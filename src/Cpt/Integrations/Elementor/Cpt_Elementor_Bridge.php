@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Elementor\Plugin as Elementor_Plugin;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Integration_Block;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -42,7 +42,15 @@ final class Cpt_Elementor_Bridge {
 	 * @return array<string,array{title:string,editUrl:string}>
 	 */
 	public function get_items_list(): array {
-		return Cpt_Gutenberg_Block::get_items_list( $this->settings_storage );
+		return Cpt_Integration_Block::get_items_list( $this->settings_storage );
+	}
+
+	public function get_new_item_url(): string {
+		return admin_url( sprintf( 'post-new.php?post_type=%s', $this->cpt->cpt_name() ) );
+	}
+
+	public function get_item_label(): string {
+		return $this->cpt->labels()->singular_name();
 	}
 
 	/**
@@ -56,12 +64,12 @@ final class Cpt_Elementor_Bridge {
 			$html = $this->shortcode->render_shortcode( $attrs );
 
 			return self::is_editor_preview() ?
-				Cpt_Gutenberg_Block::render_preview( $cpt_settings, $this->front_assets, $html ) :
+				Cpt_Integration_Block::render_preview( $cpt_settings, $this->front_assets, $html ) :
 				$html;
 		}
 
 		return self::is_editor_preview() ?
-			Cpt_Gutenberg_Block::get_empty_preview_placeholder( $this->cpt->labels()->singular_name() ) :
+			Cpt_Integration_Block::get_empty_preview_placeholder( $this->cpt->labels()->singular_name() ) :
 			'';
 	}
 

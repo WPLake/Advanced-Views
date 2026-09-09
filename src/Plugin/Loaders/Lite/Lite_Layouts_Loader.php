@@ -100,6 +100,7 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 				$base->layouts_settings_storage,
 				$this->shortcode,
 				$base->front_assets,
+				$base->plugin,
 				$base->layout_cpt
 			),
 		);

@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Elementor\Controls_Manager;
 use Elementor\Widget_Base;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Integration_Block;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Elementor\Cpt_Elementor_Bridge;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Elementor\Cpt_Elementor_Widget;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -36,7 +37,7 @@ final class Selection_Elementor_Widget extends Widget_Base {
 	 * @return string[]
 	 */
 	public function get_categories(): array {
-		return array( Cpt_Elementor_Widget::CATEGORY );
+		return array( Cpt_Integration_Block::CATEGORY );
 	}
 
 	/**
@@ -62,6 +63,8 @@ final class Selection_Elementor_Widget extends Widget_Base {
 				'options' => Cpt_Elementor_Widget::get_item_options( self::get_bridge() ),
 			)
 		);
+
+		Cpt_Elementor_Widget::add_action_links_control( $this, self::get_bridge() );
 
 		$this->end_controls_section();
 

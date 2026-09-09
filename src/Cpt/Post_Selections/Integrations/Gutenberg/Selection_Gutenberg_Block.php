@@ -8,9 +8,9 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Integration_Block;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Integrations\Post_Selection_Shortcode;
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
@@ -57,7 +57,7 @@ final class Selection_Gutenberg_Block extends Hookable implements Hooks_Interfac
 				fn() => register_rest_route(
 					Plugin::REST_NAMESPACE,
 					self::REST_ROUTE,
-					Cpt_Gutenberg_Block::get_items_list_rest_args( $this->selections_settings_storage ),
+					Cpt_Integration_Block::get_items_list_rest_args( $this->selections_settings_storage ),
 				)
 			);
 		}
@@ -67,7 +67,7 @@ final class Selection_Gutenberg_Block extends Hookable implements Hooks_Interfac
 		register_block_type(
 			__DIR__ . '/block.json',
 			array(
-				'category'        => Cpt_Gutenberg_Block::CATEGORY,
+				'category'        => Cpt_Integration_Block::CATEGORY,
 				'supports'        => Cpt_Gutenberg_Block::get_supports(),
 				'attributes'      => array_merge(
 					array(
@@ -96,12 +96,12 @@ final class Selection_Gutenberg_Block extends Hookable implements Hooks_Interfac
 			$html = $this->selection_shortcode->render_shortcode( $attrs );
 
 			return $this->route_detector->is_admin_route() ?
-				Cpt_Gutenberg_Block::render_preview( $selection_settings, $this->front_assets, $html ) :
+				Cpt_Integration_Block::render_preview( $selection_settings, $this->front_assets, $html ) :
 				$html;
 		}
 
 		return $this->route_detector->is_admin_route() ?
-			Cpt_Gutenberg_Block::get_empty_preview_placeholder( $this->selection_cpt->labels()->singular_name() ) :
+			Cpt_Integration_Block::get_empty_preview_placeholder( $this->selection_cpt->labels()->singular_name() ) :
 			'';
 	}
 
@@ -117,13 +117,13 @@ final class Selection_Gutenberg_Block extends Hookable implements Hooks_Interfac
 		wp_localize_script(
 			self::NAME,
 			'avfSelectionBlock',
-			array(
-				'blockName'    => self::NAME,
-				'items'        => Cpt_Gutenberg_Block::get_items_list( $this->selections_settings_storage ),
-				'newItemUrl'   => admin_url( sprintf( 'post-new.php?post_type=%s', $this->selection_cpt->cpt_name() ) ),
-				'itemsRestUrl' => sprintf( '/%s/%s', Plugin::REST_NAMESPACE, self::REST_ROUTE ),
-				'canManage'    => Avf_User::can_manage(),
-				'itemLabel'    => $this->selection_cpt->labels()->singular_name(),
+			array_merge(
+				array( 'blockName' => self::NAME ),
+				Cpt_Integration_Block::get_localized_item_picker_data(
+					$this->selections_settings_storage,
+					$this->selection_cpt,
+					self::REST_ROUTE
+				)
 			)
 		);
 	}

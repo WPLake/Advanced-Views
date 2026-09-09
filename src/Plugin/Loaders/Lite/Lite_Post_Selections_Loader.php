@@ -180,6 +180,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 				$base->post_selections_settings_storage,
 				$this->shortcode,
 				$base->front_assets,
+				$base->plugin,
 				$base->post_selection_cpt
 			),
 		);

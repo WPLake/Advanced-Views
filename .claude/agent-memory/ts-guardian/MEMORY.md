@@ -1,0 +1,1 @@
+- [Autofix restart behavior](feedback_autofix_restart.md) — Biome "Fixed N file(s)" mid-guard means restart guard fresh; don't try to untangle its diff from concurrent feature changes.

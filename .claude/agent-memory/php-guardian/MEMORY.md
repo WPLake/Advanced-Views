@@ -1,0 +1,1 @@
+- [Elementor phpstan stubs](reference_elementor_phpstan_stubs.md) — missing Elementor class constants in phpstan runs are usually a stub-file gap under tools/code_quality/stubs/Elementor, not a real bug.
