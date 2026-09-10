@@ -120,7 +120,7 @@ final class Layout_Elementor_Integration extends Hookable implements Hooks_Inter
 	protected function enqueue_script( array $deps ): void {
 		wp_enqueue_script(
 			self::NAME,
-			$this->plugin->get_assets_url( 'admin/js/elementor/layout-elementor.min.js' ),
+			$this->plugin->get_assets_url( 'js/admin/elementor/layout-elementor.min.js' ),
 			$deps,
 			$this->plugin->get_version(),
 			true

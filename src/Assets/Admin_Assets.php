@@ -50,7 +50,7 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 
 		wp_enqueue_style(
 			Hard_Layout_Cpt::cpt_name() . '_editor',
-			$this->plugin->get_assets_url( 'admin/css/editor.min.css' ),
+			$this->plugin->get_assets_url( 'css/admin/editor.min.css' ),
 			array(),
 			$this->plugin->get_version()
 		);
@@ -69,7 +69,7 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 	protected function enqueue_code_editor(): void {
 		wp_enqueue_script(
 			Hard_Layout_Cpt::cpt_name() . '_ace',
-			$this->plugin->get_assets_url( 'admin/code-editor/ace.js' ),
+			$this->plugin->get_assets_url( 'js/admin/code-editor/ace.js' ),
 			array(),
 			$this->plugin->get_version(),
 			array(
@@ -82,7 +82,7 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 		foreach ( $extensions as $extension ) {
 			wp_enqueue_script(
 				Hard_Layout_Cpt::cpt_name() . '_ace-' . $extension,
-				$this->plugin->get_assets_url( 'admin/code-editor/' . $extension . '.js' ),
+				$this->plugin->get_assets_url( 'js/admin/code-editor/' . $extension . '.js' ),
 				array(
 					Hard_Layout_Cpt::cpt_name() . '_ace',
 				),
@@ -96,7 +96,7 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 
 
 	protected function get_cpt_item_js_file_url(): string {
-		return $this->plugin->get_assets_url( 'admin/js/cpt-item.min.js' );
+		return $this->plugin->get_assets_url( 'js/admin/cpt-item.min.js' );
 	}
 
 	/**
@@ -120,7 +120,7 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 
 				wp_enqueue_style(
 					Hard_Layout_Cpt::cpt_name() . '_cpt-item',
-					$this->plugin->get_assets_url( 'admin/css/cpt-item.min.css' ),
+					$this->plugin->get_assets_url( 'css/admin/cpt-item.min.css' ),
 					array(),
 					$this->plugin->get_version()
 				);
@@ -142,7 +142,7 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 			case 'edit':
 				wp_enqueue_style(
 					Hard_Layout_Cpt::cpt_name() . '_list-page',
-					$this->plugin->get_assets_url( 'admin/css/list-page.min.css' ),
+					$this->plugin->get_assets_url( 'css/admin/list-page.min.css' ),
 					array(),
 					$this->plugin->get_version()
 				);
@@ -151,7 +151,7 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 			case sprintf( '%s_page_avf-settings', $plugin_prefix ):
 				wp_enqueue_style(
 					Hard_Layout_Cpt::cpt_name() . '_tools',
-					$this->plugin->get_assets_url( 'admin/css/tools.min.css' ),
+					$this->plugin->get_assets_url( 'css/admin/tools.min.css' ),
 					array(),
 					$this->plugin->get_version()
 				);
@@ -164,7 +164,7 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 		if ( 0 === strpos( $current_base, $plugin_page_begins ) ) {
 			wp_enqueue_style(
 				Hard_Layout_Cpt::cpt_name() . '_page',
-				$this->plugin->get_assets_url( 'admin/css/dashboard.min.css' ),
+				$this->plugin->get_assets_url( 'css/admin/dashboard.min.css' ),
 				array(),
 				$this->plugin->get_version()
 			);
@@ -173,7 +173,7 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 		// plugin-header for all the pages without exception.
 		wp_enqueue_style(
 			Hard_Layout_Cpt::cpt_name() . '_common',
-			$this->plugin->get_assets_url( 'admin/css/common.min.css' ),
+			$this->plugin->get_assets_url( 'css/admin/common.min.css' ),
 			array(),
 			$this->plugin->get_version()
 		);

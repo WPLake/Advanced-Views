@@ -122,7 +122,7 @@ class Live_Reloader_Component extends Hookable implements Hooks_Interface {
 
 		wp_enqueue_script(
 			'avf-live-reloading',
-			$this->plugin->get_assets_url( 'front/js/live-reloader.min.js' ),
+			$this->plugin->get_assets_url( 'js/front/live-reloader.min.js' ),
 			array(),
 			$this->plugin->get_version(),
 			array(

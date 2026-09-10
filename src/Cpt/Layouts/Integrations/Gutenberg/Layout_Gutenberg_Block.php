@@ -103,7 +103,7 @@ final class Layout_Gutenberg_Block extends Hookable implements Hooks_Interface {
 	public function enqueue_editor_assets(): void {
 		wp_enqueue_script(
 			self::NAME,
-			$this->plugin->get_assets_url( 'admin/js/blocks/layout-block.min.js' ),
+			$this->plugin->get_assets_url( 'js/admin/blocks/layout-block.min.js' ),
 			Cpt_Gutenberg_Block::get_block_js_dependencies(),
 			$this->plugin->get_version(),
 			true

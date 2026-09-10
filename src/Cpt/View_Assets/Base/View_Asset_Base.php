@@ -46,11 +46,11 @@ abstract class View_Asset_Base implements View_Asset {
 	}
 
 	protected function get_asset_url( string $file ): string {
-		return $this->plugin->get_assets_url( 'front/' . $file );
+		return $this->plugin->get_assets_url( $file );
 	}
 
 	protected function get_asset_path( string $file ): string {
-		return $this->plugin->get_assets_path( 'front/' . $file );
+		return $this->plugin->get_assets_path( $file );
 	}
 
 	protected function print_js_code_piece(
@@ -134,7 +134,7 @@ abstract class View_Asset_Base implements View_Asset {
 
 			wp_enqueue_script(
 				$this->get_wp_handle( $js_handle ),
-				$this->get_asset_url( 'js/' . $js_handle . '.min.js' ),
+				$this->get_asset_url( 'js/front/' . $js_handle . '.min.js' ),
 				array(),
 				$this->plugin->get_version(),
 				array(
@@ -153,7 +153,7 @@ abstract class View_Asset_Base implements View_Asset {
 				continue;
 			}
 
-			$path_to_file = $this->get_asset_path( 'css/' . $css_handle . '.min.css' );
+			$path_to_file = $this->get_asset_path( 'css/front/' . $css_handle . '.min.css' );
 
 			$css .= (string) $wp_filesystem->get_contents( $path_to_file );
 		}
