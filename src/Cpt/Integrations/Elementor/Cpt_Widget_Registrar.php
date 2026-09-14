@@ -9,13 +9,10 @@ defined( 'ABSPATH' ) || exit;
 use Elementor\Elements_Manager;
 use Elementor\Widget_Base;
 use Elementor\Widgets_Manager;
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Item_Picker;
-use Org\Wplake\Advanced_Views\Cpt\Integrations\Shortcode_Renderer;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 
 /**
@@ -27,28 +24,16 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
  */
 final class Cpt_Widget_Registrar extends Hookable implements Hooks_Interface {
 	private Cpt_Item_Picker $item_picker;
-	private Cpt_Settings_Storage $settings_storage;
-	private Public_Cpt $cpt;
-	private Shortcode_Renderer $shortcode;
-	private Front_Assets $front_assets;
+	private Cpt_Renderer $renderer;
 
 	/**
 	 * @var array<Widget_Base&Widget_Dependencies>
 	 */
 	private array $widgets = array();
 
-	public function __construct(
-		Cpt_Item_Picker $item_picker,
-		Cpt_Settings_Storage $settings_storage,
-		Public_Cpt $cpt,
-		Shortcode_Renderer $shortcode,
-		Front_Assets $front_assets
-	) {
-		$this->item_picker      = $item_picker;
-		$this->settings_storage = $settings_storage;
-		$this->cpt              = $cpt;
-		$this->shortcode        = $shortcode;
-		$this->front_assets     = $front_assets;
+	public function __construct( Cpt_Item_Picker $item_picker, Cpt_Renderer $renderer ) {
+		$this->item_picker = $item_picker;
+		$this->renderer    = $renderer;
 	}
 
 	/**
@@ -67,13 +52,7 @@ final class Cpt_Widget_Registrar extends Hookable implements Hooks_Interface {
 	}
 
 	public function register_widgets( Widgets_Manager $widgets_manager ): void {
-		$widget = new Cpt_Elementor_Widget(
-			$this->item_picker,
-			$this->settings_storage,
-			$this->cpt,
-			$this->shortcode,
-			$this->front_assets
-		);
+		$widget = new Cpt_Elementor_Widget( $this->item_picker, $this->renderer );
 
 		foreach ( $this->widgets as $widget_instance ) {
 			$widget_instance::set_dependencies( $widget );

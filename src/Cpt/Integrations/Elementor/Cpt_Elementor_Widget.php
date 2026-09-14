@@ -10,13 +10,9 @@ use Elementor\Controls_Manager;
 use Elementor\Elements_Manager;
 use Elementor\Plugin as Elementor_Plugin;
 use Elementor\Widget_Base;
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Renderer;
-use Org\Wplake\Advanced_Views\Cpt\Integrations\Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
@@ -41,21 +37,11 @@ final class Cpt_Elementor_Widget {
 	);
 
 	private Cpt_Item_Picker $item_picker;
-	private Cpt_Settings_Storage $settings_storage;
-	private Public_Cpt $cpt;
 	private Cpt_Renderer $renderer;
 
-	public function __construct(
-		Cpt_Item_Picker $item_picker,
-		Cpt_Settings_Storage $settings_storage,
-		Public_Cpt $cpt,
-		Shortcode_Renderer $shortcode,
-		Front_Assets $front_assets
-	) {
-		$this->item_picker      = $item_picker;
-		$this->settings_storage = $settings_storage;
-		$this->cpt              = $cpt;
-		$this->renderer         = new Cpt_Renderer( $shortcode, $front_assets );
+	public function __construct( Cpt_Item_Picker $item_picker, Cpt_Renderer $renderer ) {
+		$this->item_picker = $item_picker;
+		$this->renderer    = $renderer;
 	}
 
 	public static function add_category( Elements_Manager $elements_manager ): void {
@@ -153,25 +139,16 @@ final class Cpt_Elementor_Widget {
 
 	/**
 	 * The single entry point Layout_Elementor_Widget/Selection_Elementor_Widget::render() calls on their held
-	 * instance: resolves the chosen id, then dispatches to render()/render_preview()/
-	 * get_empty_preview_placeholder() the same way Layout_Gutenberg_Block/Selection_Gutenberg_Block::render_block()
-	 * does, only gated by is_editor_preview() instead of Route_Detector::is_admin_route().
+	 * instance: dispatches to Cpt_Renderer::render()/render_preview() the same way
+	 * Layout_Gutenberg_Block/Selection_Gutenberg_Block::render_block() does, only gated by is_editor_preview()
+	 * instead of Route_Detector::is_admin_route().
 	 *
 	 * @param array<string,string> $attrs
 	 */
 	public function render( array $attrs ): string {
-		$unique_id    = string( $attrs, 'id' );
-		$cpt_settings = $this->settings_storage->get( $unique_id );
-
-		if ( $cpt_settings->isLoaded() ) {
-			return self::is_editor_preview() ?
-				$this->renderer->render_preview( $cpt_settings, $attrs ) :
-				$this->renderer->render( $attrs );
-		}
-
 		return self::is_editor_preview() ?
-			$this->renderer->get_empty_preview_placeholder( $this->cpt->labels()->singular_name() ) :
-			'';
+			$this->renderer->render_preview( $attrs, true ) :
+			$this->renderer->render( $attrs );
 	}
 
 	/**

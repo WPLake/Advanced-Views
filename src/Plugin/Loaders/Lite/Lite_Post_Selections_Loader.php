@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Renderer;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Elementor\Cpt_Widget_Registrar;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Cpt\Post_Selections_Cpt;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Cpt\Selection_Git_Box;
@@ -176,27 +177,23 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->post_selection_cpt
 		);
 
-		$this->cpt_block = new Cpt_Gutenberg_Block(
-			$base->post_selections_settings_storage,
-			$base->post_selection_cpt,
+		$cpt_renderer = new Cpt_Renderer(
 			$this->shortcode,
-			$base->front_assets
+			$base->front_assets,
+			$base->post_selections_settings_storage,
+			$base->post_selection_cpt
 		);
+
+		$cpt_block = new Cpt_Gutenberg_Block( $cpt_renderer );
 
 		$this->block = new Selection_Gutenberg_Block(
 			$base->plugin,
 			$this->item_picker,
-			$this->cpt_block
+			$cpt_block
 		);
 
-		$this->make_elementor_integration = function () use ( $base ): array {
-			$integration = new Cpt_Widget_Registrar(
-				$this->item_picker,
-				$base->post_selections_settings_storage,
-				$base->post_selection_cpt,
-				$this->shortcode,
-				$base->front_assets
-			);
+		$this->make_elementor_integration = function () use ( $base, $cpt_renderer ): array {
+			$integration = new Cpt_Widget_Registrar( $this->item_picker, $cpt_renderer );
 
 			$integration->add_widget( new Selection_Elementor_Widget() );
 

@@ -10,7 +10,6 @@ use Closure;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Cpt_Assets_Reducer;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Cpt_Gutenberg_Editor_Settings;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Fs_Only_Tab;
-use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Cpt\Layouts\Cpt\Layout_Git_Box;
 use Org\Wplake\Advanced_Views\Cpt\Layouts\Cpt\Layout_Git_Tabs;
@@ -45,7 +44,6 @@ abstract class Layouts_Loader_Base extends Module_Loader {
 	public Layout_Shortcode $shortcode;
 	public Shortcode_Gutenberg_Block $shortcode_block;
 	public Cpt_Item_Picker $item_picker;
-	public Cpt_Gutenberg_Block $cpt_block;
 	public Layout_Gutenberg_Block $block;
 	public Layout_Save_Actions $save_actions;
 	public Layout_Factory $factory;

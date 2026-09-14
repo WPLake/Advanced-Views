@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Renderer;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Elementor\Cpt_Widget_Registrar;
 use Org\Wplake\Advanced_Views\Cpt\Layouts\Cpt\Layout_Git_Box;
 use Org\Wplake\Advanced_Views\Cpt\Layouts\Cpt\Layout_Git_Tabs;
@@ -96,27 +97,23 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 			$base->layout_cpt
 		);
 
-		$this->cpt_block = new Cpt_Gutenberg_Block(
-			$base->layouts_settings_storage,
-			$base->layout_cpt,
+		$cpt_renderer = new Cpt_Renderer(
 			$this->shortcode,
-			$base->front_assets
+			$base->front_assets,
+			$base->layouts_settings_storage,
+			$base->layout_cpt
 		);
+
+		$cpt_block = new Cpt_Gutenberg_Block( $cpt_renderer );
 
 		$this->block = new Layout_Gutenberg_Block(
 			$base->plugin,
 			$this->item_picker,
-			$this->cpt_block
+			$cpt_block
 		);
 
-		$this->create_elementor_integration = function () use ( $base ): array {
-			$widget_registrar = new Cpt_Widget_Registrar(
-				$this->item_picker,
-				$base->layouts_settings_storage,
-				$base->layout_cpt,
-				$this->shortcode,
-				$base->front_assets
-			);
+		$this->create_elementor_integration = function () use ( $base, $cpt_renderer ): array {
+			$widget_registrar = new Cpt_Widget_Registrar( $this->item_picker, $cpt_renderer );
 
 			$widget_registrar->add_widget( new Layout_Elementor_Widget() );
 
