@@ -56,7 +56,8 @@ final class Cpt_Elementor_Widget {
 			self::ACTION_LINKS_CONTROL_ID,
 			array(
 				'type' => Controls_Manager::RAW_HTML,
-				'raw'  => self::get_action_links_html( $bridge ),
+				// HTML is set on the JS side.
+				'raw'  => '',
 			)
 		);
 	}
@@ -138,20 +139,5 @@ final class Cpt_Elementor_Widget {
 		}
 
 		return $bridge;
-	}
-
-	protected static function get_action_links_html( Cpt_Elementor_Bridge $bridge ): string {
-		$add_new_label = sprintf(
-		// translators: %s is a singular post-type name, e.g. "Layout".
-			__( 'Add new %s', 'acf-views' ),
-			$bridge->get_item_label()
-		);
-
-		return sprintf(
-			'<a href="%s" target="_blank">%s</a> - <a href="#" class="avf-action-links__refresh">%s</a>',
-			esc_url( $bridge->get_new_item_url() ),
-			esc_html( $add_new_label ),
-			esc_html__( 'Refresh', 'acf-views' )
-		);
 	}
 }
