@@ -10,6 +10,8 @@ use Closure;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Cpt_Assets_Reducer;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Cpt_Gutenberg_Editor_Settings;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Fs_Only_Tab;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Cpt\Post_Selections_Cpt;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Cpt\Selection_Git_Box;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Cpt\Selection_Git_Tabs;
@@ -41,6 +43,8 @@ abstract class Post_Selections_Loader_Base extends Module_Loader {
 	public Post_Selections_Pre_Built_Tab $pre_built_tab;
 	public Selection_Layout_Integration $layout_integration;
 	public Post_Selection_Shortcode $shortcode;
+	public Cpt_Item_Picker $item_picker;
+	public Cpt_Gutenberg_Block $cpt_block;
 	public Selection_Gutenberg_Block $block;
 	public Selection_Save_Actions $save_actions;
 	public Selection_Git_Tabs $git_tabs;
@@ -91,6 +95,7 @@ abstract class Post_Selections_Loader_Base extends Module_Loader {
 				$this->save_actions,
 				$this->layout_integration,
 				$this->shortcode,
+				$this->item_picker,
 				$this->block,
 				$this->git_tabs,
 				$this->git_box,

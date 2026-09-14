@@ -12,6 +12,9 @@ use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Cpt_Gutenberg_Editor_Settings;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Fs_Only_Tab;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\File_System;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Elementor\Cpt_Widget_Registrar;
 use Org\Wplake\Advanced_Views\Cpt\Layouts\Cpt\Layout_Git_Box;
 use Org\Wplake\Advanced_Views\Cpt\Layouts\Cpt\Layout_Git_Tabs;
 use Org\Wplake\Advanced_Views\Cpt\Layouts\Cpt\Layout_Interactive_Fields;
@@ -24,7 +27,8 @@ use Org\Wplake\Advanced_Views\Cpt\Layouts\Cpt\Table\Layouts_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Cpt\Layouts\Data_Storage\Layout_Fs_Fields;
 use Org\Wplake\Advanced_Views\Cpt\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Cpt\Layouts\Fields\Field_Markup;
-use Org\Wplake\Advanced_Views\Cpt\Layouts\Integrations\Elementor\Layout_Elementor_Integration;
+use Org\Wplake\Advanced_Views\Cpt\Layouts\Integrations\Elementor\Layout_Elementor_Assets;
+use Org\Wplake\Advanced_Views\Cpt\Layouts\Integrations\Elementor\Layout_Elementor_Widget;
 use Org\Wplake\Advanced_Views\Cpt\Layouts\Integrations\Gutenberg\Layout_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Cpt\Layouts\Integrations\Gutenberg\Shortcode_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Cpt\Layouts\Integrations\Layout_Shortcode;
@@ -87,23 +91,40 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 			$this->shortcode_block
 		);
 
-		$this->block = new Layout_Gutenberg_Block(
+		$this->item_picker = new Cpt_Item_Picker(
 			$base->layouts_settings_storage,
-			$this->shortcode,
-			$base->front_assets,
-			$base->plugin,
 			$base->layout_cpt
 		);
 
-		$this->create_elementor_integration = fn(): array => array(
-			new Layout_Elementor_Integration(
-				$base->layouts_settings_storage,
-				$this->shortcode,
-				$base->front_assets,
-				$base->plugin,
-				$base->layout_cpt
-			),
+		$this->cpt_block = new Cpt_Gutenberg_Block(
+			$base->layouts_settings_storage,
+			$base->layout_cpt,
+			$this->shortcode,
+			$base->front_assets
 		);
+
+		$this->block = new Layout_Gutenberg_Block(
+			$base->plugin,
+			$this->item_picker,
+			$this->cpt_block
+		);
+
+		$this->create_elementor_integration = function () use ( $base ): array {
+			$widget_registrar = new Cpt_Widget_Registrar(
+				$this->item_picker,
+				$base->layouts_settings_storage,
+				$base->layout_cpt,
+				$this->shortcode,
+				$base->front_assets
+			);
+
+			$widget_registrar->add_widget( new Layout_Elementor_Widget() );
+
+			return array(
+				$widget_registrar,
+				new Layout_Elementor_Assets( $this->item_picker, $base->plugin ),
+			);
+		};
 
 		$this->cpt                 = new Layouts_Cpt( $base->layout_cpt, $base->layouts_settings_storage );
 		$this->cpt_table           = new Layouts_Cpt_Table(

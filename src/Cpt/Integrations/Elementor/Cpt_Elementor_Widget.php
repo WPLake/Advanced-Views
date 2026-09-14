@@ -8,14 +8,23 @@ defined( 'ABSPATH' ) || exit;
 
 use Elementor\Controls_Manager;
 use Elementor\Elements_Manager;
+use Elementor\Plugin as Elementor_Plugin;
 use Elementor\Widget_Base;
-use LogicException;
-use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Integration_Block;
+use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Renderer;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Shortcode_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
- * Stateless logic shared by every Elementor widget backed by a Cpt_Settings_Storage (Layout, Post Selection...) -
- * the Elementor-specific counterpart to Cpt_Gutenberg_Block, both sitting on top of Cpt_Integration_Block.
+ * Logic shared by every Elementor widget backed by a Cpt_Settings_Storage (Layout, Post Selection...) - the
+ * Elementor-specific counterpart to Cpt_Gutenberg_Block. One instance per CPT, built by Cpt_Widget_Registrar
+ * and handed to the concrete widget class via its own set_dependencies() - the same role Cpt_Elementor_Bridge
+ * used to play, folded in here since there's no remaining state Elementor's per-render widget re-construction
+ * would otherwise lose.
  */
 final class Cpt_Elementor_Widget {
 	// the RAW_HTML control itemActionLinks.ts locates via `[data-setting]` to keep in sync with the selected item.
@@ -31,12 +40,27 @@ final class Cpt_Elementor_Widget {
 		'custom_arguments'   => 'custom-arguments',
 	);
 
-	private function __construct() {
+	private Cpt_Item_Picker $item_picker;
+	private Cpt_Settings_Storage $settings_storage;
+	private Public_Cpt $cpt;
+	private Cpt_Renderer $renderer;
+
+	public function __construct(
+		Cpt_Item_Picker $item_picker,
+		Cpt_Settings_Storage $settings_storage,
+		Public_Cpt $cpt,
+		Shortcode_Renderer $shortcode,
+		Front_Assets $front_assets
+	) {
+		$this->item_picker      = $item_picker;
+		$this->settings_storage = $settings_storage;
+		$this->cpt              = $cpt;
+		$this->renderer         = new Cpt_Renderer( $shortcode, $front_assets );
 	}
 
 	public static function add_category( Elements_Manager $elements_manager ): void {
 		$elements_manager->add_category(
-			Cpt_Integration_Block::CATEGORY,
+			Cpt_Item_Picker::CATEGORY,
 			array(
 				'title' => __( 'Advanced Views', 'acf-views' ),
 				'icon'  => 'fa fa-plug',
@@ -51,7 +75,7 @@ final class Cpt_Elementor_Widget {
 	 * rendered here; itemActionLinks.ts swaps in the "Edit" link once it knows which item this particular
 	 * instance has selected.
 	 */
-	public static function add_action_links_control( Widget_Base $widget, Cpt_Elementor_Bridge $bridge ): void {
+	public function add_action_links( Widget_Base $widget ): void {
 		$widget->add_control(
 			self::ACTION_LINKS_CONTROL_ID,
 			array(
@@ -62,7 +86,7 @@ final class Cpt_Elementor_Widget {
 		);
 	}
 
-	public static function get_common_controls( Widget_Base $widget ): void {
+	public static function add_common_controls( Widget_Base $widget ): void {
 		$widget->start_controls_section(
 			'avf_advanced_section',
 			array(
@@ -123,21 +147,43 @@ final class Cpt_Elementor_Widget {
 	/**
 	 * @return array<string,string>
 	 */
-	public static function get_item_options( Cpt_Elementor_Bridge $bridge ): array {
-		$options = array();
-
-		foreach ( $bridge->get_items_list() as $unique_id => $item ) {
-			$options[ $unique_id ] = $item['title'];
-		}
-
-		return $options;
+	public function get_item_options(): array {
+		return $this->item_picker->get_flat_items();
 	}
 
-	public static function require_bridge( ?Cpt_Elementor_Bridge $bridge ): Cpt_Elementor_Bridge {
-		if ( ! $bridge instanceof Cpt_Elementor_Bridge ) {
-			throw new LogicException( 'Cpt_Elementor_Bridge dependencies were not set before rendering the widget.' );
+	/**
+	 * The single entry point Layout_Elementor_Widget/Selection_Elementor_Widget::render() calls on their held
+	 * instance: resolves the chosen id, then dispatches to render()/render_preview()/
+	 * get_empty_preview_placeholder() the same way Layout_Gutenberg_Block/Selection_Gutenberg_Block::render_block()
+	 * does, only gated by is_editor_preview() instead of Route_Detector::is_admin_route().
+	 *
+	 * @param array<string,string> $attrs
+	 */
+	public function render( array $attrs ): string {
+		$unique_id    = string( $attrs, 'id' );
+		$cpt_settings = $this->settings_storage->get( $unique_id );
+
+		if ( $cpt_settings->isLoaded() ) {
+			return self::is_editor_preview() ?
+				$this->renderer->render_preview( $cpt_settings, $attrs ) :
+				$this->renderer->render( $attrs );
 		}
 
-		return $bridge;
+		return self::is_editor_preview() ?
+			$this->renderer->get_empty_preview_placeholder( $this->cpt->labels()->singular_name() ) :
+			'';
+	}
+
+	/**
+	 * Elementor's main canvas preview loads the real front-end URL through normal template routing (caught by
+	 * is_preview_mode()'s 'elementor-preview' query arg), while its per-widget AJAX partial re-render runs through
+	 * admin-ajax.php with edit mode explicitly turned on for the duration of the render (caught by is_edit_mode()) -
+	 * neither is covered by Route_Detector::is_admin_route().
+	 */
+	protected static function is_editor_preview(): bool {
+		$elementor = Elementor_Plugin::$instance;
+
+		return $elementor->editor->is_edit_mode() ||
+				$elementor->preview->is_preview_mode();
 	}
 }

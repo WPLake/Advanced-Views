@@ -12,6 +12,9 @@ use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Cpt_Gutenberg_Editor_Settings;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Fs_Only_Tab;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\File_System;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Elementor\Cpt_Widget_Registrar;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Cpt\Post_Selections_Cpt;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Cpt\Selection_Git_Box;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Cpt\Selection_Git_Tabs;
@@ -24,7 +27,8 @@ use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Cpt\Table\Post_Selections_Pre_
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Cpt\Table\Post_Selections_Table;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Data_Storage\Post_Selection_Fs_Fields;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Data_Storage\Selection_Settings_Storage;
-use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Integrations\Elementor\Selection_Elementor_Integration;
+use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Integrations\Elementor\Selection_Elementor_Assets;
+use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Integrations\Elementor\Selection_Elementor_Widget;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Integrations\Gutenberg\Selection_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Integrations\Post_Selection_Shortcode;
 use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Post_Query;
@@ -167,23 +171,40 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$this->factory
 		);
 
-		$this->block = new Selection_Gutenberg_Block(
+		$this->item_picker = new Cpt_Item_Picker(
 			$base->post_selections_settings_storage,
-			$this->shortcode,
-			$base->front_assets,
-			$base->plugin,
 			$base->post_selection_cpt
 		);
 
-		$this->make_elementor_integration = fn(): array => array(
-			new Selection_Elementor_Integration(
-				$base->post_selections_settings_storage,
-				$this->shortcode,
-				$base->front_assets,
-				$base->plugin,
-				$base->post_selection_cpt
-			),
+		$this->cpt_block = new Cpt_Gutenberg_Block(
+			$base->post_selections_settings_storage,
+			$base->post_selection_cpt,
+			$this->shortcode,
+			$base->front_assets
 		);
+
+		$this->block = new Selection_Gutenberg_Block(
+			$base->plugin,
+			$this->item_picker,
+			$this->cpt_block
+		);
+
+		$this->make_elementor_integration = function () use ( $base ): array {
+			$integration = new Cpt_Widget_Registrar(
+				$this->item_picker,
+				$base->post_selections_settings_storage,
+				$base->post_selection_cpt,
+				$this->shortcode,
+				$base->front_assets
+			);
+
+			$integration->add_widget( new Selection_Elementor_Widget() );
+
+			return array(
+				$integration,
+				new Selection_Elementor_Assets( $this->item_picker, $base->plugin ),
+			);
+		};
 
 		$this->interactive_fields = new Selection_Interactive_Fields(
 			$base->post_selection_cpt,

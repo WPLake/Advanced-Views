@@ -8,16 +8,20 @@ defined( 'ABSPATH' ) || exit;
 
 use Elementor\Controls_Manager;
 use Elementor\Widget_Base;
-use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Integration_Block;
-use Org\Wplake\Advanced_Views\Cpt\Integrations\Elementor\Cpt_Elementor_Bridge;
+use LogicException;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Cpt\Integrations\Elementor\Cpt_Elementor_Widget;
+use Org\Wplake\Advanced_Views\Cpt\Integrations\Elementor\Widget_Dependencies;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
-final class Selection_Elementor_Widget extends Widget_Base {
-	private static ?Cpt_Elementor_Bridge $bridge = null;
+final class Selection_Elementor_Widget extends Widget_Base implements Widget_Dependencies {
+	private static ?Cpt_Elementor_Widget $widget = null;
 
-	public static function set_dependencies( Cpt_Elementor_Bridge $bridge ): void {
-		self::$bridge = $bridge;
+	/**
+	 * Called once from Cpt_Widget_Registrar::register_widgets(), before Elementor ever renders.
+	 */
+	public static function set_dependencies( Cpt_Elementor_Widget $widget ): void {
+		self::$widget = $widget;
 	}
 
 	public function get_name(): string {
@@ -37,7 +41,7 @@ final class Selection_Elementor_Widget extends Widget_Base {
 	 * @return string[]
 	 */
 	public function get_categories(): array {
-		return array( Cpt_Integration_Block::CATEGORY );
+		return array( Cpt_Item_Picker::CATEGORY );
 	}
 
 	/**
@@ -60,15 +64,15 @@ final class Selection_Elementor_Widget extends Widget_Base {
 			array(
 				'label'   => __( 'Post Selection', 'acf-views' ),
 				'type'    => Controls_Manager::SELECT2,
-				'options' => Cpt_Elementor_Widget::get_item_options( self::get_bridge() ),
+				'options' => self::get_widget()->get_item_options(),
 			)
 		);
 
-		Cpt_Elementor_Widget::add_action_links_control( $this, self::get_bridge() );
+		self::get_widget()->add_action_links( $this );
 
 		$this->end_controls_section();
 
-		Cpt_Elementor_Widget::get_common_controls( $this );
+		Cpt_Elementor_Widget::add_common_controls( $this );
 	}
 
 	protected function render(): void {
@@ -83,10 +87,14 @@ final class Selection_Elementor_Widget extends Widget_Base {
 		);
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo self::get_bridge()->render( $attrs );
+		echo self::get_widget()->render( $attrs );
 	}
 
-	protected static function get_bridge(): Cpt_Elementor_Bridge {
-		return Cpt_Elementor_Widget::require_bridge( self::$bridge );
+	protected static function get_widget(): Cpt_Elementor_Widget {
+		if ( ! self::$widget instanceof Cpt_Elementor_Widget ) {
+			throw new LogicException( 'Cpt_Elementor_Widget dependencies were not set before rendering the widget.' );
+		}
+
+		return self::$widget;
 	}
 }
