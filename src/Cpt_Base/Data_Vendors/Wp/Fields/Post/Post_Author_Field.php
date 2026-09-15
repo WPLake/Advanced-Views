@@ -8,7 +8,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\User_Field;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -66,7 +66,7 @@ class Post_Author_Field extends User_Field {
 	/**
 	 * @return string[]
 	 */
-	public function get_conditional_fields( Field_Meta_Interface $field_meta ): array {
+	public function get_conditional_fields( Field_Meta $field_meta ): array {
 		return array_merge(
 			parent::get_conditional_fields( $field_meta ),
 			array(
@@ -78,7 +78,7 @@ class Post_Author_Field extends User_Field {
 	public function is_with_field_wrapper(
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta
+		Field_Meta $field_meta
 	): bool {
 		if ( $field_settings->has_external_layout() ) {
 			return true;

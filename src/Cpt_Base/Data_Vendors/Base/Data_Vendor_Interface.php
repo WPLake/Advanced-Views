@@ -10,11 +10,11 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Markup_Field_Interface;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Integrations\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
@@ -50,7 +50,7 @@ interface Data_Vendor_Interface {
 	/**
 	 * @param string[] $include_only_types
 	 *
-	 * @return array<string|int, Field_Meta_Interface|string>
+	 * @return array<string|int, Field_Meta|string>
 	 */
 	public function get_field_choices(
 		array $include_only_types = array(),
@@ -59,7 +59,7 @@ interface Data_Vendor_Interface {
 	): array;
 
 	/**
-	 * @return array<string|int, Field_Meta_Interface|string>
+	 * @return array<string|int, Field_Meta|string>
 	 */
 	public function get_sub_field_choices( bool $is_meta_format = false, bool $is_field_name_as_label = false ): array;
 
@@ -80,7 +80,7 @@ interface Data_Vendor_Interface {
 	/**
 	 * @param mixed[] $data
 	 */
-	public function fill_field_meta( Field_Meta_Interface $field_meta, array $data = array() ): void;
+	public function fill_field_meta( Field_Meta $field_meta, array $data = array() ): void;
 
 	/**
 	 * @param array<string|int,mixed>|null $local_data
@@ -89,18 +89,18 @@ interface Data_Vendor_Interface {
 	 */
 	public function get_field_value(
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		Source $source,
 		?Item_Settings $item_settings = null,
 		bool $is_formatted = false,
 		?array $local_data = null
 	);
 
-	public function convert_string_to_date_time( Field_Meta_Interface $field_meta, string $value ): ?DateTime;
+	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime;
 
 	public function convert_date_to_string_for_db_comparison(
 		DateTime $date_time,
-		Field_Meta_Interface $field_meta
+		Field_Meta $field_meta
 	): string;
 
 	/**

@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Acf\Fields;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Link_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\List_Field;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 
@@ -91,7 +91,7 @@ class Page_Link_Field extends List_Field {
 	/**
 	 * @return string[]
 	 */
-	public function get_conditional_fields( Field_Meta_Interface $field_meta ): array {
+	public function get_conditional_fields( Field_Meta $field_meta ): array {
 		return array_merge(
 			parent::get_conditional_fields( $field_meta ),
 			array(

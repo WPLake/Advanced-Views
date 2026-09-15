@@ -15,6 +15,7 @@ use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Data_Vendor_Integration
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Link_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Wp\Fields\Comment\{Comment_Date_Field};
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Wp\Fields\Comment\Comment_Author_Email_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Wp\Fields\Comment\Comment_Author_Name_Field;
@@ -61,8 +62,6 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Integrations\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
@@ -278,7 +277,7 @@ class Wp_Data_Vendor extends Data_Vendor {
 	/**
 	 * @param string[] $include_only_types
 	 *
-	 * @return array<string|int, Field_Meta_Interface|string>
+	 * @return array<string|int, Field_Meta|string>
 	 */
 	public function get_field_choices(
 		array $include_only_types = array(),
@@ -333,7 +332,7 @@ class Wp_Data_Vendor extends Data_Vendor {
 	/**
 	 * @param mixed[] $data
 	 */
-	public function fill_field_meta( Field_Meta_Interface $field_meta, array $data = array() ): void {
+	public function fill_field_meta( Field_Meta $field_meta, array $data = array() ): void {
 		if ( 0 === strpos( $field_meta->get_field_id(), Taxonomy_Term_Fields::PREFIX ) ) {
 			$field_meta->set_type( Taxonomy_Term_Fields::FIELD_TERMS );
 			// name is necessary for the identifier and markup generation.
@@ -365,7 +364,7 @@ class Wp_Data_Vendor extends Data_Vendor {
 	 */
 	public function get_field_value(
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		Source $source,
 		?Item_Settings $item_settings = null,
 		bool $is_formatted = false,
@@ -410,13 +409,13 @@ class Wp_Data_Vendor extends Data_Vendor {
 		return null;
 	}
 
-	public function convert_string_to_date_time( Field_Meta_Interface $field_meta, string $value ): ?DateTime {
+	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
 		return null;
 	}
 
 	public function convert_date_to_string_for_db_comparison(
 		DateTime $date_time,
-		Field_Meta_Interface $field_meta
+		Field_Meta $field_meta
 	): string {
 		return '';
 	}

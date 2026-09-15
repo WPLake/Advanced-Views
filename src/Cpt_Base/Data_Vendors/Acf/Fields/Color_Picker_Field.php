@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Acf\Fields;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -95,7 +95,7 @@ class Color_Picker_Field extends Markup_Field {
 	public function is_with_field_wrapper(
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta
+		Field_Meta $field_meta
 	): bool {
 		return true;
 	}

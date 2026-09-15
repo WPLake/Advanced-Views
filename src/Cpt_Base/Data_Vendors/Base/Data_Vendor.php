@@ -8,10 +8,10 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Markup_Field_Interface;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Pro_Stub_Field;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Base\Action;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -91,7 +91,7 @@ abstract class Data_Vendor extends Action implements Data_Vendor_Interface {
 	}
 
 	/**
-	 * @return array<string|int, Field_Meta_Interface|string>
+	 * @return array<string|int, Field_Meta|string>
 	 */
 	public function get_sub_field_choices( bool $is_meta_format = false, bool $is_field_name_as_label = false ): array {
 		return array();
@@ -116,7 +116,7 @@ abstract class Data_Vendor extends Action implements Data_Vendor_Interface {
 			$this->get_sub_field_choices( true );
 
 		/**
-		 * @var Field_Meta_Interface $field_meta
+		 * @var Field_Meta $field_meta
 		 */
 		foreach ( $field_choices as $field_key => $field_meta ) {
 			if ( false === $field_meta->is_field_exist() ) {

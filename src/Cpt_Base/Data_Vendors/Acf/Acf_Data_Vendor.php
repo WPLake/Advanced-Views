@@ -32,12 +32,11 @@ use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\True_False_Field
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Url_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\User_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Integrations\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
@@ -91,13 +90,13 @@ class Acf_Data_Vendor extends Data_Vendor {
 	}
 
 	/**
-	 * @param array<string|int,Field_Meta_Interface|string> $field_choices
+	 * @param array<string|int,Field_Meta|string> $field_choices
 	 * @param array<string|int,mixed> $fields
 	 * @param string[] $supported_field_types
 	 * @param string[] $include_only_types
 	 * @param string[] $pro_stub_field_types
 	 *
-	 * @return array<string|int, Field_Meta_Interface|string>
+	 * @return array<string|int, Field_Meta|string>
 	 */
 	protected function get_field_choices_recursively(
 		array $field_choices,
@@ -303,7 +302,7 @@ class Acf_Data_Vendor extends Data_Vendor {
 	/**
 	 * @param string[] $include_only_types
 	 *
-	 * @return array<string|int, Field_Meta_Interface|string>
+	 * @return array<string|int, Field_Meta|string>
 	 */
 	public function get_field_choices(
 		array $include_only_types = array(),
@@ -344,7 +343,7 @@ class Acf_Data_Vendor extends Data_Vendor {
 	/**
 	 * @param mixed[] $data
 	 */
-	public function fill_field_meta( Field_Meta_Interface $field_meta, array $data = array() ): void {
+	public function fill_field_meta( Field_Meta $field_meta, array $data = array() ): void {
 		if ( false === function_exists( 'get_field_object' ) ) {
 			return;
 		}
@@ -408,7 +407,7 @@ class Acf_Data_Vendor extends Data_Vendor {
 	 */
 	public function get_field_value(
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		Source $source,
 		?Item_Settings $item_settings = null,
 		bool $is_formatted = false,
@@ -454,7 +453,7 @@ class Acf_Data_Vendor extends Data_Vendor {
 		return $value;
 	}
 
-	public function convert_string_to_date_time( Field_Meta_Interface $field_meta, string $value ): ?DateTime {
+	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
 		$date_time = false;
 
 		switch ( $field_meta->get_type() ) {
@@ -476,7 +475,7 @@ class Acf_Data_Vendor extends Data_Vendor {
 
 	public function convert_date_to_string_for_db_comparison(
 		DateTime $date_time,
-		Field_Meta_Interface $field_meta
+		Field_Meta $field_meta
 	): string {
 		switch ( $field_meta->get_type() ) {
 			case 'date_picker':
@@ -493,7 +492,7 @@ class Acf_Data_Vendor extends Data_Vendor {
 	}
 
 	/**
-	 * @return array<string|int, Field_Meta_Interface|string>
+	 * @return array<string|int, Field_Meta|string>
 	 */
 	public function get_sub_field_choices( bool $is_meta_format = false, bool $is_field_name_as_label = false ): array {
 		if ( false === function_exists( 'acf_get_fields' ) ) {

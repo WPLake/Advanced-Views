@@ -7,8 +7,8 @@ namespace Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Markup_Field_Data;
 
 defined( 'ABSPATH' ) || exit;
@@ -81,7 +81,7 @@ abstract class Markup_Field implements Markup_Field_Interface {
 	/**
 	 * @return string[]
 	 */
-	public function get_conditional_fields( Field_Meta_Interface $field_meta ): array {
+	public function get_conditional_fields( Field_Meta $field_meta ): array {
 		return array();
 	}
 

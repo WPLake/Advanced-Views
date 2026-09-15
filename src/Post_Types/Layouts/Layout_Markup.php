@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Cpt_Base\Template\Engines_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Field_Markup;
@@ -34,7 +35,7 @@ class Layout_Markup {
 
 	protected function generate_row_markup(
 		Layout_Settings $layout_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		Item_Settings $item_settings
 	): void {
 		if ( ! $field_meta->is_field_exist() ||

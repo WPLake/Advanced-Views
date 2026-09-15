@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Types\Layouts;
-
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+namespace Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors;
 
 defined( 'ABSPATH' ) || exit;
 
-class Field_Meta implements Field_Meta_Interface {
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+
+class Field_Meta {
 	private string $vendor_name;
 	private string $field_id;
 	private string $name;
@@ -23,7 +23,7 @@ class Field_Meta implements Field_Meta_Interface {
 	private bool $is_multiple;
 	private bool $is_repeater;
 	private bool $is_group;
-	private ?Field_Meta_Interface $field_meta;
+	private ?Field_Meta $field_meta;
 	/**
 	 * @var mixed
 	 */
@@ -123,7 +123,7 @@ class Field_Meta implements Field_Meta_Interface {
 		return $this->is_group;
 	}
 
-	public function get_self_repeatable_meta(): ?Field_Meta_Interface {
+	public function get_self_repeatable_meta(): ?Field_Meta {
 		return $this->field_meta;
 	}
 
@@ -202,7 +202,7 @@ class Field_Meta implements Field_Meta_Interface {
 		$this->is_group = $is_group;
 	}
 
-	public function set_self_repeatable_meta( ?Field_Meta_Interface $field_meta ): void {
+	public function set_self_repeatable_meta( ?Field_Meta $field_meta ): void {
 		$this->field_meta = $field_meta;
 	}
 

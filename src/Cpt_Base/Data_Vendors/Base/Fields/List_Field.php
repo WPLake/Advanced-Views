@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Cpt_Base\Template\Generation\Tokens\Variable\Variable_Token;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 
@@ -33,7 +33,7 @@ abstract class List_Field extends Markup_Field {
 	 *
 	 * @return mixed
 	 */
-	protected function get_value( Field_Meta_Interface $field_meta, $value ) {
+	protected function get_value( Field_Meta $field_meta, $value ) {
 		if ( $field_meta->is_multiple() ) {
 			if ( is_array( $value ) ) {
 				return $value;
@@ -255,7 +255,7 @@ abstract class List_Field extends Markup_Field {
 	public function is_with_field_wrapper(
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta
+		Field_Meta $field_meta
 	): bool {
 		return $layout_settings->is_with_unnecessary_wrappers ||
 				$field_meta->is_multiple();
@@ -264,7 +264,7 @@ abstract class List_Field extends Markup_Field {
 	/**
 	 * @return string[]
 	 */
-	public function get_conditional_fields( Field_Meta_Interface $field_meta ): array {
+	public function get_conditional_fields( Field_Meta $field_meta ): array {
 		$conditional_fields = $field_meta->is_multiple() ?
 			array(
 				Field_Settings::FIELD_OPTIONS_DELIMITER,

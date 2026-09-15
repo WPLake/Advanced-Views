@@ -7,12 +7,11 @@ namespace Org\Wplake\Advanced_Views\Acf\Groups;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Acf\Acf_Data_Vendor;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Woo\Fields\Woo_Fields;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Woo\Woo_Data_Vendor;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Wp\Wp_Data_Vendor;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\CreatorInterface;
 
 defined( 'ABSPATH' ) || exit;
@@ -221,7 +220,7 @@ class Field_Settings extends Group {
 	// cache.
 	private string $label_translation;
 	private string $link_label_translation;
-	private ?Field_Meta_Interface $field_meta;
+	private ?Field_Meta $field_meta;
 
 	public function __construct( CreatorInterface $creator ) {
 		parent::__construct( $creator );
@@ -304,7 +303,7 @@ class Field_Settings extends Group {
 		return explode( '|', $key )[0];
 	}
 
-	public function get_field_meta(): Field_Meta_Interface {
+	public function get_field_meta(): Field_Meta {
 		if ( null === $this->field_meta ) {
 			$this->field_meta = self::get_field_meta_by_key( $this->key );
 		}
@@ -312,7 +311,7 @@ class Field_Settings extends Group {
 		return $this->field_meta;
 	}
 
-	public static function get_field_meta_by_key( string $key ): Field_Meta_Interface {
+	public static function get_field_meta_by_key( string $key ): Field_Meta {
 		if ( null !== self::$data_vendors ) {
 			return self::$data_vendors->get_field_meta(
 				self::get_vendor_name_by_key( $key ),
@@ -327,7 +326,7 @@ class Field_Settings extends Group {
 
 	// for RepeaterField.php and tests only!
 	// @phpcs:ignore
-	public function _set_field_meta( Field_Meta_Interface $field_meta ): void {
+	public function _set_field_meta( Field_Meta $field_meta ): void {
 		$this->field_meta = $field_meta;
 	}
 

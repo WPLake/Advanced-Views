@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Bridge\Controllers\Layout\Layout_Template_Controll
 use Org\Wplake\Advanced_Views\Bridge\Controllers\Request_Controller;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Instance;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Woo\Woo_Data_Vendor;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Wp\Wp_Data_Vendor;
 use Org\Wplake\Advanced_Views\Cpt_Base\Template\Engines_Storage;
@@ -156,7 +157,7 @@ class Layout extends Instance {
 	 */
 	public function get_field_value(
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		?Item_Settings $item_settings = null,
 		bool $is_formatted = false
 	) {
@@ -170,7 +171,7 @@ class Layout extends Instance {
 		);
 	}
 
-	public function convert_string_to_date_time( Field_Meta_Interface $field_meta, string $value ): ?DateTime {
+	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
 		return $this->data_vendors->convert_string_to_date_time( $field_meta, $value );
 	}
 
@@ -216,7 +217,7 @@ class Layout extends Instance {
 	 */
 	protected function get_template_args_for_variable(
 		Item_Settings $item_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		Source $source,
 		$field_value,
 		bool $is_for_validation

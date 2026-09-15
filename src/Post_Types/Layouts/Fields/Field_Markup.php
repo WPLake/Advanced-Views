@@ -12,13 +12,13 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Markup_Field_Interface;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Woo\Woo_Data_Vendor;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Wp\Wp_Data_Vendor;
 use Org\Wplake\Advanced_Views\Cpt_Base\Template\Engines_Storage;
 use Org\Wplake\Advanced_Views\Cpt_Base\Template\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Cpt_Base\Template\Generation\Tokens\Format_Token;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\View_Assets\Base\View_Front_Asset;
@@ -65,7 +65,7 @@ class Field_Markup {
 	 */
 	protected function apply_field_data_filter(
 		array $field_data,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		string $short_unique_view_id
 	): array {
 		$field_data = Plugin::apply_filters(
@@ -398,7 +398,7 @@ class Field_Markup {
 		Layout_Settings $layout_settings,
 		?Item_Settings $item_settings,
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		int &$tabs_number,
 		string $field_id,
 		bool $is_with_outer_wrappers
@@ -471,7 +471,7 @@ class Field_Markup {
 		Layout_Settings $layout_settings,
 		?Item_Settings $item_settings,
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		int $tabs_number,
 		string $field_id,
 		string $custom_field_markup = ''
@@ -595,7 +595,7 @@ class Field_Markup {
 	 * @param View_Front_Asset[] $field_assets
 	 * @param Layout_Settings $layout_settings
 	 * @param Field_Settings $field_settings
-	 * @param Field_Meta_Interface $field_meta
+	 * @param Field_Meta $field_meta
 	 * @param string $row_type
 	 *
 	 * @return bool
@@ -604,7 +604,7 @@ class Field_Markup {
 		array $field_assets,
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		string $row_type
 	): bool {
 		$field_type = $field_meta->get_type();
@@ -626,7 +626,7 @@ class Field_Markup {
 	public function is_with_row_wrapper(
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta
+		Field_Meta $field_meta
 	): bool {
 		return $layout_settings->is_with_unnecessary_wrappers ||
 				'' !== $field_settings->label ||
@@ -646,7 +646,7 @@ class Field_Markup {
 		Layout_Settings $layout_settings,
 		?Item_Settings $item_settings,
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		Layout $layout,
 		Source $source,
 		$field_value,

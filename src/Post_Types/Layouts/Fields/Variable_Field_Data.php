@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Markup_Field_Interface;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
 
@@ -35,7 +35,7 @@ class Variable_Field_Data extends Template_Field_Data {
 		Layout_Settings $layout_settings,
 		?Item_Settings $item_settings,
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		Field_Markup $field_markup,
 		Layout $layout,
 		Source $source,

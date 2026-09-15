@@ -24,6 +24,7 @@ use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\True_False_Field
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Url_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\User_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Meta_Box\Fields\Mb_File_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Meta_Box\Fields\Mb_Gallery_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Meta_Box\Fields\Mb_Image_Field;
@@ -32,8 +33,6 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Integrations\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
@@ -93,7 +92,7 @@ class Meta_Box_Data_Vendor extends Data_Vendor {
 	 */
 	protected function get_field_request_args(
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		Source $source,
 		&$source_id
 	): array {
@@ -128,13 +127,13 @@ class Meta_Box_Data_Vendor extends Data_Vendor {
 	}
 
 	/**
-	 * @param array<string,Field_Meta_Interface|string> $field_choices
+	 * @param array<string,Field_Meta|string> $field_choices
 	 * @param array<string|int,mixed> $fields
 	 * @param string[] $supported_field_types
 	 * @param string[] $include_only_types
 	 * @param string[] $pro_stub_field_types
 	 *
-	 * @return array<string, Field_Meta_Interface|string>
+	 * @return array<string, Field_Meta|string>
 	 */
 	protected function get_field_choices_recursively(
 		array $field_choices,
@@ -269,7 +268,7 @@ class Meta_Box_Data_Vendor extends Data_Vendor {
 	 *
 	 * @return mixed
 	 */
-	protected function format_group_item_value( $raw_value, Field_Settings $field_settings, Field_Meta_Interface $field_meta, Source $source ) {
+	protected function format_group_item_value( $raw_value, Field_Settings $field_settings, Field_Meta $field_meta, Source $source ) {
 		/**
 		 * Hand fix for maps.
 		 * https://docs.metabox.io/fields/osm/#outputting-a-map-in-a-group
@@ -295,7 +294,7 @@ class Meta_Box_Data_Vendor extends Data_Vendor {
 	 *
 	 * @return array<int|string,mixed>
 	 */
-	protected function format_group_value( $raw_value, Field_Settings $field_settings, Field_Meta_Interface $field_meta, Item_Settings $item_settings, Source $source ): array {
+	protected function format_group_value( $raw_value, Field_Settings $field_settings, Field_Meta $field_meta, Item_Settings $item_settings, Source $source ): array {
 		$raw_value = is_array( $raw_value ) ?
 			$raw_value :
 			array();
@@ -469,7 +468,7 @@ class Meta_Box_Data_Vendor extends Data_Vendor {
 	/**
 	 * @param string[] $include_only_types
 	 *
-	 * @return array<string|int, Field_Meta_Interface|string>
+	 * @return array<string|int, Field_Meta|string>
 	 */
 	public function get_field_choices(
 		array $include_only_types = array(),
@@ -510,7 +509,7 @@ class Meta_Box_Data_Vendor extends Data_Vendor {
 	/**
 	 * @param mixed[] $data
 	 */
-	public function fill_field_meta( Field_Meta_Interface $field_meta, array $data = array() ): void {
+	public function fill_field_meta( Field_Meta $field_meta, array $data = array() ): void {
 		if ( array() === $data ) {
 			$data = $this->get_field_info( $field_meta->get_field_id() );
 		}
@@ -607,7 +606,7 @@ class Meta_Box_Data_Vendor extends Data_Vendor {
 	 */
 	public function get_field_value(
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		Source $source,
 		?Item_Settings $item_settings = null,
 		bool $is_formatted = false,
@@ -689,7 +688,7 @@ class Meta_Box_Data_Vendor extends Data_Vendor {
 		return $value;
 	}
 
-	public function convert_string_to_date_time( Field_Meta_Interface $field_meta, string $value ): ?DateTime {
+	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
 		$date_time = false;
 
 		switch ( $field_meta->get_type() ) {
@@ -706,7 +705,7 @@ class Meta_Box_Data_Vendor extends Data_Vendor {
 
 	public function convert_date_to_string_for_db_comparison(
 		DateTime $date_time,
-		Field_Meta_Interface $field_meta
+		Field_Meta $field_meta
 	): string {
 		return $date_time->format( $field_meta->get_return_format() );
 	}
@@ -728,7 +727,7 @@ class Meta_Box_Data_Vendor extends Data_Vendor {
 	}
 
 	/**
-	 * @return array<string|int, Field_Meta_Interface|string>
+	 * @return array<string|int, Field_Meta|string>
 	 */
 	public function get_sub_field_choices( bool $is_meta_format = false, bool $is_field_name_as_label = false ): array {
 		$sub_field_choices = array();

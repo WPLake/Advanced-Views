@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\File_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Gallery_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 
@@ -29,7 +29,7 @@ class Pods_Upload_Field extends Markup_Field {
 		$this->gallery_field = $gallery_field;
 	}
 
-	protected function get_field_instance( Field_Meta_Interface $field_meta ): Markup_Field {
+	protected function get_field_instance( Field_Meta $field_meta ): Markup_Field {
 		if ( ! in_array( $field_meta->get_return_format(), array( 'images', 'images-any' ), true ) ) {
 			return $this->file_field;
 		}
@@ -89,12 +89,12 @@ class Pods_Upload_Field extends Markup_Field {
 	public function is_with_field_wrapper(
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta
+		Field_Meta $field_meta
 	): bool {
 		return $this->get_field_instance( $field_meta )->is_with_field_wrapper( $layout_settings, $field_settings, $field_meta );
 	}
 
-	public function get_conditional_fields( Field_Meta_Interface $field_meta ): array {
+	public function get_conditional_fields( Field_Meta $field_meta ): array {
 		return $this->get_field_instance( $field_meta )->get_conditional_fields( $field_meta );
 	}
 

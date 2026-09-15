@@ -30,8 +30,6 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Integrations\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
@@ -51,9 +49,9 @@ class Data_Vendors extends Action implements Hooks_Interface {
 	 */
 	private array $data_vendors;
 	/**
-	 * Vendor => field_id => Field_Meta_Interface.
+	 * Vendor => field_id => Field_Meta.
 	 *
-	 * @var Field_Meta_Interface
+	 * @var Field_Meta
 	 */
 	private array $field_meta_cache;
 
@@ -102,7 +100,7 @@ class Data_Vendors extends Action implements Hooks_Interface {
 	}
 
 	/**
-	 * @return array<string|int, string|Field_Meta_Interface>
+	 * @return array<string|int, string|Field_Meta>
 	 */
 	public function get_field_choices(
 		bool $is_only_meta_vendors = false,
@@ -141,7 +139,7 @@ class Data_Vendors extends Action implements Hooks_Interface {
 	}
 
 	/**
-	 * @return array<string|int, Field_Meta_Interface|string>
+	 * @return array<string|int, Field_Meta|string>
 	 */
 	public function get_sub_field_choices( bool $is_only_meta_vendors = false, bool $is_field_name_as_label = false ): array {
 		$choices = array(
@@ -213,7 +211,7 @@ class Data_Vendors extends Action implements Hooks_Interface {
 		return $this->data_vendors[ $vendor_name ]->get_supported_field_types();
 	}
 
-	public function get_field_meta( string $vendor_name, string $field_id ): Field_Meta_Interface {
+	public function get_field_meta( string $vendor_name, string $field_id ): Field_Meta {
 		$vendor = $this->data_vendors[ $vendor_name ] ?? null;
 
 		$this->field_meta_cache[ $vendor_name ] ??= array();
@@ -240,7 +238,7 @@ class Data_Vendors extends Action implements Hooks_Interface {
 	 */
 	public function get_field_value(
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		Source $source,
 		?Item_Settings $item_settings = null,
 		bool $is_formatted = false,
@@ -357,7 +355,7 @@ class Data_Vendors extends Action implements Hooks_Interface {
 	public function convert_date_to_string_for_db_comparison(
 		string $vendor,
 		DateTime $date_time,
-		Field_Meta_Interface $field_meta
+		Field_Meta $field_meta
 	): string {
 		if ( ! key_exists( $vendor, $this->data_vendors ) ) {
 			return '';
@@ -437,7 +435,7 @@ class Data_Vendors extends Action implements Hooks_Interface {
 		return $this->data_vendors[ $vendor_name ]->get_group_link_by_group_id( $group_id_without_vendor_prefix );
 	}
 
-	public function convert_string_to_date_time( Field_Meta_Interface $field_meta, string $value ): ?DateTime {
+	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
 		$vendor_name = $field_meta->get_vendor_name();
 
 		if ( ! key_exists( $vendor_name, $this->data_vendors ) ) {

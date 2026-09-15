@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Wp\Fields\Taxonomy_Ter
 
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Taxonomy_Field;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -18,7 +18,7 @@ class Taxonomy_Terms_Field extends Taxonomy_Field {
 	 *
 	 * @return mixed
 	 */
-	protected function get_value( Field_Meta_Interface $field_meta, $value ) {
+	protected function get_value( Field_Meta $field_meta, $value ) {
 		// do not call the parent method, as we always have a single item here.
 
 		$post = $this->get_post( $value );

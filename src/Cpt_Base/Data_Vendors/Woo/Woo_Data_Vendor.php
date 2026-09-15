@@ -13,6 +13,7 @@ use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Data_Vendor_Integration
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Markup_Field_Interface;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Woo\Fields\Woo_Featured_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Woo\Fields\Woo_Fields;
 use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Woo\Fields\Woo_Gallery_Field;
@@ -30,8 +31,6 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Integrations\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
@@ -175,7 +174,7 @@ class Woo_Data_Vendor extends Data_Vendor {
 	/**
 	 * @param string[] $include_only_types
 	 *
-	 * @return array<string|int, Field_Meta_Interface|string>
+	 * @return array<string|int, Field_Meta|string>
 	 */
 	public function get_field_choices(
 		array $include_only_types = array(),
@@ -207,7 +206,7 @@ class Woo_Data_Vendor extends Data_Vendor {
 	/**
 	 * @param mixed[] $data
 	 */
-	public function fill_field_meta( Field_Meta_Interface $field_meta, array $data = array() ): void {
+	public function fill_field_meta( Field_Meta $field_meta, array $data = array() ): void {
 		if ( ! in_array( $field_meta->get_field_id(), $this->get_supported_field_types(), true ) ) {
 			return;
 		}
@@ -231,7 +230,7 @@ class Woo_Data_Vendor extends Data_Vendor {
 	 */
 	public function get_field_value(
 		Field_Settings $field_settings,
-		Field_Meta_Interface $field_meta,
+		Field_Meta $field_meta,
 		Source $source,
 		?Item_Settings $item_settings = null,
 		bool $is_formatted = false,
@@ -244,13 +243,13 @@ class Woo_Data_Vendor extends Data_Vendor {
 		return $source->get_id();
 	}
 
-	public function convert_string_to_date_time( Field_Meta_Interface $field_meta, string $value ): ?DateTime {
+	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
 		return null;
 	}
 
 	public function convert_date_to_string_for_db_comparison(
 		DateTime $date_time,
-		Field_Meta_Interface $field_meta
+		Field_Meta $field_meta
 	): string {
 		return '';
 	}
