@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\Import_Result;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\Pre_Built_Tab;
-use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Storage\Layout_Settings_Storage;
 

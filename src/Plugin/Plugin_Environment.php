@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\File_System_Loader;
-use Org\Wplake\Advanced_Views\Cpt_Base\Template\Templates_Environment;
+use Org\Wplake\Advanced_Views\Cpt_Base\Template_Base\Templates_Environment;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;

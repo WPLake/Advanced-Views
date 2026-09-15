@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\External_Storage_Tab;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\Import_Result;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\Tab_Data;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Cpt_Base\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Cpt_Base\Git_Api\Git_Repository_Item;
 use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;

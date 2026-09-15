@@ -43,11 +43,11 @@ use Org\Wplake\Advanced_Views\Compatibility\Migration\Version\V_3\Migration_3_9_
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\File_System_Loader;
-use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Cpt_Base\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Cpt_Base\Mount_Points;
-use Org\Wplake\Advanced_Views\Cpt_Base\Template\Engines_Storage;
-use Org\Wplake\Advanced_Views\Cpt_Base\Template\Templates_Environment;
+use Org\Wplake\Advanced_Views\Cpt_Base\Template_Engines\Engines_Storage;
+use Org\Wplake\Advanced_Views\Cpt_Base\Template_Base\Templates_Environment;
 use Org\Wplake\Advanced_Views\Dashboard\Admin_Bar;
 use Org\Wplake\Advanced_Views\Dashboard\Admin_Pages;
 use Org\Wplake\Advanced_Views\Dashboard\Live_Reloader\Live_Reloader;

@@ -10,8 +10,8 @@ use DateTime;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\Markup_Field_Interface;
-use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Field_Meta;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Interface;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
 

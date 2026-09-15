@@ -5,8 +5,8 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Cpt_Base\Base;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Template\Engines_Storage;
-use Org\Wplake\Advanced_Views\Cpt_Base\Template\Rendering\Template_Renderer_Base;
+use Org\Wplake\Advanced_Views\Cpt_Base\Template_Engines\Engines_Storage;
+use Org\Wplake\Advanced_Views\Cpt_Base\Template_Base\Rendering\Template_Renderer_Base;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Utils\eval_snippet;

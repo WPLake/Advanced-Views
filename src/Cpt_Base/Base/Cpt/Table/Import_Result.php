@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table;
 
-use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Related_Groups_Import_Result;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Related_Groups_Import_Result;
 
 defined( 'ABSPATH' ) || exit;
 
