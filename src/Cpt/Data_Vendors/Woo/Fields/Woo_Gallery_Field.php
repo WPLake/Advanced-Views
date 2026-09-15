@@ -4,9 +4,9 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Woo\Fields;
 
-use Org\Wplake\Advanced_Views\Cpt\Layouts\Fields\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Base\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Base\Fields\Gallery_Field;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 
 defined( 'ABSPATH' ) || exit;
 

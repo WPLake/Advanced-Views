@@ -10,10 +10,10 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Acf\Acf_Data_Vendor;
 use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Meta_Box\Meta_Box_Data_Vendor;
-use Org\Wplake\Advanced_Views\Cpt\Layouts\Field_Meta_Interface;
-use Org\Wplake\Advanced_Views\Cpt\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Cpt\Layouts\Fields\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Cpt\View_Assets\Maps_Asset;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Markup_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 

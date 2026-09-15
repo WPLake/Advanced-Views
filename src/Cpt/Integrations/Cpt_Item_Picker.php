@@ -34,15 +34,23 @@ final class Cpt_Item_Picker extends Hookable implements Hooks_Interface {
 
 	public function set_hooks( Route_Detector $route_detector ): void {
 		if ( $route_detector->is_admin_route() ) {
-			self::add_action(
-				'rest_api_init',
-				fn() => register_rest_route(
-					Plugin::REST_NAMESPACE,
-					$this->get_route_name(),
-					$this->get_route_args(),
-				)
-			);
+			self::add_action( 'rest_api_init', array( $this, 'register_rest_route' ) );
 		}
+	}
+
+	public function register_rest_route(): void {
+		register_rest_route(
+			Plugin::REST_NAMESPACE,
+			$this->get_route_name(),
+			array(
+				'methods'             => 'GET',
+				'permission_callback' => fn(): bool => Avf_User::can_manage(),
+				/**
+				 * @return array<string,array{title:string,editUrl:string}>
+				 */
+				'callback'            => fn(): array => $this->get_items(),
+			),
+		);
 	}
 
 	/**
@@ -98,19 +106,5 @@ final class Cpt_Item_Picker extends Hookable implements Hooks_Interface {
 
 	protected function get_route_name(): string {
 		return sprintf( '%s/%s', self::REST_ROUTE_PREFIX, $this->cpt->cpt_name() );
-	}
-
-	/**
-	 * @return array<string,mixed>
-	 */
-	protected function get_route_args(): array {
-		return array(
-			'methods'             => 'GET',
-			'permission_callback' => fn(): bool => Avf_User::can_manage(),
-			/**
-			 * @return array<string,array{title:string,editUrl:string}>
-			 */
-			'callback'            => fn(): array => $this->get_items(),
-		);
 	}
 }

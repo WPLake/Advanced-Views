@@ -4,8 +4,6 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Dashboard;
 
-use Org\Wplake\Advanced_Views\Cpt\Layouts\Integrations\Layout_Shortcode;
-use Org\Wplake\Advanced_Views\Cpt\Post_Selections\Integrations\Post_Selection_Shortcode;
 use Org\Wplake\Advanced_Views\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
@@ -14,6 +12,8 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Integrations\Layout_Shortcode;
+use Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Integrations\Post_Selection_Shortcode;
 use WP_Admin_Bar;
 
 defined( 'ABSPATH' ) || exit;

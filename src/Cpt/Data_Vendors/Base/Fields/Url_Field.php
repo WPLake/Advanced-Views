@@ -4,8 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Base\Fields;
 
-use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Base\Fields\Link_Field;
-use Org\Wplake\Advanced_Views\Cpt\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 
 defined( 'ABSPATH' ) || exit;
 

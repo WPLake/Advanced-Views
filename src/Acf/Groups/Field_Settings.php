@@ -10,9 +10,9 @@ use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Data_Vendors;
 use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Woo\Fields\Woo_Fields;
 use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Woo\Woo_Data_Vendor;
 use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Wp\Wp_Data_Vendor;
-use Org\Wplake\Advanced_Views\Cpt\Layouts\Field_Meta;
-use Org\Wplake\Advanced_Views\Cpt\Layouts\Field_Meta_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\CreatorInterface;
 
 defined( 'ABSPATH' ) || exit;

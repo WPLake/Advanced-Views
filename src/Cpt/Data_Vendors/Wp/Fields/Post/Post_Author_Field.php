@@ -4,12 +4,12 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Wp\Fields\Post;
 
-use Org\Wplake\Advanced_Views\Cpt\Layouts\Field_Meta_Interface;
-use Org\Wplake\Advanced_Views\Cpt\Layouts\Fields\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Base\Fields\Custom_Field;
-use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Base\Fields\User_Field;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Base\Fields\Custom_Field;
+use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Base\Fields\User_Field;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
