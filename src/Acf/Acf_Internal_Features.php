@@ -4,13 +4,13 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Acf;
 
-use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Data_Vendors;
 
 class Acf_Internal_Features extends Hookable implements Hooks_Interface {
 	private Plugin $plugin;

@@ -12,11 +12,11 @@ use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Git_Tabs;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Import_Result;
-use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Data_Vendors;
 use Org\Wplake\Advanced_Views\Cpt\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Cpt\Layout_Git_Tabs;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Data_Vendors;
 use Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Data_Storage\Selection_Settings_Storage;
 
 

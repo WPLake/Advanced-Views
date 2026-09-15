@@ -7,7 +7,6 @@ namespace Org\Wplake\Advanced_Views\Assets;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\File_System;
-use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Data_Vendors;
 use Org\Wplake\Advanced_Views\Cpt\View_Assets\Base\View_Asset_Base;
 use Org\Wplake\Advanced_Views\Cpt\View_Assets\Base\View_Front_Asset;
 use Org\Wplake\Advanced_Views\Cpt\View_Assets\Common_Front_Asset;
@@ -20,6 +19,7 @@ use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Data_Vendors;
 
 defined( 'ABSPATH' ) || exit;
 

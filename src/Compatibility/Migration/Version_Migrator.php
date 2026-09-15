@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Base\Migration;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Version\Base\Version_Migration;
-use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
@@ -17,6 +16,7 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Data_Vendors;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
 final class Version_Migrator extends Hookable implements Hooks_Interface {

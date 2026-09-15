@@ -15,7 +15,6 @@ use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\External_Storage_Tab;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Import_Result;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Tab_Data;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Data_Vendors;
 use Org\Wplake\Advanced_Views\Cpt\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Cpt\Git_Api\Git_Repository_Item;
 use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
@@ -24,6 +23,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Data_Vendors;
 
 abstract class Git_Tabs extends External_Storage_Tab {
 	use Safe_Array_Arguments;

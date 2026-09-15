@@ -9,11 +9,11 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
-use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Data_Vendors;
 
 class Field_Settings_Integration extends Acf_Integration {
 	use Safe_Array_Arguments;

@@ -11,9 +11,9 @@ use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Import_Result;
 use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Pre_Built_Tab;
-use Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Data_Vendors;
 
 class Layouts_Pre_Built_Tab extends Pre_Built_Tab {
 	private Layout_Settings_Storage $layouts_settings_storage;
