@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Integrations;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
-use Org\Wplake\Advanced_Views\Cpt\Integrations\Shortcode_Base;
+use Org\Wplake\Advanced_Views\Cpt_Base\Integrations\Shortcode_Base;
 use Org\Wplake\Advanced_Views\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;

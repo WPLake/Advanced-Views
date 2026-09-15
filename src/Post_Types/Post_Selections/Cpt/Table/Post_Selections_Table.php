@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Cpt\Table;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Cpt_Table;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Dashboard\Html_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;

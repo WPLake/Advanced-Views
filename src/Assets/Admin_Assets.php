@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Assets;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Cpt_Interactive_Fields;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Cpt_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;

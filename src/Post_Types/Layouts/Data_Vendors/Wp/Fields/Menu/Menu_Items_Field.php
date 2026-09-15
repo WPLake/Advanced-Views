@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Cpt\Template\Generation\Tokens\Template_Token;
+use Org\Wplake\Advanced_Views\Cpt_Base\Template\Generation\Tokens\Template_Token;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Base\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Base\Fields\Link_Field;

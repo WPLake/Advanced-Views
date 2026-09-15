@@ -9,9 +9,9 @@ defined( 'ABSPATH' ) || exit;
 use Elementor\Controls_Manager;
 use Elementor\Widget_Base;
 use LogicException;
-use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Item_Picker;
-use Org\Wplake\Advanced_Views\Cpt\Integrations\Elementor\Cpt_Elementor_Widget;
-use Org\Wplake\Advanced_Views\Cpt\Integrations\Elementor\Widget_Dependencies;
+use Org\Wplake\Advanced_Views\Cpt_Base\Integrations\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Cpt_Base\Integrations\Elementor\Cpt_Elementor_Widget;
+use Org\Wplake\Advanced_Views\Cpt_Base\Integrations\Elementor\Widget_Dependencies;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 final class Layout_Elementor_Widget extends Widget_Base implements Widget_Dependencies {

@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Base;
 use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Settings_Creator;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Settings_Creator;
 use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;

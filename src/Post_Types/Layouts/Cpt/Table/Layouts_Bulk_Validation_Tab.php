@@ -4,11 +4,11 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Types\Layouts\Cpt\Table;
 
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Bulk_Validation_Tab;
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Cpt_Table;
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Fs_Only_Tab;
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Cpt\Base\Instance;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\Bulk_Validation_Tab;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\Cpt_Table;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\Fs_Only_Tab;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Instance;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
 

@@ -4,10 +4,10 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Cpt\Table;
 
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Bulk_Validation_Tab;
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Cpt_Table;
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Fs_Only_Tab;
-use Org\Wplake\Advanced_Views\Cpt\Base\Instance;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\Bulk_Validation_Tab;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\Cpt_Table;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\Fs_Only_Tab;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Instance;
 use Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Post_Selection_Factory;
 

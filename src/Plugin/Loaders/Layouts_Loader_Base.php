@@ -7,10 +7,10 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Cpt_Assets_Reducer;
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Cpt_Gutenberg_Editor_Settings;
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Table\Fs_Only_Tab;
-use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Cpt_Assets_Reducer;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Cpt_Gutenberg_Editor_Settings;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\Fs_Only_Tab;
+use Org\Wplake\Advanced_Views\Cpt_Base\Integrations\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Module_Loader;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Cpt\Layout_Git_Box;

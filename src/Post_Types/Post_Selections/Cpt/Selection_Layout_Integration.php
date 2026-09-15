@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Cpt;
 
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Settings_Creator;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Settings_Creator;
 use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;

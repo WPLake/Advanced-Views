@@ -6,8 +6,8 @@ namespace Org\Wplake\Advanced_Views\Post_Types\Layouts\Integrations\Gutenberg;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Gutenberg_Block;
-use Org\Wplake\Advanced_Views\Cpt\Integrations\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Cpt_Base\Integrations\Cpt_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Cpt_Base\Integrations\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;

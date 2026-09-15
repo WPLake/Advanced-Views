@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\Fs_Fields;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\Fs_Fields;
 
 class Post_Selection_Fs_Fields extends Fs_Fields {
 	/**

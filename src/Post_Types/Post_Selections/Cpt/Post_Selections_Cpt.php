@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Cpt;
 
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Cpt;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;

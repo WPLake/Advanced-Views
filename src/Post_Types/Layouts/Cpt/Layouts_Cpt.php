@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Types\Layouts\Cpt;
 
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt\Cpt;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;

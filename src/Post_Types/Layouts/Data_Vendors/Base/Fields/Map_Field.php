@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Cpt\View_Assets\Maps_Asset;
+use Org\Wplake\Advanced_Views\Cpt_Base\View_Assets\Maps_Asset;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Acf\Acf_Data_Vendor;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Meta_Box\Meta_Box_Data_Vendor;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Field_Meta_Interface;

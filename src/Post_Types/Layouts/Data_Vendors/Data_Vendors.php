@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
-use Org\Wplake\Advanced_Views\Cpt\Base\Cpt_Data_Storage\File_System_Loader;
+use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\File_System_Loader;
 use Org\Wplake\Advanced_Views\Plugin\Base\Action;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;

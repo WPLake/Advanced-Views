@@ -39,10 +39,10 @@ use Org\Wplake\Advanced_Views\Post_Types\Layouts\Integrations\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
 use Pods_Migrate_Packages;
-use function Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Pods\pods;
-use function Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Pods\pods_api;
+use function Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Pods\pods;
+use function Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Pods\pods_api;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
-use const Org\Wplake\Advanced_Views\Cpt\Data_Vendors\Pods\PODS_DIR;
+use const Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Pods\PODS_DIR;
 
 class Pods_Data_Vendor extends Data_Vendor {
 	const NAME = 'pods';
