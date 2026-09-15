@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Cpt;
 
+defined( 'ABSPATH' ) || exit;
+
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Settings_Creator;
 use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
@@ -12,15 +14,11 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Types\Layouts\Cpt\Layout_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Data_Storage\Selection_Settings_Storage;
 
-defined( 'ABSPATH' ) || exit;
-
 class Selection_Layout_Integration extends Cpt_Settings_Creator implements Hooks_Interface {
-
-	const ARGUMENT_FROM  = '_from';
-	const NONCE_MAKE_NEW = 'av-make-card';
 
 	private Selection_Settings_Storage $post_selections_settings_storage;
 	private Layout_Settings_Storage $layouts_settings_storage;
@@ -39,7 +37,7 @@ class Selection_Layout_Integration extends Cpt_Settings_Creator implements Hooks
 		$this->post_selections_cpt_save_actions = $post_selections_cpt_save_actions;
 	}
 
-	public function maybe_create_card_for_view(): void {
+	public function maybe_create_selection_for_layout(): void {
 		$screen = get_current_screen();
 
 		if ( null === $screen ) {
@@ -47,8 +45,8 @@ class Selection_Layout_Integration extends Cpt_Settings_Creator implements Hooks
 		}
 
 		$from      = Query_Arguments::get_int_for_admin_action(
-			self::ARGUMENT_FROM,
-			self::NONCE_MAKE_NEW
+			Layout_Meta_Boxes::ARGUMENT_FROM_LAYOUT,
+			Layout_Meta_Boxes::NONCE_MAKE_NEW
 		);
 		$from_post = 0 !== $from ?
 			get_post( $from ) :
@@ -91,6 +89,6 @@ class Selection_Layout_Integration extends Cpt_Settings_Creator implements Hooks
 			return;
 		}
 
-		self::add_action( 'current_screen', array( $this, 'maybe_create_card_for_view' ) );
+		self::add_action( 'current_screen', array( $this, 'maybe_create_selection_for_layout' ) );
 	}
 }

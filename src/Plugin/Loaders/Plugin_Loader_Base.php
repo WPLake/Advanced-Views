@@ -43,6 +43,7 @@ use Org\Wplake\Advanced_Views\Compatibility\Migration\Version\V_3\Migration_3_9_
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\File_System_Loader;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
 use Org\Wplake\Advanced_Views\Cpt_Base\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Cpt_Base\Mount_Points;
 use Org\Wplake\Advanced_Views\Cpt_Base\Template\Engines_Storage;
@@ -69,7 +70,6 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Profiler;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Data_Vendors;
 use Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Loader;

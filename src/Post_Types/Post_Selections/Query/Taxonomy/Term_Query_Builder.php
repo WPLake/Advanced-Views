@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Query\Taxonomy;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Tax_Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Data_Vendors;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
 use Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Query\Context\Context_Container_Base;
 use Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Query\Context\Query_Context_Container;
 use Org\Wplake\Advanced_Views\Post_Types\Post_Selections\Query\Query_Utils;

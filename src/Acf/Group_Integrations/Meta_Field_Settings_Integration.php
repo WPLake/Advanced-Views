@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Acf\Group_Integrations;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Meta_Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Data_Vendors;
+use Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Data_Vendors;
 
 defined( 'ABSPATH' ) || exit;
 
