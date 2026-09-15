@@ -10,7 +10,6 @@ use WP_Comment;
 use WP_Post;
 use WP_Term;
 use WP_User;
-use function Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Base\Fields\wc_get_product;
 
 trait Custom_Field {
 	/**

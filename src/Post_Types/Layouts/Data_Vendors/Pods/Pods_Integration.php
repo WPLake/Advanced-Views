@@ -18,7 +18,6 @@ use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Data_Vendors;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Integrations\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout_Factory;
 use WP_Post;
-use function Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Pods\pods_api;
 
 class Pods_Integration extends Settings_Vendor_Integration {
 

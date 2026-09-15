@@ -8,7 +8,6 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Data_Vendors\Base\Settings_Vendor_Integration;
 use WP_Post;
-use function Org\Wplake\Advanced_Views\Cpt_Base\Data_Vendors\Meta_Box\rwmb_get_registry;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
