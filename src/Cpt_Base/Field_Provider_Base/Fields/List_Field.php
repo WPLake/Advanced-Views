@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Cpt_Base\Template_Base\Generation\Tokens\Variable\
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 
-abstract class List_Field extends Markup_Field {
+abstract class List_Field extends Markup_Field_Base {
 	const LOOP_ITEM_NAME = 'item';
 
 	/**

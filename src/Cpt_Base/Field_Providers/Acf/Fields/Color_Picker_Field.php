@@ -6,15 +6,15 @@ namespace Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Acf\Fields;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
-class Color_Picker_Field extends Markup_Field {
+class Color_Picker_Field extends Markup_Field_Base {
 	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 

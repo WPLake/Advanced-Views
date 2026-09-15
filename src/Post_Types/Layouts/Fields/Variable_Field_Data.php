@@ -10,8 +10,8 @@ use DateTime;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Interface;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
 
@@ -39,7 +39,7 @@ class Variable_Field_Data extends Template_Field_Data {
 		Field_Markup $field_markup,
 		Layout $layout,
 		Source $source,
-		Markup_Field_Interface $markup_field
+		Markup_Field $markup_field
 	) {
 		parent::__construct( $layout_settings, $item_settings, $field_settings, $field_meta, $field_markup, $markup_field );
 

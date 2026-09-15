@@ -10,7 +10,9 @@ use DateTime;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Data_Vendor_Base;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Provider_Base;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Provider_Integration;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Date_Picker_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\File_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Gallery_Field;
@@ -24,9 +26,7 @@ use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Taxonomy_Field
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\True_False_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Url_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\User_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Data_Vendor_Integration;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Data_Vendors;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Pods\Fields\Pods_Pick_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Pods\Fields\Pods_Upload_Field;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
@@ -40,7 +40,7 @@ use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
 use Pods_Migrate_Packages;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
-class Pods_Data_Vendor extends Data_Vendor_Base {
+class Pods_Data_Vendor extends Field_Provider_Base {
 	const NAME = 'pods';
 
 	/**
@@ -414,7 +414,7 @@ class Pods_Data_Vendor extends Data_Vendor_Base {
 		Layout_Shortcode $layout_shortcode,
 		Settings_Storage $settings,
 		Plugin_Cpt $plugin_cpt
-	): ?Data_Vendor_Integration {
+	): ?Field_Provider_Integration {
 		return new Pods_Integration(
 			$item_settings,
 			$layouts_settings_storage,

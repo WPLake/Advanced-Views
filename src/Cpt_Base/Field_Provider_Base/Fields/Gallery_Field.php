@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Types\Layouts\View_Assets\Splide_Asset;
 
 defined( 'ABSPATH' ) || exit;
 
-class Gallery_Field extends Markup_Field {
+class Gallery_Field extends Markup_Field_Base {
 	protected Image_Field $image_field;
 
 	public function __construct( Image_Field $image_field ) {

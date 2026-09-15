@@ -8,7 +8,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 
 defined( 'ABSPATH' ) || exit;
 
-interface Data_Vendor_Integration {
+interface Field_Provider_Integration {
 	public function add_tab_to_meta_group(): void;
 
 	public function add_column_to_list_table(): void;

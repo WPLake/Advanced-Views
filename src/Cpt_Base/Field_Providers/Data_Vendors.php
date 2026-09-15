@@ -12,10 +12,10 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\File_System_Loader;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Data_Vendor_Integration;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Data_Vendor_Interface;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Interface;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Provider;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Provider_Integration;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Related_Groups_Import_Result;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Acf\Acf_Data_Vendor;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Meta_Box\Meta_Box_Data_Vendor;
@@ -46,7 +46,7 @@ class Data_Vendors extends Action implements Hooks_Interface {
 	use Safe_Array_Arguments;
 
 	/**
-	 * @var array<string, Data_Vendor_Interface> name => instance
+	 * @var array<string, Field_Provider> name => instance
 	 */
 	private array $data_vendors;
 	/**
@@ -74,7 +74,7 @@ class Data_Vendors extends Action implements Hooks_Interface {
 	}
 
 	/**
-	 * @return  array<string, Data_Vendor_Interface> name => instance
+	 * @return  array<string, Field_Provider> name => instance
 	 */
 	public function get_data_vendors(): array {
 		return $this->data_vendors;
@@ -183,7 +183,7 @@ class Data_Vendors extends Action implements Hooks_Interface {
 	public function get_markup_field_instance(
 		string $vendor_name,
 		string $field_type
-	): ?Markup_Field_Interface {
+	): ?Markup_Field {
 		if ( ! key_exists( $vendor_name, $this->data_vendors ) ) {
 			return null;
 		}
@@ -603,7 +603,7 @@ class Data_Vendors extends Action implements Hooks_Interface {
 	}
 
 	/**
-	 * @return Data_Vendor_Interface[]
+	 * @return Field_Provider[]
 	 */
 	protected function get_vendors(): array {
 		return array(
@@ -617,7 +617,7 @@ class Data_Vendors extends Action implements Hooks_Interface {
 
 	protected function load_integration_instance(
 		Route_Detector $route_detector,
-		Data_Vendor_Integration $data_vendor_integration,
+		Field_Provider_Integration $data_vendor_integration,
 		Layout_Settings_Storage $layouts_settings_storage
 	): void {
 		// functions below only for the admin part.

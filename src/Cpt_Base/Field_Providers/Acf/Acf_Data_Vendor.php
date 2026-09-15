@@ -9,10 +9,9 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Acf\Fields\Color_Picker_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Acf\Fields\Icon_Picker_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Acf\Fields\Page_Link_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Data_Vendor_Base;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Provider_Base;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Provider_Integration;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Date_Picker_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\File_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Gallery_Field;
@@ -20,7 +19,7 @@ use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Html_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Link_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Map_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Interface;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Plain_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Post_Object_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Pro_Stub_Field;
@@ -30,9 +29,10 @@ use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Taxonomy_Field
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\True_False_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Url_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\User_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Data_Vendor_Integration;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Acf\Fields\Color_Picker_Field;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Acf\Fields\Icon_Picker_Field;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Acf\Fields\Page_Link_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Data_Vendors;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Cpt\Layout_Save_Actions;
@@ -44,7 +44,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
-class Acf_Data_Vendor extends Data_Vendor_Base {
+class Acf_Data_Vendor extends Field_Provider_Base {
 	// for back compatibility only.
 	const NAME = 'acf';
 
@@ -200,7 +200,7 @@ class Acf_Data_Vendor extends Data_Vendor_Base {
 		Layout_Shortcode $layout_shortcode,
 		Settings_Storage $settings,
 		Plugin_Cpt $plugin_cpt
-	): ?Data_Vendor_Integration {
+	): ?Field_Provider_Integration {
 		return new Acf_Integration(
 			$item_settings,
 			$layouts_settings_storage,
@@ -215,7 +215,7 @@ class Acf_Data_Vendor extends Data_Vendor_Base {
 	}
 
 	/**
-	 * @return array<string,Markup_Field_Interface>
+	 * @return array<string,Markup_Field>
 	 */
 	public function get_field_types(): array {
 		$basic = array(

@@ -8,8 +8,8 @@ namespace Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Interface;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -20,7 +20,7 @@ class Template_Field_Data {
 	private Field_Settings $field_settings;
 	private Field_Meta $field_meta;
 	private Field_Markup $field_markup;
-	private Markup_Field_Interface $markup_field;
+	private Markup_Field $markup_field;
 
 	public function __construct(
 		Layout_Settings $layout_settings,
@@ -28,7 +28,7 @@ class Template_Field_Data {
 		Field_Settings $field_settings,
 		Field_Meta $field_meta,
 		Field_Markup $field_markup,
-		Markup_Field_Interface $markup_field
+		Markup_Field $markup_field
 	) {
 		$this->layout_settings = $layout_settings;
 		$this->item_settings   = $item_settings;
@@ -78,11 +78,11 @@ class Template_Field_Data {
 		$this->field_meta = $field_meta;
 	}
 
-	public function get_field_instance(): Markup_Field_Interface {
+	public function get_field_instance(): Markup_Field {
 		return $this->markup_field;
 	}
 
-	public function set_field_instance( Markup_Field_Interface $markup_field ): void {
+	public function set_field_instance( Markup_Field $markup_field ): void {
 		$this->markup_field = $markup_field;
 	}
 }

@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 
 defined( 'ABSPATH' ) || exit;
 
-class Html_Field extends Markup_Field {
+class Html_Field extends Markup_Field_Base {
 	private bool $is_formatted_value_in_use;
 	private bool $is_with_replace_new_line_to_br;
 

@@ -6,16 +6,16 @@ namespace Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Acf\Fields;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Image_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Image_Field;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 
 defined( 'ABSPATH' ) || exit;
 
-class Icon_Picker_Field extends Markup_Field {
+class Icon_Picker_Field extends Markup_Field_Base {
 	use Safe_Array_Arguments;
 
 	private Image_Field $image_field;

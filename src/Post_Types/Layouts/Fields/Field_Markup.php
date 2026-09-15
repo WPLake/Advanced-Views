@@ -11,13 +11,13 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Interface;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Woo\Woo_Data_Vendor;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Wp\Wp_Data_Vendor;
-use Org\Wplake\Advanced_Views\Cpt_Base\Template_Engines\Engines_Storage;
 use Org\Wplake\Advanced_Views\Cpt_Base\Template_Base\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Cpt_Base\Template_Base\Generation\Tokens\Format_Token;
+use Org\Wplake\Advanced_Views\Cpt_Base\Template_Engines\Engines_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
@@ -31,7 +31,7 @@ class Field_Markup {
 	/**
 	 * Vendor => field_type => ?Markup_Field_Interface.
 	 *
-	 * @var array<string,array<string,Markup_Field_Interface|null>>
+	 * @var array<string,array<string,Markup_Field|null>>
 	 */
 	private array $cache;
 	private Engines_Storage $engines_storage;
@@ -43,7 +43,7 @@ class Field_Markup {
 		$this->cache           = array();
 	}
 
-	protected function get_markup_field_instance( string $vendor_name, string $field_type ): ?Markup_Field_Interface {
+	protected function get_markup_field_instance( string $vendor_name, string $field_type ): ?Markup_Field {
 		if ( key_exists( $vendor_name, $this->cache ) &&
 			key_exists( $field_type, $this->cache[ $vendor_name ] ) ) {
 			return $this->cache[ $vendor_name ][ $field_type ];
@@ -319,7 +319,7 @@ class Field_Markup {
 
 		$markup_field_instance = $this->get_markup_field_instance( $field_settings->get_vendor_name(), $field_settings->get_field_meta()->get_type() );
 
-		return $markup_field_instance instanceof Markup_Field_Interface ?
+		return $markup_field_instance instanceof Markup_Field ?
 			$markup_field_instance->get_custom_field_wrapper_tag() :
 			'';
 	}

@@ -10,12 +10,12 @@ use DateTime;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Data_Vendor_Base;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Provider_Base;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Provider_Integration;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Link_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Data_Vendor_Integration;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Data_Vendors;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Wp\Fields\Comment\{Comment_Date_Field};
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Wp\Fields\Comment\Comment_Author_Email_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Wp\Fields\Comment\Comment_Author_Name_Field;
@@ -66,7 +66,7 @@ use Org\Wplake\Advanced_Views\Post_Types\Layouts\Integrations\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
 
-class Wp_Data_Vendor extends Data_Vendor_Base {
+class Wp_Data_Vendor extends Field_Provider_Base {
 	// for back compatibility only.
 	const NAME = 'wp';
 
@@ -247,7 +247,7 @@ class Wp_Data_Vendor extends Data_Vendor_Base {
 		Layout_Shortcode $layout_shortcode,
 		Settings_Storage $settings,
 		Plugin_Cpt $plugin_cpt
-	): ?Data_Vendor_Integration {
+	): ?Field_Provider_Integration {
 		return null;
 	}
 

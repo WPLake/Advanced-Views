@@ -15,7 +15,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
-class Link_Field extends Markup_Field {
+class Link_Field extends Markup_Field_Base {
 	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 

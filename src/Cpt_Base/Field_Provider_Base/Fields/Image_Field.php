@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Types\Layouts\View_Assets\Lightbox_Asset;
 
 defined( 'ABSPATH' ) || exit;
 
-class Image_Field extends Markup_Field {
+class Image_Field extends Markup_Field_Base {
 	protected function print_inner_attributes( string $field_id, Markup_Field_Data $markup_field_data ): void {
 		$token_factory    = $markup_field_data->get_token_factory();
 		$inner_attributes = array();

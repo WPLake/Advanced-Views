@@ -6,17 +6,17 @@ namespace Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Wp\Fields\Post;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Image_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 
 
 defined( 'ABSPATH' ) || exit;
 
-class Post_Thumbnail_Link_Field extends Markup_Field {
+class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 	use Custom_Field;
 
 	protected Image_Field $image_field;

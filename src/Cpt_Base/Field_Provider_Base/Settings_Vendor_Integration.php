@@ -8,8 +8,6 @@ use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Settings_Creator;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Data_Vendor_Integration;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Data_Vendor_Interface;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
@@ -27,7 +25,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implements Data_Vendor_Integration {
+abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implements Field_Provider_Integration {
 	use Safe_Array_Arguments;
 
 	const NONCE_ADD_NEW = 'av-add-new';
@@ -38,7 +36,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	private Data_Vendors $data_vendors;
 	private Layout_Save_Actions $layouts_cpt_save_actions;
 	private Layout_Factory $layout_factory;
-	private Data_Vendor_Interface $data_vendor;
+	private Field_Provider $data_vendor;
 	private Layout_Shortcode $layout_shortcode;
 	private Plugin_Cpt $plugin_cpt;
 
@@ -48,7 +46,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		Data_Vendors $data_vendors,
 		Layout_Save_Actions $layouts_cpt_save_actions,
 		Layout_Factory $layout_factory,
-		Data_Vendor_Interface $data_vendor,
+		Field_Provider $data_vendor,
 		Layout_Shortcode $layout_shortcode,
 		Settings_Storage $settings,
 		Plugin_Cpt $plugin_cpt

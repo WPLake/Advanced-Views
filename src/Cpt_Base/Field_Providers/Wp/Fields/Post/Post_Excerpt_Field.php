@@ -6,16 +6,16 @@ namespace Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Wp\Fields\Post;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Custom_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Custom_Field;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 use WP_Post;
 
 defined( 'ABSPATH' ) || exit;
 
-class Post_Excerpt_Field extends Markup_Field {
+class Post_Excerpt_Field extends Markup_Field_Base {
 	use Custom_Field;
 
 	// custom modification to avoid issues (see body for the details).

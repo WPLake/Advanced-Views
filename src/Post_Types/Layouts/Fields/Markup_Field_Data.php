@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Interface;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Template_Base\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\View_Assets\Base\View_Front_Asset;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\View_Assets\Html_Wrapper;
@@ -32,7 +32,7 @@ class Markup_Field_Data extends Template_Field_Data {
 		Field_Settings $field_settings,
 		Field_Meta $field_meta,
 		Field_Markup $field_markup,
-		Markup_Field_Interface $markup_field,
+		Markup_Field $markup_field,
 		Token_Factory $token_factory
 	) {
 		parent::__construct(

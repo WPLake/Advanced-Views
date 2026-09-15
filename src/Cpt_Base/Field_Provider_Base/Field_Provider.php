@@ -8,7 +8,7 @@ use DateTime;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Interface;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
@@ -20,7 +20,7 @@ use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
 
 defined( 'ABSPATH' ) || exit;
 
-interface Data_Vendor_Interface {
+interface Field_Provider {
 	public function get_name(): string;
 
 	public function is_meta_vendor(): bool;
@@ -37,7 +37,7 @@ interface Data_Vendor_Interface {
 		Layout_Shortcode $layout_shortcode,
 		Settings_Storage $settings,
 		Plugin_Cpt $plugin_cpt
-	): ?Data_Vendor_Integration;
+	): ?Field_Provider_Integration;
 
 	public function get_group_key( string $group_id ): string;
 
@@ -72,7 +72,7 @@ interface Data_Vendor_Interface {
 	 */
 	public function get_supported_field_types(): array;
 
-	public function get_markup_field_instance( string $field_type ): ?Markup_Field_Interface;
+	public function get_markup_field_instance( string $field_type ): ?Markup_Field;
 
 	public function is_empty_value_supported_in_markup( string $field_type ): bool;
 

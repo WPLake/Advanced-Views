@@ -6,19 +6,19 @@ namespace Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Pods\Fields;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\File_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Post_Object_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Select_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Taxonomy_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\User_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 
 defined( 'ABSPATH' ) || exit;
 
-class Pods_Pick_Field extends Markup_Field {
+class Pods_Pick_Field extends Markup_Field_Base {
 	private Select_Field $select_field;
 	private User_Field $user_field;
 	private Post_Object_Field $post_object_field;
@@ -39,7 +39,7 @@ class Pods_Pick_Field extends Markup_Field {
 		$this->file_field        = $file_field;
 	}
 
-	protected function get_field_instance( Field_Meta $field_meta ): Markup_Field {
+	protected function get_field_instance( Field_Meta $field_meta ): Markup_Field_Base {
 		switch ( $field_meta->get_return_format() ) {
 			case 'post_type':
 				return $this->post_object_field;
@@ -61,7 +61,7 @@ class Pods_Pick_Field extends Markup_Field {
 	 *
 	 * @return mixed
 	 */
-	protected function get_instance_value( Markup_Field $markup_field, $value ) {
+	protected function get_instance_value( Markup_Field_Base $markup_field, $value ) {
 		if ( $markup_field instanceof Post_Object_Field ||
 			$markup_field instanceof User_Field ||
 			$markup_field instanceof File_Field ) {

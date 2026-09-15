@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 
 defined( 'ABSPATH' ) || exit;
 
-class True_False_Field extends Markup_Field {
+class True_False_Field extends Markup_Field_Base {
 	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 		$safe_classes  = esc_html(

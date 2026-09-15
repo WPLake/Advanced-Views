@@ -8,12 +8,12 @@ use DateTime;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Data_Vendor_Base;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Image_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Interface;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Data_Vendor_Integration;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Provider_Base;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Provider_Integration;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Image_Field;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Woo\Fields\Woo_Featured_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Woo\Fields\Woo_Fields;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Woo\Fields\Woo_Gallery_Field;
@@ -37,7 +37,7 @@ use Org\Wplake\Advanced_Views\Post_Types\Layouts\Source;
 
 defined( 'ABSPATH' ) || exit;
 
-class Woo_Data_Vendor extends Data_Vendor_Base {
+class Woo_Data_Vendor extends Field_Provider_Base {
 	// for back compatibility only.
 	const NAME = 'woo';
 
@@ -79,7 +79,7 @@ class Woo_Data_Vendor extends Data_Vendor_Base {
 	}
 
 	/**
-	 * @return array<string,Markup_Field_Interface>
+	 * @return array<string,Markup_Field>
 	 */
 	protected function get_field_types(): array {
 		return array(
@@ -150,7 +150,7 @@ class Woo_Data_Vendor extends Data_Vendor_Base {
 		Layout_Shortcode $layout_shortcode,
 		Settings_Storage $settings,
 		Plugin_Cpt $plugin_cpt
-	): ?Data_Vendor_Integration {
+	): ?Field_Provider_Integration {
 		return null;
 	}
 

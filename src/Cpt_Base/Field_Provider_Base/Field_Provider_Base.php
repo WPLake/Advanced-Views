@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Interface;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Pro_Stub_Field;
 use Org\Wplake\Advanced_Views\Plugin\Base\Action;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
@@ -14,11 +14,11 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Data_Vendor_Base extends Action implements Data_Vendor_Interface {
+abstract class Field_Provider_Base extends Action implements Field_Provider {
 	use Safe_Array_Arguments;
 
 	/**
-	 * @var array<string,Markup_Field_Interface>
+	 * @var array<string,Markup_Field>
 	 */
 	private array $field_types;
 
@@ -29,7 +29,7 @@ abstract class Data_Vendor_Base extends Action implements Data_Vendor_Interface 
 	}
 
 	/**
-	 * @return array<string,Markup_Field_Interface>
+	 * @return array<string,Markup_Field>
 	 */
 	abstract protected function get_field_types(): array;
 
@@ -68,7 +68,7 @@ abstract class Data_Vendor_Base extends Action implements Data_Vendor_Interface 
 	}
 
 	/**
-	 * @return  array<string,Markup_Field_Interface>
+	 * @return  array<string,Markup_Field>
 	 */
 	protected function get_registered_field_types(): array {
 		return $this->field_types;
@@ -96,10 +96,10 @@ abstract class Data_Vendor_Base extends Action implements Data_Vendor_Interface 
 		return array();
 	}
 
-	public function get_markup_field_instance( string $field_type ): ?Markup_Field_Interface {
+	public function get_markup_field_instance( string $field_type ): ?Markup_Field {
 		$instance = $this->field_types[ $field_type ] ?? null;
 
-		return $instance instanceof Markup_Field_Interface ?
+		return $instance instanceof Markup_Field ?
 			$instance :
 			null;
 	}

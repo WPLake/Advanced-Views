@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Acf\Acf_Data_Vendor;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Acf\Acf_Data_Vendor;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Meta_Box\Meta_Box_Data_Vendor;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Types\Layouts\View_Assets\Maps_Asset;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
-class Map_Field extends Markup_Field {
+class Map_Field extends Markup_Field_Base {
 	protected function print_map_marker_attributes(
 		string $field_id,
 		string $item_id,

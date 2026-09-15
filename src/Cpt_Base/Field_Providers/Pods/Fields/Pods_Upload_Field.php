@@ -6,17 +6,17 @@ namespace Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Pods\Fields;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\File_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Gallery_Field;
 use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Image_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
+use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Types\Layouts\Fields\Variable_Field_Data;
 
 defined( 'ABSPATH' ) || exit;
 
-class Pods_Upload_Field extends Markup_Field {
+class Pods_Upload_Field extends Markup_Field_Base {
 	const LOOP_ITEM_NAME = 'file_item';
 
 	private Image_Field $image_field;
@@ -29,7 +29,7 @@ class Pods_Upload_Field extends Markup_Field {
 		$this->gallery_field = $gallery_field;
 	}
 
-	protected function get_field_instance( Field_Meta $field_meta ): Markup_Field {
+	protected function get_field_instance( Field_Meta $field_meta ): Markup_Field_Base {
 		if ( ! in_array( $field_meta->get_return_format(), array( 'images', 'images-any' ), true ) ) {
 			return $this->file_field;
 		}
