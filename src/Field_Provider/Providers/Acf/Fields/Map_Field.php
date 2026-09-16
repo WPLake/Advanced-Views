@@ -2,15 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
+namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Fields;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Acf_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Meta_Box\Meta_Box_Data_Vendor;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Fields\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Maps_Asset;
@@ -149,7 +148,7 @@ class Map_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_acf_template_validation_args( Variable_Field_Data $variable_field_data ): array {
+	protected function get_validation_args( Variable_Field_Data $variable_field_data ): array {
 		if ( 'open_street_map' !== $variable_field_data->get_field_meta()->get_type() ) {
 			$args = ! $variable_field_data->get_field_meta()->is_multiple() ?
 				array(
@@ -203,7 +202,7 @@ class Map_Field extends Markup_Field_Base {
 		);
 	}
 
-	protected function print_acf_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 		$field_meta    = $markup_field_data->get_field_meta();
 		$field_data    = $markup_field_data->get_field_data();
@@ -322,59 +321,20 @@ class Map_Field extends Markup_Field_Base {
 		echo '></div>';
 	}
 
-	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
-		switch ( $markup_field_data->get_field_meta()->get_vendor_name() ) {
-			case Acf_Data_Vendor::NAME:
-				$this->print_acf_markup( $field_id, $markup_field_data );
-				break;
-			case Meta_Box_Data_Vendor::NAME:
-				$var = $markup_field_data->get_token_factory()->variable( $field_id )
-										->add_item_path( 'value' );
-
-				$markup_field_data->get_token_factory()->to_echo( $var )
-									->set_is_raw( true )
-									->print();
-
-				break;
-		}
-	}
-
 	/**
 	 * @return array<string, mixed>
 	 */
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
-		switch ( $variable_field_data->get_field_meta()->get_vendor_name() ) {
-			case Acf_Data_Vendor::NAME:
-				return 'open_street_map' !== $variable_field_data->get_field_meta()->get_type() ?
-					$this->get_template_args_for_google( $variable_field_data ) :
-					$this->get_template_args_for_os( $variable_field_data );
-			case Meta_Box_Data_Vendor::NAME:
-				return array(
-					'value' => $variable_field_data->get_formatted_value(),
-				);
-		}
-
-		return array(
-			'value' => '',
-		);
+		return 'open_street_map' !== $variable_field_data->get_field_meta()->get_type() ?
+			$this->get_template_args_for_google( $variable_field_data ) :
+			$this->get_template_args_for_os( $variable_field_data );
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
-		switch ( $variable_field_data->get_field_meta()->get_vendor_name() ) {
-			case Acf_Data_Vendor::NAME:
-				return $this->get_acf_template_validation_args( $variable_field_data );
-			case Meta_Box_Data_Vendor::NAME:
-				return array(
-					'value' => 'some <strong>html</strong>',
-				);
-		}
-
-		return array(
-			'value' => '',
-		);
+		return $this->get_validation_args( $variable_field_data );
 	}
 
 	public function is_with_field_wrapper(
@@ -383,38 +343,29 @@ class Map_Field extends Markup_Field_Base {
 		Field_Meta $field_meta
 	): bool {
 		return $layout_settings->is_with_unnecessary_wrappers ||
-				( Acf_Data_Vendor::NAME === $field_meta->get_vendor_name() && 'open_street_map' === $field_meta->get_type() ) ||
-				Meta_Box_Data_Vendor::NAME === $field_meta->get_vendor_name();
+				'open_street_map' === $field_meta->get_type();
 	}
 
 	/**
 	 * @return string[]
 	 */
 	public function get_conditional_fields( Field_Meta $field_meta ): array {
-		$args = array(
-			Field_Settings::FIELD_MAP_MARKER_ICON,
-			Field_Settings::FIELD_MAP_MARKER_ICON_TITLE,
+		return array_merge(
+			parent::get_conditional_fields( $field_meta ),
+			array(
+				Field_Settings::FIELD_MAP_MARKER_ICON,
+				Field_Settings::FIELD_MAP_MARKER_ICON_TITLE,
+				Field_Settings::FIELD_MAP_ADDRESS_FORMAT,
+				Field_Settings::FIELD_IS_MAP_WITH_ADDRESS,
+				Field_Settings::FIELD_IS_MAP_WITHOUT_GOOGLE_MAP,
+			)
 		);
-
-		if ( Acf_Data_Vendor::NAME === $field_meta->get_vendor_name() ) {
-			$args = array_merge(
-				$args,
-				array(
-					Field_Settings::FIELD_MAP_ADDRESS_FORMAT,
-					Field_Settings::FIELD_IS_MAP_WITH_ADDRESS,
-					Field_Settings::FIELD_IS_MAP_WITHOUT_GOOGLE_MAP,
-				)
-			);
-		}
-
-		return array_merge( parent::get_conditional_fields( $field_meta ), $args );
 	}
 
 	public function get_front_assets( Field_Settings $field_settings ): array {
 		$front_assets = array();
 
-		if ( Acf_Data_Vendor::NAME === $field_settings->get_field_meta()->get_vendor_name() &&
-			false === $field_settings->is_map_without_google_map ) {
+		if ( false === $field_settings->is_map_without_google_map ) {
 			$front_assets[] = Maps_Asset::NAME;
 		}
 

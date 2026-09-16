@@ -16,7 +16,6 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Integration;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Date_Picker_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Html_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Link_Field;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Map_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Plain_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Post_Object_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Pro_Stub_Field;
@@ -28,6 +27,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Meta_Box\Fields\Mb_File_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Meta_Box\Fields\Mb_Gallery_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Meta_Box\Fields\Mb_Image_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Providers\Meta_Box\Fields\Mb_Map_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Meta_Box\Fields\Mb_Taxonomy_Field;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
@@ -393,13 +393,13 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			'color'           => new Plain_Field(),
 			'date'            => new Date_Picker_Field(),
 			'datetime'        => new Date_Picker_Field(),
-			'map'             => new Map_Field(),
+			'map'             => new Mb_Map_Field(),
 			'hidden'          => new Plain_Field(),
 			// FontAwesome or SVG icon.
 			'icon'            => new Html_Field(),
 			'image_select'    => new Select_Field(),
 			'oembed'          => new Html_Field(),
-			'osm'             => new Map_Field(),
+			'osm'             => new Mb_Map_Field(),
 			'password'        => new Plain_Field(),
 			'select_advanced' => new Select_Field(),
 			// it's a range number.
