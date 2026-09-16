@@ -7,11 +7,11 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 
 abstract class Pre_Built_Tab extends External_Storage_Tab {
@@ -37,10 +37,10 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		Cpt_Settings_Storage $cpt_data_storage,
 		Cpt_Settings_Storage $external_cpt_data_storage,
 		Data_Vendors $data_vendors,
-		Version_Migrator $version_migrator,
+		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Logger $logger
 	) {
-		parent::__construct( $cpt_table, $cpt_data_storage, $data_vendors, $version_migrator, $logger );
+		parent::__construct( $cpt_table, $cpt_data_storage, $data_vendors, $cpt_settings_migrator, $logger );
 
 		$this->external_cpt_settings_storage = $external_cpt_data_storage;
 		$this->pulling_unique_ids            = array();

@@ -9,10 +9,10 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -23,22 +23,22 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 
 	private Cpt_Settings_Storage $cpt_settings_storage;
 	private Data_Vendors $data_vendors;
-	private Version_Migrator $version_migrator;
+	private Cpt_Settings_Migrator $cpt_settings_migrator;
 	private Logger $logger;
 
 	public function __construct(
 		Cpt_Table $cpt_table,
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Data_Vendors $data_vendors,
-		Version_Migrator $version_migrator,
+		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Logger $logger
 	) {
 		parent::__construct( $cpt_table );
 
-		$this->cpt_settings_storage = $cpt_settings_storage;
-		$this->data_vendors         = $data_vendors;
-		$this->version_migrator     = $version_migrator;
-		$this->logger               = $logger;
+		$this->cpt_settings_storage  = $cpt_settings_storage;
+		$this->data_vendors          = $data_vendors;
+		$this->cpt_settings_migrator = $cpt_settings_migrator;
+		$this->logger                = $logger;
 	}
 
 	abstract protected function get_cpt_data( string $unique_id ): Cpt_Settings;
@@ -103,10 +103,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		}
 
 		// 5. perform upgrades (if items were created with the old plugin version)
-		$previous_plugin_version = $cpt_data->plugin_version;
-		// we don't need it for instances outside of Git repository.
-		$cpt_data->plugin_version = '';
-		$this->version_migrator->migrate_cpt_settings( $previous_plugin_version, $cpt_data );
+		$this->cpt_settings_migrator->migrate_cpt_settings( $cpt_data );
 
 		// 6. save
 		$this->cpt_settings_storage->save( $cpt_data );

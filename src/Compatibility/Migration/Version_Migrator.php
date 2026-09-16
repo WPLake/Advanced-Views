@@ -17,9 +17,10 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
-final class Version_Migrator extends Hookable implements Hooks_Interface {
+final class Version_Migrator extends Hookable implements Hooks_Interface, Cpt_Settings_Migrator {
 	private Plugin $plugin;
 	private Settings_Storage $settings;
 	/**
@@ -152,7 +153,11 @@ final class Version_Migrator extends Hookable implements Hooks_Interface {
 		}
 	}
 
-	public function migrate_cpt_settings( string $previous_version, Cpt_Settings $cpt_settings ): void {
+	public function migrate_cpt_settings( Cpt_Settings $cpt_settings ): void {
+		$previous_version = $cpt_settings->plugin_version;
+		// we don't need it for instances outside of Git repository.
+		$cpt_settings->plugin_version = '';
+
 		$version_migrations = $this->get_version_migrations( $previous_version );
 
 		foreach ( $version_migrations as $version_migration ) {

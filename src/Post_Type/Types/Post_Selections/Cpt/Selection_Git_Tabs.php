@@ -8,10 +8,10 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Git_Tabs;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Import_Result;
@@ -30,7 +30,7 @@ class Selection_Git_Tabs extends Git_Tabs {
 		Git_Lab_Api $git_lab_api,
 		Cpt_Settings $cpt_settings,
 		Selection_Settings_Storage $post_selections_settings_storage,
-		Version_Migrator $version_migrator,
+		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Layout_Git_Tabs $layouts_git_cpt_table_tabs,
 		Data_Vendors $data_vendors,
 		Logger $logger
@@ -41,7 +41,7 @@ class Selection_Git_Tabs extends Git_Tabs {
 			$git_lab_api,
 			$cpt_settings,
 			$post_selections_settings_storage,
-			$version_migrator,
+			$cpt_settings_migrator,
 			$data_vendors,
 			$logger
 		);

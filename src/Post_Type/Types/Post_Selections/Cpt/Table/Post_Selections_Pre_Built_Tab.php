@@ -6,9 +6,9 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Cpt\Table;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Import_Result;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Pre_Built_Tab;
@@ -26,7 +26,7 @@ class Post_Selections_Pre_Built_Tab extends Pre_Built_Tab {
 		Selection_Settings_Storage $settings_storage,
 		Selection_Settings_Storage $external_settings_storage,
 		Data_Vendors $data_vendors,
-		Version_Migrator $version_migrator,
+		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Logger $logger,
 		Layouts_Pre_Built_Tab $layouts_pre_built_tab
 	) {
@@ -35,7 +35,7 @@ class Post_Selections_Pre_Built_Tab extends Pre_Built_Tab {
 			$settings_storage,
 			$external_settings_storage,
 			$data_vendors,
-			$version_migrator,
+			$cpt_settings_migrator,
 			$logger
 		);
 
