@@ -7,10 +7,10 @@ namespace Org\Wplake\Advanced_Views\Compatibility\Migration\Use_Case;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Compatibility\Migration\Base\Migration_Base;
-use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\File_System_Loader;
+use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Migration_Base;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 
 final class Migration_Field_Values extends Migration_Base {
 	private Cpt_Settings_Storage $cpt_settings_storage;

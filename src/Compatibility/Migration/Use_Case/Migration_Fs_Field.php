@@ -6,11 +6,11 @@ namespace Org\Wplake\Advanced_Views\Compatibility\Migration\Use_Case;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Compatibility\Migration\Base\Migration_Base;
-use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\File_System;
-use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt_Data_Storage\File_System_Loader;
+use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Migration_Base;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 
 final class Migration_Fs_Field extends Migration_Base {
 	private File_System $file_system;

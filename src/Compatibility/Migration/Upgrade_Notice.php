@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Compatibility\Migration;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Compatibility\Migration\Version\Base\Version_Migration;
+use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Version\Version_Migration;
 use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;

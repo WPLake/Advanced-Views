@@ -5,12 +5,12 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Acf\Groups;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Acf\Acf_Data_Vendor;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Data_Vendors;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Provider_Base\Field_Meta;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Woo\Fields\Woo_Fields;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Woo\Woo_Data_Vendor;
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Wp\Wp_Data_Vendor;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
+use Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Acf_Data_Vendor;
+use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Fields\Woo_Fields;
+use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Woo_Data_Vendor;
+use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Wp_Data_Vendor;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\CreatorInterface;
 

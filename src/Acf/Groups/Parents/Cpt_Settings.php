@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Acf\Groups\Parents;
 
 use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Mount_Point_Settings;
-use Org\Wplake\Advanced_Views\Cpt_Base\Base\Cpt\Table\Fs_Only_Tab;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Fs_Only_Tab;
 
 defined( 'ABSPATH' ) || exit;
 

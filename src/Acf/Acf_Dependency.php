@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Acf;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Cpt_Base\Field_Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
