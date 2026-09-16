@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use WP_Post;
 
 /**
- * Common class for both AcfViews and AcfCards
+ * Common class for both Layout and Post_Selection
  */
 class Point_Mounter extends Hookable implements Hooks_Interface {
 	/**
@@ -59,7 +59,6 @@ class Point_Mounter extends Hookable implements Hooks_Interface {
 		return $content;
 	}
 
-	// fixme
 	/**
 	 * @param bool $is_run_shortcode Can be false for tests
 	 */
@@ -70,6 +69,22 @@ class Point_Mounter extends Hookable implements Hooks_Interface {
 		string $content,
 		bool $is_run_shortcode = true
 	): string {
+		$replacement_range = $this->find_replacement_range( $mount_point_settings, $content );
+
+		// mountPoint not found (mistake), just skip.
+		if ( null === $replacement_range ) {
+			return $content;
+		}
+
+		$shortcode = $this->prepare_shortcode( $point_provider, $source_post_id, $mount_point_settings, $is_run_shortcode );
+
+		return substr_replace( $content, $shortcode, $replacement_range['offset'], $replacement_range['length'] );
+	}
+
+	/**
+	 * @return ?array{offset:int,length:int}
+	 */
+	protected function find_replacement_range( Mount_Point_Settings $mount_point_settings, string $content ): ?array {
 		$point_strlen = strlen( $mount_point_settings->mount_point );
 		$is_point_set = $point_strlen > 0;
 
@@ -77,9 +92,8 @@ class Point_Mounter extends Hookable implements Hooks_Interface {
 			strpos( $content, $mount_point_settings->mount_point ) :
 			0;
 
-		// mountPoint not found (mistake), just skip.
 		if ( false === $start_of_marker_index ) {
-			return $content;
+			return null;
 		}
 
 		$end_of_marker_index = $is_point_set ?
@@ -105,16 +119,26 @@ class Point_Mounter extends Hookable implements Hooks_Interface {
 				break;
 		}
 
+		return array(
+			'offset' => $offset,
+			'length' => $length,
+		);
+	}
+
+	protected function prepare_shortcode(
+		Point_Provider $point_provider,
+		int $source_post_id,
+		Mount_Point_Settings $mount_point_settings,
+		bool $is_run_shortcode
+	): string {
 		$shortcode_args = strlen( $mount_point_settings->shortcode_args ) > 0 ?
 			' ' . $mount_point_settings->shortcode_args :
 			'';
 		$shortcode      = $point_provider->compose_shortcode( $source_post_id, $shortcode_args );
 
-		if ( $is_run_shortcode ) {
-			$shortcode = do_shortcode( $shortcode );
-		}
-
-		return substr_replace( $content, $shortcode, $offset, $length );
+		return $is_run_shortcode ?
+			do_shortcode( $shortcode ) :
+			$shortcode;
 	}
 
 	/**

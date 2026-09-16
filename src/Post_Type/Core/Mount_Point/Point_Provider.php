@@ -8,7 +8,6 @@ defined( 'ABSPATH' ) || exit;
 
 use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Mount_Point_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use WP_Post;
@@ -30,9 +29,30 @@ class Point_Provider {
 	 * @throws Exception
 	 */
 	public function match_items( string $current_post_type, int $current_post_id ): array {
-		global $wpdb;
-
 		$matched_items = array();
+
+		foreach ( $this->query_source_posts( $current_post_type, $current_post_id ) as $source_post ) {
+			// for some reason the field may contain a string.
+			$source_post_id = int( $source_post->ID );
+			$mount_points   = $this->match_mount_points( $source_post, $current_post_type, $current_post_id );
+
+			if ( array() !== $mount_points ) {
+				$matched_items[ $source_post_id ] = $mount_points;
+			}
+		}
+
+		return $matched_items;
+	}
+
+	public function compose_shortcode( int $post_id, string $shortcode_args ): string {
+		return sprintf( '[%s id="%s"%s]', $this->cpt->shortcode(), $post_id, $shortcode_args );
+	}
+
+	/**
+	 * @return WP_Post[]
+	 */
+	protected function query_source_posts( string $current_post_type, int $current_post_id ): array {
+		global $wpdb;
 
 		$query = $wpdb->prepare(
 			"SELECT * from {$wpdb->posts} WHERE post_type = %s AND post_status = 'publish'
@@ -53,45 +73,31 @@ class Point_Provider {
 			$source_posts
 		);
 
-		foreach ( $source_posts as $source_post ) {
-			// for some reason the field may contain a string.
-			$source_post_id = int( $source_post->ID );
-			$cpt_settings    = $this->settings_storage->get( $source_post->post_name );
+		return $source_posts;
+	}
 
-			// filter target mount points
-			// as the query was rough and contained common data from all mount points of this provider's items.
+	/**
+	 * The query is rough and returns common data from all mount points of the source item,
+	 * so narrow it down to the ones actually matching the current post.
+	 *
+	 * @return Mount_Point_Settings[]
+	 */
+	protected function match_mount_points( WP_Post $source_post, string $current_post_type, int $current_post_id ): array {
+		$matched_mount_points = array();
+		$cpt_settings         = $this->settings_storage->get( $source_post->post_name );
 
-			foreach ( $cpt_settings->mount_points as $mount_point_settings ) {
-				// without strict comparison, as in the posts array can be strings.
-				// @phpcs:ignore
-				if ( ! in_array( $current_post_type, $mount_point_settings->post_types, false ) && // @phpstan-ignore-line
-					 // @phpcs:ignore
-					! in_array( $current_post_id, $mount_point_settings->posts, false ) ) { // @phpstan-ignore-line
-					continue;
-				}
-
-				if ( ! isset( $matched_items[ $source_post_id ] ) ) {
-					$matched_items[ $source_post_id ] = array();
-				}
-
-				// several mount points can exist for one source item.
-				$matched_items[ $source_post_id ][] = $mount_point_settings;
+		foreach ( $cpt_settings->mount_points as $mount_point_settings ) {
+			// without strict comparison, as in the posts array can be strings.
+			// @phpcs:ignore
+			if ( ! in_array( $current_post_type, $mount_point_settings->post_types, false ) && // @phpstan-ignore-line
+				 // @phpcs:ignore
+				! in_array( $current_post_id, $mount_point_settings->posts, false ) ) { // @phpstan-ignore-line
+				continue;
 			}
+
+			$matched_mount_points[] = $mount_point_settings;
 		}
 
-		return $matched_items;
-	}
-
-	public function compose_shortcode( int $post_id, string $shortcode_args ): string {
-		if ( Hard_Layout_Cpt::cpt_name() === $this->cpt->cpt_name() &&
-			$this->should_claim_point() ) {
-			$shortcode_args .= ' mount-point="1"';
-		}
-
-		return sprintf( '[%s id="%s"%s]', $this->cpt->shortcode(), $post_id, $shortcode_args );
-	}
-
-	protected function should_claim_point(): bool {
-		return wp_is_block_theme();
+		return $matched_mount_points;
 	}
 }
