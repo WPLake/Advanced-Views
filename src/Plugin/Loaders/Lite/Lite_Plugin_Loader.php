@@ -50,7 +50,8 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Points;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Provider;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Data_Storage\Post_Selection_Fs_Fields;
@@ -297,11 +298,11 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$this->settings
 		);
 
-		$this->mount_points = new Mount_Points(
-			$this->layouts_settings_storage,
-			$this->post_selections_settings_storage,
-			$this->layout_cpt,
-			$this->post_selection_cpt
+		$this->point_mounter = new Point_Mounter(
+			array(
+				new Point_Provider( $this->layouts_settings_storage, $this->layout_cpt ),
+				new Point_Provider( $this->post_selections_settings_storage, $this->post_selection_cpt ),
+			)
 		);
 
 		parent::others();

@@ -66,7 +66,7 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Points;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Templates_Environment;
@@ -117,7 +117,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public Live_Reloader $live_reloader;
 	public Admin_Bar $admin_bar;
 	public Upgrade_Notice $upgrade_notice;
-	public Mount_Points $mount_points;
+	public Point_Mounter $point_mounter;
 	public Git_Lab_Api $git_lab_api;
 
 	public Engines_Storage $engines_storage;
@@ -285,7 +285,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 				$this->settings_page,
 				$this->live_reloader,
 				$this->admin_bar,
-				$this->mount_points,
+				$this->point_mounter,
 			)
 		);
 	}
