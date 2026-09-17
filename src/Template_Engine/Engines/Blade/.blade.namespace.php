@@ -7,5 +7,3 @@ use Architecture\Policy\Namespace_Policy;
 class blade_namespace extends Namespace_Policy {
 
 }
-
-return blade_namespace::class;

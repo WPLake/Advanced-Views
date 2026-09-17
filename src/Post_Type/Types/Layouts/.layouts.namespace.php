@@ -6,5 +6,3 @@ use Architecture\Policy\Namespace_Policy;
 
 class layouts_namespace extends Namespace_Policy {
 }
-
-return layouts_namespace::class;

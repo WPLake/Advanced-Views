@@ -7,5 +7,3 @@ use Architecture\Policy\Namespace_Policy;
 class woo_namespace extends Namespace_Policy {
 	
 }
-
-return woo_namespace::class;

@@ -7,5 +7,3 @@ use Architecture\Policy\Domain_Policy;
 class template_engine_domain extends Domain_Policy {
 
 }
-
-return template_engine_domain::class;

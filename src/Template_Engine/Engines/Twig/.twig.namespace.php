@@ -7,5 +7,3 @@ use Architecture\Policy\Namespace_Policy;
 class twig_namespace extends Namespace_Policy {
 
 }
-
-return twig_namespace::class;

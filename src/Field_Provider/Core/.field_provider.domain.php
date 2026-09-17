@@ -10,5 +10,3 @@ class field_provider_domain extends Domain_Policy {
 		template_engine_domain::class,
 	];
 }
-
-return field_provider_domain::class;

@@ -7,5 +7,3 @@ use Architecture\Policy\Namespace_Policy;
 class pods_namespace extends Namespace_Policy {
 	
 }
-
-return pods_namespace::class;

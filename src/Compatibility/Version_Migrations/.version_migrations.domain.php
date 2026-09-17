@@ -18,5 +18,3 @@ class version_migrations_domain extends migration_domain {
 		v3_namespace::class,
 	];
 }
-
-return version_migrations_domain::class;

@@ -7,5 +7,3 @@ use Architecture\Policy\Namespace_Policy;
 class meta_box_namespace extends Namespace_Policy {
 	
 }
-
-return meta_box_namespace::class;

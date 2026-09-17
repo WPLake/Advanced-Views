@@ -22,5 +22,3 @@ class field_providers_domain extends field_provider_domain {
 		wp_namespace::class,
 	];
 }
-
-return field_providers_domain::class;

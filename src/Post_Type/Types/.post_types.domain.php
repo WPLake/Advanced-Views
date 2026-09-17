@@ -19,5 +19,3 @@ class post_types_domain extends post_type_domain {
 		post_selections_namespace::class => [ layouts_namespace::class ],
 	];
 }
-
-return post_types_domain::class;

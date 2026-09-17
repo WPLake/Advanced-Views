@@ -7,5 +7,3 @@ use Architecture\Policy\Namespace_Policy;
 class v1_namespace extends Namespace_Policy{
 	
 }
-
-return v1_namespace::class;

@@ -22,5 +22,3 @@ class template_engines_domain extends template_engine_domain {
 		blade_namespace::class => [ php_namespace::class, ],
 	];
 }
-
-return template_engines_domain::class;

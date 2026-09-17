@@ -7,5 +7,3 @@ use Architecture\Policy\Namespace_Policy;
 class php_namespace extends Namespace_Policy {
 
 }
-
-return php_namespace::class;

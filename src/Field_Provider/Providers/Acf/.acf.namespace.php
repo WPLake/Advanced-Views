@@ -7,5 +7,3 @@ use Architecture\Policy\Namespace_Policy;
 class acf_namespace extends Namespace_Policy {
 	
 }
-
-return acf_namespace::class;
