@@ -13,13 +13,14 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Fields\Field_Markup;
+use Org\Wplake\Advanced_Views\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
 use WP_REST_Request;
 
 class Layout_Factory extends Instance_Factory {
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Layout_Markup $layout_markup;
-	protected Engines_Storage $engines_storage;
+	protected Template_Renderer_Storage $template_renderer_storage;
 	protected Field_Markup $field_markup;
 	protected Data_Vendors_Base $data_vendors;
 
@@ -27,17 +28,17 @@ class Layout_Factory extends Instance_Factory {
 		Front_Assets $front_assets,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Layout_Markup $layout_markup,
-		Engines_Storage $engines_storage,
+		Template_Renderer_Storage $template_renderer_storage,
 		Field_Markup $field_markup,
 		Data_Vendors_Base $data_vendors
 	) {
 		parent::__construct( $front_assets );
 
-		$this->layouts_settings_storage = $layouts_settings_storage;
-		$this->layout_markup            = $layout_markup;
-		$this->engines_storage          = $engines_storage;
-		$this->field_markup             = $field_markup;
-		$this->data_vendors             = $data_vendors;
+		$this->layouts_settings_storage  = $layouts_settings_storage;
+		$this->layout_markup             = $layout_markup;
+		$this->template_renderer_storage = $template_renderer_storage;
+		$this->field_markup              = $field_markup;
+		$this->data_vendors              = $data_vendors;
 	}
 
 	public static function get_template_fields( Cpt_Theme_Settings $theme_settings ): array {
@@ -121,7 +122,7 @@ class Layout_Factory extends Instance_Factory {
 	): Layout {
 		return new Layout(
 			$this->data_vendors,
-			$this->engines_storage,
+			$this->template_renderer_storage,
 			$markup,
 			$settings,
 			$source,

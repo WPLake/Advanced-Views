@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Context\Query_Context;
+use Org\Wplake\Advanced_Views\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
@@ -25,7 +26,7 @@ class Post_Selection extends Instance {
 	private Post_Selection_Settings $settings;
 	private Post_Query $post_query;
 	private Post_Selection_Markup $post_selection_markup;
-	private Engines_Storage $engines_storage;
+	private Template_Renderer_Storage $template_renderer_storage;
 	private int $pages_amount;
 	/**
 	 * @var int[]
@@ -33,7 +34,7 @@ class Post_Selection extends Instance {
 	private array $post_ids;
 
 	public function __construct(
-		Engines_Storage $engines_storage,
+		Template_Renderer_Storage $template_renderer_storage,
 		Post_Selection_Settings $post_selection_settings,
 		Post_Query $post_query,
 		Post_Selection_Markup $post_selection_markup,
@@ -41,12 +42,12 @@ class Post_Selection extends Instance {
 	) {
 		parent::__construct( $post_selection_settings, '', $classes );
 
-		$this->settings              = $post_selection_settings;
-		$this->post_query            = $post_query;
-		$this->post_selection_markup = $post_selection_markup;
-		$this->engines_storage       = $engines_storage;
-		$this->pages_amount          = 0;
-		$this->post_ids              = array();
+		$this->settings                  = $post_selection_settings;
+		$this->post_query                = $post_query;
+		$this->post_selection_markup     = $post_selection_markup;
+		$this->template_renderer_storage = $template_renderer_storage;
+		$this->pages_amount              = 0;
+		$this->post_ids                  = array();
 	}
 
 	/**
@@ -328,7 +329,7 @@ class Post_Selection extends Instance {
 		array $variables,
 		bool $is_for_validation = false
 	): bool {
-		$template_engine = $this->engines_storage
+		$template_engine = $this->template_renderer_storage
 			->resolve_renderer( $this->settings->template_engine );
 
 		ob_start();

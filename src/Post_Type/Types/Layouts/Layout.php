@@ -20,7 +20,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Fields\Field_Markup;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
+use Org\Wplake\Advanced_Views\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
@@ -29,7 +29,7 @@ class Layout extends Instance {
 	private Layout_Settings $layout_settings;
 	private Data_Vendors_Base $data_vendors;
 	private Field_Markup $field_markup;
-	private Engines_Storage $engines_storage;
+	private Template_Renderer_Storage $template_renderer_storage;
 	/**
 	 * @var array<string, mixed>
 	 */
@@ -44,7 +44,7 @@ class Layout extends Instance {
 
 	public function __construct(
 		Data_Vendors_Base $data_vendors,
-		Engines_Storage $engines_storage,
+		Template_Renderer_Storage $template_renderer_storage,
 		string $twig_template,
 		Layout_Settings $layout_settings,
 		Source $source,
@@ -53,13 +53,13 @@ class Layout extends Instance {
 	) {
 		parent::__construct( $layout_settings, $twig_template, $classes );
 
-		$this->layout_settings = $layout_settings;
-		$this->data_vendors    = $data_vendors;
-		$this->source          = $source;
-		$this->field_markup    = $field_markup;
-		$this->engines_storage = $engines_storage;
-		$this->field_values    = array();
-		$this->local_data      = null;
+		$this->layout_settings           = $layout_settings;
+		$this->data_vendors              = $data_vendors;
+		$this->source                    = $source;
+		$this->field_markup              = $field_markup;
+		$this->template_renderer_storage = $template_renderer_storage;
+		$this->field_values              = array();
+		$this->local_data                = null;
 	}
 
 	/**
@@ -280,7 +280,7 @@ class Layout extends Instance {
 			}
 		}
 
-		$template_engine = $this->engines_storage
+		$template_engine = $this->template_renderer_storage
 								->resolve_renderer( $this->layout_settings->template_engine );
 
 		if ( null !== $template_engine ) {

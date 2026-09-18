@@ -12,27 +12,28 @@ use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Context\Query_Context;
+use Org\Wplake\Advanced_Views\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
 use WP_REST_Request;
 
 class Post_Selection_Factory extends Instance_Factory {
 	protected Post_Query $query_builder;
 	protected Post_Selection_Markup $post_selection_markup;
-	protected Engines_Storage $engines_storage;
+	protected Template_Renderer_Storage $template_renderer_storage;
 	private Selection_Settings_Storage $post_selections_settings_storage;
 
 	public function __construct(
 		Front_Assets $front_assets,
 		Post_Query $query_builder,
 		Post_Selection_Markup $post_selection_markup,
-		Engines_Storage $engines_storage,
+		Template_Renderer_Storage $template_renderer_storage,
 		Selection_Settings_Storage $post_selections_settings_storage
 	) {
 		parent::__construct( $front_assets );
 
 		$this->query_builder                    = $query_builder;
 		$this->post_selection_markup            = $post_selection_markup;
-		$this->engines_storage                  = $engines_storage;
+		$this->template_renderer_storage        = $template_renderer_storage;
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
 	}
 
@@ -45,7 +46,7 @@ class Post_Selection_Factory extends Instance_Factory {
 	}
 
 	public function make( Post_Selection_Settings $post_selection_settings, string $classes = '' ): Post_Selection {
-		return new Post_Selection( $this->engines_storage, $post_selection_settings, $this->query_builder, $this->post_selection_markup, $classes );
+		return new Post_Selection( $this->template_renderer_storage, $post_selection_settings, $this->query_builder, $this->post_selection_markup, $classes );
 	}
 
 	public function make_and_print_html(
