@@ -20,7 +20,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Data_Storage\Selec
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Post_Selection_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Post_Selection_Markup;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Post_Query_Builder;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
+use Org\Wplake\Advanced_Views\Template_Engine\Core\Integration\Template_Integration_Storage;
 
 class Selection_Save_Actions extends Cpt_Save_Actions {
 
@@ -43,7 +43,7 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 		Post_Query_Builder $query_builder,
 		Post_Selection_Factory $post_selection_factory,
 		Public_Cpt $public_cpt,
-		Engines_Storage $engines_storage
+		Template_Integration_Storage $template_integration_storage
 	) {
 		// make a clone before passing to the parent, to make sure that external changes won't appear in this object.
 		$post_selection_settings = $post_selection_settings->getDeepClone();
@@ -55,7 +55,7 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 			$post_selection_settings,
 			$front_assets,
 			$public_cpt,
-			$engines_storage,
+			$template_integration_storage,
 			$post_selection_factory
 		);
 

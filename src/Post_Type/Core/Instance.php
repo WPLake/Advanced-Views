@@ -7,7 +7,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Rendering\Template_Renderer_Base;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
 
@@ -15,15 +14,13 @@ defined( 'ABSPATH' ) || exit;
 
 abstract class Instance {
 	private string $template;
-	protected Engines_Storage $engines_storage;
 	private Cpt_Settings $cpt_settings;
 	private string $classes;
 
-	public function __construct( Engines_Storage $engines_storage, Cpt_Settings $cpt_settings, string $template, string $classes = '' ) {
-		$this->engines_storage = $engines_storage;
-		$this->cpt_settings    = $cpt_settings;
-		$this->template        = $template;
-		$this->classes         = $classes;
+	public function __construct( Cpt_Settings $cpt_settings, string $template, string $classes = '' ) {
+		$this->cpt_settings = $cpt_settings;
+		$this->template     = $template;
+		$this->classes      = $classes;
 	}
 
 	/**

@@ -23,7 +23,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Data_Storage\Selec
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Post_Selection_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Post_Selection_Markup;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Context\Query_Context;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
+use Org\Wplake\Advanced_Views\Template_Engine\Core\Integration\Template_Integration_Storage;
 use WP_Post;
 
 final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
@@ -42,7 +42,7 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 		Selection_Settings_Storage $selections_settings_storage,
 		Post_Selection_Markup $selection_markup,
 		Post_Selection_Factory $selection_factory,
-		Engines_Storage $engines_storage,
+		Template_Integration_Storage $template_integration_storage,
 		Data_Vendors $data_vendors,
 		Settings_Storage $settings,
 		Selection_Meta_Boxes $selection_meta_boxes,
@@ -53,7 +53,7 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 			$html,
 			$plugin,
 			$selection_factory,
-			$engines_storage,
+			$template_integration_storage,
 			$data_vendors,
 			$settings,
 			$selections_settings_storage

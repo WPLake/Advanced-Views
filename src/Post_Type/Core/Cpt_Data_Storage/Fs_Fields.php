@@ -6,22 +6,22 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Integration\Template_Integration;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
+use Org\Wplake\Advanced_Views\Template_Engine\Core\Integration\Template_Integration_Storage;
 
 defined( 'ABSPATH' ) || exit;
 
 class Fs_Fields {
-	protected Engines_Storage $engines_storage;
+	protected Template_Integration_Storage $template_integration_storage;
 
-	public function __construct( Engines_Storage $engines_storage ) {
-		$this->engines_storage = $engines_storage;
+	public function __construct( Template_Integration_Storage $template_integration_storage ) {
+		$this->template_integration_storage = $template_integration_storage;
 	}
 
 	/**
 	 * @return array<string,string[]>
 	 */
 	public function extract_markup_multilingual_strings( Cpt_Settings $cpt_settings ): array {
-		$integration   = $this->engines_storage->resolve_integration( $cpt_settings->template_engine );
+		$integration   = $this->template_integration_storage->resolve_integration( $cpt_settings->template_engine );
 		$custom_markup = trim( $cpt_settings->custom_markup );
 
 		if ( strlen( $custom_markup ) > 0 &&
@@ -118,7 +118,7 @@ class Fs_Fields {
 	 * @return string[]
 	 */
 	public function get_fs_field_file_names( bool $is_without_auto_generated = false ): array {
-		$template_integrations = $this->engines_storage->get_integrations();
+		$template_integrations = $this->template_integration_storage->get_integrations();
 		$file_names            = array(
 			'style.css',
 			'style.scss',
@@ -165,7 +165,7 @@ class Fs_Fields {
 			'links.md'         => $this->get_links_md_content( $cpt_settings ),
 		);
 
-		$integration             = $this->engines_storage->resolve_integration( $cpt_settings->template_engine );
+		$integration             = $this->template_integration_storage->resolve_integration( $cpt_settings->template_engine );
 		$template_file_extension = $integration instanceof Template_Integration ?
 			$integration->get_file_extension() :
 			'';
@@ -207,7 +207,7 @@ class Fs_Fields {
 	}
 
 	public function set_fs_field( Cpt_Settings $cpt_settings, string $field_file, string $field_value ): void {
-		$integration = $this->engines_storage->resolve_integration( $cpt_settings->template_engine );
+		$integration = $this->template_integration_storage->resolve_integration( $cpt_settings->template_engine );
 
 		$is_template_field = fn( string $test_name ) => $integration instanceof Template_Integration &&
 				$test_name . $integration->get_file_extension() === $field_file;

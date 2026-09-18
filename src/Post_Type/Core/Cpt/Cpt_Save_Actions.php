@@ -23,7 +23,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Stora
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Integration\Template_Integration;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
+use Org\Wplake\Advanced_Views\Template_Engine\Core\Integration\Template_Integration_Storage;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -47,7 +47,7 @@ abstract class Cpt_Save_Actions extends Action implements Hooks_Interface {
 	private array $validated_input_names;
 	private Front_Assets $front_assets;
 	protected Public_Cpt $public_plugin_cpt;
-	protected Engines_Storage $engines_storage;
+	protected Template_Integration_Storage $template_integration_storage;
 	protected Instance_Factory $instance_factory;
 
 	public function __construct(
@@ -57,7 +57,7 @@ abstract class Cpt_Save_Actions extends Action implements Hooks_Interface {
 		Cpt_Settings $cpt_settings,
 		Front_Assets $front_assets,
 		Public_Cpt $public_cpt,
-		Engines_Storage $engines_storage,
+		Template_Integration_Storage $template_integration_storage,
 		Instance_Factory $instance_factory
 	) {
 		parent::__construct( $logger );
@@ -66,14 +66,14 @@ abstract class Cpt_Save_Actions extends Action implements Hooks_Interface {
 		$this->plugin               = $plugin;
 		// don't make a clone, as otherwise $viewValidationData in inheritors won't be actual anymore
 		// (there is a clone at the child class level).
-		$this->cpt_settings          = $cpt_settings;
-		$this->front_assets          = $front_assets;
-		$this->available_acf_fields  = array_keys( $this->cpt_settings->getFieldValues() );
-		$this->field_values          = array();
-		$this->validated_input_names = array();
-		$this->public_plugin_cpt     = $public_cpt;
-		$this->engines_storage       = $engines_storage;
-		$this->instance_factory      = $instance_factory;
+		$this->cpt_settings                 = $cpt_settings;
+		$this->front_assets                 = $front_assets;
+		$this->available_acf_fields         = array_keys( $this->cpt_settings->getFieldValues() );
+		$this->field_values                 = array();
+		$this->validated_input_names        = array();
+		$this->public_plugin_cpt            = $public_cpt;
+		$this->template_integration_storage = $template_integration_storage;
+		$this->instance_factory             = $instance_factory;
 	}
 
 	// according to the tests, json in post_meta in 13 times quicker than ordinary postMeta way -
@@ -355,7 +355,7 @@ abstract class Cpt_Save_Actions extends Action implements Hooks_Interface {
 		}
 
 		$template_engine      = $this->instance_factory::resolve_template_field_engine( $field_name, $instance_data );
-		$template_integration = $this->engines_storage->resolve_integration( $template_engine );
+		$template_integration = $this->template_integration_storage->resolve_integration( $template_engine );
 
 		// to avoid issues with security plugins, like WordFence.
 		if ( $template_integration instanceof Template_Integration ) {
@@ -650,7 +650,7 @@ abstract class Cpt_Save_Actions extends Action implements Hooks_Interface {
 		$template_fields = $this->instance_factory::get_template_fields( $this->cpt_settings );
 
 		foreach ( $template_fields as $field_name => $template_engine ) {
-			$template_integration = $this->engines_storage->resolve_integration( $template_engine );
+			$template_integration = $this->template_integration_storage->resolve_integration( $template_engine );
 
 			// mocking avoids issues with security plugins, like Wordfence.
 			if ( $template_integration instanceof Template_Integration ) {

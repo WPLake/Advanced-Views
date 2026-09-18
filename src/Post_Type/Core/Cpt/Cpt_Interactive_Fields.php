@@ -21,7 +21,7 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Integration\Template_Integration;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
+use Org\Wplake\Advanced_Views\Template_Engine\Core\Integration\Template_Integration_Storage;
 use WP_Post;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
@@ -38,7 +38,7 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 	protected Html_Printer $html;
 	protected Plugin $plugin;
 	protected Instance_Factory $instance_factory;
-	protected Engines_Storage $engines_storage;
+	protected Template_Integration_Storage $template_integration_storage;
 	protected Data_Vendors $data_vendors;
 	protected Settings_Storage $settings;
 	protected Cpt_Settings_Storage $cpt_settings_storage;
@@ -48,19 +48,19 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 		Html_Printer $html,
 		Plugin $plugin,
 		Instance_Factory $instance_factory,
-		Engines_Storage $engines_storage,
+		Template_Integration_Storage $template_integration_storage,
 		Data_Vendors $data_vendors,
 		Settings_Storage $settings,
 		Cpt_Settings_Storage $cpt_settings_storage
 	) {
-		$this->public_cpt           = $public_cpt;
-		$this->html                 = $html;
-		$this->plugin               = $plugin;
-		$this->instance_factory     = $instance_factory;
-		$this->engines_storage      = $engines_storage;
-		$this->data_vendors         = $data_vendors;
-		$this->settings             = $settings;
-		$this->cpt_settings_storage = $cpt_settings_storage;
+		$this->public_cpt                   = $public_cpt;
+		$this->html                         = $html;
+		$this->plugin                       = $plugin;
+		$this->instance_factory             = $instance_factory;
+		$this->template_integration_storage = $template_integration_storage;
+		$this->data_vendors                 = $data_vendors;
+		$this->settings                     = $settings;
+		$this->cpt_settings_storage         = $cpt_settings_storage;
 	}
 
 	// by tests, json in post_meta in 13 times quicker than ordinary postMeta way (30ms per 10 objects vs 400ms).
@@ -115,7 +115,7 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 				'autocompleteFilters'   => $integration->get_autocomplete_filters(),
 				'provocativeSymbolsMap' => $integration->get_provocative_symbols_map(),
 			),
-			$this->engines_storage->get_integrations()
+			$this->template_integration_storage->get_integrations()
 		);
 
 		return array(
@@ -214,7 +214,7 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 			$field_name = Group::resolve_field_name_from_id( $field_id );
 
 			$template_engine   = $this->instance_factory::resolve_template_field_engine( $field_name, $theme_settings );
-			$field_integration = $this->engines_storage->resolve_integration( $template_engine );
+			$field_integration = $this->template_integration_storage->resolve_integration( $template_engine );
 
 			$field['engine'] = $template_engine;
 			$field['mode']   = $field_integration instanceof Template_Integration ?

@@ -25,6 +25,7 @@ class Post_Selection extends Instance {
 	private Post_Selection_Settings $settings;
 	private Post_Query $post_query;
 	private Post_Selection_Markup $post_selection_markup;
+	private Engines_Storage $engines_storage;
 	private int $pages_amount;
 	/**
 	 * @var int[]
@@ -38,11 +39,12 @@ class Post_Selection extends Instance {
 		Post_Selection_Markup $post_selection_markup,
 		string $classes = ''
 	) {
-		parent::__construct( $engines_storage, $post_selection_settings, '', $classes );
+		parent::__construct( $post_selection_settings, '', $classes );
 
 		$this->settings              = $post_selection_settings;
 		$this->post_query            = $post_query;
 		$this->post_selection_markup = $post_selection_markup;
+		$this->engines_storage       = $engines_storage;
 		$this->pages_amount          = 0;
 		$this->post_ids              = array();
 	}

@@ -22,7 +22,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settin
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Layout_Markup;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Source;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
+use Org\Wplake\Advanced_Views\Template_Engine\Core\Integration\Template_Integration_Storage;
 use WP_Post;
 
 final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
@@ -39,7 +39,7 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 		Plugin $plugin,
 		Layout_Settings_Storage $layout_settings_storage,
 		Layout_Factory $layout_factory,
-		Engines_Storage $engines_storage,
+		Template_Integration_Storage $template_integration_storage,
 		Data_Vendors $data_vendors,
 		Settings_Storage $settings,
 		Layout_Markup $layout_markup,
@@ -50,7 +50,7 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 			$html,
 			$plugin,
 			$layout_factory,
-			$engines_storage,
+			$template_integration_storage,
 			$data_vendors,
 			$settings,
 			$layout_settings_storage

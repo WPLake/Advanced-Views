@@ -29,6 +29,7 @@ class Layout extends Instance {
 	private Layout_Settings $layout_settings;
 	private Data_Vendors $data_vendors;
 	private Field_Markup $field_markup;
+	private Engines_Storage $engines_storage;
 	/**
 	 * @var array<string, mixed>
 	 */
@@ -50,12 +51,13 @@ class Layout extends Instance {
 		Field_Markup $field_markup,
 		string $classes = ''
 	) {
-		parent::__construct( $engines_storage, $layout_settings, $twig_template, $classes );
+		parent::__construct( $layout_settings, $twig_template, $classes );
 
 		$this->layout_settings = $layout_settings;
 		$this->data_vendors    = $data_vendors;
 		$this->source          = $source;
 		$this->field_markup    = $field_markup;
+		$this->engines_storage = $engines_storage;
 		$this->field_values    = array();
 		$this->local_data      = null;
 	}

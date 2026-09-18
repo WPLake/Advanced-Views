@@ -20,7 +20,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settin
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Layout_Markup;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Source;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
+use Org\Wplake\Advanced_Views\Template_Engine\Core\Integration\Template_Integration_Storage;
 
 class Layout_Save_Actions extends Cpt_Save_Actions {
 	private Layout_Markup $layout_markup;
@@ -37,7 +37,7 @@ class Layout_Save_Actions extends Cpt_Save_Actions {
 		Layout_Markup $layout_markup,
 		Layout_Factory $layout_factory,
 		Public_Cpt $public_cpt,
-		Engines_Storage $engines_storage
+		Template_Integration_Storage $template_integration_storage
 	) {
 		// make a clone before passing to the parent, to make sure that external changes won't appear in this object.
 		$layout_settings = $layout_settings->getDeepClone();
@@ -49,7 +49,7 @@ class Layout_Save_Actions extends Cpt_Save_Actions {
 			$layout_settings,
 			$front_assets,
 			$public_cpt,
-			$engines_storage,
+			$template_integration_storage,
 			$layout_factory
 		);
 

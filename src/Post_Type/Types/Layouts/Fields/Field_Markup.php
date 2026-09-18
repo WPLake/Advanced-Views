@@ -21,8 +21,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Source;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Base\View_Front_Asset;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Generation\Token_Factory;
+use Org\Wplake\Advanced_Views\Template_Engine\Core\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Generation\Tokens\Format_Token;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 class Field_Markup {
@@ -34,13 +34,13 @@ class Field_Markup {
 	 * @var array<string,array<string,Markup_Field|null>>
 	 */
 	private array $cache;
-	private Engines_Storage $engines_storage;
+	private Token_Factory_Storage $token_factory_storage;
 
-	public function __construct( Data_Vendors $data_vendors, Front_Assets $front_assets, Engines_Storage $engines_storage ) {
-		$this->data_vendors    = $data_vendors;
-		$this->front_assets    = $front_assets;
-		$this->engines_storage = $engines_storage;
-		$this->cache           = array();
+	public function __construct( Data_Vendors $data_vendors, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
+		$this->data_vendors          = $data_vendors;
+		$this->front_assets          = $front_assets;
+		$this->token_factory_storage = $token_factory_storage;
+		$this->cache                 = array();
 	}
 
 	protected function get_markup_field_instance( string $vendor_name, string $field_type ): ?Markup_Field {
@@ -211,7 +211,7 @@ class Field_Markup {
 		Format_Token::next_line();
 		Format_Token::tabulation( ++$tabs_number );
 
-		$token_generator = $this->engines_storage->resolve_token_factory( $layout_settings->template_engine );
+		$token_generator = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
 
 		$var = $token_generator->variable( $field_id )
 								->add_item_path( 'label' );
@@ -423,7 +423,7 @@ class Field_Markup {
 			Format_Token::next_line();
 		}
 
-		$token_factory     = $this->engines_storage->resolve_token_factory( $layout_settings->template_engine );
+		$token_factory     = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
 		$markup_field_data = new Markup_Field_Data(
 			$layout_settings,
 			$item_settings,
@@ -480,7 +480,7 @@ class Field_Markup {
 			$this->data_vendors->get_field_front_assets( $field_settings->get_vendor_name(), $field_settings )
 		);
 		$is_label_out_of_row = $this->is_label_out_of_row( $field_assets );
-		$token_factory       = $this->engines_storage->resolve_token_factory( $layout_settings->template_engine );
+		$token_factory       = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
 
 		$row_tag = '';
 
