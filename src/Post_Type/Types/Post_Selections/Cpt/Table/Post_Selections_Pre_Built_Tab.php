@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Cpt\Table;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
@@ -25,7 +25,7 @@ class Post_Selections_Pre_Built_Tab extends Pre_Built_Tab {
 		Cpt_Table $cpt_table,
 		Selection_Settings_Storage $settings_storage,
 		Selection_Settings_Storage $external_settings_storage,
-		Data_Vendors $data_vendors,
+		Data_Vendors_Base $data_vendors,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Logger $logger,
 		Layouts_Pre_Built_Tab $layouts_pre_built_tab

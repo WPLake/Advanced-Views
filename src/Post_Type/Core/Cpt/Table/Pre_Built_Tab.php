@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
 use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
@@ -36,7 +36,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		Cpt_Table $cpt_table,
 		Cpt_Settings_Storage $cpt_data_storage,
 		Cpt_Settings_Storage $external_cpt_data_storage,
-		Data_Vendors $data_vendors,
+		Data_Vendors_Base $data_vendors,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Logger $logger
 	) {

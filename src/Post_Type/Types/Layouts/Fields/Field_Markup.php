@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Woo_Data_Vendor;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Wp_Data_Vendor;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
@@ -26,7 +26,7 @@ use Org\Wplake\Advanced_Views\Template_Engine\Core\Generation\Tokens\Format_Toke
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 class Field_Markup {
-	private Data_Vendors $data_vendors;
+	private Data_Vendors_Base $data_vendors;
 	private Front_Assets $front_assets;
 	/**
 	 * Vendor => field_type => ?Markup_Field_Interface.
@@ -36,7 +36,7 @@ class Field_Markup {
 	private array $cache;
 	private Token_Factory_Storage $token_factory_storage;
 
-	public function __construct( Data_Vendors $data_vendors, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
+	public function __construct( Data_Vendors_Base $data_vendors, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
 		$this->data_vendors          = $data_vendors;
 		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;

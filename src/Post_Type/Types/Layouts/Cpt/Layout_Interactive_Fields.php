@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Assets\ACE_Mods;
 use Org\Wplake\Advanced_Views\Dashboard\Html_Printer;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
@@ -40,7 +40,7 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 		Layout_Settings_Storage $layout_settings_storage,
 		Layout_Factory $layout_factory,
 		Template_Integration_Storage $template_integration_storage,
-		Data_Vendors $data_vendors,
+		Data_Vendors_Base $data_vendors,
 		Settings_Storage $settings,
 		Layout_Markup $layout_markup,
 		Layout_Meta_Boxes $layout_meta_boxes

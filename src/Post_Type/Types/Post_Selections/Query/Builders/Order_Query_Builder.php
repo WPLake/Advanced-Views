@@ -7,14 +7,14 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Builde
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Post_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Query_Utils;
 
 final class Order_Query_Builder implements Post_Query_Builder {
-	private Data_Vendors $data_vendors;
+	private Data_Vendors_Base $data_vendors;
 
-	public function __construct( Data_Vendors $data_vendors ) {
+	public function __construct( Data_Vendors_Base $data_vendors ) {
 		$this->data_vendors = $data_vendors;
 	}
 

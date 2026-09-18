@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Tax_Field_Settings;
 use Org\Wplake\Advanced_Views\Assets\ACE_Mods;
 use Org\Wplake\Advanced_Views\Dashboard\Html_Printer;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
@@ -43,7 +43,7 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 		Post_Selection_Markup $selection_markup,
 		Post_Selection_Factory $selection_factory,
 		Template_Integration_Storage $template_integration_storage,
-		Data_Vendors $data_vendors,
+		Data_Vendors_Base $data_vendors,
 		Settings_Storage $settings,
 		Selection_Meta_Boxes $selection_meta_boxes,
 		Layout_Settings_Storage $layout_settings_storage

@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Template_Engine\Core\Generation\Token_Factory_Stor
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Integration\Template_Integration;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Integration\Template_Integration_Storage;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Rendering\Template_Renderer;
+use Org\Wplake\Advanced_Views\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use Org\Wplake\Advanced_Views\Template_Engine\Engines\Blade\Blade_Integration;
 use Org\Wplake\Advanced_Views\Template_Engine\Engines\Blade\Blade_Renderer;
 use Org\Wplake\Advanced_Views\Template_Engine\Engines\Blade\Blade_Tokens;
@@ -24,7 +25,10 @@ use Org\Wplake\Advanced_Views\Template_Engine\Engines\Twig\Twig_Integration;
 use Org\Wplake\Advanced_Views\Template_Engine\Engines\Twig\Twig_Renderer;
 use Org\Wplake\Advanced_Views\Template_Engine\Engines\Twig\Twig_Tokens;
 
-class Engines_Storage implements Template_Integration_Storage, Token_Factory_Storage {
+class Engines_Storage implements
+	Template_Integration_Storage,
+	Token_Factory_Storage,
+	Template_Renderer_Storage {
 	const TWIG  = 'twig';
 	const PHP   = 'php';
 	const BLADE = 'blade';

@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Cpt\Table;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
@@ -17,13 +17,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settin
 
 class Layouts_Pre_Built_Tab extends Pre_Built_Tab {
 	private Layout_Settings_Storage $layouts_settings_storage;
-	private Data_Vendors $data_vendors;
+	private Data_Vendors_Base $data_vendors;
 
 	public function __construct(
 		Cpt_Table $cpt_table,
 		Layout_Settings_Storage $views_data_storage,
 		Layout_Settings_Storage $external_views_data_storage,
-		Data_Vendors $data_vendors,
+		Data_Vendors_Base $data_vendors,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Logger $logger
 	) {

@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
@@ -32,7 +32,7 @@ class Selection_Git_Tabs extends Git_Tabs {
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Layout_Git_Tabs $layouts_git_cpt_table_tabs,
-		Data_Vendors $data_vendors,
+		Data_Vendors_Base $data_vendors,
 		Logger $logger
 	) {
 		parent::__construct(

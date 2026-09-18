@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Dashboard\Html_Printer;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
@@ -22,7 +22,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	const ARGUMENT_FROM_LAYOUT = '_from';
 	const NONCE_MAKE_NEW       = 'av-make-card';
 
-	private Data_Vendors $data_vendors;
+	private Data_Vendors_Base $data_vendors;
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Public_Cpt $public_cpt;
 	private Plugin_Cpt $plugin_cpt;
@@ -31,7 +31,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		Html_Printer $html,
 		Plugin $plugin,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Data_Vendors $data_vendors,
+		Data_Vendors_Base $data_vendors,
 		Public_Cpt $public_cpt,
 		Plugin_Cpt $plugin_cpt
 	) {

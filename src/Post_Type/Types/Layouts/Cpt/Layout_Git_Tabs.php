@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Cpt;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settings_Storage;
 
 class Layout_Git_Tabs extends Git_Tabs {
-	private Data_Vendors $data_vendors;
+	private Data_Vendors_Base $data_vendors;
 	private Layout_Settings_Storage $layouts_settings_storage;
 
 	public function __construct(
@@ -28,7 +28,7 @@ class Layout_Git_Tabs extends Git_Tabs {
 		Cpt_Settings $cpt_settings,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
-		Data_Vendors $data_vendors,
+		Data_Vendors_Base $data_vendors,
 		Logger $logger
 	) {
 		parent::__construct(

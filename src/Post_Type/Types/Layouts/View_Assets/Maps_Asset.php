@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Base\View_Front_Asset_Base;
@@ -22,7 +22,7 @@ class Maps_Asset extends View_Front_Asset_Base {
 	 */
 	private array $maps;
 
-	public function __construct( Plugin $plugin, File_System $file_system, Data_Vendors $data_vendors ) {
+	public function __construct( Plugin $plugin, File_System $file_system, Data_Vendors_Base $data_vendors ) {
 		parent::__construct( $plugin, $file_system, $data_vendors );
 
 		$this->set_js_handles(
