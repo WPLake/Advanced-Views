@@ -50,7 +50,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	public function __construct( Logger $logger ) {
 		parent::__construct( $logger );
 
-		$this->provider_cluster     = array();
+		$this->provider_cluster = array();
 		$this->field_meta_cache = array();
 	}
 

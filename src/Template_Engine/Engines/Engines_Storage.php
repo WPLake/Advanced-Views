@@ -112,7 +112,7 @@ class Engines_Storage implements
 
 			// not every renderer is guaranteed to be available (e.g. Blade requires PHP >= 8.2.0).
 			if ( $renderer instanceof File_Template_Renderer_Base &&
-			     $renderer->is_available() ) {
+				$renderer->is_available() ) {
 				return $renderer;
 			}
 		}

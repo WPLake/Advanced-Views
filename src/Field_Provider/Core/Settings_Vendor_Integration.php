@@ -54,7 +54,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 
 		$this->item_settings            = $item_settings;
 		$this->layouts_settings_storage = $layouts_settings_storage;
-		$this->provider_cluster             = $provider_cluster;
+		$this->provider_cluster         = $provider_cluster;
 		$this->layouts_cpt_save_actions = $layouts_cpt_save_actions;
 		$this->layout_factory           = $layout_factory;
 		$this->data_vendor              = $data_vendor;

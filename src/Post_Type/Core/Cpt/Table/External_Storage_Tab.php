@@ -36,7 +36,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		parent::__construct( $cpt_table );
 
 		$this->cpt_settings_storage  = $cpt_settings_storage;
-		$this->provider_cluster          = $provider_cluster;
+		$this->provider_cluster      = $provider_cluster;
 		$this->cpt_settings_migrator = $cpt_settings_migrator;
 		$this->logger                = $logger;
 	}

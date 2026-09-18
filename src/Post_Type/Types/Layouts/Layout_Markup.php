@@ -28,7 +28,7 @@ class Layout_Markup {
 
 	public function __construct( Field_Markup $field_markup, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage ) {
 		$this->field_markup          = $field_markup;
-		$this->provider_cluster          = $provider_cluster;
+		$this->provider_cluster      = $provider_cluster;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->markups_safe          = array();
 	}

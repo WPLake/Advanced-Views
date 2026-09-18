@@ -28,7 +28,7 @@ class Field_Settings_Integration extends Acf_Integration {
 		parent::__construct( $plugin_cpt->cpt_name() );
 
 		$this->provider_cluster = $provider_cluster;
-		$this->plugin_cpt   = $plugin_cpt;
+		$this->plugin_cpt       = $plugin_cpt;
 	}
 
 	/**

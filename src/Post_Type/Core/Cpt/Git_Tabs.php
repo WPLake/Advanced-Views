@@ -64,7 +64,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 		$this->git_lab_api        = $git_lab_api;
 		$this->cpt_settings       = $cpt_settings->getDeepClone();
 		$this->pulling_unique_ids = array();
-		$this->provider_cluster       = $provider_cluster;
+		$this->provider_cluster   = $provider_cluster;
 	}
 
 	abstract protected function import_related_cpt_data_items(

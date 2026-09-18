@@ -43,7 +43,7 @@ class Layout_Git_Tabs extends Git_Tabs {
 		);
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
-		$this->provider_cluster             = $provider_cluster;
+		$this->provider_cluster         = $provider_cluster;
 	}
 
 	protected function get_cpt_data( string $unique_id ): Cpt_Settings {

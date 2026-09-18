@@ -30,7 +30,7 @@ class Layout_Git_Box extends Git_Meta_Box {
 		parent::__construct( $cpt_name, $settings, $layouts_settings_storage, $git_lab_api, $plugin );
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
-		$this->provider_cluster             = $provider_cluster;
+		$this->provider_cluster         = $provider_cluster;
 	}
 
 	/**

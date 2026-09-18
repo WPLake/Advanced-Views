@@ -32,7 +32,7 @@ class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Conta
 	private array $context_containers;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster ) {
-		$this->provider_cluster       = $provider_cluster;
+		$this->provider_cluster   = $provider_cluster;
 		$this->context_containers = array();
 		$this->query_builders     = array();
 

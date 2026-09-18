@@ -35,7 +35,7 @@ class Field_Markup {
 	private Token_Factory_Storage $token_factory_storage;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
-		$this->provider_cluster          = $provider_cluster;
+		$this->provider_cluster      = $provider_cluster;
 		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->cache                 = array();

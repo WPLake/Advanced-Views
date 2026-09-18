@@ -52,7 +52,7 @@ class Layout extends Instance {
 		parent::__construct( $layout_settings, $twig_template, $classes );
 
 		$this->layout_settings           = $layout_settings;
-		$this->provider_cluster              = $provider_cluster;
+		$this->provider_cluster          = $provider_cluster;
 		$this->source                    = $source;
 		$this->field_markup              = $field_markup;
 		$this->template_renderer_storage = $template_renderer_storage;

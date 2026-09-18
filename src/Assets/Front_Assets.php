@@ -52,9 +52,9 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	private array $tailwind_css_rules;
 
 	public function __construct( Plugin $plugin, Field_Provider_Cluster $provider_cluster, File_System $file_system, Live_Reloader_Component $live_reloader_component ) {
-		$this->plugin       = $plugin;
+		$this->plugin           = $plugin;
 		$this->provider_cluster = $provider_cluster;
-		$this->buffer_level = null;
+		$this->buffer_level     = null;
 		$this->is_custom_interactivity_api_import_map_required = false;
 
 		$this->assets                      = array();

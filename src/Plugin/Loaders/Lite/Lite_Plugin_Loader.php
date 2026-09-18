@@ -136,7 +136,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 
 		$this->item_settings = $this->group_creator->create( Item_Settings::class );
 
-		$this->provider_cluster            = new Data_Vendors( $this->logger );
+		$this->provider_cluster        = new Data_Vendors( $this->logger );
 		$this->live_reloader_component = new Live_Reloader_Component( $this->plugin, $this->settings );
 		$this->front_assets            = new Front_Assets(
 			$this->plugin,

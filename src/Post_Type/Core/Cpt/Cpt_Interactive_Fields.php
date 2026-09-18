@@ -58,7 +58,7 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 		$this->plugin                       = $plugin;
 		$this->instance_factory             = $instance_factory;
 		$this->template_integration_storage = $template_integration_storage;
-		$this->provider_cluster                 = $provider_cluster;
+		$this->provider_cluster             = $provider_cluster;
 		$this->settings                     = $settings;
 		$this->cpt_settings_storage         = $cpt_settings_storage;
 	}

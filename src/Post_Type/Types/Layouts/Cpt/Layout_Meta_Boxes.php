@@ -38,7 +38,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		parent::__construct( $html, $plugin );
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
-		$this->provider_cluster             = $provider_cluster;
+		$this->provider_cluster         = $provider_cluster;
 		$this->public_cpt               = $public_cpt;
 		$this->plugin_cpt               = $plugin_cpt;
 	}
