@@ -13,8 +13,6 @@ use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Woo_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Wp_Data_Vendor;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Source;
@@ -78,11 +76,7 @@ class Field_Markup {
 			$short_unique_view_id
 		);
 
-		if ( ! in_array(
-			$field_meta->get_vendor_name(),
-			array( Wp_Data_Vendor::NAME, Woo_Data_Vendor::NAME ),
-			true
-		) ) {
+		if ( $field_meta->is_native_type() ) {
 			$field_data = Plugin::apply_filters(
 				array(
 					sprintf( 'advanced_views/layout/field_data/type=%s', $field_meta->get_type() ),

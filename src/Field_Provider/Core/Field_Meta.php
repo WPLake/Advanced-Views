@@ -36,6 +36,7 @@ class Field_Meta {
 	private string $center_lat;
 	private string $center_lng;
 	private bool $is_ui_only;
+	private bool $is_native_type;
 
 	public function __construct( string $vendor_name, string $field_id ) {
 		$this->vendor_name    = $vendor_name;
@@ -56,6 +57,7 @@ class Field_Meta {
 		$this->center_lat     = '';
 		$this->center_lng     = '';
 		$this->is_ui_only     = false;
+		$this->is_native_type = false;
 	}
 
 	public function is_field_exist(): bool {
@@ -154,6 +156,10 @@ class Field_Meta {
 		return $this->is_ui_only;
 	}
 
+	public function is_native_type(): bool {
+		return $this->is_native_type;
+	}
+
 	// setters.
 
 	public function set_is_field_exist( bool $is_field_exist ): void {
@@ -227,5 +233,9 @@ class Field_Meta {
 
 	public function set_is_ui_only( bool $is_ui_only ): void {
 		$this->is_ui_only = $is_ui_only;
+	}
+
+	public function set_is_native_type( bool $is_native_type ): void {
+		$this->is_native_type = $is_native_type;
 	}
 }

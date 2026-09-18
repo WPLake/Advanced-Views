@@ -648,6 +648,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			return;
 		}
 
+		$field_meta->set_is_native_type( true );
 		$field_meta->set_name( $this->get_string_arg( 'name', $data ) );
 		$field_meta->set_type( $field_type );
 		$field_meta->set_display_format( $this->get_display_format( $data ) );

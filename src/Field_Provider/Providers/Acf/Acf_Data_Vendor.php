@@ -355,6 +355,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 				array();
 		}
 
+		$field_meta->set_is_native_type( true );
 		$field_meta->set_name( $this->get_string_arg( 'name', $data ) );
 		$field_meta->set_type( $this->get_string_arg( 'type', $data ) );
 		$field_meta->set_return_format( $this->get_string_arg( 'return_format', $data ) );

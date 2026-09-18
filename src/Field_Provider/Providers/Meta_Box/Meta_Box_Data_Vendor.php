@@ -516,6 +516,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			return;
 		}
 
+		$field_meta->set_is_native_type( true );
 		$field_meta->set_name( $this->get_string_arg( 'name', $data ) );
 		$field_meta->set_type( $field_type );
 		$field_meta->set_choices( $this->get_array_arg( 'options', $data ) );

@@ -14,8 +14,6 @@ use Org\Wplake\Advanced_Views\Bridge\Controllers\Layout\Layout_Template_Controll
 use Org\Wplake\Advanced_Views\Bridge\Controllers\Request_Controller;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Woo_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Wp_Data_Vendor;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
@@ -414,11 +412,7 @@ class Layout extends Instance {
 
 			// 1. default value from our plugin. Note: custom field types don't support default values
 			if ( $is_empty_value &&
-				! in_array(
-					$field_meta->get_vendor_name(),
-					array( Wp_Data_Vendor::NAME, Woo_Data_Vendor::NAME ),
-					true
-				) ) {
+				$field_meta->is_native_type() ) {
 				$field_value = $item->field->default_value;
 			}
 
@@ -426,11 +420,7 @@ class Layout extends Instance {
 
 			// 2. default value from ACF. Note: custom field types don't support default values
 			if ( $is_empty_value &&
-				! in_array(
-					$field_meta->get_vendor_name(),
-					array( Wp_Data_Vendor::NAME, Woo_Data_Vendor::NAME ),
-					true
-				) ) {
+				$field_meta->is_native_type() ) {
 				$field_value = $field_meta->get_default_value();
 			}
 
