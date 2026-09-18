@@ -57,7 +57,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settin
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Data_Storage\Post_Selection_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Templates_Environment;
+use Org\Wplake\Advanced_Views\Template_Engine\Engines\Blade\Blade_Template_Engine;
 use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
+use Org\Wplake\Advanced_Views\Template_Engine\Engines\PHP\PHP_Template_Engine;
+use Org\Wplake\Advanced_Views\Template_Engine\Engines\Twig\Twig_Template_Engine;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 
 final class Lite_Plugin_Loader extends Plugin_Loader_Base {
@@ -95,7 +98,13 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->post_selection_settings = $this->group_creator->create( Post_Selection_Settings::class );
 
 		$this->html            = new Html_Printer();
-		$this->engines_storage = new Engines_Storage( $uploads_folder, $this->logger, $this->settings );
+		$this->engines_storage = new Engines_Storage(
+			array(
+				new Twig_Template_Engine( $uploads_folder, $this->logger, $this->settings ),
+				new Blade_Template_Engine( $uploads_folder, $this->logger, $this->settings ),
+				new PHP_Template_Engine( $this->logger, $this->settings ),
+			)
+		);
 
 		$post_selections_file_system            = new File_System(
 			$this->logger,
@@ -178,7 +187,8 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 
 		$this->layout_settings_integration         = new Layout_Settings_Integration(
 			$this->layout_cpt->cpt_name(),
-			$this->provider_cluster
+			$this->provider_cluster,
+			$this->engines_storage
 		);
 		$this->field_settings_integration          = new Field_Settings_Integration(
 			$this->provider_cluster,
@@ -187,7 +197,8 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->post_selection_settings_integration = new Post_Selection_Settings_Integration(
 			$this->post_selection_cpt->cpt_name(),
 			$this->provider_cluster,
-			$this->layout_cpt
+			$this->layout_cpt,
+			$this->engines_storage
 		);
 		$this->item_settings_integration           = new Item_Settings_Integration(
 			$this->layout_cpt->cpt_name(),
@@ -273,7 +284,8 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$this->layouts_settings_storage,
 			$this->post_selections_settings_storage,
 			$this->group_creator->create( Git_Repository::class ),
-			$this->state_report
+			$this->state_report,
+			$this->engines_storage
 		);
 
 		$this->admin_assets = new Admin_Assets(

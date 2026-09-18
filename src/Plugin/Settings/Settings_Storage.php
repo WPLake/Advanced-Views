@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
+use Org\Wplake\Advanced_Views\Template_Engine\Engines\Twig\Twig_Template_Engine;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
@@ -288,7 +288,7 @@ class Settings_Storage implements Cpt_Theme_Settings {
 		$this->template_engine                    = string(
 			$this->settings,
 			'templateEngine',
-			Engines_Storage::TWIG
+			Twig_Template_Engine::NAME
 		);
 		$this->classes_generation                 = string(
 			$this->settings,

@@ -18,6 +18,7 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
@@ -36,6 +37,7 @@ final class Settings_Page extends Action implements Hooks_Interface {
 	private string $saved_message;
 	private Git_Repository $git_repository;
 	private State_Report $state_report;
+	private Engines_Storage $engines_storage;
 
 	public function __construct(
 		Logger $logger,
@@ -44,7 +46,8 @@ final class Settings_Page extends Action implements Hooks_Interface {
 		Layout_Settings_Storage $layouts_settings_storage,
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Git_Repository $git_repository,
-		State_Report $state_report
+		State_Report $state_report,
+		Engines_Storage $engines_storage
 	) {
 		parent::__construct( $logger );
 
@@ -56,6 +59,7 @@ final class Settings_Page extends Action implements Hooks_Interface {
 		$this->saved_message                    = '';
 		$this->git_repository                   = $git_repository->getDeepClone();
 		$this->state_report                     = $state_report;
+		$this->engines_storage                  = $engines_storage;
 	}
 
 
@@ -68,6 +72,15 @@ final class Settings_Page extends Action implements Hooks_Interface {
 			// priority 20, as it's after the ACF's save_post hook.
 			self::add_action( 'acf/save_post', array( $this, 'maybe_process' ), 20 );
 			self::add_action( 'acf/input/admin_head', array( $this, 'maybe_inject_values' ) );
+
+			self::add_filter(
+				'acf/load_field/name=' . Plugin_Settings::getAcfFieldName( Plugin_Settings::FIELD_TEMPLATE_ENGINE ),
+				function ( array $field ) {
+					$field['choices'] = $this->engines_storage->get_choices();
+
+					return $field;
+				}
+			);
 		}
 	}
 

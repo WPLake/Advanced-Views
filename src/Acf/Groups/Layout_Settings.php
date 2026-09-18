@@ -107,7 +107,6 @@ class Layout_Settings extends Cpt_Settings {
 	 * @a-type select
 	 * @label Template Engine
 	 * @instructions Choose one of the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>supported template engines</a>, which will be used for this Layout.
-	 * @choices {"php":"PHP","twig":"Twig","blade":"Blade (requires PHP >= 8.2.0)"}
 	 * @default_value twig
 	 */
 	public string $template_engine;

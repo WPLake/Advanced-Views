@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Data_Storage\Selec
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
+use Org\Wplake\Advanced_Views\Template_Engine\Engines\PHP\PHP_Template_Engine;
 use WP_REST_Request;
 
 class Post_Selection_Factory extends Instance_Factory {
@@ -39,7 +40,7 @@ class Post_Selection_Factory extends Instance_Factory {
 
 	public static function get_template_fields( Cpt_Theme_Settings $theme_settings ): array {
 		return array(
-			Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_EXTRA_QUERY_ARGUMENTS ) => Engines_Storage::PHP,
+			Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_EXTRA_QUERY_ARGUMENTS ) => PHP_Template_Engine::NAME,
 			Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_MARKUP ) => $theme_settings->get_template_engine(),
 			Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_CUSTOM_MARKUP ) => $theme_settings->get_template_engine(),
 		);

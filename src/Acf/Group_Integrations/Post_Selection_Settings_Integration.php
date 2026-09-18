@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
+use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -19,16 +20,19 @@ class Post_Selection_Settings_Integration extends Acf_Integration {
 
 	private Field_Provider_Cluster $provider_cluster;
 	private Plugin_Cpt $plugin_cpt;
+	private Engines_Storage $engines_storage;
 
 	public function __construct(
 		string $target_cpt_name,
 		Field_Provider_Cluster $provider_cluster,
-		Plugin_Cpt $plugin_cpt
+		Plugin_Cpt $plugin_cpt,
+		Engines_Storage $engines_storage
 	) {
 		parent::__construct( $target_cpt_name );
 
 		$this->provider_cluster = $provider_cluster;
-		$this->plugin_cpt   = $plugin_cpt;
+		$this->plugin_cpt       = $plugin_cpt;
+		$this->engines_storage  = $engines_storage;
 	}
 
 	/**
@@ -70,6 +74,15 @@ class Post_Selection_Settings_Integration extends Acf_Integration {
 			'acf/load_field/name=' . Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_POST_STATUSES ),
 			function ( array $field ) {
 				$field['choices'] = $this->get_post_status_choices();
+
+				return $field;
+			}
+		);
+
+		self::add_filter(
+			'acf/load_field/name=' . Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_TEMPLATE_ENGINE ),
+			function ( array $field ) {
+				$field['choices'] = $this->engines_storage->get_choices();
 
 				return $field;
 			}

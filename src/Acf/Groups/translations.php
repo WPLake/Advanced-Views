@@ -175,9 +175,6 @@ __("Add Field", "acf-views");
 
 // Layout_Settings.php : choices
 
-__("PHP", "acf-views");
-__("Twig", "acf-views");
-__("Blade (requires PHP >= 8.2.0)", "acf-views");
 __("Off", "acf-views");
 __("ACF Block", "acf-views");
 __("Meta Box Block", "acf-views");
@@ -331,9 +328,6 @@ __("Add Repository", "acf-views");
 
 // Plugin_Settings.php : choices
 
-__("PHP", "acf-views");
-__("Twig", "acf-views");
-__("Blade (requires PHP >= 8.2.0)", "acf-views");
 __("Classic (no CSS isolation)", "acf-views");
 __("Declarative Shadow DOM (CSS isolated", "acf-views");
 __("JS Shadow DOM (CSS isolated", "acf-views");
@@ -483,9 +477,6 @@ __("Splide v4 (29.8KB js", "acf-views");
 __("Load More Button", "acf-views");
 __("Infinity Scroll", "acf-views");
 __("Page Numbers", "acf-views");
-__("PHP", "acf-views");
-__("Twig", "acf-views");
-__("Blade (requires PHP >= 8.2.0)", "acf-views");
 __("Classic (no CSS isolation)", "acf-views");
 __("Declarative Shadow DOM (CSS isolated", "acf-views");
 __("JS Shadow DOM (CSS isolated", "acf-views");
