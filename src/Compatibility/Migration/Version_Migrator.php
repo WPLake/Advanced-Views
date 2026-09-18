@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Migration;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Version\Version_Migration;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
@@ -126,7 +126,7 @@ final class Version_Migrator extends Hookable implements Hooks_Interface, Cpt_Se
 				'migrate_from_previous_version',
 			),
 			// with the priority higher than in the Data_Vendors.
-			Data_Vendors::PLUGINS_LOADED_HOOK_PRIORITY + 1
+			Field_Provider_Cluster::PLUGINS_LOADED_HOOK_PRIORITY + 1
 		);
 
 		/**

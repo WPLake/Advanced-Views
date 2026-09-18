@@ -13,6 +13,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Integration;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Related_Groups_Import_Result;
@@ -36,13 +37,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Source;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
-class Data_Vendors extends Action implements Hooks_Interface {
-	/**
-	 * 1. must be more than the default 10, so it's executed after the data vendor plugins fully loaded themselves (e.g. MetaBox has loading inside this hook)
-	 * 2. '15' gives the ability to shift back when it needs, while still been after the default one.
-	 */
-	const PLUGINS_LOADED_HOOK_PRIORITY = 15;
-
+class Data_Vendors extends Action implements Hooks_Interface, Field_Provider_Cluster {
 	use Safe_Array_Arguments;
 
 	/**
