@@ -40,7 +40,7 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 		Layout_Settings_Storage $layout_settings_storage,
 		Layout_Factory $layout_factory,
 		Template_Integration_Storage $template_integration_storage,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Settings_Storage $settings,
 		Layout_Markup $layout_markup,
 		Layout_Meta_Boxes $layout_meta_boxes
@@ -51,7 +51,7 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 			$plugin,
 			$layout_factory,
 			$template_integration_storage,
-			$data_vendors,
+			$provider_cluster,
 			$settings,
 			$layout_settings_storage
 		);

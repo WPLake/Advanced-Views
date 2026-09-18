@@ -84,7 +84,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public Templates_Environment $templates_environment;
 	public Public_Cpt $layout_cpt;
 	public Public_Cpt $post_selection_cpt;
-	public Data_Vendors $data_vendors;
+	public Data_Vendors $provider_cluster;
 	public Front_Assets $front_assets;
 	public Live_Reloader_Component $live_reloader_component;
 	/**
@@ -191,7 +191,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 	protected function primary(): void {
 		// it's a hack, but there is no other way to pass data (constructor is always called automatically).
-		Field_Settings::set_data_vendors( $this->data_vendors );
+		Field_Settings::set_provider_cluster( $this->provider_cluster );
 
 		$this->add_hookable(
 			array(
@@ -199,7 +199,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 				$this->plugin,
 				$this->templates_environment,
 				$this->front_assets,
-				$this->data_vendors,
+				$this->provider_cluster,
 				$this->live_reloader_component,
 				$this->version_migrator,
 				$this->upgrade_notice,
@@ -258,7 +258,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		);
 
 		// only now, when layouts() are called.
-		$this->data_vendors->make_integration_instances(
+		$this->provider_cluster->make_integration_instances(
 			$route_detector,
 			$this->item_settings,
 			$this->layouts_settings_storage,

@@ -15,12 +15,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Html_Wrapper;
 defined( 'ABSPATH' ) || exit;
 
 abstract class View_Front_Asset_Base extends View_Asset_Base implements View_Front_Asset {
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 
-	public function __construct( Plugin $plugin, File_System $file_system, Field_Provider_Cluster $data_vendors ) {
+	public function __construct( Plugin $plugin, File_System $file_system, Field_Provider_Cluster $provider_cluster ) {
 		parent::__construct( $plugin, $file_system );
 
-		$this->data_vendors = $data_vendors;
+		$this->provider_cluster = $provider_cluster;
 	}
 
 	protected function print_css_code(
@@ -75,8 +75,8 @@ abstract class View_Front_Asset_Base extends View_Asset_Base implements View_Fro
 		return $item_selector;
 	}
 
-	public function get_data_vendors(): Field_Provider_Cluster {
-		return $this->data_vendors;
+	public function get_provider_cluster(): Field_Provider_Cluster {
+		return $this->provider_cluster;
 	}
 
 	/**
@@ -92,7 +92,7 @@ abstract class View_Front_Asset_Base extends View_Asset_Base implements View_Fro
 			return $code;
 		}
 
-		[$target_fields, $target_sub_fields] = $this->data_vendors->get_fields_by_front_asset(
+		[$target_fields, $target_sub_fields] = $this->provider_cluster->get_fields_by_front_asset(
 			static::NAME,
 			$cpt_settings
 		);
@@ -211,7 +211,7 @@ abstract class View_Front_Asset_Base extends View_Asset_Base implements View_Fro
 			return false;
 		}
 
-		[$target_fields, $target_sub_fields] = $this->data_vendors->get_fields_by_front_asset(
+		[$target_fields, $target_sub_fields] = $this->provider_cluster->get_fields_by_front_asset(
 			static::NAME,
 			$cpt_settings
 		);

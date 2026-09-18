@@ -22,21 +22,21 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	const KEY_RESULT_GROUPS = '';
 
 	private Cpt_Settings_Storage $cpt_settings_storage;
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 	private Cpt_Settings_Migrator $cpt_settings_migrator;
 	private Logger $logger;
 
 	public function __construct(
 		Cpt_Table $cpt_table,
 		Cpt_Settings_Storage $cpt_settings_storage,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Logger $logger
 	) {
 		parent::__construct( $cpt_table );
 
 		$this->cpt_settings_storage  = $cpt_settings_storage;
-		$this->data_vendors          = $data_vendors;
+		$this->provider_cluster          = $provider_cluster;
 		$this->cpt_settings_migrator = $cpt_settings_migrator;
 		$this->logger                = $logger;
 	}
@@ -109,7 +109,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		$this->cpt_settings_storage->save( $cpt_data );
 
 		// 7. import related meta groups (if present)
-		$related_groups_import_result = $this->data_vendors->import_related_group_files( $field_values );
+		$related_groups_import_result = $this->provider_cluster->import_related_group_files( $field_values );
 
 		$import_result = new Import_Result();
 		$import_result->add_unique_id( $unique_id );
@@ -168,7 +168,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		foreach ( $import_result->get_related_groups_import_result()->get_group_ids() as $vendor_name => $group_ids ) {
 			$grouped_meta_group_links[ $vendor_name ] = array();
 			foreach ( $group_ids as $group_id ) {
-				$group_link_data = $this->data_vendors->get_group_link_by_group_id( $group_id, $vendor_name );
+				$group_link_data = $this->provider_cluster->get_group_link_by_group_id( $group_id, $vendor_name );
 
 				if ( null === $group_link_data ) {
 					continue;
@@ -304,8 +304,8 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		return $this->cpt_settings_storage;
 	}
 
-	protected function get_data_vendors(): Field_Provider_Cluster {
-		return $this->data_vendors;
+	protected function get_provider_cluster(): Field_Provider_Cluster {
+		return $this->provider_cluster;
 	}
 
 	public function maybe_show_action_result_message(): void {

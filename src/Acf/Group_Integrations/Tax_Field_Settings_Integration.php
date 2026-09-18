@@ -10,12 +10,12 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 defined( 'ABSPATH' ) || exit;
 
 class Tax_Field_Settings_Integration extends Acf_Integration {
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 
-	public function __construct( string $target_cpt_name, Field_Provider_Cluster $data_vendors ) {
+	public function __construct( string $target_cpt_name, Field_Provider_Cluster $provider_cluster ) {
 		parent::__construct( $target_cpt_name );
 
-		$this->data_vendors = $data_vendors;
+		$this->provider_cluster = $provider_cluster;
 	}
 
 	/**
@@ -102,7 +102,7 @@ class Tax_Field_Settings_Integration extends Acf_Integration {
 		self::add_filter(
 			'acf/load_field/name=' . Tax_Field_Settings::getAcfFieldName( Tax_Field_Settings::FIELD_META_GROUP ),
 			function ( array $field ) {
-				$field['choices'] = $this->data_vendors->get_group_choices( true );
+				$field['choices'] = $this->provider_cluster->get_group_choices( true );
 
 				return $field;
 			}
@@ -111,7 +111,7 @@ class Tax_Field_Settings_Integration extends Acf_Integration {
 		self::add_filter(
 			'acf/load_field/name=' . Tax_Field_Settings::getAcfFieldName( Tax_Field_Settings::FIELD_META_FIELD ),
 			function ( array $field ) {
-				$field['choices'] = $this->data_vendors->get_field_choices( true );
+				$field['choices'] = $this->provider_cluster->get_field_choices( true );
 
 				return $field;
 			}

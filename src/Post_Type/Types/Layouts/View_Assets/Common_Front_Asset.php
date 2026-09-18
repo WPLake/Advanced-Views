@@ -19,8 +19,8 @@ defined( 'ABSPATH' ) || exit;
 abstract class Common_Front_Asset extends View_Front_Asset_Base {
 	private string $card_field_id;
 
-	public function __construct( Plugin $plugin, File_System $file_system, Field_Provider_Cluster $data_vendors ) {
-		parent::__construct( $plugin, $file_system, $data_vendors );
+	public function __construct( Plugin $plugin, File_System $file_system, Field_Provider_Cluster $provider_cluster ) {
+		parent::__construct( $plugin, $file_system, $provider_cluster );
 
 		$this->card_field_id = '';
 	}

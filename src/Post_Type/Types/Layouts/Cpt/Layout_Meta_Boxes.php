@@ -22,7 +22,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	const ARGUMENT_FROM_LAYOUT = '_from';
 	const NONCE_MAKE_NEW       = 'av-make-card';
 
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Public_Cpt $public_cpt;
 	private Plugin_Cpt $plugin_cpt;
@@ -31,14 +31,14 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		Html_Printer $html,
 		Plugin $plugin,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Public_Cpt $public_cpt,
 		Plugin_Cpt $plugin_cpt
 	) {
 		parent::__construct( $html, $plugin );
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
-		$this->data_vendors             = $data_vendors;
+		$this->provider_cluster             = $provider_cluster;
 		$this->public_cpt               = $public_cpt;
 		$this->plugin_cpt               = $plugin_cpt;
 	}
@@ -104,7 +104,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		foreach ( $used_meta_group_ids as $group_id ) {
 			++$counter;
 
-			$group_link = $this->data_vendors->get_group_link_by_group_id( $group_id );
+			$group_link = $this->provider_cluster->get_group_link_by_group_id( $group_id );
 
 			if ( null === $group_link ) {
 				continue;

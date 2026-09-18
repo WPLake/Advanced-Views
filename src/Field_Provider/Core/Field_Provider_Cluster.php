@@ -37,7 +37,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	/**
 	 * @var array<string, Field_Provider> name => instance
 	 */
-	private array $data_vendors;
+	private array $provider_cluster;
 	/**
 	 * Vendor => field_id => Field_Meta.
 	 *
@@ -48,7 +48,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	public function __construct( Logger $logger ) {
 		parent::__construct( $logger );
 
-		$this->data_vendors     = array();
+		$this->provider_cluster     = array();
 		$this->field_meta_cache = array();
 	}
 
@@ -65,8 +65,8 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	/**
 	 * @return  array<string, Field_Provider> name => instance
 	 */
-	public function get_data_vendors(): array {
-		return $this->data_vendors;
+	public function get_provider_cluster(): array {
+		return $this->provider_cluster;
 	}
 
 	/**
@@ -77,7 +77,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 			'' => __( 'Select', 'acf-views' ),
 		);
 
-		foreach ( $this->data_vendors as $data_vendor ) {
+		foreach ( $this->provider_cluster as $data_vendor ) {
 			if ( $is_only_meta_vendors &&
 				! $data_vendor->is_meta_vendor() ) {
 				continue;
@@ -103,7 +103,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 			) :
 			array();
 
-		foreach ( $this->data_vendors as $data_vendor ) {
+		foreach ( $this->provider_cluster as $data_vendor ) {
 			if ( $is_only_meta_vendors &&
 				false === $data_vendor->is_meta_vendor() ) {
 				continue;
@@ -136,7 +136,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 			'' => __( 'Select', 'acf-views' ),
 		);
 
-		foreach ( $this->data_vendors as $data_vendor ) {
+		foreach ( $this->provider_cluster as $data_vendor ) {
 			if ( $is_only_meta_vendors &&
 				! $data_vendor->is_meta_vendor() ) {
 				continue;
@@ -154,7 +154,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	public function get_field_key_conditional_rules( bool $is_sub_fields = false ): array {
 		$field_key_conditions = array();
 
-		foreach ( $this->data_vendors as $data_vendor ) {
+		foreach ( $this->provider_cluster as $data_vendor ) {
 			$vendor_field_key_conditional_rules = $data_vendor->get_field_key_conditional_rules( $is_sub_fields );
 
 			foreach ( $vendor_field_key_conditional_rules as $vendor_field => $vendor_field_conditions ) {
@@ -173,19 +173,19 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 		string $vendor_name,
 		string $field_type
 	): ?Markup_Field {
-		if ( ! key_exists( $vendor_name, $this->data_vendors ) ) {
+		if ( ! key_exists( $vendor_name, $this->provider_cluster ) ) {
 			return null;
 		}
 
-		return $this->data_vendors[ $vendor_name ]->get_markup_field_instance( $field_type );
+		return $this->provider_cluster[ $vendor_name ]->get_markup_field_instance( $field_type );
 	}
 
 	public function is_empty_value_supported_in_markup( string $vendor_name, string $field_type ): bool {
-		if ( ! key_exists( $vendor_name, $this->data_vendors ) ) {
+		if ( ! key_exists( $vendor_name, $this->provider_cluster ) ) {
 			return false;
 		}
 
-		return $this->data_vendors[ $vendor_name ]->is_empty_value_supported_in_markup( $field_type );
+		return $this->provider_cluster[ $vendor_name ]->is_empty_value_supported_in_markup( $field_type );
 	}
 
 	/**
@@ -194,15 +194,15 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	 * @return string[]
 	 */
 	public function get_supported_field_types( string $vendor_name ): array {
-		if ( ! key_exists( $vendor_name, $this->data_vendors ) ) {
+		if ( ! key_exists( $vendor_name, $this->provider_cluster ) ) {
 			return array();
 		}
 
-		return $this->data_vendors[ $vendor_name ]->get_supported_field_types();
+		return $this->provider_cluster[ $vendor_name ]->get_supported_field_types();
 	}
 
 	public function get_field_meta( string $vendor_name, string $field_id ): Field_Meta {
-		$vendor = $this->data_vendors[ $vendor_name ] ?? null;
+		$vendor = $this->provider_cluster[ $vendor_name ] ?? null;
 
 		$this->field_meta_cache[ $vendor_name ] ??= array();
 
@@ -236,11 +236,11 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	) {
 		$vendor_name = $field_meta->get_vendor_name();
 
-		if ( ! key_exists( $vendor_name, $this->data_vendors ) ) {
+		if ( ! key_exists( $vendor_name, $this->provider_cluster ) ) {
 			return null;
 		}
 
-		return $this->data_vendors[ $vendor_name ]->get_field_value(
+		return $this->provider_cluster[ $vendor_name ]->get_field_value(
 			$field_settings,
 			$field_meta,
 			$source,
@@ -258,7 +258,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 				continue;
 			}
 
-			$this->data_vendors[ $vendor->get_name() ] = $vendor;
+			$this->provider_cluster[ $vendor->get_name() ] = $vendor;
 		}
 	}
 
@@ -266,11 +266,11 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	 * @return string[]
 	 */
 	public function get_field_front_assets( string $vendor_name, Field_Settings $field_settings ): array {
-		if ( ! key_exists( $vendor_name, $this->data_vendors ) ) {
+		if ( ! key_exists( $vendor_name, $this->provider_cluster ) ) {
 			return array();
 		}
 
-		$field_front_assets = $this->data_vendors[ $vendor_name ]->get_field_front_assets( $field_settings );
+		$field_front_assets = $this->provider_cluster[ $vendor_name ]->get_field_front_assets( $field_settings );
 
 		// avoid duplicates (can be in case of the inheritance chain).
 		return array_unique( $field_front_assets );
@@ -331,13 +331,13 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	}
 
 	public function is_field_type_with_sub_fields( string $vendor, string $field_type ): bool {
-		if ( ! key_exists( $vendor, $this->data_vendors ) ) {
+		if ( ! key_exists( $vendor, $this->provider_cluster ) ) {
 			return false;
 		}
 
 		return in_array(
 			$field_type,
-			$this->data_vendors[ $vendor ]->get_field_types_with_sub_fields(),
+			$this->provider_cluster[ $vendor ]->get_field_types_with_sub_fields(),
 			true
 		);
 	}
@@ -347,11 +347,11 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 		DateTime $date_time,
 		Field_Meta $field_meta
 	): string {
-		if ( ! key_exists( $vendor, $this->data_vendors ) ) {
+		if ( ! key_exists( $vendor, $this->provider_cluster ) ) {
 			return '';
 		}
 
-		return $this->data_vendors[ $vendor ]->convert_date_to_string_for_db_comparison(
+		return $this->provider_cluster[ $vendor ]->convert_date_to_string_for_db_comparison(
 			$date_time,
 			$field_meta
 		);
@@ -383,7 +383,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 									$settings,
 									$plugin_cpt
 								): void {
-									foreach ( $this->data_vendors as $vendor ) {
+									foreach ( $this->provider_cluster as $vendor ) {
 										$integration_instance = $vendor->make_integration_instance(
 											$item_settings,
 											$layouts_settings_storage,
@@ -418,21 +418,21 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 			$group_id_without_vendor_prefix = $group_id;
 		}
 
-		if ( ! key_exists( $vendor_name, $this->data_vendors ) ) {
+		if ( ! key_exists( $vendor_name, $this->provider_cluster ) ) {
 			return null;
 		}
 
-		return $this->data_vendors[ $vendor_name ]->get_group_link_by_group_id( $group_id_without_vendor_prefix );
+		return $this->provider_cluster[ $vendor_name ]->get_group_link_by_group_id( $group_id_without_vendor_prefix );
 	}
 
 	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
 		$vendor_name = $field_meta->get_vendor_name();
 
-		if ( ! key_exists( $vendor_name, $this->data_vendors ) ) {
+		if ( ! key_exists( $vendor_name, $this->provider_cluster ) ) {
 			return null;
 		}
 
-		return $this->data_vendors[ $vendor_name ]->convert_string_to_date_time( $field_meta, $value );
+		return $this->provider_cluster[ $vendor_name ]->convert_string_to_date_time( $field_meta, $value );
 	}
 
 	/**
@@ -448,7 +448,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 
 			$file_vendor = str_replace( '.json', '', $file_name );
 
-			if ( ! key_exists( $file_vendor, $this->get_data_vendors() ) ) {
+			if ( ! key_exists( $file_vendor, $this->get_provider_cluster() ) ) {
 				continue;
 			}
 
@@ -458,7 +458,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 				continue;
 			}
 
-			$vendor = $this->get_data_vendors()[ $file_vendor ];
+			$vendor = $this->get_provider_cluster()[ $file_vendor ];
 
 			$meta_data = arr( $import_data, 'meta' );
 			// compatibility with the old export format, which didn't have meta at all.
@@ -517,7 +517,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 
 			$vendor_name = $item->field->get_vendor_name();
 
-			if ( ! key_exists( $vendor_name, $this->get_data_vendors() ) ) {
+			if ( ! key_exists( $vendor_name, $this->get_provider_cluster() ) ) {
 				continue;
 			}
 
@@ -527,11 +527,11 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 
 		// 2. get export data for each related group
 		foreach ( $related_groups as $vendor_name => $group_ids ) {
-			if ( ! key_exists( $vendor_name, $this->get_data_vendors() ) ) {
+			if ( ! key_exists( $vendor_name, $this->get_provider_cluster() ) ) {
 				continue;
 			}
 
-			$vendor = $this->get_data_vendors()[ $vendor_name ];
+			$vendor = $this->get_provider_cluster()[ $vendor_name ];
 			// remove duplicates.
 			$group_ids = array_unique( $group_ids );
 
@@ -552,11 +552,11 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 		$related_group_export_files = array();
 
 		foreach ( $related_group_export_data as $vendor_name => $groups_export_data ) {
-			if ( ! key_exists( $vendor_name, $this->get_data_vendors() ) ) {
+			if ( ! key_exists( $vendor_name, $this->get_provider_cluster() ) ) {
 				continue;
 			}
 
-			$vendor           = $this->get_data_vendors()[ $vendor_name ];
+			$vendor           = $this->get_provider_cluster()[ $vendor_name ];
 			$export_meta_data = $vendor->get_export_meta_data( $groups_export_data );
 
 			$groups_export_content = wp_json_encode(
@@ -584,7 +584,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	public function get_export_file_names(): array {
 		$export_file_names = array();
 
-		foreach ( array_keys( $this->get_data_vendors() ) as $vendor_name ) {
+		foreach ( array_keys( $this->get_provider_cluster() ) as $vendor_name ) {
 			$export_file_names[] = $vendor_name . '.json';
 		}
 
@@ -625,11 +625,11 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 		// b) check if the field has acfViewId in the conditional fields
 		// (as can leave from the previous field type, e.g. after clone).
 
-		if ( ! key_exists( $vendor_name, $this->get_data_vendors() ) ) {
+		if ( ! key_exists( $vendor_name, $this->get_provider_cluster() ) ) {
 			return false;
 		}
 
-		$markup_instance = $this->get_data_vendors()[ $vendor_name ]->get_markup_field_instance( $field_type );
+		$markup_instance = $this->get_provider_cluster()[ $vendor_name ]->get_markup_field_instance( $field_type );
 
 		if ( null === $markup_instance ) {
 			return false;

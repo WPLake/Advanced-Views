@@ -21,7 +21,7 @@ class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Conta
 		Context_Container_Base::set_query_context as protected set_context;
 	}
 
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 	/**
 	 * @var Post_Query_Builder[]
 	 */
@@ -31,13 +31,13 @@ class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Conta
 	 */
 	private array $context_containers;
 
-	public function __construct( Field_Provider_Cluster $data_vendors ) {
-		$this->data_vendors       = $data_vendors;
+	public function __construct( Field_Provider_Cluster $provider_cluster ) {
+		$this->provider_cluster       = $provider_cluster;
 		$this->context_containers = array();
 		$this->query_builders     = array();
 
 		$this->add_query_builder( new Entity_Query_Builder() )
-			->add_query_builder( new Order_Query_Builder( $this->data_vendors ) )
+			->add_query_builder( new Order_Query_Builder( $this->provider_cluster ) )
 			->add_taxonomy_builder();
 	}
 
@@ -57,7 +57,7 @@ class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Conta
 	}
 
 	protected function add_taxonomy_builder(): self {
-		$term_query_builder = new Term_Query_Builder( $this->data_vendors );
+		$term_query_builder = new Term_Query_Builder( $this->provider_cluster );
 		$taxonomy_builder   = new Taxonomy_Query_Builder( $term_query_builder );
 
 		$this->add_context_container( $term_query_builder )
@@ -78,7 +78,7 @@ class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Conta
 		return $this;
 	}
 
-	protected function get_data_vendors(): Field_Provider_Cluster {
-		return $this->data_vendors;
+	protected function get_provider_cluster(): Field_Provider_Cluster {
+		return $this->provider_cluster;
 	}
 }

@@ -42,13 +42,13 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 		parent::__construct();
 
 		$field_markup  = new Field_Markup(
-			$base->data_vendors,
+			$base->provider_cluster,
 			$base->front_assets,
 			$base->engines_storage
 		);
 		$layout_markup = new Layout_Markup(
 			$field_markup,
-			$base->data_vendors,
+			$base->provider_cluster,
 			$base->engines_storage
 		);
 
@@ -58,13 +58,13 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 			$layout_markup,
 			$base->engines_storage,
 			$field_markup,
-			$base->data_vendors
+			$base->provider_cluster
 		);
 		$this->cpt_meta_boxes  = new Layout_Meta_Boxes(
 			$base->html,
 			$base->plugin,
 			$base->layouts_settings_storage,
-			$base->data_vendors,
+			$base->provider_cluster,
 			$base->layout_cpt,
 			$base->post_selection_cpt
 		);
@@ -161,7 +161,7 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 			$this->cpt_table,
 			$base->layouts_settings_storage,
 			$layouts_settings_storage,
-			$base->data_vendors,
+			$base->provider_cluster,
 			$base->version_migrator,
 			$base->logger
 		);
@@ -180,7 +180,7 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 			$base->group_creator->create( Layout_Settings::class ),
 			$base->layouts_settings_storage,
 			$base->version_migrator,
-			$base->data_vendors,
+			$base->provider_cluster,
 			$base->logger
 		);
 		$this->git_box  = new Layout_Git_Box(
@@ -188,7 +188,7 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 			$base->settings,
 			$base->layouts_settings_storage,
 			$base->git_lab_api,
-			$base->data_vendors,
+			$base->provider_cluster,
 			$base->plugin
 		);
 
@@ -199,7 +199,7 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 			$base->layouts_settings_storage,
 			$this->factory,
 			$base->engines_storage,
-			$base->data_vendors,
+			$base->provider_cluster,
 			$base->settings,
 			$layout_markup,
 			$this->cpt_meta_boxes

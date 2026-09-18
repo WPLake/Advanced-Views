@@ -32,7 +32,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 
 	private Item_Settings $item_settings;
 	private Layout_Settings_Storage $layouts_settings_storage;
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 	private Layout_Save_Actions $layouts_cpt_save_actions;
 	private Layout_Factory $layout_factory;
 	private Field_Provider $data_vendor;
@@ -42,7 +42,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	public function __construct(
 		Item_Settings $item_settings,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Layout_Save_Actions $layouts_cpt_save_actions,
 		Layout_Factory $layout_factory,
 		Field_Provider $data_vendor,
@@ -54,7 +54,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 
 		$this->item_settings            = $item_settings;
 		$this->layouts_settings_storage = $layouts_settings_storage;
-		$this->data_vendors             = $data_vendors;
+		$this->provider_cluster             = $provider_cluster;
 		$this->layouts_cpt_save_actions = $layouts_cpt_save_actions;
 		$this->layout_factory           = $layout_factory;
 		$this->data_vendor              = $data_vendor;
@@ -391,7 +391,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 					return;
 				}
 
-				$supported_field_types = $this->data_vendors->get_supported_field_types( $this->get_vendor_name() );
+				$supported_field_types = $this->provider_cluster->get_supported_field_types( $this->get_vendor_name() );
 				$group_fields          = $this->get_group_fields( $from_post );
 				$group_key             = '';
 

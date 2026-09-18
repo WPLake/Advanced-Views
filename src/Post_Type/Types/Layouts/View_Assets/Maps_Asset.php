@@ -22,8 +22,8 @@ class Maps_Asset extends View_Front_Asset_Base {
 	 */
 	private array $maps;
 
-	public function __construct( Plugin $plugin, File_System $file_system, Field_Provider_Cluster $data_vendors ) {
-		parent::__construct( $plugin, $file_system, $data_vendors );
+	public function __construct( Plugin $plugin, File_System $file_system, Field_Provider_Cluster $provider_cluster ) {
+		parent::__construct( $plugin, $file_system, $provider_cluster );
 
 		$this->set_js_handles(
 			array(
@@ -80,7 +80,7 @@ class Maps_Asset extends View_Front_Asset_Base {
 			return;
 		}
 
-		[$target_fields, $target_sub_fields] = $this->get_data_vendors()->get_fields_by_front_asset(
+		[$target_fields, $target_sub_fields] = $this->get_provider_cluster()->get_fields_by_front_asset(
 			static::NAME,
 			$cpt_settings
 		);

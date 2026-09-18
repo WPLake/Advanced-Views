@@ -43,7 +43,7 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 		Post_Selection_Markup $selection_markup,
 		Post_Selection_Factory $selection_factory,
 		Template_Integration_Storage $template_integration_storage,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Settings_Storage $settings,
 		Selection_Meta_Boxes $selection_meta_boxes,
 		Layout_Settings_Storage $layout_settings_storage
@@ -54,7 +54,7 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 			$plugin,
 			$selection_factory,
 			$template_integration_storage,
-			$data_vendors,
+			$provider_cluster,
 			$settings,
 			$selections_settings_storage
 		);

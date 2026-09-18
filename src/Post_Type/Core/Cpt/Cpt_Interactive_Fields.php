@@ -39,7 +39,7 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 	protected Plugin $plugin;
 	protected Instance_Factory $instance_factory;
 	protected Template_Integration_Storage $template_integration_storage;
-	protected Field_Provider_Cluster $data_vendors;
+	protected Field_Provider_Cluster $provider_cluster;
 	protected Settings_Storage $settings;
 	protected Cpt_Settings_Storage $cpt_settings_storage;
 
@@ -49,7 +49,7 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 		Plugin $plugin,
 		Instance_Factory $instance_factory,
 		Template_Integration_Storage $template_integration_storage,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Settings_Storage $settings,
 		Cpt_Settings_Storage $cpt_settings_storage
 	) {
@@ -58,7 +58,7 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 		$this->plugin                       = $plugin;
 		$this->instance_factory             = $instance_factory;
 		$this->template_integration_storage = $template_integration_storage;
-		$this->data_vendors                 = $data_vendors;
+		$this->provider_cluster                 = $provider_cluster;
 		$this->settings                     = $settings;
 		$this->cpt_settings_storage         = $cpt_settings_storage;
 	}
@@ -241,12 +241,12 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 		 * @var array<string, string> $field_choices
 		 */
 		$field_choices = array_merge(
-			$this->data_vendors->get_field_choices(
+			$this->provider_cluster->get_field_choices(
 				false,
 				false,
 				true
 			),
-			$this->data_vendors->get_sub_field_choices( false, true )
+			$this->provider_cluster->get_sub_field_choices( false, true )
 		);
 
 		// optionally: convert all non-English pieces in names to English:

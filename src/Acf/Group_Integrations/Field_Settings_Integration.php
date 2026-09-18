@@ -18,16 +18,16 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 class Field_Settings_Integration extends Acf_Integration {
 	use Safe_Array_Arguments;
 
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 	private Plugin_Cpt $plugin_cpt;
 
 	public function __construct(
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Plugin_Cpt $plugin_cpt
 	) {
 		parent::__construct( $plugin_cpt->cpt_name() );
 
-		$this->data_vendors = $data_vendors;
+		$this->provider_cluster = $provider_cluster;
 		$this->plugin_cpt   = $plugin_cpt;
 	}
 
@@ -131,7 +131,7 @@ class Field_Settings_Integration extends Acf_Integration {
 			function ( array $field ) {
 				// using exactly the negative (excludeTypes) filter,
 				// otherwise if there are no such fields the field will be visible.
-				$sub_field_choices = $this->data_vendors->get_field_choices( false, true );
+				$sub_field_choices = $this->provider_cluster->get_field_choices( false, true );
 				$sub_field_choices = array_keys( $sub_field_choices );
 
 				// if there are no repeater fields, then we add a dummy option to hide the field.
@@ -149,8 +149,8 @@ class Field_Settings_Integration extends Acf_Integration {
 	}
 
 	protected function set_conditional_field_rules(): void {
-		$field_key_conditional_rules     = $this->data_vendors->get_field_key_conditional_rules();
-		$sub_field_key_conditional_rules = $this->data_vendors->get_field_key_conditional_rules( true );
+		$field_key_conditional_rules     = $this->provider_cluster->get_field_key_conditional_rules();
+		$sub_field_key_conditional_rules = $this->provider_cluster->get_field_key_conditional_rules( true );
 
 		foreach ( $field_key_conditional_rules as $field_name => $target_choices ) {
 			$this->add_conditional_filter( $field_name, $target_choices );
@@ -160,7 +160,7 @@ class Field_Settings_Integration extends Acf_Integration {
 			$this->add_conditional_filter( $field_name, $target_choices, true );
 		}
 
-		$all_conditional_fields = $this->data_vendors->get_all_conditional_fields();
+		$all_conditional_fields = $this->provider_cluster->get_all_conditional_fields();
 
 		$missing_conditional_fields     = array_diff(
 			$all_conditional_fields,
@@ -206,7 +206,7 @@ class Field_Settings_Integration extends Acf_Integration {
 		self::add_filter(
 			'acf/load_field/name=' . Field_Settings::getAcfFieldName( Field_Settings::FIELD_KEY ),
 			function ( array $field ) {
-				$field['choices'] = $this->data_vendors->get_field_choices();
+				$field['choices'] = $this->provider_cluster->get_field_choices();
 
 				return $field;
 			}
@@ -215,7 +215,7 @@ class Field_Settings_Integration extends Acf_Integration {
 		self::add_filter(
 			'acf/load_field/name=' . Repeater_Field_Settings::getAcfFieldName( Repeater_Field_Settings::FIELD_KEY ),
 			function ( array $field ) {
-				$field['choices'] = $this->data_vendors->get_sub_field_choices();
+				$field['choices'] = $this->provider_cluster->get_sub_field_choices();
 
 				return $field;
 			}

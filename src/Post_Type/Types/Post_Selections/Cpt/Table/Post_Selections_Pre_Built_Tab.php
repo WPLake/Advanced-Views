@@ -25,7 +25,7 @@ class Post_Selections_Pre_Built_Tab extends Pre_Built_Tab {
 		Cpt_Table $cpt_table,
 		Selection_Settings_Storage $settings_storage,
 		Selection_Settings_Storage $external_settings_storage,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Logger $logger,
 		Layouts_Pre_Built_Tab $layouts_pre_built_tab
@@ -34,7 +34,7 @@ class Post_Selections_Pre_Built_Tab extends Pre_Built_Tab {
 			$cpt_table,
 			$settings_storage,
 			$external_settings_storage,
-			$data_vendors,
+			$provider_cluster,
 			$cpt_settings_migrator,
 			$logger
 		);

@@ -39,7 +39,7 @@ class Field_Settings extends Group {
 	const FIELD_IS_MAP_WITHOUT_GOOGLE_MAP = 'is_map_without_google_map';
 	const FIELD_OPTIONS_DELIMITER         = 'options_delimiter';
 
-	private static ?Field_Provider_Cluster $data_vendors = null;
+	private static ?Field_Provider_Cluster $provider_cluster = null;
 
 	/**
 	 * @a-type select
@@ -230,8 +230,8 @@ class Field_Settings extends Group {
 		$this->field_meta             = null;
 	}
 
-	public static function set_data_vendors( Field_Provider_Cluster $data_vendors ): void {
-		self::$data_vendors = $data_vendors;
+	public static function set_provider_cluster( Field_Provider_Cluster $provider_cluster ): void {
+		self::$provider_cluster = $provider_cluster;
 	}
 
 	public static function get_field_id_by_key( string $key ): string {
@@ -312,8 +312,8 @@ class Field_Settings extends Group {
 	}
 
 	public static function get_field_meta_by_key( string $key ): Field_Meta {
-		if ( null !== self::$data_vendors ) {
-			return self::$data_vendors->get_field_meta(
+		if ( null !== self::$provider_cluster ) {
+			return self::$provider_cluster->get_field_meta(
 				self::get_vendor_name_by_key( $key ),
 				self::get_field_id_by_key( $key )
 			);

@@ -127,11 +127,11 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 
 		$this->item_settings = $this->group_creator->create( Item_Settings::class );
 
-		$this->data_vendors            = new Data_Vendors( $this->logger );
+		$this->provider_cluster            = new Data_Vendors( $this->logger );
 		$this->live_reloader_component = new Live_Reloader_Component( $this->plugin, $this->settings );
 		$this->front_assets            = new Front_Assets(
 			$this->plugin,
-			$this->data_vendors,
+			$this->provider_cluster,
 			$layouts_file_system,
 			$this->live_reloader_component
 		);
@@ -178,25 +178,25 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 
 		$this->layout_settings_integration         = new Layout_Settings_Integration(
 			$this->layout_cpt->cpt_name(),
-			$this->data_vendors
+			$this->provider_cluster
 		);
 		$this->field_settings_integration          = new Field_Settings_Integration(
-			$this->data_vendors,
+			$this->provider_cluster,
 			$this->layout_cpt
 		);
 		$this->post_selection_settings_integration = new Post_Selection_Settings_Integration(
 			$this->post_selection_cpt->cpt_name(),
-			$this->data_vendors,
+			$this->provider_cluster,
 			$this->layout_cpt
 		);
 		$this->item_settings_integration           = new Item_Settings_Integration(
 			$this->layout_cpt->cpt_name(),
-			$this->data_vendors
+			$this->provider_cluster
 		);
 		// metaField is a part of the Meta Filter, so we use 'cardsCpt' here.
 		$this->meta_field_settings_integration        = new Meta_Field_Settings_Integration(
 			$this->post_selection_cpt->cpt_name(),
-			$this->data_vendors
+			$this->provider_cluster
 		);
 		$this->layout_mount_point_integration         = new Mount_Point_Settings_Integration(
 			$this->layout_cpt->cpt_name()
@@ -206,7 +206,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		);
 		$this->tax_field_settings_integration         = new Tax_Field_Settings_Integration(
 			$this->post_selection_cpt->cpt_name(),
-			$this->data_vendors
+			$this->provider_cluster
 		);
 		$this->tools_settings_integration             = new Tools_Settings_Integration(
 			$this->layouts_settings_storage,

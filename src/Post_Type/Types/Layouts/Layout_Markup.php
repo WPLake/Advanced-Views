@@ -23,12 +23,12 @@ class Layout_Markup {
 	 */
 	private array $markups_safe;
 	private Field_Markup $field_markup;
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 	private Token_Factory_Storage $token_factory_storage;
 
-	public function __construct( Field_Markup $field_markup, Field_Provider_Cluster $data_vendors, Token_Factory_Storage $token_factory_storage ) {
+	public function __construct( Field_Markup $field_markup, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage ) {
 		$this->field_markup          = $field_markup;
-		$this->data_vendors          = $data_vendors;
+		$this->provider_cluster          = $provider_cluster;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->markups_safe          = array();
 	}
@@ -50,7 +50,7 @@ class Layout_Markup {
 		$field_type = $field_meta->get_type();
 
 		$is_condition_with_true_stub = $item_settings->field->is_visible_when_empty ||
-							$this->data_vendors->is_empty_value_supported_in_markup(
+							$this->provider_cluster->is_empty_value_supported_in_markup(
 								$item_settings->field->get_vendor_name(),
 								$field_type
 							);
@@ -61,7 +61,7 @@ class Layout_Markup {
 
 				$row_type = 'row';
 
-				if ( $this->data_vendors->is_field_type_with_sub_fields(
+				if ( $this->provider_cluster->is_field_type_with_sub_fields(
 					$field_meta->get_vendor_name(),
 					$field_meta->get_type()
 				) ) {

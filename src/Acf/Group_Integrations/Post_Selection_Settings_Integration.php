@@ -17,17 +17,17 @@ defined( 'ABSPATH' ) || exit;
 class Post_Selection_Settings_Integration extends Acf_Integration {
 	use Safe_Array_Arguments;
 
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 	private Plugin_Cpt $plugin_cpt;
 
 	public function __construct(
 		string $target_cpt_name,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Plugin_Cpt $plugin_cpt
 	) {
 		parent::__construct( $target_cpt_name );
 
-		$this->data_vendors = $data_vendors;
+		$this->provider_cluster = $provider_cluster;
 		$this->plugin_cpt   = $plugin_cpt;
 	}
 
@@ -42,7 +42,7 @@ class Post_Selection_Settings_Integration extends Acf_Integration {
 		self::add_filter(
 			'acf/load_field/name=' . Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_ORDER_BY_META_FIELD_GROUP ),
 			function ( array $field ) {
-				$field['choices'] = $this->data_vendors->get_group_choices( true );
+				$field['choices'] = $this->provider_cluster->get_group_choices( true );
 
 				return $field;
 			}
@@ -51,7 +51,7 @@ class Post_Selection_Settings_Integration extends Acf_Integration {
 		self::add_filter(
 			'acf/load_field/name=' . Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_ORDER_BY_META_FIELD_KEY ),
 			function ( array $field ) {
-				$field['choices'] = $this->data_vendors->get_field_choices( true );
+				$field['choices'] = $this->provider_cluster->get_field_choices( true );
 
 				return $field;
 			}

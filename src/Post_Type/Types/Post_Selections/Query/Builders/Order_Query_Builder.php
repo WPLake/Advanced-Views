@@ -12,10 +12,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Post_Query_B
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Query_Utils;
 
 final class Order_Query_Builder implements Post_Query_Builder {
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 
-	public function __construct( Field_Provider_Cluster $data_vendors ) {
-		$this->data_vendors = $data_vendors;
+	public function __construct( Field_Provider_Cluster $provider_cluster ) {
+		$this->provider_cluster = $provider_cluster;
 	}
 
 	public function build_post_query( Post_Selection_Settings $selection_settings ): array {
@@ -40,7 +40,7 @@ final class Order_Query_Builder implements Post_Query_Builder {
 	}
 
 	protected function get_order_by_meta_key( Post_Selection_Settings $selection ): ?string {
-		$field_meta = $this->data_vendors->get_field_meta(
+		$field_meta = $this->provider_cluster->get_field_meta(
 			$selection->get_order_by_meta_field_source(),
 			$selection->get_order_by_meta_acf_field_id()
 		);

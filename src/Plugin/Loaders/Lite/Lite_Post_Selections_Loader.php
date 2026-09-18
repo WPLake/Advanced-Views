@@ -42,7 +42,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 	public function __construct( Lite_Plugin_Loader $base ) {
 		parent::__construct();
 
-		$query_builder         = new Selection_Query_Builder( $base->data_vendors );
+		$query_builder         = new Selection_Query_Builder( $base->provider_cluster );
 		$post_query            = new Post_Query( $query_builder, $base->logger );
 		$post_selection_markup = new Post_Selection_Markup(
 			$base->front_assets,
@@ -121,7 +121,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$this->cpt_table,
 			$base->post_selections_settings_storage,
 			$post_selections_settings_storage,
-			$base->data_vendors,
+			$base->provider_cluster,
 			$base->version_migrator,
 			$base->logger,
 			$base->layouts_loader->pre_built_tab
@@ -135,7 +135,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->post_selections_settings_storage,
 			$base->version_migrator,
 			$base->layouts_loader->git_tabs,
-			$base->data_vendors,
+			$base->provider_cluster,
 			$base->logger
 		);
 		$this->git_box  = new Selection_Git_Box(
@@ -211,7 +211,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$post_selection_markup,
 			$this->factory,
 			$base->engines_storage,
-			$base->data_vendors,
+			$base->provider_cluster,
 			$base->settings,
 			$this->meta_boxes,
 			$base->layouts_settings_storage,

@@ -354,7 +354,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	public function make_integration_instance(
 		Item_Settings $item_settings,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Layout_Save_Actions $layouts_cpt_save_actions,
 		Layout_Factory $layout_factory,
 		Repeater_Field_Settings $repeater_field_settings,
@@ -365,7 +365,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		return new Meta_Box_Integration(
 			$item_settings,
 			$layouts_settings_storage,
-			$data_vendors,
+			$provider_cluster,
 			$layouts_cpt_save_actions,
 			$layout_factory,
 			$this,

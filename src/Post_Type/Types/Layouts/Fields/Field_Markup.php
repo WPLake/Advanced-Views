@@ -24,7 +24,7 @@ use Org\Wplake\Advanced_Views\Template_Engine\Core\Generation\Tokens\Format_Toke
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 class Field_Markup {
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 	private Front_Assets $front_assets;
 	/**
 	 * Vendor => field_type => ?Markup_Field_Interface.
@@ -34,8 +34,8 @@ class Field_Markup {
 	private array $cache;
 	private Token_Factory_Storage $token_factory_storage;
 
-	public function __construct( Field_Provider_Cluster $data_vendors, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
-		$this->data_vendors          = $data_vendors;
+	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
+		$this->provider_cluster          = $provider_cluster;
 		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->cache                 = array();
@@ -48,7 +48,7 @@ class Field_Markup {
 		}
 
 		$this->cache[ $vendor_name ]              ??= array();
-		$this->cache[ $vendor_name ][ $field_type ] = $this->data_vendors->get_markup_field_instance(
+		$this->cache[ $vendor_name ][ $field_type ] = $this->provider_cluster->get_markup_field_instance(
 			$vendor_name,
 			$field_type
 		);
@@ -471,7 +471,7 @@ class Field_Markup {
 		string $custom_field_markup = ''
 	): int {
 		$field_assets        = $this->front_assets->get_view_assets_by_names(
-			$this->data_vendors->get_field_front_assets( $field_settings->get_vendor_name(), $field_settings )
+			$this->provider_cluster->get_field_front_assets( $field_settings->get_vendor_name(), $field_settings )
 		);
 		$is_label_out_of_row = $this->is_label_out_of_row( $field_assets );
 		$token_factory       = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
@@ -624,7 +624,7 @@ class Field_Markup {
 	): bool {
 		return $layout_settings->is_with_unnecessary_wrappers ||
 				'' !== $field_settings->label ||
-				$this->data_vendors->is_field_type_with_sub_fields(
+				$this->provider_cluster->is_field_type_with_sub_fields(
 					$field_meta->get_vendor_name(),
 					$field_meta->get_type()
 				);

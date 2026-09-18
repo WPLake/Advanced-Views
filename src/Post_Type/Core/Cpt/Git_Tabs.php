@@ -46,7 +46,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 	 * @var array<string, bool>
 	 */
 	private array $pulling_unique_ids;
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 
 	public function __construct(
 		Cpt_Table $cpt_table,
@@ -55,16 +55,16 @@ abstract class Git_Tabs extends External_Storage_Tab {
 		Cpt_Settings $cpt_settings,
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Logger $logger
 	) {
-		parent::__construct( $cpt_table, $cpt_settings_storage, $data_vendors, $cpt_settings_migrator, $logger );
+		parent::__construct( $cpt_table, $cpt_settings_storage, $provider_cluster, $cpt_settings_migrator, $logger );
 
 		$this->settings           = $settings;
 		$this->git_lab_api        = $git_lab_api;
 		$this->cpt_settings       = $cpt_settings->getDeepClone();
 		$this->pulling_unique_ids = array();
-		$this->data_vendors       = $data_vendors;
+		$this->provider_cluster       = $provider_cluster;
 	}
 
 	abstract protected function import_related_cpt_data_items(
@@ -318,7 +318,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 									->get_fs_fields()
 									->get_fs_field_file_names( true );
 		// include all vendor export files to the 'known' list of files.
-		$fs_field_file_names = array_merge( $fs_field_file_names, $this->data_vendors->get_export_file_names() );
+		$fs_field_file_names = array_merge( $fs_field_file_names, $this->provider_cluster->get_export_file_names() );
 
 		$all_repository_items = $this->git_lab_api->get_all_items(
 			$this->get_cpt_name(),

@@ -19,10 +19,10 @@ final class Term_Query_Builder implements Query_Context_Container {
 
 	const NO_VALUE_COMPARISONS = array( 'EXISTS', 'NOT EXISTS' );
 
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 
-	public function __construct( Field_Provider_Cluster $data_vendors ) {
-		$this->data_vendors = $data_vendors;
+	public function __construct( Field_Provider_Cluster $provider_cluster ) {
+		$this->provider_cluster = $provider_cluster;
 	}
 
 	/**
@@ -122,7 +122,7 @@ final class Term_Query_Builder implements Query_Context_Container {
 	 * @return mixed[]
 	 */
 	protected function resolve_meta_value( Tax_Field_Settings $term ): array {
-		$field_data = $this->data_vendors->get_field_meta(
+		$field_data = $this->provider_cluster->get_field_meta(
 			$term->get_vendor_name(),
 			$term->get_field_id()
 		);

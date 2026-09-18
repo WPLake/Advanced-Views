@@ -28,7 +28,7 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	const MINIFY_TYPE_JS  = 'js';
 
 	private Plugin $plugin;
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 	private ?int $buffer_level;
 	private bool $is_custom_interactivity_api_import_map_required;
 	/**
@@ -51,9 +51,9 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	 */
 	private array $tailwind_css_rules;
 
-	public function __construct( Plugin $plugin, Field_Provider_Cluster $data_vendors, File_System $file_system, Live_Reloader_Component $live_reloader_component ) {
+	public function __construct( Plugin $plugin, Field_Provider_Cluster $provider_cluster, File_System $file_system, Live_Reloader_Component $live_reloader_component ) {
 		$this->plugin       = $plugin;
-		$this->data_vendors = $data_vendors;
+		$this->provider_cluster = $provider_cluster;
 		$this->buffer_level = null;
 		$this->is_custom_interactivity_api_import_map_required = false;
 
@@ -73,9 +73,9 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	 */
 	protected function get_assets(): array {
 		return array(
-			new Maps_Asset( $this->plugin, $this->file_system, $this->data_vendors ),
-			new Light_Gallery_Asset( $this->plugin, $this->file_system, $this->data_vendors ),
-			new Lightbox_Asset( $this->plugin, $this->file_system, $this->data_vendors ),
+			new Maps_Asset( $this->plugin, $this->file_system, $this->provider_cluster ),
+			new Light_Gallery_Asset( $this->plugin, $this->file_system, $this->provider_cluster ),
+			new Lightbox_Asset( $this->plugin, $this->file_system, $this->provider_cluster ),
 		);
 	}
 

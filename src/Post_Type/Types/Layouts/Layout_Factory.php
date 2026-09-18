@@ -22,7 +22,7 @@ class Layout_Factory extends Instance_Factory {
 	private Layout_Markup $layout_markup;
 	protected Template_Renderer_Storage $template_renderer_storage;
 	protected Field_Markup $field_markup;
-	protected Field_Provider_Cluster $data_vendors;
+	protected Field_Provider_Cluster $provider_cluster;
 
 	public function __construct(
 		Front_Assets $front_assets,
@@ -30,7 +30,7 @@ class Layout_Factory extends Instance_Factory {
 		Layout_Markup $layout_markup,
 		Template_Renderer_Storage $template_renderer_storage,
 		Field_Markup $field_markup,
-		Field_Provider_Cluster $data_vendors
+		Field_Provider_Cluster $provider_cluster
 	) {
 		parent::__construct( $front_assets );
 
@@ -38,7 +38,7 @@ class Layout_Factory extends Instance_Factory {
 		$this->layout_markup             = $layout_markup;
 		$this->template_renderer_storage = $template_renderer_storage;
 		$this->field_markup              = $field_markup;
-		$this->data_vendors              = $data_vendors;
+		$this->provider_cluster              = $provider_cluster;
 	}
 
 	public static function get_template_fields( Cpt_Theme_Settings $theme_settings ): array {
@@ -121,7 +121,7 @@ class Layout_Factory extends Instance_Factory {
 		string $classes
 	): Layout {
 		return new Layout(
-			$this->data_vendors,
+			$this->provider_cluster,
 			$this->template_renderer_storage,
 			$markup,
 			$settings,

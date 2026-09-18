@@ -26,7 +26,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	public function __construct(
 		Item_Settings $item_settings,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Layout_Save_Actions $layouts_cpt_save_actions,
 		Layout_Factory $layout_factory,
 		Pods_Data_Vendor $pods_data_vendor,
@@ -37,7 +37,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		parent::__construct(
 			$item_settings,
 			$layouts_settings_storage,
-			$data_vendors,
+			$provider_cluster,
 			$layouts_cpt_save_actions,
 			$layout_factory,
 			$pods_data_vendor,

@@ -25,7 +25,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 class Layout extends Instance {
 	private Layout_Settings $layout_settings;
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 	private Field_Markup $field_markup;
 	private Template_Renderer_Storage $template_renderer_storage;
 	/**
@@ -41,7 +41,7 @@ class Layout extends Instance {
 	private ?array $local_data;
 
 	public function __construct(
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Template_Renderer_Storage $template_renderer_storage,
 		string $twig_template,
 		Layout_Settings $layout_settings,
@@ -52,7 +52,7 @@ class Layout extends Instance {
 		parent::__construct( $layout_settings, $twig_template, $classes );
 
 		$this->layout_settings           = $layout_settings;
-		$this->data_vendors              = $data_vendors;
+		$this->provider_cluster              = $provider_cluster;
 		$this->source                    = $source;
 		$this->field_markup              = $field_markup;
 		$this->template_renderer_storage = $template_renderer_storage;
@@ -161,7 +161,7 @@ class Layout extends Instance {
 		?Item_Settings $item_settings = null,
 		bool $is_formatted = false
 	) {
-		return $this->data_vendors->get_field_value(
+		return $this->provider_cluster->get_field_value(
 			$field_settings,
 			$field_meta,
 			$this->source,
@@ -172,7 +172,7 @@ class Layout extends Instance {
 	}
 
 	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
-		return $this->data_vendors->convert_string_to_date_time( $field_meta, $value );
+		return $this->provider_cluster->convert_string_to_date_time( $field_meta, $value );
 	}
 
 	public function get_source(): Source {

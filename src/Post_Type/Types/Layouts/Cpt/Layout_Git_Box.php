@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settings_Storage;
 
 class Layout_Git_Box extends Git_Meta_Box {
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 	private Layout_Settings_Storage $layouts_settings_storage;
 
 	public function __construct(
@@ -24,13 +24,13 @@ class Layout_Git_Box extends Git_Meta_Box {
 		Settings_Storage $settings,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Git_Lab_Api $git_lab_api,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Plugin $plugin
 	) {
 		parent::__construct( $cpt_name, $settings, $layouts_settings_storage, $git_lab_api, $plugin );
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
-		$this->data_vendors             = $data_vendors;
+		$this->provider_cluster             = $provider_cluster;
 	}
 
 	/**
@@ -46,7 +46,7 @@ class Layout_Git_Box extends Git_Meta_Box {
 		if ( $is_with_meta_groups ) {
 			$export_fs_field_values = array_merge(
 				$export_fs_field_values,
-				$this->data_vendors->get_related_group_export_files( $cpt_settings )
+				$this->provider_cluster->get_related_group_export_files( $cpt_settings )
 			);
 		}
 
@@ -63,7 +63,7 @@ class Layout_Git_Box extends Git_Meta_Box {
 			return false;
 		}
 
-		$related_view_unique_ids = $this->data_vendors->get_related_view_unique_ids( $cpt_settings );
+		$related_view_unique_ids = $this->provider_cluster->get_related_view_unique_ids( $cpt_settings );
 
 		foreach ( $related_view_unique_ids as $related_view_unique_id ) {
 			$related_cpt_data = $this->layouts_settings_storage->get( $related_view_unique_id );

@@ -17,13 +17,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settin
 
 class Layouts_Pre_Built_Tab extends Pre_Built_Tab {
 	private Layout_Settings_Storage $layouts_settings_storage;
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 
 	public function __construct(
 		Cpt_Table $cpt_table,
 		Layout_Settings_Storage $views_data_storage,
 		Layout_Settings_Storage $external_views_data_storage,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Logger $logger
 	) {
@@ -31,18 +31,18 @@ class Layouts_Pre_Built_Tab extends Pre_Built_Tab {
 			$cpt_table,
 			$views_data_storage,
 			$external_views_data_storage,
-			$data_vendors,
+			$provider_cluster,
 			$cpt_settings_migrator,
 			$logger
 		);
 
 		$this->layouts_settings_storage = $views_data_storage;
-		$this->data_vendors       = $data_vendors;
+		$this->provider_cluster       = $provider_cluster;
 	}
 	protected function import_related_cpt_data_items( string $unique_id ): ?Import_Result {
 		$view_data = $this->layouts_settings_storage->get( $unique_id );
 
-		$related_view_unique_ids = $this->data_vendors->get_related_view_unique_ids( $view_data );
+		$related_view_unique_ids = $this->provider_cluster->get_related_view_unique_ids( $view_data );
 
 		$this->get_logger()->debug(
 			'importing related items',

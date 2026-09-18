@@ -10,19 +10,19 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 defined( 'ABSPATH' ) || exit;
 
 class Meta_Field_Settings_Integration extends Acf_Integration {
-	private Field_Provider_Cluster $data_vendors;
+	private Field_Provider_Cluster $provider_cluster;
 
-	public function __construct( string $target_cpt_name, Field_Provider_Cluster $data_vendors ) {
+	public function __construct( string $target_cpt_name, Field_Provider_Cluster $provider_cluster ) {
 		parent::__construct( $target_cpt_name );
 
-		$this->data_vendors = $data_vendors;
+		$this->provider_cluster = $provider_cluster;
 	}
 
 	protected function set_field_choices(): void {
 		self::add_filter(
 			'acf/load_field/name=' . Meta_Field_Settings::getAcfFieldName( Meta_Field_Settings::FIELD_GROUP ),
 			function ( array $field ) {
-				$field['choices'] = $this->data_vendors->get_group_choices( true );
+				$field['choices'] = $this->provider_cluster->get_group_choices( true );
 
 				return $field;
 			}
@@ -31,7 +31,7 @@ class Meta_Field_Settings_Integration extends Acf_Integration {
 		self::add_filter(
 			'acf/load_field/name=' . Meta_Field_Settings::getAcfFieldName( Meta_Field_Settings::FIELD_FIELD_KEY ),
 			function ( array $field ) {
-				$field['choices'] = $this->data_vendors->get_field_choices( true );
+				$field['choices'] = $this->provider_cluster->get_field_choices( true );
 
 				return $field;
 			}
@@ -40,7 +40,7 @@ class Meta_Field_Settings_Integration extends Acf_Integration {
 		self::add_filter(
 			'acf/load_field/name=' . Meta_Field_Settings::getAcfFieldName( Meta_Field_Settings::FIELD_DYNAMIC_POST_GROUP ),
 			function ( array $field ) {
-				$field['choices'] = $this->data_vendors->get_group_choices( true );
+				$field['choices'] = $this->provider_cluster->get_group_choices( true );
 
 				return $field;
 			}
@@ -49,7 +49,7 @@ class Meta_Field_Settings_Integration extends Acf_Integration {
 		self::add_filter(
 			'acf/load_field/name=' . Meta_Field_Settings::getAcfFieldName( Meta_Field_Settings::FIELD_DYNAMIC_POST_FIELD ),
 			function ( array $field ) {
-				$field['choices'] = $this->data_vendors->get_field_choices( true );
+				$field['choices'] = $this->provider_cluster->get_field_choices( true );
 
 				return $field;
 			}

@@ -32,7 +32,7 @@ class Selection_Git_Tabs extends Git_Tabs {
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Layout_Git_Tabs $layouts_git_cpt_table_tabs,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Logger $logger
 	) {
 		parent::__construct(
@@ -42,7 +42,7 @@ class Selection_Git_Tabs extends Git_Tabs {
 			$cpt_settings,
 			$post_selections_settings_storage,
 			$cpt_settings_migrator,
-			$data_vendors,
+			$provider_cluster,
 			$logger
 		);
 

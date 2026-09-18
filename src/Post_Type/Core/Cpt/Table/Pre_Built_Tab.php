@@ -36,11 +36,11 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		Cpt_Table $cpt_table,
 		Cpt_Settings_Storage $cpt_data_storage,
 		Cpt_Settings_Storage $external_cpt_data_storage,
-		Field_Provider_Cluster $data_vendors,
+		Field_Provider_Cluster $provider_cluster,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Logger $logger
 	) {
-		parent::__construct( $cpt_table, $cpt_data_storage, $data_vendors, $cpt_settings_migrator, $logger );
+		parent::__construct( $cpt_table, $cpt_data_storage, $provider_cluster, $cpt_settings_migrator, $logger );
 
 		$this->external_cpt_settings_storage = $external_cpt_data_storage;
 		$this->pulling_unique_ids            = array();
@@ -134,7 +134,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		$short_unique_id = $cpt_data->get_unique_id( true );
 
 		$meta_group_files = array();
-		foreach ( array_keys( $this->get_data_vendors()->get_data_vendors() ) as $meta_vendor_name ) {
+		foreach ( array_keys( $this->get_provider_cluster()->get_provider_cluster() ) as $meta_vendor_name ) {
 			$meta_group_files[] = $meta_vendor_name . '.json';
 		}
 
