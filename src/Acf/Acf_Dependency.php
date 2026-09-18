@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Acf;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
@@ -53,7 +53,7 @@ class Acf_Dependency extends Hookable implements Hooks_Interface {
 			'plugins_loaded',
 			array( $this, 'maybe_include_acf_plugin' ),
 			// -2, so it's before Acf_Internal_Features
-			Data_Vendors_Base::PLUGINS_LOADED_HOOK_PRIORITY - 2
+			Field_Provider_Cluster::PLUGINS_LOADED_HOOK_PRIORITY - 2
 		);
 	}
 }

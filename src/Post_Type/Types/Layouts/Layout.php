@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Bridge\Controllers\Layout\Layout_Template_Controller;
 use Org\Wplake\Advanced_Views\Bridge\Controllers\Request_Controller;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
@@ -25,7 +25,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 class Layout extends Instance {
 	private Layout_Settings $layout_settings;
-	private Data_Vendors_Base $data_vendors;
+	private Field_Provider_Cluster $data_vendors;
 	private Field_Markup $field_markup;
 	private Template_Renderer_Storage $template_renderer_storage;
 	/**
@@ -41,7 +41,7 @@ class Layout extends Instance {
 	private ?array $local_data;
 
 	public function __construct(
-		Data_Vendors_Base $data_vendors,
+		Field_Provider_Cluster $data_vendors,
 		Template_Renderer_Storage $template_renderer_storage,
 		string $twig_template,
 		Layout_Settings $layout_settings,

@@ -11,11 +11,6 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Acf_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Meta_Box\Meta_Box_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Pods\Pods_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Woo_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Wp_Data_Vendor;
 use Org\Wplake\Advanced_Views\Plugin\Base\Action;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
@@ -30,7 +25,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Integrations\Layout_Shortc
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Source;
 
-abstract class Data_Vendors_Base extends Action implements Hooks_Interface, Field_Provider_Cluster {
+abstract class Field_Provider_Cluster extends Action implements Hooks_Interface {
 	/**
 	 * 1. must be more than the default 10, so it's executed after the data vendor plugins fully loaded themselves (e.g. MetaBox has loading inside this hook)
 	 * 2. '15' gives the ability to shift back when it needs, while still been after the default one.
@@ -84,7 +79,7 @@ abstract class Data_Vendors_Base extends Action implements Hooks_Interface, Fiel
 
 		foreach ( $this->data_vendors as $data_vendor ) {
 			if ( $is_only_meta_vendors &&
-			     ! $data_vendor->is_meta_vendor() ) {
+				! $data_vendor->is_meta_vendor() ) {
 				continue;
 			}
 
@@ -110,7 +105,7 @@ abstract class Data_Vendors_Base extends Action implements Hooks_Interface, Fiel
 
 		foreach ( $this->data_vendors as $data_vendor ) {
 			if ( $is_only_meta_vendors &&
-			     false === $data_vendor->is_meta_vendor() ) {
+				false === $data_vendor->is_meta_vendor() ) {
 				continue;
 			}
 
@@ -120,7 +115,7 @@ abstract class Data_Vendors_Base extends Action implements Hooks_Interface, Fiel
 
 			// skip if types with subFields were requested, but vendor doesn't have such types.
 			if ( $is_only_types_with_sub_fields &&
-			     array() === $only_field_types ) {
+				array() === $only_field_types ) {
 				continue;
 			}
 
@@ -143,7 +138,7 @@ abstract class Data_Vendors_Base extends Action implements Hooks_Interface, Fiel
 
 		foreach ( $this->data_vendors as $data_vendor ) {
 			if ( $is_only_meta_vendors &&
-			     ! $data_vendor->is_meta_vendor() ) {
+				! $data_vendor->is_meta_vendor() ) {
 				continue;
 			}
 
@@ -259,7 +254,7 @@ abstract class Data_Vendors_Base extends Action implements Hooks_Interface, Fiel
 	public function load_available_vendors( bool $is_force_loading = false ): void {
 		foreach ( $this->get_vendors() as $vendor ) {
 			if ( ! $vendor->is_available() &&
-			     ! $is_force_loading ) {
+				! $is_force_loading ) {
 				continue;
 			}
 
@@ -376,40 +371,40 @@ abstract class Data_Vendors_Base extends Action implements Hooks_Interface, Fiel
 		// 1. must on or later 'plugins_load', when meta plugins are loaded
 		// 2. must be on or later 'after_setup_theme', when FS only Layouts and Post Selections are available
 		File_System_Loader::instance()
-		                  ->add_loaded_callback(
-			                  function () use (
-				                  $route_detector,
-				                  $item_settings,
-				                  $layouts_settings_storage,
-				                  $layouts_cpt_save_actions,
-				                  $layout_factory,
-				                  $repeater_field_settings,
-				                  $layout_shortcode,
-				                  $settings,
-				                  $plugin_cpt
-			                  ): void {
-				                  foreach ( $this->data_vendors as $vendor ) {
-					                  $integration_instance = $vendor->make_integration_instance(
-						                  $item_settings,
-						                  $layouts_settings_storage,
-						                  $this,
-						                  $layouts_cpt_save_actions,
-						                  $layout_factory,
-						                  $repeater_field_settings,
-						                  $layout_shortcode,
-						                  $settings,
-						                  $plugin_cpt
-					                  );
+							->add_loaded_callback(
+								function () use (
+									$route_detector,
+									$item_settings,
+									$layouts_settings_storage,
+									$layouts_cpt_save_actions,
+									$layout_factory,
+									$repeater_field_settings,
+									$layout_shortcode,
+									$settings,
+									$plugin_cpt
+								): void {
+									foreach ( $this->data_vendors as $vendor ) {
+										$integration_instance = $vendor->make_integration_instance(
+											$item_settings,
+											$layouts_settings_storage,
+											$this,
+											$layouts_cpt_save_actions,
+											$layout_factory,
+											$repeater_field_settings,
+											$layout_shortcode,
+											$settings,
+											$plugin_cpt
+										);
 
-					                  // integration instance is optional (e.g. Woo and WP don't have).
-					                  if ( null === $integration_instance ) {
-						                  continue;
-					                  }
+										// integration instance is optional (e.g. Woo and WP don't have).
+										if ( null === $integration_instance ) {
+											continue;
+										}
 
-					                  $this->load_integration_instance( $route_detector, $integration_instance, $layouts_settings_storage );
-				                  }
-			                  }
-		                  );
+										$this->load_integration_instance( $route_detector, $integration_instance, $layouts_settings_storage );
+									}
+								}
+							);
 	}
 
 	/**
@@ -599,7 +594,7 @@ abstract class Data_Vendors_Base extends Action implements Hooks_Interface, Fiel
 	/**
 	 * @return Field_Provider[]
 	 */
-	protected abstract function get_vendors(): array;
+	abstract protected function get_vendors(): array;
 
 	protected function load_integration_instance(
 		Route_Detector $route_detector,

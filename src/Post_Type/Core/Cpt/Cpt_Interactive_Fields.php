@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 use Org\Wplake\Advanced_Views\Assets\ACE_Mods;
 use Org\Wplake\Advanced_Views\Dashboard\Html_Printer;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
@@ -39,7 +39,7 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 	protected Plugin $plugin;
 	protected Instance_Factory $instance_factory;
 	protected Template_Integration_Storage $template_integration_storage;
-	protected Data_Vendors_Base $data_vendors;
+	protected Field_Provider_Cluster $data_vendors;
 	protected Settings_Storage $settings;
 	protected Cpt_Settings_Storage $cpt_settings_storage;
 
@@ -49,7 +49,7 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 		Plugin $plugin,
 		Instance_Factory $instance_factory,
 		Template_Integration_Storage $template_integration_storage,
-		Data_Vendors_Base $data_vendors,
+		Field_Provider_Cluster $data_vendors,
 		Settings_Storage $settings,
 		Cpt_Settings_Storage $cpt_settings_storage
 	) {

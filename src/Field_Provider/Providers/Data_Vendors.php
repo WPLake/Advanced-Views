@@ -6,15 +6,15 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Providers;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Acf_Data_Vendor;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Meta_Box\Meta_Box_Data_Vendor;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Pods\Pods_Data_Vendor;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Woo_Data_Vendor;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Wp_Data_Vendor;
 
-class Data_Vendors extends Data_Vendors_Base {
+class Data_Vendors extends Field_Provider_Cluster {
 	/**
 	 * @return Field_Provider[]
 	 */

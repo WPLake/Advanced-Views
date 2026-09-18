@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Settings_Vendor_Integration;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
@@ -26,7 +26,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	public function __construct(
 		Item_Settings $item_settings,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Data_Vendors $data_vendors,
+		Field_Provider_Cluster $data_vendors,
 		Layout_Save_Actions $layouts_cpt_save_actions,
 		Layout_Factory $layout_factory,
 		Pods_Data_Vendor $pods_data_vendor,

@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
@@ -22,14 +22,14 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	const KEY_RESULT_GROUPS = '';
 
 	private Cpt_Settings_Storage $cpt_settings_storage;
-	private Data_Vendors_Base $data_vendors;
+	private Field_Provider_Cluster $data_vendors;
 	private Cpt_Settings_Migrator $cpt_settings_migrator;
 	private Logger $logger;
 
 	public function __construct(
 		Cpt_Table $cpt_table,
 		Cpt_Settings_Storage $cpt_settings_storage,
-		Data_Vendors_Base $data_vendors,
+		Field_Provider_Cluster $data_vendors,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Logger $logger
 	) {
@@ -304,7 +304,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		return $this->cpt_settings_storage;
 	}
 
-	protected function get_data_vendors(): Data_Vendors_Base {
+	protected function get_data_vendors(): Field_Provider_Cluster {
 		return $this->data_vendors;
 	}
 

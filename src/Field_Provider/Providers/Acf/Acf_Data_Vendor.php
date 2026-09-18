@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Integration;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Date_Picker_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\File_Field;
@@ -32,7 +33,6 @@ use Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Fields\Color_Picker_F
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Fields\Icon_Picker_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Fields\Map_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Fields\Page_Link_Field;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Cpt\Layout_Save_Actions;
@@ -193,7 +193,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	public function make_integration_instance(
 		Item_Settings $item_settings,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Data_Vendors $data_vendors,
+		Field_Provider_Cluster $data_vendors,
 		Layout_Save_Actions $layouts_cpt_save_actions,
 		Layout_Factory $layout_factory,
 		Repeater_Field_Settings $repeater_field_settings,

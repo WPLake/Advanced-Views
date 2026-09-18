@@ -7,7 +7,6 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core;
 use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
@@ -33,7 +32,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 
 	private Item_Settings $item_settings;
 	private Layout_Settings_Storage $layouts_settings_storage;
-	private Data_Vendors $data_vendors;
+	private Field_Provider_Cluster $data_vendors;
 	private Layout_Save_Actions $layouts_cpt_save_actions;
 	private Layout_Factory $layout_factory;
 	private Field_Provider $data_vendor;
@@ -43,7 +42,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	public function __construct(
 		Item_Settings $item_settings,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Data_Vendors $data_vendors,
+		Field_Provider_Cluster $data_vendors,
 		Layout_Save_Actions $layouts_cpt_save_actions,
 		Layout_Factory $layout_factory,
 		Field_Provider $data_vendor,

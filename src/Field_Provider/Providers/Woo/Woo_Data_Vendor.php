@@ -10,10 +10,10 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Integration;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Fields\Woo_Featured_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Fields\Woo_Fields;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Fields\Woo_Gallery_Field;
@@ -143,7 +143,7 @@ class Woo_Data_Vendor extends Field_Provider_Base {
 	public function make_integration_instance(
 		Item_Settings $item_settings,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Data_Vendors $data_vendors,
+		Field_Provider_Cluster $data_vendors,
 		Layout_Save_Actions $layouts_cpt_save_actions,
 		Layout_Factory $layout_factory,
 		Repeater_Field_Settings $repeater_field_settings,

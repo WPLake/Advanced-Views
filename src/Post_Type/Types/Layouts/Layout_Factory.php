@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Fields\Field_Markup;
@@ -22,7 +22,7 @@ class Layout_Factory extends Instance_Factory {
 	private Layout_Markup $layout_markup;
 	protected Template_Renderer_Storage $template_renderer_storage;
 	protected Field_Markup $field_markup;
-	protected Data_Vendors_Base $data_vendors;
+	protected Field_Provider_Cluster $data_vendors;
 
 	public function __construct(
 		Front_Assets $front_assets,
@@ -30,7 +30,7 @@ class Layout_Factory extends Instance_Factory {
 		Layout_Markup $layout_markup,
 		Template_Renderer_Storage $template_renderer_storage,
 		Field_Markup $field_markup,
-		Data_Vendors_Base $data_vendors
+		Field_Provider_Cluster $data_vendors
 	) {
 		parent::__construct( $front_assets );
 

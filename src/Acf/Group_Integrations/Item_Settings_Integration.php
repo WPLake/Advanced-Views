@@ -5,14 +5,14 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Acf\Group_Integrations;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 
 defined( 'ABSPATH' ) || exit;
 
 class Item_Settings_Integration extends Acf_Integration {
-	private Data_Vendors $data_vendors;
+	private Field_Provider_Cluster $data_vendors;
 
-	public function __construct( string $target_cpt_name, Data_Vendors $data_vendors ) {
+	public function __construct( string $target_cpt_name, Field_Provider_Cluster $data_vendors ) {
 		parent::__construct( $target_cpt_name );
 
 		$this->data_vendors = $data_vendors;

@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Fields\Field_Markup;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Generation\Token_Factory_Storage;
@@ -23,10 +23,10 @@ class Layout_Markup {
 	 */
 	private array $markups_safe;
 	private Field_Markup $field_markup;
-	private Data_Vendors_Base $data_vendors;
+	private Field_Provider_Cluster $data_vendors;
 	private Token_Factory_Storage $token_factory_storage;
 
-	public function __construct( Field_Markup $field_markup, Data_Vendors_Base $data_vendors, Token_Factory_Storage $token_factory_storage ) {
+	public function __construct( Field_Markup $field_markup, Field_Provider_Cluster $data_vendors, Token_Factory_Storage $token_factory_storage ) {
 		$this->field_markup          = $field_markup;
 		$this->data_vendors          = $data_vendors;
 		$this->token_factory_storage = $token_factory_storage;

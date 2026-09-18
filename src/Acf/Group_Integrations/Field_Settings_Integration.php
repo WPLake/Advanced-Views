@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
@@ -18,11 +18,11 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 class Field_Settings_Integration extends Acf_Integration {
 	use Safe_Array_Arguments;
 
-	private Data_Vendors $data_vendors;
+	private Field_Provider_Cluster $data_vendors;
 	private Plugin_Cpt $plugin_cpt;
 
 	public function __construct(
-		Data_Vendors $data_vendors,
+		Field_Provider_Cluster $data_vendors,
 		Plugin_Cpt $plugin_cpt
 	) {
 		parent::__construct( $plugin_cpt->cpt_name() );

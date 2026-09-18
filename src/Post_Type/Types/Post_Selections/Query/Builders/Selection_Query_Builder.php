@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Builde
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Data_Vendors_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Context\Context_Container_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Context\Query_Context_Container;
@@ -21,7 +21,7 @@ class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Conta
 		Context_Container_Base::set_query_context as protected set_context;
 	}
 
-	private Data_Vendors_Base $data_vendors;
+	private Field_Provider_Cluster $data_vendors;
 	/**
 	 * @var Post_Query_Builder[]
 	 */
@@ -31,7 +31,7 @@ class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Conta
 	 */
 	private array $context_containers;
 
-	public function __construct( Data_Vendors_Base $data_vendors ) {
+	public function __construct( Field_Provider_Cluster $data_vendors ) {
 		$this->data_vendors       = $data_vendors;
 		$this->context_containers = array();
 		$this->query_builders     = array();
@@ -78,7 +78,7 @@ class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Conta
 		return $this;
 	}
 
-	protected function get_data_vendors(): Data_Vendors_Base {
+	protected function get_data_vendors(): Field_Provider_Cluster {
 		return $this->data_vendors;
 	}
 }

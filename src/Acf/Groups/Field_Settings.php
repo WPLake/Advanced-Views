@@ -6,8 +6,8 @@ namespace Org\Wplake\Advanced_Views\Acf\Groups;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Acf_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Data_Vendors;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Fields\Woo_Fields;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Woo_Data_Vendor;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Wp_Data_Vendor;
@@ -39,7 +39,7 @@ class Field_Settings extends Group {
 	const FIELD_IS_MAP_WITHOUT_GOOGLE_MAP = 'is_map_without_google_map';
 	const FIELD_OPTIONS_DELIMITER         = 'options_delimiter';
 
-	private static ?Data_Vendors $data_vendors = null;
+	private static ?Field_Provider_Cluster $data_vendors = null;
 
 	/**
 	 * @a-type select
@@ -230,7 +230,7 @@ class Field_Settings extends Group {
 		$this->field_meta             = null;
 	}
 
-	public static function set_data_vendors( Data_Vendors $data_vendors ): void {
+	public static function set_data_vendors( Field_Provider_Cluster $data_vendors ): void {
 		self::$data_vendors = $data_vendors;
 	}
 
