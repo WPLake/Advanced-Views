@@ -15,7 +15,6 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Rendering\Template_Renderer_Storage;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
@@ -151,7 +150,6 @@ class Post_Selection extends Instance {
 
 	public function query_insert_and_print_html(
 		Query_Context $query_context,
-		bool $is_minify_markup = true,
 		bool $is_load_more = false
 	): void {
 		$posts_data = $this->post_query->query_posts( $this->settings, $query_context );
@@ -164,26 +162,6 @@ class Post_Selection extends Instance {
 		ob_start();
 		$this->post_selection_markup->print_markup( $this->settings, $is_load_more );
 		$template = (string) ob_get_clean();
-
-		if ( $is_minify_markup ) {
-			$unnecessary_symbols = array(
-				"\n",
-				"\r",
-			);
-
-			// Blade requires at least some spacing between its tokens.
-			if ( in_array(
-				$this->settings->template_engine,
-				array( Engines_Storage::TWIG, '' ),
-				true
-			) ) {
-				$unnecessary_symbols[] = "\t";
-			}
-
-			// remove special symbols that used in the markup for a preview
-			// exactly here, before the fields are inserted, to avoid affecting them.
-			$template = str_replace( $unnecessary_symbols, '', $template );
-		}
 
 		$twig_variables = $this->get_template_variables( false, $query_context->get_custom_arguments() );
 

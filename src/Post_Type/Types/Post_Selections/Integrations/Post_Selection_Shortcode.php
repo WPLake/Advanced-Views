@@ -95,7 +95,6 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 		$this->selection_factory->make_and_print_html(
 			$card_data,
 			$query_context,
-			true,
 			false,
 			$classes
 		);

@@ -248,8 +248,7 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 		ob_start();
 		$this->selection_factory->make_and_print_html(
 			$card_data,
-			Query_Context::new_instance(),
-			false
+			Query_Context::new_instance()
 		);
 		$card_html = (string) ob_get_clean();
 		$view_data = $this->layout_settings_storage->get( $card_data->acf_view_id );

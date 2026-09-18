@@ -52,12 +52,11 @@ class Post_Selection_Factory extends Instance_Factory {
 	public function make_and_print_html(
 		Post_Selection_Settings $post_selection_settings,
 		Query_Context $query_context,
-		bool $is_minify_markup = true,
 		bool $is_load_more = false,
 		string $classes = ''
 	): void {
 		$card = $this->make( $post_selection_settings, $classes );
-		$card->query_insert_and_print_html( $query_context, $is_minify_markup, $is_load_more );
+		$card->query_insert_and_print_html( $query_context, $is_load_more );
 
 		$post_selection_settings = $card->getCardData();
 
