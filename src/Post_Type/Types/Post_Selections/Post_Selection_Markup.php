@@ -26,7 +26,7 @@ class Post_Selection_Markup {
 		$this->public_cpt      = $public_cpt;
 	}
 
-	protected function print_extra_markup( Post_Selection_Settings $post_selection_settings ): void {
+	public function print_extra_markup( Post_Selection_Settings $post_selection_settings ): void {
 		if ( Post_Selection_Settings::ITEMS_SOURCE_CONTEXT_POSTS !== $post_selection_settings->items_source ) {
 			return;
 		}
