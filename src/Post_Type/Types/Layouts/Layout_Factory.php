@@ -14,7 +14,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Fields\Field_Markup;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Rendering\Template_Renderer_Storage;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\PHP\PHP_Template_Engine;
 use WP_REST_Request;
 
 class Layout_Factory extends Instance_Factory {
@@ -26,13 +25,14 @@ class Layout_Factory extends Instance_Factory {
 
 	public function __construct(
 		Front_Assets $front_assets,
+		string $controller_template_engine,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Layout_Markup $layout_markup,
 		Template_Renderer_Storage $template_renderer_storage,
 		Field_Markup $field_markup,
 		Field_Provider_Cluster $provider_cluster
 	) {
-		parent::__construct( $front_assets );
+		parent::__construct( $front_assets, $controller_template_engine );
 
 		$this->layouts_settings_storage  = $layouts_settings_storage;
 		$this->layout_markup             = $layout_markup;
@@ -41,9 +41,9 @@ class Layout_Factory extends Instance_Factory {
 		$this->provider_cluster          = $provider_cluster;
 	}
 
-	public static function get_template_fields( Cpt_Theme_Settings $theme_settings ): array {
+	public function get_template_fields( Cpt_Theme_Settings $theme_settings ): array {
 		return array(
-			Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_PHP_VARIABLES ) => PHP_Template_Engine::NAME,
+			Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_PHP_VARIABLES ) => $this->controller_template_engine,
 			Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_MARKUP ) => $theme_settings->get_template_engine(),
 			Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_CUSTOM_MARKUP ) => $theme_settings->get_template_engine(),
 		);

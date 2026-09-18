@@ -37,6 +37,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Post_Query;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Post_Selection_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Post_Selection_Markup;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Builders\Selection_Query_Builder;
+use Org\Wplake\Advanced_Views\Template_Engine\Engines\PHP\PHP_Template_Engine;
 
 final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 	public function __construct( Lite_Plugin_Loader $base ) {
@@ -51,6 +52,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 		);
 		$this->factory         = new Post_Selection_Factory(
 			$base->front_assets,
+			PHP_Template_Engine::NAME,
 			$post_query,
 			$post_selection_markup,
 			$base->engines_storage,

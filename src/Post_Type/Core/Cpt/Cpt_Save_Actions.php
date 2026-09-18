@@ -354,7 +354,7 @@ abstract class Cpt_Save_Actions extends Action implements Hooks_Interface {
 			break;
 		}
 
-		$template_engine      = $this->instance_factory::resolve_template_field_engine( $field_name, $instance_data );
+		$template_engine      = $this->instance_factory->resolve_template_field_engine( $field_name, $instance_data );
 		$template_integration = $this->template_integration_storage->resolve_integration( $template_engine );
 
 		// to avoid issues with security plugins, like WordFence.
@@ -647,7 +647,7 @@ abstract class Cpt_Save_Actions extends Action implements Hooks_Interface {
 		$this->cpt_settings->load( $post_id, '', $field_values );
 
 		// 2. unmock template fields using the loaded instance settings (e.g. chosen template engine)
-		$template_fields = $this->instance_factory::get_template_fields( $this->cpt_settings );
+		$template_fields = $this->instance_factory->get_template_fields( $this->cpt_settings );
 
 		foreach ( $template_fields as $field_name => $template_engine ) {
 			$template_integration = $this->template_integration_storage->resolve_integration( $template_engine );

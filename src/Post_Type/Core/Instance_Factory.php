@@ -13,18 +13,20 @@ use WP_REST_Request;
 
 abstract class Instance_Factory {
 	private Front_Assets $front_assets;
+	protected string $controller_template_engine;
 
-	public function __construct( Front_Assets $front_assets ) {
-		$this->front_assets = $front_assets;
+	public function __construct( Front_Assets $front_assets, string $controller_template_engine ) {
+		$this->front_assets               = $front_assets;
+		$this->controller_template_engine = $controller_template_engine;
 	}
 
 	/**
 	 * @return array<string,string>
 	 */
-	abstract public static function get_template_fields( Cpt_Theme_Settings $theme_settings ): array;
+	abstract public function get_template_fields( Cpt_Theme_Settings $theme_settings ): array;
 
-	public static function resolve_template_field_engine( string $field_name, Cpt_Theme_Settings $theme_settings ): string {
-		$template_fields = static::get_template_fields( $theme_settings );
+	public function resolve_template_field_engine( string $field_name, Cpt_Theme_Settings $theme_settings ): string {
+		$template_fields = $this->get_template_fields( $theme_settings );
 
 		if ( key_exists( $field_name, $template_fields ) ) {
 			return $template_fields[ $field_name ];

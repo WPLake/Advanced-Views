@@ -213,7 +213,7 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 			$field_id   = string( $field, 'idSelector' );
 			$field_name = Group::resolve_field_name_from_id( $field_id );
 
-			$template_engine   = $this->instance_factory::resolve_template_field_engine( $field_name, $theme_settings );
+			$template_engine   = $this->instance_factory->resolve_template_field_engine( $field_name, $theme_settings );
 			$field_integration = $this->template_integration_storage->resolve_integration( $template_engine );
 
 			$field['engine'] = $template_engine;

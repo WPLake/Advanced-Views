@@ -13,8 +13,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Rendering\Template_Renderer_Storage;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\PHP\PHP_Template_Engine;
 use WP_REST_Request;
 
 class Post_Selection_Factory extends Instance_Factory {
@@ -25,12 +23,13 @@ class Post_Selection_Factory extends Instance_Factory {
 
 	public function __construct(
 		Front_Assets $front_assets,
+		string $controller_template_engine,
 		Post_Query $query_builder,
 		Post_Selection_Markup $post_selection_markup,
 		Template_Renderer_Storage $template_renderer_storage,
 		Selection_Settings_Storage $post_selections_settings_storage
 	) {
-		parent::__construct( $front_assets );
+		parent::__construct( $front_assets, $controller_template_engine );
 
 		$this->query_builder                    = $query_builder;
 		$this->post_selection_markup            = $post_selection_markup;
@@ -38,9 +37,9 @@ class Post_Selection_Factory extends Instance_Factory {
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
 	}
 
-	public static function get_template_fields( Cpt_Theme_Settings $theme_settings ): array {
+	public function get_template_fields( Cpt_Theme_Settings $theme_settings ): array {
 		return array(
-			Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_EXTRA_QUERY_ARGUMENTS ) => PHP_Template_Engine::NAME,
+			Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_EXTRA_QUERY_ARGUMENTS ) => $this->controller_template_engine,
 			Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_MARKUP ) => $theme_settings->get_template_engine(),
 			Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_CUSTOM_MARKUP ) => $theme_settings->get_template_engine(),
 		);
