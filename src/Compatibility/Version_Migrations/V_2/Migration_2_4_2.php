@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Menu\Menu_Fields;
 use Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Menu_Item\Menu_Item_Fields;
 use Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Post\Post_Fields;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 
 final class Migration_2_4_2 extends Version_Migration_Base {
 	private Layout_Settings_Storage $layouts_settings_storage;

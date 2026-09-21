@@ -7,12 +7,12 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Light_Gallery_Pattern;
-use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Macy_Pattern;
-use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Masonry_Pattern;
-use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Splide_Pattern;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Fields\Markup_Field_Data;
+use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Macy_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Masonry_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Splide_Pattern;
 
 defined( 'ABSPATH' ) || exit;
 

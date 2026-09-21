@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Bridge\Shortcodes;
 
 use Org\Wplake\Advanced_Views\Bridge\Interfaces\Shortcodes\Shortcode_Interface;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Integrations\Shortcode_Renderer;
+use Org\Wplake\Advanced_Views\Post\Post_Type\Core\Integrations\Shortcode_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 

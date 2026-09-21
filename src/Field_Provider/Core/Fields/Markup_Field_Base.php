@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
+use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Fields\Markup_Field_Data;
 
 defined( 'ABSPATH' ) || exit;
 

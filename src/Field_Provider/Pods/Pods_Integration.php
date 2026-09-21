@@ -13,10 +13,10 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Settings_Vendor_Integration;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integrations\Layout_Shortcode;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Cpt\Layout_Save_Actions;
+use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Integrations\Layout_Shortcode;
+use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Layout_Factory;
 use WP_Post;
 
 class Pods_Integration extends Settings_Vendor_Integration {

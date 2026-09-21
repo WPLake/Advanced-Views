@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
+use Org\Wplake\Advanced_Views\Post\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
 final class Version_Migrator extends Hookable implements Hooks_Interface, Cpt_Settings_Migrator {

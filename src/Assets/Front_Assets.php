@@ -6,20 +6,20 @@ namespace Org\Wplake\Advanced_Views\Assets;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Library_Pattern\Core\Library_Pattern_Base;
-use Org\Wplake\Advanced_Views\Library_Pattern\Core\Template\Common_Template_Pattern;
-use Org\Wplake\Advanced_Views\Library_Pattern\Core\Template\Html_Wrapper;
-use Org\Wplake\Advanced_Views\Library_Pattern\Core\Template\Template_Pattern;
-use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Light_Gallery_Pattern;
-use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Lightbox_Pattern;
-use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Map_Pattern;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
+use Org\Wplake\Advanced_Views\Post\Post_Type\Core\Cpt_Data_Storage\File_System;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern_Base;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Common_Template_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map_Pattern;
 
 defined( 'ABSPATH' ) || exit;
 
