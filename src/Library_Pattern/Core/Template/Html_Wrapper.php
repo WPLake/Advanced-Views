@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets;
+namespace Org\Wplake\Advanced_Views\Library_Pattern\Core\Template;
 
 defined( 'ABSPATH' ) || exit;
 

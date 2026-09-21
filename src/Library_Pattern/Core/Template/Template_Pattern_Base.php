@@ -2,19 +2,19 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Base;
+namespace Org\Wplake\Advanced_Views\Library_Pattern\Core\Template;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
+use Org\Wplake\Advanced_Views\Library_Pattern\Core\Library_Pattern_Base;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Html_Wrapper;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class View_Front_Asset_Base extends View_Asset_Base implements View_Front_Asset {
+abstract class Template_Pattern_Base extends Library_Pattern_Base implements Template_Pattern {
 	private Field_Provider_Cluster $provider_cluster;
 
 	public function __construct( Plugin $plugin, File_System $file_system, Field_Provider_Cluster $provider_cluster ) {

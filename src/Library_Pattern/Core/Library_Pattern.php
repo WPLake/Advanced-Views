@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Base;
+namespace Org\Wplake\Advanced_Views\Library_Pattern\Core;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 
 defined( 'ABSPATH' ) || exit;
 
-interface View_Asset {
+interface Library_Pattern {
 	public function enqueue_active(): string;
 
 	public function get_auto_discover_name(): string;

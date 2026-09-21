@@ -9,9 +9,9 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
+use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Light_Gallery_Pattern;
+use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Lightbox_Pattern;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Light_Gallery_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Lightbox_Asset;
 
 class Post_Thumbnail_Field extends Image_Field {
 	use Custom_Field;
@@ -42,10 +42,10 @@ class Post_Thumbnail_Field extends Image_Field {
 
 		switch ( $field_settings->lightbox_type ) {
 			case 'simple':
-				$front_assets[] = Lightbox_Asset::NAME;
+				$front_assets[] = Lightbox_Pattern::NAME;
 				break;
 			case 'lightgallery_v2':
-				$front_assets[] = Light_Gallery_Asset::NAME;
+				$front_assets[] = Light_Gallery_Pattern::NAME;
 				break;
 		}
 

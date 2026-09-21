@@ -9,9 +9,9 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Generation\Token_Factory_Storage;
 

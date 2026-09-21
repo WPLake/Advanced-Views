@@ -10,15 +10,15 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Base\View_Front_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Html_Wrapper;
+use Org\Wplake\Advanced_Views\Library_Pattern\Core\Template\Html_Wrapper;
+use Org\Wplake\Advanced_Views\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Generation\Token_Factory;
 
 defined( 'ABSPATH' ) || exit;
 
 class Markup_Field_Data extends Template_Field_Data {
 	/**
-	 * @var View_Front_Asset[]
+	 * @var Template_Pattern[]
 	 */
 	private array $field_assets;
 	private int $tabs_number;
@@ -160,14 +160,14 @@ class Markup_Field_Data extends Template_Field_Data {
 	}
 
 	/**
-	 * @return  View_Front_Asset[]
+	 * @return  Template_Pattern[]
 	 */
 	public function get_field_assets(): array {
 		return $this->field_assets;
 	}
 
 	/**
-	 * @param View_Front_Asset[] $field_assets
+	 * @param Template_Pattern[] $field_assets
 	 */
 	public function set_field_assets( array $field_assets ): void {
 		$this->field_assets = $field_assets;

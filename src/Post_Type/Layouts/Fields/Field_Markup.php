@@ -13,11 +13,11 @@ use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
+use Org\Wplake\Advanced_Views\Library_Pattern\Core\Template\Html_Wrapper;
+use Org\Wplake\Advanced_Views\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Base\View_Front_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Generation\Tokens\Format_Token;
@@ -112,7 +112,7 @@ class Field_Markup {
 	}
 
 	/**
-	 * @param View_Front_Asset[] $field_assets
+	 * @param Template_Pattern[] $field_assets
 	 * @param string $row_type
 	 *
 	 * @return string
@@ -168,7 +168,7 @@ class Field_Markup {
 	}
 
 	/**
-	 * @param View_Front_Asset[] $field_assets
+	 * @param Template_Pattern[] $field_assets
 	 *
 	 * @return bool
 	 */
@@ -222,7 +222,7 @@ class Field_Markup {
 	}
 
 	/**
-	 * @param View_Front_Asset[] $field_assets
+	 * @param Template_Pattern[] $field_assets
 	 *
 	 * @return Html_Wrapper[]
 	 */
@@ -296,7 +296,7 @@ class Field_Markup {
 	}
 
 	/**
-	 * @param View_Front_Asset[] $field_assets
+	 * @param Template_Pattern[] $field_assets
 	 * @param Field_Settings $field_settings
 	 * @param string $row_type
 	 *
@@ -319,7 +319,7 @@ class Field_Markup {
 	}
 
 	/**
-	 * @param View_Front_Asset[] $field_assets
+	 * @param Template_Pattern[] $field_assets
 	 */
 	protected function print_field_wrapper(
 		array $field_assets,
@@ -385,7 +385,7 @@ class Field_Markup {
 	// public, as used in Upgrades.
 
 	/**
-	 * @param View_Front_Asset[] $field_assets
+	 * @param Template_Pattern[] $field_assets
 	 */
 	public function print_field_markup(
 		array $field_assets,
@@ -586,7 +586,7 @@ class Field_Markup {
 	}
 
 	/**
-	 * @param View_Front_Asset[] $field_assets
+	 * @param Template_Pattern[] $field_assets
 	 * @param Layout_Settings $layout_settings
 	 * @param Field_Settings $field_settings
 	 * @param Field_Meta $field_meta

@@ -2,15 +2,15 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Base;
+namespace Org\Wplake\Advanced_Views\Library_Pattern\Core\Template;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Html_Wrapper;
+use Org\Wplake\Advanced_Views\Library_Pattern\Core\Library_Pattern;
 
 defined( 'ABSPATH' ) || exit;
 
-interface View_Front_Asset extends View_Asset {
+interface Template_Pattern extends Library_Pattern {
 	public function get_row_wrapper_class( string $row_type ): string;
 
 	public function get_row_wrapper_tag( Field_Settings $field_settings, string $row_type ): string;

@@ -8,18 +8,18 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
+use Org\Wplake\Advanced_Views\Library_Pattern\Core\Library_Pattern_Base;
+use Org\Wplake\Advanced_Views\Library_Pattern\Core\Template\Common_Template_Pattern;
+use Org\Wplake\Advanced_Views\Library_Pattern\Core\Template\Html_Wrapper;
+use Org\Wplake\Advanced_Views\Library_Pattern\Core\Template\Template_Pattern;
+use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Light_Gallery_Pattern;
+use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Lightbox_Pattern;
+use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Map_Pattern;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Base\View_Asset_Base;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Base\View_Front_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Common_Front_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Html_Wrapper;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Light_Gallery_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Lightbox_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Maps_Asset;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -32,7 +32,7 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	private ?int $buffer_level;
 	private bool $is_custom_interactivity_api_import_map_required;
 	/**
-	 * @var View_Asset_Base[]
+	 * @var Library_Pattern_Base[]
 	 */
 	private array $assets;
 	/**
@@ -69,13 +69,13 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	}
 
 	/**
-	 * @return View_Asset_Base[]
+	 * @return Library_Pattern_Base[]
 	 */
 	protected function get_assets(): array {
 		return array(
-			new Maps_Asset( $this->plugin, $this->file_system, $this->provider_cluster ),
-			new Light_Gallery_Asset( $this->plugin, $this->file_system, $this->provider_cluster ),
-			new Lightbox_Asset( $this->plugin, $this->file_system, $this->provider_cluster ),
+			new Map_Pattern( $this->plugin, $this->file_system, $this->provider_cluster ),
+			new Light_Gallery_Pattern( $this->plugin, $this->file_system, $this->provider_cluster ),
+			new Lightbox_Pattern( $this->plugin, $this->file_system, $this->provider_cluster ),
 		);
 	}
 
@@ -486,14 +486,14 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	/**
 	 * @param string[] $names
 	 *
-	 * @return View_Front_Asset[]
+	 * @return Template_Pattern[]
 	 */
 	public function get_view_assets_by_names( array $names ): array {
 		$front_assets_by_name = array_intersect_key( $this->assets, array_flip( $names ) );
 
 		return array_filter(
 			$front_assets_by_name,
-			fn( $asset ) => $asset instanceof View_Front_Asset
+			fn( $asset ) => $asset instanceof Template_Pattern
 		);
 	}
 
@@ -501,7 +501,7 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 		$classes = array();
 
 		foreach ( $this->assets as $asset ) {
-			if ( ! ( $asset instanceof Common_Front_Asset ) ||
+			if ( ! ( $asset instanceof Common_Template_Pattern ) ||
 				! $asset->is_target_selection( $post_selection_settings ) ) {
 				continue;
 			}
@@ -528,7 +528,7 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 		$outers = array();
 
 		foreach ( $this->assets as $asset ) {
-			if ( ! ( $asset instanceof Common_Front_Asset ) ||
+			if ( ! ( $asset instanceof Common_Template_Pattern ) ||
 				! $asset->is_target_selection( $post_selection_settings ) ) {
 				continue;
 			}
@@ -562,7 +562,7 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 		$attrs = array();
 
 		foreach ( $this->assets as $asset ) {
-			if ( ! ( $asset instanceof Common_Front_Asset ) ||
+			if ( ! ( $asset instanceof Common_Template_Pattern ) ||
 				! $asset->is_target_selection( $post_selection_settings ) ) {
 				continue;
 			}

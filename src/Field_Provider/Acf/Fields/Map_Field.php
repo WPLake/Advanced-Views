@@ -10,9 +10,9 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
+use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Map_Pattern;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Maps_Asset;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -366,7 +366,7 @@ class Map_Field extends Markup_Field_Base {
 		$front_assets = array();
 
 		if ( false === $field_settings->is_map_without_google_map ) {
-			$front_assets[] = Maps_Asset::NAME;
+			$front_assets[] = Map_Pattern::NAME;
 		}
 
 		return array_merge( parent::get_front_assets( $field_settings ), $front_assets );

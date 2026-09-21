@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Base;
+namespace Org\Wplake\Advanced_Views\Library_Pattern\Core;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 
-abstract class View_Asset_Base implements View_Asset {
+abstract class Library_Pattern_Base implements Library_Pattern {
 	const NAME = '';
 
 	/**

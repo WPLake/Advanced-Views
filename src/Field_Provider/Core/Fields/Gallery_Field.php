@@ -7,12 +7,12 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
+use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Light_Gallery_Pattern;
+use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Macy_Pattern;
+use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Masonry_Pattern;
+use Org\Wplake\Advanced_Views\Library_Pattern\Patterns\Splide_Pattern;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Light_Gallery_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Macy_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Masonry_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Splide_Asset;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -136,18 +136,18 @@ class Gallery_Field extends Markup_Field_Base {
 
 		switch ( $field_settings->gallery_type ) {
 			case 'masonry':
-				$front_assets[] = Masonry_Asset::NAME;
+				$front_assets[] = Masonry_Pattern::NAME;
 				break;
 			case 'lightgallery_v2':
-				$front_assets[] = Light_Gallery_Asset::NAME;
+				$front_assets[] = Light_Gallery_Pattern::NAME;
 				break;
 			case 'macy_v2':
-				$front_assets[] = Macy_Asset::NAME;
+				$front_assets[] = Macy_Pattern::NAME;
 				break;
 		}
 
 		if ( 'splide_v4' === $field_settings->slider_type ) {
-			$front_assets[] = Splide_Asset::NAME;
+			$front_assets[] = Splide_Pattern::NAME;
 		}
 
 		return array_merge( parent::get_front_assets( $field_settings ), $front_assets );
