@@ -2,6 +2,7 @@
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Types;
 
+use Org\Wplake\Advanced_Views\Post_Query\Core\post_query_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Core\post_type_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\layouts_namespace;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\post_selections_namespace;
@@ -10,6 +11,7 @@ class post_types_domain extends post_type_domain {
 	const WHITELIST_DOMAINS = [
 		parent::class,
 		...parent::WHITELIST_DOMAINS,
+		post_query_domain::class,
 	];
 	const DECOUPLED_CHILDREN = [
 		layouts_namespace::class,

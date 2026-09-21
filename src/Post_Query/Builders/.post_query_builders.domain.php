@@ -1,6 +1,6 @@
 <?php
 
-namespace Org\Wplake\Advanced_Views\Post_Query\Builder;
+namespace Org\Wplake\Advanced_Views\Post_Query\Builders;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\field_provider_domain;
 use Org\Wplake\Advanced_Views\Post_Query\Core\post_query_domain;

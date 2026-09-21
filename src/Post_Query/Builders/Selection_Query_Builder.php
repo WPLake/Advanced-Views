@@ -2,16 +2,16 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Query\Builder;
+namespace Org\Wplake\Advanced_Views\Post_Query\Builders;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Post_Query\Builder\Base\Entity_Query_Builder;
-use Org\Wplake\Advanced_Views\Post_Query\Builder\Base\Order_Query_Builder;
-use Org\Wplake\Advanced_Views\Post_Query\Builder\Taxonomy\Taxonomy_Query_Builder;
-use Org\Wplake\Advanced_Views\Post_Query\Builder\Taxonomy\Term_Query_Builder;
+use Org\Wplake\Advanced_Views\Post_Query\Builders\Base\Entity_Query_Builder;
+use Org\Wplake\Advanced_Views\Post_Query\Builders\Base\Order_Query_Builder;
+use Org\Wplake\Advanced_Views\Post_Query\Builders\Taxonomy\Taxonomy_Query_Builder;
+use Org\Wplake\Advanced_Views\Post_Query\Builders\Taxonomy\Term_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Context_Container_Base;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context_Container;
