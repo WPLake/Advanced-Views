@@ -36,7 +36,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integrations\Gutenberg\Shortcode
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integrations\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Markup;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\PHP\PHP_Template_Engine;
+use Org\Wplake\Advanced_Views\Template_Engine\PHP\PHP_Template_Engine;
 
 final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 	public function __construct( Lite_Plugin_Loader $base ) {

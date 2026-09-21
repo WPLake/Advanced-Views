@@ -58,9 +58,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Post_Select
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Templates_Environment;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Blade\Blade_Template_Engine;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\PHP\PHP_Template_Engine;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Twig\Twig_Template_Engine;
+use Org\Wplake\Advanced_Views\Template_Engine\Blade\Blade_Template_Engine;
+use Org\Wplake\Advanced_Views\Template_Engine\PHP\PHP_Template_Engine;
+use Org\Wplake\Advanced_Views\Template_Engine\Twig\Twig_Template_Engine;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 
 final class Lite_Plugin_Loader extends Plugin_Loader_Base {
