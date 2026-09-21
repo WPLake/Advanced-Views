@@ -6,7 +6,7 @@ use Org\Wplake\Advanced_Views\Compatibility\Migration\migration_domain;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_1\v1_namespace;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_2\v2_namespace;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\v3_namespace;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\field_providers_domain;
+use Org\Wplake\Advanced_Views\Field_Provider\Wp\wp_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Types\post_types_domain;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\template_engine_domain;
 
@@ -17,8 +17,8 @@ class version_migrations_domain extends migration_domain {
 		template_engine_domain::class,
 		// legitimate: migrations do concrete Type-specific stuff (e.g. updating Layout-only fields)
 		post_types_domain::class,
-		// legitimate: migrations do provider-specific stuff (e.g. WP: replace_post_comments_and_menu_link_fields_to_separate)
-		field_providers_domain::class,
+		// legitimate: migrations do WP-specific stuff (e.g. replace_post_comments_and_menu_link_fields_to_separate)
+		wp_domain::class,
 	];
 	const DECOUPLED_CHILDREN = [
 		v1_namespace::class,

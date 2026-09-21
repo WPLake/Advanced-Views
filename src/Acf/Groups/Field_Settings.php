@@ -7,10 +7,10 @@ namespace Org\Wplake\Advanced_Views\Acf\Groups;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Acf_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Fields\Woo_Fields;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Woo_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Wp_Data_Vendor;
+use Org\Wplake\Advanced_Views\Field_Provider\Acf\Acf_Data_Vendor;
+use Org\Wplake\Advanced_Views\Field_Provider\Woo\Fields\Woo_Fields;
+use Org\Wplake\Advanced_Views\Field_Provider\Woo\Woo_Data_Vendor;
+use Org\Wplake\Advanced_Views\Field_Provider\Wp\Wp_Data_Vendor;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\CreatorInterface;
 

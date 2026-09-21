@@ -8,10 +8,10 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Version\Version_Migration_Base;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\Comment_Items\Comment_Item_Fields;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\Menu\Menu_Fields;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\Menu_Item\Menu_Item_Fields;
-use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\Post\Post_Fields;
+use Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Comment_Items\Comment_Item_Fields;
+use Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Menu\Menu_Fields;
+use Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Menu_Item\Menu_Item_Fields;
+use Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Post\Post_Fields;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 
