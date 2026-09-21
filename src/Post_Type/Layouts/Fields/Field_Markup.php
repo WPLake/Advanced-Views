@@ -29,7 +29,7 @@ class Field_Markup {
 	/**
 	 * Vendor => field_type => ?Markup_Field_Interface.
 	 *
-	 * @var Markup_Field
+	 * @var array<string,array<string,Markup_Field|null>>
 	 */
 	private array $cache;
 	private Token_Factory_Storage $token_factory_storage;
