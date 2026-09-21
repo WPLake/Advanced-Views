@@ -485,7 +485,7 @@ class ComposerStaticInit_org_wplake_advanced_views_prefixed_vendors {
 		'Org\\Wplake\\Advanced_Views\\Template_Engine\\Engines\\Blade\\Tokens\\Blade_Loop' => __DIR__ . '/../..' . '/../../src/Template_Engine/Engines/Blade/Tokens/Blade_Loop.php',
 		'Org\\Wplake\\Advanced_Views\\Template_Engine\\Engines\\Blade\\Tokens\\Conditional\\Blade_IF' => __DIR__ . '/../..' . '/../../src/Template_Engine/Engines/Blade/Tokens/Conditional/Blade_IF.php',
 		'Org\\Wplake\\Advanced_Views\\Template_Engine\\Engines\\Blade\\Tokens\\Variable\\Blade_Assignment' => __DIR__ . '/../..' . '/../../src/Template_Engine/Engines/Blade/Tokens/Variable/Blade_Assignment.php',
-		'Org\\Wplake\\Advanced_Views\\Template_Engine\\Engines\\Engines_Storage' => __DIR__ . '/../..' . '/../../src/Template_Engine/Engines/Engines_Storage.php',
+		'Org\\Wplake\\Advanced_Views\\Template_Engine\\Core\\Engines_Storage' => __DIR__ . '/../..' . '/../../src/Template_Engine/Engines/Engines_Storage.php',
 		'Org\\Wplake\\Advanced_Views\\Template_Engine\\Engines\\PHP\\PHP_Integration' => __DIR__ . '/../..' . '/../../src/Template_Engine/Engines/PHP/PHP_Integration.php',
 		'Org\\Wplake\\Advanced_Views\\Template_Engine\\Engines\\PHP\\PHP_Renderer' => __DIR__ . '/../..' . '/../../src/Template_Engine/Engines/PHP/PHP_Renderer.php',
 		'Org\\Wplake\\Advanced_Views\\Template_Engine\\Engines\\PHP\\PHP_Tokens' => __DIR__ . '/../..' . '/../../src/Template_Engine/Engines/PHP/PHP_Tokens.php',

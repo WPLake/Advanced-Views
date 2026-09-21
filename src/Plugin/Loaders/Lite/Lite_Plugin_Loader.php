@@ -56,9 +56,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Fs_Fie
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Data_Storage\Post_Selection_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Templates_Environment;
 use Org\Wplake\Advanced_Views\Template_Engine\Engines\Blade\Blade_Template_Engine;
-use Org\Wplake\Advanced_Views\Template_Engine\Engines\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template_Engine\Engines\PHP\PHP_Template_Engine;
 use Org\Wplake\Advanced_Views\Template_Engine\Engines\Twig\Twig_Template_Engine;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
@@ -98,12 +98,14 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->post_selection_settings = $this->group_creator->create( Post_Selection_Settings::class );
 
 		$this->html            = new Html_Printer();
+		$twig_engine           = new Twig_Template_Engine( $uploads_folder, $this->logger, $this->settings );
 		$this->engines_storage = new Engines_Storage(
 			array(
-				new Twig_Template_Engine( $uploads_folder, $this->logger, $this->settings ),
+				$twig_engine,
 				new Blade_Template_Engine( $uploads_folder, $this->logger, $this->settings ),
 				new PHP_Template_Engine( $this->logger, $this->settings ),
-			)
+			),
+			$twig_engine
 		);
 
 		$post_selections_file_system            = new File_System(

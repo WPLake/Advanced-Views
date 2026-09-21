@@ -434,7 +434,7 @@ return array(
 	'Org\\Wplake\\Advanced_Views\\Template_Engine\\Engines\\Blade\\Tokens\\Blade_Loop' => $baseDir . '/../../src/Template_Engine/Engines/Blade/Tokens/Blade_Loop.php',
 	'Org\\Wplake\\Advanced_Views\\Template_Engine\\Engines\\Blade\\Tokens\\Conditional\\Blade_IF' => $baseDir . '/../../src/Template_Engine/Engines/Blade/Tokens/Conditional/Blade_IF.php',
 	'Org\\Wplake\\Advanced_Views\\Template_Engine\\Engines\\Blade\\Tokens\\Variable\\Blade_Assignment' => $baseDir . '/../../src/Template_Engine/Engines/Blade/Tokens/Variable/Blade_Assignment.php',
-	'Org\\Wplake\\Advanced_Views\\Template_Engine\\Engines\\Engines_Storage' => $baseDir . '/../../src/Template_Engine/Engines/Engines_Storage.php',
+	'Org\\Wplake\\Advanced_Views\\Template_Engine\\Core\\Engines_Storage' => $baseDir . '/../../src/Template_Engine/Engines/Engines_Storage.php',
 	'Org\\Wplake\\Advanced_Views\\Template_Engine\\Engines\\PHP\\PHP_Integration' => $baseDir . '/../../src/Template_Engine/Engines/PHP/PHP_Integration.php',
 	'Org\\Wplake\\Advanced_Views\\Template_Engine\\Engines\\PHP\\PHP_Renderer' => $baseDir . '/../../src/Template_Engine/Engines/PHP/PHP_Renderer.php',
 	'Org\\Wplake\\Advanced_Views\\Template_Engine\\Engines\\PHP\\PHP_Tokens' => $baseDir . '/../../src/Template_Engine/Engines/PHP/PHP_Tokens.php',

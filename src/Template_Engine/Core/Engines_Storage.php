@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template_Engine\Engines;
+namespace Org\Wplake\Advanced_Views\Template_Engine\Core;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -13,7 +13,6 @@ use Org\Wplake\Advanced_Views\Template_Engine\Core\Integration\Template_Integrat
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Rendering\File_Template_Renderer_Base;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Rendering\Template_Renderer;
 use Org\Wplake\Advanced_Views\Template_Engine\Core\Rendering\Template_Renderer_Storage;
-use Org\Wplake\Advanced_Views\Template_Engine\Core\Template_Engine;
 
 class Engines_Storage implements
 	Template_Integration_Storage,
@@ -35,15 +34,17 @@ class Engines_Storage implements
 	 * @var array<string, Template_Integration>
 	 */
 	private array $integrations;
+	private Template_Engine $fallback_engine;
 
 	/**
 	 * @param Template_Engine[] $engines
 	 */
-	public function __construct( array $engines ) {
+	public function __construct( array $engines, Template_Engine $fallback_engine ) {
 		$this->engines         = array();
 		$this->renderers       = array();
 		$this->token_factories = array();
 		$this->integrations    = array();
+		$this->fallback_engine = $fallback_engine;
 
 		foreach ( $engines as $engine ) {
 			$this->engines[ $engine->get_name() ] = $engine;
@@ -59,15 +60,21 @@ class Engines_Storage implements
 	}
 
 	public function resolve_token_factory( string $template_engine ): Token_Factory {
-		if ( ! key_exists( $template_engine, $this->engines ) ) {
-			$template_engine = Twig\Twig_Template_Engine::NAME;
+		if ( key_exists( $template_engine, $this->engines ) ) {
+			if ( ! key_exists( $template_engine, $this->token_factories ) ) {
+				$this->token_factories[ $template_engine ] = $this->engines[ $template_engine ]->create_token_factory();
+			}
+
+			return $this->token_factories[ $template_engine ];
 		}
 
-		if ( ! key_exists( $template_engine, $this->token_factories ) ) {
-			$this->token_factories[ $template_engine ] = $this->engines[ $template_engine ]->create_token_factory();
+		$fallback_engine = $this->fallback_engine->get_name();
+
+		if ( key_exists( $fallback_engine, $this->engines ) ) {
+			return $this->resolve_token_factory( $fallback_engine );
 		}
 
-		return $this->token_factories[ $template_engine ];
+		return $this->fallback_engine->create_token_factory();
 	}
 
 	public function resolve_integration( string $template_engine ): ?Template_Integration {
