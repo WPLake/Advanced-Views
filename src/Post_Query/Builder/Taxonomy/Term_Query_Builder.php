@@ -2,15 +2,15 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Taxonomy;
+namespace Org\Wplake\Advanced_Views\Post_Query\Builder\Taxonomy;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Tax_Field_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Context\Context_Container_Base;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Context\Query_Context_Container;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Query_Utils;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Context_Container_Base;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context_Container;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Query_Utils;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 

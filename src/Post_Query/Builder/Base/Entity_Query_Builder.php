@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Builders;
+namespace Org\Wplake\Advanced_Views\Post_Query\Builder\Base;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Post_Query_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selections\Query\Query_Utils;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Query_Utils;
 
 final class Entity_Query_Builder implements Post_Query_Builder {
 	public function build_post_query( Post_Selection_Settings $selection_settings ): array {
