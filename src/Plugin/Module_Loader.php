@@ -55,7 +55,8 @@ abstract class Module_Loader {
 						$item->set_hooks( $this->route_detector );
 					}
 				}
-			}
+			},
+			11
 		);
 	}
 }

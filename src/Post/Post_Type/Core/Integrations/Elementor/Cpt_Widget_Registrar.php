@@ -27,19 +27,20 @@ final class Cpt_Widget_Registrar extends Hookable implements Hooks_Interface {
 	private Cpt_Renderer $renderer;
 
 	/**
-	 * @var array<Widget_Base&Widget_Dependencies>
+	 * @var class-string<Widget_Base&Widget_Dependencies>[]
 	 */
-	private array $widgets = array();
+	private array $widgets;
 
 	public function __construct( Cpt_Item_Picker $item_picker, Cpt_Renderer $renderer ) {
 		$this->item_picker = $item_picker;
 		$this->renderer    = $renderer;
+		$this->widgets     = array();
 	}
 
 	/**
-	 * @param Widget_Base&Widget_Dependencies $widget
+	 * @param class-string<Widget_Base&Widget_Dependencies> $widget
 	 */
-	public function add_widget( Widget_Base $widget ): void {
+	public function add_widget( string $widget ): void {
 		$this->widgets[] = $widget;
 	}
 
@@ -54,10 +55,10 @@ final class Cpt_Widget_Registrar extends Hookable implements Hooks_Interface {
 	public function register_widgets( Widgets_Manager $widgets_manager ): void {
 		$widget = new Cpt_Elementor_Widget( $this->item_picker, $this->renderer );
 
-		foreach ( $this->widgets as $widget_instance ) {
-			$widget_instance::set_dependencies( $widget );
+		foreach ( $this->widgets as $widget_class ) {
+			$widget_class::set_dependencies( $widget );
 
-			$widgets_manager->register( $widget_instance );
+			$widgets_manager->register( new $widget_class() );
 		}
 	}
 }

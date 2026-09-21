@@ -117,7 +117,7 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 		$this->create_elementor_integration = function () use ( $base, $cpt_renderer ): array {
 			$widget_registrar = new Cpt_Widget_Registrar( $this->item_picker, $cpt_renderer );
 
-			$widget_registrar->add_widget( new Layout_Elementor_Widget() );
+			$widget_registrar->add_widget( Layout_Elementor_Widget::class );
 
 			return array(
 				$widget_registrar,

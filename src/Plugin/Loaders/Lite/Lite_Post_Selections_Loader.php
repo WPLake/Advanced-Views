@@ -197,7 +197,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 		$this->make_elementor_integration = function () use ( $base, $cpt_renderer ): array {
 			$integration = new Cpt_Widget_Registrar( $this->item_picker, $cpt_renderer );
 
-			$integration->add_widget( new Selection_Elementor_Widget() );
+			$integration->add_widget( Selection_Elementor_Widget::class );
 
 			return array(
 				$integration,
