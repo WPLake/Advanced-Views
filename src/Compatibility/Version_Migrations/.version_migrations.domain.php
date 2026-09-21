@@ -7,8 +7,8 @@ use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_1\v1_namespace;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_2\v2_namespace;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\v3_namespace;
 use Org\Wplake\Advanced_Views\Field_Provider\Wp\wp_provider_domain;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\layouts_cpt_domain;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Post_Selections\post_selections_cpt_domain;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\layouts_cpt_domain;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\post_selections_cpt_domain;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\template_engine_domain;
 
 class version_migrations_domain extends migration_domain {

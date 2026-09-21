@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
 
 class Admin_Assets extends Hookable implements Hooks_Interface {
 	private Plugin $plugin;

@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Compatibility\Migration\Core;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 
 interface Migration extends Cpt_Settings_Migrator {
 	public function migrate(): void;

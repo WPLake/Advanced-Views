@@ -10,8 +10,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 
 
 defined( 'ABSPATH' ) || exit;

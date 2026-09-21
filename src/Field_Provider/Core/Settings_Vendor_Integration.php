@@ -13,12 +13,12 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Core\Cpt_Settings_Creator;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Cpt\Layout_Save_Actions;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Integrations\Layout_Shortcode;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Layout_Factory;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Source;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Settings_Creator;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 

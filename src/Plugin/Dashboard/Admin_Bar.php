@@ -12,8 +12,8 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Compo
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Layouts\Integrations\Layout_Shortcode;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Post_Selections\Integrations\Post_Selection_Shortcode;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
 use WP_Admin_Bar;
 
 defined( 'ABSPATH' ) || exit;
