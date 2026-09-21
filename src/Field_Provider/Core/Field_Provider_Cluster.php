@@ -281,7 +281,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	/**
 	 * @return array{0:Field_Settings[],1:Field_Settings[]}
 	 */
-	public function get_fields_by_front_asset( string $asset_name, Layout_Settings $layout_settings ): array {
+	public function get_fields_with_pattern( string $asset_name, Layout_Settings $layout_settings ): array {
 		$fields = array(
 			array(),
 			array(),

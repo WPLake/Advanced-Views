@@ -43,27 +43,27 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	 * @var array<string, string>
 	 */
 	private array $include_css_code;
-	private File_System $file_system;
 	private string $assets_css_code;
 	private Live_Reloader_Component $live_reloader_component;
 	/**
 	 * @var array<string,true>
 	 */
 	private array $tailwind_css_rules;
+	private File_System $file_system;
 
-	public function __construct( Plugin $plugin, Field_Provider_Cluster $provider_cluster, File_System $file_system, Live_Reloader_Component $live_reloader_component ) {
+	public function __construct( Plugin $plugin, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component ) {
 		$this->plugin           = $plugin;
 		$this->provider_cluster = $provider_cluster;
+		$this->file_system      = $file_system;
 		$this->buffer_level     = null;
 		$this->is_custom_interactivity_api_import_map_required = false;
 
-		$this->assets                      = array();
-		$this->inline_js_code              = array();
-		$this->include_css_code            = array();
-		$this->file_system                 = $file_system;
-			$this->live_reloader_component = $live_reloader_component;
-		$this->assets_css_code             = '';
-		$this->tailwind_css_rules          = array();
+		$this->assets                  = array();
+		$this->inline_js_code          = array();
+		$this->include_css_code        = array();
+		$this->live_reloader_component = $live_reloader_component;
+		$this->assets_css_code         = '';
+		$this->tailwind_css_rules      = array();
 
 		$this->load_assets();
 	}
@@ -73,9 +73,9 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	 */
 	protected function get_assets(): array {
 		return array(
-			new Map_Pattern( $this->plugin, $this->file_system, $this->provider_cluster ),
-			new Light_Gallery_Pattern( $this->plugin, $this->file_system, $this->provider_cluster ),
-			new Lightbox_Pattern( $this->plugin, $this->file_system, $this->provider_cluster ),
+			new Map_Pattern( $this->plugin, $this->provider_cluster ),
+			new Light_Gallery_Pattern( $this->plugin, $this->provider_cluster ),
+			new Lightbox_Pattern( $this->plugin, $this->provider_cluster ),
 		);
 	}
 
@@ -240,10 +240,6 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 		$tailwind_styles = (string) $wp_filesystem->get_contents( $tailwind_globals_file );
 
 		return $this->minify_code( $tailwind_styles, self::MINIFY_TYPE_CSS );
-	}
-
-	protected function get_filesystem(): File_System {
-		return $this->file_system;
 	}
 
 	protected function print_interactivity_api_import_map( string $interactivity_api_script_url ): void {

@@ -142,8 +142,8 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->live_reloader_component = new Live_Reloader_Component( $this->plugin, $this->settings );
 		$this->front_assets            = new Front_Assets(
 			$this->plugin,
-			$this->provider_cluster,
 			$layouts_file_system,
+			$this->provider_cluster,
 			$this->live_reloader_component
 		);
 		$this->git_lab_api             = new Git_Lab_Api(

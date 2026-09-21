@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Core\Cpt_Data_Storage\File_System;
+use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
 
 abstract class Library_Pattern_Base implements Library_Pattern {
 	const NAME = '';
@@ -22,13 +22,11 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 	 */
 	private array $css_handles;
 	private Plugin $plugin;
-	private File_System $file_system;
 	private string $auto_discover_name;
 	private bool $is_with_web_component;
 
-	public function __construct( Plugin $plugin, File_System $file_system ) {
+	public function __construct( Plugin $plugin ) {
 		$this->plugin                = $plugin;
-		$this->file_system           = $file_system;
 		$this->js_handles            = array();
 		$this->css_handles           = array();
 		$this->auto_discover_name    = '';
@@ -146,7 +144,7 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 
 		$css = '';
 
-		$wp_filesystem = $this->file_system->get_wp_filesystem();
+		$wp_filesystem = WP_Filesystem_Factory::get_wp_filesystem();
 
 		foreach ( $this->css_handles as $css_handle => $is_active ) {
 			if ( ! $is_active ) {

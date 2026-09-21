@@ -11,15 +11,14 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Core\Cpt_Data_Storage\File_System;
 
 defined( 'ABSPATH' ) || exit;
 
 abstract class Common_Template_Pattern extends Template_Pattern_Base {
 	private string $card_field_id;
 
-	public function __construct( Plugin $plugin, File_System $file_system, Field_Provider_Cluster $provider_cluster ) {
-		parent::__construct( $plugin, $file_system, $provider_cluster );
+	public function __construct( Plugin $plugin, Field_Provider_Cluster $provider_cluster ) {
+		parent::__construct( $plugin, $provider_cluster );
 
 		$this->card_field_id = '';
 	}

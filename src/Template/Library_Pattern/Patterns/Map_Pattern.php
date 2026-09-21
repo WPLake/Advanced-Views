@@ -9,7 +9,6 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Post\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern_Base;
 
 defined( 'ABSPATH' ) || exit;
@@ -22,8 +21,8 @@ class Map_Pattern extends Template_Pattern_Base {
 	 */
 	private array $maps;
 
-	public function __construct( Plugin $plugin, File_System $file_system, Field_Provider_Cluster $provider_cluster ) {
-		parent::__construct( $plugin, $file_system, $provider_cluster );
+	public function __construct( Plugin $plugin, Field_Provider_Cluster $provider_cluster ) {
+		parent::__construct( $plugin, $provider_cluster );
 
 		$this->set_js_handles(
 			array(
@@ -80,7 +79,7 @@ class Map_Pattern extends Template_Pattern_Base {
 			return;
 		}
 
-		[$target_fields, $target_sub_fields] = $this->get_provider_cluster()->get_fields_by_front_asset(
+		[$target_fields, $target_sub_fields] = $this->get_provider_cluster()->get_fields_with_pattern(
 			static::NAME,
 			$cpt_settings
 		);
