@@ -9,9 +9,9 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Fields\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Light_Gallery_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Lightbox_Asset;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Light_Gallery_Asset;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Lightbox_Asset;
 
 class Post_Thumbnail_Field extends Image_Field {
 	use Custom_Field;

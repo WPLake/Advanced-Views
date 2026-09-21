@@ -13,13 +13,13 @@ use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Base\View_Asset_Base;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Base\View_Front_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Common_Front_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Html_Wrapper;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Light_Gallery_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Lightbox_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Maps_Asset;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Base\View_Asset_Base;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Base\View_Front_Asset;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Common_Front_Asset;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Html_Wrapper;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Light_Gallery_Asset;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Lightbox_Asset;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Maps_Asset;
 
 defined( 'ABSPATH' ) || exit;
 

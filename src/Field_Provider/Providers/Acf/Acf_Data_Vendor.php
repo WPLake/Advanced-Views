@@ -35,11 +35,11 @@ use Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Fields\Map_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Fields\Page_Link_Field;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Cpt\Layout_Save_Actions;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Integrations\Layout_Shortcode;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Layout_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Source;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integrations\Layout_Shortcode;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;

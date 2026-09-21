@@ -7,12 +7,12 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\Fields\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Light_Gallery_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Macy_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Masonry_Asset;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layouts\View_Assets\Splide_Asset;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Light_Gallery_Asset;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Macy_Asset;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Masonry_Asset;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\View_Assets\Splide_Asset;
 
 defined( 'ABSPATH' ) || exit;
 
