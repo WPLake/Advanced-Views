@@ -127,7 +127,7 @@ class Layouts_Cpt_Table extends Cpt_Table {
 	}
 
 	/**
-	 * @return Closure
+	 * @return array<string, Closure(): void>
 	 */
 	protected function get_column_printers( Layout_Settings $view_data ): array {
 		return array(

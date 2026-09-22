@@ -25,7 +25,7 @@ class Point_Provider {
 	/**
 	 * Return array with structure: sourcePostId => Mount_Point_Settings[]
 	 *
-	 * @return Mount_Point_Settings
+	 * @return array<int, Mount_Point_Settings[]>
 	 * @throws Exception
 	 */
 	public function match_items( string $current_post_type, int $current_post_id ): array {

@@ -6,8 +6,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor;
 
 defined( 'ABSPATH' ) || exit;
 
-use;
-use;
 use Elementor\Elements_Manager;
 use Elementor\Widget_Base;
 use Elementor\Widgets_Manager;
