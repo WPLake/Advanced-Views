@@ -19,7 +19,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
  * generic class.
  */
 final class Selection_Elementor_Assets extends Hookable implements Hooks_Interface {
-	const NAME = Plugin::PRODUCT_SLUG . '/post-selection-elementor';
+	const EDITOR_NAME  = Plugin::PRODUCT_SLUG . '/post-selection-elementor-editor';
+	const PREVIEW_NAME = Plugin::PRODUCT_SLUG . '/post-selection-elementor-preview';
 
 	private Cpt_Item_Picker $item_picker;
 	private Plugin $plugin;
@@ -45,13 +46,19 @@ final class Selection_Elementor_Assets extends Hookable implements Hooks_Interfa
 	}
 
 	public function enqueue_editor_assets(): void {
-		// deps on wp-api-fetch/wp-i18n for itemActionLinks.ts's "Refresh"; on elementor-editor so window.elementor
+		// deps on wp-api-fetch/wp-i18n for actionLinksEditor.ts's "Refresh"; on elementor-editor so window.elementor
 		// exists by the time this script runs (the panel/preview split - and why 'elementor-frontend' must NOT be
 		// a dep of the preview-side script below - is a documented Elementor gotcha, see enqueue_preview_assets()).
-		$this->enqueue_script( array( 'wp-api-fetch', 'wp-i18n', 'elementor-editor' ) );
+		wp_enqueue_script(
+			self::EDITOR_NAME,
+			$this->plugin->get_assets_url( 'js/admin/post-type/post-selections/elementor/selection-elementor-editor.min.js' ),
+			array( 'wp-api-fetch', 'wp-i18n', 'elementor-editor' ),
+			$this->plugin->get_version(),
+			true
+		);
 
 		wp_localize_script(
-			self::NAME,
+			self::EDITOR_NAME,
 			'avfSelectionElementor',
 			array(
 				'itemControlId' => 'selection_id',
@@ -62,19 +69,12 @@ final class Selection_Elementor_Assets extends Hookable implements Hooks_Interfa
 
 	public function enqueue_preview_assets(): void {
 		// no 'elementor-frontend' dep here - Elementor has a documented load bug when a script enqueued via
-		// 'elementor/preview/enqueue_scripts' depends on it. selectionElementor.ts waits on the
+		// 'elementor/preview/enqueue_scripts' depends on it. selectionElementorPreview.ts waits on the
 		// 'elementor/frontend/init' window event instead, the pattern Elementor's own docs recommend for this.
-		$this->enqueue_script( array( 'jquery' ) );
-	}
-
-	/**
-	 * @param string[] $deps
-	 */
-	protected function enqueue_script( array $deps ): void {
 		wp_enqueue_script(
-			self::NAME,
-			$this->plugin->get_assets_url( 'js/admin/elementor/selection-elementor.min.js' ),
-			$deps,
+			self::PREVIEW_NAME,
+			$this->plugin->get_assets_url( 'js/admin/post-type/post-selections/elementor/selection-elementor-preview.min.js' ),
+			array( 'jquery' ),
 			$this->plugin->get_version(),
 			true
 		);

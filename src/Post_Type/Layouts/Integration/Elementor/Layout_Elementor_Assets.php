@@ -18,7 +18,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
  * piece of config that's genuinely per-CPT and doesn't belong hard-coded into that otherwise fully generic class.
  */
 final class Layout_Elementor_Assets extends Hookable implements Hooks_Interface {
-	const NAME = Plugin::PRODUCT_SLUG . '/layout-elementor';
+	const EDITOR_NAME  = Plugin::PRODUCT_SLUG . '/layout-elementor-editor';
+	const PREVIEW_NAME = Plugin::PRODUCT_SLUG . '/layout-elementor-preview';
 
 	private Cpt_Item_Picker $item_picker;
 	private Plugin $plugin;
@@ -37,13 +38,19 @@ final class Layout_Elementor_Assets extends Hookable implements Hooks_Interface 
 	}
 
 	public function enqueue_editor_assets(): void {
-		// deps on wp-api-fetch/wp-i18n for itemActionLinks.ts's "Refresh"; on elementor-editor so window.elementor
+		// deps on wp-api-fetch/wp-i18n for actionLinksEditor.ts's "Refresh"; on elementor-editor so window.elementor
 		// exists by the time this script runs (the panel/preview split - and why 'elementor-frontend' must NOT be
 		// a dep of the preview-side script below - is a documented Elementor gotcha, see enqueue_preview_assets()).
-		$this->enqueue_script( array( 'wp-api-fetch', 'wp-i18n', 'elementor-editor' ) );
+		wp_enqueue_script(
+			self::EDITOR_NAME,
+			$this->plugin->get_assets_url( 'js/admin/post-type/layouts/elementor/layout-elementor-editor.min.js' ),
+			array( 'wp-api-fetch', 'wp-i18n', 'elementor-editor' ),
+			$this->plugin->get_version(),
+			true
+		);
 
 		wp_localize_script(
-			self::NAME,
+			self::EDITOR_NAME,
 			'avfLayoutElementor',
 			array(
 				'itemControlId' => 'layout_id',
@@ -54,19 +61,12 @@ final class Layout_Elementor_Assets extends Hookable implements Hooks_Interface 
 
 	public function enqueue_preview_assets(): void {
 		// no 'elementor-frontend' dep here - Elementor has a documented load bug when a script enqueued via
-		// 'elementor/preview/enqueue_scripts' depends on it. layoutElementor.ts waits on the 'elementor/frontend/init'
-		// window event instead, the pattern Elementor's own docs recommend for this exact situation.
-		$this->enqueue_script( array( 'jquery' ) );
-	}
-
-	/**
-	 * @param string[] $deps
-	 */
-	protected function enqueue_script( array $deps ): void {
+		// 'elementor/preview/enqueue_scripts' depends on it. layoutElementorPreview.ts waits on the
+		// 'elementor/frontend/init' window event instead, the pattern Elementor's own docs recommend for this.
 		wp_enqueue_script(
-			self::NAME,
-			$this->plugin->get_assets_url( 'js/admin/elementor/layout-elementor.min.js' ),
-			$deps,
+			self::PREVIEW_NAME,
+			$this->plugin->get_assets_url( 'js/admin/post-type/layouts/elementor/layout-elementor-preview.min.js' ),
+			array( 'jquery' ),
 			$this->plugin->get_version(),
 			true
 		);

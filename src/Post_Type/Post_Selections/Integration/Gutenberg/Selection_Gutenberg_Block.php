@@ -76,7 +76,7 @@ final class Selection_Gutenberg_Block extends Hookable implements Hooks_Interfac
 	public function enqueue_editor_assets(): void {
 		wp_enqueue_script(
 			self::NAME,
-			$this->plugin->get_assets_url( 'js/admin/blocks/selection-block.min.js' ),
+			$this->plugin->get_assets_url( 'js/admin/post-type/post-selections/gutenberg/selection-gutenberg.min.js' ),
 			Cpt_Gutenberg_Block::get_block_js_dependencies(),
 			$this->plugin->get_version(),
 			true
