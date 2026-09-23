@@ -84,8 +84,10 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 	 * @param mixed[] $shortcode_args
 	 */
 	protected function is_shortcode_available_for_user( array $user_roles, array $shortcode_args ): bool {
-		$user_with_roles    = self::get_roles( any( $shortcode_args, 'user-with-roles' ) );
-		$user_without_roles = self::get_roles( any( $shortcode_args, 'user-without-roles' ) );
+		$user_with_roles_input    = any( $shortcode_args, 'user-with-roles' );
+		$user_with_roles          = self::get_roles( $user_with_roles_input );
+		$user_without_roles_input = any( $shortcode_args, 'user-without-roles' );
+		$user_without_roles       = self::get_roles( $user_without_roles_input );
 
 		if ( 0 === count( $user_with_roles ) &&
 			0 === count( $user_without_roles ) ) {
@@ -116,11 +118,14 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 			}
 		}
 
+		$joined_attrs    = implode( ' ', $attrs );
+		$shortcode_debug = sprintf( '(%s %s)', $shortcode, $joined_attrs );
+
 		return sprintf(
 			"<p style='color:red;'>%s %s %s</p>",
 			esc_html__( 'AVF shortcode render error:', 'acf-views' ),
 			esc_html( $error ),
-			esc_html( sprintf( '(%s %s)', $shortcode, implode( ' ', $attrs ) ) )
+			esc_html( $shortcode_debug )
 		);
 	}
 
@@ -187,23 +192,33 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 			// e.g. for Card + View inside, only for Card, as for View we already processed.
 			$pos = strpos( $html, $template_opening_tag );
 
-			if ( false !== $pos ) {
+			if ( is_int( $pos ) ) {
+				$template_opening_tag_length = strlen( $template_opening_tag );
+
 				$html = substr_replace(
 					$html,
 					$template_opening_tag . "\r\n" . $shadow_css,
 					$pos,
-					strlen( $template_opening_tag )
+					$template_opening_tag_length
 				);
 
 				$shadow_css = '';
 			}
 		}
 
-		if ( false === $is_with_quick_link &&
-			Cpt_Settings::WEB_COMPONENT_NONE === $cpt_data->web_component ) {
-			return $html;
+		if ( $is_with_quick_link || Cpt_Settings::WEB_COMPONENT_NONE !== $cpt_data->web_component ) {
+			return self::add_quick_link_and_last_tag_markup( $html, $shadow_css, $is_with_quick_link, $cpt_data );
 		}
 
+		return $html;
+	}
+
+	protected static function add_quick_link_and_last_tag_markup(
+		string $html,
+		string $shadow_css,
+		bool $is_with_quick_link,
+		Cpt_Settings $cpt_data
+	): string {
 		$html           = trim( $html );
 		$last_tag_regex = Cpt_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE !== $cpt_data->web_component ?
 			'/<\/[a-z0-9\-_]+>$/' :
@@ -219,47 +234,57 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 
 		// we need the last match only, e.g.
 		// e.g. for Card + View inside, only for Card, as for View we already processed.
-		$last_tag_match = $matches[0][ count( $matches[0] ) - 1 ];
+		$last_match_index = count( $matches[0] ) - 1;
+		$last_tag_match   = $matches[0][ $last_match_index ];
 
-		$quick_link_html = '';
-
-		if ( $is_with_quick_link ) {
-			$label  = __( 'Edit', 'acf-views' );
-			$label .= sprintf( ' "%s"', $cpt_data->title );
-
-			$is_wp_playground = false !== strpos( get_site_url(), 'playground.wordpress.net' );
-			$link_target      = false === $is_wp_playground ?
-				'_blank' :
-				'_self';
-			$attrs            = array(
-				'href'        => $cpt_data->get_edit_post_link(),
-				'target'      => $link_target,
-				'class'       => 'acf-views__quick-link',
-				'style'       => 'display:block;color:#008BB7;transition: all .3s ease;text-decoration: none;font-size: 12px;white-space: nowrap;opacity:.5;padding:3px 0;',
-				'onMouseOver' => "this.style.opacity='1';this.style.textDecoration='underline'",
-				'onMouseOut'  => "this.style.opacity='.5';this.style.textDecoration='none'",
-			);
-
-			$quick_link_html .= '<a';
-
-			foreach ( $attrs as $attr_name => $attr_value ) {
-				$quick_link_html .= sprintf( ' %s="%s"', esc_html( $attr_name ), esc_attr( $attr_value ) );
-			}
-
-			$quick_link_html .= '>';
-			$quick_link_html .= esc_html( $label );
-			$quick_link_html .= '</a>';
-		}
+		$quick_link_html = $is_with_quick_link ? self::create_quick_link_html( $cpt_data ) : '';
 
 		$closing_div          = $last_tag_match[0];
 		$closing_div_position = $last_tag_match[1];
+		$closing_div_length   = strlen( $closing_div );
 
 		return substr_replace(
 			$html,
 			$shadow_css . $quick_link_html . $closing_div,
 			$closing_div_position,
-			strlen( $closing_div )
+			$closing_div_length
 		);
+	}
+
+	protected static function create_quick_link_html( Cpt_Settings $cpt_data ): string {
+		$label  = __( 'Edit', 'acf-views' );
+		$label .= sprintf( ' "%s"', $cpt_data->title );
+
+		$site_url         = get_site_url();
+		$playground_pos   = strpos( $site_url, 'playground.wordpress.net' );
+		$is_wp_playground = is_int( $playground_pos );
+		$link_target      = false === $is_wp_playground ?
+			'_blank' :
+			'_self';
+		$attrs            = array(
+			'href'        => $cpt_data->get_edit_post_link(),
+			'target'      => $link_target,
+			'class'       => 'acf-views__quick-link',
+			'style'       => 'display:block;color:#008BB7;transition: all .3s ease;text-decoration: none;font-size: 12px;white-space: nowrap;opacity:.5;padding:3px 0;',
+			'onMouseOver' => "this.style.opacity='1';this.style.textDecoration='underline'",
+			'onMouseOut'  => "this.style.opacity='.5';this.style.textDecoration='none'",
+		);
+
+		$quick_link_html = '<a';
+
+		foreach ( $attrs as $attr_name => $attr_value ) {
+			$quick_link_html .= sprintf(
+				' %s="%s"',
+				esc_html( $attr_name ),
+				esc_attr( $attr_value )
+			);
+		}
+
+		$quick_link_html .= '>';
+		$quick_link_html .= esc_html( $label );
+		$quick_link_html .= '</a>';
+
+		return $quick_link_html;
 	}
 
 	public function get_rendered_items_count(): int {
@@ -268,11 +293,10 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 
 	public function register_rest_route(): void {
 		foreach ( $this->public_cpt->rest_route_names() as $route_name ) {
-			register_rest_route(
-				Plugin::REST_NAMESPACE,
-				$route_name . '/(?P<unique_id>[a-z0-9]+)',
-				$this->get_rest_route_args()
-			);
+			$route_pattern = $route_name . '/(?P<unique_id>[a-z0-9]+)';
+			$route_args    = $this->get_rest_route_args();
+
+			register_rest_route( Plugin::REST_NAMESPACE, $route_pattern, $route_args );
 		}
 	}
 
@@ -307,17 +331,15 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 					 * @param mixed $param
 					 */
 					'validate_callback' => function ( $param ): bool {
-						if ( false === is_string( $param ) &&
-							false === is_numeric( $param ) ) {
-							return false;
+						if ( is_string( $param ) || is_numeric( $param ) ) {
+							$param     = (string) $param;
+							$post_type = $this->get_post_type();
+							$unique_id = $this->cpt_settings_storage->get_unique_id_from_shortcode_id( $param, $post_type );
+
+							return strlen( $unique_id ) > 0;
 						}
 
-						$param = (string) $param;
-
-						return '' !== $this->cpt_settings_storage->get_unique_id_from_shortcode_id(
-							$param,
-							$this->get_post_type()
-						);
+						return false;
 					},
 				),
 			),
@@ -330,14 +352,14 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 			'callback'            => function ( WP_REST_Request $wprest_request ): array {
 				$short_unique_id = $wprest_request->get_param( 'unique_id' );
 
-				// already validated above.
-				if ( false === is_string( $short_unique_id ) ) {
-					return array();
+				if ( is_string( $short_unique_id ) ) {
+					$unique_id = $this->get_unique_id_prefix() . $short_unique_id;
+
+					return $this->instance_factory->get_rest_api_response( $unique_id, $wprest_request );
 				}
 
-				$unique_id = $this->get_unique_id_prefix() . $short_unique_id;
-
-				return $this->instance_factory->get_rest_api_response( $unique_id, $wprest_request );
+				// already validated above - only reachable if validate_callback let a non-string id through.
+				return array();
 			},
 		);
 	}

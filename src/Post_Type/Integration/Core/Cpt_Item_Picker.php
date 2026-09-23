@@ -39,9 +39,11 @@ final class Cpt_Item_Picker extends Hookable implements Hooks_Interface {
 	}
 
 	public function register_rest_route(): void {
+		$route_name = $this->get_route_name();
+
 		register_rest_route(
 			Plugin::REST_NAMESPACE,
-			$this->get_route_name(),
+			$route_name,
 			array(
 				'methods'             => 'GET',
 				'permission_callback' => fn(): bool => Avf_User::can_manage(),
@@ -95,16 +97,22 @@ final class Cpt_Item_Picker extends Hookable implements Hooks_Interface {
 	 * @return array{items:array<string,array{title:string,editUrl:string}>,newItemUrl:string,itemsRestUrl:string,canManage:bool,itemLabel:string}
 	 */
 	public function get_js_data(): array {
+		$cpt_name     = $this->cpt->cpt_name();
+		$new_item_url = sprintf( 'post-new.php?post_type=%s', $cpt_name );
+		$route_name   = $this->get_route_name();
+
 		return array(
 			'items'        => $this->get_items(),
-			'newItemUrl'   => admin_url( sprintf( 'post-new.php?post_type=%s', $this->cpt->cpt_name() ) ),
-			'itemsRestUrl' => sprintf( '/%s/%s', Plugin::REST_NAMESPACE, $this->get_route_name() ),
+			'newItemUrl'   => admin_url( $new_item_url ),
+			'itemsRestUrl' => sprintf( '/%s/%s', Plugin::REST_NAMESPACE, $route_name ),
 			'canManage'    => Avf_User::can_manage(),
 			'itemLabel'    => $this->cpt->labels()->singular_name(),
 		);
 	}
 
 	protected function get_route_name(): string {
-		return sprintf( '%s/%s', self::REST_ROUTE_PREFIX, $this->cpt->cpt_name() );
+		$cpt_name = $this->cpt->cpt_name();
+
+		return sprintf( '%s/%s', self::REST_ROUTE_PREFIX, $cpt_name );
 	}
 }

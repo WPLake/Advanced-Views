@@ -46,51 +46,50 @@ final class Cpt_Renderer {
 		$cpt_settings = $this->settings_storage->get( $unique_id );
 
 		if ( $cpt_settings->isLoaded() ) {
-			$html = $this->render( $attrs );
+			$html         = $this->render( $attrs );
+			$trimmed_html = trim( $html );
 
-			if ( strlen( trim( $html ) ) > 0 ) {
+			if ( strlen( $trimmed_html ) > 0 ) {
 				return $inline_styles ?
 					$this->make_style_tag( $cpt_settings ) . $html :
 					$html;
 			}
 
-			return self::make_placeholder( __( 'No output to preview', 'acf-views' ) );
+			$placeholder_message = __( 'No output to preview', 'acf-views' );
+
+			return self::make_placeholder( $placeholder_message );
 		}
 
 		return $this->get_empty_preview_placeholder();
 	}
 
 	protected function get_empty_preview_placeholder(): string {
-		$label = sprintf(
 		// translators: %s is a singular post-type name, e.g. "Layout".
-			__( 'Select a %s to see the preview', 'acf-views' ),
-			$this->cpt->labels()->singular_name()
-		);
+		$message       = __( 'Select a %s to see the preview', 'acf-views' );
+		$singular_name = $this->cpt->labels()->singular_name();
+
+		$label = sprintf( $message, $singular_name );
 
 		return self::make_placeholder( $label );
 	}
 
 	/**
-	 * Every render carries its own scoped 'data-avf-id' style tag, instead of relying solely on
-	 * Front_Assets' page-level 'wp_head'/'wp_footer' printing - a dynamic 'render_callback' can't reach
-	 * that when rendered through the block editor's ServerSideRender REST call (or Elementor's own AJAX
-	 * per-widget re-render), which is a request of its own with no such page to print into.
-	 *
-	 * Each editor's own editor-only script then moves this tag into <head>, replacing any existing tag with
-	 * the same id, so repeated/updated uses of the same item in the editor don't keep accumulating duplicate CSS.
+	 * Each render carries its own scoped 'data-avf-id' style tag rather than relying on Front_Assets' page-level
+	 * printing, since a dynamic 'render_callback' (ServerSideRender, Elementor's AJAX re-render) has no such page
+	 * to print into; the editor's own script relocates this tag into <head>, replacing any existing one with the
+	 * same id.
 	 */
 	protected function make_style_tag( Cpt_Settings $cpt_settings ): string {
 		// internal (e.g. shadow DOM) CSS is scoped to its own markup and inlined there instead.
 		if ( ! $cpt_settings->is_css_internal() ) {
-			$css = $this->front_assets->minify_code(
-				$cpt_settings->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY ),
-				Front_Assets::MINIFY_TYPE_CSS
-			);
+			$css_code     = $cpt_settings->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
+			$minified_css = $this->front_assets->minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
+			$unique_id    = $cpt_settings->get_unique_id();
 
 			return sprintf(
 				'<style data-avf-id="%s">%s</style>',
-				esc_attr( $cpt_settings->get_unique_id() ),
-				$css
+				esc_attr( $unique_id ),
+				$minified_css
 			);
 		}
 
@@ -98,6 +97,9 @@ final class Cpt_Renderer {
 	}
 
 	protected static function make_placeholder( string $message ): string {
-		return sprintf( '<p class="avf-cpt-block__placeholder">[%s]</p>', esc_html( $message ) );
+		return sprintf(
+			'<p class="avf-cpt-block__placeholder">[%s]</p>',
+			esc_html( $message )
+		);
 	}
 }
