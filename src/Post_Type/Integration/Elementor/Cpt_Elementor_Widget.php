@@ -7,7 +7,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor;
 defined( 'ABSPATH' ) || exit;
 
 use Elementor\Controls_Manager;
-use Elementor\Elements_Manager;
 use Elementor\Plugin as Elementor_Plugin;
 use Elementor\Widget_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
@@ -41,16 +40,6 @@ final class Cpt_Elementor_Widget {
 	public function __construct( Cpt_Item_Picker $item_picker, Cpt_Renderer $renderer ) {
 		$this->item_picker = $item_picker;
 		$this->renderer    = $renderer;
-	}
-
-	public static function add_category( Elements_Manager $elements_manager ): void {
-		$elements_manager->add_category(
-			Cpt_Item_Picker::CATEGORY,
-			array(
-				'title' => __( 'Advanced Views', 'acf-views' ),
-				'icon'  => 'fa fa-plug',
-			)
-		);
 	}
 
 	/**

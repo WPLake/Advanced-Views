@@ -41,6 +41,7 @@ final class Layout_Elementor_Widget extends Widget_Base implements Widget_Depend
 	 * @return string[]
 	 */
 	public function get_categories(): array {
+		// fixme.
 		return array( Cpt_Item_Picker::CATEGORY );
 	}
 
@@ -67,110 +68,12 @@ final class Layout_Elementor_Widget extends Widget_Base implements Widget_Depend
 				'options' => self::get_widget()->get_item_options(),
 			)
 		);
-
 		self::get_widget()->add_action_links( $this );
-
-		$this->register_source_controls();
+		Layout_Object_Source::add_source_controls( $this );
 
 		$this->end_controls_section();
 
 		Cpt_Elementor_Widget::add_common_controls( $this );
-	}
-
-	protected function register_source_controls(): void {
-		$this->add_control(
-			'object_source',
-			array(
-				'label'   => __( 'Object Source', 'acf-views' ),
-				'type'    => Controls_Manager::SELECT2,
-				'default' => 'post',
-				'options' => array(
-					'post'    => __( 'Post', 'acf-views' ),
-					'options' => __( 'Custom options page (ACF/MB)', 'acf-views' ),
-					'user'    => __( 'User', 'acf-views' ),
-					'term'    => __( 'Term', 'acf-views' ),
-					'menu'    => __( 'Menu', 'acf-views' ),
-					'comment' => __( 'Comment', 'acf-views' ),
-				),
-			)
-		);
-
-		$this->add_control(
-			'post_lookup',
-			array(
-				'label'     => __( 'Look Up Post By', 'acf-views' ),
-				'type'      => Controls_Manager::SELECT2,
-				'default'   => 'current',
-				'options'   => array(
-					'current' => __( 'Current Post', 'acf-views' ),
-					'id'      => __( 'Post ID', 'acf-views' ),
-					'slug'    => __( 'Post Slug', 'acf-views' ),
-				),
-				'condition' => array( 'object_source' => 'post' ),
-			)
-		);
-		$this->add_control(
-			'post_id',
-			array(
-				'label'       => __( 'Post ID', 'acf-views' ),
-				'type'        => Controls_Manager::TEXT,
-				'description' => self::with_dynamic_value_help(),
-				'condition'   => array(
-					'object_source' => 'post',
-					'post_lookup'   => 'id',
-				),
-			)
-		);
-		$this->add_control(
-			'post_slug',
-			array(
-				'label'       => __( 'Post Slug', 'acf-views' ),
-				'type'        => Controls_Manager::TEXT,
-				'description' => self::with_dynamic_value_help(),
-				'condition'   => array(
-					'object_source' => 'post',
-					'post_lookup'   => 'slug',
-				),
-			)
-		);
-		$this->add_control(
-			'user_id',
-			array(
-				'label'       => __( 'User ID', 'acf-views' ),
-				'type'        => Controls_Manager::TEXT,
-				'description' => self::with_dynamic_value_help( __( 'Leave empty to use the current user.', 'acf-views' ) ),
-				'condition'   => array( 'object_source' => 'user' ),
-			)
-		);
-		$this->add_control(
-			'term_id',
-			array(
-				'label'       => __( 'Term ID', 'acf-views' ),
-				'type'        => Controls_Manager::TEXT,
-				'description' => self::with_dynamic_value_help(
-					__( 'Leave empty to use the current term on a term page.', 'acf-views' )
-				),
-				'condition'   => array( 'object_source' => 'term' ),
-			)
-		);
-		$this->add_control(
-			'menu_slug',
-			array(
-				'label'       => __( 'Menu Slug', 'acf-views' ),
-				'type'        => Controls_Manager::TEXT,
-				'description' => self::with_dynamic_value_help(),
-				'condition'   => array( 'object_source' => 'menu' ),
-			)
-		);
-		$this->add_control(
-			'comment_id',
-			array(
-				'label'       => __( 'Comment ID', 'acf-views' ),
-				'type'        => Controls_Manager::TEXT,
-				'description' => self::with_dynamic_value_help(),
-				'condition'   => array( 'object_source' => 'comment' ),
-			)
-		);
 	}
 
 	protected function render(): void {
@@ -198,15 +101,5 @@ final class Layout_Elementor_Widget extends Widget_Base implements Widget_Depend
 		}
 
 		return self::$widget;
-	}
-
-	/**
-	 * Every lookup control below shares this same hint (mirroring sourceFieldBuilders.ts's dynamicValueHelp), so
-	 * it's kept as one reusable, single translated string instead of being retyped (and re-translated) per field.
-	 */
-	protected static function with_dynamic_value_help( string $description = '' ): string {
-		$help = __( 'To pull it from another field, add that field inside the current Layout instead.', 'acf-views' );
-
-		return '' !== $description ? $description . ' ' . $help : $help;
 	}
 }

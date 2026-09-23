@@ -19,7 +19,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
  * generic class.
  */
 final class Selection_Elementor_Assets extends Hookable implements Hooks_Interface {
-	// prefixed by the plugin name for wp.org Plugin directory discover.
 	const NAME = Plugin::PRODUCT_SLUG . '/post-selection-elementor';
 
 	private Cpt_Item_Picker $item_picker;

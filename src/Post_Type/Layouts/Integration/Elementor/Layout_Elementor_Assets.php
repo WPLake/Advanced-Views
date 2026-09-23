@@ -18,7 +18,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
  * piece of config that's genuinely per-CPT and doesn't belong hard-coded into that otherwise fully generic class.
  */
 final class Layout_Elementor_Assets extends Hookable implements Hooks_Interface {
-	// prefixed by the plugin name for wp.org Plugin directory discover.
 	const NAME = Plugin::PRODUCT_SLUG . '/layout-elementor';
 
 	private Cpt_Item_Picker $item_picker;
@@ -30,13 +29,6 @@ final class Layout_Elementor_Assets extends Hookable implements Hooks_Interface 
 	}
 
 	public function set_hooks( Route_Detector $route_detector ): void {
-		/**
-		 * This request isn't itself covered by is_admin_route() - Elementor's canvas preview loads through normal
-		 * front-end template routing (see Cpt_Elementor_Widget::is_editor_preview()'s docblock), so gating it the
-		 * same way as the editor-only hook below would mean it never fires. It's still safe to register
-		 * unconditionally: the underlying WP hook only ever fires from within Elementor's own preview render,
-		 * never on a plain front-end page view.
-		 */
 		self::add_action( 'elementor/preview/enqueue_scripts', array( $this, 'enqueue_preview_assets' ) );
 
 		if ( $route_detector->is_admin_route() ) {

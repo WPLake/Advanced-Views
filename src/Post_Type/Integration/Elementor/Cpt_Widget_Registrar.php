@@ -47,8 +47,16 @@ final class Cpt_Widget_Registrar extends Hookable implements Hooks_Interface {
 	public function set_hooks( Route_Detector $route_detector ): void {
 		self::add_action(
 			'elementor/elements/categories_registered',
-			fn( Elements_Manager $elements_manager ) => Cpt_Elementor_Widget::add_category( $elements_manager )
+			fn( Elements_Manager $elements_manager ) => $elements_manager->add_category(
+				// fixme
+				Cpt_Item_Picker::CATEGORY,
+				array(
+					'title' => __( 'Advanced Views', 'acf-views' ),
+					'icon'  => 'fa fa-plug',
+				)
+			)
 		);
+
 		self::add_action( 'elementor/widgets/register', array( $this, 'register_widgets' ) );
 	}
 

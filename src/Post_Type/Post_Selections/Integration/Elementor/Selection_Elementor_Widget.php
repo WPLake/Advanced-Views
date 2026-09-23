@@ -41,6 +41,7 @@ final class Selection_Elementor_Widget extends Widget_Base implements Widget_Dep
 	 * @return string[]
 	 */
 	public function get_categories(): array {
+		// fixme
 		return array( Cpt_Item_Picker::CATEGORY );
 	}
 
