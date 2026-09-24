@@ -69,7 +69,7 @@ final class Selection_Elementor_Widget extends Widget_Base implements Widget_Dep
 			)
 		);
 
-		self::get_widget()->add_action_links( $this );
+		Cpt_Elementor_Widget::add_action_links( $this );
 
 		$this->end_controls_section();
 
@@ -79,11 +79,16 @@ final class Selection_Elementor_Widget extends Widget_Base implements Widget_Dep
 	protected function render(): void {
 		$settings = $this->get_settings_for_display();
 
+		$id_attrs     = array( 'id' => string( $settings, 'selection_id' ) );
+		$common_attrs = Cpt_Elementor_Widget::build_attrs( $settings );
+
+		$merged_attrs = array_merge(
+			$id_attrs,
+			$common_attrs
+		);
+
 		$attrs = array_filter(
-			array_merge(
-				array( 'id' => string( $settings, 'selection_id' ) ),
-				Cpt_Elementor_Widget::build_attrs( $settings )
-			),
+			$merged_attrs,
 			fn( string $value ): bool => strlen( $value ) > 0
 		);
 

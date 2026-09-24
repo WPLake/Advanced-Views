@@ -17,10 +17,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
 
 /**
  * Registers the Elementor category and widget(s) for one CPT (Layout, Post Selection...) - one instance per CPT.
- * Editor/preview script enqueueing is a separate standalone actor (Layout_Elementor_Assets,
- * Selection_Elementor_Assets - registered alongside this class, not through it), since asset paths/localized var
- * names are the one piece of config that genuinely differs per CPT and doesn't belong hard-coded into this
- * otherwise fully generic registrar.
+ * Editor/preview script enqueueing lives in a separate actor (Layout_Elementor_Assets/Selection_Elementor_Assets),
+ * since asset paths/localized var names are the one piece of config that genuinely differs per CPT.
  */
 final class Cpt_Widget_Registrar extends Hookable implements Hooks_Interface {
 	private Cpt_Item_Picker $item_picker;

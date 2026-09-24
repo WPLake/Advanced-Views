@@ -49,11 +49,16 @@ final class Selection_Elementor_Assets extends Hookable implements Hooks_Interfa
 		// deps on wp-api-fetch/wp-i18n for actionLinksEditor.ts's "Refresh"; on elementor-editor so window.elementor
 		// exists by the time this script runs (the panel/preview split - and why 'elementor-frontend' must NOT be
 		// a dep of the preview-side script below - is a documented Elementor gotcha, see enqueue_preview_assets()).
+		$script_url = $this->plugin->get_assets_url(
+			'js/admin/post-type/post-selections/elementor/selection-elementor-editor.min.js'
+		);
+		$version    = $this->plugin->get_version();
+
 		wp_enqueue_script(
 			self::EDITOR_NAME,
-			$this->plugin->get_assets_url( 'js/admin/post-type/post-selections/elementor/selection-elementor-editor.min.js' ),
+			$script_url,
 			array( 'wp-api-fetch', 'wp-i18n', 'elementor-editor' ),
-			$this->plugin->get_version(),
+			$version,
 			true
 		);
 
@@ -71,11 +76,16 @@ final class Selection_Elementor_Assets extends Hookable implements Hooks_Interfa
 		// no 'elementor-frontend' dep here - Elementor has a documented load bug when a script enqueued via
 		// 'elementor/preview/enqueue_scripts' depends on it. selectionElementorPreview.ts waits on the
 		// 'elementor/frontend/init' window event instead, the pattern Elementor's own docs recommend for this.
+		$script_url = $this->plugin->get_assets_url(
+			'js/admin/post-type/post-selections/elementor/selection-elementor-preview.min.js'
+		);
+		$version    = $this->plugin->get_version();
+
 		wp_enqueue_script(
 			self::PREVIEW_NAME,
-			$this->plugin->get_assets_url( 'js/admin/post-type/post-selections/elementor/selection-elementor-preview.min.js' ),
+			$script_url,
 			array( 'jquery' ),
-			$this->plugin->get_version(),
+			$version,
 			true
 		);
 	}

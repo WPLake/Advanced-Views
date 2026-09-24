@@ -68,7 +68,7 @@ final class Layout_Elementor_Widget extends Widget_Base implements Widget_Depend
 				'options' => self::get_widget()->get_item_options(),
 			)
 		);
-		self::get_widget()->add_action_links( $this );
+		Cpt_Elementor_Widget::add_action_links( $this );
 		Layout_Object_Source::add_source_controls( $this );
 
 		$this->end_controls_section();
@@ -79,15 +79,21 @@ final class Layout_Elementor_Widget extends Widget_Base implements Widget_Depend
 	protected function render(): void {
 		$settings = $this->get_settings_for_display();
 
+		$id_attrs     = array(
+			'id'        => string( $settings, 'layout_id' ),
+			'object-id' => Layout_Object_Source::resolve_object_id( $settings ),
+		);
+		$lookup_attrs = Layout_Object_Source::get_lookup_attributes( $settings );
+		$common_attrs = Cpt_Elementor_Widget::build_attrs( $settings );
+
+		$merged_attrs = array_merge(
+			$id_attrs,
+			$lookup_attrs,
+			$common_attrs
+		);
+
 		$attrs = array_filter(
-			array_merge(
-				array(
-					'id'        => string( $settings, 'layout_id' ),
-					'object-id' => Layout_Object_Source::resolve_object_id( $settings ),
-				),
-				Layout_Object_Source::get_lookup_attributes( $settings ),
-				Cpt_Elementor_Widget::build_attrs( $settings )
-			),
+			$merged_attrs,
 			fn( string $value ): bool => strlen( $value ) > 0
 		);
 

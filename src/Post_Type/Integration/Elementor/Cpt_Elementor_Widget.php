@@ -15,10 +15,9 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
  * Logic shared by every Elementor widget backed by a Cpt_Settings_Storage (Layout, Post Selection...) - the
- * Elementor-specific counterpart to Cpt_Gutenberg_Block. One instance per CPT, built by Cpt_Widget_Registrar
- * and handed to the concrete widget class via its own set_dependencies() - the same role Cpt_Elementor_Bridge
- * used to play, folded in here since there's no remaining state Elementor's per-render widget re-construction
- * would otherwise lose.
+ * Elementor-specific counterpart to Cpt_Gutenberg_Block. One instance per CPT, built by Cpt_Widget_Registrar and
+ * handed to the concrete widget class via its own set_dependencies(), since Elementor re-constructs the widget
+ * itself with no args on every render.
  */
 final class Cpt_Elementor_Widget {
 	// the RAW_HTML control itemActionLinks.ts locates via `[data-setting]` to keep in sync with the selected item.
@@ -43,13 +42,11 @@ final class Cpt_Elementor_Widget {
 	}
 
 	/**
-	 * Adds the "Add new / Refresh" links row right after the item-picker SELECT2 control - the Elementor
-	 * counterpart to Gutenberg's actionLinksElement (see itemPicker.ts). Elementor registers a widget's controls
-	 * once per widget type, not per saved instance, so only the type-level state (nothing selected yet) can be
-	 * rendered here; itemActionLinks.ts swaps in the "Edit" link once it knows which item this particular
-	 * instance has selected.
+	 * Adds the "Add new / Refresh" links row after the item-picker control. Elementor registers a widget's
+	 * controls once per widget type, not per saved instance, so only type-level state (nothing selected yet)
+	 * renders here; the JS side (actionLinks.ts) swaps in the "Edit" link once it knows the selected item.
 	 */
-	public function add_action_links( Widget_Base $widget ): void {
+	public static function add_action_links( Widget_Base $widget ): void {
 		$widget->add_control(
 			self::ACTION_LINKS_CONTROL_ID,
 			array(
