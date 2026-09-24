@@ -41,6 +41,7 @@ final class Cpt_Gutenberg_Block {
 		return array_merge(
 			array(
 				array(
+					// fixme
 					'slug'  => Cpt_Item_Picker::CATEGORY,
 					'title' => __( 'Advanced Views', 'acf-views' ),
 				),

@@ -45,15 +45,21 @@ final class Layout_Gutenberg_Block extends Hookable implements Hooks_Interface {
 	}
 
 	public function register_block(): void {
+		$layout_attributes = self::get_attribute_declarations();
+		$common_attributes = Cpt_Gutenberg_Block::get_attribute_declarations();
+
+		$attributes = array_merge(
+			$layout_attributes,
+			$common_attributes
+		);
+
 		register_block_type(
 			__DIR__ . '/block.json',
 			array(
+				// fixme
 				'category'        => Cpt_Item_Picker::CATEGORY,
 				'supports'        => Cpt_Gutenberg_Block::get_supports(),
-				'attributes'      => array_merge(
-					self::get_attribute_declarations(),
-					Cpt_Gutenberg_Block::get_attribute_declarations()
-				),
+				'attributes'      => $attributes,
 				'render_callback' => array( $this, 'render_block' ),
 			)
 		);

@@ -98,9 +98,12 @@ final class Selection_Gutenberg_Block extends Hookable implements Hooks_Interfac
 	 * @return array<string,string>
 	 */
 	protected static function parse_attributes( array $attributes ): array {
+		$selection_id = string( $attributes, 'selectionId' );
+		$common_attrs = Cpt_Gutenberg_Block::parse_attributes( $attributes );
+
 		$attrs = array_merge(
-			array( 'id' => string( $attributes, 'selectionId' ) ),
-			Cpt_Gutenberg_Block::parse_attributes( $attributes )
+			array( 'id' => $selection_id ),
+			$common_attrs
 		);
 
 		return array_filter(
