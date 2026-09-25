@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Elementor\Controls_Manager;
 use Elementor\Widget_Base;
 use LogicException;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Integration_Category;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor\Cpt_Elementor_Widget;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor\Widget_Dependencies;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -41,8 +41,7 @@ final class Layout_Elementor_Widget extends Widget_Base implements Widget_Depend
 	 * @return string[]
 	 */
 	public function get_categories(): array {
-		// fixme.
-		return array( Cpt_Item_Picker::CATEGORY );
+		return array( Cpt_Integration_Category::NAME );
 	}
 
 	/**

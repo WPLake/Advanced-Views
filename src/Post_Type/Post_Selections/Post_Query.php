@@ -53,7 +53,6 @@ class Post_Query {
 	}
 
 	protected function make_selection_query( Post_Selection_Settings $selection, Query_Context $context ): WP_Selection_Query {
-		// fixme.
 		$this->query_builder->set_query_context( $context );
 		$post_query = $this->query_builder->build_post_query( $selection );
 

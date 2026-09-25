@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Integration_Category;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Gutenberg\Cpt_Gutenberg_Block;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -56,8 +57,7 @@ final class Layout_Gutenberg_Block extends Hookable implements Hooks_Interface {
 		register_block_type(
 			__DIR__ . '/block.json',
 			array(
-				// fixme
-				'category'        => Cpt_Item_Picker::CATEGORY,
+				'category'        => Cpt_Integration_Category::NAME,
 				'supports'        => Cpt_Gutenberg_Block::get_supports(),
 				'attributes'      => $attributes,
 				'render_callback' => array( $this, 'render_block' ),

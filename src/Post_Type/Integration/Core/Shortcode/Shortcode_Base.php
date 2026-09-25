@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Core;
+namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Shortcode;
 
 defined( 'ABSPATH' ) || exit;
 

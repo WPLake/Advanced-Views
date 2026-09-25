@@ -12,6 +12,7 @@ use Elementor\Widgets_Manager;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Integration_Category;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
 
@@ -46,10 +47,9 @@ final class Cpt_Widget_Registrar extends Hookable implements Hooks_Interface {
 		self::add_action(
 			'elementor/elements/categories_registered',
 			fn( Elements_Manager $elements_manager ) => $elements_manager->add_category(
-				// fixme
-				Cpt_Item_Picker::CATEGORY,
+				Cpt_Integration_Category::NAME,
 				array(
-					'title' => __( 'Advanced Views', 'acf-views' ),
+					'title' => Cpt_Integration_Category::get_label(),
 					'icon'  => 'fa fa-plug',
 				)
 			)

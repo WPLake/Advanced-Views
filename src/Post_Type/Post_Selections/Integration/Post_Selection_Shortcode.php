@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Shortcode_Base;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Shortcode\Shortcode_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Selection_Factory;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;

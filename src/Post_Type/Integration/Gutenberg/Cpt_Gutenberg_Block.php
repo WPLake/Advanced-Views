@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Gutenberg;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Integration_Category;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -41,9 +41,8 @@ final class Cpt_Gutenberg_Block {
 		return array_merge(
 			array(
 				array(
-					// fixme
-					'slug'  => Cpt_Item_Picker::CATEGORY,
-					'title' => __( 'Advanced Views', 'acf-views' ),
+					'slug'  => Cpt_Integration_Category::NAME,
+					'title' => Cpt_Integration_Category::get_label(),
 				),
 			),
 			$categories

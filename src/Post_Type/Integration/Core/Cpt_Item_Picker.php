@@ -19,7 +19,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Stora
  * one instance per CPT, owning its "refresh items" REST route.
  */
 final class Cpt_Item_Picker extends Hookable implements Hooks_Interface {
-	const CATEGORY = 'advanced-views';
 	// one route template for every CPT - each instance's actual endpoint is this suffixed with its own cpt_name(),
 	// so Layout's and Selection's registrations never collide despite sharing the same constant.
 	const REST_ROUTE_PREFIX = 'cpt-item-picker';
