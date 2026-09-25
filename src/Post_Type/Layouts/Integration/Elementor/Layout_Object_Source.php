@@ -11,7 +11,7 @@ use Elementor\Widget_Base;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
- * PHP mirror of origin/assets/lite/admin/js/integrations/gutenberg/layout/sourceList.ts's resolveObjectId() - the Gutenberg
+ * PHP mirror of origin/assets/lite/admin/js/integrations/postType/layouts/gutenberg/sourceAttributes.ts's resolveObjectId() - the Gutenberg
  * editor resolves the Object Source controls into the shortcode's 'object-id'/lookup attrs client-side and
  * saves the result as a plain block attribute, but Elementor's render() runs entirely server-side against its
  * own saved control values, so that mapping needs a PHP implementation of its own.
