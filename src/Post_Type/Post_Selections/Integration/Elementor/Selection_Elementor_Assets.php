@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Module_Script_Tag;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 
@@ -61,6 +62,7 @@ final class Selection_Elementor_Assets extends Hookable implements Hooks_Interfa
 			$version,
 			true
 		);
+		Module_Script_Tag::mark( self::EDITOR_NAME );
 
 		wp_localize_script(
 			self::EDITOR_NAME,
@@ -88,5 +90,6 @@ final class Selection_Elementor_Assets extends Hookable implements Hooks_Interfa
 			$version,
 			true
 		);
+		Module_Script_Tag::mark( self::PREVIEW_NAME );
 	}
 }

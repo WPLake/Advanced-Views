@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Module_Script_Tag;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use WP_Post;
@@ -129,6 +130,7 @@ class Live_Reloader_Component extends Hookable implements Hooks_Interface {
 				'in_footer' => true,
 			)
 		);
+		Module_Script_Tag::mark( 'avf-live-reloading' );
 
 		wp_localize_script(
 			'avf-live-reloading',

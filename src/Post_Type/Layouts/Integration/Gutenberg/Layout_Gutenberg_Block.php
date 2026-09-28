@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Module_Script_Tag;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Integration_Category;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
@@ -82,6 +83,7 @@ final class Layout_Gutenberg_Block extends Hookable implements Hooks_Interface {
 			$this->plugin->get_version(),
 			true
 		);
+		Module_Script_Tag::mark( self::NAME );
 
 		wp_localize_script(
 			self::NAME,

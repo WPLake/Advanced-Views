@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Module_Script_Tag;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
 
@@ -136,6 +137,7 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 						// in footer, so if we need to include others, like 'ace.js' we can include in header.
 					)
 				);
+				Module_Script_Tag::mark( Hard_Layout_Cpt::cpt_name() . '_cpt-item' );
 				wp_localize_script( Hard_Layout_Cpt::cpt_name() . '_cpt-item', 'acf_views', $js_data );
 				break;
 			// 'edit' means 'list page'

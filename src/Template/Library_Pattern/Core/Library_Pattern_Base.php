@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Module_Script_Tag;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
 
 abstract class Library_Pattern_Base implements Library_Pattern {
@@ -140,6 +141,7 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 					'strategy'  => 'defer',
 				)
 			);
+			Module_Script_Tag::mark( $this->get_wp_handle( $js_handle ) );
 		}
 
 		$css = '';
