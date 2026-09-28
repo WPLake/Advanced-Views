@@ -91,15 +91,14 @@ final class Layout_Elementor_Widget extends Widget_Base implements Widget_Depend
 			)
 		);
 
-		$this->add_control(
-			'layout_id',
-			array(
-				'label'   => $item_label,
-				'type'    => Controls_Manager::SELECT2,
-				'options' => self::get_widget()
-								->get_item_options(),
-			)
+		$layout_id_args = array(
+			'label'   => $item_label,
+			'type'    => Controls_Manager::SELECT2,
+			'options' => self::get_widget()
+							->get_item_options(),
 		);
+
+		$this->add_control( 'layout_id', $layout_id_args );
 
 		Cpt_Elementor_Widget::add_actions_control( $this );
 		Layout_Object_Source::add_source_controls( $this );
@@ -108,10 +107,10 @@ final class Layout_Elementor_Widget extends Widget_Base implements Widget_Depend
 	}
 
 	protected static function get_widget(): Cpt_Elementor_Widget {
-		if ( ! self::$widget instanceof Cpt_Elementor_Widget ) {
-			throw new LogicException( 'Cpt_Elementor_Widget dependencies were not set before rendering the widget.' );
+		if ( self::$widget instanceof Cpt_Elementor_Widget ) {
+			return self::$widget;
 		}
 
-		return self::$widget;
+		throw new LogicException( 'Cpt_Elementor_Widget dependencies were not set before rendering the widget.' );
 	}
 }
