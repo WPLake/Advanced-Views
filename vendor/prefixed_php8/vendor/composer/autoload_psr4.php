@@ -18,7 +18,7 @@ return array(
     'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Psr\\Clock\\' => array($vendorDir . '/psr/clock/src'),
     'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Jenssegers\\Blade\\' => array($vendorDir . '/jenssegers/blade/src'),
     'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\View\\' => array($vendorDir . '/illuminate/view'),
-    'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Support\\' => array($vendorDir . '/illuminate/collections', $vendorDir . '/illuminate/conditionable', $vendorDir . '/illuminate/macroable', $vendorDir . '/illuminate/support'),
+    'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Support\\' => array($vendorDir . '/illuminate/support', $vendorDir . '/illuminate/collections', $vendorDir . '/illuminate/conditionable', $vendorDir . '/illuminate/macroable'),
     'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Pipeline\\' => array($vendorDir . '/illuminate/pipeline'),
     'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Filesystem\\' => array($vendorDir . '/illuminate/filesystem'),
     'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Events\\' => array($vendorDir . '/illuminate/events'),

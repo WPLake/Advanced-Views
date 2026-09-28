@@ -18,7 +18,7 @@ class ComposerStaticInit_org_wplake_advanced_views_optional_vendors
     );
 
     public static $prefixLengthsPsr4 = array (
-        'O' => 
+        'O' =>
         array (
             'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\voku\\' => 48,
             'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Symfony\\Polyfill\\Php83\\' => 66,
@@ -47,98 +47,98 @@ class ComposerStaticInit_org_wplake_advanced_views_optional_vendors
     );
 
     public static $prefixDirsPsr4 = array (
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\voku\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\voku\\' =>
         array (
             0 => __DIR__ . '/..' . '/voku/portable-ascii/src/voku',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Symfony\\Polyfill\\Php83\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Symfony\\Polyfill\\Php83\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php83',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Symfony\\Polyfill\\Mbstring\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Symfony\\Contracts\\Translation\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Symfony\\Contracts\\Translation\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/translation-contracts',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Symfony\\Component\\Translation\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Symfony\\Component\\Translation\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/translation',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Symfony\\Component\\Finder\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Symfony\\Component\\Finder\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Symfony\\Component\\Clock\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Symfony\\Component\\Clock\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/clock',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Psr\\SimpleCache\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Psr\\SimpleCache\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Psr\\Container\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Psr\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Psr\\Clock\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Psr\\Clock\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/clock/src',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Jenssegers\\Blade\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Jenssegers\\Blade\\' =>
         array (
             0 => __DIR__ . '/..' . '/jenssegers/blade/src',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\View\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\View\\' =>
         array (
             0 => __DIR__ . '/..' . '/illuminate/view',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Support\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Support\\' =>
         array (
-            0 => __DIR__ . '/..' . '/illuminate/collections',
-            1 => __DIR__ . '/..' . '/illuminate/conditionable',
-            2 => __DIR__ . '/..' . '/illuminate/macroable',
-            3 => __DIR__ . '/..' . '/illuminate/support',
+            0 => __DIR__ . '/..' . '/illuminate/support',
+            1 => __DIR__ . '/..' . '/illuminate/collections',
+            2 => __DIR__ . '/..' . '/illuminate/conditionable',
+            3 => __DIR__ . '/..' . '/illuminate/macroable',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Pipeline\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Pipeline\\' =>
         array (
             0 => __DIR__ . '/..' . '/illuminate/pipeline',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Filesystem\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Filesystem\\' =>
         array (
             0 => __DIR__ . '/..' . '/illuminate/filesystem',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Events\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Events\\' =>
         array (
             0 => __DIR__ . '/..' . '/illuminate/events',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Contracts\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Contracts\\' =>
         array (
             0 => __DIR__ . '/..' . '/illuminate/contracts',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Container\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/illuminate/container',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Config\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Config\\' =>
         array (
             0 => __DIR__ . '/..' . '/illuminate/config',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Bus\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Illuminate\\Bus\\' =>
         array (
             0 => __DIR__ . '/..' . '/illuminate/bus',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Doctrine\\Inflector\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Doctrine\\Inflector\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/inflector/lib/Doctrine/Inflector',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Carbon\\Doctrine\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Carbon\\Doctrine\\' =>
         array (
             0 => __DIR__ . '/..' . '/carbonphp/carbon-doctrine-types/src/Carbon/Doctrine',
         ),
-        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Carbon\\' => 
+        'Org\\Wplake\\Advanced_Views\\Optional_Vendors\\Carbon\\' =>
         array (
             0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
         ),
