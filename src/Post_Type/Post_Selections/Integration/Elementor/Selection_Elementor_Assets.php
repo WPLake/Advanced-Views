@@ -67,7 +67,7 @@ final class Selection_Elementor_Assets extends Hookable implements Hooks_Interfa
 			'avfSelectionElementor',
 			array(
 				'itemControlId' => 'selection_id',
-				'itemPicker'    => $this->item_picker->get_js_data(),
+				'itemPicker'    => $this->item_picker->get_public_js_data(),
 			)
 		);
 	}

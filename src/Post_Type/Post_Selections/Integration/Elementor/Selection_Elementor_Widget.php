@@ -52,25 +52,7 @@ final class Selection_Elementor_Widget extends Widget_Base implements Widget_Dep
 	}
 
 	protected function register_controls(): void {
-		$this->start_controls_section(
-			'avf_post_selection_section',
-			array(
-				'label' => __( 'Post Selection', 'acf-views' ),
-			)
-		);
-
-		$this->add_control(
-			'selection_id',
-			array(
-				'label'   => __( 'Post Selection', 'acf-views' ),
-				'type'    => Controls_Manager::SELECT2,
-				'options' => self::get_widget()->get_item_options(),
-			)
-		);
-
-		Cpt_Elementor_Widget::add_action_links( $this );
-
-		$this->end_controls_section();
+		$this->add_selection_controls();
 
 		Cpt_Elementor_Widget::add_common_controls( $this );
 	}
@@ -93,6 +75,31 @@ final class Selection_Elementor_Widget extends Widget_Base implements Widget_Dep
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo self::get_widget()->render( $attrs );
+	}
+
+	private function add_selection_controls(): void {
+		$item_label = __( 'Post Selection', 'acf-views' );
+
+		$this->start_controls_section(
+			'avf_post_selection_section',
+			array(
+				'label' => $item_label,
+			)
+		);
+
+		$this->add_control(
+			'selection_id',
+			array(
+				'label'   => $item_label,
+				'type'    => Controls_Manager::SELECT2,
+				'options' => self::get_widget()
+								->get_item_options(),
+			)
+		);
+
+		Cpt_Elementor_Widget::add_actions_control( $this );
+
+		$this->end_controls_section();
 	}
 
 	protected static function get_widget(): Cpt_Elementor_Widget {

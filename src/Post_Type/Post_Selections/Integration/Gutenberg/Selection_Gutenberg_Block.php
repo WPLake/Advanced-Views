@@ -88,7 +88,7 @@ final class Selection_Gutenberg_Block extends Hookable implements Hooks_Interfac
 			'avfSelectionBlock',
 			array(
 				'blockName'  => self::NAME,
-				'itemPicker' => $this->item_picker->get_js_data(),
+				'itemPicker' => $this->item_picker->get_public_js_data(),
 			)
 		);
 	}

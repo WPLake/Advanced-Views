@@ -59,7 +59,7 @@ final class Layout_Elementor_Assets extends Hookable implements Hooks_Interface 
 			'avfLayoutElementor',
 			array(
 				'itemControlId' => 'layout_id',
-				'itemPicker'    => $this->item_picker->get_js_data(),
+				'itemPicker'    => $this->item_picker->get_public_js_data(),
 			)
 		);
 	}

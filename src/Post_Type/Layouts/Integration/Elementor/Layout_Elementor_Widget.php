@@ -52,26 +52,7 @@ final class Layout_Elementor_Widget extends Widget_Base implements Widget_Depend
 	}
 
 	protected function register_controls(): void {
-		$this->start_controls_section(
-			'avf_layout_section',
-			array(
-				'label' => __( 'Layout', 'acf-views' ),
-			)
-		);
-
-		$this->add_control(
-			'layout_id',
-			array(
-				'label'   => __( 'Layout', 'acf-views' ),
-				'type'    => Controls_Manager::SELECT2,
-				'options' => self::get_widget()->get_item_options(),
-			)
-		);
-		Cpt_Elementor_Widget::add_action_links( $this );
-		Layout_Object_Source::add_source_controls( $this );
-
-		$this->end_controls_section();
-
+		$this->add_layout_controls();
 		Cpt_Elementor_Widget::add_common_controls( $this );
 	}
 
@@ -98,6 +79,32 @@ final class Layout_Elementor_Widget extends Widget_Base implements Widget_Depend
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo self::get_widget()->render( $attrs );
+	}
+
+	private function add_layout_controls(): void {
+		$item_label = __( 'Layout', 'acf-views' );
+
+		$this->start_controls_section(
+			'avf_layout_section',
+			array(
+				'label' => $item_label,
+			)
+		);
+
+		$this->add_control(
+			'layout_id',
+			array(
+				'label'   => $item_label,
+				'type'    => Controls_Manager::SELECT2,
+				'options' => self::get_widget()
+								->get_item_options(),
+			)
+		);
+
+		Cpt_Elementor_Widget::add_actions_control( $this );
+		Layout_Object_Source::add_source_controls( $this );
+
+		$this->end_controls_section();
 	}
 
 	protected static function get_widget(): Cpt_Elementor_Widget {

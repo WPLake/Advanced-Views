@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Core;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
@@ -45,7 +44,7 @@ final class Cpt_Item_Picker extends Hookable implements Hooks_Interface {
 			$route_name,
 			array(
 				'methods'             => 'GET',
-				'permission_callback' => fn(): bool => Avf_User::can_manage(),
+				'permission_callback' => fn(): bool => Cpt_Integration_Category::can_user_manage(),
 				/**
 				 * @return array<string,array{title:string,editUrl:string}>
 				 */
@@ -55,15 +54,16 @@ final class Cpt_Item_Picker extends Hookable implements Hooks_Interface {
 	}
 
 	/**
+	 * The single choke point for every caller (REST callback, get_js_data(), Cpt_Elementor_Widget::add_item_control())
+	 * - guarded here so none of them can end up exposing item titles/edit URLs by forgetting their own check.
+	 *
 	 * @return array<string,string>
 	 */
 	public function get_flat_items(): array {
 		$list = array();
 
-		if ( Avf_User::can_manage() ) {
-			foreach ( $this->settings_storage->get_db_management()->get_post_ids() as $unique_id => $post_id ) {
-				$list[ $unique_id ] = $this->settings_storage->get( $unique_id )->title;
-			}
+		foreach ( $this->settings_storage->get_db_management()->get_post_ids() as $unique_id => $post_id ) {
+			$list[ $unique_id ] = $this->settings_storage->get( $unique_id )->title;
 		}
 
 		return $list;
@@ -93,18 +93,34 @@ final class Cpt_Item_Picker extends Hookable implements Hooks_Interface {
 	/**
 	 * Picker data used in the cptItemPicker.ts
 	 *
-	 * @return array{items:array<string,array{title:string,editUrl:string}>,newItemUrl:string,itemsRestUrl:string,canManage:bool,itemLabel:string}
+	 * @return array<string,mixed>
 	 */
-	public function get_js_data(): array {
-		$cpt_name     = $this->cpt->cpt_name();
-		$new_item_url = sprintf( 'post-new.php?post_type=%s', $cpt_name );
-		$route_name   = $this->get_route_name();
+	public function get_public_js_data(): array {
+		$can_user_manage = Cpt_Integration_Category::can_user_manage();
+		$items           = $this->get_items();
+		$actions_data    = $can_user_manage ?
+			$this->get_actions_js_data() :
+			array();
 
 		return array(
-			'items'        => $this->get_items(),
+			'items'     => $items,
+			'canManage' => $can_user_manage,
+			'actions'   => $actions_data,
+		);
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	protected function get_actions_js_data(): array {
+		$cpt_name     = $this->cpt->cpt_name();
+		$new_item_url = sprintf( 'post-new.php?post_type=%s', $cpt_name );
+
+		$route_name = $this->get_route_name();
+
+		return array(
 			'newItemUrl'   => admin_url( $new_item_url ),
 			'itemsRestUrl' => sprintf( '/%s/%s', Plugin::REST_NAMESPACE, $route_name ),
-			'canManage'    => Avf_User::can_manage(),
 			'itemLabel'    => $this->cpt->labels()->singular_name(),
 		);
 	}

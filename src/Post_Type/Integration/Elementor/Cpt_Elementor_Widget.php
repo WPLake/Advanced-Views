@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Elementor\Controls_Manager;
 use Elementor\Plugin as Elementor_Plugin;
 use Elementor\Widget_Base;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Integration_Category;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -46,15 +47,17 @@ final class Cpt_Elementor_Widget {
 	 * controls once per widget type, not per saved instance, so only type-level state (nothing selected yet)
 	 * renders here; the JS side (actionLinks.ts) swaps in the "Edit" link once it knows the selected item.
 	 */
-	public static function add_action_links( Widget_Base $widget ): void {
-		$widget->add_control(
-			self::ACTION_LINKS_CONTROL_ID,
-			array(
-				'type' => Controls_Manager::RAW_HTML,
-				// HTML is set on the JS side.
-				'raw'  => '',
-			)
-		);
+	public static function add_actions_control( Widget_Base $widget ): void {
+		if ( Cpt_Integration_Category::can_user_manage() ) {
+			$widget->add_control(
+				self::ACTION_LINKS_CONTROL_ID,
+				array(
+					'type' => Controls_Manager::RAW_HTML,
+					// HTML is set on the JS side.
+					'raw'  => '',
+				)
+			);
+		}
 	}
 
 	public static function add_common_controls( Widget_Base $widget ): void {
