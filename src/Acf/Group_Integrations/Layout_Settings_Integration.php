@@ -25,35 +25,30 @@ class Layout_Settings_Integration extends Acf_Integration {
 		$this->engines_storage  = $engines_storage;
 	}
 
+	/**
+	 * @return array<string,string>
+	 */
+	protected function get_parent_field_choices(): array {
+		return $this->provider_cluster->get_field_choices( true, true );
+	}
+
+	/**
+	 * @return array<string,callable(): array<string,string>>
+	 */
+	protected function get_choices_callbacks(): array {
+		return array(
+			Layout_Settings::FIELD_GROUP           =>
+				fn() => $this->provider_cluster->get_group_choices(),
+			Layout_Settings::FIELD_PARENT_FIELD    =>
+				fn() => $this->get_parent_field_choices(),
+			Layout_Settings::FIELD_TEMPLATE_ENGINE =>
+				fn() => $this->engines_storage->get_choices(),
+		);
+	}
+
 	protected function set_field_choices(): void {
-		self::add_filter(
-			'acf/load_field/name=' . Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_GROUP ),
-			function ( array $field ) {
-				$field['choices'] = $this->provider_cluster->get_group_choices();
+		$choices_callbacks = $this->get_choices_callbacks();
 
-				return $field;
-			}
-		);
-
-		self::add_filter(
-			'acf/load_field/name=' . Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_PARENT_FIELD ),
-			function ( array $field ) {
-				$field['choices'] = $this->provider_cluster->get_field_choices(
-					true,
-					true
-				);
-
-				return $field;
-			}
-		);
-
-		self::add_filter(
-			'acf/load_field/name=' . Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_TEMPLATE_ENGINE ),
-			function ( array $field ) {
-				$field['choices'] = $this->engines_storage->get_choices();
-
-				return $field;
-			}
-		);
+		self::bind_field_choices( Layout_Settings::class, $choices_callbacks );
 	}
 }

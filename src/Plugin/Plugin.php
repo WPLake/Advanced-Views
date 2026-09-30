@@ -257,6 +257,16 @@ class Plugin extends Hookable implements Hooks_Interface {
 		return __( '[Pro-only]', 'acf-views' );
 	}
 
+	public function get_pro_field_label( string $label ): string {
+		if ( $this->is_pro_field_locked() ) {
+			$pro_only_label = $this->get_pro_only_label();
+
+			return sprintf( '%s %s', $label, $pro_only_label );
+		}
+
+		return $label;
+	}
+
 	public function get_name(): string {
 		return __( 'Advanced Views Lite', 'acf-views' );
 	}

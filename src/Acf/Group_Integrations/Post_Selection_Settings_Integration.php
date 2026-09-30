@@ -42,51 +42,28 @@ class Post_Selection_Settings_Integration extends Acf_Integration {
 		return get_post_statuses();
 	}
 
+	/**
+	 * @return array<string,callable(): array<string,string>>
+	 */
+	protected function get_choices_callbacks(): array {
+		return array(
+			Post_Selection_Settings::FIELD_ORDER_BY_META_FIELD_GROUP =>
+				fn() => $this->provider_cluster->get_group_choices( true ),
+			Post_Selection_Settings::FIELD_ORDER_BY_META_FIELD_KEY =>
+				fn() => $this->provider_cluster->get_field_choices( true ),
+			Post_Selection_Settings::FIELD_POST_TYPES      =>
+				fn() => $this->get_post_type_choices(),
+			Post_Selection_Settings::FIELD_POST_STATUSES   =>
+				fn() => $this->get_post_status_choices(),
+			Post_Selection_Settings::FIELD_TEMPLATE_ENGINE =>
+				fn() => $this->engines_storage->get_choices(),
+		);
+	}
+
 	protected function set_field_choices(): void {
-		self::add_filter(
-			'acf/load_field/name=' . Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_ORDER_BY_META_FIELD_GROUP ),
-			function ( array $field ) {
-				$field['choices'] = $this->provider_cluster->get_group_choices( true );
+		$choices_callbacks = $this->get_choices_callbacks();
 
-				return $field;
-			}
-		);
-
-		self::add_filter(
-			'acf/load_field/name=' . Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_ORDER_BY_META_FIELD_KEY ),
-			function ( array $field ) {
-				$field['choices'] = $this->provider_cluster->get_field_choices( true );
-
-				return $field;
-			}
-		);
-
-		self::add_filter(
-			'acf/load_field/name=' . Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_POST_TYPES ),
-			function ( array $field ) {
-				$field['choices'] = $this->get_post_type_choices();
-
-				return $field;
-			}
-		);
-
-		self::add_filter(
-			'acf/load_field/name=' . Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_POST_STATUSES ),
-			function ( array $field ) {
-				$field['choices'] = $this->get_post_status_choices();
-
-				return $field;
-			}
-		);
-
-		self::add_filter(
-			'acf/load_field/name=' . Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_TEMPLATE_ENGINE ),
-			function ( array $field ) {
-				$field['choices'] = $this->engines_storage->get_choices();
-
-				return $field;
-			}
-		);
+		self::bind_field_choices( Post_Selection_Settings::class, $choices_callbacks );
 	}
 
 	/**

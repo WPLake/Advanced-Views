@@ -18,14 +18,19 @@ class Item_Settings_Integration extends Acf_Integration {
 		$this->provider_cluster = $provider_cluster;
 	}
 
-	protected function set_field_choices(): void {
-		self::add_filter(
-			'acf/load_field/name=' . Item_Settings::getAcfFieldName( Item_Settings::FIELD_GROUP ),
-			function ( array $field ) {
-				$field['choices'] = $this->provider_cluster->get_group_choices();
-
-				return $field;
-			}
+	/**
+	 * @return array<string,callable(): array<string,string>>
+	 */
+	protected function get_choices_callbacks(): array {
+		return array(
+			Item_Settings::FIELD_GROUP =>
+				fn() => $this->provider_cluster->get_group_choices(),
 		);
+	}
+
+	protected function set_field_choices(): void {
+		$choices_callbacks = $this->get_choices_callbacks();
+
+		self::bind_field_choices( Item_Settings::class, $choices_callbacks );
 	}
 }

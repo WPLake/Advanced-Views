@@ -70,77 +70,53 @@ class Tax_Field_Settings_Integration extends Acf_Integration {
 		return $term_choices;
 	}
 
+	/**
+	 * @return array<string,string>
+	 */
+	protected function get_value_type_choices(): array {
+		$dynamic_label = __( 'Dynamic term', 'acf-views' );
+		$dynamic_label = $this->plugin->get_pro_field_label( $dynamic_label );
+
+		return array(
+			Tax_Field_Settings::VALUE_TYPE_STATIC  => __( 'Static term', 'acf-views' ),
+			Tax_Field_Settings::VALUE_TYPE_DYNAMIC => $dynamic_label,
+		);
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	protected static function get_dynamic_term_choices(): array {
+		return array(
+			'$current$'         => __( 'Current term (archive and category pages)', 'acf-views' ),
+			'$meta$'            => __( 'Meta field value', 'acf-views' ),
+			'$custom-argument$' => __( 'Custom shortcode argument', 'acf-views' ),
+		);
+	}
+
+	/**
+	 * @return array<string,callable(): array<string,string>>
+	 */
+	protected function get_choices_callbacks(): array {
+		return array(
+			Tax_Field_Settings::FIELD_TAXONOMY     =>
+				fn() => $this->get_taxonomy_choices(),
+			Tax_Field_Settings::FIELD_VALUE_TYPE   =>
+				fn() => $this->get_value_type_choices(),
+			Tax_Field_Settings::FIELD_TERM         =>
+				fn() => $this->get_term_choices(),
+			Tax_Field_Settings::FIELD_DYNAMIC_TERM =>
+				fn() => self::get_dynamic_term_choices(),
+			Tax_Field_Settings::FIELD_META_GROUP   =>
+				fn() => $this->provider_cluster->get_group_choices( true ),
+			Tax_Field_Settings::FIELD_META_FIELD   =>
+				fn() => $this->provider_cluster->get_field_choices( true ),
+		);
+	}
+
 	protected function set_field_choices(): void {
-		// fixme improve this pattern accross all Acf_integration children.
-		// add a static helper to the parent, which takes ['field' => callback] array, loops, resolves field name, adds filter & merge callback.
-		// return should be merged exactly on the level above, so callbacks don't own "merge_array" complicity. pass $field to the callback, but do not declare it in callbacks until it's used.
-		// then move all set_field_choices() to this single call.
-		self::add_filter(
-			'acf/load_field/name=' . Tax_Field_Settings::getAcfFieldName( Tax_Field_Settings::FIELD_TAXONOMY ),
-			function ( array $field ) {
-				$field['choices'] = $this->get_taxonomy_choices();
+		$choices_callbacks = $this->get_choices_callbacks();
 
-				return $field;
-			}
-		);
-
-		self::add_filter(
-			'acf/load_field/name=' . Tax_Field_Settings::getAcfFieldName( Tax_Field_Settings::FIELD_VALUE_TYPE ),
-			function ( array $field ) {
-				$dynamic_label = __( 'Dynamic term', 'acf-views' );
-
-				// fixme must turned into a call to the ->get_pro_field_label(label), so this check & append happens there.
-				if ( $this->plugin->is_pro_field_locked() ) {
-					$dynamic_label .= ' ' . $this->plugin->get_pro_only_label();
-				}
-
-				$field['choices'] = array(
-					Tax_Field_Settings::VALUE_TYPE_STATIC  => __( 'Static term', 'acf-views' ),
-					Tax_Field_Settings::VALUE_TYPE_DYNAMIC => $dynamic_label,
-				);
-
-				return $field;
-			}
-		);
-
-		self::add_filter(
-			'acf/load_field/name=' . Tax_Field_Settings::getAcfFieldName( Tax_Field_Settings::FIELD_TERM ),
-			function ( array $field ) {
-				$field['choices'] = $this->get_term_choices();
-
-				return $field;
-			}
-		);
-
-		self::add_filter(
-			'acf/load_field/name=' . Tax_Field_Settings::getAcfFieldName( Tax_Field_Settings::FIELD_DYNAMIC_TERM ),
-			function ( array $field ) {
-				$field['choices'] = array(
-					'$current$'         => __( 'Current term (archive and category pages)', 'acf-views' ),
-					'$meta$'            => __( 'Meta field value', 'acf-views' ),
-					'$custom-argument$' => __( 'Custom shortcode argument', 'acf-views' ),
-				);
-
-				return $field;
-			}
-		);
-
-		self::add_filter(
-			'acf/load_field/name=' . Tax_Field_Settings::getAcfFieldName( Tax_Field_Settings::FIELD_META_GROUP ),
-			function ( array $field ) {
-				$field['choices'] = $this->provider_cluster->get_group_choices( true );
-
-				return $field;
-			}
-		);
-
-		self::add_filter(
-			'acf/load_field/name=' . Tax_Field_Settings::getAcfFieldName( Tax_Field_Settings::FIELD_META_FIELD ),
-			function ( array $field ) {
-				$field['choices'] = $this->provider_cluster->get_field_choices( true );
-
-				return $field;
-			}
-		);
+		self::bind_field_choices( Tax_Field_Settings::class, $choices_callbacks );
 	}
 }

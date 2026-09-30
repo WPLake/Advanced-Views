@@ -202,42 +202,38 @@ class Field_Settings_Integration extends Acf_Integration {
 		return $image_size_choices;
 	}
 
+	/**
+	 * @return array<string,callable(): array<string,string>>
+	 */
+	protected function get_field_choices_callbacks(): array {
+		return array(
+			Field_Settings::FIELD_KEY        =>
+				fn() => $this->provider_cluster->get_field_choices(),
+			Field_Settings::FIELD_IMAGE_SIZE =>
+				fn() => $this->get_image_sizes(),
+		);
+	}
+
+	/**
+	 * @return array<string,callable(): array<string,string>>
+	 */
+	protected function get_repeater_choices_callbacks(): array {
+		return array(
+			Repeater_Field_Settings::FIELD_KEY        =>
+				fn() => $this->provider_cluster->get_sub_field_choices(),
+			Repeater_Field_Settings::FIELD_IMAGE_SIZE =>
+				fn() => $this->get_image_sizes(),
+		);
+	}
+
 	protected function set_field_choices(): void {
-		self::add_filter(
-			'acf/load_field/name=' . Field_Settings::getAcfFieldName( Field_Settings::FIELD_KEY ),
-			function ( array $field ) {
-				$field['choices'] = $this->provider_cluster->get_field_choices();
+		$field_choices_callbacks = $this->get_field_choices_callbacks();
 
-				return $field;
-			}
-		);
+		self::bind_field_choices( Field_Settings::class, $field_choices_callbacks );
 
-		self::add_filter(
-			'acf/load_field/name=' . Repeater_Field_Settings::getAcfFieldName( Repeater_Field_Settings::FIELD_KEY ),
-			function ( array $field ) {
-				$field['choices'] = $this->provider_cluster->get_sub_field_choices();
+		$repeater_choices_callbacks = $this->get_repeater_choices_callbacks();
 
-				return $field;
-			}
-		);
-
-		self::add_filter(
-			'acf/load_field/name=' . Field_Settings::getAcfFieldName( Field_Settings::FIELD_IMAGE_SIZE ),
-			function ( array $field ) {
-				$field['choices'] = $this->get_image_sizes();
-
-				return $field;
-			}
-		);
-
-		self::add_filter(
-			'acf/load_field/name=' . Repeater_Field_Settings::getAcfFieldName( Repeater_Field_Settings::FIELD_IMAGE_SIZE ),
-			function ( array $field ) {
-				$field['choices'] = $this->get_image_sizes();
-
-				return $field;
-			}
-		);
+		self::bind_field_choices( Repeater_Field_Settings::class, $repeater_choices_callbacks );
 	}
 
 	public function print_add_new_view_link(): void {
