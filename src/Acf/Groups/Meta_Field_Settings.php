@@ -13,6 +13,7 @@ class Meta_Field_Settings extends Group {
 	const CUSTOM_GROUP_NAME           = self::GROUP_NAME_PREFIX . 'meta-field';
 	const FIELD_GROUP                 = 'group';
 	const FIELD_FIELD_KEY             = 'field_key';
+	const FIELD_VALUE_TYPE            = 'value_type';
 	const FIELD_DYNAMIC_SOURCE        = 'dynamic_source';
 	const FIELD_DYNAMIC_POST_GROUP    = 'dynamic_post_group';
 	const FIELD_DYNAMIC_POST_FIELD    = 'dynamic_post_field';
@@ -60,7 +61,6 @@ class Meta_Field_Settings extends Group {
 	 * @a-type select
 	 * @label Value Type
 	 * @instructions Choose the compared value type
-	 * @choices {"literal":"Static value","dynamic":"Dynamic value"}
 	 * @default_value literal
 	 * @conditional_logic [[{"field": "local_acf_views_meta-field__comparison","operator": "!=","value": "EXISTS"},{"field": "local_acf_views_meta-field__comparison","operator": "!=","value": "NOT EXISTS"}]]
 	 */
@@ -72,6 +72,7 @@ class Meta_Field_Settings extends Group {
 	 */
 	public string $value;
 	/**
+	 * @a-pro 1
 	 * @a-type select
 	 * @return_format value
 	 * @label Dynamic Source
@@ -80,6 +81,7 @@ class Meta_Field_Settings extends Group {
 	 */
 	public string $dynamic_source;
 	/**
+	 * @a-pro 1
 	 * @a-type select
 	 * @return_format value
 	 * @ui 1
@@ -89,6 +91,7 @@ class Meta_Field_Settings extends Group {
 	 */
 	public string $dynamic_post_group;
 	/**
+	 * @a-pro 1
 	 * @a-type select
 	 * @return_format value
 	 * @label Post Field
@@ -97,18 +100,21 @@ class Meta_Field_Settings extends Group {
 	 */
 	public string $dynamic_post_field;
 	/**
+	 * @a-pro 1
 	 * @label Date Modifier
 	 * @instructions Optionally enter a <a target='_blank' href='https://www.php.net/manual/en/function.strtotime.php'>relative date modifier</a> (e.g. <strong>+1 day</strong>, <strong>-1 week</strong>) to offset the current date/time. Leave empty to use the current date/time as-is.
 	 * @conditional_logic [[{"field": "local_acf_views_meta-field__dynamic-source","operator": "==","value": "$now$"}]]
 	 */
 	public string $dynamic_date_modifier;
 	/**
+	 * @a-pro 1
 	 * @label Query Parameter Name
 	 * @instructions Enter the name of the URL query parameter (from &#36;_GET) whose value should be picked up dynamically.
 	 * @conditional_logic [[{"field": "local_acf_views_meta-field__dynamic-source","operator": "==","value": "$query$."}]]
 	 */
 	public string $dynamic_query_field;
 	/**
+	 * @a-pro 1
 	 * @label Custom Argument Name
 	 * @instructions Enter the <a target='_blank' href='https://docs.advanced-views.com/post-selections/embedding-shortcode'>custom shortcode argument</a> name whose value should be picked up dynamically.
 	 * @conditional_logic [[{"field": "local_acf_views_meta-field__dynamic-source","operator": "==","value": "$custom-arguments$."}]]

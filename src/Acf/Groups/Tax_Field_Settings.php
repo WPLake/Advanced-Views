@@ -44,7 +44,7 @@ class Tax_Field_Settings extends Group {
 	 * @label Value Type
 	 * @instructions Choose the compared value type
 	 * @default_value static
-	 * @conditional_logic [[{"field": "local_acf_views_meta-field__comparison","operator": "!=","value": "EXISTS"},{"field": "local_acf_views_meta-field__comparison","operator": "!=","value": "NOT EXISTS"}]]
+	 * @conditional_logic [[{"field": "local_acf_views_tax-field__comparison","operator": "!=","value": "EXISTS"},{"field": "local_acf_views_tax-field__comparison","operator": "!=","value": "NOT EXISTS"}]]
 	 */
 	public string $value_type;
 	/**

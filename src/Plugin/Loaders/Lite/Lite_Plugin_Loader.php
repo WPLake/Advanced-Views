@@ -209,7 +209,8 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		// metaField is a part of the Meta Filter, so we use 'cardsCpt' here.
 		$this->meta_field_settings_integration        = new Meta_Field_Settings_Integration(
 			$this->post_selection_cpt->cpt_name(),
-			$this->provider_cluster
+			$this->provider_cluster,
+			$this->plugin
 		);
 		$this->layout_mount_point_integration         = new Mount_Point_Settings_Integration(
 			$this->layout_cpt->cpt_name()

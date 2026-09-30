@@ -188,7 +188,6 @@ class Post_Selection_Settings extends Cpt_Settings {
 	/**
 	 * @a-type tab
 	 * @label Meta Filters
-	 * @a-pro 1
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
 	 */
 	public bool $meta_filters_tab;

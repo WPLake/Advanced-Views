@@ -37,7 +37,7 @@ class Field_Settings_Integration extends Acf_Integration {
 	 * @param array<string|int,mixed> $field
 	 * @param array<int, int|string> $equal_values
 	 *
-	 * @return array<string,array<int,mixed>>
+	 * @return array<string,mixed>
 	 */
 	protected function get_conditional_rules(
 		array $field,

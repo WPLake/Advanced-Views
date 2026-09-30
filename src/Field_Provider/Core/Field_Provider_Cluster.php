@@ -26,6 +26,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 abstract class Field_Provider_Cluster extends Action implements Hooks_Interface {
 	/**
@@ -92,7 +93,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	}
 
 	/**
-	 * @return array<string|int, string|Field_Meta>
+	 * @return array<string,string>
 	 */
 	public function get_field_choices(
 		bool $is_only_meta_vendors = false,
@@ -123,7 +124,9 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 
 			$choices = array_merge(
 				$choices,
-				$data_vendor->get_field_choices( $only_field_types, false, $is_field_name_as_label )
+				self::get_label_choices(
+					$data_vendor->get_field_choices( $only_field_types, false, $is_field_name_as_label )
+				)
 			);
 		}
 
@@ -131,7 +134,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	}
 
 	/**
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string,string>
 	 */
 	public function get_sub_field_choices( bool $is_only_meta_vendors = false, bool $is_field_name_as_label = false ): array {
 		$choices = array(
@@ -144,7 +147,10 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 				continue;
 			}
 
-			$choices = array_merge( $choices, $data_vendor->get_sub_field_choices( false, $is_field_name_as_label ) );
+			$choices = array_merge(
+				$choices,
+				self::get_label_choices( $data_vendor->get_sub_field_choices( false, $is_field_name_as_label ) )
+			);
 		}
 
 		return $choices;
@@ -642,5 +648,24 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 		);
 
 		return in_array( Field_Settings::FIELD_ACF_VIEW_ID, $conditional_fields, true );
+	}
+
+	/**
+	 * Non-meta format choices are always labels, Field_Meta appears only in the meta format.
+	 *
+	 * @param array<string|int,Field_Meta|string> $choices
+	 *
+	 * @return array<string,string>
+	 */
+	protected static function get_label_choices( array $choices ): array {
+		$label_choices = array();
+
+		foreach ( $choices as $key => $label ) {
+			if ( is_string( $label ) ) {
+				$label_choices[ string( $key ) ] = $label;
+			}
+		}
+
+		return $label_choices;
 	}
 }

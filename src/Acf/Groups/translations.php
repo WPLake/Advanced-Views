@@ -226,8 +226,6 @@ __("Contains", "acf-views");
 __("Does not contain", "acf-views");
 __("Exists", "acf-views");
 __("Does not exist", "acf-views");
-__("Static value", "acf-views");
-__("Dynamic value", "acf-views");
 
 // Meta_Filter_Settings.php : labels
 
