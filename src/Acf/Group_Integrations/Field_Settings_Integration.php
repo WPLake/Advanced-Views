@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Acf\Group_Integrations;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
@@ -14,6 +15,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 class Field_Settings_Integration extends Acf_Integration {
 	use Safe_Array_Arguments;
@@ -35,22 +37,19 @@ class Field_Settings_Integration extends Acf_Integration {
 	 * @param array<string|int,mixed> $field
 	 * @param array<int, int|string> $equal_values
 	 *
-	 * @return array<string|int,mixed>
+	 * @return array<string,array<int,mixed>>
 	 */
-	protected function set_conditional_rules_for_field(
+	protected function get_conditional_rules(
 		array $field,
 		string $target_field,
 		array $equal_values
 	): array {
 		// multiple calls of this method are allowed.
-		if ( ! isset( $field['conditional_logic'] ) ||
-			! is_array( $field['conditional_logic'] ) ) {
-			$field['conditional_logic'] = array();
-		}
+		$conditional_logic = arr( $field, 'conditional_logic' );
 
 		foreach ( $equal_values as $equal_value ) {
 			// using the OR rule.
-			$field['conditional_logic'][] = array(
+			$conditional_logic[] = array(
 				array(
 					'field'    => $target_field,
 					'operator' => '==',
@@ -59,7 +58,7 @@ class Field_Settings_Integration extends Acf_Integration {
 			);
 		}
 
-		return $field;
+		return array( 'conditional_logic' => $conditional_logic );
 	}
 
 	/**
@@ -77,9 +76,9 @@ class Field_Settings_Integration extends Acf_Integration {
 			Field_Settings::getAcfFieldName( Field_Settings::FIELD_KEY ) :
 			Repeater_Field_Settings::getAcfFieldName( Repeater_Field_Settings::FIELD_KEY );
 
-		self::add_filter(
-			'acf/load_field/name=' . $acf_field_name,
-			fn( array $field ) => $this->set_conditional_rules_for_field(
+		Acf_Utils::override_field_settings(
+			$acf_field_name,
+			fn( array $field ) => $this->get_conditional_rules(
 				$field,
 				$acf_key,
 				$target_choices
@@ -97,9 +96,11 @@ class Field_Settings_Integration extends Acf_Integration {
 		);
 
 		foreach ( $masonry_fields as $masonry_field ) {
-			self::add_filter(
-				'acf/load_field/name=' . Field_Settings::getAcfFieldName( $masonry_field ),
-				fn( array $field ) => $this->set_conditional_rules_for_field(
+			$acf_field_name = Field_Settings::getAcfFieldName( $masonry_field );
+
+			Acf_Utils::override_field_settings(
+				$acf_field_name,
+				fn( array $field ) => $this->get_conditional_rules(
 					$field,
 					Field_Settings::getAcfFieldName( Field_Settings::FIELD_GALLERY_TYPE ),
 					array( 'masonry' ),
@@ -114,9 +115,11 @@ class Field_Settings_Integration extends Acf_Integration {
 		);
 
 		foreach ( $masonry_repeater_fields as $masonry_repeater_field ) {
-			self::add_filter(
-				'acf/load_field/name=' . Repeater_Field_Settings::getAcfFieldName( $masonry_repeater_field ),
-				fn( array $field ) => $this->set_conditional_rules_for_field(
+			$acf_field_name = Repeater_Field_Settings::getAcfFieldName( $masonry_repeater_field );
+
+			Acf_Utils::override_field_settings(
+				$acf_field_name,
+				fn( array $field ) => $this->get_conditional_rules(
 					$field,
 					Repeater_Field_Settings::getAcfFieldName( Repeater_Field_Settings::FIELD_GALLERY_TYPE ),
 					array( 'masonry' ),
@@ -126,8 +129,10 @@ class Field_Settings_Integration extends Acf_Integration {
 
 		// repeaterFields tab ('repeater' + 'group').
 
-		self::add_filter(
-			'acf/load_field/name=' . Item_Settings::getAcfFieldName( Item_Settings::FIELD_REPEATER_FIELDS_TAB ),
+		$repeater_tab_name = Item_Settings::getAcfFieldName( Item_Settings::FIELD_REPEATER_FIELDS_TAB );
+
+		Acf_Utils::override_field_settings(
+			$repeater_tab_name,
 			function ( array $field ) {
 				// using exactly the negative (excludeTypes) filter,
 				// otherwise if there are no such fields the field will be visible.
@@ -139,7 +144,7 @@ class Field_Settings_Integration extends Acf_Integration {
 					$sub_field_choices[] = '_not_exising_option';
 				}
 
-				return $this->set_conditional_rules_for_field(
+				return $this->get_conditional_rules(
 					$field,
 					Field_Settings::getAcfFieldName( Field_Settings::FIELD_KEY ),
 					$sub_field_choices
@@ -229,11 +234,11 @@ class Field_Settings_Integration extends Acf_Integration {
 	protected function set_field_choices(): void {
 		$field_choices_callbacks = $this->get_field_choices_callbacks();
 
-		self::bind_field_choices( Field_Settings::class, $field_choices_callbacks );
+		Acf_Utils::bind_field_choices( Field_Settings::class, $field_choices_callbacks );
 
 		$repeater_choices_callbacks = $this->get_repeater_choices_callbacks();
 
-		self::bind_field_choices( Repeater_Field_Settings::class, $repeater_choices_callbacks );
+		Acf_Utils::bind_field_choices( Repeater_Field_Settings::class, $repeater_choices_callbacks );
 	}
 
 	public function print_add_new_view_link(): void {

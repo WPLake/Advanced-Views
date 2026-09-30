@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Acf\Group_Integrations;
 
+use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
@@ -63,7 +64,7 @@ class Post_Selection_Settings_Integration extends Acf_Integration {
 	protected function set_field_choices(): void {
 		$choices_callbacks = $this->get_choices_callbacks();
 
-		self::bind_field_choices( Post_Selection_Settings::class, $choices_callbacks );
+		Acf_Utils::bind_field_choices( Post_Selection_Settings::class, $choices_callbacks );
 	}
 
 	/**

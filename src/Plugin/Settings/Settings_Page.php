@@ -6,6 +6,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Plugin\Settings;
 
 use Exception;
+use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
 use Org\Wplake\Advanced_Views\Acf\Groups\Git_Repository;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 use Org\Wplake\Advanced_Views\Acf\Groups\Plugin_Settings;
@@ -73,14 +74,12 @@ final class Settings_Page extends Action implements Hooks_Interface {
 			self::add_action( 'acf/save_post', array( $this, 'maybe_process' ), 20 );
 			self::add_action( 'acf/input/admin_head', array( $this, 'maybe_inject_values' ) );
 
-			self::add_filter(
-				'acf/load_field/name=' . Plugin_Settings::getAcfFieldName( Plugin_Settings::FIELD_TEMPLATE_ENGINE ),
-				function ( array $field ) {
-					$field['choices'] = $this->engines_storage->get_choices();
-
-					return $field;
-				}
+			$choices_callbacks = array(
+				Plugin_Settings::FIELD_TEMPLATE_ENGINE =>
+					fn() => $this->engines_storage->get_choices(),
 			);
+
+			Acf_Utils::bind_field_choices( Plugin_Settings::class, $choices_callbacks );
 		}
 	}
 
