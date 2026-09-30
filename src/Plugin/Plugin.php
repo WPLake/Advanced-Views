@@ -259,9 +259,12 @@ class Plugin extends Hookable implements Hooks_Interface {
 
 	public function get_pro_field_label( string $label ): string {
 		if ( $this->is_pro_field_locked() ) {
-			$pro_only_label = $this->get_pro_only_label();
+			$parts = array(
+				$label,
+				$this->get_pro_only_label(),
+			);
 
-			return sprintf( '%s %s', $label, $pro_only_label );
+			return join( ' ', $parts );
 		}
 
 		return $label;
