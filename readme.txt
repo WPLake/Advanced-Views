@@ -211,6 +211,7 @@ Advanced Views lets you display fields from almost any WordPress data source:
 
 = 3.9.7 (2026-09) =
 - Feature: Elementor integration (Layout & Selection integration widgets)
+- Readme: updated old Docs links
 
 = 3.9.6 (2026-09-08) =
 - Feature: Gutenberg integration (Layout & Selection integration blocks)
@@ -387,7 +388,7 @@ Advanced Views lets you display fields from almost any WordPress data source:
 
 = 3.6.1 (2024-06-21): =
 - Card: fixed 'pages_amount' is missing for the 'Source: Page context'
-- Translations: updated and added the Performant feature support 
+- Translations: updated and added the Performant feature support
 
 = 3.6.0 (2024-06-19): =
 - Card: added a new option to load posts from the page context (e.g. archive/author/category)
@@ -409,7 +410,7 @@ Advanced Views lets you display fields from almost any WordPress data source:
 - Added support for Taxonomies without string titles
 - Added Defaults tab in the settings
 - Added a setting to control the class generation in the default template
-- Fixed a custom-arguments shortcode-related bug when passed array via Bridge/View_Shortcode 
+- Fixed a custom-arguments shortcode-related bug when passed array via Bridge/View_Shortcode
 
 = 3.4.9 (2024-04-11): =
 - Enhanced automatic field id generation: now a) uses field name instead of label b) converts non-English locales (on hosting with php-intl extension)
