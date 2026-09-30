@@ -12,6 +12,7 @@ class Tax_Field_Settings extends Group {
 	// to fix the group name in case class name changes.
 	const CUSTOM_GROUP_NAME  = self::GROUP_NAME_PREFIX . 'tax-field';
 	const FIELD_TAXONOMY     = 'taxonomy';
+	const FIELD_VALUE_TYPE   = 'value_type';
 	const FIELD_TERM         = 'term';
 	const FIELD_DYNAMIC_TERM = 'dynamic_term';
 	const FIELD_META_GROUP   = 'meta_group';
@@ -42,7 +43,6 @@ class Tax_Field_Settings extends Group {
 	 * @a-type select
 	 * @label Value Type
 	 * @instructions Choose the compared value type
-	 * @choices {"static":"Static term","dynamic":"Dynamic term"}
 	 * @default_value static
 	 * @conditional_logic [[{"field": "local_acf_views_meta-field__comparison","operator": "!=","value": "EXISTS"},{"field": "local_acf_views_meta-field__comparison","operator": "!=","value": "NOT EXISTS"}]]
 	 */
@@ -56,6 +56,7 @@ class Tax_Field_Settings extends Group {
 	 */
 	public string $term;
 	/**
+	 * @a-pro 1
 	 * @a-type select
 	 * @return_format value
 	 * @label Dynamic Source
@@ -64,6 +65,7 @@ class Tax_Field_Settings extends Group {
 	 */
 	public string $dynamic_term;
 	/**
+	 * @a-pro 1
 	 * @a-type select
 	 * @return_format value
 	 * @label Source meta group
@@ -72,6 +74,7 @@ class Tax_Field_Settings extends Group {
 	 */
 	public string $meta_group;
 	/**
+	 * @a-pro 1
 	 * @a-type select
 	 * @return_format value
 	 * @label Source meta field
@@ -80,6 +83,7 @@ class Tax_Field_Settings extends Group {
 	 */
 	public string $meta_field;
 	/**
+	 * @a-pro 1
 	 * @label Custom argument name
 	 * @instructions Enter the <a target='_blank' href='https://docs.advanced-views.com/post-selections/embedding-shortcode'>custom shortcode argument</a> name which will be used in the query.
 	 * @conditional_logic [[{"field": "local_acf_views_tax-field__dynamic-term","operator": "==","value": "$custom-argument$"}]]

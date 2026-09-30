@@ -521,8 +521,6 @@ __("Equal to", "acf-views");
 __("Not Equal to", "acf-views");
 __("Exists", "acf-views");
 __("Does Not Exist", "acf-views");
-__("Static term", "acf-views");
-__("Dynamic term", "acf-views");
 
 // Tax_Filter_Settings.php : labels
 

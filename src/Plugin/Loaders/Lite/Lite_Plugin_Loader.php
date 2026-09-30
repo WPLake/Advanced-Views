@@ -219,7 +219,8 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		);
 		$this->tax_field_settings_integration         = new Tax_Field_Settings_Integration(
 			$this->post_selection_cpt->cpt_name(),
-			$this->provider_cluster
+			$this->provider_cluster,
+			$this->plugin
 		);
 		$this->tools_settings_integration             = new Tools_Settings_Integration(
 			$this->layouts_settings_storage,
