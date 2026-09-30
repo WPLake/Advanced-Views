@@ -5,6 +5,7 @@ namespace Org\Wplake\Advanced_Views\Post_Query\Selection;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\field_provider_domain;
 use Org\Wplake\Advanced_Views\Post_Query\Core\post_query_domain;
 use Org\Wplake\Advanced_Views\Post_Query\Entity\entity_query_domain;
+use Org\Wplake\Advanced_Views\Post_Query\Meta\meta_query_domain;
 use Org\Wplake\Advanced_Views\Post_Query\Taxonomy\taxonomy_query_domain;
 
 class selection_query_domain extends post_query_domain {
@@ -13,6 +14,7 @@ class selection_query_domain extends post_query_domain {
 		...parent::WHITELIST_DOMAINS,
 		field_provider_domain::class,
 		entity_query_domain::class,
+		meta_query_domain::class,
 		taxonomy_query_domain::class,
 	];
 }
