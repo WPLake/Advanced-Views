@@ -61,44 +61,19 @@ final class Cpt_Elementor_Widget {
 	}
 
 	public static function add_common_controls( Widget_Base $widget ): void {
+		$common_controls = self::get_common_controls();
+
 		$widget->start_controls_section(
 			'avf_advanced_section',
 			array(
-				'label' => __( 'Advanced Views', 'acf-views' ),
-				'tab'   => Controls_Manager::TAB_ADVANCED,
+				'label' => __( 'AV settings', 'acf-views' ),
+				'tab'   => Controls_Manager::TAB_CONTENT,
 			)
 		);
 
-		$widget->add_control(
-			'class',
-			array(
-				'label' => __( 'Additional CSS Class', 'acf-views' ),
-				'type'  => Controls_Manager::TEXT,
-			)
-		);
-		$widget->add_control(
-			'user_with_roles',
-			array(
-				'label'       => __( 'Show for User Roles', 'acf-views' ),
-				'type'        => Controls_Manager::TEXT,
-				'description' => __( 'Comma-separated list of roles. Leave empty to show for everyone.', 'acf-views' ),
-			)
-		);
-		$widget->add_control(
-			'user_without_roles',
-			array(
-				'label'       => __( 'Hide for User Roles', 'acf-views' ),
-				'type'        => Controls_Manager::TEXT,
-				'description' => __( 'Comma-separated list of roles.', 'acf-views' ),
-			)
-		);
-		$widget->add_control(
-			'custom_arguments',
-			array(
-				'label' => __( 'Custom Arguments', 'acf-views' ),
-				'type'  => Controls_Manager::TEXTAREA,
-			)
-		);
+		foreach ( $common_controls as $control_id => $control_args ) {
+			$widget->add_control( $control_id, $control_args );
+		}
 
 		$widget->end_controls_section();
 	}
@@ -137,6 +112,34 @@ final class Cpt_Elementor_Widget {
 		return self::is_editor_preview() ?
 			$this->renderer->render_preview( $attrs, true ) :
 			$this->renderer->render( $attrs );
+	}
+
+	/**
+	 * Keys must match COMMON_CONTROLS.
+	 *
+	 * @return array<string,array<string,mixed>>
+	 */
+	protected static function get_common_controls(): array {
+		return array(
+			'class'              => array(
+				'label' => __( 'Additional CSS Class', 'acf-views' ),
+				'type'  => Controls_Manager::TEXT,
+			),
+			'user_with_roles'    => array(
+				'label'       => __( 'Show for User Roles', 'acf-views' ),
+				'type'        => Controls_Manager::TEXT,
+				'description' => __( 'Comma-separated list of roles. Leave empty to show for everyone.', 'acf-views' ),
+			),
+			'user_without_roles' => array(
+				'label'       => __( 'Hide for User Roles', 'acf-views' ),
+				'type'        => Controls_Manager::TEXT,
+				'description' => __( 'Comma-separated list of roles.', 'acf-views' ),
+			),
+			'custom_arguments'   => array(
+				'label' => __( 'Custom Arguments', 'acf-views' ),
+				'type'  => Controls_Manager::TEXTAREA,
+			),
+		);
 	}
 
 	/**
