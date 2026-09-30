@@ -207,7 +207,6 @@ Advanced Views lets you display fields from almost any WordPress data source:
 
 = 3.9.8 (2026-) =
 - Feature adoption: Post Selection - Meta filters (static values only)
-- Readme: updated old Docs links
 
 = 3.9.7 (2026-09) =
 - Feature: Elementor integration (Layout & Selection integration widgets)
