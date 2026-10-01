@@ -480,7 +480,7 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	 *
 	 * @return Template_Pattern[]
 	 */
-	public function get_template_patterns_by_names( array $names ): array {
+	public function resolve_template_patterns( array $names ): array {
 		$names_keys       = array_flip( $names );
 		$patterns_by_name = array_intersect_key( $this->patterns, $names_keys );
 
