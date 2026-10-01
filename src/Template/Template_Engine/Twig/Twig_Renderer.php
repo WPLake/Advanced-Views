@@ -21,6 +21,13 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 defined( 'ABSPATH' ) || exit;
 
 class Twig_Renderer extends File_Template_Renderer_Base {
+	const ENVIRONMENT_ARGS = array(
+		// will generate exception if a var doesn't exist instead of replace to NULL.
+		'strict_variables' => true,
+		// 'html' by default, just highlight that it's secure to not escape TWIG variable values in PHP
+		'autoescape'       => 'html',
+	);
+
 	// @phpstan-ignore-next-line
 	private ?FilesystemLoader $filesystem_loader;
 	// @phpstan-ignore-next-line
@@ -154,12 +161,7 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 		// @phpstan-ignore-next-line
 		$this->environment = new Environment(
 			$this->filesystem_loader,
-			array(
-				// will generate exception if a var doesn't exist instead of replace to NULL.
-				'strict_variables' => true,
-				// 'html' by default, just highlight that it's secure to not escape TWIG variable values in PHP
-				'autoescape'       => 'html',
-			)
+			self::ENVIRONMENT_ARGS
 		);
 
 		// reminder: TwigFunctions automatically escape the output
