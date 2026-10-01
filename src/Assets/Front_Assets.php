@@ -456,12 +456,10 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 		foreach ( $this->patterns as $pattern ) {
 			$asset_code = $pattern->generate_code( $cpt_settings );
 
-			if ( 0 === count( $asset_code['js'] ) &&
-				0 === count( $asset_code['css'] ) ) {
-				continue;
+			if ( count( $asset_code['js'] ) > 0 ||
+				count( $asset_code['css'] ) > 0 ) {
+				$code[ $pattern->get_auto_discover_name() ] = $asset_code;
 			}
-
-			$code[ $pattern->get_auto_discover_name() ] = $asset_code;
 		}
 
 		return $code;
@@ -483,11 +481,11 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	 * @return Template_Pattern[]
 	 */
 	public function get_template_patterns_by_names( array $names ): array {
-		$names_keys           = array_flip( $names );
-		$front_assets_by_name = array_intersect_key( $this->patterns, $names_keys );
+		$names_keys       = array_flip( $names );
+		$patterns_by_name = array_intersect_key( $this->patterns, $names_keys );
 
 		return array_filter(
-			$front_assets_by_name,
+			$patterns_by_name,
 			fn( $pattern ) => $pattern instanceof Template_Pattern
 		);
 	}
@@ -519,27 +517,11 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 		$outers = array();
 
 		foreach ( $this->patterns as $pattern ) {
-			if ( ! ( $pattern instanceof Common_Template_Pattern ) ||
-				! $pattern->is_target_selection( $post_selection_settings ) ) {
-				continue;
-			}
+			if ( $pattern instanceof Common_Template_Pattern &&
+				$pattern->is_target_selection( $post_selection_settings ) ) {
+				$pattern_outers = $pattern->get_selection_item_outers( $post_selection_settings );
 
-			$asset_outers = $pattern->get_selection_item_outers( $post_selection_settings );
-
-			if ( array() === $asset_outers ) {
-				continue;
-			}
-
-			$counter = 0;
-
-			foreach ( $asset_outers as $asset_outer ) {
-				$outers[ $counter ] = key_exists( $counter, $outers ) ?
-					$outers[ $counter ] :
-					new Html_Wrapper( '', array() );
-
-				$outers[ $counter ]->merge( $asset_outer );
-
-				++$counter;
+				$outers = self::merge_outers( $outers, $pattern_outers );
 			}
 		}
 
@@ -617,5 +599,27 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 		self::add_action( 'wp_head', array( $this, 'print_styles_stub' ) );
 		// don't use 'get_header', as it doesn't work in blocks theme.
 		self::add_action( 'template_redirect', array( $this, 'start_buffering' ) );
+	}
+
+	/**
+	 * @param Html_Wrapper[] $outers
+	 * @param Html_Wrapper[] $pattern_outers
+	 *
+	 * @return Html_Wrapper[]
+	 */
+	protected static function merge_outers( array $outers, array $pattern_outers ): array {
+		$counter = 0;
+
+		foreach ( $pattern_outers as $pattern_outer ) {
+			$outers[ $counter ] = key_exists( $counter, $outers ) ?
+				$outers[ $counter ] :
+				new Html_Wrapper( '', array() );
+
+			$outers[ $counter ]->merge( $pattern_outer );
+
+			++$counter;
+		}
+
+		return $outers;
 	}
 }
