@@ -88,7 +88,6 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 			$base->layout_cpt,
 			$base->settings,
 			$base->layouts_settings_storage,
-			$base->front_assets,
 			$base->live_reloader_component,
 			$this->factory,
 			$this->shortcode_block
@@ -101,7 +100,6 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 
 		$cpt_renderer = new Cpt_Renderer(
 			$this->shortcode,
-			$base->front_assets,
 			$base->layouts_settings_storage,
 			$base->layout_cpt
 		);

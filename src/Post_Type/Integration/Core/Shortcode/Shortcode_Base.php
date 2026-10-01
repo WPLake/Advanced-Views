@@ -26,7 +26,6 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 	private Instance_Factory $instance_factory;
 	private Settings_Storage $settings;
 	private Cpt_Settings_Storage $cpt_settings_storage;
-	private Front_Assets $front_assets;
 	private Live_Reloader_Component $live_reloader_component;
 	/**
 	 * @var array<string,true>
@@ -39,7 +38,6 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 		Settings_Storage $settings,
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Instance_Factory $instance_factory,
-		Front_Assets $front_assets,
 		Live_Reloader_Component $live_reloader_component
 	) {
 		$this->public_cpt              = $public_cpt;
@@ -47,7 +45,6 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 		$this->settings                = $settings;
 		$this->cpt_settings_storage    = $cpt_settings_storage;
 		$this->instance_factory        = $instance_factory;
-		$this->front_assets            = $front_assets;
 		$this->live_reloader_component = $live_reloader_component;
 	}
 
@@ -175,10 +172,8 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 		$shadow_css = '';
 
 		if ( $cpt_data->is_css_internal() ) {
-			$shadow_css = $this->front_assets->minify_code(
-				$cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY ),
-				Front_Assets::MINIFY_TYPE_CSS
-			);
+			$css_code   = $cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
+			$shadow_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
 			$shadow_css = sprintf(
 				'<style>:host{all: initial!important;}%s</style>',
 				$shadow_css

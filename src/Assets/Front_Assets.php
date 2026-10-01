@@ -34,7 +34,7 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	/**
 	 * @var Library_Pattern_Base[]
 	 */
-	private array $assets;
+	private array $patterns;
 	/**
 	 * @var array<string, string>
 	 */
@@ -58,20 +58,20 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 		$this->buffer_level     = null;
 		$this->is_custom_interactivity_api_import_map_required = false;
 
-		$this->assets                  = array();
+		$this->patterns                = array();
 		$this->inline_js_code          = array();
 		$this->include_css_code        = array();
 		$this->live_reloader_component = $live_reloader_component;
 		$this->assets_css_code         = '';
 		$this->tailwind_css_rules      = array();
 
-		$this->load_assets();
+		$this->register_patterns();
 	}
 
 	/**
 	 * @return Library_Pattern_Base[]
 	 */
-	protected function get_assets(): array {
+	protected function create_patterns(): array {
 		return array(
 			new Map_Pattern( $this->plugin, $this->provider_cluster ),
 			new Light_Gallery_Pattern( $this->plugin, $this->provider_cluster ),
@@ -79,13 +79,15 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 		);
 	}
 
-	protected function load_assets(): void {
-		foreach ( $this->get_assets() as $asset ) {
-			$this->assets[ $asset->get_name() ] = $asset;
+	protected function register_patterns(): void {
+		$patterns = $this->create_patterns();
+
+		foreach ( $patterns as $pattern ) {
+			$this->patterns[ $pattern->get_name() ] = $pattern;
 		}
 	}
 
-	protected function extract_imports_from_js_code( string &$js_code ): string {
+	protected static function extract_imports_from_js_code( string &$js_code ): string {
 		$imports = '';
 
 		preg_match_all( '/import [^;]+;/', $js_code, $matches, PREG_SET_ORDER );
@@ -106,44 +108,39 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 			$this->is_custom_interactivity_api_import_map_required = true;
 		}
 
-		if ( false === $cpt_settings->is_web_component() ) {
-			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $js_code;
-
-			return;
-		}
-
 		// dashes to camelCase.
-		$component_name = preg_replace_callback(
-			'/-([a-z0-9])/',
-			fn( $matches ) => strtoupper( $matches[1] ),
-			$tag_name
-		);
+		$component_name = $cpt_settings->is_web_component() ?
+			preg_replace_callback(
+				'/-([a-z0-9])/',
+				fn( $matches ) => strtoupper( $matches[1] ),
+				$tag_name
+			) :
+			null;
 
-		if ( null === $component_name ) {
-			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $js_code;
+		if ( is_string( $component_name ) ) {
+			$is_with_shadow_dom = Cpt_Settings::WEB_COMPONENT_SHADOW_DOM === $cpt_settings->web_component;
+			$box_shadow_js      = $is_with_shadow_dom ?
+				'var html=this.innerHTML;this.attachShadow({mode:"open"});this.shadowRoot.innerHTML=html;' :
+				'';
+
+			$imports = self::extract_imports_from_js_code( $js_code );
+
+			printf(
+				'%sclass %s extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){%s}}customElements.define("%s", %s);',
+				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$imports,
+				esc_html( $component_name ),
+				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$box_shadow_js . $js_code,
+				esc_html( $tag_name ),
+				esc_html( $component_name ),
+			);
 
 			return;
 		}
 
-		$is_with_shadow_dom = Cpt_Settings::WEB_COMPONENT_SHADOW_DOM === $cpt_settings->web_component;
-		$box_shadow_js      = $is_with_shadow_dom ?
-			'var html=this.innerHTML;this.attachShadow({mode:"open"});this.shadowRoot.innerHTML=html;' :
-			'';
-
-		$imports = $this->extract_imports_from_js_code( $js_code );
-
-		printf(
-			'%sclass %s extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){%s}}customElements.define("%s", %s);',
-			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			$imports,
-			esc_html( $component_name ),
-			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			$box_shadow_js . $js_code,
-			esc_html( $tag_name ),
-			esc_html( $component_name ),
-		);
+		// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $js_code;
 	}
 
 	protected function get_unique_tailwind_rules( string $css, string $prefix = '' ): string {
@@ -166,16 +163,15 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 
 			$global_selector = $prefix . $selector;
 
-			if ( key_exists( $global_selector, $this->tailwind_css_rules ) ) {
-				continue;
+			if ( false === key_exists( $global_selector, $this->tailwind_css_rules ) ) {
+				$this->tailwind_css_rules[ $global_selector ] = true;
+
+				$css_rules[ $selector ] = $rules;
 			}
-
-			$this->tailwind_css_rules[ $global_selector ] = true;
-
-			$css_rules[ $selector ] = $rules;
 		}
 
-		$is_important_rule_required = '' !== $prefix &&
+		$prefix_length              = strlen( $prefix );
+		$is_important_rule_required = $prefix_length > 0 &&
 									$this->live_reloader_component->is_active();
 
 		foreach ( $css_rules as $selector => $rules ) {
@@ -193,8 +189,7 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	}
 
 	protected function merge_tailwind_rules( string $tailwind_css ): string {
-
-		$tailwind_css = $this->minify_code( $tailwind_css, self::MINIFY_TYPE_CSS );
+		$tailwind_css = self::minify_code( $tailwind_css, self::MINIFY_TYPE_CSS );
 
 		// 1. get all the media queries.
 		preg_match_all( '/(@media[^{]*)\{((?:[^{}]*\{[^{}]*\})*[^{}]*)\}/', $tailwind_css, $media_queries, PREG_SET_ORDER );
@@ -217,40 +212,39 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 		foreach ( $media_rules as $media_condition => $media_content ) {
 			$unique_media_content = $this->get_unique_tailwind_rules( $media_content, $media_condition );
 
-			$condition_css .= '' !== $unique_media_content ?
+			$condition_css .= strlen( $unique_media_content ) > 0 ?
 				$media_condition . '{' . $unique_media_content . '}' :
 			'';
 		}
 
-		return $this->get_unique_tailwind_rules( $tailwind_css ) . $condition_css;
+		$primary_css = $this->get_unique_tailwind_rules( $tailwind_css );
+
+		return $primary_css . $condition_css;
 	}
 
 	protected function get_global_tailwind_styles(): string {
-		if ( false === $this->file_system->is_active() ) {
-			return '';
+		if ( $this->file_system->is_active() ) {
+			$base_folder           = $this->file_system->get_target_base_folder();
+			$tailwind_globals_file = sprintf( '%s/tailwind.css', $base_folder );
+			$wp_filesystem         = $this->file_system->get_wp_filesystem();
+
+			if ( $wp_filesystem->exists( $tailwind_globals_file ) ) {
+				$tailwind_styles = (string) $wp_filesystem->get_contents( $tailwind_globals_file );
+
+				return self::minify_code( $tailwind_styles, self::MINIFY_TYPE_CSS );
+			}
 		}
 
-		$tailwind_globals_file = $this->file_system->get_target_base_folder() . '/tailwind.css';
-		$wp_filesystem         = $this->file_system->get_wp_filesystem();
-
-		if ( false === $wp_filesystem->exists( $tailwind_globals_file ) ) {
-			return '';
-		}
-
-		$tailwind_styles = (string) $wp_filesystem->get_contents( $tailwind_globals_file );
-
-		return $this->minify_code( $tailwind_styles, self::MINIFY_TYPE_CSS );
+		return '';
 	}
 
-	protected function print_interactivity_api_import_map( string $interactivity_api_script_url ): void {
-		$imports = array(
+	protected static function print_interactivity_api_import_map( string $interactivity_api_script_url ): void {
+		$imports   = array(
 			'@wordpress/interactivity' => $interactivity_api_script_url,
 		);
-
-		$data = array(
+		$data      = array(
 			'imports' => $imports,
 		);
-
 		$json_data = (string) wp_json_encode(
 			$data,
 			JSON_HEX_TAG | JSON_HEX_AMP
@@ -264,8 +258,9 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 		wp_print_inline_script_tag( $json_data, $attributes );
 	}
 
-	public function minify_code( string $code, string $type ): string {
-		$is_tailwind = false !== strpos( $code, 'advanced-views:tailwind' );
+	public static function minify_code( string $code, string $type ): string {
+		$tailwind_position = strpos( $code, 'advanced-views:tailwind' );
+		$is_tailwind       = is_int( $tailwind_position );
 
 		// remove all multiline comments.
 		$code_without_comments = preg_replace( '|\/\*[\s\S]+\*\/|U', '', $code );
@@ -317,46 +312,49 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	}
 
 	public function add_asset( Cpt_Settings $cpt_settings ): void {
-		$css_code = $this->minify_code(
-			$cpt_settings->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY ),
-			self::MINIFY_TYPE_CSS
-		);
-		$js_code  = $this->minify_code( $cpt_settings->get_js_code(), self::MINIFY_TYPE_JS );
+		$unique_id  = $cpt_settings->get_unique_id();
+		$css_source = $cpt_settings->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
+		$js_source  = $cpt_settings->get_js_code();
 
-		if ( '' !== $css_code &&
+		$css_code = self::minify_code( $css_source, self::MINIFY_TYPE_CSS );
+		$js_code  = self::minify_code( $js_source, self::MINIFY_TYPE_JS );
+
+		if ( strlen( $css_code ) > 0 &&
 			false === $cpt_settings->is_css_internal() ) {
-			$this->include_css_code[ $cpt_settings->get_unique_id() ] = $css_code;
+			$this->include_css_code[ $unique_id ] = $css_code;
 		}
 
-		if ( '' !== $js_code ) {
+		if ( strlen( $js_code ) > 0 ) {
 			ob_start();
 			$this->print_component_js( $cpt_settings, $js_code );
 			$inline_js_code = (string) ob_get_clean();
 
-			$this->inline_js_code[ $cpt_settings->get_unique_id() ] = $inline_js_code;
+			$this->inline_js_code[ $unique_id ] = $inline_js_code;
 		}
 
-		foreach ( $this->assets as $asset ) {
-			$asset->maybe_activate( $cpt_settings );
+		foreach ( $this->patterns as $pattern ) {
+			$pattern->maybe_activate( $cpt_settings );
 		}
 	}
 
 	public function print_assets(): void {
 		$all_js_code        = '';
-		$all_css_code       = '' !== $this->assets_css_code ?
+		$all_css_code       = strlen( $this->assets_css_code ) > 0 ?
 			sprintf( "<style data-advanced-views-assets=''>%s</style>\n", $this->assets_css_code ) :
 		'';
 		$counter            = 0;
 		$is_tailwind_in_use = false;
 
 		foreach ( $this->include_css_code as $name => $css_code ) {
-			if ( false !== strpos( $css_code, 'advanced-views:tailwind' ) ) {
+			$tailwind_position = strpos( $css_code, 'advanced-views:tailwind' );
+
+			if ( is_int( $tailwind_position ) ) {
 				$is_tailwind_in_use = true;
 
 				$css_code = $this->merge_tailwind_rules( $css_code );
 
 				// can be empty after merging.
-				if ( '' === $css_code ) {
+				if ( 0 === strlen( $css_code ) ) {
 					continue;
 				}
 			}
@@ -376,7 +374,7 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 		if ( $is_tailwind_in_use ) {
 			$global_tailwind_styles = $this->get_global_tailwind_styles();
 
-			if ( '' !== $global_tailwind_styles ) {
+			if ( strlen( $global_tailwind_styles ) > 0 ) {
 				$all_css_code .= 0 === $counter ?
 					"\n" :
 					'';
@@ -396,11 +394,11 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 			++$counter;
 		}
 
-		if ( '' === $all_css_code &&
-			'' === $all_js_code ) {
+		if ( 0 === strlen( $all_css_code ) &&
+			0 === strlen( $all_js_code ) ) {
 			// do not close the buffer, if it's not ours
 			// (then ours will be closed automatically with the end of script execution).
-			if ( null !== $this->buffer_level &&
+			if ( is_int( $this->buffer_level ) &&
 				ob_get_level() === $this->buffer_level ) {
 				ob_end_flush();
 			}
@@ -408,7 +406,7 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 			return;
 		}
 
-		if ( null !== $this->buffer_level ) {
+		if ( is_int( $this->buffer_level ) ) {
 			// close previous buffers. Some plugins may not close, if detect that ob_get_level() is another than was
 			// e.g. 'lightbox-photoswipe'.
 			while ( ob_get_level() > $this->buffer_level ) {
@@ -417,7 +415,9 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 
 			$page_content = (string) ob_get_clean();
 
-			if ( false !== strpos( $page_content, '<!--advanced-views:styles/custom-location-->' ) ) {
+			$custom_location_position = strpos( $page_content, '<!--advanced-views:styles/custom-location-->' );
+
+			if ( is_int( $custom_location_position ) ) {
 				// introduce a styles variable, which allows to detect the styles root inside a webcomponent.
 				if ( $this->live_reloader_component->is_active() ) {
 					$all_css_code .= '<avf-styles-location></avf-styles-location>';
@@ -441,7 +441,7 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 			echo $all_css_code;
 		}
 
-		if ( '' !== $all_js_code ) {
+		if ( strlen( $all_js_code ) > 0 ) {
 			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $all_js_code;
 		}
@@ -453,27 +453,25 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	public function generate_code( Cpt_Settings $cpt_settings ): array {
 		$code = array();
 
-		foreach ( $this->assets as $asset ) {
-			$asset_code = $asset->generate_code( $cpt_settings );
+		foreach ( $this->patterns as $pattern ) {
+			$asset_code = $pattern->generate_code( $cpt_settings );
 
 			if ( 0 === count( $asset_code['js'] ) &&
 				0 === count( $asset_code['css'] ) ) {
 				continue;
 			}
 
-			$code[ $asset->get_auto_discover_name() ] = $asset_code;
+			$code[ $pattern->get_auto_discover_name() ] = $asset_code;
 		}
 
 		return $code;
 	}
 
 	public function is_web_component_required( Cpt_Settings $cpt_settings ): bool {
-		foreach ( $this->assets as $asset ) {
-			if ( ! $asset->is_web_component_required( $cpt_settings ) ) {
-				continue;
+		foreach ( $this->patterns as $pattern ) {
+			if ( $pattern->is_web_component_required( $cpt_settings ) ) {
+				return true;
 			}
-
-			return true;
 		}
 
 		return false;
@@ -484,31 +482,28 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	 *
 	 * @return Template_Pattern[]
 	 */
-	public function get_view_assets_by_names( array $names ): array {
-		$front_assets_by_name = array_intersect_key( $this->assets, array_flip( $names ) );
+	public function get_template_patterns_by_names( array $names ): array {
+		$names_keys           = array_flip( $names );
+		$front_assets_by_name = array_intersect_key( $this->patterns, $names_keys );
 
 		return array_filter(
 			$front_assets_by_name,
-			fn( $asset ) => $asset instanceof Template_Pattern
+			fn( $pattern ) => $pattern instanceof Template_Pattern
 		);
 	}
 
 	public function get_card_items_wrapper_class( Post_Selection_Settings $post_selection_settings ): string {
 		$classes = array();
 
-		foreach ( $this->assets as $asset ) {
-			if ( ! ( $asset instanceof Common_Template_Pattern ) ||
-				! $asset->is_target_selection( $post_selection_settings ) ) {
-				continue;
+		foreach ( $this->patterns as $pattern ) {
+			if ( $pattern instanceof Common_Template_Pattern &&
+				$pattern->is_target_selection( $post_selection_settings ) ) {
+				$class = $pattern->get_selection_items_wrapper_class( $post_selection_settings );
+
+				if ( strlen( $class ) > 0 ) {
+					$classes[] = $class;
+				}
 			}
-
-			$class = $asset->get_selection_items_wrapper_class( $post_selection_settings );
-
-			if ( '' === $class ) {
-				continue;
-			}
-
-			$classes[] = $class;
 		}
 
 		return implode( ' ', $classes );
@@ -523,13 +518,13 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 		 */
 		$outers = array();
 
-		foreach ( $this->assets as $asset ) {
-			if ( ! ( $asset instanceof Common_Template_Pattern ) ||
-				! $asset->is_target_selection( $post_selection_settings ) ) {
+		foreach ( $this->patterns as $pattern ) {
+			if ( ! ( $pattern instanceof Common_Template_Pattern ) ||
+				! $pattern->is_target_selection( $post_selection_settings ) ) {
 				continue;
 			}
 
-			$asset_outers = $asset->get_selection_item_outers( $post_selection_settings );
+			$asset_outers = $pattern->get_selection_item_outers( $post_selection_settings );
 
 			if ( array() === $asset_outers ) {
 				continue;
@@ -557,13 +552,13 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	public function get_card_shortcode_attrs( Post_Selection_Settings $post_selection_settings ): array {
 		$attrs = array();
 
-		foreach ( $this->assets as $asset ) {
-			if ( ! ( $asset instanceof Common_Template_Pattern ) ||
-				! $asset->is_target_selection( $post_selection_settings ) ) {
-				continue;
-			}
+		foreach ( $this->patterns as $pattern ) {
+			if ( $pattern instanceof Common_Template_Pattern &&
+				$pattern->is_target_selection( $post_selection_settings ) ) {
+				$asset_attrs = $pattern->get_selection_shortcode_attrs( $post_selection_settings );
 
-			$attrs = array_merge( $attrs, $asset->get_selection_shortcode_attrs( $post_selection_settings ) );
+				$attrs = array_merge( $attrs, $asset_attrs );
+			}
 		}
 
 		return $attrs;
@@ -576,31 +571,30 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 			wp_enqueue_script_module( '@wordpress/interactivity' );
 		}
 
-		foreach ( $this->assets as $asset ) {
-			$css_code = $asset->enqueue_active();
+		foreach ( $this->patterns as $pattern ) {
+			$css_code = $pattern->enqueue_active();
 
-			if ( '' === $css_code ) {
-				continue;
+			if ( strlen( $css_code ) > 0 ) {
+				$asset_name = $pattern->get_name();
+
+				// 1. CSS, unlike JS to be enqueued later, along with the View's and Card's CSS.
+				// 2. no escaping, it's a CSS code, so e.g '.a > .b' shouldn't be escaped.
+				$this->assets_css_code .= sprintf( "/*%s*/\n%s\n", $asset_name, $css_code );
 			}
-
-			// 1. CSS, unlike JS to be enqueued later, along with the View's and Card's CSS.
-			// 2. no escaping, it's a CSS code, so e.g '.a > .b' shouldn't be escaped.
-			$this->assets_css_code .= sprintf( "/*%s*/\n%s\n", $asset->get_name(), $css_code );
 		}
 	}
 
 	/**
-	 * In WP 6.7 for classic themes there is no straight way
-	 * to automatically 'enqueue' iApi script and get its import map added to the page.
-	 * While we can't use fixed url, as in WP 6.7, iApi introduced custom script versions,
-	 * like '06b8f695ef48ab2d9277 (see wp-includes/assets/script-modules-packages.min.php).
+	 * Classic themes (WP 6.7+) have no way to enqueue the iApi script and get its import map printed,
+	 * and a fixed url can't be used, as iApi script urls are versioned
+	 * (see wp-includes/assets/script-modules-packages.min.php).
 	 */
 	public function catch_interactivity_api_script_url( string $src, string $id ): string {
 		if ( '@wordpress/interactivity' === $id &&
 			$this->is_custom_interactivity_api_import_map_required ) {
 			$this->is_custom_interactivity_api_import_map_required = false;
 
-			$this->print_interactivity_api_import_map( $src );
+			self::print_interactivity_api_import_map( $src );
 		}
 
 		return $src;

@@ -470,7 +470,7 @@ class Field_Markup {
 		string $field_id,
 		string $custom_field_markup = ''
 	): int {
-		$field_assets        = $this->front_assets->get_view_assets_by_names(
+		$field_assets        = $this->front_assets->resolve_template_patterns(
 			$this->provider_cluster->get_field_front_assets( $field_settings->get_vendor_name(), $field_settings )
 		);
 		$is_label_out_of_row = $this->is_label_out_of_row( $field_assets );

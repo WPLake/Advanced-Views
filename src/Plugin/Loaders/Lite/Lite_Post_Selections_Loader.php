@@ -169,7 +169,6 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->post_selection_cpt,
 			$base->settings,
 			$base->post_selections_settings_storage,
-			$base->front_assets,
 			$base->live_reloader_component,
 			$this->factory
 		);
@@ -181,7 +180,6 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 
 		$cpt_renderer = new Cpt_Renderer(
 			$this->shortcode,
-			$base->front_assets,
 			$base->post_selections_settings_storage,
 			$base->post_selection_cpt
 		);

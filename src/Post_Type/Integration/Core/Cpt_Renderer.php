@@ -16,18 +16,15 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 final class Cpt_Renderer {
 	private Shortcode_Renderer $shortcode;
-	private Front_Assets $front_assets;
 	private Cpt_Settings_Storage $settings_storage;
 	private Plugin_Cpt $cpt;
 
 	public function __construct(
 		Shortcode_Renderer $shortcode,
-		Front_Assets $front_assets,
 		Cpt_Settings_Storage $settings_storage,
 		Public_Cpt $cpt
 	) {
 		$this->shortcode        = $shortcode;
-		$this->front_assets     = $front_assets;
 		$this->settings_storage = $settings_storage;
 		$this->cpt              = $cpt;
 	}
@@ -84,7 +81,7 @@ final class Cpt_Renderer {
 		// internal (e.g. shadow DOM) CSS is scoped to its own markup and inlined there instead.
 		if ( ! $cpt_settings->is_css_internal() ) {
 			$css_code     = $cpt_settings->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
-			$minified_css = $this->front_assets->minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
+			$minified_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
 			$unique_id    = $cpt_settings->get_unique_id();
 
 			return sprintf(

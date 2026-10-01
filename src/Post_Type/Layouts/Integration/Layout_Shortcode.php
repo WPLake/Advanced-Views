@@ -5,7 +5,6 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
@@ -41,12 +40,11 @@ final class Layout_Shortcode extends Shortcode_Base {
 		Public_Cpt $public_cpt,
 		Settings_Storage $settings,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Front_Assets $front_assets,
 		Live_Reloader_Component $live_reloader_component,
 		Layout_Factory $layout_factory,
 		Shortcode_Gutenberg_Block $shortcode_block
 	) {
-		parent::__construct( $public_cpt, $settings, $layouts_settings_storage, $layout_factory, $front_assets, $live_reloader_component );
+		parent::__construct( $public_cpt, $settings, $layouts_settings_storage, $layout_factory, $live_reloader_component );
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
 		$this->layout_factory           = $layout_factory;
