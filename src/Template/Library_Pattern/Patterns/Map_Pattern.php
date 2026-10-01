@@ -51,63 +51,42 @@ class Map_Pattern extends Template_Pattern_Base {
 			acf_get_setting( 'google_api_key' ) :
 			$key;
 
-		wp_localize_script(
-			$this->get_wp_handle( 'acf-views-maps' ),
-			'acfViewsMaps',
-			$this->maps
+		$maps_handle   = self::get_wp_handle( 'acf-views-maps' );
+		$google_handle = self::get_wp_handle( 'google-maps' );
+		$google_url    = sprintf( 'https://maps.googleapis.com/maps/api/js?key=%s&callback=acfViewsGoogleMaps', $key );
+		$version       = $this->get_plugin()->get_version();
+		$script_args   = array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
 		);
 
-		wp_enqueue_script(
-			$this->get_wp_handle( 'google-maps' ),
-			sprintf( 'https://maps.googleapis.com/maps/api/js?key=%s&callback=acfViewsGoogleMaps', $key ),
-			array(
-				// setup deps, to make sure loaded only after plugin's maps.min.js.
-				$this->get_wp_handle( 'acf-views-maps' ),
-			),
-			$this->get_plugin()->get_version(),
-			array(
-				'in_footer' => true,
-				'strategy'  => 'defer',
-			)
-		);
+		wp_localize_script( $maps_handle, 'acfViewsMaps', $this->maps );
+
+		// setup deps, to make sure loaded only after plugin's maps.min.js.
+		wp_enqueue_script( $google_handle, $google_url, array( $maps_handle ), $version, $script_args );
 
 		return $css_code;
 	}
 
 	public function maybe_activate( Cpt_Settings $cpt_settings ): void {
-		if ( ! ( $cpt_settings instanceof Layout_Settings ) ) {
-			return;
-		}
+		if ( $cpt_settings instanceof Layout_Settings ) {
+			$target_fields      = $this->get_target_fields( $cpt_settings );
+			$is_with_google_map = false;
 
-		[$target_fields, $target_sub_fields] = $this->get_provider_cluster()->get_fields_with_pattern(
-			static::NAME,
-			$cpt_settings
-		);
+			foreach ( $target_fields as $map_field ) {
+				$map_type = $map_field->get_field_meta()->get_type();
 
-		/**
-		 * @var Field_Settings[] $target_fields
-		 */
-		$target_fields = array_merge( $target_fields, $target_sub_fields );
-
-		if ( array() === $target_fields ) {
-			return;
-		}
-
-		$is_with_google_map = false;
-
-		foreach ( $target_fields as $map_field ) {
-			if ( 'open_street_map' === $map_field->get_field_meta()->get_type() ) {
-				continue;
+				if ( 'open_street_map' !== $map_type ) {
+					$is_with_google_map = true;
+					$is_inner_target    = $this->is_google_map_selector_inner( $map_field );
+					$this->maps[]       = $cpt_settings->get_item_selector( $map_field, 'map', $is_inner_target );
+				}
 			}
 
-			$is_with_google_map = true;
-			$is_inner_target    = $this->is_google_map_selector_inner( $map_field );
-			$this->maps[]       = $cpt_settings->get_item_selector( $map_field, 'map', $is_inner_target );
-		}
-
-		// only google map requires it.
-		if ( $is_with_google_map ) {
-			$this->enable_js_handle( 'acf-views-maps' );
+			// only google map requires it.
+			if ( $is_with_google_map ) {
+				$this->enable_js_handle( 'acf-views-maps' );
+			}
 		}
 	}
 }

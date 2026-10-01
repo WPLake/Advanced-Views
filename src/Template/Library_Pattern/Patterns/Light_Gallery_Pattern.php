@@ -37,31 +37,19 @@ class Light_Gallery_Pattern extends Template_Pattern_Base {
 	}
 
 	public function maybe_activate( Cpt_Settings $cpt_settings ): void {
-		if ( ! ( $cpt_settings instanceof Layout_Settings ) ||
-			$this->is_enabled_js_handle( 'lightgallery' ) ) {
-			return;
+		if ( $cpt_settings instanceof Layout_Settings &&
+			! $this->is_enabled_js_handle( 'lightgallery' ) ) {
+			$target_fields = $this->get_target_fields( $cpt_settings );
+
+			if ( array() !== $target_fields ) {
+				$this->enable_js_handle( 'lightgallery' );
+				$this->enable_css_handle( 'lightgallery' );
+
+				// this addon is always in use.
+				$this->enable_js_handle( 'lg-thumbnail' );
+				$this->enable_css_handle( 'lg-thumbnail' );
+			}
 		}
-
-		[$target_fields, $target_sub_fields] = $this->get_provider_cluster()->get_fields_with_pattern(
-			static::NAME,
-			$cpt_settings
-		);
-
-		/**
-		 * @var Field_Settings[] $target_fields
-		 */
-		$target_fields = array_merge( $target_fields, $target_sub_fields );
-
-		if ( array() === $target_fields ) {
-			return;
-		}
-
-		$this->enable_js_handle( 'lightgallery' );
-		$this->enable_css_handle( 'lightgallery' );
-
-		// this addon is always in use.
-		$this->enable_js_handle( 'lg-thumbnail' );
-		$this->enable_css_handle( 'lg-thumbnail' );
 	}
 
 	public function get_field_wrapper_tag( Field_Settings $field_settings, string $row_type ): string {
@@ -75,7 +63,7 @@ class Light_Gallery_Pattern extends Template_Pattern_Base {
 	 */
 	public function get_field_wrapper_attrs( Field_Settings $field_settings, string $field_id ): array {
 		return ! $field_settings->get_field_meta()->is_multiple() ?
-			$this->get_data_attrs( $field_id ) :
+			self::get_data_attrs( $field_id ) :
 			array();
 	}
 
@@ -88,8 +76,10 @@ class Light_Gallery_Pattern extends Template_Pattern_Base {
 		string $field_id,
 		string $item_id
 	): array {
+		$data_attrs = self::get_data_attrs( $item_id );
+
 		return array(
-			new Html_Wrapper( 'li', $this->get_data_attrs( $item_id ) ),
+			new Html_Wrapper( 'li', $data_attrs ),
 		);
 	}
 
@@ -100,14 +90,13 @@ class Light_Gallery_Pattern extends Template_Pattern_Base {
 		// replacing with the related installation path avoids it.
 		$asset_url_base          = $this->get_asset_url( '' );
 		$relative_asset_url_base = Plugin::make_url_relative( $asset_url_base );
-
-		$relative_assets_url = sprintf( 'url(%s', $relative_asset_url_base );
+		$relative_assets_url     = sprintf( 'url(%s', $relative_asset_url_base );
 
 		return str_replace( 'url(../', $relative_assets_url, $css_code );
 	}
 
 	protected function print_js_code( string $var_name, Field_Settings $field_settings, Layout_Settings $layout_settings ): void {
-		$this->print_lightbox_js_code( $var_name, $field_settings, $layout_settings );
+		self::print_lightbox_js_code( $var_name, $field_settings, $layout_settings );
 	}
 
 	protected function print_css_code(
@@ -115,10 +104,10 @@ class Light_Gallery_Pattern extends Template_Pattern_Base {
 		Field_Settings $field_settings,
 		Layout_Settings $layout_settings
 	): void {
-		$this->print_light_box_css_code( $field_selector, $field_settings, $layout_settings );
+		self::print_light_box_css_code( $field_selector, $field_settings, $layout_settings );
 	}
 
-	protected function print_lightbox_js_code(
+	protected static function print_lightbox_js_code(
 		string $var_name,
 		Field_Settings $field_settings,
 		Layout_Settings $layout_settings
@@ -143,7 +132,7 @@ class Light_Gallery_Pattern extends Template_Pattern_Base {
 		echo "\t});";
 	}
 
-	protected function print_light_box_css_code(
+	protected static function print_light_box_css_code(
 		string $field_selector,
 		Field_Settings $field_settings,
 		Layout_Settings $layout_settings
@@ -166,7 +155,7 @@ class Light_Gallery_Pattern extends Template_Pattern_Base {
 	 *
 	 * @return array<string,string>
 	 */
-	protected function get_data_attrs( string $field_id ): array {
+	protected static function get_data_attrs( string $field_id ): array {
 		return array(
 			'data-src'      => sprintf( '{{ %s.full_size }}', $field_id ),
 			'data-sub-html' => sprintf( '{{ %s.caption }}', $field_id ),

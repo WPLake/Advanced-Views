@@ -42,11 +42,10 @@ class Lightbox_Pattern extends Template_Pattern_Base {
 			return $css_code;
 		}
 
-		wp_localize_script(
-			$this->get_wp_handle( 'acf-views-lightbox' ),
-			'acfViewsLightBox',
-			array_values( $this->light_boxes )
-		);
+		$wp_handle   = self::get_wp_handle( 'acf-views-lightbox' );
+		$light_boxes = array_values( $this->light_boxes );
+
+		wp_localize_script( $wp_handle, 'acfViewsLightBox', $light_boxes );
 
 		if ( array() === $this->light_boxes ) {
 			return $css_code;
@@ -63,14 +62,36 @@ class Lightbox_Pattern extends Template_Pattern_Base {
 		return $css_code;
 	}
 
-	protected function get_field_prefix( Layout_Settings $layout_settings, Field_Settings $field_settings ): string {
-		$field_prefix = $layout_settings->get_bem_name() . '__';
+	protected static function get_field_prefix( Layout_Settings $layout_settings, Field_Settings $field_settings ): string {
+		$bem_name     = $layout_settings->get_bem_name();
+		$field_prefix = sprintf( '%s__', $bem_name );
 
 		if ( ! $layout_settings->is_with_common_classes ) {
-			$field_prefix .= $field_settings->id . '-';
+			$field_prefix .= sprintf( '%s-', $field_settings->id );
 		}
 
 		return $field_prefix;
+	}
+
+	protected function add_light_box( Layout_Settings $layout_settings, Field_Settings $field_settings ): void {
+		$is_gallery    = $field_settings->get_field_meta()->is_multiple();
+		$item_selector = $this->get_item_selector( $layout_settings, $field_settings, true, false );
+		$bem_name      = $layout_settings->get_bem_name();
+		$field_prefix  = self::get_field_prefix( $layout_settings, $field_settings );
+
+		$light_box = array(
+			'selector'    => $item_selector,
+			'bemName'     => $bem_name,
+			'fieldPrefix' => $field_prefix,
+			'isGallery'   => $is_gallery,
+		);
+
+		/**
+		 * Selector as a key ensures that we've no duplicates -
+		 * even if the same Layout->lightboxField appears several times on the page -
+		 * as we need only list of distinct elements.
+		 */
+		$this->light_boxes[ $item_selector ] = $light_box;
 	}
 
 	protected function print_css_code(
@@ -99,40 +120,17 @@ class Lightbox_Pattern extends Template_Pattern_Base {
 	}
 
 	public function maybe_activate( Cpt_Settings $cpt_settings ): void {
-		if ( ! ( $cpt_settings instanceof Layout_Settings ) ) {
-			return;
+		if ( $cpt_settings instanceof Layout_Settings ) {
+			$target_fields = $this->get_target_fields( $cpt_settings );
+
+			if ( array() !== $target_fields ) {
+				foreach ( $target_fields as $target_field ) {
+					$this->add_light_box( $cpt_settings, $target_field );
+				}
+
+				$this->enable_js_handle( 'acf-views-lightbox' );
+			}
 		}
-
-		[$target_fields, $target_sub_fields] = $this->get_provider_cluster()->get_fields_with_pattern(
-			static::NAME,
-			$cpt_settings
-		);
-
-		/**
-		 * @var Field_Settings[] $target_fields
-		 */
-		$target_fields = array_merge( $target_fields, $target_sub_fields );
-
-		if ( array() === $target_fields ) {
-			return;
-		}
-
-		foreach ( $target_fields as $target_field ) {
-			$is_gallery    = $target_field->get_field_meta()->is_multiple();
-			$item_selector = $this->get_item_selector( $cpt_settings, $target_field, true, false );
-
-			// selector as a key ensures that we've no duplicates  -
-			// even if the same Layout->lightboxField appears several times on the page -
-			// as we need only list of distinct elements.
-			$this->light_boxes[ $item_selector ] = array(
-				'selector'    => $item_selector,
-				'bemName'     => $cpt_settings->get_bem_name(),
-				'fieldPrefix' => $this->get_field_prefix( $cpt_settings, $target_field ),
-				'isGallery'   => $is_gallery,
-			);
-		}
-
-		$this->enable_js_handle( 'acf-views-lightbox' );
 	}
 
 	public function get_field_wrapper_tag( Field_Settings $field_settings, string $row_type ): string {

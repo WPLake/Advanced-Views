@@ -58,17 +58,17 @@ abstract class Template_Pattern_Base extends Library_Pattern_Base implements Tem
 		// e.g. ".acf-view__name .acf-view__field" required full.
 		if ( ! $is_full &&
 			! $layout_settings->is_with_common_classes ) {
-			$item_selector = explode( ' ', $item_selector );
-			$item_selector = $item_selector[ count( $item_selector ) - 1 ];
+			$selector_parts = explode( ' ', $item_selector );
+			$last_index     = count( $selector_parts ) - 1;
+			$item_selector  = $selector_parts[ $last_index ];
 		}
 
 		if ( $is_with_magic_selector ) {
-			$bem_prefix    = '.' . $layout_settings->get_bem_name() . '__';
-			$item_selector = sprintf(
-				'#%s__%s',
-				Layout_Settings::MAGIC_CSS_SELECTOR,
-				substr( $item_selector, strlen( $bem_prefix ) )
-			);
+			$bem_name      = $layout_settings->get_bem_name();
+			$bem_prefix    = sprintf( '.%s__', $bem_name );
+			$prefix_length = strlen( $bem_prefix );
+			$item_tail     = substr( $item_selector, $prefix_length );
+			$item_selector = sprintf( '#%s__%s', Layout_Settings::MAGIC_CSS_SELECTOR, $item_tail );
 		}
 
 		return $item_selector;
@@ -82,75 +82,14 @@ abstract class Template_Pattern_Base extends Library_Pattern_Base implements Tem
 	 * @return array{css:array<string,string>,js:array<string,string>}
 	 */
 	public function generate_code( Cpt_Settings $cpt_settings ): array {
-		$code = array(
+		if ( $cpt_settings instanceof Layout_Settings ) {
+			return $this->generate_layout_code( $cpt_settings );
+		}
+
+		return array(
 			'css' => array(),
 			'js'  => array(),
 		);
-
-		if ( ! ( $cpt_settings instanceof Layout_Settings ) ) {
-			return $code;
-		}
-
-		[$target_fields, $target_sub_fields] = $this->provider_cluster->get_fields_with_pattern(
-			static::NAME,
-			$cpt_settings
-		);
-
-		foreach ( $target_fields as $field ) {
-			$js_field_selector  = $this->get_item_selector( $cpt_settings, $field, false, false );
-			$css_field_selector = $this->get_item_selector( $cpt_settings, $field, false, true );
-
-			$var_name = $field->get_template_field_id();
-
-			ob_start();
-			$this->print_js_code( $var_name, $field, $cpt_settings );
-			$js_code_safe = (string) ob_get_clean();
-
-			ob_start();
-			$this->print_css_code( $css_field_selector, $field, $cpt_settings );
-			$css_code_safe = (string) ob_get_clean();
-
-			if ( '' !== $js_code_safe ) {
-				ob_start();
-				$this->print_js_code_piece( $var_name, $js_code_safe, $js_field_selector, false );
-				$code['js'][ $var_name ] = (string) ob_get_clean();
-			}
-
-			if ( '' !== $css_code_safe ) {
-				ob_start();
-				$this->print_code_piece( $var_name, $css_code_safe );
-				$code['css'][ $var_name ] = (string) ob_get_clean();
-			}
-		}
-
-		foreach ( $target_sub_fields as $field ) {
-			$js_field_selector  = $this->get_item_selector( $cpt_settings, $field, false, false );
-			$css_field_selector = $this->get_item_selector( $cpt_settings, $field, false, true );
-
-			ob_start();
-			$this->print_js_code( 'item', $field, $cpt_settings );
-			$js_code_safe = (string) ob_get_clean();
-
-			ob_start();
-			$this->print_css_code( $css_field_selector, $field, $cpt_settings );
-			$css_code_safe = (string) ob_get_clean();
-
-			$var_name = $field->get_template_field_id();
-
-			if ( '' !== $js_code_safe ) {
-				ob_start();
-				$this->print_js_code_piece( $var_name, $js_code_safe, $js_field_selector, true );
-				$code['js'][ $var_name ] = (string) ob_get_clean();
-			}
-
-			if ( '' !== $css_code_safe ) {
-				ob_start();
-				$this->print_code_piece( $var_name, $css_code_safe );
-				$code['css'][ $var_name ] = (string) ob_get_clean();
-			}
-		}
-
-		return $code;
 	}
 
 	public function get_row_wrapper_class( string $row_type ): string {
@@ -205,17 +144,100 @@ abstract class Template_Pattern_Base extends Library_Pattern_Base implements Tem
 	}
 
 	public function is_web_component_required( Cpt_Settings $cpt_settings ): bool {
-		if ( ! ( $cpt_settings instanceof Layout_Settings ) ||
-			! $this->is_with_web_component() ) {
-			return false;
+		if ( $cpt_settings instanceof Layout_Settings &&
+			$this->is_with_web_component() ) {
+			[$target_fields, $target_sub_fields] = $this->provider_cluster->get_fields_with_pattern(
+				static::NAME,
+				$cpt_settings
+			);
+
+			return array() !== $target_fields ||
+					array() !== $target_sub_fields;
 		}
+
+		return false;
+	}
+
+	/**
+	 * @return array{css:array<string,string>,js:array<string,string>}
+	 */
+	protected function generate_layout_code( Layout_Settings $layout_settings ): array {
+		$code = array(
+			'css' => array(),
+			'js'  => array(),
+		);
 
 		[$target_fields, $target_sub_fields] = $this->provider_cluster->get_fields_with_pattern(
 			static::NAME,
-			$cpt_settings
+			$layout_settings
 		);
 
-		return array() !== $target_fields ||
-				array() !== $target_sub_fields;
+		foreach ( $target_fields as $field ) {
+			$js_field_selector  = $this->get_item_selector( $layout_settings, $field, false, false );
+			$css_field_selector = $this->get_item_selector( $layout_settings, $field, false, true );
+
+			$var_name = $field->get_template_field_id();
+
+			ob_start();
+			$this->print_js_code( $var_name, $field, $layout_settings );
+			$js_code_safe = (string) ob_get_clean();
+
+			ob_start();
+			$this->print_css_code( $css_field_selector, $field, $layout_settings );
+			$css_code_safe = (string) ob_get_clean();
+
+			if ( '' !== $js_code_safe ) {
+				ob_start();
+				$this->print_js_code_piece( $var_name, $js_code_safe, $js_field_selector, false );
+				$code['js'][ $var_name ] = (string) ob_get_clean();
+			}
+
+			if ( '' !== $css_code_safe ) {
+				ob_start();
+				$this->print_code_piece( $var_name, $css_code_safe );
+				$code['css'][ $var_name ] = (string) ob_get_clean();
+			}
+		}
+
+		foreach ( $target_sub_fields as $field ) {
+			$js_field_selector  = $this->get_item_selector( $layout_settings, $field, false, false );
+			$css_field_selector = $this->get_item_selector( $layout_settings, $field, false, true );
+
+			ob_start();
+			$this->print_js_code( 'item', $field, $layout_settings );
+			$js_code_safe = (string) ob_get_clean();
+
+			ob_start();
+			$this->print_css_code( $css_field_selector, $field, $layout_settings );
+			$css_code_safe = (string) ob_get_clean();
+
+			$var_name = $field->get_template_field_id();
+
+			if ( '' !== $js_code_safe ) {
+				ob_start();
+				$this->print_js_code_piece( $var_name, $js_code_safe, $js_field_selector, true );
+				$code['js'][ $var_name ] = (string) ob_get_clean();
+			}
+
+			if ( '' !== $css_code_safe ) {
+				ob_start();
+				$this->print_code_piece( $var_name, $css_code_safe );
+				$code['css'][ $var_name ] = (string) ob_get_clean();
+			}
+		}
+
+		return $code;
+	}
+
+	/**
+	 * @return Field_Settings[]
+	 */
+	protected function get_target_fields( Layout_Settings $layout_settings ): array {
+		[$target_fields, $target_sub_fields] = $this->provider_cluster->get_fields_with_pattern(
+			static::NAME,
+			$layout_settings
+		);
+
+		return array_merge( $target_fields, $target_sub_fields );
 	}
 }

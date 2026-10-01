@@ -38,7 +38,8 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 		printf( '/* %s : %s (auto-discover-begin) */', esc_html( $this->auto_discover_name ), esc_html( $name ) );
 		echo "\n\n";
 		// @phpcs:ignore WordPress.Security.EscapeOutput
-		echo $piece_safe . "\n\n";
+		echo $piece_safe;
+		echo "\n\n";
 		printf( '/* %s : %s (auto-discover-end) */', esc_html( $this->auto_discover_name ), esc_html( $name ) );
 		echo "\n\n";
 	}
@@ -77,8 +78,10 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 		$this->print_code_piece( $name, $js_code_safe );
 	}
 
-	protected function get_wp_handle( string $handle ): string {
-		return Hard_Layout_Cpt::cpt_name() . '_' . $handle;
+	protected static function get_wp_handle( string $handle ): string {
+		$cpt_name = Hard_Layout_Cpt::cpt_name();
+
+		return sprintf( '%s_%s', $cpt_name, $handle );
 	}
 
 	protected function get_plugin(): Plugin {
@@ -125,21 +128,20 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 	}
 
 	public function enqueue_active(): string {
-		foreach ( $this->js_handles as $js_handle => $is_active ) {
-			if ( false === $is_active ) {
-				continue;
-			}
+		$script_args = array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		);
+		$version     = $this->plugin->get_version();
 
-			wp_enqueue_script(
-				$this->get_wp_handle( $js_handle ),
-				$this->get_asset_url( 'js/front/' . $js_handle . '.min.js' ),
-				array(),
-				$this->plugin->get_version(),
-				array(
-					'in_footer' => true,
-					'strategy'  => 'defer',
-				)
-			);
+		foreach ( $this->js_handles as $js_handle => $is_active ) {
+			if ( $is_active ) {
+				$wp_handle   = self::get_wp_handle( $js_handle );
+				$script_file = sprintf( 'js/front/%s.min.js', $js_handle );
+				$script_url  = $this->get_asset_url( $script_file );
+
+				wp_enqueue_script( $wp_handle, $script_url, array(), $version, $script_args );
+			}
 		}
 
 		$css = '';
@@ -147,13 +149,12 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 		$wp_filesystem = WP_Filesystem_Factory::get_wp_filesystem();
 
 		foreach ( $this->css_handles as $css_handle => $is_active ) {
-			if ( ! $is_active ) {
-				continue;
+			if ( $is_active ) {
+				$style_file   = sprintf( 'css/front/%s.min.css', $css_handle );
+				$path_to_file = $this->get_asset_path( $style_file );
+
+				$css .= (string) $wp_filesystem->get_contents( $path_to_file );
 			}
-
-			$path_to_file = $this->get_asset_path( 'css/front/' . $css_handle . '.min.css' );
-
-			$css .= (string) $wp_filesystem->get_contents( $path_to_file );
 		}
 
 		return $css;

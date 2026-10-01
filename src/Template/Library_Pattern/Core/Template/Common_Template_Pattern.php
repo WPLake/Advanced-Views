@@ -78,31 +78,39 @@ abstract class Common_Template_Pattern extends Template_Pattern_Base {
 	 * @return array{css:array<string,string>,js:array<string,string>}
 	 */
 	public function generate_code( Cpt_Settings $cpt_settings ): array {
+		if ( $cpt_settings instanceof Post_Selection_Settings ) {
+			return $this->is_target_selection( $cpt_settings ) ?
+				$this->generate_selection_code( $cpt_settings ) :
+				array(
+					'css' => array(),
+					'js'  => array(),
+				);
+		}
+
+		return parent::generate_code( $cpt_settings );
+	}
+
+	/**
+	 * @return array{css:array<string,string>,js:array<string,string>}
+	 */
+	protected function generate_selection_code( Post_Selection_Settings $selection_settings ): array {
 		$code = array(
 			'css' => array(),
 			'js'  => array(),
 		);
 
-		if ( ! ( $cpt_settings instanceof Post_Selection_Settings ) ) {
-			return parent::generate_code( $cpt_settings );
-		}
-
-		if ( ! $this->is_target_selection( $cpt_settings ) ) {
-			return $code;
-		}
+		$magic_selector = sprintf( '#%s', Post_Selection_Settings::MAGIC_CSS_SELECTOR );
 
 		ob_start();
-		$this->print_common_css_code(
-			sprintf( '#%s', Post_Selection_Settings::MAGIC_CSS_SELECTOR ),
-			$cpt_settings
-		);
+		$this->print_common_css_code( $magic_selector, $selection_settings );
 		$css_code = (string) ob_get_clean();
 
 		ob_start();
 		$this->print_common_js_code( $this->card_field_id );
 		$js_code = (string) ob_get_clean();
 
-		$selector = '.' . $cpt_settings->get_bem_name() . '__' . $this->card_field_id;
+		$bem_name = $selection_settings->get_bem_name();
+		$selector = sprintf( '.%s__%s', $bem_name, $this->card_field_id );
 
 		if ( '' !== $css_code ) {
 			ob_start();
