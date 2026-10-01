@@ -93,25 +93,20 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 		$plugin_prefix = Hard_Layout_Cpt::cpt_name();
 		$version       = $this->plugin->get_version();
 
-		switch ( $current_base ) {
+		$tools_base    = sprintf( '%s_page_avf-tools', $plugin_prefix );
+		$settings_base = sprintf( '%s_page_avf-settings', $plugin_prefix );
+
+		$enqueuers = array(
 			// add, edit pages.
-			case 'post':
-				$this->enqueue_cpt_item_assets( $js_data );
-				break;
+			'post'         => fn() => $this->enqueue_cpt_item_assets( $js_data ),
 			// 'edit' means 'list page'
-			case 'edit':
-				$style_handle = sprintf( '%s_list-page', $plugin_prefix );
-				$style_url    = $this->plugin->get_assets_url( 'css/admin/list-page.min.css' );
+			'edit'         => fn() => $this->enqueue_list_page_style(),
+			$tools_base    => fn() => $this->enqueue_tools_style(),
+			$settings_base => fn() => $this->enqueue_tools_style(),
+		);
 
-				wp_enqueue_style( $style_handle, $style_url, array(), $version );
-				break;
-			case sprintf( '%s_page_avf-tools', $plugin_prefix ):
-			case sprintf( '%s_page_avf-settings', $plugin_prefix ):
-				$style_handle = sprintf( '%s_tools', $plugin_prefix );
-				$style_url    = $this->plugin->get_assets_url( 'css/admin/tools.min.css' );
-
-				wp_enqueue_style( $style_handle, $style_url, array(), $version );
-				break;
+		if ( key_exists( $current_base, $enqueuers ) ) {
+			$enqueuers[ $current_base ]();
 		}
 
 		$plugin_page_begins = sprintf( '%s_page_', $plugin_prefix );
@@ -129,6 +124,24 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 		$common_url    = $this->plugin->get_assets_url( 'css/admin/common.min.css' );
 
 		wp_enqueue_style( $common_handle, $common_url, array(), $version );
+	}
+
+	protected function enqueue_list_page_style(): void {
+		$plugin_prefix = Hard_Layout_Cpt::cpt_name();
+		$style_handle  = sprintf( '%s_list-page', $plugin_prefix );
+		$style_url     = $this->plugin->get_assets_url( 'css/admin/list-page.min.css' );
+		$version       = $this->plugin->get_version();
+
+		wp_enqueue_style( $style_handle, $style_url, array(), $version );
+	}
+
+	protected function enqueue_tools_style(): void {
+		$plugin_prefix = Hard_Layout_Cpt::cpt_name();
+		$style_handle  = sprintf( '%s_tools', $plugin_prefix );
+		$style_url     = $this->plugin->get_assets_url( 'css/admin/tools.min.css' );
+		$version       = $this->plugin->get_version();
+
+		wp_enqueue_style( $style_handle, $style_url, array(), $version );
 	}
 
 	/**
