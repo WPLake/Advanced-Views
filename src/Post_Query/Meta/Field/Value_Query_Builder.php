@@ -66,7 +66,7 @@ final class Value_Query_Builder {
 	 */
 	protected function get_value() {
 		$is_object_field = Meta_Field::is_object_field( $this->field_meta->get_type() );
-		$value           = ( $this->resolve_value )( $this->field->get_raw_value() );
+		$value           = ( $this->resolve_value )( $this->field->resolve_value() );
 
 		if ( $is_object_field ) {
 			return Meta_Field::stringify_value( $value );

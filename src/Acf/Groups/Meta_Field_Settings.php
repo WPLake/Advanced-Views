@@ -129,8 +129,8 @@ class Meta_Field_Settings extends Group {
 		return Field_Settings::get_field_id_by_key( $this->field_key );
 	}
 
-	public function get_raw_value(): string {
-		if ( self::VALUE_TYPE_DYNAMIC === $this->value_type ) {
+	public function resolve_value(): string {
+		if ( $this->is_dynamic_value() ) {
 			$resolvers = $this->get_dynamic_value_resolvers();
 
 			$value_resolvers = $resolvers[ $this->dynamic_source ] ?? null;
@@ -141,6 +141,10 @@ class Meta_Field_Settings extends Group {
 		}
 
 		return $this->value;
+	}
+
+	public function is_dynamic_value(): bool {
+		return self::VALUE_TYPE_DYNAMIC === $this->value_type;
 	}
 
 	/**

@@ -31,15 +31,11 @@ class Field_Query_Builder {
 			$field->get_field_id()
 		);
 
-		// query only existing and non-virtual, e.g. Woo_Fields::FIELD_FEATURED is a taxonomy.
-		$is_real_field = $field_meta->is_field_exist() &&
-						strlen( $field_meta->get_name() ) > 0;
+		$is_supported_field = $this->value_resolver->is_supported_field( $field, $field_meta );
 
-		if ( $is_real_field ) {
-			return $this->resolve_query_arguments( $field, $field_meta );
-		}
-
-		return array();
+		return $is_supported_field ?
+			$this->resolve_query_arguments( $field, $field_meta ) :
+			array();
 	}
 
 	/**
@@ -54,7 +50,7 @@ class Field_Query_Builder {
 			$this->value_resolver->resolve_meta_value( $raw_value, $field_meta );
 
 		if ( $is_list_field ) {
-			$resolved_value = $resolve_value( $field->get_raw_value() );
+			$resolved_value = $resolve_value( $field->resolve_value() );
 
 			return ( new List_Query_Builder( $field, $field_meta, $resolved_value ) )
 				->build_list_query();
