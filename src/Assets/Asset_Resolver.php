@@ -6,10 +6,26 @@ namespace Org\Wplake\Advanced_Views\Assets;
 
 defined( 'ABSPATH' ) || exit;
 
-interface Asset_Resolver {
-	public function get_asset_url( string $file ): string;
+class Asset_Resolver {
+	private string $plugin_url;
+	private string $plugin_path;
+	private string $plugin_version;
 
-	public function get_asset_path( string $file ): string;
+	public function __construct( string $main_plugin_file, string $plugin_version ) {
+		$this->plugin_url     = plugin_dir_url( $main_plugin_file );
+		$this->plugin_path    = plugin_dir_path( $main_plugin_file );
+		$this->plugin_version = $plugin_version;
+	}
 
-	public function get_version(): string;
+	public function get_asset_url( string $file ): string {
+		return $this->plugin_url . 'src/Assets/' . $file;
+	}
+
+	public function get_asset_path( string $file ): string {
+		return $this->plugin_path . 'src/Assets/' . $file;
+	}
+
+	public function get_version(): string {
+		return $this->plugin_version;
+	}
 }

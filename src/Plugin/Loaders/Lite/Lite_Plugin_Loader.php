@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders\Lite;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
 use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
@@ -130,6 +131,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		);
 
 		$this->plugin                = new Plugin( $this->plugin_file, $this->options, $this->settings );
+		$this->asset_resolver        = new Asset_Resolver( $this->plugin_file, $this->plugin->get_version() );
 		$this->templates_environment = new Templates_Environment(
 			$uploads_folder,
 			$this->logger,
@@ -139,9 +141,9 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->item_settings = $this->group_creator->create( Item_Settings::class );
 
 		$this->provider_cluster        = new Data_Vendors( $this->logger );
-		$this->live_reloader_component = new Live_Reloader_Component( $this->plugin, $this->settings );
+		$this->live_reloader_component = new Live_Reloader_Component( $this->asset_resolver, $this->settings );
 		$this->front_assets            = new Front_Assets(
-			$this->plugin,
+			$this->asset_resolver,
 			$layouts_file_system,
 			$this->provider_cluster,
 			$this->live_reloader_component
@@ -293,7 +295,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		);
 
 		$this->admin_assets = new Admin_Assets(
-			$this->plugin,
+			$this->asset_resolver,
 			array(
 				$this->layouts_loader->interactive_fields,
 				$this->selections_loader->interactive_fields,

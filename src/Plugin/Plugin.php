@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Plugin;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
@@ -21,7 +20,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
-class Plugin extends Hookable implements Hooks_Interface, Asset_Resolver {
+class Plugin extends Hookable implements Hooks_Interface {
 	const DOCS_URL          = 'https://docs.advanced-views.com/';
 	const PRO_VERSION_URL   = 'https://advanced-views.com/pro/';
 	const PRO_PRICING_URL   = 'https://advanced-views.com/pro/#pricing';
@@ -289,14 +288,6 @@ class Plugin extends Hookable implements Hooks_Interface, Asset_Resolver {
 
 	public function is_pro_version(): bool {
 		return $this->is_pro_version;
-	}
-
-	public function get_asset_url( string $file ): string {
-		return $this->plugin_url . 'src/Assets/' . $file;
-	}
-
-	public function get_asset_path( string $file ): string {
-		return $this->plugin_path . 'src/Assets/' . $file;
 	}
 
 	public function get_plugin_path( string $inner_path ): string {

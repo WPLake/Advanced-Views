@@ -187,7 +187,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 		$cpt_block = new Cpt_Gutenberg_Block( $cpt_renderer );
 
 		$this->block = new Selection_Gutenberg_Block(
-			$base->plugin,
+			$base->asset_resolver,
 			$this->item_picker,
 			$cpt_block
 		);
@@ -199,7 +199,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 
 			return array(
 				$integration,
-				new Selection_Elementor_Assets( $this->item_picker, $base->plugin ),
+				new Selection_Elementor_Assets( $this->item_picker, $base->asset_resolver ),
 			);
 		};
 

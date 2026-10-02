@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
 use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
@@ -76,6 +77,7 @@ use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Loader;
 
 abstract class Plugin_Loader_Base extends Module_Loader {
 	public Plugin $plugin;
+	public Asset_Resolver $asset_resolver;
 	public Plugin_Environment $plugin_environment;
 	public Version_Migrator $version_migrator;
 	public Logger $logger;

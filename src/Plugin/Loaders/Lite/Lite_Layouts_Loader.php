@@ -107,7 +107,7 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 		$cpt_block = new Cpt_Gutenberg_Block( $cpt_renderer );
 
 		$this->block = new Layout_Gutenberg_Block(
-			$base->plugin,
+			$base->asset_resolver,
 			$this->item_picker,
 			$cpt_block
 		);
@@ -119,7 +119,7 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 
 			return array(
 				$widget_registrar,
-				new Layout_Elementor_Assets( $this->item_picker, $base->plugin ),
+				new Layout_Elementor_Assets( $this->item_picker, $base->asset_resolver ),
 			);
 		};
 
