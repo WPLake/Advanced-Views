@@ -26,6 +26,8 @@ class Term_Value_Resolver implements Query_Context_Container {
 	 * @return mixed[]
 	 */
 	public function resolve_term_value( Tax_Field_Settings $term ): array {
+		// dynamicTerm is actually a Pro option, but we support them all
+		// - as backward compatibility with existing Lite setups.
 		if ( $term->is_dynamic_term() ) {
 			$resolvers = $this->get_value_resolvers( $term );
 
