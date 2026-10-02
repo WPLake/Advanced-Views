@@ -4,23 +4,23 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Acf;
 
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 
 class Acf_Internal_Features extends Hookable implements Hooks_Interface {
-	private Plugin $plugin;
+	private Asset_Resolver $asset_resolver;
 
-	public function __construct( Plugin $plugin ) {
-		$this->plugin = $plugin;
+	public function __construct( Asset_Resolver $asset_resolver ) {
+		$this->asset_resolver = $asset_resolver;
 	}
 
 	public function include_field_types(): void {
-		$internal_features_path = $this->plugin->get_standalone_vendor_dir( 'acf-internal-features' );
+		$internal_features_path = $this->asset_resolver->get_standalone_vendor_path( 'acf-internal-features' );
 
 		include_once $internal_features_path . '/inc/class-acf-field-clone.php';
 		include_once $internal_features_path . '/inc/class-acf-repeater-table.php';
@@ -34,9 +34,9 @@ class Acf_Internal_Features extends Hookable implements Hooks_Interface {
 		// register scripts.
 		wp_register_script(
 			'acf-pro-input',
-			$this->plugin->get_acf_internal_assets_url( 'acf-pro-input.min.js' ),
+			$this->asset_resolver->get_standalone_vendor_url( 'acf-internal-features/assets/acf-pro-input.min.js' ),
 			array( 'acf-input' ),
-			$this->plugin->get_version(),
+			$this->asset_resolver->get_version(),
 			array(
 				'in_footer' => false,
 			)
@@ -45,9 +45,9 @@ class Acf_Internal_Features extends Hookable implements Hooks_Interface {
 		// register styles.
 		wp_register_style(
 			'acf-pro-input',
-			$this->plugin->get_acf_internal_assets_url( 'acf-pro-input.min.css' ),
+			$this->asset_resolver->get_standalone_vendor_url( 'acf-internal-features/assets/acf-pro-input.min.css' ),
 			array( 'acf-input' ),
-			$this->plugin->get_version()
+			$this->asset_resolver->get_version()
 		);
 	}
 
@@ -59,7 +59,7 @@ class Acf_Internal_Features extends Hookable implements Hooks_Interface {
 	public function maybe_include_features(): void {
 		// skip if 'ACF Pro' is available.
 
-		if ( $this->plugin->is_acf_plugin_available( true ) ) {
+		if ( Acf_Dependency::is_acf_plugin_available( true ) ) {
 			return;
 		}
 

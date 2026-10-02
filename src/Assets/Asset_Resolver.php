@@ -29,6 +29,14 @@ class Asset_Resolver {
 		return $this->plugin_version;
 	}
 
+	public function get_standalone_vendor_path( string $sub_path ): string {
+		return $this->plugin_path . 'vendor/standalone/' . $sub_path;
+	}
+
+	public function get_standalone_vendor_url( string $sub_path ): string {
+		return $this->plugin_url . 'vendor/standalone/' . $sub_path;
+	}
+
 	protected function get_plugin_url(): string {
 		return $this->plugin_url;
 	}

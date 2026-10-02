@@ -187,7 +187,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	}
 
 	protected function integration( Route_Detector $route_detector ): void {
-		$this->acf_dependency = new Acf_Dependency( $this->plugin );
+		$this->acf_dependency = new Acf_Dependency( $this->asset_resolver );
 
 		$this->layout_settings_integration         = new Layout_Settings_Integration(
 			$this->layout_cpt->cpt_name(),
@@ -250,7 +250,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$this->demo_import,
 			$this->plugin_cpts
 		);
-		$this->acf_internal_features = new Acf_Internal_Features( $this->plugin );
+		$this->acf_internal_features = new Acf_Internal_Features( $this->asset_resolver );
 
 		$tools_settings     = new Tools_Settings( $this->group_creator );
 		$debug_dump_creator = new Debug_Dump_Creator(

@@ -6,28 +6,34 @@ namespace Org\Wplake\Advanced_Views\Acf;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 
 class Acf_Dependency extends Hookable implements Hooks_Interface {
-	private Plugin $plugin;
+	private Asset_Resolver $asset_resolver;
 
-	public function __construct( Plugin $plugin ) {
-		$this->plugin = $plugin;
+	public function __construct( Asset_Resolver $asset_resolver ) {
+		$this->asset_resolver = $asset_resolver;
+	}
+
+	public static function is_acf_plugin_available( bool $is_pro_only = false ): bool {
+		// don't use 'is_plugin_active()' as the function available lately.
+		return class_exists( 'acf_pro' ) ||
+			( ! $is_pro_only && class_exists( 'ACF' ) );
 	}
 
 	public function maybe_include_acf_plugin(): void {
-		if ( $this->plugin->is_acf_plugin_available() ) {
+		if ( self::is_acf_plugin_available() ) {
 			return;
 		}
 
-		$acf_file       = $this->plugin->get_standalone_vendor_dir( 'advanced-custom-fields/acf.php' );
-		$acf_plugin_url = $this->plugin->get_standalone_vendor_url( 'advanced-custom-fields/' );
+		$acf_file       = $this->asset_resolver->get_standalone_vendor_path( 'advanced-custom-fields/acf.php' );
+		$acf_plugin_url = $this->asset_resolver->get_standalone_vendor_url( 'advanced-custom-fields/' );
 
 		// Hide ACF admin menu (as we loaded ACF only for our plugin).
 		self::add_filter( 'acf/settings/show_admin', '__return_false' );

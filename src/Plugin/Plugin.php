@@ -37,14 +37,12 @@ class Plugin extends Hookable implements Hooks_Interface {
 	protected bool $is_pro_version = false;
 	private string $version;
 	private bool $is_switching_versions;
-	private string $plugin_url;
 	private string $plugin_path;
 
 	private Options_Storage $options;
 	private Settings_Storage $settings;
 
 	public function __construct( string $main_file, Options_Storage $options, Settings_Storage $settings ) {
-		$this->plugin_url            = plugin_dir_url( $main_file );
 		$this->plugin_path           = plugin_dir_path( $main_file );
 		$this->version               = $this->detect_plugin_version_number( $main_file );
 		$this->options               = $options;
@@ -54,11 +52,6 @@ class Plugin extends Hookable implements Hooks_Interface {
 
 	public static function make_url_relative( string $url ): string {
 		return str_replace( get_site_url(), '', $url );
-	}
-
-	// static, as called also in AcfGroup.
-	public static function is_acf_pro_plugin_available(): bool {
-		return class_exists( 'acf_pro' );
 	}
 
 	public static function get_theme_text_domain(): string {
@@ -292,24 +285,6 @@ class Plugin extends Hookable implements Hooks_Interface {
 
 	public function get_relative_plugins_path( string $inner_path ): string {
 		return $this->short_slug . '/' . $inner_path;
-	}
-
-	public function get_acf_internal_assets_url( string $file ): string {
-		return $this->plugin_url . 'vendor/standalone/acf-internal-features/assets/' . $file;
-	}
-
-	public function get_standalone_vendor_dir( string $sub_path ): string {
-		return $this->plugin_path . 'vendor/standalone/' . $sub_path;
-	}
-
-	public function get_standalone_vendor_url( string $sub_path ): string {
-		return $this->plugin_url . 'vendor/standalone/' . $sub_path;
-	}
-
-	public function is_acf_plugin_available( bool $is_pro_only = false ): bool {
-		// don't use 'is_plugin_active()' as the function available lately.
-		return static::is_acf_pro_plugin_available() ||
-				( ! $is_pro_only && class_exists( 'ACF' ) );
 	}
 
 	public function maybe_show_compatibility_warnings(): void {
