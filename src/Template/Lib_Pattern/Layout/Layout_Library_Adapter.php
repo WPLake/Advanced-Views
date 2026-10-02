@@ -9,14 +9,14 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Active_Libraries;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Code_Piece_Printer;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Library;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Library_Assets;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Library_Code;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Library_Structure;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Structure;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Target;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Assets\Active_Libraries;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Code\Code_Piece_Printer;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Library\Library;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Library\Library_Assets;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Library\Library_Code;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Library\Library_Structure;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Structure\Structure;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Code\Target;
 
 /**
  * Translates a Layout into the neutral library vocabulary (Target); generic across all libraries.

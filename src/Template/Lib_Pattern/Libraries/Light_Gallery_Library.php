@@ -6,26 +6,26 @@ namespace Org\Wplake\Advanced_Views\Template\Lib_Pattern\Libraries;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Active_Libraries;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Assets_Enqueuer;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Assets_Handles;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Assets_Location;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Code_Piece;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Html_Wrapper;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Library_Assets;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Library_Code;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Library_Structure;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Structure;
-use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Target;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Assets\Active_Libraries;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Assets\Assets_Enqueuer;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Assets\Assets_Handles;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Code\Code_Piece;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Code\Target;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Library\Library_Assets;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Library\Library_Code;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Library\Library_Structure;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Structure\Html_Wrapper;
+use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Structure\Structure;
 
 class Light_Gallery_Library implements Library_Assets, Library_Code, Library_Structure {
 	const NAME = 'light-gallery';
 
-	protected Assets_Location $assets_location;
+	protected Asset_Resolver $asset_resolver;
 
-	public function __construct( Assets_Location $assets_location ) {
-		$this->assets_location = $assets_location;
+	public function __construct( Asset_Resolver $asset_resolver ) {
+		$this->asset_resolver = $asset_resolver;
 	}
 
 	public function get_name(): string {
@@ -50,11 +50,11 @@ class Light_Gallery_Library implements Library_Assets, Library_Code, Library_Str
 
 	public function enqueue_active( Active_Libraries $active_libraries ): string {
 		$handles  = $active_libraries->get_handles( static::NAME );
-		$css_code = Assets_Enqueuer::enqueue( $this->assets_location, $handles );
+		$css_code = Assets_Enqueuer::enqueue( $this->asset_resolver, $handles );
 
 		// font and image paths in CSS won't work, as CSS will be added right to the page,
 		// replacing with the related installation path avoids it.
-		$assets_url              = $this->assets_location->url( '' );
+		$assets_url              = $this->asset_resolver->get_asset_url( '' );
 		$relative_asset_url_base = Plugin::make_url_relative( $assets_url );
 		$url_replacement         = sprintf( 'url(%s', $relative_asset_url_base );
 

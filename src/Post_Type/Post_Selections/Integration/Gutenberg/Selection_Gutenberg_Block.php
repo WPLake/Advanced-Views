@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Gutenb
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
@@ -19,19 +20,19 @@ final class Selection_Gutenberg_Block extends Hookable implements Hooks_Interfac
 	// prefixed by the plugin name for wp.org Plugin directory discover.
 	const NAME = Plugin::PRODUCT_SLUG . '/post-selection';
 
-	private Plugin $plugin;
+	private Asset_Resolver $asset_resolver;
 	private Cpt_Item_Picker $item_picker;
 	private Cpt_Gutenberg_Block $cpt_block;
 	private Route_Detector $route_detector;
 
 	public function __construct(
-		Plugin $plugin,
+		Asset_Resolver $asset_resolver,
 		Cpt_Item_Picker $item_picker,
 		Cpt_Gutenberg_Block $cpt_block
 	) {
-		$this->plugin      = $plugin;
-		$this->item_picker = $item_picker;
-		$this->cpt_block   = $cpt_block;
+		$this->asset_resolver = $asset_resolver;
+		$this->item_picker    = $item_picker;
+		$this->cpt_block      = $cpt_block;
 	}
 
 	public function set_hooks( Route_Detector $route_detector ): void {
@@ -77,9 +78,9 @@ final class Selection_Gutenberg_Block extends Hookable implements Hooks_Interfac
 	public function enqueue_editor_assets(): void {
 		wp_enqueue_script(
 			self::NAME,
-			$this->plugin->get_assets_url( 'js/admin/post-type/post-selections/gutenberg/selection-gutenberg.min.js' ),
+			$this->asset_resolver->get_asset_url( 'js/admin/post-type/post-selections/gutenberg/selection-gutenberg.min.js' ),
 			Cpt_Gutenberg_Block::get_block_js_dependencies(),
-			$this->plugin->get_version(),
+			$this->asset_resolver->get_version(),
 			true
 		);
 

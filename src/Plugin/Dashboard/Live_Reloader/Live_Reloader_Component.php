@@ -5,10 +5,10 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
@@ -27,11 +27,11 @@ class Live_Reloader_Component extends Hookable implements Hooks_Interface {
 	 */
 	private array $view_ids_inside_card;
 	private int $cards_inner_counter;
-	private Plugin $plugin;
+	private Asset_Resolver $asset_resolver;
 	private Settings_Storage $settings;
 
-	public function __construct( Plugin $plugin, Settings_Storage $settings ) {
-		$this->plugin               = $plugin;
+	public function __construct( Asset_Resolver $asset_resolver, Settings_Storage $settings ) {
+		$this->asset_resolver       = $asset_resolver;
 		$this->settings             = $settings;
 		$this->is_active            = false;
 		$this->is_present           = false;
@@ -122,9 +122,9 @@ class Live_Reloader_Component extends Hookable implements Hooks_Interface {
 
 		wp_enqueue_script(
 			'avf-live-reloading',
-			$this->plugin->get_assets_url( 'js/front/live-reloader.min.js' ),
+			$this->asset_resolver->get_asset_url( 'js/front/live-reloader.min.js' ),
 			array(),
-			$this->plugin->get_version(),
+			$this->asset_resolver->get_version(),
 			array(
 				'in_footer' => true,
 			)

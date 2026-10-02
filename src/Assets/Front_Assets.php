@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern_Base;
@@ -27,7 +27,7 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	const MINIFY_TYPE_CSS = 'css';
 	const MINIFY_TYPE_JS  = 'js';
 
-	private Plugin $plugin;
+	private Asset_Resolver $asset_resolver;
 	private Field_Provider_Cluster $provider_cluster;
 	private ?int $buffer_level;
 	private bool $is_custom_interactivity_api_import_map_required;
@@ -51,8 +51,8 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	private array $tailwind_css_rules;
 	private File_System $file_system;
 
-	public function __construct( Plugin $plugin, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component ) {
-		$this->plugin           = $plugin;
+	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component ) {
+		$this->asset_resolver   = $asset_resolver;
 		$this->provider_cluster = $provider_cluster;
 		$this->file_system      = $file_system;
 		$this->buffer_level     = null;
@@ -73,9 +73,9 @@ class Front_Assets extends Hookable implements Hooks_Interface {
 	 */
 	protected function create_patterns(): array {
 		return array(
-			new Map_Pattern( $this->plugin, $this->provider_cluster ),
-			new Light_Gallery_Pattern( $this->plugin, $this->provider_cluster ),
-			new Lightbox_Pattern( $this->plugin, $this->provider_cluster ),
+			new Map_Pattern( $this->asset_resolver, $this->provider_cluster ),
+			new Light_Gallery_Pattern( $this->asset_resolver, $this->provider_cluster ),
+			new Lightbox_Pattern( $this->asset_resolver, $this->provider_cluster ),
 		);
 	}
 

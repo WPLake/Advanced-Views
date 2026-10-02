@@ -6,8 +6,8 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
 
 abstract class Library_Pattern_Base implements Library_Pattern {
@@ -21,12 +21,12 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 	 * @var array<string, bool>
 	 */
 	private array $css_handles;
-	private Plugin $plugin;
+	private Asset_Resolver $asset_resolver;
 	private string $auto_discover_name;
 	private bool $is_with_web_component;
 
-	public function __construct( Plugin $plugin ) {
-		$this->plugin                = $plugin;
+	public function __construct( Asset_Resolver $asset_resolver ) {
+		$this->asset_resolver        = $asset_resolver;
 		$this->js_handles            = array();
 		$this->css_handles           = array();
 		$this->auto_discover_name    = '';
@@ -45,11 +45,11 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 	}
 
 	protected function get_asset_url( string $file ): string {
-		return $this->plugin->get_assets_url( $file );
+		return $this->asset_resolver->get_asset_url( $file );
 	}
 
 	protected function get_asset_path( string $file ): string {
-		return $this->plugin->get_assets_path( $file );
+		return $this->asset_resolver->get_asset_path( $file );
 	}
 
 	protected function print_js_code_piece(
@@ -84,8 +84,8 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 		return sprintf( '%s_%s', $cpt_name, $handle );
 	}
 
-	protected function get_plugin(): Plugin {
-		return $this->plugin;
+	protected function get_asset_resolver(): Asset_Resolver {
+		return $this->asset_resolver;
 	}
 
 	protected function is_with_web_component(): bool {
@@ -132,7 +132,7 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 			'in_footer' => true,
 			'strategy'  => 'defer',
 		);
-		$version     = $this->plugin->get_version();
+		$version     = $this->asset_resolver->get_version();
 
 		foreach ( $this->js_handles as $js_handle => $is_active ) {
 			if ( $is_active ) {

@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Elemen
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
@@ -23,11 +24,11 @@ final class Selection_Elementor_Assets extends Hookable implements Hooks_Interfa
 	const PREVIEW_NAME = Plugin::PRODUCT_SLUG . '/post-selection-elementor-preview';
 
 	private Cpt_Item_Picker $item_picker;
-	private Plugin $plugin;
+	private Asset_Resolver $asset_resolver;
 
-	public function __construct( Cpt_Item_Picker $item_picker, Plugin $plugin ) {
-		$this->item_picker = $item_picker;
-		$this->plugin      = $plugin;
+	public function __construct( Cpt_Item_Picker $item_picker, Asset_Resolver $asset_resolver ) {
+		$this->item_picker    = $item_picker;
+		$this->asset_resolver = $asset_resolver;
 	}
 
 	public function set_hooks( Route_Detector $route_detector ): void {
@@ -49,10 +50,10 @@ final class Selection_Elementor_Assets extends Hookable implements Hooks_Interfa
 		// deps on wp-api-fetch/wp-i18n for actionLinksEditor.ts's "Refresh"; on elementor-editor so window.elementor
 		// exists by the time this script runs (the panel/preview split - and why 'elementor-frontend' must NOT be
 		// a dep of the preview-side script below - is a documented Elementor gotcha, see enqueue_preview_assets()).
-		$script_url = $this->plugin->get_assets_url(
+		$script_url = $this->asset_resolver->get_asset_url(
 			'js/admin/post-type/post-selections/elementor/selection-elementor-editor.min.js'
 		);
-		$version    = $this->plugin->get_version();
+		$version    = $this->asset_resolver->get_version();
 
 		wp_enqueue_script(
 			self::EDITOR_NAME,
@@ -76,10 +77,10 @@ final class Selection_Elementor_Assets extends Hookable implements Hooks_Interfa
 		// no 'elementor-frontend' dep here - Elementor has a documented load bug when a script enqueued via
 		// 'elementor/preview/enqueue_scripts' depends on it. selectionElementorPreview.ts waits on the
 		// 'elementor/frontend/init' window event instead, the pattern Elementor's own docs recommend for this.
-		$script_url = $this->plugin->get_assets_url(
+		$script_url = $this->asset_resolver->get_asset_url(
 			'js/admin/post-type/post-selections/elementor/selection-elementor-preview.min.js'
 		);
-		$version    = $this->plugin->get_version();
+		$version    = $this->asset_resolver->get_version();
 
 		wp_enqueue_script(
 			self::PREVIEW_NAME,

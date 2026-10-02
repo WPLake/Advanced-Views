@@ -8,7 +8,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern_Base;
 
 defined( 'ABSPATH' ) || exit;
@@ -21,8 +21,8 @@ class Map_Pattern extends Template_Pattern_Base {
 	 */
 	private array $maps;
 
-	public function __construct( Plugin $plugin, Field_Provider_Cluster $provider_cluster ) {
-		parent::__construct( $plugin, $provider_cluster );
+	public function __construct( Asset_Resolver $asset_resolver, Field_Provider_Cluster $provider_cluster ) {
+		parent::__construct( $asset_resolver, $provider_cluster );
 
 		$this->set_js_handles(
 			array(
@@ -54,7 +54,7 @@ class Map_Pattern extends Template_Pattern_Base {
 		$maps_handle   = self::get_wp_handle( 'acf-views-maps' );
 		$google_handle = self::get_wp_handle( 'google-maps' );
 		$google_url    = sprintf( 'https://maps.googleapis.com/maps/api/js?key=%s&callback=acfViewsGoogleMaps', $key );
-		$version       = $this->get_plugin()->get_version();
+		$version       = $this->get_asset_resolver()->get_version();
 		$script_args   = array(
 			'in_footer' => true,
 			'strategy'  => 'defer',

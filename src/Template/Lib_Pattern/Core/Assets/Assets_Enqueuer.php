@@ -2,10 +2,11 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core;
+namespace Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Assets;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
 
@@ -13,18 +14,18 @@ class Assets_Enqueuer {
 	/**
 	 * Enqueues JS files and returns the CSS code to be printed inline.
 	 */
-	public static function enqueue( Assets_Location $location, Assets_Handles $handles ): string {
+	public static function enqueue( Asset_Resolver $asset_resolver, Assets_Handles $handles ): string {
 		$script_args = array(
 			'in_footer' => true,
 			'strategy'  => 'defer',
 		);
 
-		$version = $location->version();
+		$version = $asset_resolver->get_version();
 
 		foreach ( $handles->js as $handle ) {
 			$script_file = sprintf( 'js/front/%s.min.js', $handle );
 			$wp_handle   = self::get_wp_handle( $handle );
-			$script_url  = $location->url( $script_file );
+			$script_url  = $asset_resolver->get_asset_url( $script_file );
 
 			wp_enqueue_script( $wp_handle, $script_url, array(), $version, $script_args );
 		}
@@ -35,7 +36,7 @@ class Assets_Enqueuer {
 		foreach ( $handles->css as $handle ) {
 			$style_file = sprintf( 'css/front/%s.min.css', $handle );
 
-			$style_path = $location->path( $style_file );
+			$style_path = $asset_resolver->get_asset_path( $style_file );
 
 			$css .= (string) $wp_filesystem->get_contents( $style_path );
 		}

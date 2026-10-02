@@ -10,13 +10,12 @@ use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
 use WP_Screen;
 
 class Admin_Assets extends Hookable implements Hooks_Interface {
-	private Plugin $plugin;
+	private Asset_Resolver $asset_resolver;
 	/**
 	 * @var Cpt_Interactive_Fields[]
 	 */
@@ -26,10 +25,10 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 	 * @param Cpt_Interactive_Fields[] $interactive_fields
 	 */
 	public function __construct(
-		Plugin $plugin,
+		Asset_Resolver $asset_resolver,
 		array $interactive_fields
 	) {
-		$this->plugin             = $plugin;
+		$this->asset_resolver     = $asset_resolver;
 		$this->interactive_fields = $interactive_fields;
 	}
 
@@ -46,8 +45,8 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 		if ( self::is_target_screen() ) {
 			$plugin_prefix = Hard_Layout_Cpt::cpt_name();
 			$style_handle  = sprintf( '%s_editor', $plugin_prefix );
-			$style_url     = $this->plugin->get_assets_url( 'css/admin/editor.min.css' );
-			$version       = $this->plugin->get_version();
+			$style_url     = $this->asset_resolver->get_asset_url( 'css/admin/editor.min.css' );
+			$version       = $this->asset_resolver->get_version();
 
 			wp_enqueue_style( $style_handle, $style_url, array(), $version );
 		}
@@ -63,8 +62,8 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 	protected function enqueue_code_editor(): void {
 		$plugin_prefix = Hard_Layout_Cpt::cpt_name();
 		$ace_handle    = sprintf( '%s_ace', $plugin_prefix );
-		$ace_url       = $this->plugin->get_assets_url( 'js/admin/code-editor/ace.js' );
-		$version       = $this->plugin->get_version();
+		$ace_url       = $this->asset_resolver->get_asset_url( 'js/admin/code-editor/ace.js' );
+		$version       = $this->asset_resolver->get_version();
 		$script_args   = array(
 			'in_footer' => true,
 		);
@@ -76,14 +75,14 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 		foreach ( $extensions as $extension ) {
 			$extension_handle = sprintf( '%s_ace-%s', $plugin_prefix, $extension );
 			$extension_path   = sprintf( 'js/admin/code-editor/%s.js', $extension );
-			$extension_url    = $this->plugin->get_assets_url( $extension_path );
+			$extension_url    = $this->asset_resolver->get_asset_url( $extension_path );
 
 			wp_enqueue_script( $extension_handle, $extension_url, array( $ace_handle ), $version, $script_args );
 		}
 	}
 
 	protected function get_cpt_item_js_file_url(): string {
-		return $this->plugin->get_assets_url( 'js/admin/cpt-item.min.js' );
+		return $this->asset_resolver->get_asset_url( 'js/admin/cpt-item.min.js' );
 	}
 
 	/**
@@ -91,7 +90,7 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 	 */
 	protected function enqueue_admin_assets( string $current_base, array $js_data = array() ): void {
 		$plugin_prefix = Hard_Layout_Cpt::cpt_name();
-		$version       = $this->plugin->get_version();
+		$version       = $this->asset_resolver->get_version();
 
 		$tools_base    = sprintf( '%s_page_avf-tools', $plugin_prefix );
 		$settings_base = sprintf( '%s_page_avf-settings', $plugin_prefix );
@@ -114,14 +113,14 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 		// 'dashboard' for all the custom pages (but not for edit/add pages)
 		if ( 0 === strpos( $current_base, $plugin_page_begins ) ) {
 			$style_handle = sprintf( '%s_page', $plugin_prefix );
-			$style_url    = $this->plugin->get_assets_url( 'css/admin/dashboard.min.css' );
+			$style_url    = $this->asset_resolver->get_asset_url( 'css/admin/dashboard.min.css' );
 
 			wp_enqueue_style( $style_handle, $style_url, array(), $version );
 		}
 
 		// plugin-header for all the pages without exception.
 		$common_handle = sprintf( '%s_common', $plugin_prefix );
-		$common_url    = $this->plugin->get_assets_url( 'css/admin/common.min.css' );
+		$common_url    = $this->asset_resolver->get_asset_url( 'css/admin/common.min.css' );
 
 		wp_enqueue_style( $common_handle, $common_url, array(), $version );
 	}
@@ -129,8 +128,8 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 	protected function enqueue_list_page_style(): void {
 		$plugin_prefix = Hard_Layout_Cpt::cpt_name();
 		$style_handle  = sprintf( '%s_list-page', $plugin_prefix );
-		$style_url     = $this->plugin->get_assets_url( 'css/admin/list-page.min.css' );
-		$version       = $this->plugin->get_version();
+		$style_url     = $this->asset_resolver->get_asset_url( 'css/admin/list-page.min.css' );
+		$version       = $this->asset_resolver->get_version();
 
 		wp_enqueue_style( $style_handle, $style_url, array(), $version );
 	}
@@ -138,8 +137,8 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 	protected function enqueue_tools_style(): void {
 		$plugin_prefix = Hard_Layout_Cpt::cpt_name();
 		$style_handle  = sprintf( '%s_tools', $plugin_prefix );
-		$style_url     = $this->plugin->get_assets_url( 'css/admin/tools.min.css' );
-		$version       = $this->plugin->get_version();
+		$style_url     = $this->asset_resolver->get_asset_url( 'css/admin/tools.min.css' );
+		$version       = $this->asset_resolver->get_version();
 
 		wp_enqueue_style( $style_handle, $style_url, array(), $version );
 	}
@@ -151,7 +150,7 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 		global $post;
 
 		$plugin_prefix = Hard_Layout_Cpt::cpt_name();
-		$version       = $this->plugin->get_version();
+		$version       = $this->asset_resolver->get_version();
 		$post_type     = $post->post_type;
 		$page_js_data  = $this->resolve_page_js_data( $post_type );
 		$js_data       = array_merge_recursive( $js_data, $page_js_data );
@@ -159,7 +158,7 @@ class Admin_Assets extends Hookable implements Hooks_Interface {
 		$this->enqueue_code_editor();
 
 		$item_handle = sprintf( '%s_cpt-item', $plugin_prefix );
-		$style_url   = $this->plugin->get_assets_url( 'css/admin/cpt-item.min.css' );
+		$style_url   = $this->asset_resolver->get_asset_url( 'css/admin/cpt-item.min.css' );
 
 		wp_enqueue_style( $item_handle, $style_url, array(), $version );
 
