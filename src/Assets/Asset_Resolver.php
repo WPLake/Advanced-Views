@@ -28,4 +28,12 @@ class Asset_Resolver {
 	public function get_version(): string {
 		return $this->plugin_version;
 	}
+
+	protected function get_plugin_url(): string {
+		return $this->plugin_url;
+	}
+
+	protected function get_plugin_path(): string {
+		return $this->plugin_path;
+	}
 }

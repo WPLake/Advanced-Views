@@ -224,10 +224,6 @@ class Plugin extends Hookable implements Hooks_Interface {
 		);
 	}
 
-	protected function get_plugin_url(): string {
-		return $this->plugin_url;
-	}
-
 	/**
 	 * @param callable(): void $callback
 	 */
