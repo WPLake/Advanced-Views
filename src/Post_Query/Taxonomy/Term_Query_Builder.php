@@ -7,44 +7,16 @@ namespace Org\Wplake\Advanced_Views\Post_Query\Taxonomy;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Tax_Field_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Context_Container_Base;
-use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context_Container;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Query_Utils;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
-final class Term_Query_Builder implements Query_Context_Container {
-	use Context_Container_Base;
-
+final class Term_Query_Builder {
 	const NO_VALUE_COMPARISONS = array( 'EXISTS', 'NOT EXISTS' );
 
-	private Field_Provider_Cluster $provider_cluster;
+	private Term_Value_Resolver $value_resolver;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster ) {
-		$this->provider_cluster = $provider_cluster;
-	}
-
-	/**
-	 * @return int[]
-	 */
-	protected static function get_meta_ids( string $field_name, int $object_id ): array {
-		$meta_value = get_post_meta( $object_id, $field_name, true );
-
-		if ( is_numeric( $meta_value ) ) {
-			return array( int( $meta_value ) );
-		}
-
-		if ( is_array( $meta_value ) &&
-			key_exists( 0, $meta_value ) &&
-			is_numeric( $meta_value[0] ) ) {
-			return array_map(
-				fn( $item ) => int( $item ),
-				$meta_value
-			);
-		}
-
-		return array();
+	public function __construct( Term_Value_Resolver $term_value_resolver ) {
+		$this->value_resolver = $term_value_resolver;
 	}
 
 	/**
@@ -53,7 +25,7 @@ final class Term_Query_Builder implements Query_Context_Container {
 	public function build_term_query( Tax_Field_Settings $term ): array {
 		$is_value_comparison = ! in_array( $term->comparison, self::NO_VALUE_COMPARISONS, true );
 		$term_value          = $is_value_comparison ?
-			$this->resolve_term_value( $term ) :
+			$this->value_resolver->resolve_term_value( $term ) :
 			null;
 
 		$arguments = array(
@@ -88,70 +60,5 @@ final class Term_Query_Builder implements Query_Context_Container {
 		}
 
 		return 'slug';
-	}
-
-	/**
-	 * @return array<string, callable(): mixed[]>
-	 */
-	protected function get_value_resolvers( Tax_Field_Settings $term ): array {
-		return array(
-			'$current$'         => fn() => array( $this->resolve_current_term_id() ),
-			'$meta$'            => fn() => $this->resolve_meta_value( $term ),
-			'$custom-argument$' => fn() => $this->resolve_custom_value( $term ),
-		);
-	}
-
-	/**
-	 * @return mixed[]
-	 */
-	protected function resolve_term_value( Tax_Field_Settings $term ): array {
-		if ( Tax_Field_Settings::VALUE_TYPE_DYNAMIC === $term->value_type ) {
-			$resolvers = $this->get_value_resolvers( $term );
-
-			$resolver = $resolvers[ $term->dynamic_term ] ?? null;
-
-			return is_callable( $resolver ) ?
-				$resolver() :
-				array();
-		}
-
-		return array( $term->get_term_id() );
-	}
-
-	/**
-	 * @return mixed[]
-	 */
-	protected function resolve_meta_value( Tax_Field_Settings $term ): array {
-		$field_data = $this->provider_cluster->get_field_meta(
-			$term->get_vendor_name(),
-			$term->get_field_id()
-		);
-
-		if ( $field_data->is_field_exist() ) {
-			return self::get_meta_ids( $field_data->get_name(), $this->resolve_current_term_id() );
-		}
-
-		return array();
-	}
-
-	protected function resolve_current_term_id(): int {
-		return get_queried_object_id();
-	}
-
-	/**
-	 * @return mixed[]
-	 */
-	protected function resolve_custom_value( Tax_Field_Settings $term ): array {
-		$value = any( $this->get_context()->get_custom_arguments(), $term->custom_argument_name );
-
-		if ( is_numeric( $value ) ) {
-			return array( int( $value ) );
-		}
-
-		if ( is_array( $value ) ) {
-			return $value;
-		}
-
-		return array();
 	}
 }

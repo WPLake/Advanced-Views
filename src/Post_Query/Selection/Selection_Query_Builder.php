@@ -19,6 +19,7 @@ use Org\Wplake\Advanced_Views\Post_Query\Meta\Meta_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Meta\Meta_Value_Resolver;
 use Org\Wplake\Advanced_Views\Post_Query\Taxonomy\Taxonomy_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Taxonomy\Term_Query_Builder;
+use Org\Wplake\Advanced_Views\Post_Query\Taxonomy\Term_Value_Resolver;
 use function Org\Wplake\Advanced_Views\Utils\flat_map;
 
 class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Container {
@@ -63,10 +64,12 @@ class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Conta
 	}
 
 	protected function add_taxonomy_builder(): self {
-		$term_query_builder = new Term_Query_Builder( $this->provider_cluster );
+		$value_resolver = $this->create_term_value_resolver();
+
+		$term_query_builder = new Term_Query_Builder( $value_resolver );
 		$taxonomy_builder   = new Taxonomy_Query_Builder( $term_query_builder );
 
-		$this->add_context_container( $term_query_builder )
+		$this->add_context_container( $value_resolver )
 			->add_query_builder( $taxonomy_builder );
 
 		return $this;
@@ -77,6 +80,10 @@ class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Conta
 		$meta_builder  = new Meta_Query_Builder( $field_builder );
 
 		return $this->add_query_builder( $meta_builder );
+	}
+
+	protected function create_term_value_resolver(): Term_Value_Resolver {
+		return new Term_Value_Resolver( $this->provider_cluster );
 	}
 
 	protected function create_meta_value_resolver(): Meta_Value_Resolver {

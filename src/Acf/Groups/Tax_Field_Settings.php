@@ -100,6 +100,10 @@ class Tax_Field_Settings extends Group {
 		return intval( $term_id );
 	}
 
+	public function is_dynamic_term(): bool {
+		return self::VALUE_TYPE_DYNAMIC === $this->value_type;
+	}
+
 	public function get_term_id(): int {
 		return self::get_term_id_by_key( $this->term );
 	}

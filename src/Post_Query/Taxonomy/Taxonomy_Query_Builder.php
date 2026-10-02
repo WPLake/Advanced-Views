@@ -35,19 +35,29 @@ final class Taxonomy_Query_Builder implements Post_Query_Builder {
 	}
 
 	/**
-	 * @return mixed[]
+	 * @return mixed[]|null
 	 */
-	protected function get_taxonomy_arguments( Tax_Filter_Settings $filter ): array {
-		$arguments = array(
-			'relation' => $this->get_relation( $filter->relation ),
-		);
-
+	protected function get_taxonomy_arguments( Tax_Filter_Settings $filter ): ?array {
 		$group_queries = array_map(
 			fn ( Tax_Rule_Settings $term_group ) => $this->get_group_arguments( $term_group ),
 			$filter->rules
 		);
 
-		return array_merge( $arguments, $group_queries );
+		$sub_queries = array_filter(
+			$group_queries,
+			fn( $group_query ) => is_array( $group_query )
+		);
+
+		if ( count( $sub_queries ) > 0 ) {
+			$relation  = $this->get_relation( $filter->relation );
+			$arguments = array(
+				'relation' => $relation,
+			);
+
+			return array_merge( $arguments, $sub_queries );
+		}
+
+		return null;
 	}
 
 	protected function get_relation( string $custom_relation ): string {
@@ -58,18 +68,25 @@ final class Taxonomy_Query_Builder implements Post_Query_Builder {
 	}
 
 	/**
-	 * @return array<string,mixed>
+	 * @return array<string,mixed>|null
 	 */
-	protected function get_group_arguments( Tax_Rule_Settings $term_group ): array {
-		$arguments = array(
-			'relation' => $this->get_relation( $term_group->relation ),
-		);
+	protected function get_group_arguments( Tax_Rule_Settings $term_group ): ?array {
+		$has_terms = count( $term_group->taxonomies ) > 0;
 
-		$term_queries = array_map(
-			fn( Tax_Field_Settings $term ) => $this->term_query_builder->build_term_query( $term ),
-			$term_group->taxonomies
-		);
+		if ( $has_terms ) {
+			$term_queries = array_map(
+				fn( Tax_Field_Settings $term ) => $this->term_query_builder->build_term_query( $term ),
+				$term_group->taxonomies
+			);
 
-		return array_merge( $arguments, $term_queries );
+			$relation  = $this->get_relation( $term_group->relation );
+			$arguments = array(
+				'relation' => $relation,
+			);
+
+			return array_merge( $arguments, $term_queries );
+		}
+
+		return null;
 	}
 }
