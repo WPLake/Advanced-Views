@@ -84,6 +84,7 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 			$base->layout_cpt,
 			$base->engines_storage
 		);
+		$base->container->set( Layout_Save_Actions::class, $this->save_actions );
 
 		$this->shortcode = new Layout_Shortcode(
 			$base->layout_cpt,

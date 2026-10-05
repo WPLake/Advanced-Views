@@ -92,9 +92,11 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 
 		$this->options  = new Options_Storage();
 		$this->settings = new Settings_Storage( $this->options );
+		$this->container->set( Settings_Storage::class, $this->settings );
 
 		$uploads_folder = self::uploads_folder();
 		$this->logger   = new Logger( $uploads_folder, $this->settings );
+		$this->container->set( Logger::class, $this->logger );
 
 		$this->group_creator           = new Creator();
 		$this->layout_settings         = $this->group_creator->create( Layout_Settings::class );
@@ -122,6 +124,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			new Db_Management( $this->logger, $post_selections_file_system, $this->post_selection_cpt ),
 			$this->post_selection_settings
 		);
+		$this->container->set( Selection_Settings_Storage::class, $this->post_selections_settings_storage );
 
 		$layouts_file_system            = new File_System( $this->logger, $this->layout_cpt->folder_name() );
 		$this->layouts_settings_storage = new Layout_Settings_Storage(
@@ -131,14 +134,17 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			new Db_Management( $this->logger, $layouts_file_system, $this->layout_cpt ),
 			$this->layout_settings
 		);
+		$this->container->set( Layout_Settings_Storage::class, $this->layouts_settings_storage );
 
 		$this->plugin                = new Plugin( $this->plugin_file, $this->options, $this->settings );
+		$this->container->set( Plugin::class, $this->plugin );
 		$this->asset_resolver        = new Asset_Resolver( $this->plugin_file, $this->plugin->get_version() );
 		$this->templates_environment = new Templates_Environment(
 			$uploads_folder,
 			$this->logger,
 			$this->plugin,
 		);
+		$this->container->set( Templates_Environment::class, $this->templates_environment );
 
 		$this->item_settings = $this->group_creator->create( Item_Settings::class );
 
@@ -158,7 +164,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		);
 		$this->upgrade_notice          = new Upgrade_Notice( $this->plugin );
 		$this->cache_flusher           = new Cache_Flusher( $this->logger, $this->get_cache_cleaners() );
-		$this->bind_version_migrator_dependencies();
+		$this->container->set( Cache_Flusher::class, $this->cache_flusher );
 
 		$this->add_file_systems(
 			array(

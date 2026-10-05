@@ -55,9 +55,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
@@ -377,22 +375,9 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		return $cache_cleaners;
 	}
 
-	protected function bind_version_migrator_dependencies(): void {
-		$this->container->set( Plugin::class, $this->plugin );
-		$this->container->set( Settings_Storage::class, $this->settings );
-		$this->container->set( Logger::class, $this->logger );
-		$this->container->set( Upgrade_Notice::class, $this->upgrade_notice );
-		$this->container->set( Cache_Flusher::class, $this->cache_flusher );
-	}
-
 	protected function bind_migrations_dependencies(): void {
-		// fixme.
-		$this->container->set( Layout_Settings_Storage::class, $this->layouts_settings_storage );
-		$this->container->set( Selection_Settings_Storage::class, $this->post_selections_settings_storage );
-		$this->container->set( Layout_Save_Actions::class, $this->layouts_loader->save_actions );
-		$this->container->set( Selection_Save_Actions::class, $this->selections_loader->save_actions );
-		$this->container->set( Templates_Environment::class, $this->templates_environment );
 		// both params are of the same abstract type, so can't be autowired.
+		// fixme
 		$this->container->set(
 			Migration_3_8_0::class,
 			new Migration_3_8_0(
