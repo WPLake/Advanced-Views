@@ -27,21 +27,37 @@ use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_9
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Vendors\DI\Container;
+use function Org\Wplake\Advanced_Views\Utils\resolve_instances;
 
 class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
+	protected Plugin_Cpt $layout_cpt;
+	protected Plugin_Cpt $post_selection_cpt;
+
+	public function __construct( Container $container, Plugin_Cpt $layout_cpt, Plugin_Cpt $post_selection_cpt ) {
+		parent::__construct( $container );
+
+		$this->layout_cpt         = $layout_cpt;
+		$this->post_selection_cpt = $post_selection_cpt;
+	}
+
 	public function get_hookable( Route_Detector $route_detector ): Hookable {
-		$migration_classes = array_merge(
+		$migrations          = array_merge(
 			$this->v1_migrations(),
 			$this->v2_migrations(),
 			$this->v3_migrations()
 		);
-		$migrations        = array_map(
-			fn( string $migration_class ): Version_Migration => $this->container->get( $migration_class ),
-			$migration_classes
+		$migration_instances = resolve_instances(
+			$migrations,
+			$this->container
 		);
 
 		$migrator = $this->container->get( Version_Migrator::class );
-		$migrator->add_version_migrations( $migrations );
+		$migrator->add_version_migrations( $migration_instances );
 
 		return $migrator;
 	}
@@ -74,15 +90,21 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 	}
 
 	/**
-	 * @return class-string<Version_Migration>[]
+	 * @return array<class-string<Version_Migration>, class-string<Version_Migration>|Version_Migration>
 	 */
 	protected function v3_migrations(): array {
 		return array(
-			Migration_3_0_0::class,
-			Migration_3_3_0::class,
-			Migration_3_8_0::class,
-			Migration_3_8_9::class,
-			Migration_3_9_6::class,
+			Migration_3_0_0::class => Migration_3_0_0::class,
+			Migration_3_3_0::class => Migration_3_3_0::class,
+			Migration_3_8_0::class => new Migration_3_8_0(
+				$this->container->get( Logger::class ),
+				$this->container->get( Layout_Settings_Storage::class ),
+				$this->container->get( Selection_Settings_Storage::class ),
+				$this->layout_cpt,
+				$this->post_selection_cpt
+			),
+			Migration_3_8_9::class => Migration_3_8_9::class,
+			Migration_3_9_6::class => Migration_3_9_6::class,
 		);
 	}
 }

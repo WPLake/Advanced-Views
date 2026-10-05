@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Utils;
 
+use Org\Wplake\Advanced_Views\Vendors\Psr\Container\ContainerInterface;
 use Throwable;
 
 defined( 'ABSPATH' ) || exit;
@@ -29,17 +30,46 @@ function flat_map( array $items, callable $mapper ): array {
 }
 
 /**
- * @template ItemType of int|string
+ * Replaces items by their class key (or by the class value, for int keys). Instances are replaced only by the key.
  *
- * @param array<int|string, ItemType> $origin
- * @param array<int|string, ItemType> $replacements old value => new value
+ * @template T of object
+ * @template K of array-key
  *
- * @return array<int|string, ItemType>
+ * @param array<K, class-string<T>|T> $origin
+ * @param array<class-string<T>, class-string<T>|T> $replacements old class => new class|instance
+ *
+ * @return array<K, class-string<T>|T>
  */
-function swap_items( array $origin, array $replacements ): array {
-	return array_map(
-		fn( $item ) => $replacements[ $item ] ?? $item,
-		$origin
+function swap_instances( array $origin, array $replacements ): array {
+	$swapped = array();
+
+	foreach ( $origin as $key => $item ) {
+		$origin_class = is_string( $key ) ?
+			$key :
+			( is_string( $item ) ? $item : '' );
+
+		$swapped[ $key ] = $replacements[ $origin_class ] ?? $item;
+	}
+
+	return $swapped;
+}
+
+/**
+ * @template T of object
+ *
+ * @param array<int|class-string<T>, class-string<T>|T> $items
+ * @param ContainerInterface $container
+ *
+ * @return T[]
+ */
+function resolve_instances( array $items, ContainerInterface $container ): array {
+	return array_values(
+		array_map(
+			fn( $item ) => is_string( $item ) ?
+				$container->get( $item ) :
+				$item,
+			$items
+		)
 	);
 }
 

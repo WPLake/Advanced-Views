@@ -25,7 +25,6 @@ use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Bridge\Advanced_Views;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_8_0;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\Version_Migrations_Bootstrap;
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
@@ -64,6 +63,7 @@ use Org\Wplake\Advanced_Views\Vendors\DI\Container;
 use Org\Wplake\Advanced_Views\Vendors\DI\ContainerBuilder;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Loader;
+use function Org\Wplake\Advanced_Views\Utils\resolve_instances;
 
 abstract class Plugin_Loader_Base extends Module_Loader {
 	public Container $container;
@@ -158,15 +158,14 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$others         = $this->others();
 		$this->bridge();
 		$environment = $this->environment();
-		$this->bind_migrations_dependencies();
 
-		$bootstraps = array_map(
-			fn( string $bootstrap_class ): Hookable => $this->container->get( $bootstrap_class )
-																		->get_hookable( $route_detector ),
-			$this->get_bootstraps()
+		$bootstraps = resolve_instances( $this->get_bootstraps(), $this->container );
+		$modules    = array_map(
+			fn( Module_Bootstrap $bootstrap ): Hookable => $bootstrap->get_hookable( $route_detector ),
+			$bootstraps
 		);
 
-		return array_merge( $primary, $layouts, $post_selection, $integration, $others, $environment, $bootstraps );
+		return array_merge( $primary, $layouts, $post_selection, $integration, $others, $environment, $modules );
 	}
 
 	protected function translations( Route_Detector $route_detector ): void {
@@ -381,27 +380,16 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		return $cache_cleaners;
 	}
 
-	protected function bind_migrations_dependencies(): void {
-		// both params are of the same abstract type, so can't be autowired.
-		// fixme
-		$this->container->set(
-			Migration_3_8_0::class,
-			new Migration_3_8_0(
-				$this->logger,
-				$this->layouts_settings_storage,
-				$this->post_selections_settings_storage,
-				$this->layout_cpt,
-				$this->post_selection_cpt
-			)
-		);
-	}
-
 	/**
-	 * @return class-string<Module_Bootstrap>[]
+	 * @return array<class-string<Module_Bootstrap>, class-string<Module_Bootstrap>|Module_Bootstrap>
 	 */
 	protected function get_bootstraps(): array {
 		return array(
-			Version_Migrations_Bootstrap::class,
+			Version_Migrations_Bootstrap::class => new Version_Migrations_Bootstrap(
+				$this->container,
+				$this->layout_cpt,
+				$this->post_selection_cpt
+			),
 		);
 	}
 
