@@ -6,6 +6,9 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders\Lite;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table\Layouts_Pre_Built_Tab;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Git_Tabs;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Git_Box;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Loaders\Post_Selections_Loader_Base;
@@ -128,7 +131,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->provider_cluster,
 			$base->container->get( Version_Migrator::class ),
 			$base->logger,
-			$base->layouts_loader->pre_built_tab
+			$base->container->get( Layouts_Pre_Built_Tab::class )
 		);
 
 		$this->git_tabs = new Selection_Git_Tabs(
@@ -138,7 +141,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->group_creator->create( Post_Selection_Settings::class ),
 			$base->post_selections_settings_storage,
 			$base->container->get( Version_Migrator::class ),
-			$base->layouts_loader->git_tabs,
+			$base->container->get( Layout_Git_Tabs::class ),
 			$base->provider_cluster,
 			$base->logger
 		);
@@ -148,7 +151,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->post_selections_settings_storage,
 			$base->git_lab_api,
 			$base->layouts_settings_storage,
-			$base->layouts_loader->git_box,
+			$base->container->get( Layout_Git_Box::class ),
 			$base->plugin
 		);
 

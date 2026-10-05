@@ -57,6 +57,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Provider;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Post_Selection_Fs_Fields;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Blade\Blade_Template_Engine;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
@@ -180,6 +181,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$this->layout_cpt,
 			$this->post_selection_cpt
 		);
+		$this->container->set( Git_Lab_Api::class, $this->git_lab_api );
 		$this->upgrade_notice          = $this->container->get( Upgrade_Notice::class );
 		$this->cache_flusher           = new Cache_Flusher( $this->logger, $this->get_cache_cleaners() );
 		$this->container->set( Cache_Flusher::class, $this->cache_flusher );
@@ -192,15 +194,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		);
 
 		return parent::primary();
-	}
-
-	/**
-	 * @return Hookable[]
-	 */
-	protected function layouts(): array {
-		$this->layouts_loader = new Lite_Layouts_Loader( $this );
-
-		return parent::layouts();
 	}
 
 	/**
@@ -312,7 +305,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->admin_assets = new Admin_Assets(
 			$this->asset_resolver,
 			array(
-				$this->layouts_loader->interactive_fields,
+				$this->container->get( Layout_Interactive_Fields::class ),
 				$this->selections_loader->interactive_fields,
 			)
 		);

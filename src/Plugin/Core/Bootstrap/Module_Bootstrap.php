@@ -10,5 +10,8 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 
 interface Module_Bootstrap {
-	public function get_hookable( Route_Detector $route_detector ): Hookable;
+	/**
+	 * @return Hookable[]
+	 */
+	public function get_hookables( Route_Detector $route_detector ): array;
 }

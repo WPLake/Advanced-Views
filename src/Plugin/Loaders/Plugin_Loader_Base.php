@@ -55,7 +55,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
@@ -63,6 +67,7 @@ use Org\Wplake\Advanced_Views\Vendors\DI\Container;
 use Org\Wplake\Advanced_Views\Vendors\DI\ContainerBuilder;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Loader;
+use function Org\Wplake\Advanced_Views\Utils\flat_map;
 use function Org\Wplake\Advanced_Views\Utils\resolve_instances;
 
 abstract class Plugin_Loader_Base extends Module_Loader {
@@ -116,7 +121,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public Engines_Storage $engines_storage;
 	public Selection_Settings_Storage $post_selections_settings_storage;
 	public Post_Selections_Loader_Base $selections_loader;
-	public Layouts_Loader_Base $layouts_loader;
 
 	/**
 	 * @var Plugin_Cpt[]
@@ -152,20 +156,15 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$this->translations( $route_detector );
 		$primary = $this->primary();
 		$this->acf_groups( $route_detector );
-		$layouts        = $this->layouts();
+		// layouts instances are used by the next modules, so bootstraps go first.
+		$bootstraps     = $this->load_bootstraps( $route_detector );
 		$post_selection = $this->post_selections();
 		$integration    = $this->integration( $route_detector );
 		$others         = $this->others();
 		$this->bridge();
 		$environment = $this->environment();
 
-		$bootstraps = resolve_instances( $this->get_bootstraps(), $this->container );
-		$modules    = array_map(
-			fn( Module_Bootstrap $bootstrap ): Hookable => $bootstrap->get_hookable( $route_detector ),
-			$bootstraps
-		);
-
-		return array_merge( $primary, $layouts, $post_selection, $integration, $others, $environment, $modules );
+		return array_merge( $primary, $bootstraps, $post_selection, $integration, $others, $environment );
 	}
 
 	protected function translations( Route_Detector $route_detector ): void {
@@ -239,8 +238,13 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	/**
 	 * @return Hookable[]
 	 */
-	protected function layouts(): array {
-		return $this->layouts_loader->hookable();
+	protected function load_bootstraps( Route_Detector $route_detector ): array {
+		$bootstraps = resolve_instances( $this->get_bootstraps(), $this->container );
+
+		return flat_map(
+			$bootstraps,
+			fn( Module_Bootstrap $bootstrap ): array => $bootstrap->get_hookables( $route_detector )
+		);
 	}
 
 	/**
@@ -259,10 +263,10 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			$route_detector,
 			$this->item_settings,
 			$this->layouts_settings_storage,
-			$this->layouts_loader->save_actions,
-			$this->layouts_loader->factory,
+			$this->container->get( Layout_Save_Actions::class ),
+			$this->container->get( Layout_Factory::class ),
 			$this->group_creator->create( Repeater_Field_Settings::class ),
-			$this->layouts_loader->shortcode,
+			$this->container->get( Layout_Shortcode::class ),
 			$this->settings,
 			$this->layout_cpt,
 		);
@@ -303,7 +307,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	protected function bridge(): void {
-		Advanced_Views::$layout_renderer         = $this->layouts_loader->shortcode;
+		Advanced_Views::$layout_renderer         = $this->container->get( Layout_Shortcode::class );
 		Advanced_Views::$post_selection_renderer = $this->selections_loader->shortcode;
 	}
 
@@ -381,10 +385,15 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return array<class-string<Module_Bootstrap>, class-string<Module_Bootstrap>|Module_Bootstrap>
+	 * @return array<array-key, class-string<Module_Bootstrap>|Module_Bootstrap>
 	 */
 	protected function get_bootstraps(): array {
 		return array(
+			Layouts_Bootstrap::class            => new Layouts_Bootstrap(
+				$this->container,
+				$this->layout_cpt,
+				$this->post_selection_cpt
+			),
 			Version_Migrations_Bootstrap::class => new Version_Migrations_Bootstrap(
 				$this->container,
 				$this->layout_cpt,

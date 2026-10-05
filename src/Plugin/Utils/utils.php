@@ -11,11 +11,12 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * @template ItemType
+ * @template ResultType
  *
  * @param array<int|string, ItemType> $items
- * @param callable(ItemType $item, int|string $key):array<int|string, mixed> $mapper
+ * @param callable(ItemType $item, int|string $key):array<int|string, ResultType> $mapper
  *
- * @return mixed[]
+ * @return ResultType[]
  */
 function flat_map( array $items, callable $mapper ): array {
 	$chunks = array();
@@ -32,13 +33,13 @@ function flat_map( array $items, callable $mapper ): array {
 /**
  * Replaces items by their class key (or by the class value, for int keys). Instances are replaced only by the key.
  *
- * @template T of object
- * @template K of array-key
+ * @template Item
+ * @template Key of array-key
  *
- * @param array<K, class-string<T>|T> $origin
- * @param array<class-string<T>, class-string<T>|T> $replacements old class => new class|instance
+ * @param array<Key, Item> $origin
+ * @param array<string, Item> $replacements old class => new class|instance
  *
- * @return array<K, class-string<T>|T>
+ * @return array<Key, Item>
  */
 function swap_instances( array $origin, array $replacements ): array {
 	$swapped = array();
@@ -55,12 +56,12 @@ function swap_instances( array $origin, array $replacements ): array {
 }
 
 /**
- * @template T of object
+ * @template Instance of object
  *
- * @param array<int|class-string<T>, class-string<T>|T> $items
+ * @param array<array-key, class-string<Instance>|Instance> $items
  * @param ContainerInterface $container
  *
- * @return T[]
+ * @return Instance[]
  */
 function resolve_instances( array $items, ContainerInterface $container ): array {
 	return array_values(

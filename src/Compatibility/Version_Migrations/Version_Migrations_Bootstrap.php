@@ -45,7 +45,31 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 		$this->post_selection_cpt = $post_selection_cpt;
 	}
 
-	public function get_hookable( Route_Detector $route_detector ): Hookable {
+	/**
+	 * @return Hookable[]
+	 */
+	public function get_hookables( Route_Detector $route_detector ): array {
+		/**
+		 * Migrations depend on the instances registered in the container by later modules,
+		 * so they are resolved lazily, right before the migrator's hooks are set.
+		 */
+		return array(
+			new class( $this ) implements Hookable {
+				private Version_Migrations_Bootstrap $bootstrap;
+
+				public function __construct( Version_Migrations_Bootstrap $bootstrap ) {
+					$this->bootstrap = $bootstrap;
+				}
+
+				public function set_hooks( Route_Detector $route_detector ): void {
+					$migrator = $this->bootstrap->register_migrations();
+					$migrator->set_hooks( $route_detector );
+				}
+			},
+		);
+	}
+
+	public function register_migrations(): Version_Migrator {
 		$migrations          = array_merge(
 			$this->v1_migrations(),
 			$this->v2_migrations(),
@@ -73,7 +97,7 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 	}
 
 	/**
-	 * @return class-string<Version_Migration>[]
+	 * @return array<array-key, class-string<Version_Migration>|Version_Migration>
 	 */
 	protected function v2_migrations(): array {
 		return array(
@@ -90,12 +114,12 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 	}
 
 	/**
-	 * @return array<class-string<Version_Migration>, class-string<Version_Migration>|Version_Migration>
+	 * @return array<array-key, class-string<Version_Migration>|Version_Migration>
 	 */
 	protected function v3_migrations(): array {
 		return array(
-			Migration_3_0_0::class => Migration_3_0_0::class,
-			Migration_3_3_0::class => Migration_3_3_0::class,
+			Migration_3_0_0::class,
+			Migration_3_3_0::class,
 			Migration_3_8_0::class => new Migration_3_8_0(
 				$this->container->get( Logger::class ),
 				$this->container->get( Layout_Settings_Storage::class ),
@@ -103,8 +127,8 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 				$this->layout_cpt,
 				$this->post_selection_cpt
 			),
-			Migration_3_8_9::class => Migration_3_8_9::class,
-			Migration_3_9_6::class => Migration_3_9_6::class,
+			Migration_3_8_9::class,
+			Migration_3_9_6::class,
 		);
 	}
 }
