@@ -4,13 +4,13 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Acf\Group_Integrations;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 
 defined( 'ABSPATH' ) || exit;
 
-class Acf_Integration extends Hookable implements Hooks_Interface {
+class Acf_Integration extends Hookable_Base implements Hookable {
 	private string $target_cpt_name;
 
 	public function __construct( string $target_cpt_name ) {

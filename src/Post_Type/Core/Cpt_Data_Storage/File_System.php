@@ -4,19 +4,19 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Action;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
 use WP_Filesystem_Base;
 
 defined( 'ABSPATH' ) || exit;
 
-class File_System extends Action implements Hooks_Interface {
+class File_System extends Loggable_Actor implements Hookable {
 	use Safe_Array_Arguments;
 
 	private static bool $is_fs_not_writable_notice_shown = false;

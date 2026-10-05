@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Labels\Cpt_Labels_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
@@ -51,7 +51,7 @@ abstract class Post_Selections_Loader_Base extends Module_Loader {
 	public Selection_Interactive_Fields $interactive_fields;
 
 	/**
-	 * @var Closure():array<int, Hooks_Interface>
+	 * @var Closure():array<int, Hookable>
 	 */
 	protected Closure $make_elementor_integration;
 
@@ -80,7 +80,7 @@ abstract class Post_Selections_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	public function hookable(): array {
 		$this->add_plugin_extension(

@@ -5,15 +5,15 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Cpt_Table_Tab extends Hookable implements Hooks_Interface {
+abstract class Cpt_Table_Tab extends Hookable_Base implements Hookable {
 
 	private Cpt_Table $cpt_table;
 

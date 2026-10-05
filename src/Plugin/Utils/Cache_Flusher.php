@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Utils;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 
 final class Cache_Flusher {
 	private Logger $logger;

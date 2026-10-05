@@ -7,10 +7,10 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Elemen
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 
 /**
@@ -19,7 +19,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
  * the one piece of config that's genuinely per-CPT and doesn't belong hard-coded into that otherwise fully
  * generic class.
  */
-final class Selection_Elementor_Assets extends Hookable implements Hooks_Interface {
+final class Selection_Elementor_Assets extends Hookable_Base implements Hookable {
 	const EDITOR_NAME  = Plugin::PRODUCT_SLUG . '/post-selection-elementor-editor';
 	const PREVIEW_NAME = Plugin::PRODUCT_SLUG . '/post-selection-elementor-preview';
 

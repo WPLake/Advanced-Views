@@ -4,21 +4,21 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
 use WP_Admin_Bar;
 
 defined( 'ABSPATH' ) || exit;
 
-class Admin_Bar extends Hookable implements Hooks_Interface {
+class Admin_Bar extends Hookable_Base implements Hookable {
 	private Layout_Shortcode $layout_shortcode;
 	private Post_Selection_Shortcode $post_selection_shortcode;
 	private Live_Reloader_Component $live_reloader_component;

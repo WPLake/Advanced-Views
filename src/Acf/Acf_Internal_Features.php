@@ -6,13 +6,13 @@ namespace Org\Wplake\Advanced_Views\Acf;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 
-class Acf_Internal_Features extends Hookable implements Hooks_Interface {
+class Acf_Internal_Features extends Hookable_Base implements Hookable {
 	private Asset_Resolver $asset_resolver;
 
 	public function __construct( Asset_Resolver $asset_resolver ) {

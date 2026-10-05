@@ -5,13 +5,13 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Action;
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Throwable;
 
-abstract class Template_Renderer_Base extends Action implements Template_Renderer {
+abstract class Template_Renderer_Base extends Loggable_Actor implements Template_Renderer {
 	protected Settings_Storage $settings;
 
 

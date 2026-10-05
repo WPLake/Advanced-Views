@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders\Lite;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
 use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
@@ -25,14 +24,16 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Plugin_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Tools_Settings;
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Bar;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Pages;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
@@ -48,7 +49,6 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
@@ -81,7 +81,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	}
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	protected function primary(): array {
 		$this->layout_cpt         = self::make_layout_cpt();
@@ -179,7 +179,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	}
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	protected function layouts(): array {
 		$this->layouts_loader = new Lite_Layouts_Loader( $this );
@@ -188,7 +188,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	}
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	protected function post_selections(): array {
 		$this->selections_loader = new Lite_Post_Selections_Loader( $this );
@@ -197,7 +197,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	}
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	protected function integration( Route_Detector $route_detector ): array {
 		$this->acf_dependency = new Acf_Dependency( $this->asset_resolver );
@@ -248,7 +248,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	}
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	protected function others(): array {
 		$this->demo_import = new Demo_Importer(
@@ -343,7 +343,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	}
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	protected function environment(): array {
 		$this->plugin_environment = new Plugin_Environment(

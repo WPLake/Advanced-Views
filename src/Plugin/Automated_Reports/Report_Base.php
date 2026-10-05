@@ -6,13 +6,13 @@ namespace Org\Wplake\Advanced_Views\Plugin\Automated_Reports;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Action;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Profiler;
 
-abstract class Report_Base extends Action {
+abstract class Report_Base extends Loggable_Actor {
 	protected Plugin $plugin;
 	protected Settings_Storage $settings;
 

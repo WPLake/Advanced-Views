@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Acf;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -21,7 +21,7 @@ final class Acf_Utils {
 		};
 
 		$hook_name = sprintf( 'acf/load_field/name=%s', $field_name );
-		Hookable::add_filter( $hook_name, $merge_overrides );
+		Hookable_Base::add_filter( $hook_name, $merge_overrides );
 	}
 
 	/**

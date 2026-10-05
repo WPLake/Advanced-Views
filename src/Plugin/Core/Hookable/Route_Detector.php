@@ -2,7 +2,9 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Plugin\Utils;
+namespace Org\Wplake\Advanced_Views\Plugin\Core\Hookable;
+
+use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 
 defined( 'ABSPATH' ) || exit;
 

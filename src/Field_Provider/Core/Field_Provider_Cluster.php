@@ -12,12 +12,12 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Plugin\Base\Action;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
@@ -28,7 +28,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
-abstract class Field_Provider_Cluster extends Action implements Hooks_Interface {
+abstract class Field_Provider_Cluster extends Loggable_Actor implements Hookable {
 	/**
 	 * 1. must be more than the default 10, so it's executed after the data vendor plugins fully loaded themselves (e.g. MetaBox has loading inside this hook)
 	 * 2. '15' gives the ability to shift back when it needs, while still been after the default one.

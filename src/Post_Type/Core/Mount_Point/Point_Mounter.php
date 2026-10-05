@@ -7,15 +7,15 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Mount_Point_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use WP_Post;
 
 /**
  * Common class for both Layout and Post_Selection
  */
-class Point_Mounter extends Hookable implements Hooks_Interface {
+class Point_Mounter extends Hookable_Base implements Hookable {
 	/**
 	 * @var Point_Provider[]
 	 */

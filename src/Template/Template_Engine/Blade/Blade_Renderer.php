@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Blade;
 
 use Exception;
 use Org\Wplake\Advanced_Views\Optional_Vendors\Jenssegers\Blade\Blade as Blade_Engine;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\File_Template_Renderer_Base;
 use WP_Filesystem_Base;

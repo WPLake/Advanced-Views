@@ -6,8 +6,8 @@ namespace Org\Wplake\Advanced_Views\Plugin;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 
 abstract class Module_Loader {
 	private Route_Detector $route_detector;
@@ -17,7 +17,7 @@ abstract class Module_Loader {
 	}
 
 	/**
-	 * @param Hooks_Interface[] $hookable
+	 * @param Hookable[] $hookable
 	 */
 	protected function load_hookable( array $hookable ): void {
 		foreach ( $hookable as $item ) {
@@ -30,7 +30,7 @@ abstract class Module_Loader {
 	 * Deferred to 'plugins_loaded' and conditional.
 	 *
 	 * @param callable():bool $is_active
-	 * @param callable():array<int, Hooks_Interface> $make_hookable
+	 * @param callable():array<int, Hookable> $make_hookable
 	 */
 	protected function add_plugin_extension( callable $is_active, callable $make_hookable ): void {
 		add_action(

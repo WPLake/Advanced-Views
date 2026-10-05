@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Module_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Gutenberg_Editor_Settings;
@@ -50,12 +50,12 @@ abstract class Layouts_Loader_Base extends Module_Loader {
 	public Layout_Interactive_Fields $interactive_fields;
 
 	/**
-	 * @var Closure():array<int, Hooks_Interface>
+	 * @var Closure():array<int, Hookable>
 	 */
 	protected Closure $create_elementor_integration;
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	public function hookable(): array {
 		$this->add_plugin_extension(

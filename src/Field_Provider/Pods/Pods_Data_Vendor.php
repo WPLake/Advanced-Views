@@ -29,7 +29,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Url_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\User_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Pods\Fields\Pods_Pick_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Pods\Fields\Pods_Upload_Field;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;

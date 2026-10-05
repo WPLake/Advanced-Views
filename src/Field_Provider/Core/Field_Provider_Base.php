@@ -8,13 +8,13 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Pro_Stub_Field;
-use Org\Wplake\Advanced_Views\Plugin\Base\Action;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Field_Provider_Base extends Action implements Field_Provider {
+abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provider {
 	use Safe_Array_Arguments;
 
 	/**

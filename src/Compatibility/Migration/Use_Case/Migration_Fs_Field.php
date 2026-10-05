@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Compatibility\Migration\Use_Case;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Migration_Base;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;

@@ -4,17 +4,17 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use WP_Post;
 use WPCom_Markdown;
 
 defined( 'ABSPATH' ) || exit;
 
-class Cpt_Gutenberg_Editor_Settings extends Hookable implements Hooks_Interface {
+class Cpt_Gutenberg_Editor_Settings extends Hookable_Base implements Hookable {
 	private string $cpt_name;
 
 	public function __construct( string $cpt_name ) {

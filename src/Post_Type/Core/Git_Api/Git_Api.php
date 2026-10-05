@@ -6,13 +6,13 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Action;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 
-abstract class Git_Api extends Action implements Git_Api_Interface {
+abstract class Git_Api extends Loggable_Actor implements Git_Api_Interface {
 	protected Options_Storage $options;
 	protected Public_Cpt $layout_public_cpt;
 	protected Public_Cpt $post_selection_public_cpt;

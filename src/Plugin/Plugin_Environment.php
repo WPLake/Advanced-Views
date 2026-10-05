@@ -8,17 +8,17 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Table\Post_Selections_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
 
-final class Plugin_Environment implements Hooks_Interface {
+final class Plugin_Environment implements Hookable {
 	const STARTER_SELECTION_ID = 'card_6a479135a1a81';
 	const STARTER_LAYOUT_ID    = 'view_6a47911f78eb0';
 

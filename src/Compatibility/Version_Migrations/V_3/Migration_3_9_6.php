@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Tax_Field_Settings;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Version\Version_Migration_Base;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Use_Case\Migration_Field_Values;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 
 final class Migration_3_9_6 extends Version_Migration_Base {

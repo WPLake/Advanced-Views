@@ -7,13 +7,13 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Action;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use WP_Post;
 use WP_Query;
 
-class Db_Management extends Action {
+class Db_Management extends Loggable_Actor {
 	private File_System $file_system;
 	private Plugin_Cpt $plugin_cpt;
 	/**

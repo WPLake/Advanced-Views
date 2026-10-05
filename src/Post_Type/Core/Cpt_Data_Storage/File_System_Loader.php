@@ -6,11 +6,11 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 
-final class File_System_Loader extends Hookable implements Hooks_Interface {
+final class File_System_Loader extends Hookable_Base implements Hookable {
 	private static ?self $instance = null;
 
 	/**

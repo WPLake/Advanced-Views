@@ -6,16 +6,16 @@ namespace Org\Wplake\Advanced_Views\Plugin\Automated_Reports;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Environment;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
@@ -26,7 +26,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
  * Can be disabled in the plugin settings.
  * FYI: built-in WordPress growth counter was removed https://meta.trac.wordpress.org/ticket/6511
  */
-class Usage_Report extends Report_Base implements Hooks_Interface {
+class Usage_Report extends Report_Base implements Hookable {
 	const DELAY_MIN_HR       = 12;
 	const DELAY_MAX_HRS      = 48;
 	const USAGE_ENDPOINT_URL = 'https://wplake.org/wp-json/wplake/v1/plugin_usage';

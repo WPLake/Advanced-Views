@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Query\Core\WP_Selection_Query;
 use Org\Wplake\Advanced_Views\Post_Query\Selection\Selection_Query_Builder;

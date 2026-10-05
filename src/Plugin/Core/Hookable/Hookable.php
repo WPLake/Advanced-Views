@@ -2,12 +2,10 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Plugin\Base;
-
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+namespace Org\Wplake\Advanced_Views\Plugin\Core\Hookable;
 
 defined( 'ABSPATH' ) || exit;
 
-interface Hooks_Interface {
+interface Hookable {
 	public function set_hooks( Route_Detector $route_detector ): void;
 }

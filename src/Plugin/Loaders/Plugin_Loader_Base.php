@@ -45,8 +45,9 @@ use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_9
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Labels\Cpt_Labels_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
@@ -64,7 +65,6 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin_Environment;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Profiler;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
@@ -159,7 +159,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	protected function load_modules( Route_Detector $route_detector ): array {
 		$this->translations( $route_detector );
@@ -201,7 +201,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	protected function primary(): array {
 		// it's a hack, but there is no other way to pass data (constructor is always called automatically).
@@ -246,21 +246,21 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	protected function layouts(): array {
 		return $this->layouts_loader->hookable();
 	}
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	protected function post_selections(): array {
 		return $this->selections_loader->hookable();
 	}
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	protected function integration( Route_Detector $route_detector ): array {
 		// only now, when layouts() are called.
@@ -292,7 +292,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	protected function others(): array {
 		return array(
@@ -382,7 +382,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return Hooks_Interface[]
+	 * @return Hookable[]
 	 */
 	protected function environment(): array {
 		register_activation_hook(

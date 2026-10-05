@@ -7,16 +7,16 @@ namespace Org\Wplake\Advanced_Views\Compatibility\Migration;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Version\Version_Migration;
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
-final class Upgrade_Notice extends Hookable implements Hooks_Interface {
+final class Upgrade_Notice extends Hookable_Base implements Hookable {
 	private Plugin $plugin;
 	private string $dismiss_key;
 	private string $dismiss_nonce_action;
