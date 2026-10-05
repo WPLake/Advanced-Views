@@ -49,6 +49,7 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 	 * @return Hookable[]
 	 */
 	public function get_hookables( Route_Detector $route_detector ): array {
+		// fixme
 		/**
 		 * Migrations depend on the instances registered in the container by later modules,
 		 * so they are resolved lazily, right before the migrator's hooks are set.

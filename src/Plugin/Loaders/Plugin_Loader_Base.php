@@ -157,14 +157,17 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$primary = $this->primary();
 		$this->acf_groups( $route_detector );
 		// layouts instances are used by the next modules, so bootstraps go first.
-		$bootstraps     = $this->load_bootstraps( $route_detector );
+		$bootstraps     = resolve_instances( $this->get_bootstraps(), $this->container );
+		$modules        = $this->load_bootstraps( $bootstraps, $route_detector );
 		$post_selection = $this->post_selections();
 		$integration    = $this->integration( $route_detector );
 		$others         = $this->others();
 		$this->bridge();
 		$environment = $this->environment();
 
-		return array_merge( $primary, $bootstraps, $post_selection, $integration, $others, $environment );
+		$this->add_plugin_extensions( $bootstraps );
+
+		return array_merge( $primary, $modules, $post_selection, $integration, $others, $environment );
 	}
 
 	protected function translations( Route_Detector $route_detector ): void {
@@ -236,14 +239,33 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
+	 * @param Module_Bootstrap[] $bootstraps
+	 *
 	 * @return Hookable[]
 	 */
-	protected function load_bootstraps( Route_Detector $route_detector ): array {
-		$bootstraps = resolve_instances( $this->get_bootstraps(), $this->container );
-
+	protected function load_bootstraps( array $bootstraps, Route_Detector $route_detector ): array {
 		return flat_map(
 			$bootstraps,
 			fn( Module_Bootstrap $bootstrap ): array => $bootstrap->get_hookables( $route_detector )
+		);
+	}
+
+	/**
+	 * @param Module_Bootstrap[] $bootstraps
+	 */
+	protected function add_plugin_extensions( array $bootstraps ): void {
+		add_action(
+			'plugins_loaded',
+			function () use ( $bootstraps ): void {
+				foreach ( $bootstraps as $bootstrap ) {
+					foreach ( $bootstrap->get_plugin_extensions() as $loaded_action => $make_hookables ) {
+						if ( did_action( $loaded_action ) > 0 ) {
+							$this->load_hookable( $make_hookables() );
+						}
+					}
+				}
+			},
+			11
 		);
 	}
 

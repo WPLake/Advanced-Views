@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
@@ -56,6 +57,8 @@ use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 class Layouts_Bootstrap extends Module_Bootstrap_Base {
 	protected Public_Cpt $layout_cpt;
 	protected Public_Cpt $post_selection_cpt;
+	protected Cpt_Item_Picker $item_picker;
+	protected Cpt_Renderer $cpt_renderer;
 
 	public function __construct( Container $container, Public_Cpt $layout_cpt, Public_Cpt $post_selection_cpt ) {
 		parent::__construct( $container );
@@ -66,11 +69,18 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 
 	public function get_hookables( Route_Detector $route_detector ): array {
 		$layouts_settings_storage = $this->container->get( Layout_Settings_Storage::class );
-		$asset_resolver           = $this->container->get( Asset_Resolver::class );
 
-		$factory         = $this->make_factory();
-		$meta_boxes      = $this->make_meta_boxes();
-		$save_actions    = $this->make_save_actions( $factory );
+		// instances are registered in the container right after creation (for types it can't autowire),
+		// as they're used by the next ones and by other modules.
+		$factory = $this->make_factory();
+		$this->container->set( Layout_Factory::class, $factory );
+
+		$meta_boxes = $this->make_meta_boxes();
+		$this->container->set( Layout_Meta_Boxes::class, $meta_boxes );
+
+		$save_actions = $this->make_save_actions();
+		$this->container->set( Layout_Save_Actions::class, $save_actions );
+
 		$shortcode_block = new Shortcode_Gutenberg_Block( $this->layout_cpt->shortcodes() );
 		$shortcode       = new Layout_Shortcode(
 			$this->layout_cpt,
@@ -80,46 +90,35 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 			$factory,
 			$shortcode_block
 		);
+		$this->container->set( Layout_Shortcode::class, $shortcode );
 
-		$item_picker  = new Cpt_Item_Picker( $layouts_settings_storage, $this->layout_cpt );
-		$cpt_renderer = new Cpt_Renderer( $shortcode, $layouts_settings_storage, $this->layout_cpt );
-		$block        = new Layout_Gutenberg_Block(
-			$asset_resolver,
+		$item_picker        = new Cpt_Item_Picker( $layouts_settings_storage, $this->layout_cpt );
+		$cpt_renderer       = new Cpt_Renderer( $shortcode, $layouts_settings_storage, $this->layout_cpt );
+		$this->item_picker  = $item_picker;
+		$this->cpt_renderer = $cpt_renderer;
+		$block              = new Layout_Gutenberg_Block(
+			$this->container->get( Asset_Resolver::class ),
 			$item_picker,
 			new Cpt_Gutenberg_Block( $cpt_renderer )
 		);
 
-		$cpt_table           = $this->make_cpt_table( $meta_boxes );
+		$cpt_table = $this->make_cpt_table();
+		$this->container->set( Layouts_Cpt_Table::class, $cpt_table );
+
 		$fs_only_tab         = new Fs_Only_Tab( $cpt_table, $layouts_settings_storage );
 		$bulk_validation_tab = new Layouts_Bulk_Validation_Tab( $cpt_table, $layouts_settings_storage, $fs_only_tab, $factory );
-		$pre_built_tab       = $this->make_pre_built_tab( $cpt_table );
-		$git_tabs            = $this->make_git_tabs( $cpt_table );
-		$git_box             = $this->make_git_box();
-		$interactive_fields  = $this->make_interactive_fields( $factory, $meta_boxes );
 
-		// types the container can't resolve on its own (ambiguous/scalar params), used by other modules.
-		$this->container->set( Layout_Factory::class, $factory );
-		$this->container->set( Layout_Save_Actions::class, $save_actions );
-		$this->container->set( Layout_Shortcode::class, $shortcode );
-		$this->container->set( Layout_Interactive_Fields::class, $interactive_fields );
+		$pre_built_tab = $this->make_pre_built_tab();
 		$this->container->set( Layouts_Pre_Built_Tab::class, $pre_built_tab );
+
+		$git_tabs = $this->make_git_tabs();
 		$this->container->set( Layout_Git_Tabs::class, $git_tabs );
+
+		$git_box = $this->make_git_box();
 		$this->container->set( Layout_Git_Box::class, $git_box );
 
-		$this->add_plugin_extension(
-			$route_detector,
-			fn(): bool => did_action( 'elementor/loaded' ) > 0,
-			function () use ( $item_picker, $cpt_renderer, $asset_resolver ): array {
-				$widget_registrar = new Cpt_Widget_Registrar( $item_picker, $cpt_renderer );
-
-				$widget_registrar->add_widget( Layout_Elementor_Widget::class );
-
-				return array(
-					$widget_registrar,
-					new Layout_Elementor_Assets( $item_picker, $asset_resolver ),
-				);
-			}
-		);
+		$interactive_fields = $this->make_interactive_fields();
+		$this->container->set( Layout_Interactive_Fields::class, $interactive_fields );
 
 		return array(
 			$meta_boxes,
@@ -142,6 +141,26 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 			$git_box,
 			$git_tabs,
 			$interactive_fields,
+		);
+	}
+
+	public function get_plugin_extensions(): array {
+		return array(
+			'elementor/loaded' => fn(): array => $this->create_elementor_hookables(),
+		);
+	}
+
+	/**
+	 * @return Hookable[]
+	 */
+	protected function create_elementor_hookables(): array {
+		$widget_registrar = new Cpt_Widget_Registrar( $this->item_picker, $this->cpt_renderer );
+
+		$widget_registrar->add_widget( Layout_Elementor_Widget::class );
+
+		return array(
+			$widget_registrar,
+			new Layout_Elementor_Assets( $this->item_picker, $this->container->get( Asset_Resolver::class ) ),
 		);
 	}
 
@@ -168,7 +187,7 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		);
 	}
 
-	protected function make_save_actions( Layout_Factory $factory ): Layout_Save_Actions {
+	protected function make_save_actions(): Layout_Save_Actions {
 		return new Layout_Save_Actions(
 			$this->container->get( Logger::class ),
 			$this->container->get( Layout_Settings_Storage::class ),
@@ -176,23 +195,23 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 			$this->container->get( Layout_Settings::class ),
 			$this->container->get( Front_Assets::class ),
 			$this->container->get( Layout_Markup::class ),
-			$factory,
+			$this->container->get( Layout_Factory::class ),
 			$this->layout_cpt,
 			$this->container->get( Template_Integration_Storage::class )
 		);
 	}
 
-	protected function make_cpt_table( Layout_Meta_Boxes $meta_boxes ): Layouts_Cpt_Table {
+	protected function make_cpt_table(): Layouts_Cpt_Table {
 		return new Layouts_Cpt_Table(
 			$this->container->get( Layout_Settings_Storage::class ),
 			$this->layout_cpt,
 			$this->container->get( Html_Printer::class ),
-			$meta_boxes,
+			$this->container->get( Layout_Meta_Boxes::class ),
 			$this->post_selection_cpt
 		);
 	}
 
-	protected function make_pre_built_tab( Layouts_Cpt_Table $cpt_table ): Layouts_Pre_Built_Tab {
+	protected function make_pre_built_tab(): Layouts_Pre_Built_Tab {
 		$logger = $this->container->get( Logger::class );
 
 		$file_system = new File_System(
@@ -209,7 +228,7 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		);
 
 		return new Layouts_Pre_Built_Tab(
-			$cpt_table,
+			$this->container->get( Layouts_Cpt_Table::class ),
 			$this->container->get( Layout_Settings_Storage::class ),
 			$pre_built_settings_storage,
 			$this->container->get( Field_Provider_Cluster::class ),
@@ -218,9 +237,9 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		);
 	}
 
-	protected function make_git_tabs( Layouts_Cpt_Table $cpt_table ): Layout_Git_Tabs {
+	protected function make_git_tabs(): Layout_Git_Tabs {
 		return new Layout_Git_Tabs(
-			$cpt_table,
+			$this->container->get( Layouts_Cpt_Table::class ),
 			$this->container->get( Settings_Storage::class ),
 			$this->container->get( Git_Lab_Api::class ),
 			$this->container->get( Creator::class )->create( Layout_Settings::class ),
@@ -242,21 +261,18 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		);
 	}
 
-	protected function make_interactive_fields(
-		Layout_Factory $factory,
-		Layout_Meta_Boxes $meta_boxes
-	): Layout_Interactive_Fields {
+	protected function make_interactive_fields(): Layout_Interactive_Fields {
 		return new Layout_Interactive_Fields(
 			$this->layout_cpt,
 			$this->container->get( Html_Printer::class ),
 			$this->container->get( Plugin::class ),
 			$this->container->get( Layout_Settings_Storage::class ),
-			$factory,
+			$this->container->get( Layout_Factory::class ),
 			$this->container->get( Template_Integration_Storage::class ),
 			$this->container->get( Field_Provider_Cluster::class ),
 			$this->container->get( Settings_Storage::class ),
 			$this->container->get( Layout_Markup::class ),
-			$meta_boxes
+			$this->container->get( Layout_Meta_Boxes::class )
 		);
 	}
 }
