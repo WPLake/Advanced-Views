@@ -30,6 +30,7 @@ use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\Version_Migration
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
+use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
@@ -158,9 +159,14 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$this->bridge();
 		$environment = $this->environment();
 		$this->bind_migrations_dependencies();
-		$migrations = $this->version_migrations_bootstrap()->get_hookable( $route_detector );
 
-		return array_merge( $primary, $layouts, $post_selection, $integration, $others, $environment, array( $migrations ) );
+		$bootstraps = array_map(
+			fn( string $bootstrap_class ): Hookable => $this->container->get( $bootstrap_class )
+																		->get_hookable( $route_detector ),
+			$this->get_bootstraps()
+		);
+
+		return array_merge( $primary, $layouts, $post_selection, $integration, $others, $environment, $bootstraps );
 	}
 
 	protected function translations( Route_Detector $route_detector ): void {
@@ -390,8 +396,13 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		);
 	}
 
-	protected function version_migrations_bootstrap(): Version_Migrations_Bootstrap {
-		return $this->container->get( Version_Migrations_Bootstrap::class );
+	/**
+	 * @return class-string<Module_Bootstrap>[]
+	 */
+	protected function get_bootstraps(): array {
+		return array(
+			Version_Migrations_Bootstrap::class,
+		);
 	}
 
 	protected static function create_container(): Container {
