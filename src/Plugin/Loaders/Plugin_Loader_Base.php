@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
 use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
@@ -22,6 +21,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Bridge\Advanced_Views;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
@@ -72,10 +72,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Sto
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
+use Org\Wplake\Advanced_Views\Vendors\DI\Container;
+use Org\Wplake\Advanced_Views\Vendors\DI\ContainerBuilder;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Loader;
 
 abstract class Plugin_Loader_Base extends Module_Loader {
+	public Container $container;
 	public Plugin $plugin;
 	public Asset_Resolver $asset_resolver;
 	public Plugin_Environment $plugin_environment;
@@ -140,6 +143,8 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		parent::__construct();
 
 		$this->lang_relative_paths['acf-views'] = 'lang';
+
+		$this->container = self::create_container();
 	}
 
 	public function load(): void {
@@ -430,5 +435,14 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		}
 
 		return $cache_cleaners;
+	}
+
+	protected static function create_container(): Container {
+		$builder = new ContainerBuilder();
+
+		$builder->useAutowiring( true );
+		$builder->useAnnotations( false );
+
+		return $builder->build();
 	}
 }
