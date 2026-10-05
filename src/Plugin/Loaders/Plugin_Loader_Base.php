@@ -45,6 +45,7 @@ use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_9
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
+use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Labels\Cpt_Labels_Base;
@@ -152,24 +153,27 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 		$route_detector = new Route_Detector();
 
-		$this->load_modules( $route_detector );
-
-		$this->load_hookable();
+		$this->load_hookable( $this->load_modules( $route_detector ) );
 
 		Profiler::plugin_loaded( $start_timestamp );
 	}
 
-	protected function load_modules( Route_Detector $route_detector ): void {
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	protected function load_modules( Route_Detector $route_detector ): array {
 		$this->translations( $route_detector );
-		$this->primary();
+		$primary = $this->primary();
 		$this->acf_groups( $route_detector );
-		$this->layouts();
-		$this->post_selections();
-		$this->integration( $route_detector );
-		$this->others();
+		$layouts        = $this->layouts();
+		$post_selection = $this->post_selections();
+		$integration    = $this->integration( $route_detector );
+		$others         = $this->others();
 		$this->bridge();
 		$this->version_migrations();
-		$this->environment();
+		$environment = $this->environment();
+
+		return array_merge( $primary, $layouts, $post_selection, $integration, $others, $environment );
 	}
 
 	protected function translations( Route_Detector $route_detector ): void {
@@ -196,11 +200,14 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		);
 	}
 
-	protected function primary(): void {
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	protected function primary(): array {
 		// it's a hack, but there is no other way to pass data (constructor is always called automatically).
 		Field_Settings::set_provider_cluster( $this->provider_cluster );
 
-		$this->add_hookable(
+		return array_merge(
 			array(
 				$this->logger,
 				$this->plugin,
@@ -211,10 +218,9 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 				$this->version_migrator,
 				$this->upgrade_notice,
 				File_System_Loader::instance(),
-			)
+			),
+			$this->file_systems
 		);
-
-		$this->add_hookable( $this->file_systems );
 	}
 
 	protected function acf_groups( Route_Detector $route_detector ): void {
@@ -239,31 +245,24 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		);
 	}
 
-	protected function layouts(): void {
-		$this->layouts_loader->load();
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	protected function layouts(): array {
+		return $this->layouts_loader->hookable();
 	}
 
-	protected function post_selections(): void {
-		$this->selections_loader->load();
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	protected function post_selections(): array {
+		return $this->selections_loader->hookable();
 	}
 
-	protected function integration( Route_Detector $route_detector ): void {
-		$this->add_hookable(
-			array(
-				$this->acf_dependency,
-				$this->layout_settings_integration,
-				$this->field_settings_integration,
-				$this->post_selection_settings_integration,
-				$this->item_settings_integration,
-				$this->meta_field_settings_integration,
-				$this->layout_mount_point_integration,
-				$this->post_selection_mount_point_integration,
-				$this->tax_field_settings_integration,
-				$this->tools_settings_integration,
-				$this->custom_acf_field_types,
-			)
-		);
-
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	protected function integration( Route_Detector $route_detector ): array {
 		// only now, when layouts() are called.
 		$this->provider_cluster->make_integration_instances(
 			$route_detector,
@@ -276,24 +275,39 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			$this->settings,
 			$this->layout_cpt,
 		);
+
+		return array(
+			$this->acf_dependency,
+			$this->layout_settings_integration,
+			$this->field_settings_integration,
+			$this->post_selection_settings_integration,
+			$this->item_settings_integration,
+			$this->meta_field_settings_integration,
+			$this->layout_mount_point_integration,
+			$this->post_selection_mount_point_integration,
+			$this->tax_field_settings_integration,
+			$this->tools_settings_integration,
+			$this->custom_acf_field_types,
+		);
 	}
 
-	protected function others(): void {
-		$this->add_hookable(
-			array(
-				$this->dashboard,
-				$this->demo_import,
-				$this->acf_internal_features,
-				// only after late dependencies were set.
-				$this->usage_report,
-				$this->state_report,
-				$this->tools,
-				$this->admin_assets,
-				$this->settings_page,
-				$this->live_reloader,
-				$this->admin_bar,
-				$this->point_mounter,
-			)
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	protected function others(): array {
+		return array(
+			$this->dashboard,
+			$this->demo_import,
+			$this->acf_internal_features,
+			// only after late dependencies were set.
+			$this->usage_report,
+			$this->state_report,
+			$this->tools,
+			$this->admin_assets,
+			$this->settings_page,
+			$this->live_reloader,
+			$this->admin_bar,
+			$this->point_mounter,
 		);
 	}
 
@@ -367,7 +381,10 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		);
 	}
 
-	protected function environment(): void {
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	protected function environment(): array {
 		register_activation_hook(
 			$this->plugin->get_slug(),
 			array( $this->plugin_environment, 'prepare_environment' )
@@ -378,7 +395,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			array( $this->plugin_environment, 'clean_environment' )
 		);
 
-		$this->add_hookable( array( $this->plugin_environment ) );
+		return array( $this->plugin_environment );
 	}
 
 	/**

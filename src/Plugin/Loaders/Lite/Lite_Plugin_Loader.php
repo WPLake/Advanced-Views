@@ -31,6 +31,7 @@ use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
+use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
 use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Bar;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Pages;
@@ -79,7 +80,10 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->plugin_file = $plugin_file;
 	}
 
-	protected function primary(): void {
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	protected function primary(): array {
 		$this->layout_cpt         = self::make_layout_cpt();
 		$this->post_selection_cpt = Lite_Post_Selections_Loader::make_post_selection_cpt();
 
@@ -171,22 +175,31 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			)
 		);
 
-		parent::primary();
+		return parent::primary();
 	}
 
-	protected function layouts(): void {
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	protected function layouts(): array {
 		$this->layouts_loader = new Lite_Layouts_Loader( $this );
 
-		parent::layouts();
+		return parent::layouts();
 	}
 
-	protected function post_selections(): void {
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	protected function post_selections(): array {
 		$this->selections_loader = new Lite_Post_Selections_Loader( $this );
 
-		parent::post_selections();
+		return parent::post_selections();
 	}
 
-	protected function integration( Route_Detector $route_detector ): void {
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	protected function integration( Route_Detector $route_detector ): array {
 		$this->acf_dependency = new Acf_Dependency( $this->asset_resolver );
 
 		$this->layout_settings_integration         = new Layout_Settings_Integration(
@@ -231,10 +244,13 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		);
 		$this->custom_acf_field_types                 = new Custom_Acf_Field_Types( $this->layouts_settings_storage );
 
-		parent::integration( $route_detector );
+		return parent::integration( $route_detector );
 	}
 
-	protected function others(): void {
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	protected function others(): array {
 		$this->demo_import = new Demo_Importer(
 			$this->selections_loader->save_actions,
 			$this->layouts_loader->save_actions,
@@ -323,10 +339,13 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			)
 		);
 
-		parent::others();
+		return parent::others();
 	}
 
-	protected function environment(): void {
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	protected function environment(): array {
 		$this->plugin_environment = new Plugin_Environment(
 			$this->templates_environment,
 			$this->state_report,
@@ -338,6 +357,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			array( $this->layouts_settings_storage, $this->post_selections_settings_storage )
 		);
 
-		parent::environment();
+		return parent::environment();
 	}
 }

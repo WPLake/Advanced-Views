@@ -79,33 +79,32 @@ abstract class Post_Selections_Loader_Base extends Module_Loader {
 		return $public_cpt_base;
 	}
 
-	public function load(): void {
-		$this->add_hookable(
-			array(
-				$this->cpt,
-				$this->cpt_table,
-				$this->fs_only_tab,
-				$this->bulk_validation_tab,
-				$this->pre_built_tab,
-				$this->cpt_assets_reducer,
-				$this->cpt_gutenberg_editor_settings,
-				$this->meta_boxes,
-				$this->save_actions,
-				$this->layout_integration,
-				$this->shortcode,
-				$this->item_picker,
-				$this->block,
-				$this->git_tabs,
-				$this->git_box,
-				$this->interactive_fields,
-			)
-		);
-
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	public function hookable(): array {
 		$this->add_plugin_extension(
 			fn(): bool => did_action( 'elementor/loaded' ) > 0,
 			$this->make_elementor_integration
 		);
 
-		$this->load_hookable();
+		return array(
+			$this->cpt,
+			$this->cpt_table,
+			$this->fs_only_tab,
+			$this->bulk_validation_tab,
+			$this->pre_built_tab,
+			$this->cpt_assets_reducer,
+			$this->cpt_gutenberg_editor_settings,
+			$this->meta_boxes,
+			$this->save_actions,
+			$this->layout_integration,
+			$this->shortcode,
+			$this->item_picker,
+			$this->block,
+			$this->git_tabs,
+			$this->git_box,
+			$this->interactive_fields,
+		);
 	}
 }

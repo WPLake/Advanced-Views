@@ -54,33 +54,32 @@ abstract class Layouts_Loader_Base extends Module_Loader {
 	 */
 	protected Closure $create_elementor_integration;
 
-	public function load(): void {
-		$this->add_hookable(
-			array(
-				$this->cpt_meta_boxes,
-				$this->cpt,
-				$this->cpt_table,
-				$this->fs_only_tab,
-				$this->bulk_validation_tab,
-				$this->pre_built_tab,
-				$this->cpt_gutenberg_editor_settings,
-				$this->cpt_assets_reducer,
-				$this->save_actions,
-				$this->shortcode,
-				$this->shortcode_block,
-				$this->item_picker,
-				$this->block,
-				$this->git_box,
-				$this->git_tabs,
-				$this->interactive_fields,
-			)
-		);
-
+	/**
+	 * @return Hooks_Interface[]
+	 */
+	public function hookable(): array {
 		$this->add_plugin_extension(
 			fn(): bool => did_action( 'elementor/loaded' ) > 0,
 			$this->create_elementor_integration
 		);
 
-		$this->load_hookable();
+		return array(
+			$this->cpt_meta_boxes,
+			$this->cpt,
+			$this->cpt_table,
+			$this->fs_only_tab,
+			$this->bulk_validation_tab,
+			$this->pre_built_tab,
+			$this->cpt_gutenberg_editor_settings,
+			$this->cpt_assets_reducer,
+			$this->save_actions,
+			$this->shortcode,
+			$this->shortcode_block,
+			$this->item_picker,
+			$this->block,
+			$this->git_box,
+			$this->git_tabs,
+			$this->interactive_fields,
+		);
 	}
 }
