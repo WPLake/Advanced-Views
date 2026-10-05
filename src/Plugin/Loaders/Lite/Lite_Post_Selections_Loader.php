@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders\Lite;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Loaders\Post_Selections_Loader_Base;
 use Org\Wplake\Advanced_Views\Post_Query\Selection\Selection_Query_Builder;
@@ -124,7 +125,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->post_selections_settings_storage,
 			$post_selections_settings_storage,
 			$base->provider_cluster,
-			$base->version_migrator,
+			$base->container->get( Version_Migrator::class ),
 			$base->logger,
 			$base->layouts_loader->pre_built_tab
 		);
@@ -135,7 +136,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->git_lab_api,
 			$base->group_creator->create( Post_Selection_Settings::class ),
 			$base->post_selections_settings_storage,
-			$base->version_migrator,
+			$base->container->get( Version_Migrator::class ),
 			$base->layouts_loader->git_tabs,
 			$base->provider_cluster,
 			$base->logger

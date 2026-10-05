@@ -28,6 +28,21 @@ function flat_map( array $items, callable $mapper ): array {
 	return $chunks;
 }
 
+/**
+ * @template ItemType of int|string
+ *
+ * @param array<int|string, ItemType> $origin
+ * @param array<int|string, ItemType> $replacements old value => new value
+ *
+ * @return array<int|string, ItemType>
+ */
+function swap_items( array $origin, array $replacements ): array {
+	return array_map(
+		fn( $item ) => $replacements[ $item ] ?? $item,
+		$origin
+	);
+}
+
 // int-safe str_repeat - as native throws an error if $count is negative.
 function repeat_str( string $char, int $count ): string {
 	return $count > 0 ?

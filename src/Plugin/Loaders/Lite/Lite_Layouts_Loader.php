@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders\Lite;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Loaders\Layouts_Loader_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
@@ -162,7 +163,7 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 			$base->layouts_settings_storage,
 			$layouts_settings_storage,
 			$base->provider_cluster,
-			$base->version_migrator,
+			$base->container->get( Version_Migrator::class ),
 			$base->logger
 		);
 
@@ -179,7 +180,7 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 			$base->git_lab_api,
 			$base->group_creator->create( Layout_Settings::class ),
 			$base->layouts_settings_storage,
-			$base->version_migrator,
+			$base->container->get( Version_Migrator::class ),
 			$base->provider_cluster,
 			$base->logger
 		);

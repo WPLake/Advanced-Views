@@ -25,23 +25,8 @@ use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Bridge\Advanced_Views;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
-use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_1\Migration_1_6_0;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_1\Migration_1_7_0;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_2\Migration_2_0_0;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_2\Migration_2_1_0;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_2\Migration_2_2_0;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_2\Migration_2_2_2;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_2\Migration_2_2_3;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_2\Migration_2_3_0;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_2\Migration_2_4_0;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_2\Migration_2_4_2;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_2\Migration_2_4_5;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_0_0;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_3_0;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_8_0;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_8_9;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_9_6;
+use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\Version_Migrations_Bootstrap;
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
@@ -64,12 +49,15 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Environment;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Profiler;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
@@ -83,7 +71,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public Plugin $plugin;
 	public Asset_Resolver $asset_resolver;
 	public Plugin_Environment $plugin_environment;
-	public Version_Migrator $version_migrator;
 	public Logger $logger;
 	public Layout_Settings_Storage $layouts_settings_storage;
 
@@ -123,6 +110,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public Live_Reloader $live_reloader;
 	public Admin_Bar $admin_bar;
 	public Upgrade_Notice $upgrade_notice;
+	public Cache_Flusher $cache_flusher;
 	public Point_Mounter $point_mounter;
 	public Git_Lab_Api $git_lab_api;
 
@@ -170,10 +158,11 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$integration    = $this->integration( $route_detector );
 		$others         = $this->others();
 		$this->bridge();
-		$this->version_migrations();
 		$environment = $this->environment();
+		$this->bind_migrations_dependencies();
+		$migrations = $this->version_migrations_bootstrap()->get_hookable( $route_detector );
 
-		return array_merge( $primary, $layouts, $post_selection, $integration, $others, $environment );
+		return array_merge( $primary, $layouts, $post_selection, $integration, $others, $environment, array( $migrations ) );
 	}
 
 	protected function translations( Route_Detector $route_detector ): void {
@@ -215,7 +204,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 				$this->front_assets,
 				$this->provider_cluster,
 				$this->live_reloader_component,
-				$this->version_migrator,
 				$this->upgrade_notice,
 				File_System_Loader::instance(),
 			),
@@ -316,71 +304,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		Advanced_Views::$post_selection_renderer = $this->selections_loader->shortcode;
 	}
 
-	protected function version_migrations(): void {
-		$this->version_migrator->add_version_migrations(
-			array(
-				// v1.
-				new Migration_1_6_0( $this->logger ),
-				new Migration_1_7_0( $this->logger, $this->layouts_settings_storage, $this->layouts_loader->save_actions ),
-				// v2.
-				new Migration_2_0_0(
-					$this->logger,
-					$this->layouts_loader->save_actions,
-					$this->selections_loader->save_actions
-				),
-				new Migration_2_1_0(
-					$this->logger,
-					$this->layouts_loader->save_actions,
-					$this->layouts_settings_storage
-				),
-				new Migration_2_2_0(
-					$this->logger,
-					$this->layouts_settings_storage,
-					$this->post_selections_settings_storage
-				),
-				new Migration_2_2_2(
-					$this->logger,
-					$this->layouts_settings_storage,
-					$this->post_selections_settings_storage
-				),
-				new Migration_2_2_3(
-					$this->logger,
-					$this->layouts_loader->save_actions,
-					$this->selections_loader->save_actions
-				),
-				new Migration_2_3_0( $this->logger, $this->templates_environment ),
-				new Migration_2_4_0(
-					$this->logger,
-					$this->layouts_loader->save_actions,
-					$this->layouts_settings_storage,
-					$this->post_selections_settings_storage
-				),
-				new Migration_2_4_2( $this->logger, $this->layouts_settings_storage ),
-				new Migration_2_4_5( $this->logger, $this->layouts_settings_storage ),
-				// v3.
-				new Migration_3_0_0( $this->logger, $this->layouts_settings_storage, $this->post_selections_settings_storage ),
-				new Migration_3_3_0(
-					$this->logger,
-					$this->layouts_settings_storage,
-					$this->post_selections_settings_storage,
-				),
-				new Migration_3_8_0(
-					$this->logger,
-					$this->layouts_settings_storage,
-					$this->post_selections_settings_storage,
-					$this->layout_cpt,
-					$this->post_selection_cpt
-				),
-				new Migration_3_8_9(
-					$this->logger,
-					$this->layouts_settings_storage,
-					$this->post_selections_settings_storage,
-				),
-				new Migration_3_9_6( $this->logger, $this->post_selections_settings_storage ),
-			)
-		);
-	}
-
 	/**
 	 * @return Hookable[]
 	 */
@@ -452,6 +375,38 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		}
 
 		return $cache_cleaners;
+	}
+
+	protected function bind_version_migrator_dependencies(): void {
+		$this->container->set( Plugin::class, $this->plugin );
+		$this->container->set( Settings_Storage::class, $this->settings );
+		$this->container->set( Logger::class, $this->logger );
+		$this->container->set( Upgrade_Notice::class, $this->upgrade_notice );
+		$this->container->set( Cache_Flusher::class, $this->cache_flusher );
+	}
+
+	protected function bind_migrations_dependencies(): void {
+		// fixme.
+		$this->container->set( Layout_Settings_Storage::class, $this->layouts_settings_storage );
+		$this->container->set( Selection_Settings_Storage::class, $this->post_selections_settings_storage );
+		$this->container->set( Layout_Save_Actions::class, $this->layouts_loader->save_actions );
+		$this->container->set( Selection_Save_Actions::class, $this->selections_loader->save_actions );
+		$this->container->set( Templates_Environment::class, $this->templates_environment );
+		// both params are of the same abstract type, so can't be autowired.
+		$this->container->set(
+			Migration_3_8_0::class,
+			new Migration_3_8_0(
+				$this->logger,
+				$this->layouts_settings_storage,
+				$this->post_selections_settings_storage,
+				$this->layout_cpt,
+				$this->post_selection_cpt
+			)
+		);
+	}
+
+	protected function version_migrations_bootstrap(): Version_Migrations_Bootstrap {
+		return new Version_Migrations_Bootstrap( $this->container );
 	}
 
 	protected static function create_container(): Container {

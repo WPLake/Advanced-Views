@@ -27,7 +27,6 @@ use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
-use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
@@ -70,7 +69,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	public Layout_Settings $layout_settings;
 	public Post_Selection_Settings $post_selection_settings;
 	public Options_Storage $options;
-	public Cache_Flusher $cache_flusher;
 
 	public string $plugin_file;
 
@@ -160,13 +158,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		);
 		$this->upgrade_notice          = new Upgrade_Notice( $this->plugin );
 		$this->cache_flusher           = new Cache_Flusher( $this->logger, $this->get_cache_cleaners() );
-		$this->version_migrator        = new Version_Migrator(
-			$this->plugin,
-			$this->settings,
-			$this->logger,
-			$this->upgrade_notice,
-			$this->cache_flusher
-		);
+		$this->bind_version_migrator_dependencies();
 
 		$this->add_file_systems(
 			array(
