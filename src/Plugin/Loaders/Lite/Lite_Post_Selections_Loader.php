@@ -44,8 +44,8 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 	public function __construct( Lite_Plugin_Loader $base ) {
 		parent::__construct();
 
-		$query_builder         = new Selection_Query_Builder( $base->provider_cluster );
-		$post_query            = new Post_Query( $query_builder, $base->logger );
+		$query_builder         = $base->container->get( Selection_Query_Builder::class );
+		$post_query            = $base->container->get( Post_Query::class );
 		$post_selection_markup = new Post_Selection_Markup(
 			$base->front_assets,
 			$base->engines_storage,
@@ -161,12 +161,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->post_selection_cpt->cpt_name()
 		);
 
-		$this->layout_integration = new Selection_Layout_Integration(
-			$base->post_selections_settings_storage,
-			$base->layouts_settings_storage,
-			$this->save_actions,
-			$base->settings
-		);
+		$this->layout_integration = $base->container->get( Selection_Layout_Integration::class );
 		$this->shortcode          = new Post_Selection_Shortcode(
 			$base->post_selection_cpt,
 			$base->settings,
@@ -174,6 +169,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->live_reloader_component,
 			$this->factory
 		);
+		$base->container->set( Post_Selection_Shortcode::class, $this->shortcode );
 
 		$this->item_picker = new Cpt_Item_Picker(
 			$base->post_selections_settings_storage,

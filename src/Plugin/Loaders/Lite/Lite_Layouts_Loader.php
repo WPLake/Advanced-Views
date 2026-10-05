@@ -43,16 +43,8 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 	public function __construct( Lite_Plugin_Loader $base ) {
 		parent::__construct();
 
-		$field_markup  = new Field_Markup(
-			$base->provider_cluster,
-			$base->front_assets,
-			$base->engines_storage
-		);
-		$layout_markup = new Layout_Markup(
-			$field_markup,
-			$base->provider_cluster,
-			$base->engines_storage
-		);
+		$field_markup  = $base->container->get( Field_Markup::class );
+		$layout_markup = $base->container->get( Layout_Markup::class );
 
 		$this->factory         = new Layout_Factory(
 			$base->front_assets,
@@ -94,6 +86,7 @@ final class Lite_Layouts_Loader extends Layouts_Loader_Base {
 			$this->factory,
 			$this->shortcode_block
 		);
+		$base->container->set( Layout_Shortcode::class, $this->shortcode );
 
 		$this->item_picker = new Cpt_Item_Picker(
 			$base->layouts_settings_storage,

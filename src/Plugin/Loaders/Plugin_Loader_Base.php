@@ -137,7 +137,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public function load(): void {
 		$start_timestamp = microtime( true );
 
-		$route_detector = new Route_Detector();
+		$route_detector = $this->container->get( Route_Detector::class );
 
 		$this->load_hookable( $this->load_modules( $route_detector ) );
 
@@ -391,7 +391,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	protected function version_migrations_bootstrap(): Version_Migrations_Bootstrap {
-		return new Version_Migrations_Bootstrap( $this->container );
+		return $this->container->get( Version_Migrations_Bootstrap::class );
 	}
 
 	protected static function create_container(): Container {
