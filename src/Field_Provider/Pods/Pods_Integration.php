@@ -8,10 +8,10 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Settings_Vendor_Integration;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
@@ -31,7 +31,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		Layout_Factory $layout_factory,
 		Pods_Data_Vendor $pods_data_vendor,
 		Layout_Shortcode $layout_shortcode,
-		Settings_Storage $settings,
+		Cpt_Theme_Settings $settings,
 		Plugin_Cpt $plugin_cpt
 	) {
 		parent::__construct(

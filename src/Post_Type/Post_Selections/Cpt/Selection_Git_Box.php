@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Git_Meta_Box;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Git_Box;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 
@@ -25,12 +25,12 @@ class Selection_Git_Box extends Git_Meta_Box {
 		string $cpt_name,
 		Settings_Storage $settings,
 		Cpt_Settings_Storage $cpt_settings_storage,
-		Git_Lab_Api $git_lab_api,
+		Git_Api_Interface $git_api,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Layout_Git_Box $layouts_git_meta_box,
 		Plugin $plugin
 	) {
-		parent::__construct( $cpt_name, $settings, $cpt_settings_storage, $git_lab_api, $plugin );
+		parent::__construct( $cpt_name, $settings, $cpt_settings_storage, $git_api, $plugin );
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
 		$this->layouts_git_meta_box     = $layouts_git_meta_box;

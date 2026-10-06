@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Git_Tabs;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Import_Result;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 
 class Layout_Git_Tabs extends Git_Tabs {
@@ -24,7 +24,7 @@ class Layout_Git_Tabs extends Git_Tabs {
 	public function __construct(
 		Cpt_Table $cpt_table,
 		Settings_Storage $settings,
-		Git_Lab_Api $git_lab_api,
+		Git_Api_Interface $git_api,
 		Cpt_Settings $cpt_settings,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
@@ -34,7 +34,7 @@ class Layout_Git_Tabs extends Git_Tabs {
 		parent::__construct(
 			$cpt_table,
 			$settings,
-			$git_lab_api,
+			$git_api,
 			$cpt_settings,
 			$layouts_settings_storage,
 			$cpt_settings_migrator,

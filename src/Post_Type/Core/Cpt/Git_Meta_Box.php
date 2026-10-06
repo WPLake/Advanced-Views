@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 
 abstract class Git_Meta_Box extends Hookable_Base implements Hookable {
 
@@ -24,7 +24,7 @@ abstract class Git_Meta_Box extends Hookable_Base implements Hookable {
 	private Settings_Storage $settings;
 	private string $cpt_name;
 	private Cpt_Settings_Storage $cpt_settings_storage;
-	private Git_Lab_Api $git_lab_api;
+	private Git_Api_Interface $git_api;
 	/**
 	 * Used to avoid potential recursion (if user made the recursion setup)
 	 *
@@ -37,13 +37,13 @@ abstract class Git_Meta_Box extends Hookable_Base implements Hookable {
 		string $cpt_name,
 		Settings_Storage $settings,
 		Cpt_Settings_Storage $cpt_settings_storage,
-		Git_Lab_Api $git_lab_api,
+		Git_Api_Interface $git_api,
 		Plugin $plugin
 	) {
 		$this->cpt_name             = $cpt_name;
 		$this->settings             = $settings;
 		$this->cpt_settings_storage = $cpt_settings_storage;
-		$this->git_lab_api          = $git_lab_api;
+		$this->git_api              = $git_api;
 		$this->pushing_unique_ids   = array();
 		$this->plugin               = $plugin;
 	}
@@ -154,7 +154,7 @@ abstract class Git_Meta_Box extends Hookable_Base implements Hookable {
 
 		$fs_title = $this->cpt_settings_storage->get_file_system()->get_fs_title( $cpt_settings->title );
 
-		return $this->git_lab_api->push(
+		return $this->git_api->push(
 			$repository_id,
 			$access_token,
 			$this->cpt_name,
