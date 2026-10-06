@@ -10,16 +10,13 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 
 class Meta_Field_Settings extends Group {
 	// to fix the group name in case class name changes.
-	const CUSTOM_GROUP_NAME           = self::GROUP_NAME_PREFIX . 'meta-field';
-	const FIELD_GROUP                 = 'group';
-	const FIELD_FIELD_KEY             = 'field_key';
-	const FIELD_VALUE_TYPE            = 'value_type';
-	const FIELD_DYNAMIC_SOURCE        = 'dynamic_source';
-	const FIELD_DYNAMIC_POST_GROUP    = 'dynamic_post_group';
-	const FIELD_DYNAMIC_POST_FIELD    = 'dynamic_post_field';
-	const FIELD_DYNAMIC_DATE_MODIFIER = 'dynamic_date_modifier';
-	const FIELD_DYNAMIC_QUERY_FIELD   = 'dynamic_query_field';
-	const FIELD_DYNAMIC_ARGUMENT      = 'dynamic_argument_name';
+	const CUSTOM_GROUP_NAME        = self::GROUP_NAME_PREFIX . 'meta-field';
+	const FIELD_GROUP              = 'group';
+	const FIELD_FIELD_KEY          = 'field_key';
+	const FIELD_VALUE_TYPE         = 'value_type';
+	const FIELD_DYNAMIC_SOURCE     = 'dynamic_source';
+	const FIELD_DYNAMIC_POST_GROUP = 'dynamic_post_group';
+	const FIELD_DYNAMIC_POST_FIELD = 'dynamic_post_field';
 
 	const VALUE_TYPE_LITERAL            = 'literal';
 	const VALUE_TYPE_DYNAMIC            = 'dynamic';

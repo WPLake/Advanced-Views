@@ -74,10 +74,6 @@ abstract class Template_Pattern_Base extends Library_Pattern_Base implements Tem
 		return $item_selector;
 	}
 
-	public function get_provider_cluster(): Field_Provider_Cluster {
-		return $this->provider_cluster;
-	}
-
 	/**
 	 * @return array{css:array<string,string>,js:array<string,string>}
 	 */

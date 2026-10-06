@@ -17,8 +17,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 defined( 'ABSPATH' ) || exit;
 
 class Pods_Upload_Field extends Markup_Field_Base {
-	const LOOP_ITEM_NAME = 'file_item';
-
 	private Image_Field $image_field;
 	private File_Field $file_field;
 	private Gallery_Field $gallery_field;
