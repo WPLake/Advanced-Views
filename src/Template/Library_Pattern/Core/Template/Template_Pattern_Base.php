@@ -139,21 +139,6 @@ abstract class Template_Pattern_Base extends Library_Pattern_Base implements Tem
 		return false;
 	}
 
-	public function is_web_component_required( Cpt_Settings $cpt_settings ): bool {
-		if ( $cpt_settings instanceof Layout_Settings &&
-			$this->is_with_web_component() ) {
-			[$target_fields, $target_sub_fields] = $this->provider_cluster->get_fields_with_pattern(
-				static::NAME,
-				$cpt_settings
-			);
-
-			return array() !== $target_fields ||
-					array() !== $target_sub_fields;
-		}
-
-		return false;
-	}
-
 	/**
 	 * @return array{css:array<string,string>,js:array<string,string>}
 	 */

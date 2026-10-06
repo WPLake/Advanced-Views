@@ -10,7 +10,6 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Te
 
 class Comparison_Token implements Template_Token {
 	const COMPARISON_GREATER = ' > ';
-	const COMPARISON_LESS    = ' < ';
 	const COMPARISON_EQUAL   = ' == ';
 	const COMPARISON_EMPTY   = ' ?: ';
 	const COMPARISON_OR      = ' || ';
@@ -37,12 +36,6 @@ class Comparison_Token implements Template_Token {
 		return $this;
 	}
 
-
-	public function set_comparison_less(): self {
-		$this->operator_escaped = static::COMPARISON_LESS;
-
-		return $this;
-	}
 
 	public function set_comparison_equal(): self {
 		$this->operator_escaped = static::COMPARISON_EQUAL;

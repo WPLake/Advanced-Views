@@ -36,12 +36,6 @@ abstract class Loop_Token implements Template_Token {
 		return $this;
 	}
 
-	public function set_index_variable( Variable_Token $index_var ): self {
-		$this->index_var = $index_var;
-
-		return $this;
-	}
-
 	public function get_index_variable(): Variable_Token {
 		return $this->index_var;
 	}

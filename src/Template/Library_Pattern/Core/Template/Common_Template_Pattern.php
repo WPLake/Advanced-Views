@@ -33,11 +33,6 @@ abstract class Common_Template_Pattern extends Template_Pattern_Base {
 		$this->card_field_id = $card_field_id;
 	}
 
-	protected function is_web_component_required_for_card( Post_Selection_Settings $post_selection_settings ): bool {
-		return $this->is_with_web_component() &&
-				$this->is_target_selection( $post_selection_settings );
-	}
-
 	protected function print_js_code( string $var_name, Field_Settings $field_settings, Layout_Settings $layout_settings ): void {
 		$this->print_common_js_code( $var_name );
 	}
@@ -66,12 +61,6 @@ abstract class Common_Template_Pattern extends Template_Pattern_Base {
 	 */
 	public function get_selection_shortcode_attrs( Post_Selection_Settings $post_selection_settings ): array {
 		return array();
-	}
-
-	public function is_web_component_required( Cpt_Settings $cpt_settings ): bool {
-		return $cpt_settings instanceof Post_Selection_Settings ?
-			$this->is_web_component_required_for_card( $cpt_settings ) :
-			parent::is_web_component_required( $cpt_settings );
 	}
 
 	/**

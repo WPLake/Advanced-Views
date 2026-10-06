@@ -63,6 +63,9 @@ class Post_Selection_Factory extends Instance_Factory {
 		$this->add_used_cpt_data( $post_selection_settings );
 	}
 
+	/**
+	 * @return array<string,mixed>
+	 */
 	public function get_ajax_response( string $unique_id ): array {
 		$card = $this->make( $this->get_cards_data_storage()->get( $unique_id ) );
 

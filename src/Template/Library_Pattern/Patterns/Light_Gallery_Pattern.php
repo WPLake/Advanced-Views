@@ -22,7 +22,6 @@ class Light_Gallery_Pattern extends Template_Pattern_Base {
 		parent::__construct( $asset_resolver, $provider_cluster );
 
 		$this->set_auto_discover_name( 'light-gallery' );
-		$this->set_is_with_web_component( true );
 		$this->set_js_handles(
 			array(
 				'lightgallery' => false,

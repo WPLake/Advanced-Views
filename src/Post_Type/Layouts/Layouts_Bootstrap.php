@@ -199,7 +199,6 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 			$this->container->get( Front_Assets::class ),
 			$this->container->get( Layout_Markup::class ),
 			$this->container->get( Layout_Factory::class ),
-			$this->layout_cpt,
 			$this->container->get( Template_Integration_Storage::class )
 		);
 	}

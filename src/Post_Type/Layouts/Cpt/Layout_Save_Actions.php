@@ -12,7 +12,6 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
@@ -36,7 +35,6 @@ class Layout_Save_Actions extends Cpt_Save_Actions {
 		Front_Assets $front_assets,
 		Layout_Markup $layout_markup,
 		Layout_Factory $layout_factory,
-		Public_Cpt $public_cpt,
 		Template_Integration_Storage $template_integration_storage
 	) {
 		// make a clone before passing to the parent, to make sure that external changes won't appear in this object.
@@ -48,7 +46,6 @@ class Layout_Save_Actions extends Cpt_Save_Actions {
 			$plugin,
 			$layout_settings,
 			$front_assets,
-			$public_cpt,
 			$template_integration_storage,
 			$layout_factory
 		);

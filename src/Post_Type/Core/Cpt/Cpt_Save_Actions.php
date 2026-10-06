@@ -15,7 +15,6 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
@@ -46,7 +45,6 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Hookable {
 	 */
 	private array $validated_input_names;
 	private Front_Assets $front_assets;
-	protected Public_Cpt $public_plugin_cpt;
 	protected Template_Integration_Storage $template_integration_storage;
 	protected Instance_Factory $instance_factory;
 
@@ -56,7 +54,6 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Hookable {
 		Plugin $plugin,
 		Cpt_Settings $cpt_settings,
 		Front_Assets $front_assets,
-		Public_Cpt $public_cpt,
 		Template_Integration_Storage $template_integration_storage,
 		Instance_Factory $instance_factory
 	) {
@@ -71,7 +68,6 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Hookable {
 		$this->available_acf_fields         = array_keys( $this->cpt_settings->getFieldValues() );
 		$this->field_values                 = array();
 		$this->validated_input_names        = array();
-		$this->public_plugin_cpt            = $public_cpt;
 		$this->template_integration_storage = $template_integration_storage;
 		$this->instance_factory             = $instance_factory;
 	}

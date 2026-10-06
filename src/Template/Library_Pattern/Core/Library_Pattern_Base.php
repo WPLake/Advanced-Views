@@ -23,14 +23,12 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 	private array $css_handles;
 	private Asset_Resolver $asset_resolver;
 	private string $auto_discover_name;
-	private bool $is_with_web_component;
 
 	public function __construct( Asset_Resolver $asset_resolver ) {
-		$this->asset_resolver        = $asset_resolver;
-		$this->js_handles            = array();
-		$this->css_handles           = array();
-		$this->auto_discover_name    = '';
-		$this->is_with_web_component = false;
+		$this->asset_resolver     = $asset_resolver;
+		$this->js_handles         = array();
+		$this->css_handles        = array();
+		$this->auto_discover_name = '';
 	}
 
 	protected function print_code_piece( string $name, string $piece_safe ): void {
@@ -88,10 +86,6 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 		return $this->asset_resolver;
 	}
 
-	protected function is_with_web_component(): bool {
-		return $this->is_with_web_component;
-	}
-
 	/**
 	 * @param array<string, bool> $js_handles
 	 */
@@ -110,10 +104,6 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 	protected function is_enabled_js_handle( string $js_handle ): bool {
 		return key_exists( $js_handle, $this->js_handles ) &&
 				$this->js_handles[ $js_handle ];
-	}
-
-	protected function set_is_with_web_component( bool $is_with_web_component ): void {
-		$this->is_with_web_component = $is_with_web_component;
 	}
 
 	/**

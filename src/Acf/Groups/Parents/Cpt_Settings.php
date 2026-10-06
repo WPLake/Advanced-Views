@@ -18,8 +18,6 @@ abstract class Cpt_Settings extends Group implements Cpt_Theme_Settings {
 	const FIELD_CLASSES_GENERATION = 'classes_generation';
 	const FIELD_SASS_CODE          = 'sass_code';
 	const FIELD_TS_CODE            = 'ts_code';
-	// to be overridden by children.
-	const UNIQUE_ID_PREFIX                     = '';
 	const WEB_COMPONENT_CLASSIC                = 'classic';
 	const WEB_COMPONENT_SHADOW_DOM_DECLARATIVE = 'shadow_root_template';
 	const WEB_COMPONENT_SHADOW_DOM             = 'shadow_dom';

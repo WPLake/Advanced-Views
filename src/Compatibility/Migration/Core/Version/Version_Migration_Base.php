@@ -12,7 +12,6 @@ use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Migration_Base;
 abstract class Version_Migration_Base extends Migration_Base implements Version_Migration {
 	const ORDER_BEFORE_ALL = 1;
 	const ORDER_HISTORICAL = 5;
-	const ORDER_AFTER_ALL  = 10;
 
 	const ORDER              = self::ORDER_HISTORICAL;
 	const INTRODUCED_VERSION = '';

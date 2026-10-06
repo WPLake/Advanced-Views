@@ -12,7 +12,6 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Save_Actions;
@@ -42,7 +41,6 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 		Post_Selection_Markup $post_selection_markup,
 		Post_Query_Builder $query_builder,
 		Post_Selection_Factory $post_selection_factory,
-		Public_Cpt $public_cpt,
 		Template_Integration_Storage $template_integration_storage
 	) {
 		// make a clone before passing to the parent, to make sure that external changes won't appear in this object.
@@ -54,7 +52,6 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 			$plugin,
 			$post_selection_settings,
 			$front_assets,
-			$public_cpt,
 			$template_integration_storage,
 			$post_selection_factory
 		);

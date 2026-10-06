@@ -79,7 +79,6 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$post_selection_markup,
 			$query_builder,
 			$this->factory,
-			$base->post_selection_cpt,
 			$base->engines_storage
 		);
 		$base->container->set( Selection_Save_Actions::class, $this->save_actions );

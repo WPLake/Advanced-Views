@@ -464,16 +464,6 @@ class Front_Assets extends Hookable_Base implements Hookable {
 		return $code;
 	}
 
-	public function is_web_component_required( Cpt_Settings $cpt_settings ): bool {
-		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern->is_web_component_required( $cpt_settings ) ) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	/**
 	 * @param string[] $names
 	 *

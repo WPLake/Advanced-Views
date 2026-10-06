@@ -16,22 +16,10 @@ abstract class IF_Token implements Template_Token {
 	protected array $elseif_branches  = array();
 	protected ?IF_Branch $else_branch = null;
 
-	public function set_if_branch( IF_Branch $branch ): self {
-		$this->if_branch = $branch;
-
-		return $this;
-	}
-
 	public function new_if_branch(): IF_Branch {
 		$this->if_branch = new IF_Branch();
 
 		return $this->if_branch;
-	}
-
-	public function set_else_branch( IF_Branch $branch ): self {
-		$this->else_branch = $branch;
-
-		return $this;
 	}
 
 	public function new_else_branch(): IF_Branch {

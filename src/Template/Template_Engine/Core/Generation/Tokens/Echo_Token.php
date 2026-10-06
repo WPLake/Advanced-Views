@@ -16,12 +16,6 @@ abstract class Echo_Token implements Template_Token {
 		$this->is_raw = false;
 	}
 
-	public function set_content( Template_Token $content ): self {
-		$this->content = $content;
-
-		return $this;
-	}
-
 	public function set_is_raw( bool $is_raw ): self {
 		$this->is_raw = $is_raw;
 
