@@ -7,8 +7,8 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
-use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
 use Org\Wplake\Advanced_Views\Acf\Acf_Groups_Loader;
+use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tools_Settings_Integration;
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
@@ -47,6 +47,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Integrations_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Bootstrap;
@@ -137,7 +138,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 */
 	protected function load_modules( Route_Detector $route_detector ): array {
 		$this->translations( $route_detector );
-		$primary = $this->primary();
+		$primary    = $this->primary();
 		$acf_groups = $this->acf_groups( $route_detector );
 		// layouts instances are used by the next modules, so bootstraps go first.
 		$bootstraps     = resolve_instances( $this->get_bootstraps(), $this->container );
@@ -223,7 +224,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 */
 	protected function load_bootstraps( array $bootstraps, Route_Detector $route_detector ): array {
 		foreach ( $bootstraps as $bootstrap ) {
-			$bootstrap->wire_factories();
+			$bootstrap->wire_instance_factories();
 		}
 
 		return flat_map(
@@ -240,11 +241,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			'plugins_loaded',
 			function () use ( $bootstraps ): void {
 				foreach ( $bootstraps as $bootstrap ) {
-					foreach ( $bootstrap->get_extension_hookables() as $loaded_action => $make_hookables ) {
-						if ( did_action( $loaded_action ) > 0 ) {
-							$this->load_hookable( $make_hookables() );
-						}
-					}
+					$this->load_hookable( $bootstrap->get_extension_hookables() );
 				}
 			},
 			11
@@ -361,6 +358,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	protected function get_bootstraps(): array {
 		return array(
 			Layouts_Bootstrap::class,
+			Integrations_Bootstrap::class,
 			Version_Migrations_Bootstrap::class,
 		);
 	}

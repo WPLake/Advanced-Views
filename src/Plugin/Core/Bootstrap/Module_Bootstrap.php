@@ -13,7 +13,7 @@ interface Module_Bootstrap {
 	/**
 	 * Registers the container factories of the module's instances. Must be called before get_hookables().
 	 */
-	public function wire_factories(): void;
+	public function wire_instance_factories(): void;
 
 	/**
 	 * @return Hookable[]
@@ -21,10 +21,10 @@ interface Module_Bootstrap {
 	public function get_hookables( Route_Detector $route_detector ): array;
 
 	/**
-	 * Hookables that depend on another plugin being active, keyed by the action fired when that plugin is loaded
-	 * (e.g. 'elementor/loaded'). Must be called after get_hookables().
+	 * Hookables that depend on another plugin being active, so the module checks that itself (e.g. did_action()).
+	 * Called on 'plugins_loaded', after get_hookables().
 	 *
-	 * @return array<string, callable():Hookable[]>
+	 * @return Hookable[]
 	 */
 	public function get_extension_hookables(): array;
 }

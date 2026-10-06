@@ -8,7 +8,6 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Acf_Groups_Loader;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Mount_Point_Settings_Integration;
-use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
@@ -23,10 +22,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Gutenberg_Editor_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Fs_Only_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor\Cpt_Widget_Registrar;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Gutenberg\Cpt_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Field_Settings_Integration;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Item_Settings_Integration;
@@ -43,9 +38,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table\Layouts_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Field_Markup;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Elementor\Layout_Elementor_Assets;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Elementor\Layout_Elementor_Widget;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Layout_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Shortcode_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
@@ -53,7 +45,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_R
 use Org\Wplake\Advanced_Views\Template\Template_Engine\PHP\PHP_Template_Engine;
 
 class Layouts_Bootstrap extends Module_Bootstrap_Base {
-	public function wire_factories(): void {
+	public function wire_instance_factories(): void {
 		foreach ( $this->get_wire_resolves() as $class_name => $factory ) {
 			$this->wire( $class_name, $factory );
 		}
@@ -66,12 +58,6 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		);
 
 		return array_merge( $this->get_acf_groups_hookables( $route_detector ), $resolved, $this->get_instances() );
-	}
-
-	public function get_extension_hookables(): array {
-		return array(
-			'elementor/loaded' => fn(): array => $this->create_elementor_hookables(),
-		);
 	}
 
 	/**
@@ -89,7 +75,6 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 			Layouts_Pre_Built_Tab::class,
 			Layout_Save_Actions::class,
 			Layout_Shortcode::class,
-			Layout_Gutenberg_Block::class,
 			Layout_Git_Box::class,
 			Layout_Git_Tabs::class,
 			Layout_Interactive_Fields::class,
@@ -103,7 +88,6 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 	 */
 	protected function get_instances(): array {
 		return array(
-			$this->create_item_picker(),
 			$this->create_shortcode_block(),
 			$this->create_fs_only_tab(),
 			$this->create_editor_settings(),
@@ -121,7 +105,6 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 			Layouts_Pre_Built_Tab::class       => fn(): Layouts_Pre_Built_Tab => $this->make_pre_built_tab(),
 			Layouts_Cpt_Hookable::class        => fn(): Layouts_Cpt_Hookable => $this->make_cpt_hookable(),
 			Layouts_Bulk_Validation_Tab::class => fn(): Layouts_Bulk_Validation_Tab => $this->make_bulk_validation_tab(),
-			Layout_Gutenberg_Block::class      => fn(): Layout_Gutenberg_Block => $this->make_gutenberg_block(),
 		);
 	}
 
@@ -131,32 +114,17 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 	protected function get_acf_groups_hookables( Route_Detector $route_detector ): array {
 		$cpt_name = $this->resolve( Layouts_Cpt::class )->cpt_name();
 
-		if ( ! wp_doing_ajax() && ! $route_detector->is_cpt_admin_route( $cpt_name ) ) {
-			return array();
+		if ( wp_doing_ajax() || $route_detector->is_cpt_admin_route( $cpt_name ) ) {
+			$groups_path   = $this->resolve( Plugin::class )
+								->get_plugin_path( 'src/Post_Type/Layouts/Acf/Groups' );
+			$namespace_map = array( 'Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups' => $groups_path );
+
+			return array(
+				new Acf_Groups_Loader( $namespace_map ),
+			);
 		}
 
-		$groups_path = $this->resolve( Plugin::class )->get_plugin_path( 'src/Post_Type/Layouts/Acf/Groups' );
-
-		return array(
-			new Acf_Groups_Loader(
-				array( 'Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups' => $groups_path )
-			),
-		);
-	}
-
-	/**
-	 * @return Hookable[]
-	 */
-	protected function create_elementor_hookables(): array {
-		$item_picker      = $this->create_item_picker();
-		$widget_registrar = new Cpt_Widget_Registrar( $item_picker, $this->create_cpt_renderer() );
-
-		$widget_registrar->add_widget( Layout_Elementor_Widget::class );
-
-		return array(
-			$widget_registrar,
-			new Layout_Elementor_Assets( $item_picker, $this->resolve( Asset_Resolver::class ) ),
-		);
+		return array();
 	}
 
 	protected function make_cpt_hookable(): Layouts_Cpt_Hookable {
@@ -200,29 +168,6 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 
 	protected function create_shortcode_block(): Shortcode_Gutenberg_Block {
 		return new Shortcode_Gutenberg_Block( $this->resolve( Layouts_Cpt::class )->shortcodes() );
-	}
-
-	protected function create_item_picker(): Cpt_Item_Picker {
-		return new Cpt_Item_Picker(
-			$this->resolve( Layout_Settings_Storage::class ),
-			$this->resolve( Layouts_Cpt::class )
-		);
-	}
-
-	protected function create_cpt_renderer(): Cpt_Renderer {
-		return new Cpt_Renderer(
-			$this->resolve( Layout_Shortcode::class ),
-			$this->resolve( Layout_Settings_Storage::class ),
-			$this->resolve( Layouts_Cpt::class )
-		);
-	}
-
-	protected function make_gutenberg_block(): Layout_Gutenberg_Block {
-		return new Layout_Gutenberg_Block(
-			$this->resolve( Asset_Resolver::class ),
-			$this->create_item_picker(),
-			new Cpt_Gutenberg_Block( $this->create_cpt_renderer() )
-		);
 	}
 
 	protected function make_factory(): Layout_Factory {
