@@ -68,6 +68,9 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 	}
 
 	public function get_hookables( Route_Detector $route_detector ): array {
+		// fixme find a way to class look clearer.
+		// a) add ->get/set as short $this->container alias (on the _Base level)
+		// b) split into groups, then this method that merges them.
 		$layouts_settings_storage = $this->container->get( Layout_Settings_Storage::class );
 
 		// instances are registered in the container right after creation (for types it can't autowire),
@@ -214,7 +217,7 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 	protected function make_pre_built_tab(): Layouts_Pre_Built_Tab {
 		$logger = $this->container->get( Logger::class );
 
-		$file_system = new File_System(
+		$file_system                = new File_System(
 			$logger,
 			$this->layout_cpt->folder_name(),
 			$this->container->get( Plugin::class )->get_plugin_path( 'pre_built' )
