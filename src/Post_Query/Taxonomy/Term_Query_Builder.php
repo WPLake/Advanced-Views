@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Query\Taxonomy;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Tax_Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Tax_Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Query_Utils;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 

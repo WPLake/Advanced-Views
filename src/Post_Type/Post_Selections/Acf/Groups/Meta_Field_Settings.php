@@ -2,11 +2,12 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Acf\Groups;
+namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 
 class Meta_Field_Settings extends Group {
 	// to fix the group name in case class name changes.

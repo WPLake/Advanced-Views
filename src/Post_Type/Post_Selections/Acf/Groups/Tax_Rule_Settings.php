@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Acf\Groups;
+namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 
@@ -25,7 +25,7 @@ class Tax_Rule_Settings extends Group {
 	public string $relation;
 	/**
 	 * @var Tax_Field_Settings[]
-	 * @item \Org\Wplake\Advanced_Views\Acf\Groups\Tax_Field_Settings
+	 * @item \Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Tax_Field_Settings
 	 * @button_label Add Taxonomy
 	 * @label Taxonomies
 	 * @instructions Taxonomies for the taxonomy rule. Multiple taxonomies are supported

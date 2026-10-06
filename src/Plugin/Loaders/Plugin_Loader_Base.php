@@ -6,20 +6,14 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
 use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
 use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Field_Settings_Integration;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Item_Settings_Integration;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Layout_Settings_Integration;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Meta_Field_Settings_Integration;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Mount_Point_Settings_Integration;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Post_Selection_Settings_Integration;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tax_Field_Settings_Integration;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tools_Settings_Integration;
-use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
@@ -64,7 +58,6 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environmen
 use Org\Wplake\Advanced_Views\Vendors\DI\Container;
 use Org\Wplake\Advanced_Views\Vendors\DI\ContainerBuilder;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
-use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Loader;
 use function Org\Wplake\Advanced_Views\Utils\flat_map;
 use function Org\Wplake\Advanced_Views\Utils\resolve_instances;
 
@@ -85,14 +78,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public array $file_systems = array();
 
 	public Acf_Dependency $acf_dependency;
-	public Layout_Settings_Integration $layout_settings_integration;
-	public Field_Settings_Integration $field_settings_integration;
-	public Post_Selection_Settings_Integration $post_selection_settings_integration;
-	public Item_Settings_Integration $item_settings_integration;
-	public Meta_Field_Settings_Integration $meta_field_settings_integration;
-	public Mount_Point_Settings_Integration $layout_mount_point_integration;
-	public Mount_Point_Settings_Integration $post_selection_mount_point_integration;
-	public Tax_Field_Settings_Integration $tax_field_settings_integration;
 	public Tools_Settings_Integration $tools_settings_integration;
 	public Custom_Acf_Field_Types $custom_acf_field_types;
 	public Item_Settings $item_settings;
@@ -157,7 +142,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		// layouts instances are used by the next modules, so bootstraps go first.
 		$bootstraps     = resolve_instances( $this->get_bootstraps(), $this->container );
 		$modules        = $this->load_bootstraps( $bootstraps, $route_detector );
-		$post_selection = $this->post_selections();
+		$post_selection = $this->post_selections( $route_detector );
 		$integration    = $this->integration( $route_detector );
 		$others         = $this->others();
 		$this->bridge();
@@ -221,18 +206,10 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			return;
 		}
 
-		add_action(
-			'acf/init',
-			function (): void {
-				$loader = new Loader();
-
-				$loader->signUpGroups(
-					'Org\Wplake\Advanced_Views\Acf\Groups',
-					$this->plugin->get_plugin_path( 'src/Acf/Groups' )
-				);
-			},
-			// make sure it's after translations.
-			9
+		Acf_Utils::load_groups(
+			array(
+				'Org\Wplake\Advanced_Views\Acf\Groups' => $this->plugin->get_plugin_path( 'src/Acf/Groups' ),
+			)
 		);
 	}
 
@@ -270,8 +247,8 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	/**
 	 * @return Hookable[]
 	 */
-	protected function post_selections(): array {
-		return $this->selections_loader->hookable();
+	protected function post_selections( Route_Detector $route_detector ): array {
+		return $this->selections_loader->hookable( $route_detector );
 	}
 
 	/**
@@ -293,14 +270,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 		return array(
 			$this->acf_dependency,
-			$this->layout_settings_integration,
-			$this->field_settings_integration,
-			$this->post_selection_settings_integration,
-			$this->item_settings_integration,
-			$this->meta_field_settings_integration,
-			$this->layout_mount_point_integration,
-			$this->post_selection_mount_point_integration,
-			$this->tax_field_settings_integration,
 			$this->tools_settings_integration,
 			$this->custom_acf_field_types,
 		);

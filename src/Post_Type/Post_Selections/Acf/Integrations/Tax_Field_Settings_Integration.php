@@ -2,10 +2,11 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Acf\Group_Integrations;
+namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations;
 
+use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Acf_Integration;
 use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
-use Org\Wplake\Advanced_Views\Acf\Groups\Tax_Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Tax_Field_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 

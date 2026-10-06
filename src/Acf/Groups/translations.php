@@ -18,6 +18,117 @@ __("Nokia", "acf-views");
 __("HTC", "acf-views");
 __("Xiaomi", "acf-views");
 
+// Git_Repository.php : labels
+
+__("Repository ID", "acf-views");
+__("Access Token", "acf-views");
+__("Repository Name", "acf-views");
+
+// Git_Repository.php : descriptions
+
+__("To retrieve your GitLab repository ID, follow these steps: 1. Open your repository. 2. Look for the 'Project Information' block on the right-hand side. 3. Click on the three dots icon above the block. 4. Click on the 'Copy project ID' item.", "acf-views");
+__("To retrieve your GitLab access token, follow these steps: 1. Open your GitLab profile. 2. In the left menu, click on the 'Access -> Personal Access Tokens' tab. 3. Create a new token with the 'api' scope. 4. Copy the token value. (You can also use Group and Project tokens if you've a paid GitLab account)", "acf-views");
+__("Assign a name to your repository, which will appear as a new tab in the list table.", "acf-views");
+
+// Mount_Point_Settings.php : labels
+
+__("Specific posts", "acf-views");
+__("Post Types", "acf-views");
+__("Mount Point", "acf-views");
+__("Mount Position", "acf-views");
+__("Shortcode Arguments", "acf-views");
+
+// Mount_Point_Settings.php : descriptions
+
+__("Limit the mount point to only specific posts. Leave empty and use the 'Post Types' field to limit to specific post types", "acf-views");
+__("Specific post types, to all items of which the shortcode should be mounted. Leave empty if you want to add to specific items only and use the 'Specific posts' field", "acf-views");
+__("To which unique Word, String or HTML piece to Mount to. Together with the 'Mount Position' controls the placement. If left empty all the content will be used as a mount point", "acf-views");
+__("Where the shortcode should be mounted", "acf-views");
+__("Add arguments to the shortcode, e.g. 'user-with-roles'. Only the Layout/Post Selection 'id' argument is filled by default", "acf-views");
+
+// Mount_Point_Settings.php : choices
+
+__("Before", "acf-views");
+__("After", "acf-views");
+__("Instead (replace)", "acf-views");
+
+// Plugin_Settings.php : labels
+
+__("General", "acf-views");
+__("Development mode", "acf-views");
+__("File system storage", "acf-views");
+__("Live Reload mode: interval (in seconds)", "acf-views");
+__("Live Reload mode: inactive delay (in seconds)", "acf-views");
+__("Optimize Layout and Post Selection admin screen performance", "acf-views");
+__("Disable automatic reports", "acf-views");
+__("Defaults", "acf-views");
+__("Template engine", "acf-views");
+__("Web components type", "acf-views");
+__("Classes generation", "acf-views");
+__("Sass Template (for File System Storage)", "acf-views");
+__("TypeScript Template (for File System Storage)", "acf-views");
+__("Git repositories", "acf-views");
+__("Git Repositories", "acf-views");
+
+// Plugin_Settings.php : descriptions
+
+__("Enable to display quick access links on the front and make error messages more detailed (both for admins only).", "acf-views");
+__("Enable to store Layout and Post Selection data inside the child theme folder (instead of the database). <br> This allows you to edit files using your favourite editor (IDE), and do version control with auto sync. <a target='_blank' href='https://docs.advanced-views.com/features/file-system-storage'>Read more</a> <br> Important: you should use a <a target='_blank' href='https://developer.wordpress.org/themes/advanced-topics/child-themes/'>child theme</a>, otherwise automatic theme updates will erase the data.", "acf-views");
+__("Controls how often the refresh requests are sent when on-page Live Reload Mode is enabled. A smaller number means faster updates, but it also increases server load.", "acf-views");
+__("Controls the period after which Live Reload Mode is paused when no mouse events are registered. A smaller number decreases server load but may increase your waiting time.", "acf-views");
+__("Enable this setting to improve loading speed by disabling third-party scripts on Layout and Post Selection screens. <br> Note: This can significantly reduce load times on plugin-heavy sites. However, with some themes, it may cause layout issues on these admin screens.", "acf-views");
+__("Automatic error and usage reports to developers, enabling faster issue resolution and plugin improvement. <br> The reports do not include any private or sensitive information. <br> Note: In Advanced Views Pro, the license key/domain pair is always sent, regardless of this setting.", "acf-views");
+__("Controls the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>template engine</a> setting for new Layouts and Post Selections.", "acf-views");
+__("Controls the web component setting for new Layouts and Post Selections.", "acf-views");
+__("Controls classes generation in the Default Template for new Layouts and Post Selections.", "acf-views");
+__("When present, this value is used as the default for the 'style.scss' file of Layout and Post Selection, which is useful e.g. when <a target='_blank' href='https://docs.advanced-views.com/features/file-system-storage/advanced-usage'>Tailwind is in use</a>. <br> If skipped, 'style.scss' creation will be omitted.", "acf-views");
+__("When present, this value is used as the default for the 'script.ts' file of Layout and Post Selection. <br> If skipped, 'script.ts' creation will be omitted.", "acf-views");
+__("By saving Layouts and Post Selections in your GitLab repository, you can create your own library and reuse them on other websites. <br> <a target='_blank' href='https://docs.advanced-views.com/features/workflow/cross-installation-components'>Read more</a>", "acf-views");
+
+// Plugin_Settings.php : buttons
+
+__("Add Repository", "acf-views");
+
+// Plugin_Settings.php : choices
+
+__("Classic (no CSS isolation)", "acf-views");
+__("Declarative Shadow DOM (CSS isolated", "acf-views");
+__("JS Shadow DOM (CSS isolated", "acf-views");
+__("None", "acf-views");
+__("BEM style", "acf-views");
+__("None", "acf-views");
+
+// Tools_Settings.php : labels
+
+__("Export", "acf-views");
+__("Export All Layouts", "acf-views");
+__("Export All Post Selections", "acf-views");
+__("Export Layout", "acf-views");
+__("Export Post Selections", "acf-views");
+__("Import", "acf-views");
+__("Select a file to import", "acf-views");
+__("Debugging", "acf-views");
+__("Error logs", "acf-views");
+__("Internal logs", "acf-views");
+__("Generate debug dump", "acf-views");
+__("Include specific Layouts data in your debug dump", "acf-views");
+__("Include specific Post Selections data in your debug dump", "acf-views");
+__("Upgrade from version", "acf-views");
+__("Flush caches", "acf-views");
+
+// Tools_Settings.php : descriptions
+
+__("Select Layouts to be exported", "acf-views");
+__("Select Post Selections to be exported", "acf-views");
+__("Note: Layouts and Post Selections with the same IDs are overridden.", "acf-views");
+__("Contains PHP warnings and errors related to the plugin. The error logs are deleted upon plugin upgrade or deactivation.", "acf-views");
+__("Contains plugin warnings and debug messages if the development mode is enabled in <a target='_blank' href='/wp-admin/edit.php?post_type=acf_views&page=acf-views-settings'>the settings</a>. The logs are deleted upon plugin deactivation.", "acf-views");
+__("Turn this on and click 'Process' to download the file. The above logs and other information about your server environment will be included. <br> Send this to Advanced Views Support on request.", "acf-views");
+__("Select the Layout items related to your issue to include them in the debug dump.", "acf-views");
+__("Select the Post Selection items related to your issue to include them in the debug dump.", "acf-views");
+__("If the automatic version migration was interrupted, enter your previous Advanced Views version number here and press 'Process' to manually trigger the migration.", "acf-views");
+__("Activate the option and click 'Process' to flush caches. Note: use separately from other options.", "acf-views");
+
 // Field_Settings.php : labels
 
 __("Field", "acf-views");
@@ -80,18 +191,6 @@ __("LightGallery v2 (47.1KB js", "acf-views");
 __("Simple (no settings", "acf-views");
 __("None", "acf-views");
 __("Splide v4 (29.8KB js", "acf-views");
-
-// Git_Repository.php : labels
-
-__("Repository ID", "acf-views");
-__("Access Token", "acf-views");
-__("Repository Name", "acf-views");
-
-// Git_Repository.php : descriptions
-
-__("To retrieve your GitLab repository ID, follow these steps: 1. Open your repository. 2. Look for the 'Project Information' block on the right-hand side. 3. Click on the three dots icon above the block. 4. Click on the 'Copy project ID' item.", "acf-views");
-__("To retrieve your GitLab access token, follow these steps: 1. Open your GitLab profile. 2. In the left menu, click on the 'Access -> Personal Access Tokens' tab. 3. Create a new token with the 'api' scope. 4. Copy the token value. (You can also use Group and Project tokens if you've a paid GitLab account)", "acf-views");
-__("Assign a name to your repository, which will appear as a new tab in the list table.", "acf-views");
 
 // Item_Settings.php : labels
 
@@ -186,6 +285,15 @@ __("None", "acf-views");
 __("BEM style", "acf-views");
 __("None", "acf-views");
 
+// Repeater_Field_Settings.php : labels
+
+__("Field", "acf-views");
+__("Sub Field", "acf-views");
+
+// Repeater_Field_Settings.php : descriptions
+
+__("This list contains fields for the selected repeater or group. <a target='_blank' href='https://www.advancedcustomfields.com/resources/repeater/'>Learn more about Repeater Fields</a>", "acf-views");
+
 // Meta_Field_Settings.php : labels
 
 __("Group", "acf-views");
@@ -264,74 +372,6 @@ __("Add Field", "acf-views");
 
 __("Match ALL", "acf-views");
 __("Match ANY", "acf-views");
-
-// Mount_Point_Settings.php : labels
-
-__("Specific posts", "acf-views");
-__("Post Types", "acf-views");
-__("Mount Point", "acf-views");
-__("Mount Position", "acf-views");
-__("Shortcode Arguments", "acf-views");
-
-// Mount_Point_Settings.php : descriptions
-
-__("Limit the mount point to only specific posts. Leave empty and use the 'Post Types' field to limit to specific post types", "acf-views");
-__("Specific post types, to all items of which the shortcode should be mounted. Leave empty if you want to add to specific items only and use the 'Specific posts' field", "acf-views");
-__("To which unique Word, String or HTML piece to Mount to. Together with the 'Mount Position' controls the placement. If left empty all the content will be used as a mount point", "acf-views");
-__("Where the shortcode should be mounted", "acf-views");
-__("Add arguments to the shortcode, e.g. 'user-with-roles'. Only the Layout/Post Selection 'id' argument is filled by default", "acf-views");
-
-// Mount_Point_Settings.php : choices
-
-__("Before", "acf-views");
-__("After", "acf-views");
-__("Instead (replace)", "acf-views");
-
-// Plugin_Settings.php : labels
-
-__("General", "acf-views");
-__("Development mode", "acf-views");
-__("File system storage", "acf-views");
-__("Live Reload mode: interval (in seconds)", "acf-views");
-__("Live Reload mode: inactive delay (in seconds)", "acf-views");
-__("Optimize Layout and Post Selection admin screen performance", "acf-views");
-__("Disable automatic reports", "acf-views");
-__("Defaults", "acf-views");
-__("Template engine", "acf-views");
-__("Web components type", "acf-views");
-__("Classes generation", "acf-views");
-__("Sass Template (for File System Storage)", "acf-views");
-__("TypeScript Template (for File System Storage)", "acf-views");
-__("Git repositories", "acf-views");
-__("Git Repositories", "acf-views");
-
-// Plugin_Settings.php : descriptions
-
-__("Enable to display quick access links on the front and make error messages more detailed (both for admins only).", "acf-views");
-__("Enable to store Layout and Post Selection data inside the child theme folder (instead of the database). <br> This allows you to edit files using your favourite editor (IDE), and do version control with auto sync. <a target='_blank' href='https://docs.advanced-views.com/features/file-system-storage'>Read more</a> <br> Important: you should use a <a target='_blank' href='https://developer.wordpress.org/themes/advanced-topics/child-themes/'>child theme</a>, otherwise automatic theme updates will erase the data.", "acf-views");
-__("Controls how often the refresh requests are sent when on-page Live Reload Mode is enabled. A smaller number means faster updates, but it also increases server load.", "acf-views");
-__("Controls the period after which Live Reload Mode is paused when no mouse events are registered. A smaller number decreases server load but may increase your waiting time.", "acf-views");
-__("Enable this setting to improve loading speed by disabling third-party scripts on Layout and Post Selection screens. <br> Note: This can significantly reduce load times on plugin-heavy sites. However, with some themes, it may cause layout issues on these admin screens.", "acf-views");
-__("Automatic error and usage reports to developers, enabling faster issue resolution and plugin improvement. <br> The reports do not include any private or sensitive information. <br> Note: In Advanced Views Pro, the license key/domain pair is always sent, regardless of this setting.", "acf-views");
-__("Controls the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>template engine</a> setting for new Layouts and Post Selections.", "acf-views");
-__("Controls the web component setting for new Layouts and Post Selections.", "acf-views");
-__("Controls classes generation in the Default Template for new Layouts and Post Selections.", "acf-views");
-__("When present, this value is used as the default for the 'style.scss' file of Layout and Post Selection, which is useful e.g. when <a target='_blank' href='https://docs.advanced-views.com/features/file-system-storage/advanced-usage'>Tailwind is in use</a>. <br> If skipped, 'style.scss' creation will be omitted.", "acf-views");
-__("When present, this value is used as the default for the 'script.ts' file of Layout and Post Selection. <br> If skipped, 'script.ts' creation will be omitted.", "acf-views");
-__("By saving Layouts and Post Selections in your GitLab repository, you can create your own library and reuse them on other websites. <br> <a target='_blank' href='https://docs.advanced-views.com/features/workflow/cross-installation-components'>Read more</a>", "acf-views");
-
-// Plugin_Settings.php : buttons
-
-__("Add Repository", "acf-views");
-
-// Plugin_Settings.php : choices
-
-__("Classic (no CSS isolation)", "acf-views");
-__("Declarative Shadow DOM (CSS isolated", "acf-views");
-__("JS Shadow DOM (CSS isolated", "acf-views");
-__("None", "acf-views");
-__("BEM style", "acf-views");
-__("None", "acf-views");
 
 // Post_Selection_Layout_Settings.php : labels
 
@@ -482,15 +522,6 @@ __("None", "acf-views");
 __("BEM style", "acf-views");
 __("None", "acf-views");
 
-// Repeater_Field_Settings.php : labels
-
-__("Field", "acf-views");
-__("Sub Field", "acf-views");
-
-// Repeater_Field_Settings.php : descriptions
-
-__("This list contains fields for the selected repeater or group. <a target='_blank' href='https://www.advancedcustomfields.com/resources/repeater/'>Learn more about Repeater Fields</a>", "acf-views");
-
 // Tax_Field_Settings.php : labels
 
 __("Taxonomy", "acf-views");
@@ -557,34 +588,3 @@ __("Add Taxonomy", "acf-views");
 
 __("Match ALL", "acf-views");
 __("Match ANY", "acf-views");
-
-// Tools_Settings.php : labels
-
-__("Export", "acf-views");
-__("Export All Layouts", "acf-views");
-__("Export All Post Selections", "acf-views");
-__("Export Layout", "acf-views");
-__("Export Post Selections", "acf-views");
-__("Import", "acf-views");
-__("Select a file to import", "acf-views");
-__("Debugging", "acf-views");
-__("Error logs", "acf-views");
-__("Internal logs", "acf-views");
-__("Generate debug dump", "acf-views");
-__("Include specific Layouts data in your debug dump", "acf-views");
-__("Include specific Post Selections data in your debug dump", "acf-views");
-__("Upgrade from version", "acf-views");
-__("Flush caches", "acf-views");
-
-// Tools_Settings.php : descriptions
-
-__("Select Layouts to be exported", "acf-views");
-__("Select Post Selections to be exported", "acf-views");
-__("Note: Layouts and Post Selections with the same IDs are overridden.", "acf-views");
-__("Contains PHP warnings and errors related to the plugin. The error logs are deleted upon plugin upgrade or deactivation.", "acf-views");
-__("Contains plugin warnings and debug messages if the development mode is enabled in <a target='_blank' href='/wp-admin/edit.php?post_type=acf_views&page=acf-views-settings'>the settings</a>. The logs are deleted upon plugin deactivation.", "acf-views");
-__("Turn this on and click 'Process' to download the file. The above logs and other information about your server environment will be included. <br> Send this to Advanced Views Support on request.", "acf-views");
-__("Select the Layout items related to your issue to include them in the debug dump.", "acf-views");
-__("Select the Post Selection items related to your issue to include them in the debug dump.", "acf-views");
-__("If the automatic version migration was interrupted, enter your previous Advanced Views version number here and press 'Process' to manually trigger the migration.", "acf-views");
-__("Activate the option and click 'Process' to flush caches. Note: use separately from other options.", "acf-views");

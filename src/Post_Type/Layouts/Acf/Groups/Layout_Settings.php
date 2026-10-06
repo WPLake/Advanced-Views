@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Acf\Groups;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -52,7 +52,7 @@ class Layout_Settings extends Cpt_Settings {
 	public bool $fields_tab;
 
 	/**
-	 * @item \Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings
+	 * @item \Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings
 	 * @var Item_Settings[]
 	 * @label Assign Fields
 	 * @instructions Assign fields to your Layout. <br> Tip: hover mouse on the field number column and drag to reorder.

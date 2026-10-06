@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Acf\Groups;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;

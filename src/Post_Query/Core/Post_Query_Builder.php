@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Query\Core;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 
 interface Post_Query_Builder {
 	/**

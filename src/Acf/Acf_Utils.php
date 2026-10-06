@@ -6,10 +6,29 @@ namespace Org\Wplake\Advanced_Views\Acf;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
+use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Loader;
 
 defined( 'ABSPATH' ) || exit;
 
 final class Acf_Utils {
+	/**
+	 * @param array<string,string> $namespace_to_path groups namespace => directory path
+	 */
+	public static function load_groups( array $namespace_to_path ): void {
+		add_action(
+			'acf/init',
+			function () use ( $namespace_to_path ): void {
+				$loader = new Loader();
+
+				foreach ( $namespace_to_path as $namespace => $path ) {
+					$loader->signUpGroups( $namespace, $path );
+				}
+			},
+			// make sure it's after translations.
+			9
+		);
+	}
+
 	/**
 	 * @param callable(array<string,mixed> $field): array<string,mixed> $get_overrides getter of the field args to merge
 	 */

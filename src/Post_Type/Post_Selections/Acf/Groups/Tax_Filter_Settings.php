@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Acf\Groups;
+namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 
@@ -25,7 +25,7 @@ class Tax_Filter_Settings extends Group {
 	public string $relation;
 	/**
 	 * @var Tax_Rule_Settings[]
-	 * @item \Org\Wplake\Advanced_Views\Acf\Groups\Tax_Rule_Settings
+	 * @item \Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Tax_Rule_Settings
 	 * @label Taxonomy Filters
 	 * @instructions Rules for the taxonomy query. Multiple rules are supported. <a target='_blank' href='https://docs.advanced-views.com/post-selections/filters/taxonomy-filters'>Read more</a> <br> If you want to see the query that was created by your input, update the Post Selection and reload the page. After have a look at the 'Query Preview' field in the 'Query' tab
 	 * @button_label Add Rule

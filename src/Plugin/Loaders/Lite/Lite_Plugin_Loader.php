@@ -9,20 +9,13 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
 use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Field_Settings_Integration;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Item_Settings_Integration;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Layout_Settings_Integration;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Meta_Field_Settings_Integration;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Mount_Point_Settings_Integration;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Post_Selection_Settings_Integration;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tax_Field_Settings_Integration;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tools_Settings_Integration;
 use Org\Wplake\Advanced_Views\Acf\Groups\Git_Repository;
-use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Plugin_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Tools_Settings;
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
@@ -203,59 +196,19 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	/**
 	 * @return Hookable[]
 	 */
-	protected function post_selections(): array {
+	protected function post_selections( Route_Detector $route_detector ): array {
 		$this->selections_loader = new Lite_Post_Selections_Loader( $this );
 
-		return parent::post_selections();
+		return parent::post_selections( $route_detector );
 	}
 
 	/**
 	 * @return Hookable[]
 	 */
 	protected function integration( Route_Detector $route_detector ): array {
-		$layout_cpt    = $this->resolve( Layouts_Cpt::class );
-		$selection_cpt = $this->resolve( Selections_Cpt::class );
-
-		$this->acf_dependency = $this->resolve( Acf_Dependency::class );
-
-		$this->layout_settings_integration         = new Layout_Settings_Integration(
-			$layout_cpt->cpt_name(),
-			$this->provider_cluster,
-			$this->engines_storage
-		);
-		$this->field_settings_integration          = new Field_Settings_Integration(
-			$this->provider_cluster,
-			$layout_cpt
-		);
-		$this->post_selection_settings_integration = new Post_Selection_Settings_Integration(
-			$selection_cpt->cpt_name(),
-			$this->provider_cluster,
-			$layout_cpt,
-			$this->engines_storage
-		);
-		$this->item_settings_integration           = new Item_Settings_Integration(
-			$layout_cpt->cpt_name(),
-			$this->provider_cluster
-		);
-		// metaField is a part of the Meta Filter, so we use 'cardsCpt' here.
-		$this->meta_field_settings_integration        = new Meta_Field_Settings_Integration(
-			$selection_cpt->cpt_name(),
-			$this->provider_cluster,
-			$this->plugin
-		);
-		$this->layout_mount_point_integration         = new Mount_Point_Settings_Integration(
-			$layout_cpt->cpt_name()
-		);
-		$this->post_selection_mount_point_integration = new Mount_Point_Settings_Integration(
-			$selection_cpt->cpt_name()
-		);
-		$this->tax_field_settings_integration         = new Tax_Field_Settings_Integration(
-			$selection_cpt->cpt_name(),
-			$this->provider_cluster,
-			$this->plugin
-		);
-		$this->tools_settings_integration             = $this->resolve( Tools_Settings_Integration::class );
-		$this->custom_acf_field_types                 = $this->resolve( Custom_Acf_Field_Types::class );
+		$this->acf_dependency             = $this->resolve( Acf_Dependency::class );
+		$this->tools_settings_integration = $this->resolve( Tools_Settings_Integration::class );
+		$this->custom_acf_field_types     = $this->resolve( Custom_Acf_Field_Types::class );
 
 		return parent::integration( $route_detector );
 	}

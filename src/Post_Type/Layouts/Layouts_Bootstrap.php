@@ -6,7 +6,12 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
+use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Mount_Point_Settings_Integration;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Field_Settings_Integration;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Item_Settings_Integration;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Layout_Settings_Integration;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
@@ -62,6 +67,8 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		$layouts_settings_storage = $this->resolve( Layout_Settings_Storage::class );
 		$layout_cpt               = $this->resolve( Layouts_Cpt::class );
 
+		$this->load_acf_groups( $route_detector, $layout_cpt );
+
 		// instances are registered in the container right after creation (for types it can't autowire),
 		// as they're used by the next ones and by other modules.
 		$factory = $this->make_factory();
@@ -111,33 +118,64 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 
 		$interactive_fields = $this->resolve( Layout_Interactive_Fields::class );
 
-		return array(
-			$meta_boxes,
-			new Layouts_Cpt_Hookable( $layout_cpt, $layouts_settings_storage ),
-			$cpt_table,
-			$fs_only_tab,
-			$bulk_validation_tab,
-			$pre_built_tab,
-			new Cpt_Gutenberg_Editor_Settings( $layout_cpt->cpt_name() ),
-			new Cpt_Assets_Reducer(
-				$this->resolve( Settings_Storage::class ),
-				$this->resolve( Plugin::class ),
-				$layout_cpt->cpt_name()
-			),
-			$save_actions,
-			$shortcode,
-			$shortcode_block,
-			$item_picker,
-			$block,
-			$git_box,
-			$git_tabs,
-			$interactive_fields,
+		return array_merge(
+			$this->make_acf_integrations( $layout_cpt ),
+			array(
+				$meta_boxes,
+				new Layouts_Cpt_Hookable( $layout_cpt, $layouts_settings_storage ),
+				$cpt_table,
+				$fs_only_tab,
+				$bulk_validation_tab,
+				$pre_built_tab,
+				new Cpt_Gutenberg_Editor_Settings( $layout_cpt->cpt_name() ),
+				new Cpt_Assets_Reducer(
+					$this->resolve( Settings_Storage::class ),
+					$this->resolve( Plugin::class ),
+					$layout_cpt->cpt_name()
+				),
+				$save_actions,
+				$shortcode,
+				$shortcode_block,
+				$item_picker,
+				$block,
+				$git_box,
+				$git_tabs,
+				$interactive_fields,
+			)
 		);
 	}
 
 	public function get_plugin_extensions(): array {
 		return array(
 			'elementor/loaded' => fn(): array => $this->create_elementor_hookables(),
+		);
+	}
+
+	protected function load_acf_groups( Route_Detector $route_detector, Layouts_Cpt $layout_cpt ): void {
+		if ( wp_doing_ajax() || $route_detector->is_cpt_admin_route( $layout_cpt->cpt_name() ) ) {
+			Acf_Utils::load_groups(
+				array(
+					'Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups' => $this->resolve( Plugin::class )->get_plugin_path( 'src/Post_Type/Layouts/Acf/Groups' ),
+				)
+			);
+		}
+	}
+
+	/**
+	 * @return Hookable[]
+	 */
+	protected function make_acf_integrations( Layouts_Cpt $layout_cpt ): array {
+		$provider_cluster = $this->resolve( Field_Provider_Cluster::class );
+
+		return array(
+			new Layout_Settings_Integration(
+				$layout_cpt->cpt_name(),
+				$provider_cluster,
+				$this->resolve( Engines_Storage::class )
+			),
+			new Field_Settings_Integration( $provider_cluster, $layout_cpt ),
+			new Item_Settings_Integration( $layout_cpt->cpt_name(), $provider_cluster ),
+			new Mount_Point_Settings_Integration( $layout_cpt->cpt_name() ),
 		);
 	}
 

@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Acf\Groups;
+namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 
@@ -25,7 +25,7 @@ class Meta_Filter_Settings extends Group {
 	public string $relation;
 	/**
 	 * @var Meta_Rule_Settings[]
-	 * @item \Org\Wplake\Advanced_Views\Acf\Groups\Meta_Rule_Settings
+	 * @item \Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Meta_Rule_Settings
 	 * @label Meta Filters
 	 * @instructions Rules for the meta query. Multiple rules are supported. <a target='_blank' href='https://docs.advanced-views.com/post-selections/filters/meta-filters'>Read more</a> <br>If you want to see the query that was created by your input, update the Post Selection and reload the page. After have a look at the 'Query Preview' field in the 'Advanced' tab
 	 * @button_label Add Rule
