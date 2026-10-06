@@ -4,7 +4,6 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Utils;
 
-use Org\Wplake\Advanced_Views\Vendors\Psr\Container\ContainerInterface;
 use Throwable;
 
 defined( 'ABSPATH' ) || exit;
@@ -53,25 +52,6 @@ function swap_instances( array $origin, array $replacements ): array {
 	}
 
 	return $swapped;
-}
-
-/**
- * @template Instance of object
- *
- * @param array<array-key, class-string<Instance>|Instance> $items
- * @param ContainerInterface $container
- *
- * @return Instance[]
- */
-function resolve_instances( array $items, ContainerInterface $container ): array {
-	return array_values(
-		array_map(
-			fn( $item ) => is_string( $item ) ?
-				$container->get( $item ) :
-				$item,
-			$items
-		)
-	);
 }
 
 // int-safe str_repeat - as native throws an error if $count is negative.

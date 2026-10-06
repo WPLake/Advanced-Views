@@ -27,7 +27,6 @@ use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_9
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
-use function Org\Wplake\Advanced_Views\Utils\resolve_instances;
 
 class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 	/**
@@ -56,14 +55,14 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 	}
 
 	public function register_migrations(): Version_Migrator {
-		$migrations          = array_merge(
-			$this->v1_migrations(),
-			$this->v2_migrations(),
-			$this->v3_migrations()
-		);
-		$migration_instances = resolve_instances(
-			$migrations,
-			$this->container
+		$v1_migrations = $this->v1_migrations();
+		$v2_migrations = $this->v2_migrations();
+		$v3_migrations = $this->v3_migrations();
+
+		$migrations          = array_merge( $v1_migrations, $v2_migrations, $v3_migrations );
+		$migration_instances = array_map(
+			fn( string $class_name ): Version_Migration => $this->resolve( $class_name ),
+			$migrations
 		);
 
 		$migrator = $this->resolve( Version_Migrator::class );
@@ -83,7 +82,7 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 	}
 
 	/**
-	 * @return array<array-key, class-string<Version_Migration>|Version_Migration>
+	 * @return array<array-key, class-string<Version_Migration>>
 	 */
 	protected function v2_migrations(): array {
 		return array(
@@ -100,7 +99,7 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 	}
 
 	/**
-	 * @return array<array-key, class-string<Version_Migration>|Version_Migration>
+	 * @return array<array-key, class-string<Version_Migration>>
 	 */
 	protected function v3_migrations(): array {
 		return array(

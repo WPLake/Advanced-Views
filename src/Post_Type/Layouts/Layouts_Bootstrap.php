@@ -49,6 +49,18 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 	}
 
 	/**
+	 * Generic (not layout-specific) hookables, created directly as the container can't host them per module
+	 *
+	 * @return Hookable[]
+	 */
+	protected function get_instances(): array {
+		return array(
+			$this->create_editor_settings(),
+			$this->create_assets_reducer(),
+		);
+	}
+
+	/**
 	 * @return array<class-string, callable>
 	 */
 	protected function get_wire_resolves(): array {
@@ -70,18 +82,6 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 			Layout_Shortcode::class,
 			Layout_Git_Box::class,
 			Layout_Interactive_Fields::class,
-		);
-	}
-
-	/**
-	 * Generic (not layout-specific) hookables, created directly as the container can't host them per module
-	 *
-	 * @return Hookable[]
-	 */
-	protected function get_instances(): array {
-		return array(
-			$this->create_editor_settings(),
-			$this->create_assets_reducer(),
 		);
 	}
 

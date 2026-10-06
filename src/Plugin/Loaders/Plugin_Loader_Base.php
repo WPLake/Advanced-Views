@@ -45,6 +45,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Layout_Acf_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Integrations_Bootstrap;
@@ -61,7 +62,6 @@ use Org\Wplake\Advanced_Views\Vendors\DI\Container;
 use Org\Wplake\Advanced_Views\Vendors\DI\ContainerBuilder;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 use function Org\Wplake\Advanced_Views\Utils\flat_map;
-use function Org\Wplake\Advanced_Views\Utils\resolve_instances;
 
 abstract class Plugin_Loader_Base extends Module_Loader {
 	public Plugin $plugin;
@@ -142,11 +142,15 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$primary    = $this->primary();
 		$acf_groups = $this->acf_groups( $route_detector );
 		// layouts instances are used by the next modules, so bootstraps go first.
-		$bootstraps     = resolve_instances( $this->get_bootstraps(), $this->container );
-		$modules        = $this->load_bootstraps( $bootstraps, $route_detector );
-		$post_selection = $this->post_selections( $route_detector );
-		$integration    = $this->integration( $route_detector );
-		$others         = $this->others();
+		$bootstrap_classes = $this->get_bootstraps();
+		$bootstraps        = array_map(
+			fn( string $class_name ): Module_Bootstrap => $this->resolve( $class_name ),
+			$bootstrap_classes
+		);
+		$modules           = $this->load_bootstraps( $bootstraps, $route_detector );
+		$post_selection    = $this->post_selections( $route_detector );
+		$integration       = $this->integration( $route_detector );
+		$others            = $this->others();
 		$this->bridge();
 		$environment = $this->environment();
 
@@ -354,14 +358,18 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return array<array-key, class-string<Module_Bootstrap>|Module_Bootstrap>
+	 * @return array<array-key, class-string<Module_Bootstrap>>
 	 */
 	protected function get_bootstraps(): array {
 		return array(
+			// layouts
 			Layouts_Bootstrap::class,
 			Layout_Acf_Bootstrap::class,
 			Layout_Tabs_Bootstrap::class,
 			Layout_Integrations_Bootstrap::class,
+			// post_selections
+			// fixme as layouts per Post Selections
+			// fixme other domain bootstraps.
 			Version_Migrations_Bootstrap::class,
 		);
 	}
