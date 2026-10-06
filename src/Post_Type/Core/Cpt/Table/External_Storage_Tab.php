@@ -6,9 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
@@ -43,6 +41,10 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 
 	abstract protected function get_cpt_data( string $unique_id ): Cpt_Settings;
 
+	abstract protected function is_layout_item( Cpt_Settings $cpt_settings ): bool;
+
+	abstract protected function get_title_field_name(): string;
+
 	/**
 	 * @param array<string,string> $field_values
 	 */
@@ -72,10 +74,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		// 1. get item, maybe it's already exists (then we'll override it)
 		$cpt_data = $this->cpt_settings_storage->get( $unique_id );
 
-		$title = string( $data_json, Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_TITLE ) );
-		$title = 0 === strlen( $title ) ?
-			string( $data_json, Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_TITLE ) ) :
-			$title;
+		$title = string( $data_json, $this->get_title_field_name() );
 
 		// 2. insert if missing
 		$cpt_data = false === $cpt_data->isLoaded() ?
@@ -156,7 +155,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			// while in this class we have only the single one.
 			$cpt_data = $this->get_cpt_data( $unique_id );
 
-			if ( ( $cpt_data instanceof Layout_Settings ) ) {
+			if ( $this->is_layout_item( $cpt_data ) ) {
 				++$views_count;
 			} else {
 				++$cards_count;
@@ -206,7 +205,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 				// while in this class we have only the single one.
 				$cpt_data = $this->get_cpt_data( $unique_id );
 
-				if ( false === ( $cpt_data instanceof Layout_Settings ) ) {
+				if ( false === $this->is_layout_item( $cpt_data ) ) {
 					continue;
 				}
 
@@ -243,7 +242,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 				// while in this class we have only the single one.
 				$cpt_data = $this->get_cpt_data( $unique_id );
 
-				if ( false === ( $cpt_data instanceof Post_Selection_Settings ) ) {
+				if ( $this->is_layout_item( $cpt_data ) ) {
 					continue;
 				}
 

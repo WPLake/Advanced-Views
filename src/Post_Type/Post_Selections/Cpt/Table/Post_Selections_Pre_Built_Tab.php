@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Table;
 
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
@@ -60,5 +61,13 @@ class Post_Selections_Pre_Built_Tab extends Pre_Built_Tab {
 			'View for Card along with responsive CSS rules are included.',
 			'acf-views'
 		);
+	}
+
+	protected function is_layout_item( Cpt_Settings $cpt_settings ): bool {
+		return $cpt_settings instanceof Layout_Settings;
+	}
+
+	protected function get_title_field_name(): string {
+		return Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_TITLE );
 	}
 }

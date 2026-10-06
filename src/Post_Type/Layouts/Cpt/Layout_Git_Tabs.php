@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
@@ -64,5 +65,17 @@ class Layout_Git_Tabs extends Git_Tabs {
 			$repository_access_token,
 			$related_view_unique_ids
 		);
+	}
+
+	protected function get_unique_id_prefix(): string {
+		return Layout_Settings::UNIQUE_ID_PREFIX;
+	}
+
+	protected function is_layout_item( Cpt_Settings $cpt_settings ): bool {
+		return true;
+	}
+
+	protected function get_title_field_name(): string {
+		return Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_TITLE );
 	}
 }

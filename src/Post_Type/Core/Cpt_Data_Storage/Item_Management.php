@@ -4,12 +4,9 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
@@ -47,6 +44,10 @@ abstract class Item_Management extends Loggable_Actor {
 		?int $author_id = null,
 		?string $unique_id = null
 	): ?Cpt_Settings;
+
+	abstract protected function get_unique_id_field_name(): string;
+
+	abstract protected function get_title_field_name(): string;
 
 	protected function load(
 		Cpt_Settings $cpt_settings,
@@ -133,12 +134,8 @@ abstract class Item_Management extends Loggable_Actor {
 		// save the minimum data
 		// (otherwise next '->get()' call won't load the unique id for the CptData).
 
-		$unique_id_field_name = Hard_Layout_Cpt::cpt_name() === $this->db_management->get_post_type() ?
-			Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_UNIQUE_ID ) :
-			Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_UNIQUE_ID );
-		$title_field_name     = Hard_Layout_Cpt::cpt_name() === $this->db_management->get_post_type() ?
-			Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_TITLE ) :
-			Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_TITLE );
+		$unique_id_field_name = $this->get_unique_id_field_name();
+		$title_field_name     = $this->get_title_field_name();
 
 		$json = wp_json_encode(
 			array(
@@ -191,11 +188,7 @@ abstract class Item_Management extends Loggable_Actor {
 
 		// B) short unique id.
 		if ( 13 === strlen( $id ) ) {
-			$id_prefix = Hard_Layout_Cpt::cpt_name() === $post_type ?
-				Layout_Settings::UNIQUE_ID_PREFIX :
-				Post_Selection_Settings::UNIQUE_ID_PREFIX;
-
-			$unique_id = $id_prefix . $id;
+			$unique_id = $this->db_management->get_unique_id_prefix() . $id;
 
 			return key_exists( $unique_id, $post_ids ) ?
 				$unique_id :

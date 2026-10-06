@@ -77,4 +77,12 @@ class Selection_Settings_Storage extends Cpt_Settings_Storage {
 			$this->get( $unique_id ) :
 			null;
 	}
+
+	protected function get_unique_id_field_name(): string {
+		return Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_UNIQUE_ID );
+	}
+
+	protected function get_title_field_name(): string {
+		return Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_TITLE );
+	}
 }

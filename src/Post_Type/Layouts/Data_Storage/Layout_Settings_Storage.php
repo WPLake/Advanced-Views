@@ -171,4 +171,12 @@ class Layout_Settings_Storage extends Cpt_Settings_Storage {
 
 		return $views;
 	}
+
+	protected function get_unique_id_field_name(): string {
+		return Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_UNIQUE_ID );
+	}
+
+	protected function get_title_field_name(): string {
+		return Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_TITLE );
+	}
 }

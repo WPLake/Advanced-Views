@@ -4,15 +4,12 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
@@ -54,6 +51,8 @@ abstract class Cpt_Table extends Hookable_Base implements Hookable {
 		$this->current_search_value = null;
 		$this->pagination_per_page  = null;
 	}
+
+	abstract protected function get_unique_id_prefix(): string;
 
 	abstract protected function print_column( string $short_column_name, Cpt_Settings $cpt_settings ): void;
 
@@ -247,7 +246,7 @@ abstract class Cpt_Table extends Hookable_Base implements Hookable {
 		$post_type = $wp_query->query_vars['post_type'] ?? '';
 
 		if ( ! is_admin() ||
-			! in_array( $post_type, array( Hard_Layout_Cpt::cpt_name(), Hard_Post_Selection_Cpt::cpt_name() ), true ) ||
+			$this->get_cpt_name() !== $post_type ||
 			! $wp_query->is_main_query() ||
 			! $wp_query->is_search() ) {
 			return;
@@ -260,12 +259,8 @@ abstract class Cpt_Table extends Hookable_Base implements Hookable {
 			return;
 		}
 
-		$prefix = Hard_Layout_Cpt::cpt_name() === $post_type ?
-			Layout_Settings::UNIQUE_ID_PREFIX :
-			Post_Selection_Settings::UNIQUE_ID_PREFIX;
-
 		$wp_query->set( 's', '' );
-		$wp_query->set( 'name', $prefix . $search );
+		$wp_query->set( 'name', $this->get_unique_id_prefix() . $search );
 	}
 
 	public function make_table_actions(): void {

@@ -149,4 +149,8 @@ class Post_Selections_Table extends Cpt_Table {
 			array( $this, 'get_sortable_columns' )
 		);
 	}
+
+	protected function get_unique_id_prefix(): string {
+		return Post_Selection_Settings::UNIQUE_ID_PREFIX;
+	}
 }

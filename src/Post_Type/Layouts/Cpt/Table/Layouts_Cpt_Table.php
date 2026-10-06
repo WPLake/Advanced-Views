@@ -163,4 +163,8 @@ class Layouts_Cpt_Table extends Cpt_Table {
 			},
 		);
 	}
+
+	protected function get_unique_id_prefix(): string {
+		return Layout_Settings::UNIQUE_ID_PREFIX;
+	}
 }

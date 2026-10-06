@@ -6,13 +6,10 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
@@ -67,6 +64,8 @@ abstract class Git_Tabs extends External_Storage_Tab {
 		$this->provider_cluster   = $provider_cluster;
 	}
 
+	abstract protected function get_unique_id_prefix(): string;
+
 	abstract protected function import_related_cpt_data_items(
 		string $repository_id,
 		string $repository_access_token,
@@ -108,12 +107,6 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			esc_html__( 'here', 'acf-views' )
 		);
 		echo esc_html__( 'to clear the cache.', 'acf-views' );
-	}
-
-	protected function get_unique_id_prefix(): string {
-		return Hard_Layout_Cpt::cpt_name() === $this->get_cpt_name() ?
-			Layout_Settings::UNIQUE_ID_PREFIX :
-			Post_Selection_Settings::UNIQUE_ID_PREFIX;
 	}
 
 	/**

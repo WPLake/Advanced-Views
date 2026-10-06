@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
@@ -83,5 +84,13 @@ class Layouts_Pre_Built_Tab extends Pre_Built_Tab {
 			'Meta Fields and their Field Groups along with responsive CSS rules are included.',
 			'acf-views'
 		);
+	}
+
+	protected function is_layout_item( Cpt_Settings $cpt_settings ): bool {
+		return true;
+	}
+
+	protected function get_title_field_name(): string {
+		return Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_TITLE );
 	}
 }
