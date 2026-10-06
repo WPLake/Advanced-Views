@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Query\Entity;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Query_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Query_Utils;
@@ -18,20 +18,20 @@ final class Order_Query_Builder implements Post_Query_Builder {
 		$this->provider_cluster = $provider_cluster;
 	}
 
-	public function build_post_query( Post_Selection_Settings $selection_settings ): array {
+	public function build_post_query( Query_Settings $selection_settings ): array {
 		$meta_order_keys = array( 'meta_value', 'meta_value_num' );
 
 		$arguments = array(
 			'order'    => array(
-				'value' => $selection_settings->order,
+				'value' => $selection_settings->get_order(),
 			),
 			'orderby'  => array(
-				'condition' => 'none' !== $selection_settings->order_by,
-				'value'     => $selection_settings->order_by,
+				'condition' => 'none' !== $selection_settings->get_order_by(),
+				'value'     => $selection_settings->get_order_by(),
 			),
 			// @phpcs:ignore
 			'meta_key'     => array(
-				'condition' => in_array( $selection_settings->order_by, $meta_order_keys, true ),
+				'condition' => in_array( $selection_settings->get_order_by(), $meta_order_keys, true ),
 				'value'     => fn() => $this->get_order_by_meta_key( $selection_settings ),
 			),
 		);
@@ -39,7 +39,7 @@ final class Order_Query_Builder implements Post_Query_Builder {
 		return Query_Utils::filter_arguments( $arguments );
 	}
 
-	protected function get_order_by_meta_key( Post_Selection_Settings $selection ): ?string {
+	protected function get_order_by_meta_key( Query_Settings $selection ): ?string {
 		$field_meta = $this->provider_cluster->get_field_meta(
 			$selection->get_order_by_meta_field_source(),
 			$selection->get_order_by_meta_acf_field_id()

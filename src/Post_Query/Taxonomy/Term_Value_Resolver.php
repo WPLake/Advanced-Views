@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Query\Taxonomy;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Tax_Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Term_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Context_Container_Base;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context_Container;
@@ -25,13 +25,13 @@ class Term_Value_Resolver implements Query_Context_Container {
 	/**
 	 * @return mixed[]
 	 */
-	public function resolve_term_value( Tax_Field_Settings $term ): array {
+	public function resolve_term_value( Term_Settings $term ): array {
 		// dynamicTerm is actually a Pro option, but we support them all
 		// - as backward compatibility with existing Lite setups.
 		if ( $term->is_dynamic_term() ) {
 			$resolvers = $this->get_value_resolvers( $term );
 
-			$resolver = $resolvers[ $term->dynamic_term ] ?? null;
+			$resolver = $resolvers[ $term->get_dynamic_term() ] ?? null;
 
 			return is_callable( $resolver ) ?
 				$resolver() :
@@ -46,7 +46,7 @@ class Term_Value_Resolver implements Query_Context_Container {
 	/**
 	 * @return array<string, callable(): mixed[]>
 	 */
-	protected function get_value_resolvers( Tax_Field_Settings $term ): array {
+	protected function get_value_resolvers( Term_Settings $term ): array {
 		return array(
 			'$current$'         => fn() => array( self::resolve_current_term_id() ),
 			'$meta$'            => fn() => $this->resolve_meta_value( $term ),
@@ -57,7 +57,7 @@ class Term_Value_Resolver implements Query_Context_Container {
 	/**
 	 * @return mixed[]
 	 */
-	protected function resolve_meta_value( Tax_Field_Settings $term ): array {
+	protected function resolve_meta_value( Term_Settings $term ): array {
 		$vendor_name = $term->get_vendor_name();
 		$field_id    = $term->get_field_id();
 		$field_data  = $this->provider_cluster->get_field_meta( $vendor_name, $field_id );
@@ -75,9 +75,9 @@ class Term_Value_Resolver implements Query_Context_Container {
 	/**
 	 * @return mixed[]
 	 */
-	protected function resolve_custom_value( Tax_Field_Settings $term ): array {
+	protected function resolve_custom_value( Term_Settings $term ): array {
 		$custom_arguments = $this->get_context()->get_custom_arguments();
-		$value            = any( $custom_arguments, $term->custom_argument_name );
+		$value            = any( $custom_arguments, $term->get_custom_argument_name() );
 
 		if ( is_numeric( $value ) ) {
 			$term_id = int( $value );

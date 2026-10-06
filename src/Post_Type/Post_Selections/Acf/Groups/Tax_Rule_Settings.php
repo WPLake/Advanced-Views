@@ -5,10 +5,11 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Tax_Rule;
 
 defined( 'ABSPATH' ) || exit;
 
-class Tax_Rule_Settings extends Group {
+class Tax_Rule_Settings extends Group implements Tax_Rule {
 	// to fix the group name in case class name changes.
 	const CUSTOM_GROUP_NAME = self::GROUP_NAME_PREFIX . 'tax-rule';
 
@@ -33,4 +34,15 @@ class Tax_Rule_Settings extends Group {
 	 * @required 1
 	 */
 	public array $taxonomies;
+
+	public function get_relation(): string {
+		return $this->relation;
+	}
+
+	/**
+	 * @return Tax_Field_Settings[]
+	 */
+	public function get_terms(): array {
+		return $this->taxonomies;
+	}
 }

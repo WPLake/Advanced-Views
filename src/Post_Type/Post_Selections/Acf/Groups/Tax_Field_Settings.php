@@ -5,11 +5,12 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Term_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 
 defined( 'ABSPATH' ) || exit;
 
-class Tax_Field_Settings extends Group {
+class Tax_Field_Settings extends Group implements Term_Settings {
 	// to fix the group name in case class name changes.
 	const CUSTOM_GROUP_NAME  = self::GROUP_NAME_PREFIX . 'tax-field';
 	const FIELD_TAXONOMY     = 'taxonomy';
@@ -115,5 +116,21 @@ class Tax_Field_Settings extends Group {
 
 	public function get_field_id(): string {
 		return Field_Settings::get_field_id_by_key( $this->meta_field );
+	}
+
+	public function get_taxonomy(): string {
+		return $this->taxonomy;
+	}
+
+	public function get_comparison(): string {
+		return $this->comparison;
+	}
+
+	public function get_dynamic_term(): string {
+		return $this->dynamic_term;
+	}
+
+	public function get_custom_argument_name(): string {
+		return $this->custom_argument_name;
 	}
 }

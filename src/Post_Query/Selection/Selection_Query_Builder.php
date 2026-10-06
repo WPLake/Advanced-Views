@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Query\Selection;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Query_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Context_Container_Base;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
@@ -48,7 +48,7 @@ class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Conta
 			->add_meta_builder();
 	}
 
-	public function build_post_query( Post_Selection_Settings $selection_settings ): array {
+	public function build_post_query( Query_Settings $selection_settings ): array {
 		return flat_map(
 			$this->query_builders,
 			fn( Post_Query_Builder $query_builder ) =>  $query_builder->build_post_query( $selection_settings )

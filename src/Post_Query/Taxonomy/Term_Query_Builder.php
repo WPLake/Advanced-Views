@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Query\Taxonomy;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Tax_Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Term_Settings;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Query_Utils;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 
@@ -22,18 +22,18 @@ final class Term_Query_Builder {
 	/**
 	 * @return array<string,mixed>
 	 */
-	public function build_term_query( Tax_Field_Settings $term ): array {
-		$is_value_comparison = ! in_array( $term->comparison, self::NO_VALUE_COMPARISONS, true );
+	public function build_term_query( Term_Settings $term ): array {
+		$is_value_comparison = ! in_array( $term->get_comparison(), self::NO_VALUE_COMPARISONS, true );
 		$term_value          = $is_value_comparison ?
 			$this->value_resolver->resolve_term_value( $term ) :
 			null;
 
 		$arguments = array(
 			'taxonomy' => array(
-				'value' => $term->taxonomy,
+				'value' => $term->get_taxonomy(),
 			),
 			'operator' => array(
-				'value' => $term->comparison,
+				'value' => $term->get_comparison(),
 			),
 			'field'    => array(
 				'value' => fn() => $this->get_query_field( $term_value ),

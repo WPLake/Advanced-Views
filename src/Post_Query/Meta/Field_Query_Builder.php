@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Query\Meta;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Meta_Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Meta_Field_Rule;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Query\Meta\Field\List_Query_Builder;
@@ -25,7 +25,7 @@ class Field_Query_Builder {
 	/**
 	 * @return array<string,mixed>
 	 */
-	public function build_field_query( Meta_Field_Settings $field ): array {
+	public function build_field_query( Meta_Field_Rule $field ): array {
 		$field_meta = $this->provider_cluster->get_field_meta(
 			$field->get_vendor_name(),
 			$field->get_field_id()
@@ -41,7 +41,7 @@ class Field_Query_Builder {
 	/**
 	 * @return array<string,mixed>
 	 */
-	protected function resolve_query_arguments( Meta_Field_Settings $field, Field_Meta $field_meta ): array {
+	protected function resolve_query_arguments( Meta_Field_Rule $field, Field_Meta $field_meta ): array {
 		$is_list_field = Meta_Field::is_object_field( $field_meta->get_type() ) &&
 								// e.g. 'post_object' can be single.
 								$field_meta->is_multiple();

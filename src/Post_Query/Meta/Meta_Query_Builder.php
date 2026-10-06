@@ -6,10 +6,10 @@ namespace Org\Wplake\Advanced_Views\Post_Query\Meta;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Meta_Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Meta_Filter_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Meta_Rule_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Meta_Field_Rule;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Meta_Filter;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Meta_Rule;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Query_Settings;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Query_Utils;
 
@@ -20,13 +20,13 @@ final class Meta_Query_Builder implements Post_Query_Builder {
 		$this->field_query_builder = $field_query_builder;
 	}
 
-	public function build_post_query( Post_Selection_Settings $selection_settings ): array {
-		$meta_filter = $selection_settings->meta_filter;
+	public function build_post_query( Query_Settings $selection_settings ): array {
+		$meta_filter = $selection_settings->get_meta_filter();
 
 		$arguments = array(
 			// @phpcs:ignore.
 			'meta_query' => array(
-				'condition' => count( $meta_filter->rules ) > 0,
+				'condition' => count( $meta_filter->get_rules() ) > 0,
 				'value'     => fn() => $this->get_meta_arguments( $meta_filter ),
 			),
 		);
@@ -37,10 +37,10 @@ final class Meta_Query_Builder implements Post_Query_Builder {
 	/**
 	 * @return mixed[] | null
 	 */
-	protected function get_meta_arguments( Meta_Filter_Settings $meta_filter ): ?array {
+	protected function get_meta_arguments( Meta_Filter $meta_filter ): ?array {
 		$rule_queries = array_map(
-			fn( Meta_Rule_Settings $rule ) => $this->get_rule_arguments( $rule ),
-			$meta_filter->rules
+			fn( Meta_Rule $rule ) => $this->get_rule_arguments( $rule ),
+			$meta_filter->get_rules()
 		);
 
 		$sub_queries = array_filter(
@@ -51,7 +51,7 @@ final class Meta_Query_Builder implements Post_Query_Builder {
 		if ( count( $sub_queries ) > 0 ) {
 			return array_merge(
 				array(
-					'relation' => $this->get_relation( $meta_filter->relation ),
+					'relation' => $this->get_relation( $meta_filter->get_relation() ),
 				),
 				$sub_queries
 			);
@@ -63,10 +63,10 @@ final class Meta_Query_Builder implements Post_Query_Builder {
 	/**
 	 * @return mixed[] | null
 	 */
-	protected function get_rule_arguments( Meta_Rule_Settings $rule ): ?array {
+	protected function get_rule_arguments( Meta_Rule $rule ): ?array {
 		$field_queries = array_map(
-			fn( Meta_Field_Settings $field ) => $this->get_field_arguments( $field ),
-			$rule->fields
+			fn( Meta_Field_Rule $field ) => $this->get_field_arguments( $field ),
+			$rule->get_fields()
 		);
 
 		$sub_queries = array_filter(
@@ -77,7 +77,7 @@ final class Meta_Query_Builder implements Post_Query_Builder {
 		if ( count( $sub_queries ) > 0 ) {
 			return array_merge(
 				array(
-					'relation' => $this->get_relation( $rule->relation ),
+					'relation' => $this->get_relation( $rule->get_relation() ),
 				),
 				$sub_queries
 			);
@@ -96,7 +96,7 @@ final class Meta_Query_Builder implements Post_Query_Builder {
 	/**
 	 * @return mixed[] | null
 	 */
-	protected function get_field_arguments( Meta_Field_Settings $field ): ?array {
+	protected function get_field_arguments( Meta_Field_Rule $field ): ?array {
 		$arguments = $this->field_query_builder->build_field_query( $field );
 
 		if ( count( $arguments ) > 0 ) {

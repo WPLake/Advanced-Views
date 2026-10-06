@@ -11,10 +11,11 @@ use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Query_Settings;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\CreatorInterface;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\FieldInfoInterface;
 
-class Post_Selection_Settings extends Cpt_Settings {
+class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	// to fix the group name in case the class name changes.
 	const CUSTOM_GROUP_NAME = self::GROUP_NAME_PREFIX . 'acf-card-data';
 	const LOCATION_RULES    = array(
@@ -524,6 +525,70 @@ return new class extends Selection_Controller_Base {
 	 */
 	public function get_multilingual_strings(): array {
 		return $this->get_multilingual_strings_from_labels();
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function get_post_types(): array {
+		return $this->post_types;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function get_post_statuses(): array {
+		return $this->post_statuses;
+	}
+
+	public function is_ignore_sticky_posts(): bool {
+		return $this->is_ignore_sticky_posts;
+	}
+
+	/**
+	 * @return int[]
+	 */
+	public function get_post_in(): array {
+		return $this->post_in;
+	}
+
+	/**
+	 * @return int[]
+	 */
+	public function get_post_not_in(): array {
+		return $this->post_not_in;
+	}
+
+	public function get_limit(): int {
+		return $this->limit;
+	}
+
+	public function get_order(): string {
+		return $this->order;
+	}
+
+	public function get_order_by(): string {
+		return $this->order_by;
+	}
+
+	public function get_tax_filter(): Tax_Filter_Settings {
+		return $this->tax_filter;
+	}
+
+	public function get_meta_filter(): Meta_Filter_Settings {
+		return $this->meta_filter;
+	}
+
+	public function is_with_pagination(): bool {
+		return $this->is_with_pagination;
+	}
+
+	public function get_pagination_per_page(): int {
+		return $this->pagination_per_page;
+	}
+
+	public function get_extra_query_arguments(): string {
+		return $this->extra_query_arguments;
 	}
 
 	public function get_order_by_meta_acf_field_id(): string {

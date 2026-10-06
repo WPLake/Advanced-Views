@@ -6,11 +6,11 @@ namespace Org\Wplake\Advanced_Views\Post_Query\Meta\Field;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Meta_Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Meta_Field_Rule;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 
 final class List_Query_Builder {
-	private Meta_Field_Settings $field;
+	private Meta_Field_Rule $field;
 	private Field_Meta $field_meta;
 	/**
 	 * @var mixed
@@ -21,7 +21,7 @@ final class List_Query_Builder {
 	 * @param mixed $meta_value
 	 */
 	public function __construct(
-		Meta_Field_Settings $field,
+		Meta_Field_Rule $field,
 		Field_Meta $field_meta,
 		$meta_value
 	) {
@@ -71,13 +71,13 @@ final class List_Query_Builder {
 	 * @return mixed[]
 	 */
 	protected function get_item_arguments( $item_value ): array {
-		$origin_comparison       = $this->field->comparison;
-		$this->field->comparison = Meta_Field::resolve_list_field_comparison( $origin_comparison );
+		$origin_comparison = $this->field->get_comparison();
+		$this->field->set_comparison( Meta_Field::resolve_list_field_comparison( $origin_comparison ) );
 
 		$arguments = $this->get_value_arguments( $item_value );
 
 		// restore comparison.
-		$this->field->comparison = $origin_comparison;
+		$this->field->set_comparison( $origin_comparison );
 
 		return $arguments;
 	}

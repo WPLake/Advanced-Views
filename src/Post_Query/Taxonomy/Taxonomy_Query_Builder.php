@@ -6,10 +6,10 @@ namespace Org\Wplake\Advanced_Views\Post_Query\Taxonomy;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Tax_Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Tax_Filter_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Tax_Rule_Settings;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Query_Settings;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Term_Settings;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Tax_Filter;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Tax_Rule;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Query_Utils;
 
@@ -20,13 +20,13 @@ final class Taxonomy_Query_Builder implements Post_Query_Builder {
 		$this->term_query_builder = $term_query_builder;
 	}
 
-	public function build_post_query( Post_Selection_Settings $selection_settings ): array {
-		$filter = $selection_settings->tax_filter;
+	public function build_post_query( Query_Settings $selection_settings ): array {
+		$filter = $selection_settings->get_tax_filter();
 
 		$arguments = array(
 			// @phpcs:ignore.
 			'tax_query' => array(
-				'condition' => count( $filter->rules ) > 0,
+				'condition' => count( $filter->get_rules() ) > 0,
 				'value'     => fn () => $this->get_taxonomy_arguments( $filter ),
 			),
 		);
@@ -37,10 +37,10 @@ final class Taxonomy_Query_Builder implements Post_Query_Builder {
 	/**
 	 * @return mixed[]|null
 	 */
-	protected function get_taxonomy_arguments( Tax_Filter_Settings $filter ): ?array {
+	protected function get_taxonomy_arguments( Tax_Filter $filter ): ?array {
 		$group_queries = array_map(
-			fn ( Tax_Rule_Settings $term_group ) => $this->get_group_arguments( $term_group ),
-			$filter->rules
+			fn ( Tax_Rule $term_group ) => $this->get_group_arguments( $term_group ),
+			$filter->get_rules()
 		);
 
 		$sub_queries = array_filter(
@@ -49,7 +49,7 @@ final class Taxonomy_Query_Builder implements Post_Query_Builder {
 		);
 
 		if ( count( $sub_queries ) > 0 ) {
-			$relation  = $this->get_relation( $filter->relation );
+			$relation  = $this->get_relation( $filter->get_relation() );
 			$arguments = array(
 				'relation' => $relation,
 			);
@@ -70,16 +70,16 @@ final class Taxonomy_Query_Builder implements Post_Query_Builder {
 	/**
 	 * @return array<string,mixed>|null
 	 */
-	protected function get_group_arguments( Tax_Rule_Settings $term_group ): ?array {
-		$has_terms = count( $term_group->taxonomies ) > 0;
+	protected function get_group_arguments( Tax_Rule $term_group ): ?array {
+		$has_terms = count( $term_group->get_terms() ) > 0;
 
 		if ( $has_terms ) {
 			$term_queries = array_map(
-				fn( Tax_Field_Settings $term ) => $this->term_query_builder->build_term_query( $term ),
-				$term_group->taxonomies
+				fn( Term_Settings $term ) => $this->term_query_builder->build_term_query( $term ),
+				$term_group->get_terms()
 			);
 
-			$relation  = $this->get_relation( $term_group->relation );
+			$relation  = $this->get_relation( $term_group->get_relation() );
 			$arguments = array(
 				'relation' => $relation,
 			);

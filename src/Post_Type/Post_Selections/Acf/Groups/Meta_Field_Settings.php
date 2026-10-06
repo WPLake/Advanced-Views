@@ -7,9 +7,10 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Meta_Field_Rule;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 
-class Meta_Field_Settings extends Group {
+class Meta_Field_Settings extends Group implements Meta_Field_Rule {
 	// to fix the group name in case class name changes.
 	const CUSTOM_GROUP_NAME        = self::GROUP_NAME_PREFIX . 'meta-field';
 	const FIELD_GROUP              = 'group';
@@ -21,11 +22,6 @@ class Meta_Field_Settings extends Group {
 
 	const VALUE_TYPE_LITERAL            = 'literal';
 	const VALUE_TYPE_DYNAMIC            = 'dynamic';
-	const DYNAMIC_VALUE_POST            = '$post$';
-	const DYNAMIC_VALUE_POST_FIELD      = '$post$.';
-	const DYNAMIC_VALUE_NOW             = '$now$';
-	const DYNAMIC_VALUE_QUERY           = '$query$.';
-	const DYNAMIC_VALUE_CUSTOM_ARGUMENT = '$custom-arguments$.';
 
 	/**
 	 * @a-type select
@@ -143,6 +139,14 @@ class Meta_Field_Settings extends Group {
 
 	public function is_dynamic_value(): bool {
 		return self::VALUE_TYPE_DYNAMIC === $this->value_type;
+	}
+
+	public function get_comparison(): string {
+		return $this->comparison;
+	}
+
+	public function set_comparison( string $comparison ): void {
+		$this->comparison = $comparison;
 	}
 
 	/**

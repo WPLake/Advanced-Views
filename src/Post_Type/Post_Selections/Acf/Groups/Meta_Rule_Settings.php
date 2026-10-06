@@ -5,10 +5,11 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Meta_Rule;
 
 defined( 'ABSPATH' ) || exit;
 
-class Meta_Rule_Settings extends Group {
+class Meta_Rule_Settings extends Group implements Meta_Rule {
 	// to fix the group name in case class name changes.
 	const CUSTOM_GROUP_NAME = self::GROUP_NAME_PREFIX . 'meta-rule';
 
@@ -33,4 +34,15 @@ class Meta_Rule_Settings extends Group {
 	 * @required 1
 	 */
 	public array $fields;
+
+	public function get_relation(): string {
+		return $this->relation;
+	}
+
+	/**
+	 * @return Meta_Field_Settings[]
+	 */
+	public function get_fields(): array {
+		return $this->fields;
+	}
 }
