@@ -91,45 +91,45 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	 * @return Hookable[]
 	 */
 	protected function primary(): array {
-		$layout_cpt    = $this->container->get( Layouts_Cpt::class );
-		$selection_cpt = $this->container->get( Selections_Cpt::class );
+		$layout_cpt    = $this->resolve( Layouts_Cpt::class );
+		$selection_cpt = $this->resolve( Selections_Cpt::class );
 
 		$this->plugin_cpts = array(
 			$layout_cpt,
 			$selection_cpt,
 		);
 
-		$this->options  = $this->container->get( Options_Storage::class );
-		$this->settings = $this->container->get( Settings_Storage::class );
-		$this->container->set( Cpt_Theme_Settings::class, $this->settings );
+		$this->options  = $this->resolve( Options_Storage::class );
+		$this->settings = $this->resolve( Settings_Storage::class );
+		$this->wire( Cpt_Theme_Settings::class, $this->settings );
 
 		$uploads_folder = self::uploads_folder();
 		$this->logger   = new Logger( $uploads_folder, $this->settings );
-		$this->container->set( Logger::class, $this->logger );
+		$this->wire( Logger::class, $this->logger );
 
 		$this->group_creator = new Creator();
-		$this->container->set( Creator::class, $this->group_creator );
-		$this->container->set( CreatorInterface::class, $this->group_creator );
+		$this->wire( Creator::class, $this->group_creator );
+		$this->wire( CreatorInterface::class, $this->group_creator );
 
 		$this->layout_settings         = $this->group_creator->create( Layout_Settings::class );
 		$this->post_selection_settings = $this->group_creator->create( Post_Selection_Settings::class );
-		$this->container->set( Layout_Settings::class, $this->layout_settings );
-		$this->container->set( Post_Selection_Settings::class, $this->post_selection_settings );
+		$this->wire( Layout_Settings::class, $this->layout_settings );
+		$this->wire( Post_Selection_Settings::class, $this->post_selection_settings );
 
-		$this->html            = $this->container->get( Html_Printer::class );
+		$this->html            = $this->resolve( Html_Printer::class );
 		$twig_engine           = new Twig_Template_Engine( $uploads_folder, $this->logger, $this->settings );
 		$this->engines_storage = new Engines_Storage(
 			array(
 				$twig_engine,
 				new Blade_Template_Engine( $uploads_folder, $this->logger, $this->settings ),
-				$this->container->get( PHP_Template_Engine::class ),
+				$this->resolve( PHP_Template_Engine::class ),
 			),
 			$twig_engine
 		);
-		$this->container->set( Engines_Storage::class, $this->engines_storage );
-		$this->container->set( Token_Factory_Storage::class, $this->engines_storage );
-		$this->container->set( Template_Renderer_Storage::class, $this->engines_storage );
-		$this->container->set( Template_Integration_Storage::class, $this->engines_storage );
+		$this->wire( Engines_Storage::class, $this->engines_storage );
+		$this->wire( Token_Factory_Storage::class, $this->engines_storage );
+		$this->wire( Template_Renderer_Storage::class, $this->engines_storage );
+		$this->wire( Template_Integration_Storage::class, $this->engines_storage );
 
 		$post_selections_file_system            = new File_System(
 			$this->logger,
@@ -138,57 +138,57 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->post_selections_settings_storage = new Selection_Settings_Storage(
 			$this->logger,
 			$post_selections_file_system,
-			$this->container->get( Post_Selection_Fs_Fields::class ),
+			$this->resolve( Post_Selection_Fs_Fields::class ),
 			new Db_Management( $this->logger, $post_selections_file_system, $selection_cpt ),
 			$this->post_selection_settings
 		);
-		$this->container->set( Selection_Settings_Storage::class, $this->post_selections_settings_storage );
+		$this->wire( Selection_Settings_Storage::class, $this->post_selections_settings_storage );
 
 		$layouts_file_system            = new File_System( $this->logger, $layout_cpt->folder_name() );
 		$this->layouts_settings_storage = new Layout_Settings_Storage(
 			$this->logger,
 			$layouts_file_system,
-			$this->container->get( Layout_Fs_Fields::class ),
+			$this->resolve( Layout_Fs_Fields::class ),
 			new Db_Management( $this->logger, $layouts_file_system, $layout_cpt ),
 			$this->layout_settings
 		);
-		$this->container->set( Layout_Settings_Storage::class, $this->layouts_settings_storage );
+		$this->wire( Layout_Settings_Storage::class, $this->layouts_settings_storage );
 
 		$this->plugin = new Plugin( $this->plugin_file, $this->options, $this->settings );
-		$this->container->set( Plugin::class, $this->plugin );
+		$this->wire( Plugin::class, $this->plugin );
 		$this->asset_resolver = new Asset_Resolver( $this->plugin_file, $this->plugin->get_version() );
-		$this->container->set( Asset_Resolver::class, $this->asset_resolver );
+		$this->wire( Asset_Resolver::class, $this->asset_resolver );
 		$this->templates_environment = new Templates_Environment(
 			$uploads_folder,
 			$this->logger,
 			$this->plugin,
 		);
-		$this->container->set( Templates_Environment::class, $this->templates_environment );
+		$this->wire( Templates_Environment::class, $this->templates_environment );
 
 		$this->item_settings = $this->group_creator->create( Item_Settings::class );
-		$this->container->set( Item_Settings::class, $this->item_settings );
+		$this->wire( Item_Settings::class, $this->item_settings );
 
-		$this->provider_cluster = $this->container->get( Data_Vendors::class );
-		$this->container->set( Field_Provider_Cluster::class, $this->provider_cluster );
+		$this->provider_cluster = $this->resolve( Data_Vendors::class );
+		$this->wire( Field_Provider_Cluster::class, $this->provider_cluster );
 
-		$this->live_reloader_component = $this->container->get( Live_Reloader_Component::class );
+		$this->live_reloader_component = $this->resolve( Live_Reloader_Component::class );
 		$this->front_assets            = new Front_Assets(
 			$this->asset_resolver,
 			$layouts_file_system,
 			$this->provider_cluster,
 			$this->live_reloader_component
 		);
-		$this->container->set( Front_Assets::class, $this->front_assets );
+		$this->wire( Front_Assets::class, $this->front_assets );
 		$this->git_lab_api = new Git_Lab_Api(
 			$this->logger,
 			$this->options,
 			$layout_cpt,
 			$selection_cpt
 		);
-		$this->container->set( Git_Lab_Api::class, $this->git_lab_api );
-		$this->upgrade_notice = $this->container->get( Upgrade_Notice::class );
+		$this->wire( Git_Lab_Api::class, $this->git_lab_api );
+		$this->upgrade_notice = $this->resolve( Upgrade_Notice::class );
 		$this->cache_flusher  = new Cache_Flusher( $this->logger, $this->get_cache_cleaners() );
-		$this->container->set( Cache_Flusher::class, $this->cache_flusher );
+		$this->wire( Cache_Flusher::class, $this->cache_flusher );
 
 		$this->add_file_systems(
 			array(
@@ -213,10 +213,10 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	 * @return Hookable[]
 	 */
 	protected function integration( Route_Detector $route_detector ): array {
-		$layout_cpt    = $this->container->get( Layouts_Cpt::class );
-		$selection_cpt = $this->container->get( Selections_Cpt::class );
+		$layout_cpt    = $this->resolve( Layouts_Cpt::class );
+		$selection_cpt = $this->resolve( Selections_Cpt::class );
 
-		$this->acf_dependency = $this->container->get( Acf_Dependency::class );
+		$this->acf_dependency = $this->resolve( Acf_Dependency::class );
 
 		$this->layout_settings_integration         = new Layout_Settings_Integration(
 			$layout_cpt->cpt_name(),
@@ -254,8 +254,8 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$this->provider_cluster,
 			$this->plugin
 		);
-		$this->tools_settings_integration             = $this->container->get( Tools_Settings_Integration::class );
-		$this->custom_acf_field_types                 = $this->container->get( Custom_Acf_Field_Types::class );
+		$this->tools_settings_integration             = $this->resolve( Tools_Settings_Integration::class );
+		$this->custom_acf_field_types                 = $this->resolve( Custom_Acf_Field_Types::class );
 
 		return parent::integration( $route_detector );
 	}
@@ -264,10 +264,10 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	 * @return Hookable[]
 	 */
 	protected function others(): array {
-		$layout_cpt    = $this->container->get( Layouts_Cpt::class );
-		$selection_cpt = $this->container->get( Selections_Cpt::class );
+		$layout_cpt    = $this->resolve( Layouts_Cpt::class );
+		$selection_cpt = $this->resolve( Selections_Cpt::class );
 
-		$this->demo_import = $this->container->get( Demo_Importer::class );
+		$this->demo_import = $this->resolve( Demo_Importer::class );
 
 		$this->dashboard             = new Admin_Pages(
 			$this->plugin,
@@ -275,22 +275,22 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$this->demo_import,
 			$this->plugin_cpts
 		);
-		$this->acf_internal_features = $this->container->get( Acf_Internal_Features::class );
+		$this->acf_internal_features = $this->resolve( Acf_Internal_Features::class );
 
 		$this->tools = new Tools_Page(
-			$this->container->get( Tools_Settings::class ),
+			$this->resolve( Tools_Settings::class ),
 			$this->post_selections_settings_storage,
 			$this->layouts_settings_storage,
 			$this->plugin,
 			$this->logger,
-			$this->container->get( Debug_Dump_Creator::class ),
+			$this->resolve( Debug_Dump_Creator::class ),
 			$layout_cpt,
 			$selection_cpt,
 			$this->settings,
 			$this->cache_flusher
 		);
 
-		$this->state_report  = $this->container->get( State_Report::class );
+		$this->state_report  = $this->resolve( State_Report::class );
 		$this->usage_report  = new Usage_Report(
 			$this->logger,
 			$this->plugin,
@@ -303,7 +303,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		);
 		$this->settings_page = new Settings_Page(
 			$this->logger,
-			$this->container->get( Plugin_Settings::class ),
+			$this->resolve( Plugin_Settings::class ),
 			$this->settings,
 			$this->layouts_settings_storage,
 			$this->post_selections_settings_storage,
@@ -315,13 +315,13 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->admin_assets = new Admin_Assets(
 			$this->asset_resolver,
 			array(
-				$this->container->get( Layout_Interactive_Fields::class ),
+				$this->resolve( Layout_Interactive_Fields::class ),
 				$this->selections_loader->interactive_fields,
 			)
 		);
 
-		$this->live_reloader = $this->container->get( Live_Reloader::class );
-		$this->admin_bar     = $this->container->get( Admin_Bar::class );
+		$this->live_reloader = $this->resolve( Live_Reloader::class );
+		$this->admin_bar     = $this->resolve( Admin_Bar::class );
 
 		$this->point_mounter = new Point_Mounter(
 			array(

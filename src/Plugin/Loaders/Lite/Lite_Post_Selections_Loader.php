@@ -47,13 +47,13 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\PHP\PHP_Template_Engine;
 
 final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 	public function __construct( Lite_Plugin_Loader $base ) {
-		$layout_cpt    = $base->container->get( Layouts_Cpt::class );
-		$selection_cpt = $base->container->get( Selections_Cpt::class );
+		parent::__construct( $base->container );
 
-		parent::__construct();
+		$layout_cpt    = $this->resolve( Layouts_Cpt::class );
+		$selection_cpt = $this->resolve( Selections_Cpt::class );
 
-		$query_builder         = $base->container->get( Selection_Query_Builder::class );
-		$post_query            = $base->container->get( Post_Query::class );
+		$query_builder         = $this->resolve( Selection_Query_Builder::class );
+		$post_query            = $this->resolve( Post_Query::class );
 		$post_selection_markup = new Post_Selection_Markup(
 			$base->front_assets,
 			$base->engines_storage,
@@ -86,7 +86,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$this->factory,
 			$base->engines_storage
 		);
-		$base->container->set( Selection_Save_Actions::class, $this->save_actions );
+		$this->wire( Selection_Save_Actions::class, $this->save_actions );
 
 		$this->cpt                 = new Post_Selections_Cpt(
 			$selection_cpt,
@@ -133,9 +133,9 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->post_selections_settings_storage,
 			$post_selections_settings_storage,
 			$base->provider_cluster,
-			$base->container->get( Version_Migrator::class ),
+			$this->resolve( Version_Migrator::class ),
 			$base->logger,
-			$base->container->get( Layouts_Pre_Built_Tab::class )
+			$this->resolve( Layouts_Pre_Built_Tab::class )
 		);
 
 		$this->git_tabs = new Selection_Git_Tabs(
@@ -144,8 +144,8 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->git_lab_api,
 			$base->group_creator->create( Post_Selection_Settings::class ),
 			$base->post_selections_settings_storage,
-			$base->container->get( Version_Migrator::class ),
-			$base->container->get( Layout_Git_Tabs::class ),
+			$this->resolve( Version_Migrator::class ),
+			$this->resolve( Layout_Git_Tabs::class ),
 			$base->provider_cluster,
 			$base->logger
 		);
@@ -155,7 +155,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->post_selections_settings_storage,
 			$base->git_lab_api,
 			$base->layouts_settings_storage,
-			$base->container->get( Layout_Git_Box::class ),
+			$this->resolve( Layout_Git_Box::class ),
 			$base->plugin
 		);
 
@@ -168,7 +168,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$selection_cpt->cpt_name()
 		);
 
-		$this->layout_integration = $base->container->get( Selection_Layout_Integration::class );
+		$this->layout_integration = $this->resolve( Selection_Layout_Integration::class );
 		$this->shortcode          = new Post_Selection_Shortcode(
 			$selection_cpt,
 			$base->settings,
@@ -176,7 +176,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->live_reloader_component,
 			$this->factory
 		);
-		$base->container->set( Post_Selection_Shortcode::class, $this->shortcode );
+		$this->wire( Post_Selection_Shortcode::class, $this->shortcode );
 
 		$this->item_picker = new Cpt_Item_Picker(
 			$base->post_selections_settings_storage,

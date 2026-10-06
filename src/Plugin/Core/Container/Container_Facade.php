@@ -26,7 +26,7 @@ abstract class Container_Facade {
 		return $this->container->get( $class_name );
 	}
 
-	protected function wire( string $class_name, object $instance ): void {
-		$this->container->set( $class_name, $instance );
+	protected function wire( string $id, object $instance ): void {
+		$this->container->set( $id, $instance );
 	}
 }

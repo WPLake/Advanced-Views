@@ -69,7 +69,6 @@ use function Org\Wplake\Advanced_Views\Utils\flat_map;
 use function Org\Wplake\Advanced_Views\Utils\resolve_instances;
 
 abstract class Plugin_Loader_Base extends Module_Loader {
-	public Container $container;
 	public Plugin $plugin;
 	public Asset_Resolver $asset_resolver;
 	public Plugin_Environment $plugin_environment;
@@ -114,6 +113,11 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public Point_Mounter $point_mounter;
 	public Git_Lab_Api $git_lab_api;
 
+	/**
+	 * Public, as it's shared with the Post_Selections loaders.
+	 */
+	public Container $container;
+
 	public Engines_Storage $engines_storage;
 	public Selection_Settings_Storage $post_selections_settings_storage;
 	public Post_Selections_Loader_Base $selections_loader;
@@ -128,17 +132,15 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	protected array $lang_relative_paths = array();
 
 	public function __construct() {
-		parent::__construct();
+		parent::__construct( self::create_container() );
 
 		$this->lang_relative_paths['acf-views'] = 'lang';
-
-		$this->container = self::create_container();
 	}
 
 	public function load(): void {
 		$start_timestamp = microtime( true );
 
-		$route_detector = $this->container->get( Route_Detector::class );
+		$route_detector = $this->resolve( Route_Detector::class );
 
 		$this->load_hookable( $this->load_modules( $route_detector ) );
 
@@ -214,8 +216,8 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 	protected function acf_groups( Route_Detector $route_detector ): void {
 		if ( ! wp_doing_ajax() &&
-			false === $route_detector->is_cpt_admin_route( $this->container->get( Layouts_Cpt::class )->cpt_name() ) &&
-			false === $route_detector->is_cpt_admin_route( $this->container->get( Selections_Cpt::class )->cpt_name() ) ) {
+			false === $route_detector->is_cpt_admin_route( $this->resolve( Layouts_Cpt::class )->cpt_name() ) &&
+			false === $route_detector->is_cpt_admin_route( $this->resolve( Selections_Cpt::class )->cpt_name() ) ) {
 			return;
 		}
 
@@ -281,12 +283,12 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			$route_detector,
 			$this->item_settings,
 			$this->layouts_settings_storage,
-			$this->container->get( Layout_Save_Actions::class ),
-			$this->container->get( Layout_Factory::class ),
+			$this->resolve( Layout_Save_Actions::class ),
+			$this->resolve( Layout_Factory::class ),
 			$this->group_creator->create( Repeater_Field_Settings::class ),
-			$this->container->get( Layout_Shortcode::class ),
+			$this->resolve( Layout_Shortcode::class ),
 			$this->settings,
-			$this->container->get( Layouts_Cpt::class ),
+			$this->resolve( Layouts_Cpt::class ),
 		);
 
 		return array(
@@ -325,7 +327,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	protected function bridge(): void {
-		Advanced_Views::$layout_renderer         = $this->container->get( Layout_Shortcode::class );
+		Advanced_Views::$layout_renderer         = $this->resolve( Layout_Shortcode::class );
 		Advanced_Views::$post_selection_renderer = $this->selections_loader->shortcode;
 	}
 
