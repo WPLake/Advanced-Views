@@ -47,11 +47,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Integrations_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Integrations_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Layout_Tabs_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
@@ -358,7 +359,9 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	protected function get_bootstraps(): array {
 		return array(
 			Layouts_Bootstrap::class,
-			Integrations_Bootstrap::class,
+			Layout_Acf_Bootstrap::class,
+			Layout_Tabs_Bootstrap::class,
+			Layout_Integrations_Bootstrap::class,
 			Version_Migrations_Bootstrap::class,
 		);
 	}

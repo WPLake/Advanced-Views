@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs;
 
 defined( 'ABSPATH' ) || exit;
 

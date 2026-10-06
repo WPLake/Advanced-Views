@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs;
 
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Bulk_Validation_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;

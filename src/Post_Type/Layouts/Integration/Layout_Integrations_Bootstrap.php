@@ -18,9 +18,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Sto
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Elementor\Layout_Elementor_Assets;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Elementor\Layout_Elementor_Widget;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Layout_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Shortcode_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 
-class Integrations_Bootstrap extends Module_Bootstrap_Base {
+class Layout_Integrations_Bootstrap extends Module_Bootstrap_Base {
 	protected ?Cpt_Item_Picker $item_picker = null;
 	protected ?Cpt_Renderer $renderer       = null;
 
@@ -31,6 +32,7 @@ class Integrations_Bootstrap extends Module_Bootstrap_Base {
 		return array(
 			$item_picker,
 			$gutenberg_block,
+			$this->create_shortcode_block(),
 		);
 	}
 
@@ -68,6 +70,13 @@ class Integrations_Bootstrap extends Module_Bootstrap_Base {
 		$cpt_block = new Cpt_Gutenberg_Block( $renderer );
 
 		return new Layout_Gutenberg_Block( $asset_resolver, $item_picker, $cpt_block );
+	}
+
+	protected function create_shortcode_block(): Shortcode_Gutenberg_Block {
+		$layouts_cpt = $this->resolve( Layouts_Cpt::class );
+		$shortcodes  = $layouts_cpt->shortcodes();
+
+		return new Shortcode_Gutenberg_Block( $shortcodes );
 	}
 
 	protected function item_picker(): Cpt_Item_Picker {
