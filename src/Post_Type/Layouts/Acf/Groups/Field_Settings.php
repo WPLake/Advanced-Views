@@ -7,10 +7,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Field_Provider\Acf\Acf_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Woo\Fields\Woo_Fields;
-use Org\Wplake\Advanced_Views\Field_Provider\Woo\Woo_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Wp\Wp_Data_Vendor;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\CreatorInterface;
 
@@ -242,24 +238,6 @@ class Field_Settings extends Group {
 		return end( $field_id );
 	}
 
-	public static function get_vendor_name_by_key( string $key ): string {
-		// for ACF and custom fields source isn't set.
-		if ( false !== strpos( $key, ':' ) ) {
-			return explode( ':', $key )[0];
-		}
-
-		// back compatibility.
-		$field_id = self::get_field_id_by_key( $key );
-
-		if ( 0 !== strpos( $field_id, '_' ) ) {
-			return Acf_Data_Vendor::NAME;
-		}
-
-		return 0 === strpos( $field_id, Woo_Fields::PREFIX ) ?
-			Woo_Data_Vendor::NAME :
-			Wp_Data_Vendor::NAME;
-	}
-
 	public static function create_field_key(
 		string $group,
 		string $field,
@@ -277,10 +255,6 @@ class Field_Settings extends Group {
 			'';
 
 		return $full_field_id;
-	}
-
-	public function get_vendor_name(): string {
-		return self::get_vendor_name_by_key( $this->key );
 	}
 
 	public function get_field_id(): string {
@@ -314,7 +288,7 @@ class Field_Settings extends Group {
 	public static function get_field_meta_by_key( string $key ): Field_Meta {
 		if ( null !== self::$provider_cluster ) {
 			return self::$provider_cluster->get_field_meta(
-				self::get_vendor_name_by_key( $key ),
+				self::$provider_cluster->get_vendor_name_by_key( $key ),
 				self::get_field_id_by_key( $key )
 			);
 		}

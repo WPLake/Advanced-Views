@@ -115,8 +115,8 @@ class Meta_Field_Settings extends Group implements Meta_Field_Rule {
 	 */
 	public string $dynamic_argument_name;
 
-	public function get_vendor_name(): string {
-		return Field_Settings::get_vendor_name_by_key( $this->field_key );
+	public function get_vendor_key(): string {
+		return $this->field_key;
 	}
 
 	public function get_field_id(): string {

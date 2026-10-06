@@ -74,6 +74,10 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	 */
 	abstract protected function fill_field_id_and_type( array $field, string &$field_id, string &$field_type ): void;
 
+	protected function get_provider_cluster(): Field_Provider_Cluster {
+		return $this->provider_cluster;
+	}
+
 	protected function get_block_description( Layout_Settings $layout_settings ): string {
 		return sprintf(
 			'%s (%s, id = %s).',

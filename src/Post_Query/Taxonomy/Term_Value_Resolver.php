@@ -58,7 +58,7 @@ class Term_Value_Resolver implements Query_Context_Container {
 	 * @return mixed[]
 	 */
 	protected function resolve_meta_value( Term_Settings $term ): array {
-		$vendor_name = $term->get_vendor_name();
+		$vendor_name = $this->provider_cluster->get_vendor_name_by_key( $term->get_vendor_key() );
 		$field_id    = $term->get_field_id();
 		$field_data  = $this->provider_cluster->get_field_meta( $vendor_name, $field_id );
 

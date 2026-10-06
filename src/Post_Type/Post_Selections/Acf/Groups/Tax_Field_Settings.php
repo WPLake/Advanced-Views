@@ -110,8 +110,8 @@ class Tax_Field_Settings extends Group implements Term_Settings {
 		return self::get_term_id_by_key( $this->term );
 	}
 
-	public function get_vendor_name(): string {
-		return Field_Settings::get_vendor_name_by_key( $this->meta_group );
+	public function get_vendor_key(): string {
+		return $this->meta_group;
 	}
 
 	public function get_field_id(): string {

@@ -35,7 +35,7 @@ interface Query_Settings {
 
 	public function get_order_by(): string;
 
-	public function get_order_by_meta_field_source(): string;
+	public function get_order_by_meta_field_key(): string;
 
 	public function get_order_by_meta_acf_field_id(): string;
 

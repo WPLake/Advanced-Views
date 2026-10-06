@@ -19,7 +19,7 @@ interface Term_Settings {
 
 	public function get_term_id(): int;
 
-	public function get_vendor_name(): string;
+	public function get_vendor_key(): string;
 
 	public function get_field_id(): string;
 }

@@ -51,7 +51,7 @@ class Layout_Markup {
 
 		$is_condition_with_true_stub = $item_settings->field->is_visible_when_empty ||
 							$this->provider_cluster->is_empty_value_supported_in_markup(
-								$item_settings->field->get_vendor_name(),
+								$this->provider_cluster->get_vendor_name_by_key( $item_settings->field->key ),
 								$field_type
 							);
 

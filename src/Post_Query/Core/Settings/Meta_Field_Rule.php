@@ -17,7 +17,7 @@ interface Meta_Field_Rule {
 
 	public function set_comparison( string $comparison ): void;
 
-	public function get_vendor_name(): string;
+	public function get_vendor_key(): string;
 
 	public function get_field_id(): string;
 

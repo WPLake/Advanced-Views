@@ -295,7 +295,7 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Hookable
 
 		foreach ( $layout_settings->items as $item ) {
 			foreach ( $item->repeater_fields as $repeater_field ) {
-				$vendor_name = $repeater_field->get_vendor_name();
+				$vendor_name = $this->get_vendor_name_by_key( $repeater_field->key );
 
 				if ( ! in_array( $asset_name, $this->get_field_front_assets( $vendor_name, $repeater_field ), true ) ) {
 					continue;
@@ -304,7 +304,7 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Hookable
 				$fields[1][] = $repeater_field;
 			}
 
-			$vendor_name = $item->field->get_vendor_name();
+			$vendor_name = $this->get_vendor_name_by_key( $item->field->key );
 
 			if ( ! in_array( $asset_name, $this->get_field_front_assets( $vendor_name, $item->field ), true ) ) {
 				continue;
@@ -415,12 +415,21 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Hookable
 							);
 	}
 
+	public function get_vendor_name_by_key( string $key ): string {
+		// for ACF and custom fields source isn't set.
+		if ( false !== strpos( $key, ':' ) ) {
+			return explode( ':', $key )[0];
+		}
+
+		return $this->resolve_legacy_vendor_name( Field_Settings::get_field_id_by_key( $key ) );
+	}
+
 	/**
 	 * @return null|array{title:string,url:string}
 	 */
 	public function get_group_link_by_group_id( string $group_id, string $vendor_name = '' ): ?array {
 		if ( '' === $vendor_name ) {
-			$vendor_name                    = Field_Settings::get_vendor_name_by_key( $group_id . '|fake-field-id' );
+			$vendor_name                    = $this->get_vendor_name_by_key( $group_id . '|fake-field-id' );
 			$group_id_without_vendor_prefix = explode( ':', $group_id )[1] ?? $group_id;
 		} else {
 			$group_id_without_vendor_prefix = $group_id;
@@ -523,7 +532,7 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Hookable
 		foreach ( $layout_settings->items as $item ) {
 			$group_id = $item->field->get_group_id();
 
-			$vendor_name = $item->field->get_vendor_name();
+			$vendor_name = $this->get_vendor_name_by_key( $item->field->key );
 
 			if ( ! key_exists( $vendor_name, $this->get_provider_cluster() ) ) {
 				continue;
@@ -603,6 +612,11 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Hookable
 	 * @return Field_Provider[]
 	 */
 	abstract protected function get_vendors(): array;
+
+	/**
+	 * Back compatibility: keys without the vendor prefix.
+	 */
+	abstract protected function resolve_legacy_vendor_name( string $field_id ): string;
 
 	protected function load_integration_instance(
 		Route_Detector $route_detector,

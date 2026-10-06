@@ -41,7 +41,7 @@ final class Order_Query_Builder implements Post_Query_Builder {
 
 	protected function get_order_by_meta_key( Query_Settings $selection ): ?string {
 		$field_meta = $this->provider_cluster->get_field_meta(
-			$selection->get_order_by_meta_field_source(),
+			$this->provider_cluster->get_vendor_name_by_key( $selection->get_order_by_meta_field_key() ),
 			$selection->get_order_by_meta_acf_field_id()
 		);
 

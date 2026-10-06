@@ -311,7 +311,7 @@ class Field_Markup {
 			}
 		}
 
-		$markup_field_instance = $this->get_markup_field_instance( $field_settings->get_vendor_name(), $field_settings->get_field_meta()->get_type() );
+		$markup_field_instance = $this->get_markup_field_instance( $this->provider_cluster->get_vendor_name_by_key( $field_settings->key ), $field_settings->get_field_meta()->get_type() );
 
 		return $markup_field_instance instanceof Markup_Field ?
 			$markup_field_instance->get_custom_field_wrapper_tag() :
@@ -403,7 +403,7 @@ class Field_Markup {
 			return;
 		}
 
-		$vendor_name           = $field_settings->get_vendor_name();
+		$vendor_name           = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
 		$markup_field_instance = $this->get_markup_field_instance( $vendor_name, $field_type );
 
 		if ( null === $markup_field_instance ) {
@@ -471,7 +471,7 @@ class Field_Markup {
 		string $custom_field_markup = ''
 	): int {
 		$field_assets        = $this->front_assets->resolve_template_patterns(
-			$this->provider_cluster->get_field_front_assets( $field_settings->get_vendor_name(), $field_settings )
+			$this->provider_cluster->get_field_front_assets( $this->provider_cluster->get_vendor_name_by_key( $field_settings->key ), $field_settings )
 		);
 		$is_label_out_of_row = $this->is_label_out_of_row( $field_assets );
 		$token_factory       = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
@@ -607,7 +607,7 @@ class Field_Markup {
 			return false;
 		}
 
-		$markup_field_instance = $this->get_markup_field_instance( $field_settings->get_vendor_name(), $field_type );
+		$markup_field_instance = $this->get_markup_field_instance( $this->provider_cluster->get_vendor_name_by_key( $field_settings->key ), $field_type );
 
 		if ( null === $markup_field_instance ) {
 			return true;
@@ -649,7 +649,7 @@ class Field_Markup {
 	): array {
 		$field_type = $field_meta->get_type();
 
-		$vendor_name           = $field_settings->get_vendor_name();
+		$vendor_name           = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
 		$markup_field_instance = $this->get_markup_field_instance( $vendor_name, $field_type );
 
 		if ( null === $markup_field_instance ) {

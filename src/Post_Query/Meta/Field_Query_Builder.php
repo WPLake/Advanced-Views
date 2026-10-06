@@ -27,7 +27,7 @@ class Field_Query_Builder {
 	 */
 	public function build_field_query( Meta_Field_Rule $field ): array {
 		$field_meta = $this->provider_cluster->get_field_meta(
-			$field->get_vendor_name(),
+			$this->provider_cluster->get_vendor_name_by_key( $field->get_vendor_key() ),
 			$field->get_field_id()
 		);
 

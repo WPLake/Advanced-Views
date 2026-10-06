@@ -595,8 +595,8 @@ return new class extends Selection_Controller_Base {
 		return Field_Settings::get_field_id_by_key( $this->order_by_meta_field_key );
 	}
 
-	public function get_order_by_meta_field_source(): string {
-		return Field_Settings::get_vendor_name_by_key( $this->order_by_meta_field_key );
+	public function get_order_by_meta_field_key(): string {
+		return $this->order_by_meta_field_key;
 	}
 
 	public function get_bem_name(): string {
