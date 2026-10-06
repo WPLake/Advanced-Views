@@ -53,7 +53,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\PHP\PHP_Template_Engine;
-use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 
 class Layouts_Bootstrap extends Module_Bootstrap_Base {
 	protected Cpt_Item_Picker $item_picker;
@@ -267,13 +266,11 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		$cpt_table        = $this->resolve( Layouts_Cpt_Table::class );
 		$settings         = $this->resolve( Settings_Storage::class );
 		$git_api          = $this->resolve( Git_Lab_Api::class );
-		$creator          = $this->resolve( Creator::class );
+		$layout_settings  = $this->resolve( Layout_Settings::class );
 		$settings_storage = $this->resolve( Layout_Settings_Storage::class );
 		$migrator         = $this->resolve( Version_Migrator::class );
 		$provider_cluster = $this->resolve( Field_Provider_Cluster::class );
 		$logger           = $this->resolve( Logger::class );
-
-		$layout_settings = $creator->create( Layout_Settings::class );
 
 		return new Layout_Git_Tabs(
 			$cpt_table,
@@ -288,16 +285,6 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 	}
 
 	protected function make_git_box(): Layout_Git_Box {
-		$layout_cpt       = $this->resolve( Layouts_Cpt::class );
-		$settings         = $this->resolve( Settings_Storage::class );
-		$settings_storage = $this->resolve( Layout_Settings_Storage::class );
-		$git_api          = $this->resolve( Git_Lab_Api::class );
-		$provider_cluster = $this->resolve( Field_Provider_Cluster::class );
-		$plugin           = $this->resolve( Plugin::class );
-
-		$cpt_name = $layout_cpt->cpt_name();
-
-		// fixme
-		return new Layout_Git_Box( $cpt_name, $settings, $settings_storage, $git_api, $provider_cluster, $plugin );
+		return $this->resolve( Layout_Git_Box::class );
 	}
 }

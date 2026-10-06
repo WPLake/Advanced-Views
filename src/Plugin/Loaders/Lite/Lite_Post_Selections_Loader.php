@@ -150,7 +150,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->logger
 		);
 		$this->git_box  = new Selection_Git_Box(
-			$selection_cpt->cpt_name(),
+			$selection_cpt,
 			$base->settings,
 			$base->post_selections_settings_storage,
 			$base->git_lab_api,

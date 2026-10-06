@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
@@ -34,13 +35,13 @@ abstract class Git_Meta_Box extends Hookable_Base implements Hookable {
 	private Plugin $plugin;
 
 	public function __construct(
-		string $cpt_name,
+		Plugin_Cpt $cpt,
 		Settings_Storage $settings,
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Git_Api_Interface $git_api,
 		Plugin $plugin
 	) {
-		$this->cpt_name             = $cpt_name;
+		$this->cpt_name             = $cpt->cpt_name();
 		$this->settings             = $settings;
 		$this->cpt_settings_storage = $cpt_settings_storage;
 		$this->git_api              = $git_api;

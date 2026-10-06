@@ -45,6 +45,7 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Provider;
@@ -179,6 +180,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$selection_cpt
 		);
 		$this->wire( Git_Lab_Api::class, $this->git_lab_api );
+		$this->wire( Git_Api_Interface::class, $this->git_lab_api );
 		$this->upgrade_notice = $this->resolve( Upgrade_Notice::class );
 		$this->cache_flusher  = new Cache_Flusher( $this->logger, $this->get_cache_cleaners() );
 		$this->wire( Cache_Flusher::class, $this->cache_flusher );
