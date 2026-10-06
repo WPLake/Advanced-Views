@@ -6,11 +6,8 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders\Lite;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table\Layouts_Pre_Built_Tab;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Git_Tabs;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Git_Box;
-use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Plugin\Loaders\Post_Selections_Loader_Base;
 use Org\Wplake\Advanced_Views\Post_Query\Selection\Selection_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
@@ -22,6 +19,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor\Cpt_Widget_Registrar;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Gutenberg\Cpt_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Git_Box;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Git_Tabs;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table\Layouts_Pre_Built_Tab;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Post_Selections_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Git_Box;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Git_Tabs;
@@ -41,10 +42,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selecti
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Query;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Selection_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Selection_Markup;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\PHP\PHP_Template_Engine;
 
 final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 	public function __construct( Lite_Plugin_Loader $base ) {
+		$layout_cpt    = $base->container->get( Layouts_Cpt::class );
+		$selection_cpt = $base->container->get( Selections_Cpt::class );
+
 		parent::__construct();
 
 		$query_builder         = $base->container->get( Selection_Query_Builder::class );
@@ -52,7 +57,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 		$post_selection_markup = new Post_Selection_Markup(
 			$base->front_assets,
 			$base->engines_storage,
-			$base->layout_cpt
+			$layout_cpt
 		);
 		$this->factory         = new Post_Selection_Factory(
 			$base->front_assets,
@@ -67,8 +72,8 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->plugin,
 			$base->post_selections_settings_storage,
 			$base->layouts_settings_storage,
-			$base->post_selection_cpt,
-			$base->layout_cpt
+			$selection_cpt,
+			$layout_cpt
 		);
 		$this->save_actions    = new Selection_Save_Actions(
 			$base->logger,
@@ -84,15 +89,15 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 		$base->container->set( Selection_Save_Actions::class, $this->save_actions );
 
 		$this->cpt                 = new Post_Selections_Cpt(
-			$base->post_selection_cpt,
+			$selection_cpt,
 			$base->post_selections_settings_storage
 		);
 		$this->cpt_table           = new Post_Selections_Table(
 			$base->post_selections_settings_storage,
-			$base->post_selection_cpt,
+			$selection_cpt,
 			$base->html,
 			$this->meta_boxes,
-			$base->layout_cpt
+			$layout_cpt
 		);
 		$this->fs_only_tab         = new Fs_Only_Tab(
 			$this->cpt_table,
@@ -107,13 +112,13 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 
 		$file_system                      = new File_System(
 			$base->logger,
-			$base->post_selection_cpt->folder_name(),
+			$selection_cpt->folder_name(),
 			$base->plugin->get_plugin_path( 'pre_built' )
 		);
 		$db_management                    = new Db_Management(
 			$base->logger,
 			$file_system,
-			$base->post_selection_cpt,
+			$selection_cpt,
 			true
 		);
 		$post_selections_settings_storage = new Selection_Settings_Storage(
@@ -145,7 +150,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$base->logger
 		);
 		$this->git_box  = new Selection_Git_Box(
-			$base->post_selection_cpt->cpt_name(),
+			$selection_cpt->cpt_name(),
 			$base->settings,
 			$base->post_selections_settings_storage,
 			$base->git_lab_api,
@@ -157,15 +162,15 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 		$this->cpt_assets_reducer            = new Cpt_Assets_Reducer(
 			$base->settings,
 			$base->plugin,
-			$base->post_selection_cpt->cpt_name()
+			$selection_cpt->cpt_name()
 		);
 		$this->cpt_gutenberg_editor_settings = new Cpt_Gutenberg_Editor_Settings(
-			$base->post_selection_cpt->cpt_name()
+			$selection_cpt->cpt_name()
 		);
 
 		$this->layout_integration = $base->container->get( Selection_Layout_Integration::class );
 		$this->shortcode          = new Post_Selection_Shortcode(
-			$base->post_selection_cpt,
+			$selection_cpt,
 			$base->settings,
 			$base->post_selections_settings_storage,
 			$base->live_reloader_component,
@@ -175,13 +180,13 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 
 		$this->item_picker = new Cpt_Item_Picker(
 			$base->post_selections_settings_storage,
-			$base->post_selection_cpt
+			$selection_cpt
 		);
 
 		$cpt_renderer = new Cpt_Renderer(
 			$this->shortcode,
 			$base->post_selections_settings_storage,
-			$base->post_selection_cpt
+			$selection_cpt
 		);
 
 		$cpt_block = new Cpt_Gutenberg_Block( $cpt_renderer );
@@ -204,7 +209,7 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 		};
 
 		$this->interactive_fields = new Selection_Interactive_Fields(
-			$base->post_selection_cpt,
+			$selection_cpt,
 			$base->html,
 			$base->plugin,
 			$base->post_selections_settings_storage,

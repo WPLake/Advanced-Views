@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Public_Cpt_Base extends Plugin_Cpt_Base implements Public_Cpt {
+class Public_Cpt_Base extends Plugin_Cpt_Base implements Public_Cpt {
 	/**
 	 * @var string[]
 	 */

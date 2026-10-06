@@ -11,11 +11,11 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use WP_Post;
 
 class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
@@ -24,7 +24,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 
 	private Field_Provider_Cluster $provider_cluster;
 	private Layout_Settings_Storage $layouts_settings_storage;
-	private Public_Cpt $public_cpt;
+	private Layouts_Cpt $public_cpt;
 	private Plugin_Cpt $plugin_cpt;
 
 	public function __construct(
@@ -32,7 +32,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		Plugin $plugin,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Field_Provider_Cluster $provider_cluster,
-		Public_Cpt $public_cpt,
+		Layouts_Cpt $public_cpt,
 		Plugin_Cpt $plugin_cpt
 	) {
 		parent::__construct( $html, $plugin );

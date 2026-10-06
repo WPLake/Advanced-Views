@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
+use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
@@ -55,15 +55,13 @@ use Org\Wplake\Advanced_Views\Vendors\DI\Container;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 
 class Layouts_Bootstrap extends Module_Bootstrap_Base {
-	protected Public_Cpt $layout_cpt;
-	protected Public_Cpt $post_selection_cpt;
+	protected Plugin_Cpt $post_selection_cpt;
 	protected Cpt_Item_Picker $item_picker;
 	protected Cpt_Renderer $cpt_renderer;
 
-	public function __construct( Container $container, Public_Cpt $layout_cpt, Public_Cpt $post_selection_cpt ) {
+	public function __construct( Container $container, Plugin_Cpt $post_selection_cpt ) {
 		parent::__construct( $container );
 
-		$this->layout_cpt         = $layout_cpt;
 		$this->post_selection_cpt = $post_selection_cpt;
 	}
 
@@ -72,6 +70,7 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		// a) add ->get/set as short $this->container alias (on the _Base level)
 		// b) split into groups, then this method that merges them.
 		$layouts_settings_storage = $this->container->get( Layout_Settings_Storage::class );
+		$layout_cpt               = $this->container->get( Layouts_Cpt::class );
 
 		// instances are registered in the container right after creation (for types it can't autowire),
 		// as they're used by the next ones and by other modules.
@@ -84,9 +83,9 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		$save_actions = $this->make_save_actions();
 		$this->container->set( Layout_Save_Actions::class, $save_actions );
 
-		$shortcode_block = new Shortcode_Gutenberg_Block( $this->layout_cpt->shortcodes() );
+		$shortcode_block = new Shortcode_Gutenberg_Block( $layout_cpt->shortcodes() );
 		$shortcode       = new Layout_Shortcode(
-			$this->layout_cpt,
+			$layout_cpt,
 			$this->container->get( Settings_Storage::class ),
 			$layouts_settings_storage,
 			$this->container->get( Live_Reloader_Component::class ),
@@ -95,8 +94,8 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		);
 		$this->container->set( Layout_Shortcode::class, $shortcode );
 
-		$item_picker        = new Cpt_Item_Picker( $layouts_settings_storage, $this->layout_cpt );
-		$cpt_renderer       = new Cpt_Renderer( $shortcode, $layouts_settings_storage, $this->layout_cpt );
+		$item_picker        = new Cpt_Item_Picker( $layouts_settings_storage, $layout_cpt );
+		$cpt_renderer       = new Cpt_Renderer( $shortcode, $layouts_settings_storage, $layout_cpt );
 		$this->item_picker  = $item_picker;
 		$this->cpt_renderer = $cpt_renderer;
 		$block              = new Layout_Gutenberg_Block(
@@ -125,16 +124,16 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 
 		return array(
 			$meta_boxes,
-			new Layouts_Cpt( $this->layout_cpt, $layouts_settings_storage ),
+			new Layouts_Cpt( $layout_cpt, $layouts_settings_storage ),
 			$cpt_table,
 			$fs_only_tab,
 			$bulk_validation_tab,
 			$pre_built_tab,
-			new Cpt_Gutenberg_Editor_Settings( $this->layout_cpt->cpt_name() ),
+			new Cpt_Gutenberg_Editor_Settings( $layout_cpt->cpt_name() ),
 			new Cpt_Assets_Reducer(
 				$this->container->get( Settings_Storage::class ),
 				$this->container->get( Plugin::class ),
-				$this->layout_cpt->cpt_name()
+				$layout_cpt->cpt_name()
 			),
 			$save_actions,
 			$shortcode,
@@ -185,7 +184,7 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 			$this->container->get( Plugin::class ),
 			$this->container->get( Layout_Settings_Storage::class ),
 			$this->container->get( Field_Provider_Cluster::class ),
-			$this->layout_cpt,
+			$this->container->get( Layouts_Cpt::class ),
 			$this->post_selection_cpt
 		);
 	}
@@ -206,7 +205,7 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 	protected function make_cpt_table(): Layouts_Cpt_Table {
 		return new Layouts_Cpt_Table(
 			$this->container->get( Layout_Settings_Storage::class ),
-			$this->layout_cpt,
+			$this->container->get( Layouts_Cpt::class ),
 			$this->container->get( Html_Printer::class ),
 			$this->container->get( Layout_Meta_Boxes::class ),
 			$this->post_selection_cpt
@@ -218,14 +217,14 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 
 		$file_system                = new File_System(
 			$logger,
-			$this->layout_cpt->folder_name(),
+			$this->container->get( Layouts_Cpt::class )->folder_name(),
 			$this->container->get( Plugin::class )->get_plugin_path( 'pre_built' )
 		);
 		$pre_built_settings_storage = new Layout_Settings_Storage(
 			$logger,
 			$file_system,
 			new Layout_Fs_Fields( $this->container->get( Engines_Storage::class ) ),
-			new Db_Management( $logger, $file_system, $this->layout_cpt, true ),
+			new Db_Management( $logger, $file_system, $this->container->get( Layouts_Cpt::class ), true ),
 			$this->container->get( Layout_Settings::class )
 		);
 
@@ -254,7 +253,7 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 
 	protected function make_git_box(): Layout_Git_Box {
 		return new Layout_Git_Box(
-			$this->layout_cpt->cpt_name(),
+			$this->container->get( Layouts_Cpt::class )->cpt_name(),
 			$this->container->get( Settings_Storage::class ),
 			$this->container->get( Layout_Settings_Storage::class ),
 			$this->container->get( Git_Lab_Api::class ),
@@ -265,7 +264,7 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 
 	protected function make_interactive_fields(): Layout_Interactive_Fields {
 		return new Layout_Interactive_Fields(
-			$this->layout_cpt,
+			$this->container->get( Layouts_Cpt::class ),
 			$this->container->get( Html_Printer::class ),
 			$this->container->get( Plugin::class ),
 			$this->container->get( Layout_Settings_Storage::class ),

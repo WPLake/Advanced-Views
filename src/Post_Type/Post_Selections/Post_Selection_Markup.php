@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory_Storage;
@@ -18,12 +18,12 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Fac
 class Post_Selection_Markup {
 	private Front_Assets $front_assets;
 	protected Token_Factory_Storage $token_factory_storage;
-	private Public_Cpt $public_cpt;
+	private Layouts_Cpt $layout_cpt;
 
-	public function __construct( Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Public_Cpt $public_cpt ) {
+	public function __construct( Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Layouts_Cpt $layout_cpt ) {
 		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;
-		$this->public_cpt            = $public_cpt;
+		$this->layout_cpt            = $layout_cpt;
 	}
 
 	public function print_extra_markup( Post_Selection_Settings $post_selection_settings ): void {
@@ -157,7 +157,7 @@ class Post_Selection_Markup {
 											->add_item_path( 'layout_id' );
 		$post_id_var = $token_factory->variable( 'post_id' );
 
-		printf( '[%s', esc_html( $this->public_cpt->shortcode() ) );
+		printf( '[%s', esc_html( $this->layout_cpt->shortcode() ) );
 
 		$token_factory->format()
 						->attributes(

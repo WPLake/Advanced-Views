@@ -11,11 +11,11 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Meta_Boxes;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use WP_Query;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 
@@ -32,7 +32,7 @@ class Layouts_Cpt_Table extends Cpt_Table {
 
 	public function __construct(
 		Cpt_Settings_Storage $cpt_settings_storage,
-		Public_Cpt $public_cpt,
+		Layouts_Cpt $public_cpt,
 		Html_Printer $html,
 		Layout_Meta_Boxes $layouts_cpt_meta_boxes,
 		Plugin_Cpt $plugin_cpt

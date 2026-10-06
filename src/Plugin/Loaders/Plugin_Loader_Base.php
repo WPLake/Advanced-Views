@@ -33,11 +33,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Labels\Cpt_Labels_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt_Base;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Bar;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Pages;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader;
@@ -59,8 +55,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
 use Org\Wplake\Advanced_Views\Vendors\DI\Container;
@@ -79,8 +77,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public Layout_Settings_Storage $layouts_settings_storage;
 
 	public Templates_Environment $templates_environment;
-	public Public_Cpt $layout_cpt;
-	public Public_Cpt $post_selection_cpt;
 	public Data_Vendors $provider_cluster;
 	public Front_Assets $front_assets;
 	public Live_Reloader_Component $live_reloader_component;
@@ -218,8 +214,8 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 	protected function acf_groups( Route_Detector $route_detector ): void {
 		if ( ! wp_doing_ajax() &&
-			false === $route_detector->is_cpt_admin_route( $this->layout_cpt->cpt_name() ) &&
-			false === $route_detector->is_cpt_admin_route( $this->post_selection_cpt->cpt_name() ) ) {
+			false === $route_detector->is_cpt_admin_route( $this->container->get( Layouts_Cpt::class )->cpt_name() ) &&
+			false === $route_detector->is_cpt_admin_route( $this->container->get( Selections_Cpt::class )->cpt_name() ) ) {
 			return;
 		}
 
@@ -290,7 +286,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			$this->group_creator->create( Repeater_Field_Settings::class ),
 			$this->container->get( Layout_Shortcode::class ),
 			$this->settings,
-			$this->layout_cpt,
+			$this->container->get( Layouts_Cpt::class ),
 		);
 
 		return array(
@@ -357,31 +353,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$this->file_systems = array_merge( $this->file_systems, $file_systems );
 	}
 
-	protected static function make_layout_cpt(): Public_Cpt {
-		$public_cpt_base = new Public_Cpt_Base();
-
-		$public_cpt_base->cpt_name = Hard_Layout_Cpt::cpt_name();
-		// replacement will require changes in ALL the "layout-pointer" fields values, like Post Selection -> Item layout.
-		$public_cpt_base->slug_prefix = 'view_';
-		$public_cpt_base->folder_name = 'layouts';
-
-		$public_cpt_base->shortcode        = 'avf-layout';
-		$public_cpt_base->shortcodes       = array( $public_cpt_base->shortcode, 'avf_view', 'acf_views' );
-		$public_cpt_base->rest_route_names = array( 'layout', 'view' );
-
-		$public_cpt_base->labels = new class() extends Cpt_Labels_Base{
-			public function singular_name(): string {
-				return esc_html__( 'Layout', 'acf-views' );
-			}
-
-			public function plural_name(): string {
-				return esc_html__( 'Layouts', 'acf-views' );
-			}
-		};
-
-		return $public_cpt_base;
-	}
-
 	protected static function uploads_folder(): string {
 		return wp_upload_dir()['basedir'] . '/acf-views';
 	}
@@ -413,13 +384,12 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		return array(
 			Layouts_Bootstrap::class            => new Layouts_Bootstrap(
 				$this->container,
-				$this->layout_cpt,
-				$this->post_selection_cpt
+				$this->container->get( Selections_Cpt::class )
 			),
 			Version_Migrations_Bootstrap::class => new Version_Migrations_Bootstrap(
 				$this->container,
-				$this->layout_cpt,
-				$this->post_selection_cpt
+				$this->container->get( Layouts_Cpt::class ),
+				$this->container->get( Selections_Cpt::class )
 			),
 		);
 	}

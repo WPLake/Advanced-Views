@@ -8,35 +8,35 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use WP_Post;
 
 class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Selection_Settings_Storage $post_selections_settings_storage;
-	private Public_Cpt $public_cpt;
-	private Plugin_Cpt $plugin_cpt;
+	private Selections_Cpt $public_cpt;
+	private Layouts_Cpt $layout_cpt;
 
 	public function __construct(
 		Html_Printer $html,
 		Plugin $plugin,
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Public_Cpt $public_cpt,
-		Plugin_Cpt $plugin_cpt
+		Selections_Cpt $public_cpt,
+		Layouts_Cpt $layout_cpt
 	) {
 		parent::__construct( $html, $plugin );
 
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
 		$this->layouts_settings_storage         = $layouts_settings_storage;
 		$this->public_cpt                       = $public_cpt;
-		$this->plugin_cpt                       = $plugin_cpt;
+		$this->layout_cpt                       = $layout_cpt;
 	}
 
 	protected function get_cpt_name(): string {
@@ -50,7 +50,7 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 		$message = sprintf(
 			// translators: %s - singular name of the CPT.
 			__( 'No related %s.', 'acf-views' ),
-			$this->plugin_cpt->labels()->singular_name()
+			$this->layout_cpt->labels()->singular_name()
 		);
 
 		if ( '' === $post_selection_settings->acf_view_id ) {

@@ -8,10 +8,6 @@ defined( 'ABSPATH' ) || exit;
 
 use Closure;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Labels\Cpt_Labels_Base;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt_Base;
 use Org\Wplake\Advanced_Views\Plugin\Module_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Gutenberg_Editor_Settings;
@@ -54,30 +50,6 @@ abstract class Post_Selections_Loader_Base extends Module_Loader {
 	 * @var Closure():array<int, Hookable>
 	 */
 	protected Closure $make_elementor_integration;
-
-	public static function make_post_selection_cpt(): Public_Cpt {
-		$public_cpt_base = new Public_Cpt_Base();
-
-		$public_cpt_base->cpt_name    = Hard_Post_Selection_Cpt::cpt_name();
-		$public_cpt_base->slug_prefix = 'card_';
-		$public_cpt_base->folder_name = 'post-selections';
-
-		$public_cpt_base->shortcode        = 'avf-post-selection';
-		$public_cpt_base->shortcodes       = array( $public_cpt_base->shortcode, 'avf_card', 'acf_cards' );
-		$public_cpt_base->rest_route_names = array( 'post-selection', 'card' );
-
-		$public_cpt_base->labels = new class() extends Cpt_Labels_Base {
-			public function singular_name(): string {
-				return esc_html__( 'Post Selection', 'acf-views' );
-			}
-
-			public function plural_name(): string {
-				return esc_html__( 'Post Selections', 'acf-views' );
-			}
-		};
-
-		return $public_cpt_base;
-	}
 
 	/**
 	 * @return Hookable[]

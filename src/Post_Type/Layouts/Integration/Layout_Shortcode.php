@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
@@ -15,6 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Shortcode\Shortcode_Bas
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Shortcode_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use WP_Comment;
 use WP_Term;
@@ -37,7 +37,7 @@ final class Layout_Shortcode extends Shortcode_Base {
 	private Shortcode_Gutenberg_Block $shortcode_block;
 
 	public function __construct(
-		Public_Cpt $public_cpt,
+		Layouts_Cpt $public_cpt,
 		Settings_Storage $settings,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Live_Reloader_Component $live_reloader_component,

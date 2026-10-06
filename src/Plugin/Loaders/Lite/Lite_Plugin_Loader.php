@@ -20,6 +20,7 @@ use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tools_Settings_Integration;
 use Org\Wplake\Advanced_Views\Acf\Groups\Git_Repository;
 use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Plugin_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Tools_Settings;
@@ -54,11 +55,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Provider;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Post_Selection_Fs_Fields;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Blade\Blade_Template_Engine;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory_Storage;
@@ -88,16 +91,17 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	 * @return Hookable[]
 	 */
 	protected function primary(): array {
-		$this->layout_cpt         = self::make_layout_cpt();
-		$this->post_selection_cpt = Lite_Post_Selections_Loader::make_post_selection_cpt();
+		$layout_cpt    = $this->container->get( Layouts_Cpt::class );
+		$selection_cpt = $this->container->get( Selections_Cpt::class );
 
 		$this->plugin_cpts = array(
-			$this->layout_cpt,
-			$this->post_selection_cpt,
+			$layout_cpt,
+			$selection_cpt,
 		);
 
 		$this->options  = $this->container->get( Options_Storage::class );
 		$this->settings = $this->container->get( Settings_Storage::class );
+		$this->container->set( Cpt_Theme_Settings::class, $this->settings );
 
 		$uploads_folder = self::uploads_folder();
 		$this->logger   = new Logger( $uploads_folder, $this->settings );
@@ -129,30 +133,30 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 
 		$post_selections_file_system            = new File_System(
 			$this->logger,
-			$this->post_selection_cpt->folder_name()
+			$selection_cpt->folder_name()
 		);
 		$this->post_selections_settings_storage = new Selection_Settings_Storage(
 			$this->logger,
 			$post_selections_file_system,
 			$this->container->get( Post_Selection_Fs_Fields::class ),
-			new Db_Management( $this->logger, $post_selections_file_system, $this->post_selection_cpt ),
+			new Db_Management( $this->logger, $post_selections_file_system, $selection_cpt ),
 			$this->post_selection_settings
 		);
 		$this->container->set( Selection_Settings_Storage::class, $this->post_selections_settings_storage );
 
-		$layouts_file_system            = new File_System( $this->logger, $this->layout_cpt->folder_name() );
+		$layouts_file_system            = new File_System( $this->logger, $layout_cpt->folder_name() );
 		$this->layouts_settings_storage = new Layout_Settings_Storage(
 			$this->logger,
 			$layouts_file_system,
 			$this->container->get( Layout_Fs_Fields::class ),
-			new Db_Management( $this->logger, $layouts_file_system, $this->layout_cpt ),
+			new Db_Management( $this->logger, $layouts_file_system, $layout_cpt ),
 			$this->layout_settings
 		);
 		$this->container->set( Layout_Settings_Storage::class, $this->layouts_settings_storage );
 
-		$this->plugin                = new Plugin( $this->plugin_file, $this->options, $this->settings );
+		$this->plugin = new Plugin( $this->plugin_file, $this->options, $this->settings );
 		$this->container->set( Plugin::class, $this->plugin );
-		$this->asset_resolver        = new Asset_Resolver( $this->plugin_file, $this->plugin->get_version() );
+		$this->asset_resolver = new Asset_Resolver( $this->plugin_file, $this->plugin->get_version() );
 		$this->container->set( Asset_Resolver::class, $this->asset_resolver );
 		$this->templates_environment = new Templates_Environment(
 			$uploads_folder,
@@ -175,15 +179,15 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$this->live_reloader_component
 		);
 		$this->container->set( Front_Assets::class, $this->front_assets );
-		$this->git_lab_api             = new Git_Lab_Api(
+		$this->git_lab_api = new Git_Lab_Api(
 			$this->logger,
 			$this->options,
-			$this->layout_cpt,
-			$this->post_selection_cpt
+			$layout_cpt,
+			$selection_cpt
 		);
 		$this->container->set( Git_Lab_Api::class, $this->git_lab_api );
-		$this->upgrade_notice          = $this->container->get( Upgrade_Notice::class );
-		$this->cache_flusher           = new Cache_Flusher( $this->logger, $this->get_cache_cleaners() );
+		$this->upgrade_notice = $this->container->get( Upgrade_Notice::class );
+		$this->cache_flusher  = new Cache_Flusher( $this->logger, $this->get_cache_cleaners() );
 		$this->container->set( Cache_Flusher::class, $this->cache_flusher );
 
 		$this->add_file_systems(
@@ -209,41 +213,44 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	 * @return Hookable[]
 	 */
 	protected function integration( Route_Detector $route_detector ): array {
+		$layout_cpt    = $this->container->get( Layouts_Cpt::class );
+		$selection_cpt = $this->container->get( Selections_Cpt::class );
+
 		$this->acf_dependency = $this->container->get( Acf_Dependency::class );
 
 		$this->layout_settings_integration         = new Layout_Settings_Integration(
-			$this->layout_cpt->cpt_name(),
+			$layout_cpt->cpt_name(),
 			$this->provider_cluster,
 			$this->engines_storage
 		);
 		$this->field_settings_integration          = new Field_Settings_Integration(
 			$this->provider_cluster,
-			$this->layout_cpt
+			$layout_cpt
 		);
 		$this->post_selection_settings_integration = new Post_Selection_Settings_Integration(
-			$this->post_selection_cpt->cpt_name(),
+			$selection_cpt->cpt_name(),
 			$this->provider_cluster,
-			$this->layout_cpt,
+			$layout_cpt,
 			$this->engines_storage
 		);
 		$this->item_settings_integration           = new Item_Settings_Integration(
-			$this->layout_cpt->cpt_name(),
+			$layout_cpt->cpt_name(),
 			$this->provider_cluster
 		);
 		// metaField is a part of the Meta Filter, so we use 'cardsCpt' here.
 		$this->meta_field_settings_integration        = new Meta_Field_Settings_Integration(
-			$this->post_selection_cpt->cpt_name(),
+			$selection_cpt->cpt_name(),
 			$this->provider_cluster,
 			$this->plugin
 		);
 		$this->layout_mount_point_integration         = new Mount_Point_Settings_Integration(
-			$this->layout_cpt->cpt_name()
+			$layout_cpt->cpt_name()
 		);
 		$this->post_selection_mount_point_integration = new Mount_Point_Settings_Integration(
-			$this->post_selection_cpt->cpt_name()
+			$selection_cpt->cpt_name()
 		);
 		$this->tax_field_settings_integration         = new Tax_Field_Settings_Integration(
-			$this->post_selection_cpt->cpt_name(),
+			$selection_cpt->cpt_name(),
 			$this->provider_cluster,
 			$this->plugin
 		);
@@ -257,6 +264,9 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	 * @return Hookable[]
 	 */
 	protected function others(): array {
+		$layout_cpt    = $this->container->get( Layouts_Cpt::class );
+		$selection_cpt = $this->container->get( Selections_Cpt::class );
+
 		$this->demo_import = $this->container->get( Demo_Importer::class );
 
 		$this->dashboard             = new Admin_Pages(
@@ -274,8 +284,8 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$this->plugin,
 			$this->logger,
 			$this->container->get( Debug_Dump_Creator::class ),
-			$this->layout_cpt,
-			$this->post_selection_cpt,
+			$layout_cpt,
+			$selection_cpt,
 			$this->settings,
 			$this->cache_flusher
 		);
@@ -315,8 +325,8 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 
 		$this->point_mounter = new Point_Mounter(
 			array(
-				new Point_Provider( $this->layouts_settings_storage, $this->layout_cpt ),
-				new Point_Provider( $this->post_selections_settings_storage, $this->post_selection_cpt ),
+				new Point_Provider( $this->layouts_settings_storage, $layout_cpt ),
+				new Point_Provider( $this->post_selections_settings_storage, $selection_cpt ),
 			)
 		);
 

@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
@@ -14,6 +13,7 @@ use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Shortcode\Shortcode_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Selection_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
@@ -23,7 +23,7 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 	protected Selection_Settings_Storage $cards_data_storage;
 
 	public function __construct(
-		Public_Cpt $public_cpt,
+		Selections_Cpt $public_cpt,
 		Settings_Storage $settings,
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Live_Reloader_Component $live_reloader_component,
