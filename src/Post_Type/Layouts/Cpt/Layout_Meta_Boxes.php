@@ -16,6 +16,7 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use WP_Post;
 
 class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
@@ -24,8 +25,8 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 
 	private Field_Provider_Cluster $provider_cluster;
 	private Layout_Settings_Storage $layouts_settings_storage;
-	private Layouts_Cpt $public_cpt;
-	private Plugin_Cpt $plugin_cpt;
+	private Layouts_Cpt $layouts_cpt;
+	private Plugin_Cpt $selections_cpt;
 
 	public function __construct(
 		Html_Printer $html,
@@ -33,14 +34,14 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		Layout_Settings_Storage $layouts_settings_storage,
 		Field_Provider_Cluster $provider_cluster,
 		Layouts_Cpt $public_cpt,
-		Plugin_Cpt $plugin_cpt
+		Selections_Cpt $plugin_cpt
 	) {
 		parent::__construct( $html, $plugin );
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
 		$this->provider_cluster         = $provider_cluster;
-		$this->public_cpt               = $public_cpt;
-		$this->plugin_cpt               = $plugin_cpt;
+		$this->layouts_cpt              = $public_cpt;
+		$this->selections_cpt           = $plugin_cpt;
 	}
 
 	protected function get_cpt_name(): string {
@@ -131,7 +132,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			$message = sprintf(
 				// translators: %s is the plural name of the CPT.
 				__( 'No assigned %s.', 'acf-views' ),
-				$this->public_cpt->labels()->plural_name()
+				$this->layouts_cpt->labels()->plural_name()
 			);
 
 			if ( false === $is_skip_not_found_message ) {
@@ -189,7 +190,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 					sprintf(
 					// translators: %s is the plural name of the CPT.
 						__( 'Not assigned to any %s.', 'acf-views' ),
-						$this->plugin_cpt->labels()->plural_name()
+						$this->selections_cpt->labels()->plural_name()
 					)
 				)
 			);
@@ -222,7 +223,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		if ( 0 !== $post_id ) {
 			$url = add_query_arg(
 				array(
-					'post_type'                => $this->plugin_cpt->cpt_name(),
+					'post_type'                => $this->selections_cpt->cpt_name(),
 					self::ARGUMENT_FROM_LAYOUT => $post_id,
 					'_wpnonce'                 => wp_create_nonce( self::NONCE_MAKE_NEW ),
 				),
@@ -252,7 +253,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 						sprintf(
 							// translators: %s - singular name of the CPT.
 							__( 'Your %s shortcode is available after publishing.', 'acf-views' ),
-							$this->public_cpt->labels()->singular_name()
+							$this->layouts_cpt->labels()->singular_name()
 						)
 					);
 
@@ -265,7 +266,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				$this->get_html()->print_postbox_shortcode(
 					$short_view_unique_id,
 					false,
-					$this->public_cpt,
+					$this->layouts_cpt,
 					get_the_title( $post ),
 					false,
 					$view_data->is_for_internal_usage_only()
@@ -283,7 +284,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			sprintf(
 			// translators: %s - plural name of the CPT.
 				__( 'Used by %s', 'acf-views' ),
-				$this->plugin_cpt->labels()->plural_name()
+				$this->selections_cpt->labels()->plural_name()
 			),
 			function ( WP_Post $wp_post ): void {
 				$view_data = $this->layouts_settings_storage->get( $wp_post->post_name );
@@ -316,7 +317,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			sprintf(
 			// translators: %s is the plural name of the CPT.
 				__( 'Nested %s', 'acf-views' ),
-				$this->public_cpt->labels()->plural_name()
+				$this->layouts_cpt->labels()->plural_name()
 			),
 			function ( WP_Post $wp_post ): void {
 				$view_data = $this->layouts_settings_storage->get( $wp_post->post_name );

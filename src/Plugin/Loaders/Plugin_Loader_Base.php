@@ -382,15 +382,8 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 */
 	protected function get_bootstraps(): array {
 		return array(
-			Layouts_Bootstrap::class            => new Layouts_Bootstrap(
-				$this->container,
-				$this->container->get( Selections_Cpt::class )
-			),
-			Version_Migrations_Bootstrap::class => new Version_Migrations_Bootstrap(
-				$this->container,
-				$this->container->get( Layouts_Cpt::class ),
-				$this->container->get( Selections_Cpt::class )
-			),
+			Layouts_Bootstrap::class,
+			Version_Migrations_Bootstrap::class,
 		);
 	}
 

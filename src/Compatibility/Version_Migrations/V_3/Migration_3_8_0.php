@@ -13,6 +13,8 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 
 final class Migration_3_8_0 extends Version_Migration_Base {
@@ -23,15 +25,15 @@ final class Migration_3_8_0 extends Version_Migration_Base {
 		Logger $logger,
 		Layout_Settings_Storage $view_cpt_settings_storage,
 		Selection_Settings_Storage $card_cpt_settings_storage,
-		Plugin_Cpt $layouts_cpt,
-		Plugin_Cpt $post_selections_cpt
+		Layouts_Cpt $layouts_cpt,
+		Selections_Cpt $selections_cpt
 	) {
 		parent::__construct( $logger );
 
 		$file_system      = $view_cpt_settings_storage->get_file_system();
 		$this->migrations = array(
 			new Migration_Post_Type( $logger, $view_cpt_settings_storage, $this->get_views_cpt(), $layouts_cpt ),
-			new Migration_Post_Type( $logger, $card_cpt_settings_storage, $this->get_cards_cpt(), $post_selections_cpt ),
+			new Migration_Post_Type( $logger, $card_cpt_settings_storage, $this->get_cards_cpt(), $selections_cpt ),
 			new Migration_Fs_Field( $logger, $file_system, 'view.php', 'controller.php' ),
 			new Migration_Fs_Field( $logger, $file_system, 'card.php', 'controller.php' ),
 		);
@@ -45,22 +47,20 @@ final class Migration_3_8_0 extends Version_Migration_Base {
 	}
 
 	protected function get_views_cpt(): Plugin_Cpt {
-		$plugin_cpt_base = new Plugin_Cpt_Base();
-
-		$plugin_cpt_base->cpt_name    = 'acf_views';
-		$plugin_cpt_base->slug_prefix = 'view_';
-		$plugin_cpt_base->folder_name = 'views';
-
-		return $plugin_cpt_base;
+		return $this->make_cpt( 'acf_views', 'view_', 'views' );
 	}
 
 	protected function get_cards_cpt(): Plugin_Cpt {
-		$plugin_cpt_base = new Plugin_Cpt_Base();
+		return $this->make_cpt( 'acf_cards', 'card_', 'cards' );
+	}
 
-		$plugin_cpt_base->cpt_name    = 'acf_cards';
-		$plugin_cpt_base->slug_prefix = 'card_';
-		$plugin_cpt_base->folder_name = 'cards';
-
-		return $plugin_cpt_base;
+	protected function make_cpt( string $cpt_name, string $slug_prefix, string $folder_name ): Plugin_Cpt {
+		return new class( $cpt_name, $slug_prefix, $folder_name ) extends Plugin_Cpt_Base {
+			public function __construct( string $cpt_name, string $slug_prefix, string $folder_name ) {
+				$this->cpt_name    = $cpt_name;
+				$this->slug_prefix = $slug_prefix;
+				$this->folder_name = $folder_name;
+			}
+		};
 	}
 }

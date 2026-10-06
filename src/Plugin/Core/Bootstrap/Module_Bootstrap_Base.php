@@ -4,17 +4,11 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap;
 
-use Org\Wplake\Advanced_Views\Vendors\DI\Container;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Container_Facade;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Module_Bootstrap_Base implements Module_Bootstrap {
-	protected Container $container;
-
-	public function __construct( Container $container ) {
-		$this->container = $container;
-	}
-
+abstract class Module_Bootstrap_Base extends Container_Facade implements Module_Bootstrap {
 	public function get_plugin_extensions(): array {
 		return array();
 	}

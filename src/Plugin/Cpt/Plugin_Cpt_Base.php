@@ -9,10 +9,10 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Labels\Cpt_Labels;
 defined( 'ABSPATH' ) || exit;
 
 class Plugin_Cpt_Base implements Plugin_Cpt {
-	public string $cpt_name = '';
-	public Cpt_Labels $labels;
-	public string $slug_prefix = '';
-	public string $folder_name = '';
+	protected string $cpt_name = '';
+	protected Cpt_Labels $labels;
+	protected string $slug_prefix = '';
+	protected string $folder_name = '';
 
 	public function cpt_name(): string {
 		return $this->cpt_name;
