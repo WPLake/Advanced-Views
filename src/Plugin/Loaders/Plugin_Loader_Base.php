@@ -6,14 +6,11 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
 use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
 use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
+use Org\Wplake\Advanced_Views\Acf\Acf_Groups_Loader;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tools_Settings_Integration;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
@@ -45,12 +42,15 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
@@ -138,7 +138,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	protected function load_modules( Route_Detector $route_detector ): array {
 		$this->translations( $route_detector );
 		$primary = $this->primary();
-		$this->acf_groups( $route_detector );
+		$acf_groups = $this->acf_groups( $route_detector );
 		// layouts instances are used by the next modules, so bootstraps go first.
 		$bootstraps     = resolve_instances( $this->get_bootstraps(), $this->container );
 		$modules        = $this->load_bootstraps( $bootstraps, $route_detector );
@@ -150,7 +150,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 		$this->add_plugin_extensions( $bootstraps );
 
-		return array_merge( $primary, $modules, $post_selection, $integration, $others, $environment );
+		return array_merge( $primary, $acf_groups, $modules, $post_selection, $integration, $others, $environment );
 	}
 
 	protected function translations( Route_Detector $route_detector ): void {
@@ -199,17 +199,20 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		);
 	}
 
-	protected function acf_groups( Route_Detector $route_detector ): void {
+	/**
+	 * @return Hookable[]
+	 */
+	protected function acf_groups( Route_Detector $route_detector ): array {
 		if ( ! wp_doing_ajax() &&
 			false === $route_detector->is_cpt_admin_route( $this->resolve( Layouts_Cpt::class )->cpt_name() ) &&
 			false === $route_detector->is_cpt_admin_route( $this->resolve( Selections_Cpt::class )->cpt_name() ) ) {
-			return;
+			return array();
 		}
 
-		Acf_Utils::load_groups(
-			array(
-				'Org\Wplake\Advanced_Views\Acf\Groups' => $this->plugin->get_plugin_path( 'src/Acf/Groups' ),
-			)
+		return array(
+			new Acf_Groups_Loader(
+				array( 'Org\Wplake\Advanced_Views\Acf\Groups' => $this->plugin->get_plugin_path( 'src/Acf/Groups' ) )
+			),
 		);
 	}
 
@@ -219,6 +222,10 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 * @return Hookable[]
 	 */
 	protected function load_bootstraps( array $bootstraps, Route_Detector $route_detector ): array {
+		foreach ( $bootstraps as $bootstrap ) {
+			$bootstrap->wire_factories();
+		}
+
 		return flat_map(
 			$bootstraps,
 			fn( Module_Bootstrap $bootstrap ): array => $bootstrap->get_hookables( $route_detector )
@@ -233,7 +240,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			'plugins_loaded',
 			function () use ( $bootstraps ): void {
 				foreach ( $bootstraps as $bootstrap ) {
-					foreach ( $bootstrap->get_plugin_extensions() as $loaded_action => $make_hookables ) {
+					foreach ( $bootstrap->get_extension_hookables() as $loaded_action => $make_hookables ) {
 						if ( did_action( $loaded_action ) > 0 ) {
 							$this->load_hookable( $make_hookables() );
 						}

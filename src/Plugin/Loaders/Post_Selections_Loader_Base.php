@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Mount_Point_Settings_Integration;
-use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
+use Org\Wplake\Advanced_Views\Acf\Acf_Groups_Loader;
 use Closure;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Module_Loader;
@@ -63,29 +63,35 @@ abstract class Post_Selections_Loader_Base extends Module_Loader {
 	 * @return Hookable[]
 	 */
 	public function hookable( Route_Detector $route_detector ): array {
-		$this->load_acf_groups( $route_detector );
-
 		$this->add_plugin_extension(
 			fn(): bool => did_action( 'elementor/loaded' ) > 0,
 			$this->make_elementor_integration
 		);
 
 		return array_merge(
+			$this->make_acf_groups_hookables( $route_detector ),
 			$this->make_acf_integrations(),
 			$this->make_hookables()
 		);
 	}
 
-	protected function load_acf_groups( Route_Detector $route_detector ): void {
+	/**
+	 * @return Hookable[]
+	 */
+	protected function make_acf_groups_hookables( Route_Detector $route_detector ): array {
 		$selection_cpt = $this->resolve( Selections_Cpt::class );
 
-		if ( wp_doing_ajax() || $route_detector->is_cpt_admin_route( $selection_cpt->cpt_name() ) ) {
-			Acf_Utils::load_groups(
-				array(
-					'Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups' => $this->resolve( Plugin::class )->get_plugin_path( 'src/Post_Type/Post_Selections/Acf/Groups' ),
-				)
-			);
+		if ( ! wp_doing_ajax() && ! $route_detector->is_cpt_admin_route( $selection_cpt->cpt_name() ) ) {
+			return array();
 		}
+
+		$groups_path = $this->resolve( Plugin::class )->get_plugin_path( 'src/Post_Type/Post_Selections/Acf/Groups' );
+
+		return array(
+			new Acf_Groups_Loader(
+				array( 'Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups' => $groups_path )
+			),
+		);
 	}
 
 	/**

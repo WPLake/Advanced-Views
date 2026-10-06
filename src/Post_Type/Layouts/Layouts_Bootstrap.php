@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
+use Org\Wplake\Advanced_Views\Acf\Acf_Groups_Loader;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Mount_Point_Settings_Integration;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
@@ -53,102 +53,94 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_R
 use Org\Wplake\Advanced_Views\Template\Template_Engine\PHP\PHP_Template_Engine;
 
 class Layouts_Bootstrap extends Module_Bootstrap_Base {
-	protected Cpt_Item_Picker $item_picker;
-	protected Cpt_Renderer $cpt_renderer;
-
-	public function get_hookables( Route_Detector $route_detector ): array {
-		$layouts_settings_storage = $this->resolve( Layout_Settings_Storage::class );
-		$layout_cpt               = $this->resolve( Layouts_Cpt::class );
-
-		$this->load_acf_groups( $route_detector, $layout_cpt );
-
-		// instances are registered in the container right after creation (for types it can't autowire),
-		// as they're used by the next ones and by other modules.
-		$factory = $this->make_factory();
-		$this->wire( Layout_Factory::class, $factory );
-
-		$shortcodes      = $layout_cpt->shortcodes();
-		$shortcode_block = new Shortcode_Gutenberg_Block( $shortcodes );
-		$this->wire( Shortcode_Gutenberg_Block::class, $shortcode_block );
-
-		$shortcode    = $this->resolve( Layout_Shortcode::class );
-		$item_picker  = new Cpt_Item_Picker( $layouts_settings_storage, $layout_cpt );
-		$cpt_renderer = new Cpt_Renderer( $shortcode, $layouts_settings_storage, $layout_cpt );
-
-		$this->item_picker  = $item_picker;
-		$this->cpt_renderer = $cpt_renderer;
-
-		$asset_resolver = $this->resolve( Asset_Resolver::class );
-		$cpt_block      = new Cpt_Gutenberg_Block( $cpt_renderer );
-		$block          = new Layout_Gutenberg_Block( $asset_resolver, $item_picker, $cpt_block );
-
-		$cpt_table           = $this->resolve( Layouts_Cpt_Table::class );
-		$fs_only_tab         = new Fs_Only_Tab( $cpt_table, $layouts_settings_storage );
-		$bulk_validation_tab = new Layouts_Bulk_Validation_Tab( $cpt_table, $layouts_settings_storage, $fs_only_tab, $factory );
-
-		$pre_built_tab = $this->make_pre_built_tab();
-		$this->wire( Layouts_Pre_Built_Tab::class, $pre_built_tab );
-
-		$settings         = $this->resolve( Settings_Storage::class );
-		$plugin           = $this->resolve( Plugin::class );
-		$cpt_name         = $layout_cpt->cpt_name();
-		$acf_integrations = $this->make_acf_integrations( $layout_cpt );
-
-		$hookables = array(
-			$this->resolve( Layout_Meta_Boxes::class ),
-			new Layouts_Cpt_Hookable( $layout_cpt, $layouts_settings_storage ),
-			$cpt_table,
-			$fs_only_tab,
-			$bulk_validation_tab,
-			$pre_built_tab,
-			new Cpt_Gutenberg_Editor_Settings( $cpt_name ),
-			new Cpt_Assets_Reducer( $settings, $plugin, $cpt_name ),
-			$this->resolve( Layout_Save_Actions::class ),
-			$shortcode,
-			$shortcode_block,
-			$item_picker,
-			$block,
-			$this->resolve( Layout_Git_Box::class ),
-			$this->resolve( Layout_Git_Tabs::class ),
-			$this->resolve( Layout_Interactive_Fields::class ),
-		);
-
-		return array_merge( $acf_integrations, $hookables );
+	public function wire_factories(): void {
+		foreach ( $this->get_wire_resolves() as $class_name => $factory ) {
+			$this->wire( $class_name, $factory );
+		}
 	}
 
-	public function get_plugin_extensions(): array {
+	public function get_hookables( Route_Detector $route_detector ): array {
+		$resolved = array_map(
+			fn( string $class_name ): Hookable => $this->resolve( $class_name ),
+			$this->get_hookable_classes()
+		);
+
+		return array_merge( $this->get_acf_groups_hookables( $route_detector ), $resolved, $this->get_instances() );
+	}
+
+	public function get_extension_hookables(): array {
 		return array(
 			'elementor/loaded' => fn(): array => $this->create_elementor_hookables(),
 		);
 	}
 
-	protected function load_acf_groups( Route_Detector $route_detector, Layouts_Cpt $layout_cpt ): void {
-		$cpt_name     = $layout_cpt->cpt_name();
-		$is_cpt_route = $route_detector->is_cpt_admin_route( $cpt_name );
+	/**
+	 * @return array<class-string<Hookable>>
+	 */
+	protected function get_hookable_classes(): array {
+		return array(
+			Layout_Settings_Integration::class,
+			Field_Settings_Integration::class,
+			Item_Settings_Integration::class,
+			Layout_Meta_Boxes::class,
+			Layouts_Cpt_Hookable::class,
+			Layouts_Cpt_Table::class,
+			Layouts_Bulk_Validation_Tab::class,
+			Layouts_Pre_Built_Tab::class,
+			Layout_Save_Actions::class,
+			Layout_Shortcode::class,
+			Layout_Gutenberg_Block::class,
+			Layout_Git_Box::class,
+			Layout_Git_Tabs::class,
+			Layout_Interactive_Fields::class,
+		);
+	}
 
-		if ( wp_doing_ajax() || $is_cpt_route ) {
-			$plugin      = $this->resolve( Plugin::class );
-			$groups_path = $plugin->get_plugin_path( 'src/Post_Type/Layouts/Acf/Groups' );
+	/**
+	 * Generic (not layout-specific) hookables, created directly as the container can't host them per module
+	 *
+	 * @return Hookable[]
+	 */
+	protected function get_instances(): array {
+		return array(
+			$this->create_item_picker(),
+			$this->create_shortcode_block(),
+			$this->create_fs_only_tab(),
+			$this->create_editor_settings(),
+			$this->create_assets_reducer(),
+			$this->create_mount_point_integration(),
+		);
+	}
 
-			$groups = array(
-				'Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups' => $groups_path,
-			);
-
-			Acf_Utils::load_groups( $groups );
-		}
+	/**
+	 * @return array<class-string, callable>
+	 */
+	protected function get_wire_resolves(): array {
+		return array(
+			Layout_Factory::class              => fn(): Layout_Factory => $this->make_factory(),
+			Layouts_Pre_Built_Tab::class       => fn(): Layouts_Pre_Built_Tab => $this->make_pre_built_tab(),
+			Layouts_Cpt_Hookable::class        => fn(): Layouts_Cpt_Hookable => $this->make_cpt_hookable(),
+			Layouts_Bulk_Validation_Tab::class => fn(): Layouts_Bulk_Validation_Tab => $this->make_bulk_validation_tab(),
+			Layout_Gutenberg_Block::class      => fn(): Layout_Gutenberg_Block => $this->make_gutenberg_block(),
+		);
 	}
 
 	/**
 	 * @return Hookable[]
 	 */
-	protected function make_acf_integrations( Layouts_Cpt $layout_cpt ): array {
-		$cpt_name = $layout_cpt->cpt_name();
+	protected function get_acf_groups_hookables( Route_Detector $route_detector ): array {
+		$cpt_name = $this->resolve( Layouts_Cpt::class )->cpt_name();
+
+		if ( ! wp_doing_ajax() && ! $route_detector->is_cpt_admin_route( $cpt_name ) ) {
+			return array();
+		}
+
+		$groups_path = $this->resolve( Plugin::class )->get_plugin_path( 'src/Post_Type/Layouts/Acf/Groups' );
 
 		return array(
-			$this->resolve( Layout_Settings_Integration::class ),
-			$this->resolve( Field_Settings_Integration::class ),
-			$this->resolve( Item_Settings_Integration::class ),
-			new Mount_Point_Settings_Integration( $cpt_name ),
+			new Acf_Groups_Loader(
+				array( 'Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups' => $groups_path )
+			),
 		);
 	}
 
@@ -156,15 +148,80 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 	 * @return Hookable[]
 	 */
 	protected function create_elementor_hookables(): array {
-		$widget_registrar = new Cpt_Widget_Registrar( $this->item_picker, $this->cpt_renderer );
+		$item_picker      = $this->create_item_picker();
+		$widget_registrar = new Cpt_Widget_Registrar( $item_picker, $this->create_cpt_renderer() );
 
 		$widget_registrar->add_widget( Layout_Elementor_Widget::class );
 
-		$asset_resolver = $this->resolve( Asset_Resolver::class );
-
 		return array(
 			$widget_registrar,
-			new Layout_Elementor_Assets( $this->item_picker, $asset_resolver ),
+			new Layout_Elementor_Assets( $item_picker, $this->resolve( Asset_Resolver::class ) ),
+		);
+	}
+
+	protected function make_cpt_hookable(): Layouts_Cpt_Hookable {
+		return new Layouts_Cpt_Hookable(
+			$this->resolve( Layouts_Cpt::class ),
+			$this->resolve( Layout_Settings_Storage::class )
+		);
+	}
+
+	protected function create_fs_only_tab(): Fs_Only_Tab {
+		return new Fs_Only_Tab(
+			$this->resolve( Layouts_Cpt_Table::class ),
+			$this->resolve( Layout_Settings_Storage::class )
+		);
+	}
+
+	protected function make_bulk_validation_tab(): Layouts_Bulk_Validation_Tab {
+		return new Layouts_Bulk_Validation_Tab(
+			$this->resolve( Layouts_Cpt_Table::class ),
+			$this->resolve( Layout_Settings_Storage::class ),
+			$this->create_fs_only_tab(),
+			$this->resolve( Layout_Factory::class )
+		);
+	}
+
+	protected function create_editor_settings(): Cpt_Gutenberg_Editor_Settings {
+		return new Cpt_Gutenberg_Editor_Settings( $this->resolve( Layouts_Cpt::class )->cpt_name() );
+	}
+
+	protected function create_assets_reducer(): Cpt_Assets_Reducer {
+		return new Cpt_Assets_Reducer(
+			$this->resolve( Settings_Storage::class ),
+			$this->resolve( Plugin::class ),
+			$this->resolve( Layouts_Cpt::class )->cpt_name()
+		);
+	}
+
+	protected function create_mount_point_integration(): Mount_Point_Settings_Integration {
+		return new Mount_Point_Settings_Integration( $this->resolve( Layouts_Cpt::class )->cpt_name() );
+	}
+
+	protected function create_shortcode_block(): Shortcode_Gutenberg_Block {
+		return new Shortcode_Gutenberg_Block( $this->resolve( Layouts_Cpt::class )->shortcodes() );
+	}
+
+	protected function create_item_picker(): Cpt_Item_Picker {
+		return new Cpt_Item_Picker(
+			$this->resolve( Layout_Settings_Storage::class ),
+			$this->resolve( Layouts_Cpt::class )
+		);
+	}
+
+	protected function create_cpt_renderer(): Cpt_Renderer {
+		return new Cpt_Renderer(
+			$this->resolve( Layout_Shortcode::class ),
+			$this->resolve( Layout_Settings_Storage::class ),
+			$this->resolve( Layouts_Cpt::class )
+		);
+	}
+
+	protected function make_gutenberg_block(): Layout_Gutenberg_Block {
+		return new Layout_Gutenberg_Block(
+			$this->resolve( Asset_Resolver::class ),
+			$this->create_item_picker(),
+			new Cpt_Gutenberg_Block( $this->create_cpt_renderer() )
 		);
 	}
 
