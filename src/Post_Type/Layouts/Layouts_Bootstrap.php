@@ -16,7 +16,6 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
@@ -24,7 +23,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Gutenberg_Editor_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Fs_Only_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor\Cpt_Widget_Registrar;
@@ -69,28 +67,14 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		$factory = $this->make_factory();
 		$this->wire( Layout_Factory::class, $factory );
 
-		$meta_boxes = $this->make_meta_boxes();
-		$this->wire( Layout_Meta_Boxes::class, $meta_boxes );
-
-		$save_actions = $this->make_save_actions();
-		$this->wire( Layout_Save_Actions::class, $save_actions );
-
 		$shortcodes      = $layout_cpt->shortcodes();
-		$settings        = $this->resolve( Settings_Storage::class );
-		$live_reloader   = $this->resolve( Live_Reloader_Component::class );
 		$shortcode_block = new Shortcode_Gutenberg_Block( $shortcodes );
-		$shortcode       = new Layout_Shortcode(
-			$layout_cpt,
-			$settings,
-			$layouts_settings_storage,
-			$live_reloader,
-			$factory,
-			$shortcode_block
-		);
-		$this->wire( Layout_Shortcode::class, $shortcode );
+		$this->wire( Shortcode_Gutenberg_Block::class, $shortcode_block );
 
-		$item_picker        = new Cpt_Item_Picker( $layouts_settings_storage, $layout_cpt );
-		$cpt_renderer       = new Cpt_Renderer( $shortcode, $layouts_settings_storage, $layout_cpt );
+		$shortcode    = $this->resolve( Layout_Shortcode::class );
+		$item_picker  = new Cpt_Item_Picker( $layouts_settings_storage, $layout_cpt );
+		$cpt_renderer = new Cpt_Renderer( $shortcode, $layouts_settings_storage, $layout_cpt );
+
 		$this->item_picker  = $item_picker;
 		$this->cpt_renderer = $cpt_renderer;
 
@@ -98,29 +82,20 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		$cpt_block      = new Cpt_Gutenberg_Block( $cpt_renderer );
 		$block          = new Layout_Gutenberg_Block( $asset_resolver, $item_picker, $cpt_block );
 
-		$cpt_table = $this->make_cpt_table();
-		$this->wire( Layouts_Cpt_Table::class, $cpt_table );
-
+		$cpt_table           = $this->resolve( Layouts_Cpt_Table::class );
 		$fs_only_tab         = new Fs_Only_Tab( $cpt_table, $layouts_settings_storage );
 		$bulk_validation_tab = new Layouts_Bulk_Validation_Tab( $cpt_table, $layouts_settings_storage, $fs_only_tab, $factory );
 
 		$pre_built_tab = $this->make_pre_built_tab();
 		$this->wire( Layouts_Pre_Built_Tab::class, $pre_built_tab );
 
-		$git_tabs = $this->make_git_tabs();
-		$this->wire( Layout_Git_Tabs::class, $git_tabs );
-
-		$git_box = $this->make_git_box();
-		$this->wire( Layout_Git_Box::class, $git_box );
-
-		$interactive_fields = $this->resolve( Layout_Interactive_Fields::class );
-
-		$cpt_name         = $layout_cpt->cpt_name();
+		$settings         = $this->resolve( Settings_Storage::class );
 		$plugin           = $this->resolve( Plugin::class );
+		$cpt_name         = $layout_cpt->cpt_name();
 		$acf_integrations = $this->make_acf_integrations( $layout_cpt );
 
 		$hookables = array(
-			$meta_boxes,
+			$this->resolve( Layout_Meta_Boxes::class ),
 			new Layouts_Cpt_Hookable( $layout_cpt, $layouts_settings_storage ),
 			$cpt_table,
 			$fs_only_tab,
@@ -128,14 +103,14 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 			$pre_built_tab,
 			new Cpt_Gutenberg_Editor_Settings( $cpt_name ),
 			new Cpt_Assets_Reducer( $settings, $plugin, $cpt_name ),
-			$save_actions,
+			$this->resolve( Layout_Save_Actions::class ),
 			$shortcode,
 			$shortcode_block,
 			$item_picker,
 			$block,
-			$git_box,
-			$git_tabs,
-			$interactive_fields,
+			$this->resolve( Layout_Git_Box::class ),
+			$this->resolve( Layout_Git_Tabs::class ),
+			$this->resolve( Layout_Interactive_Fields::class ),
 		);
 
 		return array_merge( $acf_integrations, $hookables );
@@ -167,14 +142,12 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 	 * @return Hookable[]
 	 */
 	protected function make_acf_integrations( Layouts_Cpt $layout_cpt ): array {
-		$provider_cluster = $this->resolve( Field_Provider_Cluster::class );
-		$engines_storage  = $this->resolve( Engines_Storage::class );
-		$cpt_name         = $layout_cpt->cpt_name();
+		$cpt_name = $layout_cpt->cpt_name();
 
 		return array(
-			new Layout_Settings_Integration( $cpt_name, $provider_cluster, $engines_storage ),
-			new Field_Settings_Integration( $provider_cluster, $layout_cpt ),
-			new Item_Settings_Integration( $cpt_name, $provider_cluster ),
+			$this->resolve( Layout_Settings_Integration::class ),
+			$this->resolve( Field_Settings_Integration::class ),
+			$this->resolve( Item_Settings_Integration::class ),
 			new Mount_Point_Settings_Integration( $cpt_name ),
 		);
 	}
@@ -214,18 +187,6 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		);
 	}
 
-	protected function make_meta_boxes(): Layout_Meta_Boxes {
-		return $this->resolve( Layout_Meta_Boxes::class );
-	}
-
-	protected function make_save_actions(): Layout_Save_Actions {
-		return $this->resolve( Layout_Save_Actions::class );
-	}
-
-	protected function make_cpt_table(): Layouts_Cpt_Table {
-		return $this->resolve( Layouts_Cpt_Table::class );
-	}
-
 	protected function make_pre_built_tab(): Layouts_Pre_Built_Tab {
 		$logger           = $this->resolve( Logger::class );
 		$layout_cpt       = $this->resolve( Layouts_Cpt::class );
@@ -260,31 +221,5 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 			$migrator,
 			$logger
 		);
-	}
-
-	protected function make_git_tabs(): Layout_Git_Tabs {
-		$cpt_table        = $this->resolve( Layouts_Cpt_Table::class );
-		$settings         = $this->resolve( Settings_Storage::class );
-		$git_api          = $this->resolve( Git_Lab_Api::class );
-		$layout_settings  = $this->resolve( Layout_Settings::class );
-		$settings_storage = $this->resolve( Layout_Settings_Storage::class );
-		$migrator         = $this->resolve( Version_Migrator::class );
-		$provider_cluster = $this->resolve( Field_Provider_Cluster::class );
-		$logger           = $this->resolve( Logger::class );
-
-		return new Layout_Git_Tabs(
-			$cpt_table,
-			$settings,
-			$git_api,
-			$layout_settings,
-			$settings_storage,
-			$migrator,
-			$provider_cluster,
-			$logger
-		);
-	}
-
-	protected function make_git_box(): Layout_Git_Box {
-		return $this->resolve( Layout_Git_Box::class );
 	}
 }

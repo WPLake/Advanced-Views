@@ -14,6 +14,8 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -25,12 +27,12 @@ class Post_Selection_Settings_Integration extends Acf_Integration {
 	private Engines_Storage $engines_storage;
 
 	public function __construct(
-		string $target_cpt_name,
+		Selections_Cpt $selection_cpt,
 		Field_Provider_Cluster $provider_cluster,
-		Plugin_Cpt $plugin_cpt,
+		Layouts_Cpt $plugin_cpt,
 		Engines_Storage $engines_storage
 	) {
-		parent::__construct( $target_cpt_name );
+		parent::__construct( $selection_cpt->cpt_name() );
 
 		$this->provider_cluster = $provider_cluster;
 		$this->plugin_cpt       = $plugin_cpt;

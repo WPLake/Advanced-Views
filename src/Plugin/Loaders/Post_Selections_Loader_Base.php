@@ -6,15 +6,12 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations\Tax_Field_Settings_Integration;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations\Post_Selection_Settings_Integration;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations\Meta_Field_Settings_Integration;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Mount_Point_Settings_Integration;
 use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
 use Closure;
@@ -95,21 +92,15 @@ abstract class Post_Selections_Loader_Base extends Module_Loader {
 	 * @return Hookable[]
 	 */
 	protected function make_acf_integrations(): array {
-		$selection_cpt    = $this->resolve( Selections_Cpt::class );
-		$provider_cluster = $this->resolve( Field_Provider_Cluster::class );
-		$plugin           = $this->resolve( Plugin::class );
+		$selection_cpt = $this->resolve( Selections_Cpt::class );
+		$cpt_name      = $selection_cpt->cpt_name();
 
 		return array(
-			new Post_Selection_Settings_Integration(
-				$selection_cpt->cpt_name(),
-				$provider_cluster,
-				$this->resolve( Layouts_Cpt::class ),
-				$this->resolve( Engines_Storage::class )
-			),
+			$this->resolve( Post_Selection_Settings_Integration::class ),
 			// metaField is a part of the Meta Filter, so we use the selection CPT here.
-			new Meta_Field_Settings_Integration( $selection_cpt->cpt_name(), $provider_cluster, $plugin ),
-			new Tax_Field_Settings_Integration( $selection_cpt->cpt_name(), $provider_cluster, $plugin ),
-			new Mount_Point_Settings_Integration( $selection_cpt->cpt_name() ),
+			$this->resolve( Meta_Field_Settings_Integration::class ),
+			$this->resolve( Tax_Field_Settings_Integration::class ),
+			new Mount_Point_Settings_Integration( $cpt_name ),
 		);
 	}
 

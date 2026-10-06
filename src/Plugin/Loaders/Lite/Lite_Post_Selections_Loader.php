@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders\Lite;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Plugin\Loaders\Post_Selections_Loader_Base;
 use Org\Wplake\Advanced_Views\Post_Query\Selection\Selection_Query_Builder;
@@ -19,8 +18,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor\Cpt_Widget_Registrar;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Gutenberg\Cpt_Gutenberg_Block;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Git_Box;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Git_Tabs;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table\Layouts_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Post_Selections_Cpt;
@@ -138,26 +135,10 @@ final class Lite_Post_Selections_Loader extends Post_Selections_Loader_Base {
 			$this->resolve( Layouts_Pre_Built_Tab::class )
 		);
 
-		$this->git_tabs = new Selection_Git_Tabs(
-			$this->cpt_table,
-			$base->settings,
-			$base->git_lab_api,
-			$base->group_creator->create( Post_Selection_Settings::class ),
-			$base->post_selections_settings_storage,
-			$this->resolve( Version_Migrator::class ),
-			$this->resolve( Layout_Git_Tabs::class ),
-			$base->provider_cluster,
-			$base->logger
-		);
-		$this->git_box  = new Selection_Git_Box(
-			$selection_cpt,
-			$base->settings,
-			$base->post_selections_settings_storage,
-			$base->git_lab_api,
-			$base->layouts_settings_storage,
-			$this->resolve( Layout_Git_Box::class ),
-			$base->plugin
-		);
+		$this->wire( Post_Selections_Table::class, $this->cpt_table );
+
+		$this->git_tabs = $this->resolve( Selection_Git_Tabs::class );
+		$this->git_box  = $this->resolve( Selection_Git_Box::class );
 
 		$this->cpt_assets_reducer            = new Cpt_Assets_Reducer(
 			$base->settings,

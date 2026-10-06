@@ -9,6 +9,7 @@ use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Meta_Field_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -16,8 +17,8 @@ class Meta_Field_Settings_Integration extends Acf_Integration {
 	private Field_Provider_Cluster $provider_cluster;
 	private Plugin $plugin;
 
-	public function __construct( string $target_cpt_name, Field_Provider_Cluster $provider_cluster, Plugin $plugin ) {
-		parent::__construct( $target_cpt_name );
+	public function __construct( Selections_Cpt $selection_cpt, Field_Provider_Cluster $provider_cluster, Plugin $plugin ) {
+		parent::__construct( $selection_cpt->cpt_name() );
 
 		$this->provider_cluster = $provider_cluster;
 		$this->plugin           = $plugin;

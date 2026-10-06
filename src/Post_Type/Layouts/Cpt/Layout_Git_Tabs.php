@@ -11,24 +11,24 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Git_Tabs;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Import_Result;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table\Layouts_Cpt_Table;
 
 class Layout_Git_Tabs extends Git_Tabs {
 	private Field_Provider_Cluster $provider_cluster;
 	private Layout_Settings_Storage $layouts_settings_storage;
 
 	public function __construct(
-		Cpt_Table $cpt_table,
+		Layouts_Cpt_Table $cpt_table,
 		Settings_Storage $settings,
 		Git_Api_Interface $git_api,
-		Cpt_Settings $cpt_settings,
+		Layout_Settings $cpt_settings,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Cpt_Settings_Migrator $cpt_settings_migrator,
+		Version_Migrator $cpt_settings_migrator,
 		Field_Provider_Cluster $provider_cluster,
 		Logger $logger
 	) {

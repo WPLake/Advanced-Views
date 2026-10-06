@@ -9,6 +9,7 @@ use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -17,11 +18,11 @@ class Layout_Settings_Integration extends Acf_Integration {
 	private Engines_Storage $engines_storage;
 
 	public function __construct(
-		string $target_cpt_name,
+		Layouts_Cpt $layout_cpt,
 		Field_Provider_Cluster $provider_cluster,
 		Engines_Storage $engines_storage
 	) {
-		parent::__construct( $target_cpt_name );
+		parent::__construct( $layout_cpt->cpt_name() );
 
 		$this->provider_cluster = $provider_cluster;
 		$this->engines_storage  = $engines_storage;

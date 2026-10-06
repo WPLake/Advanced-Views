@@ -17,6 +17,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 
 class Field_Settings_Integration extends Acf_Integration {
 	use Safe_Array_Arguments;
@@ -26,7 +27,7 @@ class Field_Settings_Integration extends Acf_Integration {
 
 	public function __construct(
 		Field_Provider_Cluster $provider_cluster,
-		Plugin_Cpt $plugin_cpt
+		Layouts_Cpt $plugin_cpt
 	) {
 		parent::__construct( $plugin_cpt->cpt_name() );
 

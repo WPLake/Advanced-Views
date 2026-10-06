@@ -12,13 +12,13 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Git_Tabs;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Import_Result;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Git_Tabs;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Table\Post_Selections_Table;
 
 
 class Selection_Git_Tabs extends Git_Tabs {
@@ -26,12 +26,12 @@ class Selection_Git_Tabs extends Git_Tabs {
 	private Layout_Git_Tabs $layouts_git_cpt_table_tabs;
 
 	public function __construct(
-		Cpt_Table $cpt_table,
+		Post_Selections_Table $cpt_table,
 		Settings_Storage $settings,
 		Git_Api_Interface $git_api,
-		Cpt_Settings $cpt_settings,
+		Post_Selection_Settings $cpt_settings,
 		Selection_Settings_Storage $post_selections_settings_storage,
-		Cpt_Settings_Migrator $cpt_settings_migrator,
+		Version_Migrator $cpt_settings_migrator,
 		Layout_Git_Tabs $layouts_git_cpt_table_tabs,
 		Field_Provider_Cluster $provider_cluster,
 		Logger $logger
