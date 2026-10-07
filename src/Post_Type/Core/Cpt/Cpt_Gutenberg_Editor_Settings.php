@@ -176,6 +176,10 @@ class Cpt_Gutenberg_Editor_Settings extends Hookable_Base implements Hookable {
 		);
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
 	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_filter(
 			'wp_insert_post_data',

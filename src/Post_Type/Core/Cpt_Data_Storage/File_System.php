@@ -390,6 +390,10 @@ class File_System extends Loggable_Actor implements Hookable {
 		return $this->wp_filesystem_base;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
 	public function set_route_hooks( Route_Detector $route_detector ): void {
 		// set only if it isn't an external folder.
 		if ( 0 === strlen( $this->base_folder ) ) {

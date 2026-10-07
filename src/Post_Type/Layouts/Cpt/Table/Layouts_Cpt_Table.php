@@ -100,10 +100,6 @@ class Layouts_Cpt_Table extends Cpt_Table {
 	public function set_route_hooks( Route_Detector $route_detector ): void {
 		parent::set_route_hooks( $route_detector );
 
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
-
 		self::add_action( 'pre_get_posts', array( $this, 'add_sortable_columns_to_request' ) );
 
 		self::add_filter(

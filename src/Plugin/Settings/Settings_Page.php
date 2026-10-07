@@ -64,23 +64,25 @@ final class Settings_Page extends Loggable_Actor implements Hookable {
 	}
 
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
 	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( $route_detector->is_admin_route() ) {
-			// init, not acf/init, as the method uses 'get_edit_post_link' which will be available only since this hook
-			// (because we sign up the CPTs in this hook).
-			self::add_action( 'init', array( $this, 'add_page' ) );
-			self::add_action( 'acf/save_post', array( $this, 'maybe_catch_values' ) );
-			// priority 20, as it's after the ACF's save_post hook.
-			self::add_action( 'acf/save_post', array( $this, 'maybe_process' ), 20 );
-			self::add_action( 'acf/input/admin_head', array( $this, 'maybe_inject_values' ) );
+		// init, not acf/init, as the method uses 'get_edit_post_link' which will be available only since this hook
+		// (because we sign up the CPTs in this hook).
+		self::add_action( 'init', array( $this, 'add_page' ) );
+		self::add_action( 'acf/save_post', array( $this, 'maybe_catch_values' ) );
+		// priority 20, as it's after the ACF's save_post hook.
+		self::add_action( 'acf/save_post', array( $this, 'maybe_process' ), 20 );
+		self::add_action( 'acf/input/admin_head', array( $this, 'maybe_inject_values' ) );
 
-			$choices_callbacks = array(
-				Plugin_Settings::FIELD_TEMPLATE_ENGINE =>
-					fn() => $this->engines_storage->get_choices(),
-			);
+		$choices_callbacks = array(
+			Plugin_Settings::FIELD_TEMPLATE_ENGINE =>
+				fn() => $this->engines_storage->get_choices(),
+		);
 
-			Acf_Utils::bind_field_choices( Plugin_Settings::class, $choices_callbacks );
-		}
+		Acf_Utils::bind_field_choices( Plugin_Settings::class, $choices_callbacks );
 	}
 
 	public function add_page(): void {

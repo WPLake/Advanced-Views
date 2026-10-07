@@ -260,6 +260,10 @@ class Cpt_Assets_Reducer extends Hookable_Base implements Hookable {
 		<?php
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
 	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( ! $route_detector->is_cpt_admin_route( $this->cpt_name, Route_Detector::CPT_EDIT ) ||
 		! $this->settings->is_cpt_admin_optimization_enabled() ) {

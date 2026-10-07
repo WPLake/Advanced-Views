@@ -70,6 +70,10 @@ abstract class Cpt_Table_Tab extends Hookable_Base implements Hookable {
 		$this->cpt_table->add_tab( $tab_data );
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
 	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( false === $route_detector->is_cpt_admin_route( $this->get_cpt_name(), Route_Detector::CPT_LIST ) ) {
 			return;

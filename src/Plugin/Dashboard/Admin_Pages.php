@@ -166,11 +166,11 @@ class Admin_Pages extends Hookable_Base implements Hookable {
 		return array_merge( $links, $this->get_promo_links() );
 	}
 
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
 
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		$plugin_slug = $this->plugin->get_slug();
 
 		self::add_action( 'admin_menu', array( $this, 'add_subpages' ) );

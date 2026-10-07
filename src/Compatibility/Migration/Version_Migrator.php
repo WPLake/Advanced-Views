@@ -99,12 +99,12 @@ final class Version_Migrator extends Hookable_Base implements Hookable, Cpt_Sett
 		return 1 === preg_match( '/^\d+\.\d+\.\d+$/', $version );
 	}
 
-	public function set_route_hooks( Route_Detector $route_detector ): void {
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
 		// avoid requests with incomplete hooks cycle.
-		if ( ! $route_detector->is_complete_cycle_request() ) {
-			return;
-		}
+		return $route_detector->is_complete_cycle_request();
+	}
 
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		// don't use 'upgrader_process_complete' hook, as user can update the plugin manually by FTP.
 		$db_version   = $this->settings->get_version();
 		$code_version = $this->plugin->get_version();

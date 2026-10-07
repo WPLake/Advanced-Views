@@ -571,11 +571,11 @@ class Front_Assets extends Hookable_Base implements Hookable {
 		return $src;
 	}
 
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( $route_detector->is_admin_route() ) {
-			return;
-		}
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return ! $route_detector->is_admin_route();
+	}
 
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_filter(
 			'script_module_loader_src',
 			array( $this, 'catch_interactivity_api_script_url' ),

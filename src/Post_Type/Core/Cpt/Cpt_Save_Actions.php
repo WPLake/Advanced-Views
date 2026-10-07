@@ -72,13 +72,13 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Hookable {
 		$this->instance_factory             = $instance_factory;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
 	// according to the tests, json in post_meta in 13 times quicker than ordinary postMeta way -
 	// (30ms per 10 objects vs 400ms).
 	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( ! $route_detector->is_admin_route() ) {
-			return;
-		}
-
 		// for some reason, ACF ajax form validation doesn't work on the wordpress.com hosting.
 		if ( ! $this->plugin->is_wordpress_com_hosting() ) {
 			// priority is 20, to make sure it's run after the ACF's code.

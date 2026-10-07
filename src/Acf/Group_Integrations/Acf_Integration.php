@@ -32,11 +32,11 @@ class Acf_Integration extends Hookable_Base implements Hookable {
 	}
 
 
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
 
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		// load only on targetCpt pages
 		// (but not only on edit pages, as there are Settings & Tools groups).
 		if ( '' !== $this->target_cpt_name &&

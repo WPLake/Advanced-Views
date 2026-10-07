@@ -162,11 +162,11 @@ class Live_Reloader_Component extends Hookable_Base implements Hookable {
 		return remove_query_arg( self::QUERY_ARG, );
 	}
 
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( $route_detector->is_admin_route() ) {
-			return;
-		}
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return ! $route_detector->is_admin_route();
+	}
 
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_action( 'init', array( $this, 'set_is_active' ) );
 		self::add_action( 'wp_footer', array( $this, 'maybe_enqueue_reloading_js' ) );
 	}

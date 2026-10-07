@@ -84,11 +84,11 @@ class Selection_Layout_Integration extends Cpt_Settings_Creator implements Hooka
 		exit;
 	}
 
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
 
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_action( 'current_screen', array( $this, 'maybe_create_selection_for_layout' ) );
 	}
 }

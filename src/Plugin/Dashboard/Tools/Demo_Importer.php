@@ -708,11 +708,11 @@ final class Demo_Importer extends Hookable_Base implements Hookable {
 		$this->delete();
 	}
 
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
 
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_action( 'wp_loaded', array( $this, 'maybe_process_form' ) );
 	}
 }

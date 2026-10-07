@@ -100,11 +100,11 @@ abstract class Cpt_Meta_Boxes extends Hookable_Base implements Hookable {
 		}
 	}
 
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
 
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 	}
 }

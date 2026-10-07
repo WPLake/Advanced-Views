@@ -29,11 +29,11 @@ class Custom_Acf_Field_Types extends Hookable_Base implements Hookable {
 		acf_register_field_type( new Av_Slug_Select_Field( $this->layouts_settings_storage ) );
 	}
 
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
 
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		// must be present on both edit screens and during ajax requests.
 		if ( false === $route_detector->is_cpt_admin_route( Hard_Layout_Cpt::cpt_name(), Route_Detector::CPT_EDIT ) &&
 			false === $route_detector->is_cpt_admin_route( Hard_Post_Selection_Cpt::cpt_name(), Route_Detector::CPT_EDIT ) &&

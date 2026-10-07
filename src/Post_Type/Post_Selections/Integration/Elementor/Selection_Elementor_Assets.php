@@ -31,6 +31,10 @@ final class Selection_Elementor_Assets extends Hookable_Base implements Hookable
 		$this->asset_resolver = $asset_resolver;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
 	public function set_route_hooks( Route_Detector $route_detector ): void {
 		/**
 		 * This request isn't itself covered by is_admin_route() - Elementor's canvas preview loads through normal

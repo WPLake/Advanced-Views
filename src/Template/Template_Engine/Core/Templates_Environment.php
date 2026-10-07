@@ -30,11 +30,11 @@ class Templates_Environment extends Loggable_Actor implements Hookable {
 		$this->wp_filesystem_base = null;
 	}
 
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( ! $route_detector->is_admin_route() ) {
-			return;
-		}
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
 
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_action( 'admin_notices', array( $this, 'show_templates_dir_is_not_writable_warning' ) );
 	}
 

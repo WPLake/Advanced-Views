@@ -15,6 +15,10 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 class State_Report extends Report_Base implements Hookable {
 	const STATE_ENDPOINT_URL = 'https://wplake.org/wp-json/wplake/v1/plugin_state';
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
 	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( $this->is_activated_after_another_deactivation() &&
 			! $this->is_reporting_disabled() ) {

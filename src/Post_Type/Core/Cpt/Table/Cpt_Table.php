@@ -557,11 +557,11 @@ abstract class Cpt_Table extends Hookable_Base implements Hookable {
 		$this->add_tab_callbacks[] = $new_tab_callback;
 	}
 
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
 
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_filter(
 			sprintf( 'manage_%s_posts_columns', $this->get_cpt_name() ),
 			array( $this, 'get_columns' ),

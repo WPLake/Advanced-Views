@@ -63,11 +63,13 @@ abstract class Cpt_Interactive_Fields extends Hookable_Base implements Hookable 
 		$this->cpt_settings_storage         = $cpt_settings_storage;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
 	// by tests, json in post_meta in 13 times quicker than ordinary postMeta way (30ms per 10 objects vs 400ms).
 	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( $route_detector->is_admin_route() ) {
-			self::add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
-		}
+		self::add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 	}
 
 	public function register_rest_routes(): void {

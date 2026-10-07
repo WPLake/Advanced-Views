@@ -59,6 +59,10 @@ class Usage_Report extends Report_Base implements Hookable {
 		return Hard_Layout_Cpt::cpt_name() . '_refresh';
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
 	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( $this->settings->is_automatic_reports_disabled() ) {
 			// still sign-up the CRON job, so if it was scheduled before, then will be called without issues.

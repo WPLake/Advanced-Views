@@ -487,11 +487,11 @@ class Plugin extends Hookable_Base implements Hookable {
 				defined( 'WPCOM_CORE_ATOMIC_PLUGINS' );
 	}
 
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
 
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_action( 'admin_notices', array( $this, 'maybe_show_compatibility_warnings' ) );
 		self::add_action( 'activated_plugin', array( $this, 'deactivate_other_instances' ) );
 		self::add_action( 'pre_current_active_plugins', array( $this, 'show_plugin_deactivated_notice' ) );

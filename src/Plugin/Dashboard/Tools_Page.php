@@ -86,11 +86,11 @@ final class Tools_Page extends Hookable_Base implements Hookable {
 		$this->wp_filesystem_base    = null;
 	}
 
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
 
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		// init, not acf/init, as the method uses 'get_edit_post_link' which will be available only since this hook
 		// (because we sign up the CPTs in this hook).
 		self::add_action( 'init', array( $this, 'add_page' ) );
