@@ -14,12 +14,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Selection_Git_Tabs;
 
 class Selection_Tabs_Bootstrap extends Module_Bootstrap_Base {
-	public function wire_instances(): void {
-		$wire_resolves = $this->get_wire_resolves();
-
-		foreach ( $wire_resolves as $class_name => $factory ) {
-			$this->wire( $class_name, $factory );
-		}
+	public function get_wires(): array {
+		return array(
+			Post_Selections_Pre_Built_Tab::class       => fn() => $this->resolve( Selection_Tabs_Factory::class )->create_pre_built_tab(),
+			Post_Selections_Bulk_Validation_Tab::class => fn() => $this->resolve( Selection_Tabs_Factory::class )->create_bulk_validation_tab(),
+		);
 	}
 
 	public function get_hookables( Route_Detector $route_detector ): array {
@@ -42,16 +41,6 @@ class Selection_Tabs_Bootstrap extends Module_Bootstrap_Base {
 			Post_Selections_Bulk_Validation_Tab::class,
 			Post_Selections_Pre_Built_Tab::class,
 			Selection_Git_Tabs::class,
-		);
-	}
-
-	/**
-	 * @return array<class-string, \Closure>
-	 */
-	protected function get_wire_resolves(): array {
-		return array(
-			Post_Selections_Pre_Built_Tab::class       => fn(): Post_Selections_Pre_Built_Tab => $this->resolve( Selection_Tabs_Factory::class )->create_pre_built_tab(),
-			Post_Selections_Bulk_Validation_Tab::class => fn(): Post_Selections_Bulk_Validation_Tab => $this->resolve( Selection_Tabs_Factory::class )->create_bulk_validation_tab(),
 		);
 	}
 }

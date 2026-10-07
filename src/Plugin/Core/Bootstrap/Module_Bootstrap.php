@@ -11,9 +11,11 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 
 interface Module_Bootstrap {
 	/**
-	 * Registers the container factories of the module's instances. Must be called before get_hookables().
+	 * The container factories (closures) or instances of the module, by their ids. Must be wired before get_hookables().
+	 *
+	 * @return array<class-string, \Closure|object>
 	 */
-	public function wire_instances(): void;
+	public function get_wires(): array;
 
 	/**
 	 * @return Hookable[]

@@ -19,12 +19,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Shortcode_
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 
 class Layouts_Bootstrap extends Module_Bootstrap_Base {
-	public function wire_instances(): void {
-		$wire_resolves = $this->get_wire_resolves();
-
-		foreach ( $wire_resolves as $class_name => $factory ) {
-			$this->wire( $class_name, $factory );
-		}
+	public function get_wires(): array {
+		return array(
+			Shortcode_Gutenberg_Block::class => fn() => $this->resolve( Layouts_Factory::class )->create_shortcode_block(),
+		);
 	}
 
 	public function get_hookables( Route_Detector $route_detector ): array {
@@ -34,7 +32,7 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 			$hookable_classes
 		);
 
-		$factory    = $this->resolve( Layouts_Factory::class );
+		$factory         = $this->resolve( Layouts_Factory::class );
 		$editor_settings = $factory->create_editor_settings();
 		$assets_reducer  = $factory->create_assets_reducer();
 
@@ -42,15 +40,6 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		$instances = array( $editor_settings, $assets_reducer );
 
 		return array_merge( $resolved, $instances );
-	}
-
-	/**
-	 * @return array<class-string, \Closure>
-	 */
-	protected function get_wire_resolves(): array {
-		return array(
-			Shortcode_Gutenberg_Block::class => fn(): Shortcode_Gutenberg_Block => $this->resolve( Layouts_Factory::class )->create_shortcode_block(),
-		);
 	}
 
 	/**

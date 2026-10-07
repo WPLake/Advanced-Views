@@ -21,9 +21,9 @@ class Selection_Acf_Bootstrap extends Module_Bootstrap_Base {
 			$integration_classes
 		);
 
-		$factory = $this->resolve( Selection_Acf_Factory::class );
-		$loaders      = $factory->create_groups_loaders( $route_detector );
-		$mount_point  = $factory->create_mount_point_integration();
+		$factory     = $this->resolve( Selection_Acf_Factory::class );
+		$loaders     = $factory->create_groups_loaders( $route_detector );
+		$mount_point = $factory->create_mount_point_integration();
 
 		return array_merge( $loaders, $integrations, array( $mount_point ) );
 	}

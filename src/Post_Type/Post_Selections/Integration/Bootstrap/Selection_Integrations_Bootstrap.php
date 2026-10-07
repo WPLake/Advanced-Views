@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 
 class Selection_Integrations_Bootstrap extends Module_Bootstrap_Base {
 	public function get_hookables( Route_Detector $route_detector ): array {
-		$factory    = $this->resolve( Selection_Integrations_Factory::class );
+		$factory         = $this->resolve( Selection_Integrations_Factory::class );
 		$item_picker     = $factory->item_picker();
 		$gutenberg_block = $factory->create_gutenberg_block();
 

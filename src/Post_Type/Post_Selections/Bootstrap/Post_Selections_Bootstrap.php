@@ -21,13 +21,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Table\Post_Selection
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
 
 class Post_Selections_Bootstrap extends Module_Bootstrap_Base {
-	public function wire_instances(): void {
-		$wire_resolves = $this->get_wire_resolves();
-
-		foreach ( $wire_resolves as $class_name => $factory ) {
-			// fixme must return, no Wire.
-			$this->wire( $class_name, $factory );
-		}
+	public function get_wires(): array {
+		return array(
+			Post_Query_Builder::class => fn() => $this->resolve( Selection_Query_Builder::class ),
+		);
 	}
 
 	public function get_hookables( Route_Detector $route_detector ): array {
@@ -37,7 +34,7 @@ class Post_Selections_Bootstrap extends Module_Bootstrap_Base {
 			$hookable_classes
 		);
 
-		$factory    = $this->resolve( Post_Selections_Factory::class );
+		$factory         = $this->resolve( Post_Selections_Factory::class );
 		$editor_settings = $factory->create_editor_settings();
 		$assets_reducer  = $factory->create_assets_reducer();
 
@@ -45,15 +42,6 @@ class Post_Selections_Bootstrap extends Module_Bootstrap_Base {
 		$instances = array( $editor_settings, $assets_reducer );
 
 		return array_merge( $resolved, $instances );
-	}
-
-	/**
-	 * @return array<class-string, \Closure>
-	 */
-	protected function get_wire_resolves(): array {
-		return array(
-			Post_Query_Builder::class     => fn(): Post_Query_Builder => $this->resolve( Selection_Query_Builder::class ),
-		);
 	}
 
 	/**
