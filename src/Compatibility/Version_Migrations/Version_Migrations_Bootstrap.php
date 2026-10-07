@@ -30,7 +30,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 
 class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
-	public static function get_definitions(): array {
+	public static function get_type_definitions(): array {
 		return array( Cpt_Settings_Migrator::class => Version_Migrator::class );
 	}
 
@@ -92,10 +92,7 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 		);
 	}
 
-	/**
-	 * @return Hookable[]
-	 */
-	protected function get_hookable_instances( Route_Detector $route_detector ): array {
+	protected function resolve_hookable_instances( Route_Detector $route_detector ): array {
 		// fixme
 		/**
 		 * Migrations depend on the instances registered in the container by later modules,

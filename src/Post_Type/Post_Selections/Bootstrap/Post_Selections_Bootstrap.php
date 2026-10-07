@@ -7,7 +7,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Bootstrap;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Selection\Selection_Query_Builder;
@@ -21,15 +20,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Table\Post_Selection
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
 
 class Post_Selections_Bootstrap extends Module_Bootstrap_Base {
-	public static function get_definitions(): array {
+	public static function get_type_definitions(): array {
 		return array(
 			Post_Query_Builder::class => Selection_Query_Builder::class,
 		);
 	}
 
-	/**
-	 * @return array<class-string<Hookable>>
-	 */
 	protected function get_hookable_classes(): array {
 		return array(
 			Selection_Meta_Boxes::class,
@@ -43,10 +39,7 @@ class Post_Selections_Bootstrap extends Module_Bootstrap_Base {
 		);
 	}
 
-	/**
-	 * @return Hookable[]
-	 */
-	protected function get_hookable_instances( Route_Detector $route_detector ): array {
+	protected function resolve_hookable_instances( Route_Detector $route_detector ): array {
 		$factory = $this->resolve( Post_Selections_Factory::class );
 
 		// Generic (not selection-specific) hookables, created directly as the container can't host them per module.

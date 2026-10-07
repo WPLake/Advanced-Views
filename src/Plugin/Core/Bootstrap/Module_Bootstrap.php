@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap;
 
 defined( 'ABSPATH' ) || exit;
 
+use Closure;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 
@@ -15,19 +16,19 @@ interface Module_Bootstrap {
 	 *
 	 * @return array<class-string, class-string> the id (an abstract/Lite class) => the class the container resolves instead
 	 */
-	public static function get_definitions(): array;
+	public static function get_type_definitions(): array;
 
 	/**
 	 * The container factories (closures) or instances of the module, by their ids. Must be wired before get_hookables().
 	 *
-	 * @return array<class-string, \Closure|object>
+	 * @return array<class-string, Closure>
 	 */
-	public function get_wires(): array;
+	public function get_instance_factories(): array;
 
 	/**
 	 * @return Hookable[]
 	 */
-	public function get_hookables( Route_Detector $route_detector ): array;
+	public function resolve_hookables( Route_Detector $route_detector ): array;
 
 	/**
 	 * Hookables that depend on another plugin being active, so the module checks that itself (e.g. did_action()).
@@ -35,5 +36,5 @@ interface Module_Bootstrap {
 	 *
 	 * @return Hookable[]
 	 */
-	public function get_extension_hookables(): array;
+	public function resolve_extension_hookables(): array;
 }

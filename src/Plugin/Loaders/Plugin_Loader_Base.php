@@ -229,7 +229,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 */
 	protected function load_bootstraps( array $bootstraps, Route_Detector $route_detector ): array {
 		foreach ( $bootstraps as $bootstrap ) {
-			$instances = $bootstrap->get_wires();
+			$instances = $bootstrap->get_instance_factories();
 
 			foreach ( $instances as $id => $instance ) {
 				$this->wire( $id, $instance );
@@ -238,7 +238,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 		return flat_map(
 			$bootstraps,
-			fn( Module_Bootstrap $bootstrap ): array => $bootstrap->get_hookables( $route_detector )
+			fn( Module_Bootstrap $bootstrap ): array => $bootstrap->resolve_hookables( $route_detector )
 		);
 	}
 
@@ -250,7 +250,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			'plugins_loaded',
 			function () use ( $bootstraps ): void {
 				foreach ( $bootstraps as $bootstrap ) {
-					$this->load_hookable( $bootstrap->get_extension_hookables() );
+					$this->load_hookable( $bootstrap->resolve_extension_hookables() );
 				}
 			},
 			11
@@ -359,12 +359,12 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 */
 	protected static function get_bootstraps(): array {
 		return array(
-			// layouts
+			// layouts:
 			Layouts_Bootstrap::class,
 			Layout_Acf_Bootstrap::class,
 			Layout_Tabs_Bootstrap::class,
 			Layout_Integrations_Bootstrap::class,
-			// post_selections
+			// post_selections:
 			Post_Selections_Bootstrap::class,
 			Selection_Acf_Bootstrap::class,
 			Selection_Tabs_Bootstrap::class,
@@ -380,7 +380,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$builder->useAutowiring( true );
 		$builder->useAnnotations( false );
 
-		$definitions = static::get_definitions();
+		$definitions = static::compose_bootstrap_definitions();
 		$builder->addDefinitions( $definitions );
 
 		return $builder->build();
@@ -391,17 +391,20 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 *
 	 * @return array<class-string, Reference>
 	 */
-	protected static function get_definitions(): array {
+	protected static function compose_bootstrap_definitions(): array {
 		$bootstrap_classes = static::get_bootstraps();
-		$definitions       = array();
+		$type_definitions  = array();
 
 		foreach ( $bootstrap_classes as $bootstrap_class ) {
-			$definitions = array_merge( $definitions, $bootstrap_class::get_definitions() );
+			$type_definitions = array_merge(
+				$type_definitions,
+				$bootstrap_class::get_type_definitions()
+			);
 		}
 
 		return array_map(
 			fn( string $class_name ): Reference => get( $class_name ),
-			$definitions
+			$type_definitions
 		);
 	}
 }

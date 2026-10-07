@@ -7,7 +7,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Bootstrap;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations\Meta_Field_Settings_Integration;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations\Post_Selection_Settings_Integration;
@@ -15,9 +14,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations\Tax_Fie
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 
 class Selection_Acf_Bootstrap extends Module_Bootstrap_Base {
-	/**
-	 * @return array<class-string<Hookable>>
-	 */
 	protected function get_hookable_classes(): array {
 		return array(
 			Post_Selection_Settings_Integration::class,
@@ -27,10 +23,7 @@ class Selection_Acf_Bootstrap extends Module_Bootstrap_Base {
 		);
 	}
 
-	/**
-	 * @return Hookable[]
-	 */
-	protected function get_hookable_instances( Route_Detector $route_detector ): array {
+	protected function resolve_hookable_instances( Route_Detector $route_detector ): array {
 		$factory     = $this->resolve( Selection_Acf_Factory::class );
 		$cpt_name    = $this->resolve( Selections_Cpt::class )->cpt_name();
 		$mount_point = $factory->mount_point_integration();
