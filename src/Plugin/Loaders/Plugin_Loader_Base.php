@@ -55,6 +55,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Layout_Tabs_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Selection_Integrations_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Selection_Acf_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Selections_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Selection_Tabs_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
@@ -100,14 +105,8 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public Point_Mounter $point_mounter;
 	public Git_Lab_Api $git_lab_api;
 
-	/**
-	 * Public, as it's shared with the Post_Selections loaders.
-	 */
-	public Container $container;
-
 	public Engines_Storage $engines_storage;
 	public Selection_Settings_Storage $post_selections_settings_storage;
-	public Post_Selections_Loader_Base $selections_loader;
 
 	/**
 	 * @var Plugin_Cpt[]
@@ -141,14 +140,13 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$this->translations( $route_detector );
 		$primary    = $this->primary();
 		$acf_groups = $this->acf_groups( $route_detector );
-		// layouts instances are used by the next modules, so bootstraps go first.
+		// layouts and selections instances are used by the next modules, so bootstraps go first.
 		$bootstrap_classes = $this->get_bootstraps();
 		$bootstraps        = array_map(
 			fn( string $class_name ): Module_Bootstrap => $this->resolve( $class_name ),
 			$bootstrap_classes
 		);
 		$modules           = $this->load_bootstraps( $bootstraps, $route_detector );
-		$post_selection    = $this->post_selections( $route_detector );
 		$integration       = $this->integration( $route_detector );
 		$others            = $this->others();
 		$this->bridge();
@@ -156,7 +154,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 		$this->add_plugin_extensions( $bootstraps );
 
-		return array_merge( $primary, $acf_groups, $modules, $post_selection, $integration, $others, $environment );
+		return array_merge( $primary, $acf_groups, $modules, $integration, $others, $environment );
 	}
 
 	protected function translations( Route_Detector $route_detector ): void {
@@ -256,13 +254,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	/**
 	 * @return Hookable[]
 	 */
-	protected function post_selections( Route_Detector $route_detector ): array {
-		return $this->selections_loader->hookable( $route_detector );
-	}
-
-	/**
-	 * @return Hookable[]
-	 */
 	protected function integration( Route_Detector $route_detector ): array {
 		// only now, when layouts() are called.
 		$this->provider_cluster->make_integration_instances(
@@ -306,7 +297,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 	protected function bridge(): void {
 		Advanced_Views::$layout_renderer         = $this->resolve( Layout_Shortcode::class );
-		Advanced_Views::$post_selection_renderer = $this->selections_loader->shortcode;
+		Advanced_Views::$post_selection_renderer = $this->resolve( Post_Selection_Shortcode::class );
 	}
 
 	/**
@@ -368,7 +359,10 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			Layout_Tabs_Bootstrap::class,
 			Layout_Integrations_Bootstrap::class,
 			// post_selections
-			// fixme as layouts per Post Selections
+			Post_Selections_Bootstrap::class,
+			Selection_Acf_Bootstrap::class,
+			Selection_Tabs_Bootstrap::class,
+			Selection_Integrations_Bootstrap::class,
 			// fixme other domain bootstraps.
 			Version_Migrations_Bootstrap::class,
 		);

@@ -53,9 +53,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Post_Selection_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Blade\Blade_Template_Engine;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory_Storage;
@@ -198,15 +200,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	/**
 	 * @return Hookable[]
 	 */
-	protected function post_selections( Route_Detector $route_detector ): array {
-		$this->selections_loader = new Lite_Post_Selections_Loader( $this );
-
-		return parent::post_selections( $route_detector );
-	}
-
-	/**
-	 * @return Hookable[]
-	 */
 	protected function integration( Route_Detector $route_detector ): array {
 		$this->acf_dependency             = $this->resolve( Acf_Dependency::class );
 		$this->tools_settings_integration = $this->resolve( Tools_Settings_Integration::class );
@@ -271,7 +264,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$this->asset_resolver,
 			array(
 				$this->resolve( Layout_Interactive_Fields::class ),
-				$this->selections_loader->interactive_fields,
+				$this->resolve( Selection_Interactive_Fields::class ),
 			)
 		);
 
@@ -298,7 +291,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$this->usage_report,
 			$this->settings,
 			$this->plugin,
-			$this->selections_loader->pre_built_tab,
+			$this->resolve( Post_Selections_Pre_Built_Tab::class ),
 			$this->file_systems,
 			array( $this->layouts_settings_storage, $this->post_selections_settings_storage )
 		);

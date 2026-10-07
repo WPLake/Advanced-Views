@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt;
+namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs;
 
 defined( 'ABSPATH' ) || exit;
 

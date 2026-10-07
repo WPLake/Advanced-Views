@@ -61,7 +61,7 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 	}
 
 	/**
-	 * @return array<class-string, callable>
+	 * @return array<class-string, \Closure>
 	 */
 	protected function get_wire_resolves(): array {
 		return array(
