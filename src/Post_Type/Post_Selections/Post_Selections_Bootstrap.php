@@ -32,7 +32,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_R
 use Org\Wplake\Advanced_Views\Template\Template_Engine\PHP\PHP_Template_Engine;
 
 class Post_Selections_Bootstrap extends Module_Bootstrap_Base {
-	public function wire_instance_factories(): void {
+	public function wire_instances(): void {
 		$wire_resolves = $this->get_wire_resolves();
 
 		foreach ( $wire_resolves as $class_name => $factory ) {

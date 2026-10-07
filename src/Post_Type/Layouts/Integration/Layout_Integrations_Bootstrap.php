@@ -73,10 +73,7 @@ class Layout_Integrations_Bootstrap extends Module_Bootstrap_Base {
 	}
 
 	protected function create_shortcode_block(): Shortcode_Gutenberg_Block {
-		$layouts_cpt = $this->resolve( Layouts_Cpt::class );
-		$shortcodes  = $layouts_cpt->shortcodes();
-
-		return new Shortcode_Gutenberg_Block( $shortcodes );
+		return $this->resolve( Shortcode_Gutenberg_Block::class );
 	}
 
 	protected function item_picker(): Cpt_Item_Picker {

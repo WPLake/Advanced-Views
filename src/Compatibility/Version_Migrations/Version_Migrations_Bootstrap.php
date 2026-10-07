@@ -27,8 +27,15 @@ use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_9
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 
 class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
+	public function wire_instances(): void {
+		$migrator = $this->resolve( Version_Migrator::class );
+
+		$this->wire( Cpt_Settings_Migrator::class, $migrator );
+	}
+
 	/**
 	 * @return Hookable[]
 	 */

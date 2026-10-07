@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
@@ -25,7 +25,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 
 class Layout_Tabs_Bootstrap extends Module_Bootstrap_Base {
-	public function wire_instance_factories(): void {
+	public function wire_instances(): void {
 		$wire_resolves = $this->get_wire_resolves();
 
 		foreach ( $wire_resolves as $class_name => $factory ) {
@@ -106,7 +106,7 @@ class Layout_Tabs_Bootstrap extends Module_Bootstrap_Base {
 
 		$cpt_table        = $this->resolve( Layouts_Cpt_Table::class );
 		$settings_storage = $this->resolve( Layout_Settings_Storage::class );
-		$migrator         = $this->resolve( Version_Migrator::class );
+		$migrator         = $this->resolve( Cpt_Settings_Migrator::class );
 
 		return new Layouts_Pre_Built_Tab(
 			$cpt_table,

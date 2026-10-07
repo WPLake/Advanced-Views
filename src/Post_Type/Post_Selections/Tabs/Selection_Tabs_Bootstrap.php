@@ -6,13 +6,13 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Fs_Only_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
@@ -26,7 +26,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 
 class Selection_Tabs_Bootstrap extends Module_Bootstrap_Base {
-	public function wire_instance_factories(): void {
+	public function wire_instances(): void {
 		$wire_resolves = $this->get_wire_resolves();
 
 		foreach ( $wire_resolves as $class_name => $factory ) {
@@ -107,7 +107,7 @@ class Selection_Tabs_Bootstrap extends Module_Bootstrap_Base {
 
 		$cpt_table             = $this->resolve( Post_Selections_Table::class );
 		$settings_storage      = $this->resolve( Selection_Settings_Storage::class );
-		$migrator              = $this->resolve( Version_Migrator::class );
+		$migrator              = $this->resolve( Cpt_Settings_Migrator::class );
 		$layouts_pre_built_tab = $this->resolve( Layouts_Pre_Built_Tab::class );
 
 		return new Post_Selections_Pre_Built_Tab(

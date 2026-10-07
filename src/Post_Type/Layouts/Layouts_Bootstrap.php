@@ -23,12 +23,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layouts_Cpt as Layouts_Cpt_H
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table\Layouts_Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Field_Markup;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Shortcode_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\PHP\PHP_Template_Engine;
 
 class Layouts_Bootstrap extends Module_Bootstrap_Base {
-	public function wire_instance_factories(): void {
+	public function wire_instances(): void {
 		$wire_resolves = $this->get_wire_resolves();
 
 		foreach ( $wire_resolves as $class_name => $factory ) {
@@ -67,6 +68,7 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 		return array(
 			Layout_Factory::class       => fn(): Layout_Factory => $this->make_factory(),
 			Layouts_Cpt_Hookable::class => fn(): Layouts_Cpt_Hookable => $this->make_cpt_hookable(),
+			Shortcode_Gutenberg_Block::class => fn(): Shortcode_Gutenberg_Block => $this->make_shortcode_block(),
 		);
 	}
 
@@ -83,6 +85,12 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 			Layout_Git_Box::class,
 			Layout_Interactive_Fields::class,
 		);
+	}
+
+	protected function make_shortcode_block(): Shortcode_Gutenberg_Block {
+		$layouts_cpt = $this->resolve( Layouts_Cpt::class );
+
+		return new Shortcode_Gutenberg_Block( $layouts_cpt->shortcodes() );
 	}
 
 	protected function make_cpt_hookable(): Layouts_Cpt_Hookable {

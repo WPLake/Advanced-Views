@@ -13,7 +13,7 @@ interface Module_Bootstrap {
 	/**
 	 * Registers the container factories of the module's instances. Must be called before get_hookables().
 	 */
-	public function wire_instance_factories(): void;
+	public function wire_instances(): void;
 
 	/**
 	 * @return Hookable[]

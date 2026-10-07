@@ -54,13 +54,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Layout_Tabs_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Selection_Acf_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Selection_Integrations_Bootstrap;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Selection_Acf_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Selections_Bootstrap;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Selection_Tabs_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Selection_Tabs_Bootstrap;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
 use Org\Wplake\Advanced_Views\Vendors\DI\Container;
@@ -227,7 +227,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 */
 	protected function load_bootstraps( array $bootstraps, Route_Detector $route_detector ): array {
 		foreach ( $bootstraps as $bootstrap ) {
-			$bootstrap->wire_instance_factories();
+			$bootstrap->wire_instances();
 		}
 
 		return flat_map(

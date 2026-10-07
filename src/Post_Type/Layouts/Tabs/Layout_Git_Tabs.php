@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Git_Tabs;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Import_Result;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table\Layouts_Cpt_Table;
 
 class Layout_Git_Tabs extends Git_Tabs {
@@ -28,7 +28,7 @@ class Layout_Git_Tabs extends Git_Tabs {
 		Git_Api_Interface $git_api,
 		Layout_Settings $cpt_settings,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Version_Migrator $cpt_settings_migrator,
+		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Field_Provider_Cluster $provider_cluster,
 		Logger $logger
 	) {
