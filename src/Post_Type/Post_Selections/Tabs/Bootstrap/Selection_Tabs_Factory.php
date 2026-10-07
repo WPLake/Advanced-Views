@@ -2,14 +2,12 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs;
+namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Bootstrap;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Container_Facade;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
@@ -23,58 +21,19 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Post_Select
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Selection_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Bulk_Validation_Tab;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 
-class Selection_Tabs_Bootstrap extends Module_Bootstrap_Base {
-	public function wire_instances(): void {
-		$wire_resolves = $this->get_wire_resolves();
-
-		foreach ( $wire_resolves as $class_name => $factory ) {
-			$this->wire( $class_name, $factory );
-		}
-	}
-
-	public function get_hookables( Route_Detector $route_detector ): array {
-		$hookable_classes = $this->get_hookable_classes();
-		$resolved         = array_map(
-			fn( string $class_name ): Hookable => $this->resolve( $class_name ),
-			$hookable_classes
-		);
-
-		$fs_only_tab = $this->create_fs_only_tab();
-
-		return array_merge( $resolved, array( $fs_only_tab ) );
-	}
-
-	/**
-	 * @return array<class-string<Hookable>>
-	 */
-	protected function get_hookable_classes(): array {
-		return array(
-			Post_Selections_Bulk_Validation_Tab::class,
-			Post_Selections_Pre_Built_Tab::class,
-			Selection_Git_Tabs::class,
-		);
-	}
-
-	/**
-	 * @return array<class-string, \Closure>
-	 */
-	protected function get_wire_resolves(): array {
-		return array(
-			Post_Selections_Pre_Built_Tab::class       => fn(): Post_Selections_Pre_Built_Tab => $this->make_pre_built_tab(),
-			Post_Selections_Bulk_Validation_Tab::class => fn(): Post_Selections_Bulk_Validation_Tab => $this->make_bulk_validation_tab(),
-		);
-	}
-
-	protected function create_fs_only_tab(): Fs_Only_Tab {
+class Selection_Tabs_Factory extends Container_Facade {
+	public function create_fs_only_tab(): Fs_Only_Tab {
 		$cpt_table        = $this->resolve( Post_Selections_Table::class );
 		$settings_storage = $this->resolve( Selection_Settings_Storage::class );
 
 		return new Fs_Only_Tab( $cpt_table, $settings_storage );
 	}
 
-	protected function make_bulk_validation_tab(): Post_Selections_Bulk_Validation_Tab {
+	public function create_bulk_validation_tab(): Post_Selections_Bulk_Validation_Tab {
 		$cpt_table         = $this->resolve( Post_Selections_Table::class );
 		$settings_storage  = $this->resolve( Selection_Settings_Storage::class );
 		$fs_only_tab       = $this->create_fs_only_tab();
@@ -83,7 +42,7 @@ class Selection_Tabs_Bootstrap extends Module_Bootstrap_Base {
 		return new Post_Selections_Bulk_Validation_Tab( $cpt_table, $settings_storage, $fs_only_tab, $selection_factory );
 	}
 
-	protected function make_pre_built_tab(): Post_Selections_Pre_Built_Tab {
+	public function create_pre_built_tab(): Post_Selections_Pre_Built_Tab {
 		$logger             = $this->resolve( Logger::class );
 		$selections_cpt     = $this->resolve( Selections_Cpt::class );
 		$plugin             = $this->resolve( Plugin::class );

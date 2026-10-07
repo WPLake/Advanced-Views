@@ -2,17 +2,15 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Bootstrap;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Container_Facade;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Fs_Only_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
@@ -22,58 +20,19 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Layouts_Bulk_Validation_Tab;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Layouts_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 
-class Layout_Tabs_Bootstrap extends Module_Bootstrap_Base {
-	public function wire_instances(): void {
-		$wire_resolves = $this->get_wire_resolves();
-
-		foreach ( $wire_resolves as $class_name => $factory ) {
-			$this->wire( $class_name, $factory );
-		}
-	}
-
-	public function get_hookables( Route_Detector $route_detector ): array {
-		$hookable_classes = $this->get_hookable_classes();
-		$resolved         = array_map(
-			fn( string $class_name ): Hookable => $this->resolve( $class_name ),
-			$hookable_classes
-		);
-
-		$fs_only_tab = $this->create_fs_only_tab();
-
-		return array_merge( $resolved, array( $fs_only_tab ) );
-	}
-
-	/**
-	 * @return array<class-string<Hookable>>
-	 */
-	protected function get_hookable_classes(): array {
-		return array(
-			Layouts_Bulk_Validation_Tab::class,
-			Layouts_Pre_Built_Tab::class,
-			Layout_Git_Tabs::class,
-		);
-	}
-
-	/**
-	 * @return array<class-string, \Closure>
-	 */
-	protected function get_wire_resolves(): array {
-		return array(
-			Layouts_Pre_Built_Tab::class       => fn(): Layouts_Pre_Built_Tab => $this->make_pre_built_tab(),
-			Layouts_Bulk_Validation_Tab::class => fn(): Layouts_Bulk_Validation_Tab => $this->make_bulk_validation_tab(),
-		);
-	}
-
-	protected function create_fs_only_tab(): Fs_Only_Tab {
+class Layout_Tabs_Factory extends Container_Facade {
+	public function create_fs_only_tab(): Fs_Only_Tab {
 		$cpt_table        = $this->resolve( Layouts_Cpt_Table::class );
 		$settings_storage = $this->resolve( Layout_Settings_Storage::class );
 
 		return new Fs_Only_Tab( $cpt_table, $settings_storage );
 	}
 
-	protected function make_bulk_validation_tab(): Layouts_Bulk_Validation_Tab {
+	public function create_bulk_validation_tab(): Layouts_Bulk_Validation_Tab {
 		$cpt_table        = $this->resolve( Layouts_Cpt_Table::class );
 		$settings_storage = $this->resolve( Layout_Settings_Storage::class );
 		$fs_only_tab      = $this->create_fs_only_tab();
@@ -82,7 +41,7 @@ class Layout_Tabs_Bootstrap extends Module_Bootstrap_Base {
 		return new Layouts_Bulk_Validation_Tab( $cpt_table, $settings_storage, $fs_only_tab, $layout_factory );
 	}
 
-	protected function make_pre_built_tab(): Layouts_Pre_Built_Tab {
+	public function create_pre_built_tab(): Layouts_Pre_Built_Tab {
 		$logger           = $this->resolve( Logger::class );
 		$layout_cpt       = $this->resolve( Layouts_Cpt::class );
 		$plugin           = $this->resolve( Plugin::class );
