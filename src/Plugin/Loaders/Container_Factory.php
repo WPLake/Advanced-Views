@@ -12,31 +12,22 @@ use Org\Wplake\Advanced_Views\Vendors\DI\ContainerBuilder;
 use Org\Wplake\Advanced_Views\Vendors\DI\Definition\Reference;
 use function Org\Wplake\Advanced_Views\Vendors\DI\get;
 
-class Container_Factory {
-	/**
-	 * @var class-string<Module_Bootstrap>[]
-	 */
-	protected array $bootstrap_classes;
-
+abstract class Container_Factory {
 	/**
 	 * @param class-string<Module_Bootstrap>[] $bootstrap_classes
 	 */
-	public function __construct( array $bootstrap_classes ) {
-		$this->bootstrap_classes = $bootstrap_classes;
-	}
-
-	public function build(): Container {
+	public static function build( array $bootstrap_classes ): Container {
 		$builder = new ContainerBuilder();
 
 		$builder->useAutowiring( true );
 		$builder->useAnnotations( false );
 
-		$definitions = $this->compose_type_definitions();
+		$definitions = self::compose_type_definitions( $bootstrap_classes );
 		$builder->addDefinitions( $definitions );
 
 		$container = $builder->build();
 
-		$this->wire_instance_factories( $container );
+		self::wire_instance_factories( $container, $bootstrap_classes );
 
 		return $container;
 	}
@@ -44,12 +35,14 @@ class Container_Factory {
 	/**
 	 * PHP-DI Reference is just a class pointer, not an instance.
 	 *
+	 * @param class-string<Module_Bootstrap>[] $bootstrap_classes
+	 *
 	 * @return array<class-string, Reference>
 	 */
-	protected function compose_type_definitions(): array {
+	protected static function compose_type_definitions( array $bootstrap_classes ): array {
 		$type_definitions = array();
 
-		foreach ( $this->bootstrap_classes as $bootstrap_class ) {
+		foreach ( $bootstrap_classes as $bootstrap_class ) {
 			$type_definitions = array_merge(
 				$type_definitions,
 				$bootstrap_class::get_type_definitions()
@@ -62,8 +55,11 @@ class Container_Factory {
 		);
 	}
 
-	protected function wire_instance_factories( Container $container ): void {
-		foreach ( $this->bootstrap_classes as $bootstrap_class ) {
+	/**
+	 * @param class-string<Module_Bootstrap>[] $bootstrap_classes
+	 */
+	protected static function wire_instance_factories( Container $container, array $bootstrap_classes ): void {
+		foreach ( $bootstrap_classes as $bootstrap_class ) {
 			$bootstrap = $container->get( $bootstrap_class );
 			$instances = $bootstrap->get_instance_factories();
 

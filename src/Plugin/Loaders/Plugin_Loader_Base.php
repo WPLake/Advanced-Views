@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Bridge\Advanced_Views;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\Version_Migrations_Bootstrap;
+use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\Bootstrap\Version_Migrations_Bootstrap;
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
@@ -115,8 +115,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 	public function __construct() {
 		$bootstrap_classes = static::get_bootstraps();
-		$container_factory = new Container_Factory( $bootstrap_classes );
-		$container         = $container_factory->build();
+		$container         = Container_Factory::build( $bootstrap_classes );
 
 		parent::__construct( $container );
 
@@ -141,7 +140,9 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$primary = $this->primary();
 
 		// layouts and selections instances are used by the next modules, so bootstraps go first.
-		$this->modules_bootstrap( $route_detector )->bootstrap( $this->container );
+		$modules_bootstrap = $this->resolve( Modules_Bootstrap::class );
+		$bootstrap_classes = static::get_bootstraps();
+		$modules_bootstrap->bootstrap( $bootstrap_classes );
 
 		$integration = $this->integration( $route_detector );
 		$others      = $this->others();
@@ -149,16 +150,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$environment = $this->environment();
 
 		return array_merge( $primary, $integration, $others, $environment );
-	}
-
-	protected function modules_bootstrap( Route_Detector $route_detector ): Modules_Bootstrap {
-		$bootstrap_classes = static::get_bootstraps();
-		$bootstraps        = array_map(
-			fn( string $class_name ): Module_Bootstrap => $this->resolve( $class_name ),
-			$bootstrap_classes
-		);
-
-		return new Modules_Bootstrap( $bootstraps, $route_detector );
 	}
 
 	protected function translations( Route_Detector $route_detector ): void {

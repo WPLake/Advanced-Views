@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Compatibility\Version_Migrations;
+namespace Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\Bootstrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -24,15 +24,9 @@ use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_3
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_8_0;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_8_9;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_9_6;
-use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Container_Facade;
 
-class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
-	public static function get_type_definitions(): array {
-		return array( Cpt_Settings_Migrator::class => Version_Migrator::class );
-	}
-
-
+final class Version_Migrations_Factory extends Container_Facade {
 	public function register_migrations(): Version_Migrator {
 		$v1_migrations = $this->v1_migrations();
 		$v2_migrations = $this->v2_migrations();
@@ -61,7 +55,7 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 	}
 
 	/**
-	 * @return array<array-key, class-string<Version_Migration>>
+	 * @return class-string<Version_Migration>[]
 	 */
 	protected function v2_migrations(): array {
 		return array(
@@ -78,7 +72,7 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 	}
 
 	/**
-	 * @return array<array-key, class-string<Version_Migration>>
+	 * @return class-string<Version_Migration>[]
 	 */
 	protected function v3_migrations(): array {
 		return array(
@@ -88,13 +82,5 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 			Migration_3_8_9::class,
 			Migration_3_9_6::class,
 		);
-	}
-
-	public function get_hookable_factories(): array {
-		/**
-		 * Migrations depend on the instances registered in the container by later modules,
-		 * so they are registered lazily, when the migrator is created.
-		 */
-		return array( Version_Migrator::class => fn() => $this->register_migrations() );
 	}
 }
