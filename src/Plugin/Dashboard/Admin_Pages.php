@@ -51,6 +51,29 @@ class Admin_Pages extends Hookable_Base implements Hookable {
 		$this->plugin_cpts = $plugin_cpts;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		$plugin_slug = $this->plugin->get_slug();
+
+		self::add_action( 'admin_menu', array( $this, 'add_subpages' ) );
+
+		self::add_action(
+			'current_screen',
+			function ( WP_Screen $wp_screen ): void {
+				if ( ! in_array( $wp_screen->post_type, array( Hard_Layout_Cpt::cpt_name(), Hard_Post_Selection_Cpt::cpt_name() ), true ) ) {
+					return;
+				}
+
+				self::add_action( 'in_admin_header', array( $this, 'get_header' ) );
+			}
+		);
+
+		self::add_filter( "plugin_action_links_{$plugin_slug}", array( $this, 'extend_plugin_action_links' ) );
+	}
+
 	public function add_subpages(): void {
 		$parent_slug = sprintf( 'edit.php?post_type=%s', Hard_Layout_Cpt::cpt_name() );
 
@@ -164,29 +187,6 @@ class Admin_Pages extends Hookable_Base implements Hookable {
 		}
 
 		return array_merge( $links, $this->get_promo_links() );
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return $route_detector->is_admin_route();
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		$plugin_slug = $this->plugin->get_slug();
-
-		self::add_action( 'admin_menu', array( $this, 'add_subpages' ) );
-
-		self::add_action(
-			'current_screen',
-			function ( WP_Screen $wp_screen ): void {
-				if ( ! in_array( $wp_screen->post_type, array( Hard_Layout_Cpt::cpt_name(), Hard_Post_Selection_Cpt::cpt_name() ), true ) ) {
-					return;
-				}
-
-				self::add_action( 'in_admin_header', array( $this, 'get_header' ) );
-			}
-		);
-
-		self::add_filter( "plugin_action_links_{$plugin_slug}", array( $this, 'extend_plugin_action_links' ) );
 	}
 
 	/**

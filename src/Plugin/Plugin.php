@@ -50,6 +50,24 @@ class Plugin extends Hookable_Base implements Hookable {
 		$this->is_switching_versions = false;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'admin_notices', array( $this, 'maybe_show_compatibility_warnings' ) );
+		self::add_action( 'activated_plugin', array( $this, 'deactivate_other_instances' ) );
+		self::add_action( 'pre_current_active_plugins', array( $this, 'show_plugin_deactivated_notice' ) );
+
+		self::add_filter( 'acf/prepare_field', array( $this, 'amend_field_settings' ) );
+		self::add_filter( 'acf/field_wrapper_attributes', array( $this, 'add_class_to_admin_pro_field_classes' ), 10, 2 );
+
+		if ( $route_detector->is_cpt_admin_route( Hard_Layout_Cpt::cpt_name(), Route_Detector::CPT_ADD ) ||
+			$route_detector->is_cpt_admin_route( Hard_Post_Selection_Cpt::cpt_name(), Route_Detector::CPT_ADD ) ) {
+			self::add_filter( 'acf/prepare_field', array( $this, 'set_global_defaults_for_field' ) );
+		}
+	}
+
 	public static function make_url_relative( string $url ): string {
 		return str_replace( get_site_url(), '', $url );
 	}
@@ -485,23 +503,5 @@ class Plugin extends Hookable_Base implements Hookable {
 	public function is_wordpress_com_hosting(): bool {
 		return defined( 'WPCOMSH_VERSION' ) ||
 				defined( 'WPCOM_CORE_ATOMIC_PLUGINS' );
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return $route_detector->is_admin_route();
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		self::add_action( 'admin_notices', array( $this, 'maybe_show_compatibility_warnings' ) );
-		self::add_action( 'activated_plugin', array( $this, 'deactivate_other_instances' ) );
-		self::add_action( 'pre_current_active_plugins', array( $this, 'show_plugin_deactivated_notice' ) );
-
-		self::add_filter( 'acf/prepare_field', array( $this, 'amend_field_settings' ) );
-		self::add_filter( 'acf/field_wrapper_attributes', array( $this, 'add_class_to_admin_pro_field_classes' ), 10, 2 );
-
-		if ( $route_detector->is_cpt_admin_route( Hard_Layout_Cpt::cpt_name(), Route_Detector::CPT_ADD ) ||
-			$route_detector->is_cpt_admin_route( Hard_Post_Selection_Cpt::cpt_name(), Route_Detector::CPT_ADD ) ) {
-			self::add_filter( 'acf/prepare_field', array( $this, 'set_global_defaults_for_field' ) );
-		}
 	}
 }

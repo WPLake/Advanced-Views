@@ -19,6 +19,23 @@ class Acf_Internal_Features extends Hookable_Base implements Hookable {
 		$this->asset_resolver = $asset_resolver;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route() &&
+			( $route_detector->is_cpt_admin_route( Hard_Layout_Cpt::cpt_name() ) ||
+				$route_detector->is_cpt_admin_route( Hard_Post_Selection_Cpt::cpt_name() ) ||
+				wp_doing_ajax() );
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		// only since 'plugins_loaded' we can judge if ACF is loaded or not
+		// '-1' so it's after AcfDependency->maybeIncludeAcfPlugin().
+		self::add_action(
+			'plugins_loaded',
+			array( $this, 'maybe_include_features' ),
+			Field_Provider_Cluster::PLUGINS_LOADED_HOOK_PRIORITY - 1
+		);
+	}
+
 	public function include_field_types(): void {
 		$internal_features_path = $this->asset_resolver->get_standalone_vendor_path( 'acf-internal-features' );
 
@@ -66,22 +83,5 @@ class Acf_Internal_Features extends Hookable_Base implements Hookable {
 		self::add_action( 'init', array( $this, 'register_assets' ) );
 		self::add_action( 'acf/include_field_types', array( $this, 'include_field_types' ), 5 );
 		self::add_action( 'acf/input/admin_enqueue_scripts', array( $this, 'input_admin_enqueue_scripts' ) );
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return $route_detector->is_admin_route() &&
-			( $route_detector->is_cpt_admin_route( Hard_Layout_Cpt::cpt_name() ) ||
-				$route_detector->is_cpt_admin_route( Hard_Post_Selection_Cpt::cpt_name() ) ||
-				wp_doing_ajax() );
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		// only since 'plugins_loaded' we can judge if ACF is loaded or not
-		// '-1' so it's after AcfDependency->maybeIncludeAcfPlugin().
-		self::add_action(
-			'plugins_loaded',
-			array( $this, 'maybe_include_features' ),
-			Field_Provider_Cluster::PLUGINS_LOADED_HOOK_PRIORITY - 1
-		);
 	}
 }

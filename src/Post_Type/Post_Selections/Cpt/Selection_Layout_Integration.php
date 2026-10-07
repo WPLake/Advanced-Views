@@ -37,6 +37,14 @@ class Selection_Layout_Integration extends Cpt_Settings_Creator implements Hooka
 		$this->post_selections_cpt_save_actions = $post_selections_cpt_save_actions;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'current_screen', array( $this, 'maybe_create_selection_for_layout' ) );
+	}
+
 	public function maybe_create_selection_for_layout(): void {
 		$screen = get_current_screen();
 
@@ -82,13 +90,5 @@ class Selection_Layout_Integration extends Cpt_Settings_Creator implements Hooka
 
 		wp_safe_redirect( $selection_settings->get_edit_post_link( 'redirect' ) );
 		exit;
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return $route_detector->is_admin_route();
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		self::add_action( 'current_screen', array( $this, 'maybe_create_selection_for_layout' ) );
 	}
 }

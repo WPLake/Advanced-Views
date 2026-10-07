@@ -49,6 +49,24 @@ abstract class Git_Meta_Box extends Hookable_Base implements Hookable {
 		$this->plugin               = $plugin;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		if ( $route_detector->is_cpt_admin_route( $this->cpt_name, Route_Detector::CPT_EDIT ) ) {
+			// for feature-promotion, show the meta-box even there are no set repositories.
+			self::add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
+		}
+
+		if ( wp_doing_ajax() ) {
+			self::add_action(
+				sprintf( 'wp_ajax_acf-views__git_meta_box_%s', $this->cpt_name ),
+				array( $this, 'push_item_ajax' )
+			);
+		}
+	}
+
 	protected function print_git_lab_repositories_meta_box(): void {
 		echo '<av-git-meta-box class="av-git-meta-box" style="transition:all .3s ease;">';
 
@@ -268,23 +286,5 @@ abstract class Git_Meta_Box extends Hookable_Base implements Hookable {
 		}
 
 		exit;
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return true;
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( $route_detector->is_cpt_admin_route( $this->cpt_name, Route_Detector::CPT_EDIT ) ) {
-			// for feature-promotion, show the meta-box even there are no set repositories.
-			self::add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
-		}
-
-		if ( wp_doing_ajax() ) {
-			self::add_action(
-				sprintf( 'wp_ajax_acf-views__git_meta_box_%s', $this->cpt_name ),
-				array( $this, 'push_item_ajax' )
-			);
-		}
 	}
 }

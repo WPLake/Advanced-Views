@@ -36,6 +36,14 @@ class Admin_Bar extends Hookable_Base implements Hookable {
 		$this->settings                 = $settings;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return ! $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'admin_bar_menu', array( $this, 'add_admin_bar_menu' ), 81 );
+	}
+
 	public function add_admin_bar_menu( WP_Admin_Bar $wp_admin_bar ): void {
 		if ( ! Avf_User::can_manage() ) {
 			return;
@@ -85,13 +93,5 @@ class Admin_Bar extends Hookable_Base implements Hookable {
 		foreach ( $items as $item ) {
 			$wp_admin_bar->add_menu( $item );
 		}
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return ! $route_detector->is_admin_route();
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		self::add_action( 'admin_bar_menu', array( $this, 'add_admin_bar_menu' ), 81 );
 	}
 }

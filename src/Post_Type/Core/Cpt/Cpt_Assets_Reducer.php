@@ -24,6 +24,32 @@ class Cpt_Assets_Reducer extends Hookable_Base implements Hookable {
 		$this->plugin   = $plugin;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		if ( ! $route_detector->is_cpt_admin_route( $this->cpt_name, Route_Detector::CPT_EDIT ) ||
+		! $this->settings->is_cpt_admin_optimization_enabled() ) {
+			return;
+		}
+
+		// in some cases assets reducer causes issues, so we must provide a fallback action for users.
+		self::add_action( 'admin_notices', array( $this, 'print_fallback_message' ) );
+
+		// 1. styles (in header)
+		// print is later than 'admin_enqueue_scripts'
+		// NOTE: priority 11 is ok, as it's bigger than the default 10.
+		// Do not use a big priority, as e.g. since 20+ priority the theme styles are already printed
+		self::add_action( 'admin_print_styles', array( $this, 'remove_unused_styles_from_edit_screen' ), 11 );
+
+		// 2. scripts (in header)
+		self::add_action( 'admin_print_scripts', array( $this, 'remove_unused_scripts_from_edit_screen' ), 11 );
+
+		// 3. scripts (in footer)
+		self::add_action( 'admin_footer', array( $this, 'remove_unused_scripts_from_edit_screen' ), 99 );
+	}
+
 	protected function is_necessary_handle( string $handle ): bool {
 		// acf do not include select2 if it's already included (e.g. by woo, or Avada).
 		return in_array( $handle, array( 'select2' ), true );
@@ -258,31 +284,5 @@ class Cpt_Assets_Reducer extends Hookable_Base implements Hookable {
 		});
 		</script>
 		<?php
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return true;
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( ! $route_detector->is_cpt_admin_route( $this->cpt_name, Route_Detector::CPT_EDIT ) ||
-		! $this->settings->is_cpt_admin_optimization_enabled() ) {
-			return;
-		}
-
-		// in some cases assets reducer causes issues, so we must provide a fallback action for users.
-		self::add_action( 'admin_notices', array( $this, 'print_fallback_message' ) );
-
-		// 1. styles (in header)
-		// print is later than 'admin_enqueue_scripts'
-		// NOTE: priority 11 is ok, as it's bigger than the default 10.
-		// Do not use a big priority, as e.g. since 20+ priority the theme styles are already printed
-		self::add_action( 'admin_print_styles', array( $this, 'remove_unused_styles_from_edit_screen' ), 11 );
-
-		// 2. scripts (in header)
-		self::add_action( 'admin_print_scripts', array( $this, 'remove_unused_scripts_from_edit_screen' ), 11 );
-
-		// 3. scripts (in footer)
-		self::add_action( 'admin_footer', array( $this, 'remove_unused_scripts_from_edit_screen' ), 99 );
 	}
 }

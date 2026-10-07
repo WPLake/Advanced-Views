@@ -21,6 +21,22 @@ class Acf_Dependency extends Hookable_Base implements Hookable {
 		$this->asset_resolver = $asset_resolver;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route() &&
+			( $route_detector->is_cpt_admin_route( Hard_Layout_Cpt::cpt_name() ) ||
+				$route_detector->is_cpt_admin_route( Hard_Post_Selection_Cpt::cpt_name() ) ||
+				wp_doing_ajax() );
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action(
+			'plugins_loaded',
+			array( $this, 'maybe_include_acf_plugin' ),
+			// -2, so it's before Acf_Internal_Features
+			Field_Provider_Cluster::PLUGINS_LOADED_HOOK_PRIORITY - 2
+		);
+	}
+
 	public static function is_acf_plugin_available( bool $is_pro_only = false ): bool {
 		// don't use 'is_plugin_active()' as the function available lately.
 		return class_exists( 'acf_pro' ) ||
@@ -44,21 +60,5 @@ class Acf_Dependency extends Hookable_Base implements Hookable {
 
 		// used in the AcfDataVendor to skip loading if it's inner ACF.
 		define( 'ACF_VIEWS_INNER_ACF', true );
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return $route_detector->is_admin_route() &&
-			( $route_detector->is_cpt_admin_route( Hard_Layout_Cpt::cpt_name() ) ||
-				$route_detector->is_cpt_admin_route( Hard_Post_Selection_Cpt::cpt_name() ) ||
-				wp_doing_ajax() );
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		self::add_action(
-			'plugins_loaded',
-			array( $this, 'maybe_include_acf_plugin' ),
-			// -2, so it's before Acf_Internal_Features
-			Field_Provider_Cluster::PLUGINS_LOADED_HOOK_PRIORITY - 2
-		);
 	}
 }

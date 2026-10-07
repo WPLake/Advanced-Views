@@ -67,6 +67,25 @@ class Front_Assets extends Hookable_Base implements Hookable {
 		$this->register_patterns();
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return ! $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_filter(
+			'script_module_loader_src',
+			array( $this, 'catch_interactivity_api_script_url' ),
+			10,
+			2
+		);
+		self::add_action( 'wp_footer', array( $this, 'enqueue_assets' ) );
+		// printCustomAssets() contains ob_get_clean, so must be executed after all other scripts.
+		self::add_action( 'wp_footer', array( $this, 'print_assets' ), 9999 );
+		self::add_action( 'wp_head', array( $this, 'print_styles_stub' ) );
+		// don't use 'get_header', as it doesn't work in blocks theme.
+		self::add_action( 'template_redirect', array( $this, 'start_buffering' ) );
+	}
+
 	/**
 	 * @return Library_Pattern_Base[]
 	 */
@@ -569,25 +588,6 @@ class Front_Assets extends Hookable_Base implements Hookable {
 		}
 
 		return $src;
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return ! $route_detector->is_admin_route();
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		self::add_filter(
-			'script_module_loader_src',
-			array( $this, 'catch_interactivity_api_script_url' ),
-			10,
-			2
-		);
-		self::add_action( 'wp_footer', array( $this, 'enqueue_assets' ) );
-		// printCustomAssets() contains ob_get_clean, so must be executed after all other scripts.
-		self::add_action( 'wp_footer', array( $this, 'print_assets' ), 9999 );
-		self::add_action( 'wp_head', array( $this, 'print_styles_stub' ) );
-		// don't use 'get_header', as it doesn't work in blocks theme.
-		self::add_action( 'template_redirect', array( $this, 'start_buffering' ) );
 	}
 
 	/**

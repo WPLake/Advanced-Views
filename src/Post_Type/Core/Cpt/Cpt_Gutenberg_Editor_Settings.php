@@ -21,6 +21,24 @@ class Cpt_Gutenberg_Editor_Settings extends Hookable_Base implements Hookable {
 		$this->cpt_name = $cpt_name;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_filter(
+			'wp_insert_post_data',
+			array( $this, 'avoid_override_post_content_by_gutenberg_and_theme_builders' ),
+			// must be more than the default priority of 10.
+			99,
+			4
+		);
+
+		if ( $route_detector->is_admin_route() ) {
+			$this->set_admin_hooks( $route_detector );
+		}
+	}
+
 	/**
 	 * Gutenberg will try to update the content by the presented value, which is empty, so ignore it
 	 * Also some theme builders may perform different replaces for their shortcodes, etc
@@ -174,24 +192,6 @@ class Cpt_Gutenberg_Editor_Settings extends Hookable_Base implements Hookable {
 				'autosaveInterval' => 99999,
 			)
 		);
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return true;
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		self::add_filter(
-			'wp_insert_post_data',
-			array( $this, 'avoid_override_post_content_by_gutenberg_and_theme_builders' ),
-			// must be more than the default priority of 10.
-			99,
-			4
-		);
-
-		if ( $route_detector->is_admin_route() ) {
-			$this->set_admin_hooks( $route_detector );
-		}
 	}
 
 	protected function set_admin_hooks( Route_Detector $route_detector ): void {

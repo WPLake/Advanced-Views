@@ -52,6 +52,36 @@ abstract class Cpt_Table extends Hookable_Base implements Hookable {
 		$this->pagination_per_page  = null;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_filter(
+			sprintf( 'manage_%s_posts_columns', $this->get_cpt_name() ),
+			array( $this, 'get_columns' ),
+		);
+
+		if ( $route_detector->is_cpt_admin_route( $this->cpt_name, Route_Detector::CPT_LIST ) ) {
+			self::add_action( 'admin_init', array( $this, 'make_table_actions' ) );
+			self::add_action( 'admin_notices', array( $this, 'show_action_result_message' ) );
+			self::add_filter( 'admin_body_class', array( $this, 'add_acf_class_to_body' ) );
+			self::add_filter( sprintf( 'views_edit-%s', $this->cpt_name ), array( $this, 'modify_table_header' ) );
+		}
+
+		self::add_action(
+			sprintf( 'manage_%s_posts_custom_column', $this->cpt_name ),
+			array( $this, 'printTableColumn' ),
+			10,
+			2
+		);
+		self::add_action( 'pre_get_posts', array( $this, 'add_post_name_to_search' ) );
+
+		self::add_filter( 'post_row_actions', array( $this, 'get_row_actions' ), 10, 2 );
+		self::add_filter( sprintf( 'bulk_actions-edit-%s', $this->cpt_name ), array( $this, 'get_bulk_table_actions' ) );
+		self::add_filter( 'get_the_excerpt', array( $this, 'hide_excerpt_from_extended_list_view' ), 10, 2 );
+	}
+
 	abstract protected function get_unique_id_prefix(): string;
 
 	abstract protected function print_column( string $short_column_name, Cpt_Settings $cpt_settings ): void;
@@ -555,35 +585,5 @@ abstract class Cpt_Table extends Hookable_Base implements Hookable {
 
 	public function add_new_tab_callback( callable $new_tab_callback ): void {
 		$this->add_tab_callbacks[] = $new_tab_callback;
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return $route_detector->is_admin_route();
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		self::add_filter(
-			sprintf( 'manage_%s_posts_columns', $this->get_cpt_name() ),
-			array( $this, 'get_columns' ),
-		);
-
-		if ( $route_detector->is_cpt_admin_route( $this->cpt_name, Route_Detector::CPT_LIST ) ) {
-			self::add_action( 'admin_init', array( $this, 'make_table_actions' ) );
-			self::add_action( 'admin_notices', array( $this, 'show_action_result_message' ) );
-			self::add_filter( 'admin_body_class', array( $this, 'add_acf_class_to_body' ) );
-			self::add_filter( sprintf( 'views_edit-%s', $this->cpt_name ), array( $this, 'modify_table_header' ) );
-		}
-
-		self::add_action(
-			sprintf( 'manage_%s_posts_custom_column', $this->cpt_name ),
-			array( $this, 'printTableColumn' ),
-			10,
-			2
-		);
-		self::add_action( 'pre_get_posts', array( $this, 'add_post_name_to_search' ) );
-
-		self::add_filter( 'post_row_actions', array( $this, 'get_row_actions' ), 10, 2 );
-		self::add_filter( sprintf( 'bulk_actions-edit-%s', $this->cpt_name ), array( $this, 'get_bulk_table_actions' ) );
-		self::add_filter( 'get_the_excerpt', array( $this, 'hide_excerpt_from_extended_list_view' ), 10, 2 );
 	}
 }

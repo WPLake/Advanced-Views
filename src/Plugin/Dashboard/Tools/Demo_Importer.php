@@ -75,6 +75,14 @@ final class Demo_Importer extends Hookable_Base implements Hookable {
 		$this->is_import_request = false;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'wp_loaded', array( $this, 'maybe_process_form' ) );
+	}
+
 	protected function add_error( string $error ): void {
 		$this->error .= $error;
 	}
@@ -706,13 +714,5 @@ final class Demo_Importer extends Hookable_Base implements Hookable {
 		}
 
 		$this->delete();
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return $route_detector->is_admin_route();
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		self::add_action( 'wp_loaded', array( $this, 'maybe_process_form' ) );
 	}
 }

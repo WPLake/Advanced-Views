@@ -47,6 +47,48 @@ final class Version_Migrator extends Hookable_Base implements Hookable, Cpt_Sett
 		$this->version_migrations = array();
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		// avoid requests with incomplete hooks cycle.
+		return $route_detector->is_complete_cycle_request();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		// don't use 'upgrader_process_complete' hook, as user can update the plugin manually by FTP.
+		$db_version   = $this->settings->get_version();
+		$code_version = $this->plugin->get_version();
+
+		/**
+		 * Run upgrade if the DB version is set, and different from the code version.
+		 * (it's unset until the plugin activation hook called, which happens later than wp_loaded)
+		 */
+		if ( '' === $db_version ||
+			$db_version === $code_version ) {
+			return;
+		}
+
+		// only at this hook can be sure that other plugin's functions are available.
+		self::add_action(
+			'plugins_loaded',
+			array(
+				$this,
+				'migrate_from_previous_version',
+			),
+			// with the priority higher than in the Data_Vendors.
+			Field_Provider_Cluster::PLUGINS_LOADED_HOOK_PRIORITY + 1
+		);
+
+		/**
+		 * Running lately, inside the "wp_loaded" hook ensures all migration hooks are called.
+		 *
+		 * Plus, we ensure that migration wasn't interrupted by some redirect or another request-breaker:
+		 * otherwise, we don't save the new version and will have another migration.
+		 */
+		self::add_action(
+			'wp_loaded',
+			array( $this, 'complete_version_migration' )
+		);
+	}
+
 	public static function is_version_lower( string $version, string $target_version ): bool {
 		if ( ! self::is_valid_version( $version ) ||
 			! self::is_valid_version( $target_version ) ) {
@@ -97,48 +139,6 @@ final class Version_Migrator extends Hookable_Base implements Hookable, Cpt_Sett
 
 	public static function is_valid_version( string $version ): bool {
 		return 1 === preg_match( '/^\d+\.\d+\.\d+$/', $version );
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		// avoid requests with incomplete hooks cycle.
-		return $route_detector->is_complete_cycle_request();
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		// don't use 'upgrader_process_complete' hook, as user can update the plugin manually by FTP.
-		$db_version   = $this->settings->get_version();
-		$code_version = $this->plugin->get_version();
-
-		/**
-		 * Run upgrade if the DB version is set, and different from the code version.
-		 * (it's unset until the plugin activation hook called, which happens later than wp_loaded)
-		 */
-		if ( '' === $db_version ||
-			$db_version === $code_version ) {
-			return;
-		}
-
-		// only at this hook can be sure that other plugin's functions are available.
-		self::add_action(
-			'plugins_loaded',
-			array(
-				$this,
-				'migrate_from_previous_version',
-			),
-			// with the priority higher than in the Data_Vendors.
-			Field_Provider_Cluster::PLUGINS_LOADED_HOOK_PRIORITY + 1
-		);
-
-		/**
-		 * Running lately, inside the "wp_loaded" hook ensures all migration hooks are called.
-		 *
-		 * Plus, we ensure that migration wasn't interrupted by some redirect or another request-breaker:
-		 * otherwise, we don't save the new version and will have another migration.
-		 */
-		self::add_action(
-			'wp_loaded',
-			array( $this, 'complete_version_migration' )
-		);
 	}
 
 	/**

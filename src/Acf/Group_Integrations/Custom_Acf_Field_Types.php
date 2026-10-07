@@ -21,14 +21,6 @@ class Custom_Acf_Field_Types extends Hookable_Base implements Hookable {
 		$this->layouts_settings_storage = $layouts_settings_storage;
 	}
 
-	public function register_av_slug_select_field(): void {
-		if ( false === function_exists( 'acf_register_field_type' ) ) {
-			return;
-		}
-
-		acf_register_field_type( new Av_Slug_Select_Field( $this->layouts_settings_storage ) );
-	}
-
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
 		// must be present on both edit screens and during ajax requests.
 		return $route_detector->is_admin_route() &&
@@ -42,5 +34,13 @@ class Custom_Acf_Field_Types extends Hookable_Base implements Hookable {
 			'acf/include_field_types',
 			array( $this, 'register_av_slug_select_field' )
 		);
+	}
+
+	public function register_av_slug_select_field(): void {
+		if ( false === function_exists( 'acf_register_field_type' ) ) {
+			return;
+		}
+
+		acf_register_field_type( new Av_Slug_Select_Field( $this->layouts_settings_storage ) );
 	}
 }

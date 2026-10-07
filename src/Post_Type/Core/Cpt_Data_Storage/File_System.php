@@ -42,6 +42,18 @@ class File_System extends Loggable_Actor implements Hookable {
 		$this->wp_filesystem_base   = null;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		// set only if it isn't an external folder.
+		if ( 0 === strlen( $this->base_folder ) ) {
+			File_System_Loader::instance()
+								->add_onload_callback( fn() => $this->set_base_folder( $route_detector ) );
+		}
+	}
+
 	protected function read_item_folders(): void {
 		$this->is_read_item_folders = true;
 		$this->item_folders         = array();
@@ -388,17 +400,5 @@ class File_System extends Loggable_Actor implements Hookable {
 		}
 
 		return $this->wp_filesystem_base;
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return true;
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		// set only if it isn't an external folder.
-		if ( 0 === strlen( $this->base_folder ) ) {
-			File_System_Loader::instance()
-								->add_onload_callback( fn() => $this->set_base_folder( $route_detector ) );
-		}
 	}
 }

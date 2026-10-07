@@ -40,6 +40,15 @@ class Live_Reloader_Component extends Hookable_Base implements Hookable {
 		$this->view_ids_inside_card = array();
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return ! $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'init', array( $this, 'set_is_active' ) );
+		self::add_action( 'wp_footer', array( $this, 'maybe_enqueue_reloading_js' ) );
+	}
+
 	public function set_is_active(): void {
 		$this->is_active = Avf_User::can_manage() &&
 							'' !== Query_Arguments::get_string_for_non_action( self::QUERY_ARG );
@@ -160,14 +169,5 @@ class Live_Reloader_Component extends Hookable_Base implements Hookable {
 		}
 
 		return remove_query_arg( self::QUERY_ARG, );
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return ! $route_detector->is_admin_route();
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		self::add_action( 'init', array( $this, 'set_is_active' ) );
-		self::add_action( 'wp_footer', array( $this, 'maybe_enqueue_reloading_js' ) );
 	}
 }

@@ -17,21 +17,6 @@ class Acf_Integration extends Hookable_Base implements Hookable {
 		$this->target_cpt_name = $target_cpt_name;
 	}
 
-	/**
-	 * @return string[]
-	 */
-	protected function get_post_type_choices(): array {
-		return get_post_types();
-	}
-
-
-	protected function set_field_choices(): void {
-	}
-
-	protected function set_conditional_field_rules(): void {
-	}
-
-
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
 		return $route_detector->is_admin_route();
 	}
@@ -56,4 +41,19 @@ class Acf_Integration extends Hookable_Base implements Hookable {
 			}
 		);
 	}
+
+	/**
+	 * @return string[]
+	 */
+	protected function get_post_type_choices(): array {
+		return get_post_types();
+	}
+
+
+	protected function set_field_choices(): void {
+	}
+
+	protected function set_conditional_field_rules(): void {
+	}
+
 }

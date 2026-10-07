@@ -31,14 +31,6 @@ final class File_System_Loader extends Hookable_Base implements Hookable {
 		$this->is_loaded        = false;
 	}
 
-	public static function instance(): self {
-		if ( is_null( self::$instance ) ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
-	}
-
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
 		return true;
 	}
@@ -52,6 +44,14 @@ final class File_System_Loader extends Hookable_Base implements Hookable {
 				$this->post_load();
 			}
 		);
+	}
+
+	public static function instance(): self {
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	/**

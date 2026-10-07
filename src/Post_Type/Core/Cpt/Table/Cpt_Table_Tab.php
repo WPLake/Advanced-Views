@@ -21,6 +21,21 @@ abstract class Cpt_Table_Tab extends Hookable_Base implements Hookable {
 		$this->cpt_table = $cpt_table;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		if ( false === $route_detector->is_cpt_admin_route( $this->get_cpt_name(), Route_Detector::CPT_LIST ) ) {
+			return;
+		}
+
+		$this->cpt_table->add_new_tab_callback( array( $this, 'add_tab' ) );
+
+		self::add_action( 'admin_init', array( $this, 'maybe_perform_actions' ) );
+		self::add_action( 'admin_notices', array( $this, 'maybe_show_action_result_message' ) );
+	}
+
 	abstract protected function get_tab(): ?Tab_Data;
 
 	abstract public function maybe_perform_actions(): void;
@@ -68,20 +83,5 @@ abstract class Cpt_Table_Tab extends Hookable_Base implements Hookable {
 
 		$tab_data->set_pagination_per_page( $this->get_pagination_per_page() );
 		$this->cpt_table->add_tab( $tab_data );
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return true;
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_cpt_admin_route( $this->get_cpt_name(), Route_Detector::CPT_LIST ) ) {
-			return;
-		}
-
-		$this->cpt_table->add_new_tab_callback( array( $this, 'add_tab' ) );
-
-		self::add_action( 'admin_init', array( $this, 'maybe_perform_actions' ) );
-		self::add_action( 'admin_notices', array( $this, 'maybe_show_action_result_message' ) );
 	}
 }

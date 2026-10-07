@@ -55,10 +55,6 @@ class Usage_Report extends Report_Base implements Hookable {
 		$this->cpt_settings_storages = $cpt_settings_storages;
 	}
 
-	public static function hook(): string {
-		return Hard_Layout_Cpt::cpt_name() . '_refresh';
-	}
-
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
 		return true;
 	}
@@ -71,6 +67,10 @@ class Usage_Report extends Report_Base implements Hookable {
 		}
 
 		$this->set_enabled_hooks( $route_detector );
+	}
+
+	public static function hook(): string {
+		return Hard_Layout_Cpt::cpt_name() . '_refresh';
 	}
 
 	// WP Cron is unreliable. Execute also within the dashboard (in case the time has come).

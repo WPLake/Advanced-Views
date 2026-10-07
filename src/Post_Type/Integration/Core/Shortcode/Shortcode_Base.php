@@ -48,6 +48,20 @@ abstract class Shortcode_Base extends Hookable_Base implements Shortcode_Rendere
 		$this->live_reloader_component = $live_reloader_component;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		if ( $route_detector->is_admin_route() ) {
+			self::add_action( 'rest_api_init', array( $this, 'register_rest_route' ) );
+		}
+
+		foreach ( $this->public_cpt->shortcodes() as $shortcode ) {
+			self::add_shortcode( $shortcode, array( $this, 'do_shortcode' ) );
+		}
+	}
+
 	protected function get_post_type(): string {
 		return $this->public_cpt->cpt_name();
 	}
@@ -302,20 +316,6 @@ abstract class Shortcode_Base extends Hookable_Base implements Shortcode_Rendere
 		$attrs = arr( $args );
 
 		return $this->render_shortcode( $attrs );
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return true;
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( $route_detector->is_admin_route() ) {
-			self::add_action( 'rest_api_init', array( $this, 'register_rest_route' ) );
-		}
-
-		foreach ( $this->public_cpt->shortcodes() as $shortcode ) {
-			self::add_shortcode( $shortcode, array( $this, 'do_shortcode' ) );
-		}
 	}
 
 	/**

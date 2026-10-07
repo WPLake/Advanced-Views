@@ -22,6 +22,14 @@ abstract class Cpt_Meta_Boxes extends Hookable_Base implements Hookable {
 		$this->plugin = $plugin;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
+	}
+
 	abstract protected function get_cpt_name(): string;
 
 	protected function get_html(): Html_Printer {
@@ -98,13 +106,5 @@ abstract class Cpt_Meta_Boxes extends Hookable_Base implements Hookable {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo __( 'Pages:', 'acf-views' ) . ' ' . join( ', ', $safe_post_links );
 		}
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return $route_detector->is_admin_route();
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		self::add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 	}
 }

@@ -56,6 +56,14 @@ class Live_Reloader extends Hookable_Base implements Hookable {
 		$this->request_post_id                  = 0;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
+	}
+
 	/**
 	 * @param array<string,mixed> $request_args
 	 *
@@ -486,13 +494,5 @@ class Live_Reloader extends Hookable_Base implements Hookable {
 				'permission_callback' => fn(): bool => Avf_User::can_manage(),
 			)
 		);
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return $route_detector->is_admin_route();
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		self::add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 	}
 }

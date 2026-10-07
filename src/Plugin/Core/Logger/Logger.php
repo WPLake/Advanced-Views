@@ -34,6 +34,18 @@ class Logger extends Hookable_Base implements Hookable {
 		$this->request_id = uniqid( '', true );
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
+		set_error_handler( array( $this, 'maybe_log_php_error' ) );
+
+		// separately, as set_error_handler doesn't handle critical errors.
+		register_shutdown_function( array( $this, 'maybe_log_fatal_php_error' ) );
+	}
+
 	protected function get_wp_filesystem(): WP_Filesystem_Base {
 		if ( null === $this->wp_filesystem_base ) {
 			$this->wp_filesystem_base = WP_Filesystem_Factory::get_wp_filesystem();
@@ -341,17 +353,5 @@ class Logger extends Hookable_Base implements Hookable {
 			$last_error_info['file'],
 			$last_error_info['line']
 		);
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return true;
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
-		set_error_handler( array( $this, 'maybe_log_php_error' ) );
-
-		// separately, as set_error_handler doesn't handle critical errors.
-		register_shutdown_function( array( $this, 'maybe_log_fatal_php_error' ) );
 	}
 }

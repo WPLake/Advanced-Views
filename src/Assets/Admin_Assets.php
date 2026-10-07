@@ -32,6 +32,15 @@ class Admin_Assets extends Hookable_Base implements Hookable {
 		$this->interactive_fields = $interactive_fields;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+		self::add_action( 'enqueue_block_assets', array( $this, 'enqueue_editor_styles' ) );
+	}
+
 	public function enqueue_admin_scripts(): void {
 		$current_screen = get_current_screen();
 
@@ -50,15 +59,6 @@ class Admin_Assets extends Hookable_Base implements Hookable {
 
 			wp_enqueue_style( $style_handle, $style_url, array(), $version );
 		}
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return $route_detector->is_admin_route();
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		self::add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
-		self::add_action( 'enqueue_block_assets', array( $this, 'enqueue_editor_styles' ) );
 	}
 
 	protected function enqueue_code_editor(): void {

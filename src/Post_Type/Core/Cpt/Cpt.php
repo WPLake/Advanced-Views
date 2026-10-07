@@ -23,6 +23,20 @@ abstract class Cpt extends Hookable_Base implements Hookable {
 		$this->cpt_settings_storage = $cpt_settings_storage;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'init', array( $this, 'add_cpt' ) );
+
+		if ( $route_detector->is_admin_route() ) {
+			self::add_filter( 'admin_footer_text', array( $this, 'print_survey_link' ) );
+			self::add_filter( 'post_updated_messages', array( $this, 'replace_post_updated_message' ) );
+			self::add_filter( 'enter_title_here', array( $this, 'get_title_placeholder' ) );
+		}
+	}
+
 	abstract public function add_cpt(): void;
 
 	/**
@@ -75,20 +89,6 @@ abstract class Cpt extends Hookable_Base implements Hookable {
 			'<span id="footer-thankyou">%s</span>',
 			$content
 		);
-	}
-
-	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return true;
-	}
-
-	public function set_route_hooks( Route_Detector $route_detector ): void {
-		self::add_action( 'init', array( $this, 'add_cpt' ) );
-
-		if ( $route_detector->is_admin_route() ) {
-			self::add_filter( 'admin_footer_text', array( $this, 'print_survey_link' ) );
-			self::add_filter( 'post_updated_messages', array( $this, 'replace_post_updated_message' ) );
-			self::add_filter( 'enter_title_here', array( $this, 'get_title_placeholder' ) );
-		}
 	}
 
 	protected function get_cpt_name(): string {

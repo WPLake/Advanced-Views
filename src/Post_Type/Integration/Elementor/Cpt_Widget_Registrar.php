@@ -36,13 +36,6 @@ final class Cpt_Widget_Registrar extends Hookable_Base implements Hookable {
 		$this->widgets     = array();
 	}
 
-	/**
-	 * @param class-string<Widget_Base&Widget_Dependencies> $widget
-	 */
-	public function add_widget( string $widget ): void {
-		$this->widgets[] = $widget;
-	}
-
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
 		return true;
 	}
@@ -60,6 +53,13 @@ final class Cpt_Widget_Registrar extends Hookable_Base implements Hookable {
 		);
 
 		self::add_action( 'elementor/widgets/register', array( $this, 'register_widgets' ) );
+	}
+
+	/**
+	 * @param class-string<Widget_Base&Widget_Dependencies> $widget
+	 */
+	public function add_widget( string $widget ): void {
+		$this->widgets[] = $widget;
 	}
 
 	public function register_widgets( Widgets_Manager $widgets_manager ): void {
