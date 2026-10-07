@@ -62,11 +62,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selecti
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Bootstrap\Selection_Tabs_Bootstrap;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
-use Org\Wplake\Advanced_Views\Vendors\DI\Container;
-use Org\Wplake\Advanced_Views\Vendors\DI\ContainerBuilder;
-use Org\Wplake\Advanced_Views\Vendors\DI\Definition\Reference;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
-use function Org\Wplake\Advanced_Views\Vendors\DI\get;
 
 abstract class Plugin_Loader_Base extends Module_Loader {
 	public Plugin $plugin;
@@ -118,7 +114,11 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	protected array $lang_relative_paths = array();
 
 	public function __construct() {
-		parent::__construct( static::create_container() );
+		$bootstrap_classes = static::get_bootstraps();
+		$container_factory = new Container_Factory( $bootstrap_classes );
+		$container         = $container_factory->build();
+
+		parent::__construct( $container );
 
 		$this->lang_relative_paths['acf-views'] = 'lang';
 	}
@@ -141,7 +141,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$primary = $this->primary();
 
 		// layouts and selections instances are used by the next modules, so bootstraps go first.
-		$this->modules_bootstrap( $route_detector )->bootstrap();
+		$this->modules_bootstrap( $route_detector )->bootstrap( $this->container );
 
 		$integration = $this->integration( $route_detector );
 		$others      = $this->others();
@@ -158,7 +158,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			$bootstrap_classes
 		);
 
-		return new Modules_Bootstrap( $this->container, $bootstraps, $route_detector );
+		return new Modules_Bootstrap( $bootstraps, $route_detector );
 	}
 
 	protected function translations( Route_Detector $route_detector ): void {
@@ -324,40 +324,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			Selection_Integrations_Bootstrap::class,
 			// fixme other domain bootstraps.
 			Version_Migrations_Bootstrap::class,
-		);
-	}
-
-	protected static function create_container(): Container {
-		$builder = new ContainerBuilder();
-
-		$builder->useAutowiring( true );
-		$builder->useAnnotations( false );
-
-		$definitions = static::compose_bootstrap_type_definitions();
-		$builder->addDefinitions( $definitions );
-
-		return $builder->build();
-	}
-
-	/**
-	 * PHP-DI Reference is just a class pointer, not an instance.
-	 *
-	 * @return array<class-string, Reference>
-	 */
-	protected static function compose_bootstrap_type_definitions(): array {
-		$bootstrap_classes = static::get_bootstraps();
-		$type_definitions  = array();
-
-		foreach ( $bootstrap_classes as $bootstrap_class ) {
-			$type_definitions = array_merge(
-				$type_definitions,
-				$bootstrap_class::get_type_definitions()
-			);
-		}
-
-		return array_map(
-			fn( string $class_name ): Reference => get( $class_name ),
-			$type_definitions
 		);
 	}
 

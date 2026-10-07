@@ -28,23 +28,4 @@ abstract class Module_Loader extends Container_Facade {
 			$item->set_route_hooks( $this->route_detector );
 		}
 	}
-
-	/**
-	 * Registers hookables that depend on another plugin being active (e.g. Elementor).
-	 * Deferred to 'plugins_loaded' and conditional.
-	 *
-	 * @param callable():bool $is_active
-	 * @param callable():array<int, Hookable> $make_hookable
-	 */
-	protected function add_plugin_extension( callable $is_active, callable $make_hookable ): void {
-		add_action(
-			'plugins_loaded',
-			function () use ( $is_active, $make_hookable ): void {
-				if ( $is_active() ) {
-					$this->load_hookable( $make_hookable() );
-				}
-			},
-			11
-		);
-	}
 }

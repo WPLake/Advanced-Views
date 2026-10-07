@@ -8,13 +8,12 @@ defined( 'ABSPATH' ) || exit;
 
 use Closure;
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap;
-use Org\Wplake\Advanced_Views\Plugin\Core\Container\Container_Facade;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Vendors\DI\Container;
 use function Org\Wplake\Advanced_Views\Utils\flat_map;
 
-class Modules_Bootstrap extends Container_Facade {
+final class Modules_Bootstrap {
 	/**
 	 * @var Module_Bootstrap[]
 	 */
@@ -24,17 +23,13 @@ class Modules_Bootstrap extends Container_Facade {
 	/**
 	 * @param Module_Bootstrap[] $bootstraps
 	 */
-	public function __construct( Container $container, array $bootstraps, Route_Detector $route_detector ) {
-		parent::__construct( $container );
-
+	public function __construct( array $bootstraps, Route_Detector $route_detector ) {
 		$this->bootstraps     = $bootstraps;
 		$this->route_detector = $route_detector;
 	}
 
-	public function bootstrap(): void {
-		$this->wire_instance_factories();
-
-		$resolved_classes = $this->resolve_hookable_classes();
+	public function bootstrap( Container $container ): void {
+		$resolved_classes = $this->resolve_hookable_classes( $container );
 		$instances        = $this->resolve_hookable_instances();
 		$hookables        = array_merge( $resolved_classes, $instances );
 
@@ -43,20 +38,10 @@ class Modules_Bootstrap extends Container_Facade {
 		$this->add_plugin_extensions();
 	}
 
-	protected function wire_instance_factories(): void {
-		foreach ( $this->bootstraps as $bootstrap ) {
-			$instances = $bootstrap->get_instance_factories();
-
-			foreach ( $instances as $id => $instance ) {
-				$this->wire( $id, $instance );
-			}
-		}
-	}
-
 	/**
 	 * @return Hookable[]
 	 */
-	protected function resolve_hookable_classes(): array {
+	protected function resolve_hookable_classes( Container $container ): array {
 		$get_classes = fn( Module_Bootstrap $bootstrap ): array => $bootstrap->get_hookable_classes();
 		$classes     = flat_map( $this->bootstraps, $get_classes );
 
@@ -67,7 +52,8 @@ class Modules_Bootstrap extends Container_Facade {
 		$routed_classes  = array_filter( $classes, $has_route_hooks );
 		$routed_classes  = array_values( $routed_classes );
 
-		$resolve_class = fn( string $class_name ): Hookable => $this->resolve( $class_name );
+		$resolve_class = fn( string $class_name ): Hookable => $container->get( $class_name );
+
 		return array_map( $resolve_class, $routed_classes );
 	}
 
