@@ -189,10 +189,12 @@ class Cpt_Gutenberg_Editor_Settings extends Hookable_Base implements Hookable {
 			4
 		);
 
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
+		if ( $route_detector->is_admin_route() ) {
+			$this->set_admin_hooks( $route_detector );
 		}
+	}
 
+	protected function set_admin_hooks( Route_Detector $route_detector ): void {
 		self::add_action( 'post_edit_form_tag', array( $this, 'disable_autocomplete_for_post_edit' ) );
 
 		self::add_action( 'admin_footer', array( $this, 'maybe_show_error_that_gutenberg_editor_is_suppressed' ) );

@@ -65,32 +65,12 @@ class Usage_Report extends Report_Base implements Hookable {
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( $this->settings->is_automatic_reports_disabled() ) {
-			// still sign-up the CRON job, so if it was scheduled before, then will be called without issues.
-			self::add_action(
-				self::hook(),
-				function (): void {
-					// nothing to do.
-				}
-			);
-		} else {
-			self::add_action( 'init', array( $this, 'init' ) );
-			// CRON job.
-			self::add_action( self::hook(), array( $this, 'send_and_schedule_next' ) );
+			$this->set_disabled_hooks();
 
-			$is_cpt_list_screen = $route_detector->is_cpt_admin_route(
-				Hard_Layout_Cpt::cpt_name(),
-				Route_Detector::CPT_LIST
-			) ||
-									$route_detector->is_cpt_admin_route(
-										Hard_Post_Selection_Cpt::cpt_name(),
-										Route_Detector::CPT_LIST
-									);
-
-			if ( $is_cpt_list_screen &&
-				! $this->settings->is_automatic_reports_confirmed() ) {
-				self::add_action( 'admin_notices', array( $this, 'show_automatic_reports_notice' ) );
-			}
+			return;
 		}
+
+		$this->set_enabled_hooks( $route_detector );
 	}
 
 	// WP Cron is unreliable. Execute also within the dashboard (in case the time has come).
@@ -308,5 +288,35 @@ class Usage_Report extends Report_Base implements Hookable {
 		}
 
 		return 0;
+	}
+
+	protected function set_disabled_hooks(): void {
+		// still sign-up the CRON job, so if it was scheduled before, then will be called without issues.
+		self::add_action(
+			self::hook(),
+			function (): void {
+				// nothing to do.
+			}
+		);
+	}
+
+	protected function set_enabled_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'init', array( $this, 'init' ) );
+		// CRON job.
+		self::add_action( self::hook(), array( $this, 'send_and_schedule_next' ) );
+
+		$is_cpt_list_screen = $route_detector->is_cpt_admin_route(
+			Hard_Layout_Cpt::cpt_name(),
+			Route_Detector::CPT_LIST
+		) ||
+			$route_detector->is_cpt_admin_route(
+				Hard_Post_Selection_Cpt::cpt_name(),
+				Route_Detector::CPT_LIST
+			);
+
+		if ( $is_cpt_list_screen &&
+			! $this->settings->is_automatic_reports_confirmed() ) {
+			self::add_action( 'admin_notices', array( $this, 'show_automatic_reports_notice' ) );
+		}
 	}
 }

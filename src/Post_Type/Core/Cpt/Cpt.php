@@ -84,13 +84,11 @@ abstract class Cpt extends Hookable_Base implements Hookable {
 	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_action( 'init', array( $this, 'add_cpt' ) );
 
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
+		if ( $route_detector->is_admin_route() ) {
+			self::add_filter( 'admin_footer_text', array( $this, 'print_survey_link' ) );
+			self::add_filter( 'post_updated_messages', array( $this, 'replace_post_updated_message' ) );
+			self::add_filter( 'enter_title_here', array( $this, 'get_title_placeholder' ) );
 		}
-
-		self::add_filter( 'admin_footer_text', array( $this, 'print_survey_link' ) );
-		self::add_filter( 'post_updated_messages', array( $this, 'replace_post_updated_message' ) );
-		self::add_filter( 'enter_title_here', array( $this, 'get_title_placeholder' ) );
 	}
 
 	protected function get_cpt_name(): string {

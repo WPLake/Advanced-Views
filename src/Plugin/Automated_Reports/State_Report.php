@@ -26,13 +26,7 @@ class State_Report extends Report_Base implements Hookable {
 		}
 
 		if ( $route_detector->is_admin_route() ) {
-			$request_uri = Query_Arguments::get_string_for_non_action( 'REQUEST_URI', 'server' );
-
-			// deactivation survey includes the 'delete data' option, which should be visible even if reports are off
-			// (without the survey for sure).
-			if ( false !== strpos( $request_uri, '/wp-admin/plugins.php' ) ) {
-				self::add_action( 'admin_footer', array( $this, 'bind_deactivation_survey_popup' ) );
-			}
+			$this->set_admin_hooks();
 		}
 	}
 
@@ -294,5 +288,15 @@ class State_Report extends Report_Base implements Hookable {
 	// logic is overridden in Pro.
 	protected function is_reporting_disabled(): bool {
 		return $this->settings->is_automatic_reports_disabled();
+	}
+
+	protected function set_admin_hooks(): void {
+		$request_uri = Query_Arguments::get_string_for_non_action( 'REQUEST_URI', 'server' );
+
+		// deactivation survey includes the 'delete data' option, which should be visible even if reports are off
+		// (without the survey for sure).
+		if ( false !== strpos( $request_uri, '/wp-admin/plugins.php' ) ) {
+			self::add_action( 'admin_footer', array( $this, 'bind_deactivation_survey_popup' ) );
+		}
 	}
 }
