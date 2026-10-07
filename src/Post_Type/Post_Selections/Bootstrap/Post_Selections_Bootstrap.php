@@ -21,9 +21,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Table\Post_Selection
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
 
 class Post_Selections_Bootstrap extends Module_Bootstrap_Base {
-	public function get_wires(): array {
+	public static function get_definitions(): array {
 		return array(
-			Post_Query_Builder::class => fn() => $this->resolve( Selection_Query_Builder::class ),
+			Post_Query_Builder::class => Selection_Query_Builder::class,
 		);
 	}
 

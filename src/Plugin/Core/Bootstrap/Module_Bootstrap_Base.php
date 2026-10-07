@@ -11,6 +11,10 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 defined( 'ABSPATH' ) || exit;
 
 abstract class Module_Bootstrap_Base extends Container_Facade implements Module_Bootstrap {
+	public static function get_definitions(): array {
+		return array();
+	}
+
 	public function get_wires(): array {
 		return array();
 	}

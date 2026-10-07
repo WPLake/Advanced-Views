@@ -65,8 +65,10 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
 use Org\Wplake\Advanced_Views\Vendors\DI\Container;
 use Org\Wplake\Advanced_Views\Vendors\DI\ContainerBuilder;
+use Org\Wplake\Advanced_Views\Vendors\DI\Definition\Reference;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 use function Org\Wplake\Advanced_Views\Utils\flat_map;
+use function Org\Wplake\Advanced_Views\Vendors\DI\get;
 
 abstract class Plugin_Loader_Base extends Module_Loader {
 	public Plugin $plugin;
@@ -118,7 +120,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	protected array $lang_relative_paths = array();
 
 	public function __construct() {
-		parent::__construct( self::create_container() );
+		parent::__construct( static::create_container() );
 
 		$this->lang_relative_paths['acf-views'] = 'lang';
 	}
@@ -141,7 +143,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$primary    = $this->primary();
 		$acf_groups = $this->acf_groups( $route_detector );
 		// layouts and selections instances are used by the next modules, so bootstraps go first.
-		$bootstrap_classes = $this->get_bootstraps();
+		$bootstrap_classes = static::get_bootstraps();
 		$bootstraps        = array_map(
 			fn( string $class_name ): Module_Bootstrap => $this->resolve( $class_name ),
 			$bootstrap_classes
@@ -355,7 +357,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	/**
 	 * @return array<array-key, class-string<Module_Bootstrap>>
 	 */
-	protected function get_bootstraps(): array {
+	protected static function get_bootstraps(): array {
 		return array(
 			// layouts
 			Layouts_Bootstrap::class,
@@ -378,6 +380,28 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$builder->useAutowiring( true );
 		$builder->useAnnotations( false );
 
+		$definitions = static::get_definitions();
+		$builder->addDefinitions( $definitions );
+
 		return $builder->build();
+	}
+
+	/**
+	 * PHP-DI Reference is just a class pointer, not an instance.
+	 *
+	 * @return array<class-string, Reference>
+	 */
+	protected static function get_definitions(): array {
+		$bootstrap_classes = static::get_bootstraps();
+		$definitions       = array();
+
+		foreach ( $bootstrap_classes as $bootstrap_class ) {
+			$definitions = array_merge( $definitions, $bootstrap_class::get_definitions() );
+		}
+
+		return array_map(
+			fn( string $class_name ): Reference => get( $class_name ),
+			$definitions
+		);
 	}
 }

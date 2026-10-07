@@ -29,31 +29,6 @@ function flat_map( array $items, callable $mapper ): array {
 	return $chunks;
 }
 
-/**
- * Replaces items by their class key (or by the class value, for int keys). Instances are replaced only by the key.
- *
- * @template Item
- * @template Key of array-key
- *
- * @param array<Key, Item> $origin
- * @param array<string, Item> $replacements old class => new class|instance
- *
- * @return array<Key, Item>
- */
-function swap_instances( array $origin, array $replacements ): array {
-	$swapped = array();
-
-	foreach ( $origin as $key => $item ) {
-		$origin_class = is_string( $key ) ?
-			$key :
-			( is_string( $item ) ? $item : '' );
-
-		$swapped[ $key ] = $replacements[ $origin_class ] ?? $item;
-	}
-
-	return $swapped;
-}
-
 // int-safe str_repeat - as native throws an error if $count is negative.
 function repeat_str( string $char, int $count ): string {
 	return $count > 0 ?

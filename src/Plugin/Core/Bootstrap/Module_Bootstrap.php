@@ -11,6 +11,13 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 
 interface Module_Bootstrap {
 	/**
+	 * Static, as the container is built from them before any instance exists.
+	 *
+	 * @return array<class-string, class-string> the id (an abstract/Lite class) => the class the container resolves instead
+	 */
+	public static function get_definitions(): array;
+
+	/**
 	 * The container factories (closures) or instances of the module, by their ids. Must be wired before get_hookables().
 	 *
 	 * @return array<class-string, \Closure|object>

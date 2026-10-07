@@ -30,10 +30,8 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 
 class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
-	public function get_wires(): array {
-		$migrator = $this->resolve( Version_Migrator::class );
-
-		return array( Cpt_Settings_Migrator::class => $migrator );
+	public static function get_definitions(): array {
+		return array( Cpt_Settings_Migrator::class => Version_Migrator::class );
 	}
 
 
