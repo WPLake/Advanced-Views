@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table\Layouts_Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 
 class Layouts_Bootstrap extends Module_Bootstrap_Base {
-	protected function get_hookable_classes(): array {
+	public function get_hookable_classes(): array {
 		return array(
 			Layout_Meta_Boxes::class,
 			Layouts_Cpt_Hookable::class,

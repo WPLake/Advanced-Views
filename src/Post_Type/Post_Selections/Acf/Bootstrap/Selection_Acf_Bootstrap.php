@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations\Tax_Fie
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 
 class Selection_Acf_Bootstrap extends Module_Bootstrap_Base {
-	protected function get_hookable_classes(): array {
+	public function get_hookable_classes(): array {
 		return array(
 			Post_Selection_Settings_Integration::class,
 			// metaField is a part of the Meta Filter, so we use the selection CPT here.

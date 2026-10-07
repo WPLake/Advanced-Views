@@ -26,7 +26,7 @@ class Post_Selections_Bootstrap extends Module_Bootstrap_Base {
 		);
 	}
 
-	protected function get_hookable_classes(): array {
+	public function get_hookable_classes(): array {
 		return array(
 			Selection_Meta_Boxes::class,
 			Post_Selections_Cpt::class,

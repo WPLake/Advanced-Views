@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Layout_Settings
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 
 class Layout_Acf_Bootstrap extends Module_Bootstrap_Base {
-	protected function get_hookable_classes(): array {
+	public function get_hookable_classes(): array {
 		return array(
 			Layout_Settings_Integration::class,
 			Field_Settings_Integration::class,

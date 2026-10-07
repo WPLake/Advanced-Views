@@ -20,7 +20,7 @@ class Layout_Integrations_Bootstrap extends Module_Bootstrap_Base {
 		return array();
 	}
 
-	protected function get_hookable_classes(): array {
+	public function get_hookable_classes(): array {
 		return array( Shortcode_Gutenberg_Block::class );
 	}
 

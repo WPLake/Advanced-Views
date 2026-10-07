@@ -26,6 +26,11 @@ interface Module_Bootstrap {
 	public function get_instance_factories(): array;
 
 	/**
+	 * @return class-string<Hookable>[]
+	 */
+	public function get_hookable_classes(): array;
+
+	/**
 	 * @return Hookable[]
 	 */
 	public function resolve_hookables( Route_Detector $route_detector ): array;

@@ -24,7 +24,7 @@ class Layout_Tabs_Bootstrap extends Module_Bootstrap_Base {
 		);
 	}
 
-	protected function get_hookable_classes(): array {
+	public function get_hookable_classes(): array {
 		return array(
 			Layouts_Bulk_Validation_Tab::class,
 			Layouts_Pre_Built_Tab::class,

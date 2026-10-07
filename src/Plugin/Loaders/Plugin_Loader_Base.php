@@ -143,14 +143,10 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$primary    = $this->primary();
 		$acf_groups = $this->acf_groups( $route_detector );
 		// layouts and selections instances are used by the next modules, so bootstraps go first.
-		$bootstrap_classes = static::get_bootstraps();
-		$bootstraps        = array_map(
-			fn( string $class_name ): Module_Bootstrap => $this->resolve( $class_name ),
-			$bootstrap_classes
-		);
-		$modules           = $this->load_bootstraps( $bootstraps, $route_detector );
-		$integration       = $this->integration( $route_detector );
-		$others            = $this->others();
+		$bootstraps  = $this->resolve_bootstraps();
+		$modules     = $this->load_bootstraps( $bootstraps, $route_detector );
+		$integration = $this->integration( $route_detector );
+		$others      = $this->others();
 		$this->bridge();
 		$environment = $this->environment();
 
@@ -159,28 +155,38 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		return array_merge( $primary, $acf_groups, $modules, $integration, $others, $environment );
 	}
 
+	/**
+	 * @return Module_Bootstrap[]
+	 */
+	protected function resolve_bootstraps(): array {
+		$bootstrap_classes = static::get_bootstraps();
+
+		return array_map(
+			fn( string $class_name ): Module_Bootstrap => $this->resolve( $class_name ),
+			$bootstrap_classes
+		);
+	}
+
 	protected function translations( Route_Detector $route_detector ): void {
 		// on the whole admin area, as menu items need translations.
-		if ( ! $route_detector->is_admin_route() ) {
-			return;
+		if ( $route_detector->is_admin_route() ) {
+			add_action(
+				'after_setup_theme',
+				function (): void {
+					foreach ( $this->lang_relative_paths as $domain => $relative_path ) {
+						$path = $this->plugin->get_relative_plugins_path( $relative_path );
+
+						load_plugin_textdomain(
+							$domain,
+							false,
+							$path
+						);
+					}
+				},
+				// make sure it's before acf_groups.
+				8
+			);
 		}
-
-		add_action(
-			'after_setup_theme',
-			function (): void {
-				foreach ( $this->lang_relative_paths as $domain => $relative_path ) {
-					$path = $this->plugin->get_relative_plugins_path( $relative_path );
-
-					load_plugin_textdomain(
-						$domain,
-						false,
-						$path
-					);
-				}
-			},
-			// make sure it's before acf_groups.
-			8
-		);
 	}
 
 	/**
@@ -228,6 +234,21 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 * @return Hookable[]
 	 */
 	protected function load_bootstraps( array $bootstraps, Route_Detector $route_detector ): array {
+		$this->wire_instance_factories( $bootstraps );
+
+		$resolved  = $this->resolve_hookable_classes( $bootstraps, $route_detector );
+		$instances = flat_map(
+			$bootstraps,
+			fn( Module_Bootstrap $bootstrap ): array => $bootstrap->resolve_hookables( $route_detector )
+		);
+
+		return array_merge( $resolved, $instances );
+	}
+
+	/**
+	 * @param Module_Bootstrap[] $bootstraps
+	 */
+	protected function wire_instance_factories( array $bootstraps ): void {
 		foreach ( $bootstraps as $bootstrap ) {
 			$instances = $bootstrap->get_instance_factories();
 
@@ -235,10 +256,28 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 				$this->wire( $id, $instance );
 			}
 		}
+	}
 
-		return flat_map(
+	/**
+	 * @param Module_Bootstrap[] $bootstraps
+	 *
+	 * @return Hookable[]
+	 */
+	protected function resolve_hookable_classes( array $bootstraps, Route_Detector $route_detector ): array {
+		$classes = flat_map(
 			$bootstraps,
-			fn( Module_Bootstrap $bootstrap ): array => $bootstrap->resolve_hookables( $route_detector )
+			fn( Module_Bootstrap $bootstrap ): array => $bootstrap->get_hookable_classes()
+		);
+
+		/**
+		 * @param class-string<Hookable> $class_name
+		 */
+		$has_route_hooks = fn( string $class_name ): bool => $class_name::has_route_hooks( $route_detector );
+		$routed_classes  = array_filter( $classes, $has_route_hooks );
+
+		return array_map(
+			fn( string $class_name ): Hookable => $this->resolve( $class_name ),
+			array_values( $routed_classes )
 		);
 	}
 
@@ -261,17 +300,23 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 * @return Hookable[]
 	 */
 	protected function integration( Route_Detector $route_detector ): array {
+		$save_actions   = $this->resolve( Layout_Save_Actions::class );
+		$layout_factory = $this->resolve( Layout_Factory::class );
+		$repeater_field = $this->group_creator->create( Repeater_Field_Settings::class );
+		$shortcode      = $this->resolve( Layout_Shortcode::class );
+		$layouts_cpt    = $this->resolve( Layouts_Cpt::class );
+
 		// only now, when layouts() are called.
 		$this->provider_cluster->make_integration_instances(
 			$route_detector,
 			$this->item_settings,
 			$this->layouts_settings_storage,
-			$this->resolve( Layout_Save_Actions::class ),
-			$this->resolve( Layout_Factory::class ),
-			$this->group_creator->create( Repeater_Field_Settings::class ),
-			$this->resolve( Layout_Shortcode::class ),
+			$save_actions,
+			$layout_factory,
+			$repeater_field,
+			$shortcode,
 			$this->settings,
-			$this->resolve( Layouts_Cpt::class ),
+			$layouts_cpt,
 		);
 
 		return array(
@@ -310,13 +355,15 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 * @return Hookable[]
 	 */
 	protected function environment(): array {
+		$slug = $this->plugin->get_slug();
+
 		register_activation_hook(
-			$this->plugin->get_slug(),
+			$slug,
 			array( $this->plugin_environment, 'prepare_environment' )
 		);
 
 		register_deactivation_hook(
-			$this->plugin->get_slug(),
+			$slug,
 			array( $this->plugin_environment, 'clean_environment' )
 		);
 
@@ -328,10 +375,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 */
 	protected function add_file_systems( array $file_systems ): void {
 		$this->file_systems = array_merge( $this->file_systems, $file_systems );
-	}
-
-	protected static function uploads_folder(): string {
-		return wp_upload_dir()['basedir'] . '/acf-views';
 	}
 
 	/**
@@ -406,5 +449,11 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			fn( string $class_name ): Reference => get( $class_name ),
 			$type_definitions
 		);
+	}
+
+	protected static function uploads_folder(): string {
+		$uploads = wp_upload_dir();
+
+		return sprintf( '%s/acf-views', $uploads['basedir'] );
 	}
 }

@@ -19,26 +19,15 @@ abstract class Module_Bootstrap_Base extends Container_Facade implements Module_
 		return array();
 	}
 
-	public function resolve_hookables( Route_Detector $route_detector ): array {
-		$hookable_classes = $this->get_hookable_classes();
-		$resolved         = array_map(
-			fn( string $class_name ): Hookable => $this->resolve( $class_name ),
-			$hookable_classes
-		);
-
-		$instances = $this->resolve_hookable_instances( $route_detector );
-
-		return array_merge( $resolved, $instances );
-	}
-
-	public function resolve_extension_hookables(): array {
+	public function get_hookable_classes(): array {
 		return array();
 	}
 
-	/**
-	 * @return array<class-string<Hookable>>
-	 */
-	protected function get_hookable_classes(): array {
+	public function resolve_hookables( Route_Detector $route_detector ): array {
+		return $this->resolve_hookable_instances( $route_detector );
+	}
+
+	public function resolve_extension_hookables(): array {
 		return array();
 	}
 
