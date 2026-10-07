@@ -15,16 +15,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layouts_Cpt as Layouts_Cpt_Hookable;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table\Layouts_Cpt_Table;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Shortcode_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 
 class Layouts_Bootstrap extends Module_Bootstrap_Base {
-	public function get_wires(): array {
-		return array(
-			Shortcode_Gutenberg_Block::class => fn() => $this->resolve( Layouts_Factory::class )->create_shortcode_block(),
-		);
-	}
-
 	/**
 	 * @return array<class-string<Hookable>>
 	 */
@@ -48,8 +41,8 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 
 		// Generic (not layout-specific) hookables, created directly as the container can't host them per module.
 		return array(
-			$factory->create_editor_settings(),
-			$factory->create_assets_reducer(),
+			$factory->editor_settings(),
+			$factory->assets_reducer(),
 		);
 	}
 }

@@ -43,7 +43,7 @@ class Selection_Integrations_Factory extends Container_Facade {
 		return $this->renderer;
 	}
 
-	public function create_gutenberg_block(): Selection_Gutenberg_Block {
+	public function gutenberg_block(): Selection_Gutenberg_Block {
 		$asset_resolver = $this->resolve( Asset_Resolver::class );
 		$item_picker    = $this->item_picker();
 		$renderer       = $this->renderer();
@@ -56,7 +56,7 @@ class Selection_Integrations_Factory extends Container_Facade {
 	/**
 	 * @return Hookable[]
 	 */
-	public function create_elementor_hookables(): array {
+	public function elementor_hookables(): array {
 		$item_picker    = $this->item_picker();
 		$renderer       = $this->renderer();
 		$asset_resolver = $this->resolve( Asset_Resolver::class );

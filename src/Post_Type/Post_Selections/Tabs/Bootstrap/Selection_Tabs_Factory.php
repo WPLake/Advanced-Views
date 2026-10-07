@@ -26,23 +26,23 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 
 class Selection_Tabs_Factory extends Container_Facade {
-	public function create_fs_only_tab(): Fs_Only_Tab {
+	public function fs_only_tab(): Fs_Only_Tab {
 		$cpt_table        = $this->resolve( Post_Selections_Table::class );
 		$settings_storage = $this->resolve( Selection_Settings_Storage::class );
 
 		return new Fs_Only_Tab( $cpt_table, $settings_storage );
 	}
 
-	public function create_bulk_validation_tab(): Post_Selections_Bulk_Validation_Tab {
+	public function bulk_validation_tab(): Post_Selections_Bulk_Validation_Tab {
 		$cpt_table         = $this->resolve( Post_Selections_Table::class );
 		$settings_storage  = $this->resolve( Selection_Settings_Storage::class );
-		$fs_only_tab       = $this->create_fs_only_tab();
+		$fs_only_tab       = $this->fs_only_tab();
 		$selection_factory = $this->resolve( Post_Selection_Factory::class );
 
 		return new Post_Selections_Bulk_Validation_Tab( $cpt_table, $settings_storage, $fs_only_tab, $selection_factory );
 	}
 
-	public function create_pre_built_tab(): Post_Selections_Pre_Built_Tab {
+	public function pre_built_tab(): Post_Selections_Pre_Built_Tab {
 		$logger             = $this->resolve( Logger::class );
 		$selections_cpt     = $this->resolve( Selections_Cpt::class );
 		$plugin             = $this->resolve( Plugin::class );

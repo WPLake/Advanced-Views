@@ -51,8 +51,8 @@ class Post_Selections_Bootstrap extends Module_Bootstrap_Base {
 
 		// Generic (not selection-specific) hookables, created directly as the container can't host them per module.
 		return array(
-			$factory->create_editor_settings(),
-			$factory->create_assets_reducer(),
+			$factory->editor_settings(),
+			$factory->assets_reducer(),
 		);
 	}
 }

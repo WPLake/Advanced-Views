@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations\Meta_Field_Settings_Integration;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations\Post_Selection_Settings_Integration;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations\Tax_Field_Settings_Integration;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 
 class Selection_Acf_Bootstrap extends Module_Bootstrap_Base {
 	/**
@@ -31,9 +32,13 @@ class Selection_Acf_Bootstrap extends Module_Bootstrap_Base {
 	 */
 	protected function get_hookable_instances( Route_Detector $route_detector ): array {
 		$factory     = $this->resolve( Selection_Acf_Factory::class );
-		$loaders     = $factory->create_groups_loaders( $route_detector );
-		$mount_point = $factory->create_mount_point_integration();
+		$cpt_name    = $this->resolve( Selections_Cpt::class )->cpt_name();
+		$mount_point = $factory->mount_point_integration();
 
-		return array_merge( $loaders, array( $mount_point ) );
+		if ( wp_doing_ajax() || $route_detector->is_cpt_admin_route( $cpt_name ) ) {
+			return array( $factory->groups_loader(), $mount_point );
+		}
+
+		return array( $mount_point );
 	}
 }

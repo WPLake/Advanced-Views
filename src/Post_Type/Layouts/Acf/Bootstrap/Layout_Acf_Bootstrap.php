@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Field_Settings_Integration;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Item_Settings_Integration;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Layout_Settings_Integration;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 
 class Layout_Acf_Bootstrap extends Module_Bootstrap_Base {
 	/**
@@ -29,11 +30,14 @@ class Layout_Acf_Bootstrap extends Module_Bootstrap_Base {
 	 * @return Hookable[]
 	 */
 	protected function get_hookable_instances( Route_Detector $route_detector ): array {
-		$factory = $this->resolve( Layout_Acf_Factory::class );
+		$factory     = $this->resolve( Layout_Acf_Factory::class );
+		$cpt_name    = $this->resolve( Layouts_Cpt::class )->cpt_name();
+		$mount_point = $factory->mount_point_integration();
 
-		$loaders     = $factory->create_groups_loaders( $route_detector );
-		$mount_point = $factory->create_mount_point_integration();
+		if ( wp_doing_ajax() || $route_detector->is_cpt_admin_route( $cpt_name ) ) {
+			return array( $factory->groups_loader(), $mount_point );
+		}
 
-		return array_merge( $loaders, array( $mount_point ) );
+		return array( $mount_point );
 	}
 }

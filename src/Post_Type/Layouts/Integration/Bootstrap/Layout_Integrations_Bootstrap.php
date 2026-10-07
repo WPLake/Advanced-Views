@@ -15,7 +15,7 @@ class Layout_Integrations_Bootstrap extends Module_Bootstrap_Base {
 	public function get_extension_hookables(): array {
 		if ( did_action( 'elementor/loaded' ) > 0 ) {
 			return $this->resolve( Layout_Integrations_Factory::class )
-						->create_elementor_hookables();
+						->elementor_hookables();
 		}
 
 		return array();
@@ -34,7 +34,7 @@ class Layout_Integrations_Bootstrap extends Module_Bootstrap_Base {
 	protected function get_hookable_instances( Route_Detector $route_detector ): array {
 		$factory         = $this->resolve( Layout_Integrations_Factory::class );
 		$item_picker     = $factory->item_picker();
-		$gutenberg_block = $factory->create_gutenberg_block();
+		$gutenberg_block = $factory->gutenberg_block();
 
 		return array( $item_picker, $gutenberg_block );
 	}

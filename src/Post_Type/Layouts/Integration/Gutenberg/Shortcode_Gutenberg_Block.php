@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use WP_Block;
 use WP_Block_Template;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
@@ -21,11 +22,8 @@ final class Shortcode_Gutenberg_Block extends Hookable_Base implements Hookable 
 	 */
 	private array $supported_shortcode_names;
 
-	/**
-	 * @param string[] $supported_shortcode_names
-	 */
-	public function __construct( array $supported_shortcode_names ) {
-		$this->supported_shortcode_names = $supported_shortcode_names;
+	public function __construct( Layouts_Cpt $layouts_cpt ) {
+		$this->supported_shortcode_names = $layouts_cpt->shortcodes();
 		// don't use '0' as the default, because it can be 0 in the 'render_callback' hook.
 		$this->context_post_id = - 1;
 	}

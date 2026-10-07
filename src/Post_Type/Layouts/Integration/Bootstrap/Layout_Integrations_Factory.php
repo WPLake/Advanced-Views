@@ -43,7 +43,7 @@ class Layout_Integrations_Factory extends Container_Facade {
 		return $this->renderer;
 	}
 
-	public function create_gutenberg_block(): Layout_Gutenberg_Block {
+	public function gutenberg_block(): Layout_Gutenberg_Block {
 		$asset_resolver = $this->resolve( Asset_Resolver::class );
 		$item_picker    = $this->item_picker();
 		$renderer       = $this->renderer();
@@ -56,13 +56,12 @@ class Layout_Integrations_Factory extends Container_Facade {
 	/**
 	 * @return Hookable[]
 	 */
-	public function create_elementor_hookables(): array {
+	public function elementor_hookables(): array {
 		$item_picker    = $this->item_picker();
 		$renderer       = $this->renderer();
 		$asset_resolver = $this->resolve( Asset_Resolver::class );
 
 		$widget_registrar = new Cpt_Widget_Registrar( $item_picker, $renderer );
-
 		$widget_registrar->add_widget( Layout_Elementor_Widget::class );
 
 		return array(
