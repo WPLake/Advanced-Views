@@ -17,7 +17,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layouts_Cpt as Layouts_Cpt_H
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table\Layouts_Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Shortcode_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 
 class Layouts_Bootstrap extends Module_Bootstrap_Base {
 	public function wire_instances(): void {
@@ -50,8 +49,6 @@ class Layouts_Bootstrap extends Module_Bootstrap_Base {
 	 */
 	protected function get_wire_resolves(): array {
 		return array(
-			Layout_Factory::class            => fn(): Layout_Factory => $this->resolve( Layouts_Factory::class )->create_layout_factory(),
-			Layouts_Cpt_Hookable::class      => fn(): Layouts_Cpt_Hookable => $this->resolve( Layouts_Factory::class )->create_cpt_hookable(),
 			Shortcode_Gutenberg_Block::class => fn(): Shortcode_Gutenberg_Block => $this->resolve( Layouts_Factory::class )->create_shortcode_block(),
 		);
 	}

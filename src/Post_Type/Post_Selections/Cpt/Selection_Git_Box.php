@@ -12,10 +12,10 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Git_Meta_Box;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Git_Box;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 
 class Selection_Git_Box extends Git_Meta_Box {
 
@@ -25,7 +25,7 @@ class Selection_Git_Box extends Git_Meta_Box {
 	public function __construct(
 		Selections_Cpt $selection_cpt,
 		Settings_Storage $settings,
-		Cpt_Settings_Storage $cpt_settings_storage,
+		Selection_Settings_Storage $cpt_settings_storage,
 		Git_Api_Interface $git_api,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Layout_Git_Box $layouts_git_meta_box,

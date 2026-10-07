@@ -17,7 +17,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Sto
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Elementor\Layout_Elementor_Assets;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Elementor\Layout_Elementor_Widget;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Layout_Gutenberg_Block;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Shortcode_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 
@@ -52,10 +51,6 @@ class Layout_Integrations_Factory extends Container_Facade {
 		$cpt_block = new Cpt_Gutenberg_Block( $renderer );
 
 		return new Layout_Gutenberg_Block( $asset_resolver, $item_picker, $cpt_block );
-	}
-
-	public function create_shortcode_block(): Shortcode_Gutenberg_Block {
-		return $this->resolve( Shortcode_Gutenberg_Block::class );
 	}
 
 	/**

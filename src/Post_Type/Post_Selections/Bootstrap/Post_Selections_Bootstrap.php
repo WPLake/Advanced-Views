@@ -19,7 +19,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Meta_Boxes
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Table\Post_Selections_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Selection_Factory;
 
 class Post_Selections_Bootstrap extends Module_Bootstrap_Base {
 	public function wire_instances(): void {
@@ -53,11 +52,7 @@ class Post_Selections_Bootstrap extends Module_Bootstrap_Base {
 	 */
 	protected function get_wire_resolves(): array {
 		return array(
-			Post_Selection_Factory::class => fn(): Post_Selection_Factory => $this->resolve( Post_Selections_Factory::class )
-			                                                                      ->create_selection_factory(),
 			Post_Query_Builder::class     => fn(): Post_Query_Builder => $this->resolve( Selection_Query_Builder::class ),
-			Selection_Git_Box::class      => fn(): Selection_Git_Box => $this->resolve( Post_Selections_Factory::class )
-			                                                                 ->create_git_box(),
 		);
 	}
 

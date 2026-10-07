@@ -8,13 +8,14 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Shortcode_Gutenberg_Block;
 
 class Layout_Integrations_Bootstrap extends Module_Bootstrap_Base {
 	public function get_hookables( Route_Detector $route_detector ): array {
-		$factory    = $this->resolve( Layout_Integrations_Factory::class );
+		$factory         = $this->resolve( Layout_Integrations_Factory::class );
 		$item_picker     = $factory->item_picker();
 		$gutenberg_block = $factory->create_gutenberg_block();
-		$shortcode_block = $factory->create_shortcode_block();
+		$shortcode_block = $this->resolve( Shortcode_Gutenberg_Block::class );
 
 		return array( $item_picker, $gutenberg_block, $shortcode_block );
 	}

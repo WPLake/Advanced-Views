@@ -9,6 +9,8 @@ defined( 'ABSPATH' ) || exit;
 interface Cpt_Theme_Settings {
 	public function get_template_engine(): string;
 
+	public function get_controller_template_engine(): string;
+
 	public function get_web_component_type(): string;
 
 	public function get_classes_generation(): string;
