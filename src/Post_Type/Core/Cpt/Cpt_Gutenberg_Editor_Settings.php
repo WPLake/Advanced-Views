@@ -176,7 +176,7 @@ class Cpt_Gutenberg_Editor_Settings extends Hookable_Base implements Hookable {
 		);
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_filter(
 			'wp_insert_post_data',
 			array( $this, 'avoid_override_post_content_by_gutenberg_and_theme_builders' ),

@@ -77,7 +77,7 @@ abstract class Cpt extends Hookable_Base implements Hookable {
 		);
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_action( 'init', array( $this, 'add_cpt' ) );
 
 		if ( false === $route_detector->is_admin_route() ) {

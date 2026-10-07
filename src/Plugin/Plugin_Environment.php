@@ -64,7 +64,7 @@ final class Plugin_Environment implements Hookable {
 		$this->storages     = $storages;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( $route_detector->is_admin_route() &&
 			$route_detector->is_complete_cycle_request() ) {
 			$this->process_transient_jobs();

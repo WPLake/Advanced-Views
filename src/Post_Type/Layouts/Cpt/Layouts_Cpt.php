@@ -116,8 +116,8 @@ class Layouts_Cpt extends Cpt {
 		}
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
-		parent::set_hooks( $route_detector );
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		parent::set_route_hooks( $route_detector );
 
 		if ( false === $route_detector->is_admin_route() ) {
 			return;

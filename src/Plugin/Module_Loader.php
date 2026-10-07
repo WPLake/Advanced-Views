@@ -25,7 +25,7 @@ abstract class Module_Loader extends Container_Facade {
 	 */
 	protected function load_hookable( array $hookable ): void {
 		foreach ( $hookable as $item ) {
-			$item->set_hooks( $this->route_detector );
+			$item->set_route_hooks( $this->route_detector );
 		}
 	}
 

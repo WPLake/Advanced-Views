@@ -43,7 +43,7 @@ final class Cpt_Widget_Registrar extends Hookable_Base implements Hookable {
 		$this->widgets[] = $widget;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_action(
 			'elementor/elements/categories_registered',
 			fn( Elements_Manager $elements_manager ) => $elements_manager->add_category(

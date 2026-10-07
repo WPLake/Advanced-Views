@@ -28,7 +28,7 @@ class Point_Mounter extends Hookable_Base implements Hookable {
 		$this->point_providers = $point_providers;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_filter(
 			'the_content',
 			function ( $content ) {

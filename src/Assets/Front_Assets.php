@@ -571,7 +571,7 @@ class Front_Assets extends Hookable_Base implements Hookable {
 		return $src;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( $route_detector->is_admin_route() ) {
 			return;
 		}

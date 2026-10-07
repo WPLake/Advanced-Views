@@ -55,7 +55,7 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Hookable
 		$this->field_meta_cache = array();
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		// 1. with the higher priority than the default one, to make sure all vendor codes are loaded.
 		// 2. still small, to be earlier than the rest of AVF code listening to this hook
 		self::add_action(

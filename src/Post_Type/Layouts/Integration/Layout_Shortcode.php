@@ -53,8 +53,8 @@ final class Layout_Shortcode extends Shortcode_Base {
 		$this->displaying_views = array();
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
-		parent::set_hooks( $route_detector );
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		parent::set_route_hooks( $route_detector );
 
 		if ( wp_doing_ajax() ) {
 			self::add_action( 'wp_ajax_nopriv_advanced_views', array( $this, 'get_ajax_response' ) );

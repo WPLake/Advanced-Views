@@ -30,7 +30,7 @@ class Templates_Environment extends Loggable_Actor implements Hookable {
 		$this->wp_filesystem_base = null;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( ! $route_detector->is_admin_route() ) {
 			return;
 		}

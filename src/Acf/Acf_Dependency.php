@@ -46,7 +46,7 @@ class Acf_Dependency extends Hookable_Base implements Hookable {
 		define( 'ACF_VIEWS_INNER_ACF', true );
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( false === $route_detector->is_admin_route() ||
 			( false === $route_detector->is_cpt_admin_route( Hard_Layout_Cpt::cpt_name() ) &&
 				false === $route_detector->is_cpt_admin_route( Hard_Post_Selection_Cpt::cpt_name() ) &&

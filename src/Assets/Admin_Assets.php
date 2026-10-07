@@ -52,7 +52,7 @@ class Admin_Assets extends Hookable_Base implements Hookable {
 		}
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( $route_detector->is_admin_route() ) {
 			self::add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 			self::add_action( 'enqueue_block_assets', array( $this, 'enqueue_editor_styles' ) );

@@ -28,7 +28,7 @@ final class Shortcode_Gutenberg_Block extends Hookable_Base implements Hookable 
 		$this->context_post_id = - 1;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_filter( 'register_block_type_args', array( $this, 'extend_core_shortcode_block' ), 10, 2 );
 
 		self::add_filter( 'get_block_templates', array( $this, 'trim_shortcode_brackets' ) );

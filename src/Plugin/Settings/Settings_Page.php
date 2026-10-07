@@ -64,7 +64,7 @@ final class Settings_Page extends Loggable_Actor implements Hookable {
 	}
 
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( $route_detector->is_admin_route() ) {
 			// init, not acf/init, as the method uses 'get_edit_post_link' which will be available only since this hook
 			// (because we sign up the CPTs in this hook).

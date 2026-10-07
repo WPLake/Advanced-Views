@@ -24,7 +24,7 @@ final class Acf_Groups_Loader implements Hookable {
 		$this->namespace_to_path = $namespace_to_path;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		Hookable_Base::add_action(
 			'acf/init',
 			function (): void {

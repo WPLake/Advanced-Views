@@ -35,7 +35,7 @@ final class Layout_Gutenberg_Block extends Hookable_Base implements Hookable {
 		$this->cpt_block      = $cpt_block;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		$this->route_detector = $route_detector;
 
 		self::add_action( 'init', array( $this, 'register_block' ) );

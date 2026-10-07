@@ -343,7 +343,7 @@ class Logger extends Hookable_Base implements Hookable {
 		);
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
 		set_error_handler( array( $this, 'maybe_log_php_error' ) );
 

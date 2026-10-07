@@ -30,7 +30,7 @@ final class Layout_Elementor_Assets extends Hookable_Base implements Hookable {
 		$this->asset_resolver = $asset_resolver;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_action( 'elementor/preview/enqueue_scripts', array( $this, 'enqueue_preview_assets' ) );
 
 		if ( $route_detector->is_admin_route() ) {

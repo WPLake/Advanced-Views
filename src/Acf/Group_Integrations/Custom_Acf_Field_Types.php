@@ -29,7 +29,7 @@ class Custom_Acf_Field_Types extends Hookable_Base implements Hookable {
 		acf_register_field_type( new Av_Slug_Select_Field( $this->layouts_settings_storage ) );
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( false === $route_detector->is_admin_route() ) {
 			return;
 		}

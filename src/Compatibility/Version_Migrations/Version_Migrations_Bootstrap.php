@@ -106,9 +106,9 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 					$this->bootstrap = $bootstrap;
 				}
 
-				public function set_hooks( Route_Detector $route_detector ): void {
+				public function set_route_hooks( Route_Detector $route_detector ): void {
 					$migrator = $this->bootstrap->register_migrations();
-					$migrator->set_hooks( $route_detector );
+					$migrator->set_route_hooks( $route_detector );
 				}
 			},
 		);

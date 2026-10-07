@@ -30,7 +30,7 @@ final class Cpt_Item_Picker extends Hookable_Base implements Hookable {
 		$this->cpt              = $cpt;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( $route_detector->is_admin_route() ) {
 			self::add_action( 'rest_api_init', array( $this, 'register_rest_route' ) );
 		}

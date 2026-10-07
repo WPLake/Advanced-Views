@@ -162,7 +162,7 @@ class Live_Reloader_Component extends Hookable_Base implements Hookable {
 		return remove_query_arg( self::QUERY_ARG, );
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( $route_detector->is_admin_route() ) {
 			return;
 		}

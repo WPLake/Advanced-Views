@@ -64,7 +64,7 @@ abstract class Cpt_Interactive_Fields extends Hookable_Base implements Hookable 
 	}
 
 	// by tests, json in post_meta in 13 times quicker than ordinary postMeta way (30ms per 10 objects vs 400ms).
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( $route_detector->is_admin_route() ) {
 			self::add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 		}

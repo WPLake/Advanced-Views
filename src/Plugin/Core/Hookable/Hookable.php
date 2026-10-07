@@ -7,5 +7,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Core\Hookable;
 defined( 'ABSPATH' ) || exit;
 
 interface Hookable {
-	public function set_hooks( Route_Detector $route_detector ): void;
+	public function has_route_hooks( Route_Detector $route_detector ): void;
+
+	public function set_route_hooks( Route_Detector $route_detector ): void;
 }

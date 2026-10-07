@@ -166,7 +166,7 @@ class Admin_Pages extends Hookable_Base implements Hookable {
 		return array_merge( $links, $this->get_promo_links() );
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( false === $route_detector->is_admin_route() ) {
 			return;
 		}

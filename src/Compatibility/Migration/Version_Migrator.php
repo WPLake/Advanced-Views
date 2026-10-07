@@ -99,7 +99,7 @@ final class Version_Migrator extends Hookable_Base implements Hookable, Cpt_Sett
 		return 1 === preg_match( '/^\d+\.\d+\.\d+$/', $version );
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		// avoid requests with incomplete hooks cycle.
 		if ( ! $route_detector->is_complete_cycle_request() ) {
 			return;

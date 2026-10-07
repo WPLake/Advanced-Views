@@ -39,7 +39,7 @@ final class File_System_Loader extends Hookable_Base implements Hookable {
 		return self::$instance;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		// theme is loaded since this hook.
 		self::add_action(
 			'after_setup_theme',

@@ -86,7 +86,7 @@ final class Tools_Page extends Hookable_Base implements Hookable {
 		$this->wp_filesystem_base    = null;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( false === $route_detector->is_admin_route() ) {
 			return;
 		}

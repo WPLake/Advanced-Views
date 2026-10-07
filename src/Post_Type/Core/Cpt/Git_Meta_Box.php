@@ -270,7 +270,7 @@ abstract class Git_Meta_Box extends Hookable_Base implements Hookable {
 		exit;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( $route_detector->is_cpt_admin_route( $this->cpt_name, Route_Detector::CPT_EDIT ) ) {
 			// for feature-promotion, show the meta-box even there are no set repositories.
 			self::add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );

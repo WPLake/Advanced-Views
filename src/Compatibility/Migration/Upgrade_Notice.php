@@ -28,7 +28,7 @@ final class Upgrade_Notice extends Hookable_Base implements Hookable {
 		$this->dismiss_nonce_action = 'avf-upgrade-notice';
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( $route_detector->is_admin_route() ) {
 			$upgrade_notice = $this->get_upgrade_notice();
 
