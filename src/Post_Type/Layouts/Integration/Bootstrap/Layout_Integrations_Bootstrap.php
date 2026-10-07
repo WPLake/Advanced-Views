@@ -7,7 +7,8 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Bootstrap;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Layout_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Shortcode_Gutenberg_Block;
 
 class Layout_Integrations_Bootstrap extends Module_Bootstrap_Base {
@@ -24,11 +25,12 @@ class Layout_Integrations_Bootstrap extends Module_Bootstrap_Base {
 		return array( Shortcode_Gutenberg_Block::class );
 	}
 
-	protected function resolve_hookable_instances( Route_Detector $route_detector ): array {
-		$factory         = $this->resolve( Layout_Integrations_Factory::class );
-		$item_picker     = $factory->item_picker();
-		$gutenberg_block = $factory->gutenberg_block();
+	public function get_hookable_factories(): array {
+		$factory = $this->resolve( Layout_Integrations_Factory::class );
 
-		return array( $item_picker, $gutenberg_block );
+		return array(
+			Cpt_Item_Picker::class => fn() => $factory->item_picker(),
+			Layout_Gutenberg_Block::class => fn() => $factory->gutenberg_block(),
+		);
 	}
 }

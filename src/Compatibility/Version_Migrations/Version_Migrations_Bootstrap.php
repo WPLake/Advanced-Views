@@ -25,8 +25,6 @@ use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_8
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_8_9;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_9_6;
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 
 class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
@@ -92,29 +90,11 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 		);
 	}
 
-	protected function resolve_hookable_instances( Route_Detector $route_detector ): array {
-		// fixme
+	public function get_hookable_factories(): array {
 		/**
 		 * Migrations depend on the instances registered in the container by later modules,
-		 * so they are resolved lazily, right before the migrator's hooks are set.
+		 * so they are registered lazily, when the migrator is created.
 		 */
-		return array(
-			new class( $this ) implements Hookable {
-				private Version_Migrations_Bootstrap $bootstrap;
-
-				public function __construct( Version_Migrations_Bootstrap $bootstrap ) {
-					$this->bootstrap = $bootstrap;
-				}
-
-				public static function has_route_hooks( Route_Detector $route_detector ): bool {
-					return Version_Migrator::has_route_hooks( $route_detector );
-				}
-
-				public function set_route_hooks( Route_Detector $route_detector ): void {
-					$migrator = $this->bootstrap->register_migrations();
-					$migrator->set_route_hooks( $route_detector );
-				}
-			},
-		);
+		return array( Version_Migrator::class => fn() => $this->register_migrations() );
 	}
 }

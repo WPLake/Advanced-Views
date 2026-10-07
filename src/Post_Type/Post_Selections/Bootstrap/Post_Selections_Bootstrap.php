@@ -7,7 +7,8 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Bootstrap;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Gutenberg_Editor_Settings;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Selection\Selection_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Post_Selections_Cpt;
@@ -39,13 +40,13 @@ class Post_Selections_Bootstrap extends Module_Bootstrap_Base {
 		);
 	}
 
-	protected function resolve_hookable_instances( Route_Detector $route_detector ): array {
+	public function get_hookable_factories(): array {
 		$factory = $this->resolve( Post_Selections_Factory::class );
 
-		// Generic (not selection-specific) hookables, created directly as the container can't host them per module.
+		// Generic (not specific to this CPT) hookables, created directly as the container can't host them per module.
 		return array(
-			$factory->editor_settings(),
-			$factory->assets_reducer(),
+			Cpt_Gutenberg_Editor_Settings::class => fn() => $factory->editor_settings(),
+			Cpt_Assets_Reducer::class            => fn() => $factory->assets_reducer(),
 		);
 	}
 }

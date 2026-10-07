@@ -8,6 +8,8 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Mount_Point_Settings_Integration;
+use Org\Wplake\Advanced_Views\Acf\Acf_Groups_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Field_Settings_Integration;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Item_Settings_Integration;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Layout_Settings_Integration;
@@ -22,15 +24,18 @@ class Layout_Acf_Bootstrap extends Module_Bootstrap_Base {
 		);
 	}
 
-	protected function resolve_hookable_instances( Route_Detector $route_detector ): array {
-		$factory     = $this->resolve( Layout_Acf_Factory::class );
-		$cpt_name    = $this->resolve( Layouts_Cpt::class )->cpt_name();
-		$mount_point = $factory->mount_point_integration();
+	public function get_hookable_factories(): array {
+		$factory        = $this->resolve( Layout_Acf_Factory::class );
+		$route_detector = $this->resolve( Route_Detector::class );
+		$cpt_name       = $this->resolve( Layouts_Cpt::class )->cpt_name();
+		$factories      = array();
 
 		if ( wp_doing_ajax() || $route_detector->is_cpt_admin_route( $cpt_name ) ) {
-			return array( $factory->groups_loader(), $mount_point );
+			$factories[ Acf_Groups_Loader::class ] = fn() => $factory->groups_loader();
 		}
 
-		return array( $mount_point );
+		$factories[ Mount_Point_Settings_Integration::class ] = fn() => $factory->mount_point_integration();
+
+		return $factories;
 	}
 }

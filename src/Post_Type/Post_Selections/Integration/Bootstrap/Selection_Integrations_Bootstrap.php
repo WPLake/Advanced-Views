@@ -7,7 +7,8 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Bootst
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Gutenberg\Selection_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 
 class Selection_Integrations_Bootstrap extends Module_Bootstrap_Base {
 	public function resolve_extension_hookables(): array {
@@ -18,11 +19,12 @@ class Selection_Integrations_Bootstrap extends Module_Bootstrap_Base {
 		return array();
 	}
 
-	protected function resolve_hookable_instances( Route_Detector $route_detector ): array {
-		$factory         = $this->resolve( Selection_Integrations_Factory::class );
-		$item_picker     = $factory->item_picker();
-		$gutenberg_block = $factory->gutenberg_block();
+	public function get_hookable_factories(): array {
+		$factory = $this->resolve( Selection_Integrations_Factory::class );
 
-		return array( $item_picker, $gutenberg_block );
+		return array(
+			Cpt_Item_Picker::class => fn() => $factory->item_picker(),
+			Selection_Gutenberg_Block::class => fn() => $factory->gutenberg_block(),
+		);
 	}
 }

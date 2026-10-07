@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 
 defined( 'ABSPATH' ) || exit;
 
+use Closure;
 use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
 use Org\Wplake\Advanced_Views\Acf\Acf_Groups_Loader;
 use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
@@ -236,13 +237,13 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	protected function load_bootstraps( array $bootstraps, Route_Detector $route_detector ): array {
 		$this->wire_instance_factories( $bootstraps );
 
-		$resolved  = $this->resolve_hookable_classes( $bootstraps, $route_detector );
-		$instances = flat_map(
+		$resolved_classes = $this->resolve_hookable_classes( $bootstraps, $route_detector );
+		$instances        = flat_map(
 			$bootstraps,
-			fn( Module_Bootstrap $bootstrap ): array => $bootstrap->resolve_hookables( $route_detector )
+			fn( Module_Bootstrap $bootstrap ): array => $this->create_hookable_instances( $bootstrap, $route_detector )
 		);
 
-		return array_merge( $resolved, $instances );
+		return array_merge( $resolved_classes, $instances );
 	}
 
 	/**
@@ -278,6 +279,28 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		return array_map(
 			fn( string $class_name ): Hookable => $this->resolve( $class_name ),
 			array_values( $routed_classes )
+		);
+	}
+
+	/**
+	 * Per bootstrap, as different modules have factories for the same class (e.g. a CPT-specific one).
+	 *
+	 * @return Hookable[]
+	 */
+	protected function create_hookable_instances( Module_Bootstrap $bootstrap, Route_Detector $route_detector ): array {
+		$factories = $bootstrap->get_hookable_factories();
+
+		$routed_factories = array_filter(
+			$factories,
+			fn( string $class_name ): bool => $class_name::has_route_hooks( $route_detector ),
+			ARRAY_FILTER_USE_KEY
+		);
+
+		return array_values(
+			array_map(
+				fn( Closure $factory ): Hookable => $factory(),
+				$routed_factories
+			)
 		);
 	}
 
