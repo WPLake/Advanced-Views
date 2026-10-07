@@ -21,18 +21,6 @@ class Layout_Tabs_Bootstrap extends Module_Bootstrap_Base {
 		);
 	}
 
-	public function get_hookables( Route_Detector $route_detector ): array {
-		$hookable_classes = $this->get_hookable_classes();
-		$resolved         = array_map(
-			fn( string $class_name ): Hookable => $this->resolve( $class_name ),
-			$hookable_classes
-		);
-
-		$fs_only_tab = $this->resolve( Layout_Tabs_Factory::class )->create_fs_only_tab();
-
-		return array_merge( $resolved, array( $fs_only_tab ) );
-	}
-
 	/**
 	 * @return array<class-string<Hookable>>
 	 */
@@ -42,5 +30,15 @@ class Layout_Tabs_Bootstrap extends Module_Bootstrap_Base {
 			Layouts_Pre_Built_Tab::class,
 			Layout_Git_Tabs::class,
 		);
+	}
+
+	/**
+	 * @return Hookable[]
+	 */
+	protected function get_hookable_instances( Route_Detector $route_detector ): array {
+		$factory     = $this->resolve( Layout_Tabs_Factory::class );
+		$fs_only_tab = $factory->create_fs_only_tab();
+
+		return array( $fs_only_tab );
 	}
 }

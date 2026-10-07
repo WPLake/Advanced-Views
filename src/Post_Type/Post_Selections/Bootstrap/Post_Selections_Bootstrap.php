@@ -27,23 +27,6 @@ class Post_Selections_Bootstrap extends Module_Bootstrap_Base {
 		);
 	}
 
-	public function get_hookables( Route_Detector $route_detector ): array {
-		$hookable_classes = $this->get_hookable_classes();
-		$resolved         = array_map(
-			fn( string $class_name ): Hookable => $this->resolve( $class_name ),
-			$hookable_classes
-		);
-
-		$factory         = $this->resolve( Post_Selections_Factory::class );
-		$editor_settings = $factory->create_editor_settings();
-		$assets_reducer  = $factory->create_assets_reducer();
-
-		// Generic (not selection-specific) hookables, created directly as the container can't host them per module.
-		$instances = array( $editor_settings, $assets_reducer );
-
-		return array_merge( $resolved, $instances );
-	}
-
 	/**
 	 * @return array<class-string<Hookable>>
 	 */
@@ -57,6 +40,19 @@ class Post_Selections_Bootstrap extends Module_Bootstrap_Base {
 			Selection_Git_Box::class,
 			Selection_Layout_Integration::class,
 			Selection_Interactive_Fields::class,
+		);
+	}
+
+	/**
+	 * @return Hookable[]
+	 */
+	protected function get_hookable_instances( Route_Detector $route_detector ): array {
+		$factory = $this->resolve( Post_Selections_Factory::class );
+
+		// Generic (not selection-specific) hookables, created directly as the container can't host them per module.
+		return array(
+			$factory->create_editor_settings(),
+			$factory->create_assets_reducer(),
 		);
 	}
 }

@@ -36,30 +36,6 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 		return array( Cpt_Settings_Migrator::class => $migrator );
 	}
 
-	/**
-	 * @return Hookable[]
-	 */
-	public function get_hookables( Route_Detector $route_detector ): array {
-		// fixme
-		/**
-		 * Migrations depend on the instances registered in the container by later modules,
-		 * so they are resolved lazily, right before the migrator's hooks are set.
-		 */
-		return array(
-			new class( $this ) implements Hookable {
-				private Version_Migrations_Bootstrap $bootstrap;
-
-				public function __construct( Version_Migrations_Bootstrap $bootstrap ) {
-					$this->bootstrap = $bootstrap;
-				}
-
-				public function set_hooks( Route_Detector $route_detector ): void {
-					$migrator = $this->bootstrap->register_migrations();
-					$migrator->set_hooks( $route_detector );
-				}
-			},
-		);
-	}
 
 	public function register_migrations(): Version_Migrator {
 		$v1_migrations = $this->v1_migrations();
@@ -115,6 +91,31 @@ class Version_Migrations_Bootstrap extends Module_Bootstrap_Base {
 			Migration_3_8_0::class,
 			Migration_3_8_9::class,
 			Migration_3_9_6::class,
+		);
+	}
+
+	/**
+	 * @return Hookable[]
+	 */
+	protected function get_hookable_instances( Route_Detector $route_detector ): array {
+		// fixme
+		/**
+		 * Migrations depend on the instances registered in the container by later modules,
+		 * so they are resolved lazily, right before the migrator's hooks are set.
+		 */
+		return array(
+			new class( $this ) implements Hookable {
+				private Version_Migrations_Bootstrap $bootstrap;
+
+				public function __construct( Version_Migrations_Bootstrap $bootstrap ) {
+					$this->bootstrap = $bootstrap;
+				}
+
+				public function set_hooks( Route_Detector $route_detector ): void {
+					$migrator = $this->bootstrap->register_migrations();
+					$migrator->set_hooks( $route_detector );
+				}
+			},
 		);
 	}
 }
