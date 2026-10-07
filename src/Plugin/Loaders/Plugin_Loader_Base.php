@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Closure;
 use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
-use Org\Wplake\Advanced_Views\Acf\Acf_Groups_Loader;
+use Org\Wplake\Advanced_Views\Acf\Bootstrap\Acf_Bootstrap;
 use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tools_Settings_Integration;
@@ -60,7 +60,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Bootstrap\Post_Selection
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Bootstrap\Selection_Integrations_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Bootstrap\Selection_Tabs_Bootstrap;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
@@ -142,7 +141,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	protected function load_modules( Route_Detector $route_detector ): array {
 		$this->translations( $route_detector );
 		$primary    = $this->primary();
-		$acf_groups = $this->acf_groups( $route_detector );
 		// layouts and selections instances are used by the next modules, so bootstraps go first.
 		$bootstraps  = $this->resolve_bootstraps();
 		$modules     = $this->load_bootstraps( $bootstraps, $route_detector );
@@ -153,7 +151,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 		$this->add_plugin_extensions( $bootstraps );
 
-		return array_merge( $primary, $acf_groups, $modules, $integration, $others, $environment );
+		return array_merge( $primary, $modules, $integration, $others, $environment );
 	}
 
 	/**
@@ -184,7 +182,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 						);
 					}
 				},
-				// make sure it's before acf_groups.
+				// make sure it's before the acf groups loading.
 				8
 			);
 		}
@@ -209,23 +207,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 				File_System_Loader::instance(),
 			),
 			$this->file_systems
-		);
-	}
-
-	/**
-	 * @return Hookable[]
-	 */
-	protected function acf_groups( Route_Detector $route_detector ): array {
-		if ( ! wp_doing_ajax() &&
-			false === $route_detector->is_cpt_admin_route( $this->resolve( Layouts_Cpt::class )->cpt_name() ) &&
-			false === $route_detector->is_cpt_admin_route( $this->resolve( Selections_Cpt::class )->cpt_name() ) ) {
-			return array();
-		}
-
-		return array(
-			new Acf_Groups_Loader(
-				array( 'Org\Wplake\Advanced_Views\Acf\Groups' => $this->plugin->get_plugin_path( 'src/Acf/Groups' ) )
-			),
 		);
 	}
 
@@ -425,6 +406,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 */
 	protected static function get_bootstraps(): array {
 		return array(
+			Acf_Bootstrap::class,
 			// layouts:
 			Layouts_Bootstrap::class,
 			Layout_Acf_Bootstrap::class,
