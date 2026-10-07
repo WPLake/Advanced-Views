@@ -69,17 +69,13 @@ class Acf_Internal_Features extends Hookable_Base implements Hookable {
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return $route_detector->is_admin_route();
+		return $route_detector->is_admin_route() &&
+			( $route_detector->is_cpt_admin_route( Hard_Layout_Cpt::cpt_name() ) ||
+				$route_detector->is_cpt_admin_route( Hard_Post_Selection_Cpt::cpt_name() ) ||
+				wp_doing_ajax() );
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ||
-			( false === $route_detector->is_cpt_admin_route( Hard_Layout_Cpt::cpt_name() ) &&
-				false === $route_detector->is_cpt_admin_route( Hard_Post_Selection_Cpt::cpt_name() ) &&
-				! wp_doing_ajax() ) ) {
-			return;
-		}
-
 		// only since 'plugins_loaded' we can judge if ACF is loaded or not
 		// '-1' so it's after AcfDependency->maybeIncludeAcfPlugin().
 		self::add_action(
