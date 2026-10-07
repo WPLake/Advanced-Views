@@ -6,10 +6,9 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 
 defined( 'ABSPATH' ) || exit;
 
-use Closure;
 use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
-use Org\Wplake\Advanced_Views\Acf\Bootstrap\Acf_Bootstrap;
 use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
+use Org\Wplake\Advanced_Views\Acf\Bootstrap\Acf_Bootstrap;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tools_Settings_Integration;
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
@@ -67,7 +66,6 @@ use Org\Wplake\Advanced_Views\Vendors\DI\Container;
 use Org\Wplake\Advanced_Views\Vendors\DI\ContainerBuilder;
 use Org\Wplake\Advanced_Views\Vendors\DI\Definition\Reference;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
-use function Org\Wplake\Advanced_Views\Utils\flat_map;
 use function Org\Wplake\Advanced_Views\Vendors\DI\get;
 
 abstract class Plugin_Loader_Base extends Module_Loader {
@@ -140,30 +138,27 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 */
 	protected function load_modules( Route_Detector $route_detector ): array {
 		$this->translations( $route_detector );
-		$primary    = $this->primary();
+		$primary = $this->primary();
+
 		// layouts and selections instances are used by the next modules, so bootstraps go first.
-		$bootstraps  = $this->resolve_bootstraps();
-		$modules     = $this->load_bootstraps( $bootstraps, $route_detector );
+		$this->modules_bootstrap( $route_detector )->bootstrap();
+
 		$integration = $this->integration( $route_detector );
 		$others      = $this->others();
 		$this->bridge();
 		$environment = $this->environment();
 
-		$this->add_plugin_extensions( $bootstraps );
-
-		return array_merge( $primary, $modules, $integration, $others, $environment );
+		return array_merge( $primary, $integration, $others, $environment );
 	}
 
-	/**
-	 * @return Module_Bootstrap[]
-	 */
-	protected function resolve_bootstraps(): array {
+	protected function modules_bootstrap( Route_Detector $route_detector ): Modules_Bootstrap {
 		$bootstrap_classes = static::get_bootstraps();
-
-		return array_map(
+		$bootstraps        = array_map(
 			fn( string $class_name ): Module_Bootstrap => $this->resolve( $class_name ),
 			$bootstrap_classes
 		);
+
+		return new Modules_Bootstrap( $this->container, $bootstraps, $route_detector );
 	}
 
 	protected function translations( Route_Detector $route_detector ): void {
@@ -207,96 +202,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 				File_System_Loader::instance(),
 			),
 			$this->file_systems
-		);
-	}
-
-	/**
-	 * @param Module_Bootstrap[] $bootstraps
-	 *
-	 * @return Hookable[]
-	 */
-	protected function load_bootstraps( array $bootstraps, Route_Detector $route_detector ): array {
-		$this->wire_instance_factories( $bootstraps );
-
-		$resolved_classes = $this->resolve_hookable_classes( $bootstraps, $route_detector );
-		$instances        = flat_map(
-			$bootstraps,
-			fn( Module_Bootstrap $bootstrap ): array => $this->create_hookable_instances( $bootstrap, $route_detector )
-		);
-
-		return array_merge( $resolved_classes, $instances );
-	}
-
-	/**
-	 * @param Module_Bootstrap[] $bootstraps
-	 */
-	protected function wire_instance_factories( array $bootstraps ): void {
-		foreach ( $bootstraps as $bootstrap ) {
-			$instances = $bootstrap->get_instance_factories();
-
-			foreach ( $instances as $id => $instance ) {
-				$this->wire( $id, $instance );
-			}
-		}
-	}
-
-	/**
-	 * @param Module_Bootstrap[] $bootstraps
-	 *
-	 * @return Hookable[]
-	 */
-	protected function resolve_hookable_classes( array $bootstraps, Route_Detector $route_detector ): array {
-		$classes = flat_map(
-			$bootstraps,
-			fn( Module_Bootstrap $bootstrap ): array => $bootstrap->get_hookable_classes()
-		);
-
-		/**
-		 * @param class-string<Hookable> $class_name
-		 */
-		$has_route_hooks = fn( string $class_name ): bool => $class_name::has_route_hooks( $route_detector );
-		$routed_classes  = array_filter( $classes, $has_route_hooks );
-
-		return array_map(
-			fn( string $class_name ): Hookable => $this->resolve( $class_name ),
-			array_values( $routed_classes )
-		);
-	}
-
-	/**
-	 * Per bootstrap, as different modules have factories for the same class (e.g. a CPT-specific one).
-	 *
-	 * @return Hookable[]
-	 */
-	protected function create_hookable_instances( Module_Bootstrap $bootstrap, Route_Detector $route_detector ): array {
-		$factories = $bootstrap->get_hookable_factories();
-
-		$routed_factories = array_filter(
-			$factories,
-			fn( string $class_name ): bool => $class_name::has_route_hooks( $route_detector ),
-			ARRAY_FILTER_USE_KEY
-		);
-
-		return array_values(
-			array_map(
-				fn( Closure $factory ): Hookable => $factory(),
-				$routed_factories
-			)
-		);
-	}
-
-	/**
-	 * @param Module_Bootstrap[] $bootstraps
-	 */
-	protected function add_plugin_extensions( array $bootstraps ): void {
-		add_action(
-			'plugins_loaded',
-			function () use ( $bootstraps ): void {
-				foreach ( $bootstraps as $bootstrap ) {
-					$this->load_hookable( $bootstrap->resolve_extension_hookables() );
-				}
-			},
-			11
 		);
 	}
 
@@ -402,17 +307,17 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return array<array-key, class-string<Module_Bootstrap>>
+	 * @return class-string<Module_Bootstrap>[]
 	 */
 	protected static function get_bootstraps(): array {
 		return array(
 			Acf_Bootstrap::class,
-			// layouts:
+			// layouts.
 			Layouts_Bootstrap::class,
 			Layout_Acf_Bootstrap::class,
 			Layout_Tabs_Bootstrap::class,
 			Layout_Integrations_Bootstrap::class,
-			// post_selections:
+			// post_selections.
 			Post_Selections_Bootstrap::class,
 			Selection_Acf_Bootstrap::class,
 			Selection_Tabs_Bootstrap::class,
@@ -428,7 +333,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$builder->useAutowiring( true );
 		$builder->useAnnotations( false );
 
-		$definitions = static::compose_bootstrap_definitions();
+		$definitions = static::compose_bootstrap_type_definitions();
 		$builder->addDefinitions( $definitions );
 
 		return $builder->build();
@@ -439,7 +344,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 *
 	 * @return array<class-string, Reference>
 	 */
-	protected static function compose_bootstrap_definitions(): array {
+	protected static function compose_bootstrap_type_definitions(): array {
 		$bootstrap_classes = static::get_bootstraps();
 		$type_definitions  = array();
 

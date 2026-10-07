@@ -8,7 +8,6 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Container_Facade;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor\Cpt_Widget_Registrar;
@@ -53,20 +52,20 @@ class Layout_Integrations_Factory extends Container_Facade {
 		return new Layout_Gutenberg_Block( $asset_resolver, $item_picker, $cpt_block );
 	}
 
-	/**
-	 * @return Hookable[]
-	 */
-	public function elementor_hookables(): array {
-		$item_picker    = $this->item_picker();
-		$renderer       = $this->renderer();
-		$asset_resolver = $this->resolve( Asset_Resolver::class );
+	public function elementor_widget_registrar(): Cpt_Widget_Registrar {
+		$item_picker = $this->item_picker();
+		$renderer    = $this->renderer();
 
 		$widget_registrar = new Cpt_Widget_Registrar( $item_picker, $renderer );
 		$widget_registrar->add_widget( Layout_Elementor_Widget::class );
 
-		return array(
-			$widget_registrar,
-			new Layout_Elementor_Assets( $item_picker, $asset_resolver ),
-		);
+		return $widget_registrar;
+	}
+
+	public function elementor_assets(): Layout_Elementor_Assets {
+		$item_picker    = $this->item_picker();
+		$asset_resolver = $this->resolve( Asset_Resolver::class );
+
+		return new Layout_Elementor_Assets( $item_picker, $asset_resolver );
 	}
 }
