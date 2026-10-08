@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Bootstrap;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Facade;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Facade\Factory_Facade;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;

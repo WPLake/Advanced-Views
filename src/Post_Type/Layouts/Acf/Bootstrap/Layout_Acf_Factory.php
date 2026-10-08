@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Bootstrap\Acf_Groups_Loader;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Mount_Point_Settings_Integration;
-use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Facade;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Facade\Factory_Facade;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 

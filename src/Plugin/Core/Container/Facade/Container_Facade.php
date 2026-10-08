@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Plugin\Core\Container;
+namespace Org\Wplake\Advanced_Views\Plugin\Core\Container\Facade;
 
 use Org\Wplake\Advanced_Views\Vendors\DI\Container;
 

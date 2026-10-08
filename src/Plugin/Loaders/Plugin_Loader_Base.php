@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
 use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
-use Org\Wplake\Advanced_Views\Acf\Bootstrap\Acf_Bootstrap;
+use Org\Wplake\Advanced_Views\Acf\Bootstrap\Acf_Module;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tools_Settings_Integration;
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
@@ -16,14 +16,16 @@ use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Bridge\Advanced_Views;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
-use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\Bootstrap\Version_Migrations_Bootstrap;
+use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\Bootstrap\Version_Migrations_Module;
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
-use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Container_Factory;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
+use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Provider\Hookables_Bootstrap;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Module_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Bar;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Pages;
@@ -42,24 +44,24 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Bootstrap\Layout_Acf_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Bootstrap\Layout_Acf_Module;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Bootstrap\Layouts_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Bootstrap\Layouts_Module;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Bootstrap\Layout_Integrations_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Bootstrap\Layout_Integrations_Module;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Bootstrap\Layout_Tabs_Bootstrap;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Bootstrap\Selection_Acf_Bootstrap;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Bootstrap\Post_Selections_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Bootstrap\Layout_Tabs_Module;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Bootstrap\Selection_Acf_Module;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Bootstrap\Post_Selections_Module;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Bootstrap\Selection_Integrations_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Bootstrap\Selection_Integrations_Module;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Bootstrap\Selection_Tabs_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Bootstrap\Selection_Tabs_Module;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
@@ -140,7 +142,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$primary = $this->primary();
 
 		// layouts and selections instances are used by the next modules, so bootstraps go first.
-		$modules_bootstrap = $this->resolve( Modules_Bootstrap::class );
+		$modules_bootstrap = $this->resolve( Hookables_Bootstrap::class );
 		$bootstrap_classes = static::get_bootstraps();
 		$modules_bootstrap->bootstrap( $bootstrap_classes );
 
@@ -298,23 +300,23 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return class-string<Module_Bootstrap>[]
+	 * @return class-string<Module_Base>[]
 	 */
 	protected static function get_bootstraps(): array {
 		return array(
-			Acf_Bootstrap::class,
+			Acf_Module::class,
 			// layouts.
-			Layouts_Bootstrap::class,
-			Layout_Acf_Bootstrap::class,
-			Layout_Tabs_Bootstrap::class,
-			Layout_Integrations_Bootstrap::class,
+			Layouts_Module::class,
+			Layout_Acf_Module::class,
+			Layout_Tabs_Module::class,
+			Layout_Integrations_Module::class,
 			// post_selections.
-			Post_Selections_Bootstrap::class,
-			Selection_Acf_Bootstrap::class,
-			Selection_Tabs_Bootstrap::class,
-			Selection_Integrations_Bootstrap::class,
+			Post_Selections_Module::class,
+			Selection_Acf_Module::class,
+			Selection_Tabs_Module::class,
+			Selection_Integrations_Module::class,
 			// fixme other domain bootstraps.
-			Version_Migrations_Bootstrap::class,
+			Version_Migrations_Module::class,
 		);
 	}
 

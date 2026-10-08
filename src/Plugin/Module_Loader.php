@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Core\Container\Container_Facade;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Facade\Container_Facade;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Vendors\DI\Container;

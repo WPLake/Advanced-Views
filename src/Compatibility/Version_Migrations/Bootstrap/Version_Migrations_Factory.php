@@ -24,7 +24,7 @@ use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_3
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_8_0;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_8_9;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_9_6;
-use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Facade;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Facade\Factory_Facade;
 
 final class Version_Migrations_Factory extends Factory_Facade {
 	public function register_migrations(): Version_Migrator {
