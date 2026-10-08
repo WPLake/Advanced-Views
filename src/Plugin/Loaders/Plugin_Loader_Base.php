@@ -141,7 +141,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		$primary = $this->primary();
 
 		// layouts and selections instances are used by the next modules, so bootstraps go first.
-		$modules_bootstrap = $this->resolve( Hookables_Bootstrap::class );
+		$modules_bootstrap = $this->resolve( Actor_Bootstrap::class );
 		$bootstrap_classes = static::get_bootstraps();
 		$modules_bootstrap->bootstrap( $bootstrap_classes );
 

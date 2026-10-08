@@ -14,7 +14,6 @@ use WP_Filesystem_Base;
 defined( 'ABSPATH' ) || exit;
 
 class Blade_Renderer extends File_Template_Renderer_Base {
-	// @phpstan-ignore-next-line
 	private ?Blade_Engine $blade_engine;
 
 	public function __construct( string $templates_folder, Logger $logger, Settings_Storage $settings, WP_Filesystem_Base $wp_filesystem_base ) {
@@ -23,14 +22,12 @@ class Blade_Renderer extends File_Template_Renderer_Base {
 		$this->blade_engine = null;
 	}
 
-	// @phpstan-ignore-next-line
 	protected function get_blade(): ?Blade_Engine {
 		if ( false === $this->is_available() ) {
 			return null;
 		}
 
 		if ( null === $this->blade_engine ) {
-			// @phpstan-ignore-next-line
 			$this->blade_engine = new Blade_Engine( $this->get_templates_folder(), $this->get_templates_folder() );
 		}
 
@@ -48,7 +45,6 @@ class Blade_Renderer extends File_Template_Renderer_Base {
 			return '';
 		}
 
-		// @phpstan-ignore-next-line
 		return $blade->render( $template_name, $args );
 	}
 

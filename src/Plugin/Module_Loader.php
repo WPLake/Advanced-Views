@@ -30,8 +30,14 @@ abstract class Module_Loader {
 		return $this->repository->resolve( $class_name );
 	}
 
-	protected function wire( string $id, object $instance ): void {
-		$this->repository->wire( $id, $instance );
+	/**
+	 * @template Instance of object
+	 *
+	 * @param class-string<Instance> $class_name
+	 * @param Instance $instance
+	 */
+	protected function wire( string $class_name, object $instance ): void {
+		$this->repository->wire( $class_name, $instance );
 	}
 
 	/**

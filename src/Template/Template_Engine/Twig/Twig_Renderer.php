@@ -29,7 +29,6 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 	);
 
 	private ?FilesystemLoader $filesystem_loader;
-	// @phpstan-ignore-next-line
 	private ?Environment $environment;
 
 	public function __construct( string $templates_folder, Logger $logger, Settings_Storage $settings, WP_Filesystem_Base $wp_filesystem_base ) {
@@ -44,7 +43,6 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 	 * @throws Exception
 	 */
 	protected function render( string $template_name, array $args ): string {
-		// @phpstan-ignore-next-line
 		return $this->get_twig()->render( $template_name . '.' . $this->get_extension(), $args );
 	}
 
@@ -153,11 +151,8 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 		);
 	}
 
-	// @phpstan-ignore-next-line
 	protected function init_twig(): Environment {
-		// @phpstan-ignore-next-line
 		$this->filesystem_loader = new FilesystemLoader( $this->get_templates_folder() );
-		// @phpstan-ignore-next-line
 		$this->environment = new Environment(
 			$this->filesystem_loader,
 			self::ENVIRONMENT_ARGS
@@ -199,9 +194,7 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 				continue;
 			}
 
-			// @phpstan-ignore-next-line
 			$this->environment->addFunction(
-			// @phpstan-ignore-next-line
 				new TwigFunction( $function_name, $function_callback, $function_args )
 			);
 		}
@@ -221,9 +214,7 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 				continue;
 			}
 
-			// @phpstan-ignore-next-line
 			$this->environment->addFilter(
-			// @phpstan-ignore-next-line
 				new TwigFilter( $filter_name, $filter_callback, $filter_args )
 			);
 		}
@@ -231,7 +222,6 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 		return $this->environment;
 	}
 
-	// @phpstan-ignore-next-line
 	protected function get_twig(): Environment {
 		if ( null === $this->environment ) {
 			return $this->init_twig();
