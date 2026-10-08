@@ -5,15 +5,15 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Cpt_Meta_Boxes extends Hookable_Base implements Hookable {
+abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	private Html_Printer $html;
 	private Plugin $plugin;
 

@@ -7,9 +7,9 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Elementor;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 
@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
  * (registered alongside Cpt_Widget_Registrar, not through it), since asset paths/localized var names are the one
  * piece of config that's genuinely per-CPT and doesn't belong hard-coded into that otherwise fully generic class.
  */
-final class Layout_Elementor_Assets extends Hookable_Base implements Hookable {
+final class Layout_Elementor_Assets extends Actor_Base implements Actor {
 	const EDITOR_NAME  = Plugin::PRODUCT_SLUG . '/layout-elementor-editor';
 	const PREVIEW_NAME = Plugin::PRODUCT_SLUG . '/layout-elementor-preview';
 

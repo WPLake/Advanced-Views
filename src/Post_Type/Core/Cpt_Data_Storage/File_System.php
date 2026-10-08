@@ -4,8 +4,8 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage;
 
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
@@ -16,7 +16,7 @@ use WP_Filesystem_Base;
 
 defined( 'ABSPATH' ) || exit;
 
-class File_System extends Loggable_Actor implements Hookable {
+class File_System extends Loggable_Actor implements Actor {
 	use Safe_Array_Arguments;
 
 	private static bool $is_fs_not_writable_notice_shown = false;

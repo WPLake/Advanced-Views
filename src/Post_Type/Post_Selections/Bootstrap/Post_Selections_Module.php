@@ -28,7 +28,7 @@ class Post_Selections_Module extends Module_Base {
 		);
 	}
 
-	public static function get_hookable_classes(): array {
+	public static function get_actor_classes(): array {
 		return array(
 			Selection_Meta_Boxes::class,
 			Post_Selections_Cpt::class,
@@ -41,7 +41,7 @@ class Post_Selections_Module extends Module_Base {
 		);
 	}
 
-	public static function get_hookable_factories( Instance_Container $container ): array {
+	public static function get_actor_factories( Instance_Container $container ): array {
 		$factory = $container->resolve( Post_Selections_Factory::class );
 
 		// Generic (not specific to this CPT) hookables, created directly as the container can't host them per module.

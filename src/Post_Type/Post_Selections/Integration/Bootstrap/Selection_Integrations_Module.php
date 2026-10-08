@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Elementor\Se
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Gutenberg\Selection_Gutenberg_Block;
 
 class Selection_Integrations_Module extends Module_Base {
-	public static function get_hookable_factories( Instance_Container $container ): array {
+	public static function get_actor_factories( Instance_Container $container ): array {
 		$factory = $container->resolve( Selection_Integrations_Factory::class );
 
 		return array(
@@ -23,7 +23,7 @@ class Selection_Integrations_Module extends Module_Base {
 		);
 	}
 
-	public static function resolve_extension_hookables( Instance_Container $container ): array {
+	public static function resolve_extension_actors( Instance_Container $container ): array {
 		if ( did_action( 'elementor/loaded' ) > 0 ) {
 			$factory = $container->resolve( Selection_Integrations_Factory::class );
 

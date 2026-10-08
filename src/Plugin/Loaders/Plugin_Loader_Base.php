@@ -20,8 +20,8 @@ use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\Bootstrap\Version
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Module_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
@@ -134,7 +134,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return Hookable[]
+	 * @return Actor[]
 	 */
 	protected function load_modules( Route_Detector $route_detector ): array {
 		$this->translations( $route_detector );
@@ -176,7 +176,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return Hookable[]
+	 * @return Actor[]
 	 */
 	protected function primary(): array {
 		// it's a hack, but there is no other way to pass data (constructor is always called automatically).
@@ -198,7 +198,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return Hookable[]
+	 * @return Actor[]
 	 */
 	protected function integration( Route_Detector $route_detector ): array {
 		$save_actions   = $this->resolve( Layout_Save_Actions::class );
@@ -228,7 +228,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return Hookable[]
+	 * @return Actor[]
 	 */
 	protected function others(): array {
 		return array(
@@ -253,7 +253,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	}
 
 	/**
-	 * @return Hookable[]
+	 * @return Actor[]
 	 */
 	protected function environment(): array {
 		$slug = $this->plugin->get_slug();

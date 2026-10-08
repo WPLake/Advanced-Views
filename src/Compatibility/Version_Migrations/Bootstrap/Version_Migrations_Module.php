@@ -16,7 +16,7 @@ final class Version_Migrations_Module extends Module_Base {
 		return array( Cpt_Settings_Migrator::class => Version_Migrator::class );
 	}
 
-	public static function get_hookable_factories( Instance_Container $container ): array {
+	public static function get_actor_factories( Instance_Container $container ): array {
 		$factory = $container->resolve( Version_Migrations_Factory::class );
 
 		/**

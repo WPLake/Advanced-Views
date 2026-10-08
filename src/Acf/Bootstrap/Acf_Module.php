@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 
 class Acf_Module extends Module_Base {
-	public static function get_hookable_factories( Instance_Container $container ): array {
+	public static function get_actor_factories( Instance_Container $container ): array {
 		return array(
 			Acf_Groups_Loader::class => fn() => self::create_groups_loader( $container ),
 		);

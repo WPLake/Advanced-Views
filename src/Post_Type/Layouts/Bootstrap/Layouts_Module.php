@@ -19,7 +19,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table\Layouts_Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 
 class Layouts_Module extends Module_Base {
-	public static function get_hookable_classes(): array {
+	public static function get_actor_classes(): array {
 		return array(
 			Layout_Meta_Boxes::class,
 			Layouts_Cpt_Hookable::class,
@@ -31,7 +31,7 @@ class Layouts_Module extends Module_Base {
 		);
 	}
 
-	public static function get_hookable_factories( Instance_Container $container ): array {
+	public static function get_actor_factories( Instance_Container $container ): array {
 		$factory = $container->resolve( Layouts_Factory::class );
 
 		// Generic (not specific to this CPT) hookables, created directly as the container can't host them per module.

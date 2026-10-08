@@ -6,8 +6,8 @@ namespace Org\Wplake\Advanced_Views\Plugin;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Loaders\Repository\Instance_Repository;
 
 abstract class Module_Loader {
@@ -35,7 +35,7 @@ abstract class Module_Loader {
 	}
 
 	/**
-	 * @param Hookable[] $hookable
+	 * @param Actor[] $hookable
 	 */
 	protected function load_hookable( array $hookable ): void {
 		foreach ( $hookable as $item ) {

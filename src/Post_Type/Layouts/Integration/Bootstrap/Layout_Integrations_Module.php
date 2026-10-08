@@ -15,11 +15,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Layout_Gut
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Shortcode_Gutenberg_Block;
 
 class Layout_Integrations_Module extends Module_Base {
-	public static function get_hookable_classes(): array {
+	public static function get_actor_classes(): array {
 		return array( Shortcode_Gutenberg_Block::class );
 	}
 
-	public static function get_hookable_factories( Instance_Container $container ): array {
+	public static function get_actor_factories( Instance_Container $container ): array {
 		$factory = $container->resolve( Layout_Integrations_Factory::class );
 
 		return array(
@@ -28,7 +28,7 @@ class Layout_Integrations_Module extends Module_Base {
 		);
 	}
 
-	public static function resolve_extension_hookables( Instance_Container $container ): array {
+	public static function resolve_extension_actors( Instance_Container $container ): array {
 		if ( did_action( 'elementor/loaded' ) > 0 ) {
 			$factory = $container->resolve( Layout_Integrations_Factory::class );
 

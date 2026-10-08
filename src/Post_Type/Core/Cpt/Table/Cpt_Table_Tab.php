@@ -6,14 +6,14 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Cpt_Table_Tab extends Hookable_Base implements Hookable {
+abstract class Cpt_Table_Tab extends Actor_Base implements Actor {
 
 	private Cpt_Table $cpt_table;
 

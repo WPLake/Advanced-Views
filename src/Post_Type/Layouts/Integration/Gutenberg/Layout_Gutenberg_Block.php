@@ -7,16 +7,16 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Integration_Category;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Gutenberg\Cpt_Gutenberg_Block;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
-final class Layout_Gutenberg_Block extends Hookable_Base implements Hookable {
+final class Layout_Gutenberg_Block extends Actor_Base implements Actor {
 	// prefixed by the plugin name for wp.org Plugin directory discover.
 	const NAME = Plugin::PRODUCT_SLUG . '/layout';
 

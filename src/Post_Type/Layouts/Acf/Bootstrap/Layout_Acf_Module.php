@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Item_Settings_I
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Layout_Settings_Integration;
 
 class Layout_Acf_Module extends Module_Base {
-	public static function get_hookable_classes(): array {
+	public static function get_actor_classes(): array {
 		return array(
 			Layout_Settings_Integration::class,
 			Field_Settings_Integration::class,
@@ -23,7 +23,7 @@ class Layout_Acf_Module extends Module_Base {
 		);
 	}
 
-	public static function get_hookable_factories( Instance_Container $container ): array {
+	public static function get_actor_factories( Instance_Container $container ): array {
 		$factory = $container->resolve( Layout_Acf_Factory::class );
 
 		return array(

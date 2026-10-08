@@ -8,9 +8,9 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 
-class Cpt_Settings_Creator extends Hookable_Base {
+class Cpt_Settings_Creator extends Actor_Base {
 	private Cpt_Theme_Settings $settings;
 
 	public function __construct( Cpt_Theme_Settings $settings ) {

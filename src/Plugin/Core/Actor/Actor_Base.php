@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Plugin\Core\Hookable;
+namespace Org\Wplake\Advanced_Views\Plugin\Core\Actor;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Profiler;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 
-abstract class Hookable_Base {
+abstract class Actor_Base {
 	public static function add_action(
 		string $hook_name,
 		callable $callback,

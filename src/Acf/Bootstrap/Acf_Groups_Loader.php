@@ -4,14 +4,14 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Acf\Bootstrap;
 
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Loader;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Acf_Groups_Loader implements Hookable {
+final class Acf_Groups_Loader implements Actor {
 	/**
 	 * @var array<string,string> groups namespace => directory path
 	 */
@@ -40,7 +40,7 @@ final class Acf_Groups_Loader implements Hookable {
 							wp_doing_ajax();
 
 		if ( $is_target_route ) {
-			Hookable_Base::add_action(
+			Actor_Base::add_action(
 				'acf/init',
 				function (): void {
 					$loader = new Loader();

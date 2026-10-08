@@ -25,7 +25,7 @@ class Layout_Tabs_Module extends Module_Base {
 		);
 	}
 
-	public static function get_hookable_classes(): array {
+	public static function get_actor_classes(): array {
 		return array(
 			Layouts_Bulk_Validation_Tab::class,
 			Layouts_Pre_Built_Tab::class,
@@ -33,7 +33,7 @@ class Layout_Tabs_Module extends Module_Base {
 		);
 	}
 
-	public static function get_hookable_factories( Instance_Container $container ): array {
+	public static function get_actor_factories( Instance_Container $container ): array {
 		$factory = $container->resolve( Layout_Tabs_Factory::class );
 
 		return array( Fs_Only_Tab::class => fn() => $factory->fs_only_tab() );

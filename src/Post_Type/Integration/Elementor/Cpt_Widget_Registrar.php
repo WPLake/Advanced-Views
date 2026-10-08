@@ -9,9 +9,9 @@ defined( 'ABSPATH' ) || exit;
 use Elementor\Elements_Manager;
 use Elementor\Widget_Base;
 use Elementor\Widgets_Manager;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Integration_Category;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
@@ -21,7 +21,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
  * Editor/preview script enqueueing lives in a separate actor (Layout_Elementor_Assets/Selection_Elementor_Assets),
  * since asset paths/localized var names are the one piece of config that genuinely differs per CPT.
  */
-final class Cpt_Widget_Registrar extends Hookable_Base implements Hookable {
+final class Cpt_Widget_Registrar extends Actor_Base implements Actor {
 	private Cpt_Item_Picker $item_picker;
 	private Cpt_Renderer $renderer;
 

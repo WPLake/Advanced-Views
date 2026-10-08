@@ -4,11 +4,11 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Core\Logger;
 
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 
 defined( 'ABSPATH' ) || exit;
 
-class Loggable_Actor extends Hookable_Base {
+class Loggable_Actor extends Actor_Base {
 	protected Logger $logger;
 
 	public function __construct( Logger $logger ) {

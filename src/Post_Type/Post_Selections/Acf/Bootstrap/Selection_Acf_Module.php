@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations\Post_Se
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations\Tax_Field_Settings_Integration;
 
 class Selection_Acf_Module extends Module_Base {
-	public static function get_hookable_classes(): array {
+	public static function get_actor_classes(): array {
 		return array(
 			Post_Selection_Settings_Integration::class,
 			// metaField is a part of the Meta Filter, so we use the selection CPT here.
@@ -24,7 +24,7 @@ class Selection_Acf_Module extends Module_Base {
 		);
 	}
 
-	public static function get_hookable_factories( Instance_Container $container ): array {
+	public static function get_actor_factories( Instance_Container $container ): array {
 		$factory = $container->resolve( Selection_Acf_Factory::class );
 
 		return array(

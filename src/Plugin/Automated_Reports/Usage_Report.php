@@ -7,8 +7,8 @@ namespace Org\Wplake\Advanced_Views\Plugin\Automated_Reports;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
@@ -26,7 +26,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
  * Can be disabled in the plugin settings.
  * FYI: built-in WordPress growth counter was removed https://meta.trac.wordpress.org/ticket/6511
  */
-class Usage_Report extends Report_Base implements Hookable {
+class Usage_Report extends Report_Base implements Actor {
 	const DELAY_MIN_HR       = 12;
 	const DELAY_MAX_HRS      = 48;
 	const USAGE_ENDPOINT_URL = 'https://wplake.org/wp-json/wplake/v1/plugin_usage';

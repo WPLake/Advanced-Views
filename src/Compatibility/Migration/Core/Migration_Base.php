@@ -7,10 +7,10 @@ namespace Org\Wplake\Advanced_Views\Compatibility\Migration\Core;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 
-abstract class Migration_Base extends Hookable_Base implements Migration {
+abstract class Migration_Base extends Actor_Base implements Migration {
 	protected Logger $logger;
 
 	public function __construct( Logger $logger ) {

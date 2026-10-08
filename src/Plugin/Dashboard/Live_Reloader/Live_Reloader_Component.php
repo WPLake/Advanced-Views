@@ -6,17 +6,17 @@ namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use WP_Post;
 
 defined( 'ABSPATH' ) || exit;
 
-class Live_Reloader_Component extends Hookable_Base implements Hookable {
+class Live_Reloader_Component extends Actor_Base implements Actor {
 	const QUERY_ARG = 'avf_live-reload';
 
 	private bool $is_active;

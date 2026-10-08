@@ -11,9 +11,9 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 use Org\Wplake\Advanced_Views\Assets\ACE_Mods;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
@@ -31,7 +31,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 /**
  * @phpstan-type FieldsList array<int,array<string,mixed>>
  */
-abstract class Cpt_Interactive_Fields extends Hookable_Base implements Hookable {
+abstract class Cpt_Interactive_Fields extends Actor_Base implements Actor {
 	const REST_REFRESH_ROUTE = '';
 
 	protected Public_Cpt $public_cpt;

@@ -25,8 +25,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Bar;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Pages;
@@ -84,7 +84,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	}
 
 	/**
-	 * @return Hookable[]
+	 * @return Actor[]
 	 */
 	protected function primary(): array {
 		$layout_cpt    = $this->resolve( Layouts_Cpt::class );
@@ -198,7 +198,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	}
 
 	/**
-	 * @return Hookable[]
+	 * @return Actor[]
 	 */
 	protected function integration( Route_Detector $route_detector ): array {
 		$this->acf_dependency             = $this->resolve( Acf_Dependency::class );
@@ -209,7 +209,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	}
 
 	/**
-	 * @return Hookable[]
+	 * @return Actor[]
 	 */
 	protected function others(): array {
 		$layout_cpt    = $this->resolve( Layouts_Cpt::class );
@@ -282,7 +282,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	}
 
 	/**
-	 * @return Hookable[]
+	 * @return Actor[]
 	 */
 	protected function environment(): array {
 		$this->plugin_environment = new Plugin_Environment(
