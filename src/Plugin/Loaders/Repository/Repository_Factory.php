@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders\Repository;
 
 defined( 'ABSPATH' ) || exit;
 
-use;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Instance_Provider;
 use Org\Wplake\Advanced_Views\Vendors\DI\Container;

@@ -28,7 +28,6 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 		'autoescape'       => 'html',
 	);
 
-	// @phpstan-ignore-next-line
 	private ?FilesystemLoader $filesystem_loader;
 	// @phpstan-ignore-next-line
 	private ?Environment $environment;
