@@ -6,14 +6,14 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Bootstrap;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Core\Container\Facade\Factory_Facade;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Gutenberg_Editor_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 
-class Layouts_Factory extends Factory_Facade {
+class Layouts_Factory extends Factory_Base {
 	public function editor_settings(): Cpt_Gutenberg_Editor_Settings {
 		$layouts_cpt = $this->resolve( Layouts_Cpt::class );
 		$cpt_name    = $layouts_cpt->cpt_name();

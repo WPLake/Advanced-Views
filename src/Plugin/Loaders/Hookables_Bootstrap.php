@@ -2,21 +2,21 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Provider;
+namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
-use Org\Wplake\Advanced_Views\Vendors\Psr\Container\ContainerInterface;
-use function Org\Wplake\Advanced_Views\Utils\resolve;
+use Org\Wplake\Advanced_Views\Plugin\Core\Module\Hookable_Provider;
 
-final class Hookables_Bootstrap {
-	protected ContainerInterface $container;
+final class ookables_Bootstrap {
+	protected Instance_Container $container;
 	protected Route_Detector $route_detector;
 
-	public function __construct( ContainerInterface $container, Route_Detector $route_detector ) {
+	public function __construct( Instance_Container $container, Route_Detector $route_detector ) {
 		$this->container      = $container;
 		$this->route_detector = $route_detector;
 	}
@@ -45,7 +45,7 @@ final class Hookables_Bootstrap {
 		foreach ( $providers as $provider ) {
 			foreach ( $provider::get_hookable_classes() as $class_name ) {
 				if ( $class_name::has_route_hooks( $this->route_detector ) ) {
-					$hookables[] = resolve( $this->container, $class_name );
+					$hookables[] = $this->container->resolve( $class_name );
 				}
 			}
 		}

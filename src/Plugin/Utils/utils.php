@@ -4,7 +4,6 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Utils;
 
-use Org\Wplake\Advanced_Views\Vendors\Psr\Container\ContainerInterface;
 use Throwable;
 
 defined( 'ABSPATH' ) || exit;
@@ -28,17 +27,6 @@ function flat_map( array $items, callable $mapper ): array {
 	}
 
 	return $chunks;
-}
-
-/**
- * @template Instance of object
- *
- * @param class-string<Instance> $class_name
- *
- * @return Instance
- */
-function resolve( ContainerInterface $container, string $class_name ): object {
-	return $container->get( $class_name );
 }
 
 // int-safe str_repeat - as native throws an error if $count is negative.

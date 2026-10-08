@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Plugin\Core\Container;
+namespace Org\Wplake\Advanced_Views\Plugin\Core\Module;
 
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
-use Org\Wplake\Advanced_Views\Vendors\Psr\Container\ContainerInterface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 
-interface Service_Provider {
+interface Instance_Provider {
 	/**
 	 * Static, as the container is built from them before any instance exists.
 	 *
@@ -20,5 +20,5 @@ interface Service_Provider {
 	/**
 	 * @return array<class-string, Closure>
 	 */
-	public static function get_instance_factories( ContainerInterface $container ): array;
+	public static function get_instance_factories( Instance_Container $container ): array;
 }

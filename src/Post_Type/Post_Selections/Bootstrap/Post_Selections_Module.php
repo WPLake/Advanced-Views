@@ -6,7 +6,8 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Bootstrap;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Core\Module_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
+use Org\Wplake\Advanced_Views\Plugin\Core\Module\Module_Base;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Selection\Selection_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
@@ -19,8 +20,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Meta_Boxes
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Table\Post_Selections_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
-use Org\Wplake\Advanced_Views\Vendors\Psr\Container\ContainerInterface;
-use function Org\Wplake\Advanced_Views\Utils\resolve;
 
 class Post_Selections_Module extends Module_Base {
 	public static function get_type_definitions(): array {
@@ -42,8 +41,8 @@ class Post_Selections_Module extends Module_Base {
 		);
 	}
 
-	public static function get_hookable_factories( ContainerInterface $container ): array {
-		$factory = resolve( $container, Post_Selections_Factory::class );
+	public static function get_hookable_factories( Instance_Container $container ): array {
+		$factory = $container->resolve( Post_Selections_Factory::class );
 
 		// Generic (not specific to this CPT) hookables, created directly as the container can't host them per module.
 		return array(
