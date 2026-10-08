@@ -10,4 +10,8 @@ class blade_engine_domain extends php_engine_domain {
 		parent::class,
 		...parent::WHITELIST_DOMAINS,
 	];
+	const WHITELIST_NAMESPACES = [
+		...parent::WHITELIST_NAMESPACES,
+		'Org\Wplake\Advanced_Views\Optional_Vendors\Jenssegers\Blade',
+	];
 }

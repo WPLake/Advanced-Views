@@ -11,4 +11,7 @@ class post_type_domain extends Domain_Policy {
 		field_provider_domain::class,
 		template_engine_domain::class,
 	];
+	const WHITELIST_NAMESPACES = [
+		'Psr\Container',
+	];
 }

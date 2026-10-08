@@ -9,4 +9,8 @@ class twig_engine_domain extends template_engine_domain {
 		parent::class,
 		...parent::WHITELIST_DOMAINS,
 	];
+	const WHITELIST_NAMESPACES = [
+		...parent::WHITELIST_NAMESPACES,
+		'Org\Wplake\Advanced_Views\Vendors\Twig',
+	];
 }

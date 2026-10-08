@@ -19,4 +19,9 @@ class layouts_cpt_domain extends post_type_domain {
 		post_selections_cpt_domain::class,
 		php_engine_domain::class,
 	];
+	const WHITELIST_NAMESPACES = [
+		...parent::WHITELIST_NAMESPACES,
+		'Elementor',
+		'Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups',
+	];
 }

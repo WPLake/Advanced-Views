@@ -12,6 +12,9 @@ class cpt_integration_domain extends Domain_Policy {
 	const WHITELIST_DOMAINS = [
 		post_type_domain::class,
 	];
+	const WHITELIST_NAMESPACES = [
+		'Elementor',
+	];
 	const DECOUPLED_CHILDREN = [
 		cpt_integration_namespace::class,
 		elementor_integration_namespace::class,
