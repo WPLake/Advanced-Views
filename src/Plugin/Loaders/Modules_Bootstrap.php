@@ -8,13 +8,13 @@ defined( 'ABSPATH' ) || exit;
 
 use Closure;
 use Org\Wplake\Advanced_Views\Plugin\Core\Bootstrap\Module_Bootstrap;
-use Org\Wplake\Advanced_Views\Plugin\Core\Container\Container_Facade;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Facade;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Hookable;
 use Org\Wplake\Advanced_Views\Plugin\Core\Hookable\Route_Detector;
 use Org\Wplake\Advanced_Views\Vendors\DI\Container;
 use function Org\Wplake\Advanced_Views\Utils\flat_map;
 
-final class Modules_Bootstrap extends Container_Facade {
+final class Modules_Bootstrap extends Factory_Facade {
 	protected Route_Detector $route_detector;
 
 	public function __construct( Container $container, Route_Detector $route_detector ) {

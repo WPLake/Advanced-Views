@@ -4,14 +4,14 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Core\Container;
 
-use Org\Wplake\Advanced_Views\Vendors\DI\Container;
+use Org\Wplake\Advanced_Views\Vendors\Psr\Container\ContainerInterface;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Container_Facade {
-	private Container $container;
+abstract class Factory_Facade {
+	private ContainerInterface $container;
 
-	public function __construct( Container $container ) {
+	public function __construct( ContainerInterface $container ) {
 		$this->container = $container;
 	}
 
@@ -24,9 +24,5 @@ abstract class Container_Facade {
 	 */
 	protected function resolve( string $class_name ): object {
 		return $this->container->get( $class_name );
-	}
-
-	protected function wire( string $id, object $instance ): void {
-		$this->container->set( $id, $instance );
 	}
 }

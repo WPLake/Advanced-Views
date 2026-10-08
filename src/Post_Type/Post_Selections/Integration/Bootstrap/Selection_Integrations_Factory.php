@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Bootst
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Plugin\Core\Container\Container_Facade;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Facade;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor\Cpt_Widget_Registrar;
@@ -19,7 +19,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Gutenberg\Se
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 
-class Selection_Integrations_Factory extends Container_Facade {
+class Selection_Integrations_Factory extends Factory_Facade {
 	protected ?Cpt_Item_Picker $item_picker = null;
 	protected ?Cpt_Renderer $renderer       = null;
 

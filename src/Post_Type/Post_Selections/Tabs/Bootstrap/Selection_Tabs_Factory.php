@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Bootstrap;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Plugin\Core\Container\Container_Facade;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Facade;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
@@ -25,7 +25,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Bul
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 
-class Selection_Tabs_Factory extends Container_Facade {
+class Selection_Tabs_Factory extends Factory_Facade {
 	public function fs_only_tab(): Fs_Only_Tab {
 		$cpt_table        = $this->resolve( Post_Selections_Table::class );
 		$settings_storage = $this->resolve( Selection_Settings_Storage::class );

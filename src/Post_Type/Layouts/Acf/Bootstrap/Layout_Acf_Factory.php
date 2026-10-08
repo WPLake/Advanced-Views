@@ -8,11 +8,11 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Bootstrap\Acf_Groups_Loader;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Mount_Point_Settings_Integration;
-use Org\Wplake\Advanced_Views\Plugin\Core\Container\Container_Facade;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Facade;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 
-class Layout_Acf_Factory extends Container_Facade {
+class Layout_Acf_Factory extends Factory_Facade {
 	public function groups_loader(): Acf_Groups_Loader {
 		$plugin = $this->resolve( Plugin::class );
 
