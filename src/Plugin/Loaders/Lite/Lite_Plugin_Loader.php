@@ -6,10 +6,6 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders\Lite;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
-use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tools_Settings_Integration;
 use Org\Wplake\Advanced_Views\Acf\Groups\Git_Repository;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -26,7 +22,6 @@ use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
-use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Bar;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Pages;
@@ -175,17 +170,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	/**
 	 * @return Actor[]
 	 */
-	protected function integration( Route_Detector $route_detector ): array {
-		$this->acf_dependency             = $this->resolve( Acf_Dependency::class );
-		$this->tools_settings_integration = $this->resolve( Tools_Settings_Integration::class );
-		$this->custom_acf_field_types     = $this->resolve( Custom_Acf_Field_Types::class );
-
-		return parent::integration( $route_detector );
-	}
-
-	/**
-	 * @return Actor[]
-	 */
 	protected function others(): array {
 		$layout_cpt    = $this->resolve( Layouts_Cpt::class );
 		$selection_cpt = $this->resolve( Selections_Cpt::class );
@@ -198,7 +182,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$this->demo_import,
 			$this->plugin_cpts
 		);
-		$this->acf_internal_features = $this->resolve( Acf_Internal_Features::class );
 
 		$this->tools = new Tools_Page(
 			$this->resolve( Tools_Settings::class ),

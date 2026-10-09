@@ -6,28 +6,28 @@ namespace Org\Wplake\Advanced_Views\Acf\Bootstrap;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
+use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
+use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
+use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tools_Settings_Integration;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Module_Base;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 
 class Acf_Module extends Module_Base {
-	public static function get_actor_factories( Instance_Container $container ): array {
+	public static function get_actor_classes(): array {
 		return array(
-			Acf_Groups_Loader::class => fn() => self::create_groups_loader( $container ),
+			Acf_Dependency::class,
+			Acf_Internal_Features::class,
+			Tools_Settings_Integration::class,
+			Custom_Acf_Field_Types::class,
 		);
 	}
 
-	protected static function create_groups_loader( Instance_Container $container ): Acf_Groups_Loader {
-		$plugin        = $container->resolve( Plugin::class );
-		$groups_path   = $plugin->get_plugin_path( 'src/Acf/Groups' );
-		$namespace_map = array( 'Org\Wplake\Advanced_Views\Acf\Groups' => $groups_path );
-		$cpt_names     = array(
-			$container->resolve( Layouts_Cpt::class )->cpt_name(),
-			$container->resolve( Selections_Cpt::class )->cpt_name(),
-		);
+	public static function get_actor_factories( Instance_Container $container ): array {
+		$factory = $container->resolve( Acf_Factory::class );
 
-		return new Acf_Groups_Loader( $namespace_map, $cpt_names );
+		return array(
+			Acf_Groups_Loader::class => fn() => $factory->groups_loader(),
+		);
 	}
 }

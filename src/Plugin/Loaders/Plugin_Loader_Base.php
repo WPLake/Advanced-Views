@@ -6,11 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
-use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
 use Org\Wplake\Advanced_Views\Acf\Bootstrap\Acf_Module;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tools_Settings_Integration;
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
@@ -79,15 +75,11 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 */
 	public array $file_systems = array();
 
-	public Acf_Dependency $acf_dependency;
-	public Tools_Settings_Integration $tools_settings_integration;
-	public Custom_Acf_Field_Types $custom_acf_field_types;
 	public Item_Settings $item_settings;
 	public Settings_Storage $settings;
 	public Creator $group_creator;
 	public Admin_Pages $dashboard;
 	public Demo_Importer $demo_import;
-	public Acf_Internal_Features $acf_internal_features;
 	public Usage_Report $usage_report;
 	public State_Report $state_report;
 	public Tools_Page $tools;
@@ -216,11 +208,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			$layouts_cpt,
 		);
 
-		return array(
-			$this->acf_dependency,
-			$this->tools_settings_integration,
-			$this->custom_acf_field_types,
-		);
+		return array();
 	}
 
 	/**
@@ -230,7 +218,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		return array(
 			$this->dashboard,
 			$this->demo_import,
-			$this->acf_internal_features,
 			// only after late dependencies were set.
 			$this->usage_report,
 			$this->state_report,
