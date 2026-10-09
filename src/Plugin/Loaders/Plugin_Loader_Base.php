@@ -7,10 +7,6 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Bootstrap\Acf_Module;
-use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
-use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
-use Org\Wplake\Advanced_Views\Bridge\Advanced_Views;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\Bootstrap\Version_Migrations_Module;
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
@@ -55,20 +51,19 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Bootstrap\Selection_
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Bootstrap\Post_Selections_Module;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Bootstrap\Selection_Integrations_Module;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Bootstrap\Selection_Tabs_Module;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Bootstrap\Template_Engine_Module;
+use Org\Wplake\Advanced_Views\Assets\Bootstrap\Assets_Module;
+use Org\Wplake\Advanced_Views\Bridge\Bootstrap\Bridge_Module;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 
 abstract class Plugin_Loader_Base extends Module_Loader {
 	public Plugin $plugin;
-	public Asset_Resolver $asset_resolver;
 	public Plugin_Environment $plugin_environment;
 	public Logger $logger;
 	public Layout_Settings_Storage $layouts_settings_storage;
 
 	public Data_Vendors $provider_cluster;
-	public Front_Assets $front_assets;
 	public Live_Reloader_Component $live_reloader_component;
 	/**
 	 * @var File_System[]
@@ -83,7 +78,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public Usage_Report $usage_report;
 	public State_Report $state_report;
 	public Tools_Page $tools;
-	public Admin_Assets $admin_assets;
 	public Settings_Page $settings_page;
 	public Live_Reloader $live_reloader;
 	public Admin_Bar $admin_bar;
@@ -136,7 +130,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 		$integration = $this->integration( $route_detector );
 		$others      = $this->others();
-		$this->bridge();
 		$environment = $this->environment();
 
 		return array_merge( $primary, $integration, $others, $environment );
@@ -175,7 +168,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			array(
 				$this->logger,
 				$this->plugin,
-				$this->front_assets,
 				$this->provider_cluster,
 				$this->live_reloader_component,
 				$this->upgrade_notice,
@@ -222,17 +214,11 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			$this->usage_report,
 			$this->state_report,
 			$this->tools,
-			$this->admin_assets,
 			$this->settings_page,
 			$this->live_reloader,
 			$this->admin_bar,
 			$this->point_mounter,
 		);
-	}
-
-	protected function bridge(): void {
-		Advanced_Views::$layout_renderer         = $this->resolve( Layout_Shortcode::class );
-		Advanced_Views::$post_selection_renderer = $this->resolve( Post_Selection_Shortcode::class );
 	}
 
 	/**
@@ -288,6 +274,8 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		return array(
 			Acf_Module::class,
 			Template_Engine_Module::class,
+			Assets_Module::class,
+			Bridge_Module::class,
 			// layouts.
 			Layouts_Module::class,
 			Layout_Acf_Module::class,

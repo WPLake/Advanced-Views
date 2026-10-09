@@ -10,11 +10,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Git_Repository;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Plugin_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Tools_Settings;
-use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
-use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
@@ -37,17 +33,12 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Db_Management;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Provider;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Interactive_Fields;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Post_Selection_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre_Built_Tab;
@@ -58,7 +49,6 @@ use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\CreatorIn
 
 final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	public Html_Printer $html;
-	public Post_Selection_Settings $post_selection_settings;
 	public Options_Storage $options;
 
 	public string $plugin_file;
@@ -93,31 +83,16 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->wire( Creator::class, $this->group_creator );
 		$this->wire( CreatorInterface::class, $this->group_creator );
 
-		$this->post_selection_settings = $this->group_creator->create( Post_Selection_Settings::class );
-		$this->wire( Post_Selection_Settings::class, $this->post_selection_settings );
-
 		$this->html            = $this->resolve( Html_Printer::class );
 
-		$post_selections_file_system            = new File_System(
-			$this->logger,
-			$selection_cpt->folder_name()
-		);
-		$this->post_selections_settings_storage = new Selection_Settings_Storage(
-			$this->logger,
-			$post_selections_file_system,
-			$this->resolve( Post_Selection_Fs_Fields::class ),
-			new Db_Management( $this->logger, $post_selections_file_system, $selection_cpt ),
-			$this->post_selection_settings
-		);
-		$this->wire( Selection_Settings_Storage::class, $this->post_selections_settings_storage );
+		$this->post_selections_settings_storage = $this->resolve( Selection_Settings_Storage::class );
+		$post_selections_file_system            = $this->post_selections_settings_storage->get_file_system();
 
 		$this->layouts_settings_storage = $this->resolve( Layout_Settings_Storage::class );
 		$layouts_file_system            = $this->layouts_settings_storage->get_file_system();
 
 		$this->plugin = new Plugin( $this->plugin_file, $this->options, $this->settings );
 		$this->wire( Plugin::class, $this->plugin );
-		$this->asset_resolver = new Asset_Resolver( $this->plugin_file, $this->plugin->get_version() );
-		$this->wire( Asset_Resolver::class, $this->asset_resolver );
 
 		$this->item_settings = $this->group_creator->create( Item_Settings::class );
 		$this->wire( Item_Settings::class, $this->item_settings );
@@ -126,13 +101,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->wire( Field_Provider_Cluster::class, $this->provider_cluster );
 
 		$this->live_reloader_component = $this->resolve( Live_Reloader_Component::class );
-		$this->front_assets            = new Front_Assets(
-			$this->asset_resolver,
-			$layouts_file_system,
-			$this->provider_cluster,
-			$this->live_reloader_component
-		);
-		$this->wire( Front_Assets::class, $this->front_assets );
 		$this->git_lab_api = new Git_Lab_Api(
 			$this->logger,
 			$this->options,
@@ -204,14 +172,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$this->group_creator->create( Git_Repository::class ),
 			$this->state_report,
 			$this->resolve( Engines_Storage::class )
-		);
-
-		$this->admin_assets = new Admin_Assets(
-			$this->asset_resolver,
-			array(
-				$this->resolve( Layout_Interactive_Fields::class ),
-				$this->resolve( Selection_Interactive_Fields::class ),
-			)
 		);
 
 		$this->live_reloader = $this->resolve( Live_Reloader::class );

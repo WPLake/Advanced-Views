@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Selection\Selection_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Gutenberg_Editor_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Post_Selections_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Git_Box;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Interactive_Fields;
@@ -19,12 +20,22 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Layout_Int
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Table\Post_Selections_Table;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
 
 class Post_Selections_Module extends Module_Base {
 	public static function get_type_definitions(): array {
 		return array(
 			Post_Query_Builder::class => Selection_Query_Builder::class,
+		);
+	}
+
+	public static function get_instance_factories( Instance_Container $container ): array {
+		return array(
+			Post_Selection_Settings::class     => fn() => $container->resolve( Post_Selections_Factory::class )
+				->selection_settings(),
+			Selection_Settings_Storage::class => fn() => $container->resolve( Post_Selections_Factory::class )
+				->settings_storage(),
 		);
 	}
 

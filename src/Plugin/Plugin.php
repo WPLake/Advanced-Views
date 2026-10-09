@@ -37,12 +37,14 @@ class Plugin extends Actor_Base implements Actor {
 	protected bool $is_pro_version = false;
 	private string $version;
 	private bool $is_switching_versions;
+	private string $main_file;
 	private string $plugin_path;
 
 	private Options_Storage $options;
 	private Cpt_Theme_Settings $settings;
 
 	public function __construct( string $main_file, Options_Storage $options, Cpt_Theme_Settings $settings ) {
+		$this->main_file             = $main_file;
 		$this->plugin_path           = plugin_dir_path( $main_file );
 		$this->version               = $this->detect_plugin_version_number( $main_file );
 		$this->options               = $options;
@@ -279,6 +281,10 @@ class Plugin extends Actor_Base implements Actor {
 
 	public function get_name(): string {
 		return __( 'Advanced Views Lite', 'acf-views' );
+	}
+
+	public function get_main_file(): string {
+		return $this->main_file;
 	}
 
 	public function get_slug(): string {
