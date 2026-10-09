@@ -6,10 +6,12 @@ namespace Org\Wplake\Advanced_Views\Acf\Bootstrap;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Acf\Groups\Git_Repository;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 
 class Acf_Factory extends Factory_Base {
 	public function groups_loader(): Acf_Groups_Loader {
@@ -22,5 +24,11 @@ class Acf_Factory extends Factory_Base {
 		);
 
 		return new Acf_Groups_Loader( $namespace_map, $cpt_names );
+	}
+
+	public function git_repository(): Git_Repository {
+		$group_creator = $this->resolve( Creator::class );
+
+		return $group_creator->create( Git_Repository::class );
 	}
 }

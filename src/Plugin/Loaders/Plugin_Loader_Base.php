@@ -11,8 +11,6 @@ use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\Bootstrap\Version_Migrations_Bootstrap;
 use Org\Wplake\Advanced_Views\Field_Provider\Bootstrap\Field_Provider_Bootstrap;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
-use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
@@ -21,7 +19,6 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\Bootstrap\Dashboard_Bootstrap;
 use Org\Wplake\Advanced_Views\Plugin\Loaders\Repository\Repository_Factory;
 use Org\Wplake\Advanced_Views\Plugin\Module_Loader;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Profiler;
@@ -58,9 +55,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 	public Settings_Storage $settings;
 	public Creator $group_creator;
-	public Usage_Report $usage_report;
-	public State_Report $state_report;
-	public Settings_Page $settings_page;
 	public Upgrade_Notice $upgrade_notice;
 	public Cache_Flusher $cache_flusher;
 	public Point_Mounter $point_mounter;
@@ -133,9 +127,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	protected function others(): array {
 		return array(
 			// only after late dependencies were set.
-			$this->usage_report,
-			$this->state_report,
-			$this->settings_page,
 			$this->point_mounter,
 		);
 	}

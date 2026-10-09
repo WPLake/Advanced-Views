@@ -6,18 +6,13 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders\Lite;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Git_Repository;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Plugin_Settings;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
-use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
-use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Loaders\Plugin_Loader_Base;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
@@ -28,7 +23,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Sto
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\CreatorInterface;
 
@@ -101,19 +95,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$layout_cpt    = $this->resolve( Layouts_Cpt::class );
 		$selection_cpt = $this->resolve( Selections_Cpt::class );
 
-		$this->state_report  = $this->resolve( State_Report::class );
-		$this->usage_report  = $this->resolve( Usage_Report::class );
-		$this->settings_page = new Settings_Page(
-			$this->logger,
-			$this->resolve( Plugin_Settings::class ),
-			$this->settings,
-			$this->layouts_settings_storage,
-			$this->post_selections_settings_storage,
-			$this->group_creator->create( Git_Repository::class ),
-			$this->state_report,
-			$this->resolve( Engines_Storage::class )
-		);
-
 		$this->point_mounter = new Point_Mounter(
 			array(
 				new Point_Provider( $this->layouts_settings_storage, $layout_cpt ),
@@ -123,5 +104,4 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 
 		return parent::others();
 	}
-
 }
