@@ -71,7 +71,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			Selection_Integrations_Bootstrap::class,
 			// shared post_type items (mounter, git).
 			Post_Type_Bootstrap::class,
-			// migrations
+			// migrations.
 			Version_Migrations_Bootstrap::class,
 		);
 	}
