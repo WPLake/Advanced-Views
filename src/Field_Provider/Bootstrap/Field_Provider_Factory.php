@@ -48,8 +48,4 @@ class Field_Provider_Factory extends Factory_Base {
 	protected function cluster_class(): string {
 		return Data_Vendors::class;
 	}
-
-	public function integrations_loader(): Integrations_Loader {
-		return new Integrations_Loader( $this->resolve( Field_Provider_Cluster::class ) );
-	}
 }

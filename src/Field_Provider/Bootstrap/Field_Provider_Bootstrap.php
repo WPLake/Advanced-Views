@@ -24,12 +24,4 @@ class Field_Provider_Bootstrap extends Bootstrap_Base {
 			Field_Provider_Cluster::class,
 		);
 	}
-
-	public static function get_actor_factories( Instance_Container $container ): array {
-		$factory = $container->resolve( Field_Provider_Factory::class );
-
-		return array(
-			Integrations_Loader::class => fn() => $factory->integrations_loader(),
-		);
-	}
 }

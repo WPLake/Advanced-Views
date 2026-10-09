@@ -72,6 +72,8 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 			array( $this, 'load_available_vendors' ),
 			self::PLUGINS_LOADED_HOOK_PRIORITY
 		);
+
+		$this->make_integration_instances( $route_detector );
 	}
 
 	/**
@@ -374,28 +376,6 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		);
 	}
 
-	public function make_integration_instances( Route_Detector $route_detector ): void {
-		// 1. must on or later 'plugins_load', when meta plugins are loaded
-		// 2. must be on or later 'after_setup_theme', when FS only Layouts and Post Selections are available
-		File_System_Loader::instance()
-							->add_loaded_callback(
-								function () use ( $route_detector ): void {
-									$layouts_settings_storage = $this->container->resolve( Layout_Settings_Storage::class );
-
-									foreach ( $this->provider_cluster as $vendor ) {
-										$integration_instance = $vendor->make_integration_instance( $this->container );
-
-										// integration instance is optional (e.g. Woo and WP don't have).
-										if ( null === $integration_instance ) {
-											continue;
-										}
-
-										$this->load_integration_instance( $route_detector, $integration_instance, $layouts_settings_storage );
-									}
-								}
-							);
-	}
-
 	public function get_vendor_name_by_key( string $key ): string {
 		// for ACF and custom fields source isn't set.
 		if ( false !== strpos( $key, ':' ) ) {
@@ -667,5 +647,27 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		}
 
 		return $label_choices;
+	}
+
+	protected function make_integration_instances( Route_Detector $route_detector ): void {
+		// 1. must on or later 'plugins_load', when meta plugins are loaded
+		// 2. must be on or later 'after_setup_theme', when FS only Layouts and Post Selections are available
+		File_System_Loader::instance()
+							->add_loaded_callback(
+								function () use ( $route_detector ): void {
+									$layouts_settings_storage = $this->container->resolve( Layout_Settings_Storage::class );
+
+									foreach ( $this->provider_cluster as $vendor ) {
+										$integration_instance = $vendor->make_integration_instance( $this->container );
+
+										// integration instance is optional (e.g. Woo and WP don't have).
+										if ( null === $integration_instance ) {
+											continue;
+										}
+
+										$this->load_integration_instance( $route_detector, $integration_instance, $layouts_settings_storage );
+									}
+								}
+							);
 	}
 }
