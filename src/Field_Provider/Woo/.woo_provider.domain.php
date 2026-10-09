@@ -9,4 +9,9 @@ class woo_provider_domain extends field_provider_domain {
 		parent::class,
 		...parent::WHITELIST_DOMAINS,
 	];
+	const WHITELIST_GLOBALS = [
+		...parent::WHITELIST_GLOBALS,
+		'WP_Comment',
+		'WP_User',
+	];
 }

@@ -24,4 +24,11 @@ class layouts_cpt_domain extends post_type_domain {
 		'Elementor',
 		'Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups',
 	];
+	const WHITELIST_GLOBALS = [
+		...parent::WHITELIST_GLOBALS,
+		'WP_Block',
+		'WP_Block_Template',
+		'WP_Comment',
+		'WP_Term',
+	];
 }

@@ -14,4 +14,12 @@ class post_type_domain extends Domain_Policy {
 	const WHITELIST_NAMESPACES = [
 		'Psr\Container',
 	];
+	const WHITELIST_GLOBALS = [
+		'WP_Post',
+		'WP_REST_Request',
+		'WP_Query',
+		'WP_Filesystem_Base',
+		'WP_List_Table',
+		'WP_Post_Type',
+	];
 }

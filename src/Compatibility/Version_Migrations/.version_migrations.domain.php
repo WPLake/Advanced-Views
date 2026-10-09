@@ -27,4 +27,9 @@ class version_migrations_domain extends migration_domain {
 		v2_namespace::class,
 		v3_namespace::class,
 	];
+	const WHITELIST_GLOBALS = [
+		...parent::WHITELIST_GLOBALS,
+		'WP_Post',
+		'WP_Query',
+	];
 }

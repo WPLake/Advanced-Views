@@ -11,4 +11,8 @@ class meta_query_domain extends post_query_domain {
 		...parent::WHITELIST_DOMAINS,
 		field_provider_domain::class,
 	];
+	const WHITELIST_GLOBALS = [
+		...parent::WHITELIST_GLOBALS,
+		'WP_Post',
+	];
 }

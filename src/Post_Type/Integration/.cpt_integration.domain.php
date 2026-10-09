@@ -15,6 +15,10 @@ class cpt_integration_domain extends Domain_Policy {
 	const WHITELIST_NAMESPACES = [
 		'Elementor',
 	];
+	const WHITELIST_GLOBALS = [
+		'WP_REST_Request',
+	];
+
 	const DECOUPLED_CHILDREN = [
 		cpt_integration_namespace::class,
 		elementor_integration_namespace::class,
