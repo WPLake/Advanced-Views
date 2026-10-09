@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Mount_Point_Settings_Integr
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Field_Settings_Integration;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Field_Settings_Provider_Setup;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Item_Settings_Integration;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations\Layout_Settings_Integration;
 
@@ -20,6 +21,7 @@ class Layout_Acf_Bootstrap extends Bootstrap_Base {
 			Layout_Settings_Integration::class,
 			Field_Settings_Integration::class,
 			Item_Settings_Integration::class,
+			Field_Settings_Provider_Setup::class,
 		);
 	}
 

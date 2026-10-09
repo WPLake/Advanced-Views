@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Selection\Selection_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Gutenberg_Editor_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Post_Selections_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Git_Box;
@@ -59,6 +60,8 @@ class Post_Selections_Bootstrap extends Bootstrap_Base {
 		return array(
 			Cpt_Gutenberg_Editor_Settings::class => fn() => $factory->editor_settings(),
 			Cpt_Assets_Reducer::class            => fn() => $factory->assets_reducer(),
+			File_System::class                   => fn() => $container->resolve( Selection_Settings_Storage::class )
+				->get_file_system(),
 		);
 	}
 }

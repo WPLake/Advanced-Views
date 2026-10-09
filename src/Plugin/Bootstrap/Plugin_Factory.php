@@ -20,6 +20,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
 
 class Plugin_Factory extends Factory_Base {
+	public function logger(): Logger {
+		return new Logger( Plugin::uploads_folder(), $this->resolve( Settings_Storage::class ) );
+	}
+
 	public function usage_report(): Usage_Report {
 		return new Usage_Report(
 			$this->resolve( Logger::class ),

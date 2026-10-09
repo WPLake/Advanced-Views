@@ -7,27 +7,21 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Bootstrap\Acf_Bootstrap;
-use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\Bootstrap\Version_Migrations_Bootstrap;
 use Org\Wplake\Advanced_Views\Field_Provider\Bootstrap\Field_Provider_Bootstrap;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
-use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Bootstrap\Dashboard_Bootstrap;
 use Org\Wplake\Advanced_Views\Plugin\Loaders\Repository\Repository_Factory;
 use Org\Wplake\Advanced_Views\Plugin\Module_Loader;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Profiler;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Bootstrap\Layout_Acf_Bootstrap;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Bootstrap\Layouts_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Bootstrap\Layout_Integrations_Bootstrap;
@@ -41,21 +35,11 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Bootstrap\Template_Engine
 use Org\Wplake\Advanced_Views\Assets\Bootstrap\Assets_Bootstrap;
 use Org\Wplake\Advanced_Views\Plugin\Bootstrap\Plugin_Bootstrap;
 use Org\Wplake\Advanced_Views\Bridge\Bootstrap\Bridge_Bootstrap;
-use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 
 abstract class Plugin_Loader_Base extends Module_Loader {
 	public Plugin $plugin;
-	public Logger $logger;
 	public Layout_Settings_Storage $layouts_settings_storage;
 
-	/**
-	 * @var File_System[]
-	 */
-	public array $file_systems = array();
-
-	public Settings_Storage $settings;
-	public Creator $group_creator;
-	public Upgrade_Notice $upgrade_notice;
 	public Cache_Flusher $cache_flusher;
 	public Point_Mounter $point_mounter;
 	public Git_Lab_Api $git_lab_api;
@@ -100,17 +84,9 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 * @return Actor[]
 	 */
 	protected function primary(): array {
-		// it's a hack, but there is no other way to pass data (constructor is always called automatically).
-		Field_Settings::set_provider_cluster( $this->resolve( Field_Provider_Cluster::class ) );
-
-		return array_merge(
-			array(
-				$this->logger,
-				$this->plugin,
-				$this->upgrade_notice,
-				File_System_Loader::instance(),
-			),
-			$this->file_systems
+		return array(
+			$this->plugin,
+			File_System_Loader::instance(),
 		);
 	}
 
@@ -129,13 +105,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			// only after late dependencies were set.
 			$this->point_mounter,
 		);
-	}
-
-	/**
-	 * @param File_System[] $file_systems
-	 */
-	protected function add_file_systems( array $file_systems ): void {
-		$this->file_systems = array_merge( $this->file_systems, $file_systems );
 	}
 
 	/**

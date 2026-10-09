@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Gutenberg_Editor_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
@@ -55,6 +56,8 @@ class Layouts_Bootstrap extends Bootstrap_Base {
 		return array(
 			Cpt_Gutenberg_Editor_Settings::class => fn() => $factory->editor_settings(),
 			Cpt_Assets_Reducer::class            => fn() => $factory->assets_reducer(),
+			File_System::class                   => fn() => $container->resolve( Layout_Settings_Storage::class )
+				->get_file_system(),
 		);
 	}
 }
