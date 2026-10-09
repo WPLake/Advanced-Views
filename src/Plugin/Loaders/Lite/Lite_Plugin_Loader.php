@@ -8,7 +8,6 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Git_Repository;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Plugin_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
@@ -45,7 +44,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Provider;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Interactive_Fields;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Interactive_Fields;
@@ -60,7 +58,6 @@ use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\CreatorIn
 
 final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	public Html_Printer $html;
-	public Layout_Settings $layout_settings;
 	public Post_Selection_Settings $post_selection_settings;
 	public Options_Storage $options;
 
@@ -96,9 +93,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->wire( Creator::class, $this->group_creator );
 		$this->wire( CreatorInterface::class, $this->group_creator );
 
-		$this->layout_settings         = $this->group_creator->create( Layout_Settings::class );
 		$this->post_selection_settings = $this->group_creator->create( Post_Selection_Settings::class );
-		$this->wire( Layout_Settings::class, $this->layout_settings );
 		$this->wire( Post_Selection_Settings::class, $this->post_selection_settings );
 
 		$this->html            = $this->resolve( Html_Printer::class );
@@ -116,15 +111,8 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		);
 		$this->wire( Selection_Settings_Storage::class, $this->post_selections_settings_storage );
 
-		$layouts_file_system            = new File_System( $this->logger, $layout_cpt->folder_name() );
-		$this->layouts_settings_storage = new Layout_Settings_Storage(
-			$this->logger,
-			$layouts_file_system,
-			$this->resolve( Layout_Fs_Fields::class ),
-			new Db_Management( $this->logger, $layouts_file_system, $layout_cpt ),
-			$this->layout_settings
-		);
-		$this->wire( Layout_Settings_Storage::class, $this->layouts_settings_storage );
+		$this->layouts_settings_storage = $this->resolve( Layout_Settings_Storage::class );
+		$layouts_file_system            = $this->layouts_settings_storage->get_file_system();
 
 		$this->plugin = new Plugin( $this->plugin_file, $this->options, $this->settings );
 		$this->wire( Plugin::class, $this->plugin );
