@@ -7,8 +7,11 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Bootstrap\Acf_Bootstrap;
+use Org\Wplake\Advanced_Views\Assets\Bootstrap\Assets_Bootstrap;
+use Org\Wplake\Advanced_Views\Bridge\Bootstrap\Bridge_Bootstrap;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\Bootstrap\Version_Migrations_Bootstrap;
 use Org\Wplake\Advanced_Views\Field_Provider\Bootstrap\Field_Provider_Bootstrap;
+use Org\Wplake\Advanced_Views\Plugin\Bootstrap\Plugin_Bootstrap;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
@@ -32,9 +35,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_S
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Bootstrap\Selection_Integrations_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Bootstrap\Selection_Tabs_Bootstrap;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Bootstrap\Template_Engine_Bootstrap;
-use Org\Wplake\Advanced_Views\Assets\Bootstrap\Assets_Bootstrap;
-use Org\Wplake\Advanced_Views\Plugin\Bootstrap\Plugin_Bootstrap;
-use Org\Wplake\Advanced_Views\Bridge\Bootstrap\Bridge_Bootstrap;
 
 abstract class Plugin_Loader_Base extends Module_Loader {
 	public Plugin $plugin;
@@ -149,7 +149,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			Selection_Acf_Bootstrap::class,
 			Selection_Tabs_Bootstrap::class,
 			Selection_Integrations_Bootstrap::class,
-			// fixme other domain bootstraps.
+			// migrations
 			Version_Migrations_Bootstrap::class,
 		);
 	}
