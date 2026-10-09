@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Gutenberg_Editor_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Fs_Fields;
@@ -41,6 +42,11 @@ class Layouts_Factory extends Factory_Base {
 	public function layout_settings(): Layout_Settings {
 		return $this->resolve( Creator::class )
 					->create( Layout_Settings::class );
+	}
+
+	public function item_settings(): Item_Settings {
+		return $this->resolve( Creator::class )
+					->create( Item_Settings::class );
 	}
 
 	public function repeater_field_settings(): Repeater_Field_Settings {

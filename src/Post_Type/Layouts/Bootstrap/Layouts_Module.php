@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Module_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Gutenberg_Editor_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Git_Box;
@@ -26,6 +27,8 @@ class Layouts_Module extends Module_Base {
 		return array(
 			Layout_Settings::class         => fn() => $container->resolve( Layouts_Factory::class )
 				->layout_settings(),
+			Item_Settings::class           => fn() => $container->resolve( Layouts_Factory::class )
+				->item_settings(),
 			Repeater_Field_Settings::class => fn() => $container->resolve( Layouts_Factory::class )
 				->repeater_field_settings(),
 			Layout_Settings_Storage::class => fn() => $container->resolve( Layouts_Factory::class )

@@ -7,7 +7,6 @@ namespace Org\Wplake\Advanced_Views\Plugin\Loaders\Lite;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Git_Repository;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Plugin_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Tools_Settings;
@@ -91,9 +90,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 
 		$this->plugin = new Plugin( $this->plugin_file, $this->options, $this->settings );
 		$this->wire( Plugin::class, $this->plugin );
-
-		$this->item_settings = $this->group_creator->create( Item_Settings::class );
-		$this->wire( Item_Settings::class, $this->item_settings );
 
 		$this->live_reloader_component = $this->resolve( Live_Reloader_Component::class );
 		$this->git_lab_api = new Git_Lab_Api(

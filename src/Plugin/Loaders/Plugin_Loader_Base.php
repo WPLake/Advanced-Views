@@ -38,7 +38,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Bootstrap\Layout_Acf_Module;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Bootstrap\Layouts_Module;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Bootstrap\Layout_Integrations_Module;
@@ -66,7 +65,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 */
 	public array $file_systems = array();
 
-	public Item_Settings $item_settings;
 	public Settings_Storage $settings;
 	public Creator $group_creator;
 	public Admin_Pages $dashboard;
