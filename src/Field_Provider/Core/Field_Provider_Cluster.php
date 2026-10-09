@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settin
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
@@ -47,10 +48,20 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	 * @var array<string, array<string, Field_Meta>>
 	 */
 	private array $field_meta_cache;
+	private Instance_Container $container;
+	/**
+	 * @var class-string<Field_Provider>[]
+	 */
+	private array $provider_classes;
 
-	public function __construct( Logger $logger ) {
+	/**
+	 * @param class-string<Field_Provider>[] $provider_classes
+	 */
+	public function __construct( Logger $logger, Instance_Container $container, array $provider_classes ) {
 		parent::__construct( $logger );
 
+		$this->container        = $container;
+		$this->provider_classes = $provider_classes;
 		$this->provider_cluster = array();
 		$this->field_meta_cache = array();
 	}
@@ -264,7 +275,7 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 
 	// use $isForceLoading for tests only.
 	public function load_available_vendors( bool $is_force_loading = false ): void {
-		foreach ( $this->get_vendors() as $vendor ) {
+		foreach ( $this->resolve_providers() as $vendor ) {
 			if ( ! $vendor->is_available() &&
 				! $is_force_loading ) {
 				continue;
@@ -615,7 +626,12 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	/**
 	 * @return Field_Provider[]
 	 */
-	abstract protected function get_vendors(): array;
+	protected function resolve_providers(): array {
+		return array_map(
+			fn( string $provider_class ): Field_Provider => $this->container->resolve( $provider_class ),
+			$this->provider_classes
+		);
+	}
 
 	/**
 	 * Back compatibility: keys without the vendor prefix.

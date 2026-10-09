@@ -6,29 +6,13 @@ namespace Org\Wplake\Advanced_Views\Field_Provider;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Acf\Acf_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Meta_Box\Meta_Box_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Pods\Pods_Data_Vendor;
 use Org\Wplake\Advanced_Views\Field_Provider\Woo\Fields\Woo_Fields;
 use Org\Wplake\Advanced_Views\Field_Provider\Woo\Woo_Data_Vendor;
 use Org\Wplake\Advanced_Views\Field_Provider\Wp\Wp_Data_Vendor;
 
 class Data_Vendors extends Field_Provider_Cluster {
-	/**
-	 * @return Field_Provider[]
-	 */
-	protected function get_vendors(): array {
-		return array(
-			new Wp_Data_Vendor( $this->get_logger() ),
-			new Woo_Data_Vendor( $this->get_logger() ),
-			new Acf_Data_Vendor( $this->get_logger() ),
-			new Meta_Box_Data_Vendor( $this->get_logger() ),
-			new Pods_Data_Vendor( $this->get_logger() ),
-		);
-	}
-
 	protected function resolve_legacy_vendor_name( string $field_id ): string {
 		if ( 0 !== strpos( $field_id, '_' ) ) {
 			return Acf_Data_Vendor::NAME;
