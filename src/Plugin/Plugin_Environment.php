@@ -65,11 +65,15 @@ final class Plugin_Environment implements Actor {
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		return $route_detector->is_admin_route() &&
-			$route_detector->is_complete_cycle_request();
+		return true;
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {
+		$slug = $this->plugin->get_slug();
+
+		register_activation_hook( $slug, array( $this, 'prepare_environment' ) );
+		register_deactivation_hook( $slug, array( $this, 'clean_environment' ) );
+
 		$this->process_transient_jobs();
 	}
 

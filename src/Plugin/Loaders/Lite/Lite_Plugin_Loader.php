@@ -16,7 +16,6 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Loaders\Plugin_Loader_Base;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Plugin\Plugin_Environment;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
@@ -29,9 +28,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Sto
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\CreatorInterface;
 
@@ -105,16 +102,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$selection_cpt = $this->resolve( Selections_Cpt::class );
 
 		$this->state_report  = $this->resolve( State_Report::class );
-		$this->usage_report  = new Usage_Report(
-			$this->logger,
-			$this->plugin,
-			$this->settings,
-			$this->state_report,
-			array(
-				$this->layouts_settings_storage,
-				$this->post_selections_settings_storage,
-			)
-		);
+		$this->usage_report  = $this->resolve( Usage_Report::class );
 		$this->settings_page = new Settings_Page(
 			$this->logger,
 			$this->resolve( Plugin_Settings::class ),
@@ -136,21 +124,4 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		return parent::others();
 	}
 
-	/**
-	 * @return Actor[]
-	 */
-	protected function environment(): array {
-		$this->plugin_environment = new Plugin_Environment(
-			$this->resolve( Templates_Environment::class ),
-			$this->state_report,
-			$this->usage_report,
-			$this->settings,
-			$this->plugin,
-			$this->resolve( Post_Selections_Pre_Built_Tab::class ),
-			$this->file_systems,
-			array( $this->layouts_settings_storage, $this->post_selections_settings_storage )
-		);
-
-		return parent::environment();
-	}
 }

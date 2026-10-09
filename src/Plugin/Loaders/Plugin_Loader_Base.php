@@ -21,7 +21,6 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\Bootstrap\Dashboard_Bootstrap;
 use Org\Wplake\Advanced_Views\Plugin\Loaders\Repository\Repository_Factory;
 use Org\Wplake\Advanced_Views\Plugin\Module_Loader;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Plugin\Plugin_Environment;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
@@ -49,7 +48,6 @@ use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 
 abstract class Plugin_Loader_Base extends Module_Loader {
 	public Plugin $plugin;
-	public Plugin_Environment $plugin_environment;
 	public Logger $logger;
 	public Layout_Settings_Storage $layouts_settings_storage;
 
@@ -70,18 +68,11 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 	public Selection_Settings_Storage $post_selections_settings_storage;
 
-	/**
-	 * @var array<string, string> domain => relative_path
-	 */
-	protected array $lang_relative_paths = array();
-
 	public function __construct() {
 		$bootstrap_classes = static::get_bootstraps();
 		$container         = Repository_Factory::build( $bootstrap_classes );
 
 		parent::__construct( $container );
-
-		$this->lang_relative_paths['acf-views'] = 'lang';
 	}
 
 	public function load(): void {
@@ -98,7 +89,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 * @return Actor[]
 	 */
 	protected function load_modules( Route_Detector $route_detector ): array {
-		$this->translations( $route_detector );
 		$primary = $this->primary();
 
 		// layouts and selections instances are used by the next modules, so bootstraps go first.
@@ -108,31 +98,8 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 		$integration = $this->integration( $route_detector );
 		$others      = $this->others();
-		$environment = $this->environment();
 
-		return array_merge( $primary, $integration, $others, $environment );
-	}
-
-	protected function translations( Route_Detector $route_detector ): void {
-		// on the whole admin area, as menu items need translations.
-		if ( $route_detector->is_admin_route() ) {
-			add_action(
-				'after_setup_theme',
-				function (): void {
-					foreach ( $this->lang_relative_paths as $domain => $relative_path ) {
-						$path = $this->plugin->get_relative_plugins_path( $relative_path );
-
-						load_plugin_textdomain(
-							$domain,
-							false,
-							$path
-						);
-					}
-				},
-				// make sure it's before the acf groups loading.
-				8
-			);
-		}
+		return array_merge( $primary, $integration, $others );
 	}
 
 	/**
@@ -171,25 +138,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			$this->settings_page,
 			$this->point_mounter,
 		);
-	}
-
-	/**
-	 * @return Actor[]
-	 */
-	protected function environment(): array {
-		$slug = $this->plugin->get_slug();
-
-		register_activation_hook(
-			$slug,
-			array( $this->plugin_environment, 'prepare_environment' )
-		);
-
-		register_deactivation_hook(
-			$slug,
-			array( $this->plugin_environment, 'clean_environment' )
-		);
-
-		return array( $this->plugin_environment );
 	}
 
 	/**
