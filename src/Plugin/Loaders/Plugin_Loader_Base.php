@@ -17,13 +17,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Module_Base;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Bar;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Pages;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools_Page;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Bootstrap\Dashboard_Module;
 use Org\Wplake\Advanced_Views\Plugin\Loaders\Repository\Repository_Factory;
 use Org\Wplake\Advanced_Views\Plugin\Module_Loader;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
@@ -59,7 +53,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public Logger $logger;
 	public Layout_Settings_Storage $layouts_settings_storage;
 
-	public Live_Reloader_Component $live_reloader_component;
 	/**
 	 * @var File_System[]
 	 */
@@ -67,14 +60,9 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 	public Settings_Storage $settings;
 	public Creator $group_creator;
-	public Admin_Pages $dashboard;
-	public Demo_Importer $demo_import;
 	public Usage_Report $usage_report;
 	public State_Report $state_report;
-	public Tools_Page $tools;
 	public Settings_Page $settings_page;
-	public Live_Reloader $live_reloader;
-	public Admin_Bar $admin_bar;
 	public Upgrade_Notice $upgrade_notice;
 	public Cache_Flusher $cache_flusher;
 	public Point_Mounter $point_mounter;
@@ -82,10 +70,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 
 	public Selection_Settings_Storage $post_selections_settings_storage;
 
-	/**
-	 * @var Plugin_Cpt[]
-	 */
-	protected array $plugin_cpts = array();
 	/**
 	 * @var array<string, string> domain => relative_path
 	 */
@@ -162,7 +146,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			array(
 				$this->logger,
 				$this->plugin,
-				$this->live_reloader_component,
 				$this->upgrade_notice,
 				File_System_Loader::instance(),
 			),
@@ -182,15 +165,10 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 */
 	protected function others(): array {
 		return array(
-			$this->dashboard,
-			$this->demo_import,
 			// only after late dependencies were set.
 			$this->usage_report,
 			$this->state_report,
-			$this->tools,
 			$this->settings_page,
-			$this->live_reloader,
-			$this->admin_bar,
 			$this->point_mounter,
 		);
 	}
@@ -252,6 +230,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			Plugin_Module::class,
 			Assets_Module::class,
 			Bridge_Module::class,
+			Dashboard_Module::class,
 			// layouts.
 			Layouts_Module::class,
 			Layout_Acf_Module::class,

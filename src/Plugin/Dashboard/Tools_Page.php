@@ -14,7 +14,6 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Debug_Dump_Creator;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
@@ -23,8 +22,10 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use WP_Filesystem_Base;
 use WP_Post;
 use WP_Query;
@@ -51,8 +52,8 @@ final class Tools_Page extends Actor_Base implements Actor {
 	private bool $is_import_successful;
 	private string $import_result_message;
 	private ?WP_Filesystem_Base $wp_filesystem_base;
-	private Plugin_Cpt $layouts_cpt;
-	private Plugin_Cpt $post_selections_cpt;
+	private Layouts_Cpt $layouts_cpt;
+	private Selections_Cpt $post_selections_cpt;
 	private Settings_Storage $settings;
 	private Cache_Flusher $cache_flusher;
 
@@ -63,8 +64,8 @@ final class Tools_Page extends Actor_Base implements Actor {
 		Plugin $plugin,
 		Logger $logger,
 		Debug_Dump_Creator $debug_dump_creator,
-		Plugin_Cpt $layouts_cpt,
-		Plugin_Cpt $post_selections_cpt,
+		Layouts_Cpt $layouts_cpt,
+		Selections_Cpt $post_selections_cpt,
 		Settings_Storage $settings,
 		Cache_Flusher $cache_flusher
 	) {

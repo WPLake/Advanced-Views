@@ -9,20 +9,11 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Git_Repository;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Plugin_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Tools_Settings;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Bar;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Pages;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Debug_Dump_Creator;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools_Page;
 use Org\Wplake\Advanced_Views\Plugin\Loaders\Plugin_Loader_Base;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Environment;
@@ -45,7 +36,6 @@ use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\CreatorInterface;
 
 final class Lite_Plugin_Loader extends Plugin_Loader_Base {
-	public Html_Printer $html;
 	public Options_Storage $options;
 
 	public string $plugin_file;
@@ -63,11 +53,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$layout_cpt    = $this->resolve( Layouts_Cpt::class );
 		$selection_cpt = $this->resolve( Selections_Cpt::class );
 
-		$this->plugin_cpts = array(
-			$layout_cpt,
-			$selection_cpt,
-		);
-
 		$this->options  = $this->resolve( Options_Storage::class );
 		$this->settings = $this->resolve( Settings_Storage::class );
 		$this->wire( Cpt_Theme_Settings::class, $this->settings );
@@ -80,7 +65,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->wire( Creator::class, $this->group_creator );
 		$this->wire( CreatorInterface::class, $this->group_creator );
 
-		$this->html            = $this->resolve( Html_Printer::class );
 
 		$this->post_selections_settings_storage = $this->resolve( Selection_Settings_Storage::class );
 		$post_selections_file_system            = $this->post_selections_settings_storage->get_file_system();
@@ -91,7 +75,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->plugin = new Plugin( $this->plugin_file, $this->options, $this->settings );
 		$this->wire( Plugin::class, $this->plugin );
 
-		$this->live_reloader_component = $this->resolve( Live_Reloader_Component::class );
 		$this->git_lab_api = new Git_Lab_Api(
 			$this->logger,
 			$this->options,
@@ -121,28 +104,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$layout_cpt    = $this->resolve( Layouts_Cpt::class );
 		$selection_cpt = $this->resolve( Selections_Cpt::class );
 
-		$this->demo_import = $this->resolve( Demo_Importer::class );
-
-		$this->dashboard             = new Admin_Pages(
-			$this->plugin,
-			$this->html,
-			$this->demo_import,
-			$this->plugin_cpts
-		);
-
-		$this->tools = new Tools_Page(
-			$this->resolve( Tools_Settings::class ),
-			$this->post_selections_settings_storage,
-			$this->layouts_settings_storage,
-			$this->plugin,
-			$this->logger,
-			$this->resolve( Debug_Dump_Creator::class ),
-			$layout_cpt,
-			$selection_cpt,
-			$this->settings,
-			$this->cache_flusher
-		);
-
 		$this->state_report  = $this->resolve( State_Report::class );
 		$this->usage_report  = new Usage_Report(
 			$this->logger,
@@ -164,9 +125,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$this->state_report,
 			$this->resolve( Engines_Storage::class )
 		);
-
-		$this->live_reloader = $this->resolve( Live_Reloader::class );
-		$this->admin_bar     = $this->resolve( Admin_Bar::class );
 
 		$this->point_mounter = new Point_Mounter(
 			array(
