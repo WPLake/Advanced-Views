@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Plugin;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
+use Org\Wplake\Advanced_Views\Assets\Resolver\Plugin_Assets;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -20,7 +21,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
-class Plugin extends Actor_Base implements Actor {
+class Plugin extends Actor_Base implements Actor, Plugin_Assets {
 	const DOCS_URL          = 'https://docs.advanced-views.com/';
 	const PRO_VERSION_URL   = 'https://advanced-views.com/pro/';
 	const PRO_PRICING_URL   = 'https://advanced-views.com/pro/#pricing';
@@ -37,14 +38,14 @@ class Plugin extends Actor_Base implements Actor {
 	protected bool $is_pro_version = false;
 	private string $version;
 	private bool $is_switching_versions;
-	private string $main_file;
+	private string $plugin_url;
 	private string $plugin_path;
 
 	private Options_Storage $options;
 	private Cpt_Theme_Settings $settings;
 
 	public function __construct( string $main_file, Options_Storage $options, Cpt_Theme_Settings $settings ) {
-		$this->main_file             = $main_file;
+		$this->plugin_url            = plugin_dir_url( $main_file );
 		$this->plugin_path           = plugin_dir_path( $main_file );
 		$this->version               = $this->detect_plugin_version_number( $main_file );
 		$this->options               = $options;
@@ -283,10 +284,6 @@ class Plugin extends Actor_Base implements Actor {
 		return __( 'Advanced Views Lite', 'acf-views' );
 	}
 
-	public function get_main_file(): string {
-		return $this->main_file;
-	}
-
 	public function get_slug(): string {
 		return $this->slug;
 	}
@@ -309,8 +306,16 @@ class Plugin extends Actor_Base implements Actor {
 		return sprintf( '%s/acf-views', $uploads['basedir'] );
 	}
 
-	public function get_plugin_path( string $inner_path ): string {
+	public function get_root_url(): string {
+		return $this->plugin_url;
+	}
+
+	public function get_root_path( string $inner_path = '' ): string {
 		return $this->plugin_path . $inner_path;
+	}
+
+	public function get_assets_version(): string {
+		return $this->version;
 	}
 
 	public function get_relative_plugins_path( string $inner_path ): string {

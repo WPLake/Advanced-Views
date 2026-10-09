@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Lib_Pattern\Libraries;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
+use Org\Wplake\Advanced_Views\Assets\Resolver\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Assets\Active_Libraries;
 use Org\Wplake\Advanced_Views\Template\Lib_Pattern\Core\Assets\Assets_Enqueuer;

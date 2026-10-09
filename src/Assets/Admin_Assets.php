@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Assets;
 
+use Org\Wplake\Advanced_Views\Assets\Resolver\Asset_Resolver;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;

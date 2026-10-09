@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Bootst
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
+use Org\Wplake\Advanced_Views\Assets\Resolver\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;

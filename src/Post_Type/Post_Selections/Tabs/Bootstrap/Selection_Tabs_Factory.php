@@ -51,7 +51,7 @@ class Selection_Tabs_Factory extends Factory_Base {
 		$provider_cluster   = $this->resolve( Field_Provider_Cluster::class );
 
 		$folder_name    = $selections_cpt->folder_name();
-		$pre_built_path = $plugin->get_plugin_path( 'pre_built' );
+		$pre_built_path = $plugin->get_root_path( 'pre_built' );
 		$file_system    = new File_System( $logger, $folder_name, $pre_built_path );
 		$fs_fields      = new Post_Selection_Fs_Fields( $engines_storage );
 		$db_management  = new Db_Management( $logger, $file_system, $selections_cpt, true );

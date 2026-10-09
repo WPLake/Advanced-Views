@@ -16,7 +16,7 @@ class Layout_Acf_Factory extends Factory_Base {
 	public function groups_loader(): Acf_Groups_Loader {
 		$plugin = $this->resolve( Plugin::class );
 
-		$groups_path   = $plugin->get_plugin_path( 'src/Post_Type/Layouts/Acf/Groups' );
+		$groups_path   = $plugin->get_root_path( 'src/Post_Type/Layouts/Acf/Groups' );
 		$namespace_map = array( 'Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups' => $groups_path );
 
 		$cpt_name = $this->resolve( Layouts_Cpt::class )->cpt_name();

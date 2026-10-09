@@ -54,6 +54,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Bootstrap\Se
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Bootstrap\Selection_Tabs_Module;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Bootstrap\Template_Engine_Module;
 use Org\Wplake\Advanced_Views\Assets\Bootstrap\Assets_Module;
+use Org\Wplake\Advanced_Views\Plugin\Bootstrap\Plugin_Module;
 use Org\Wplake\Advanced_Views\Bridge\Bootstrap\Bridge_Module;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 
@@ -274,6 +275,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		return array(
 			Acf_Module::class,
 			Template_Engine_Module::class,
+			Plugin_Module::class,
 			Assets_Module::class,
 			Bridge_Module::class,
 			// layouts.
