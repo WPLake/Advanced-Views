@@ -31,7 +31,7 @@ final class PHP_Template_Engine implements Template_Engine {
 		return __( 'PHP', 'acf-views' );
 	}
 
-	public function create_renderer(): Template_Renderer {
+	public function create_renderer( string $render_folder ): Template_Renderer {
 		return new PHP_Renderer( $this->logger, $this->settings );
 	}
 

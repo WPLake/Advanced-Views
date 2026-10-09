@@ -15,12 +15,10 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_R
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Template_Engine;
 
 final class Blade_Template_Engine implements Template_Engine {
-	private string $uploads_folder;
 	private Logger $logger;
 	private Settings_Storage $settings;
 
-	public function __construct( string $uploads_folder, Logger $logger, Settings_Storage $settings ) {
-		$this->uploads_folder = $uploads_folder;
+	public function __construct( Logger $logger, Settings_Storage $settings ) {
 		$this->logger         = $logger;
 		$this->settings       = $settings;
 	}
@@ -33,9 +31,9 @@ final class Blade_Template_Engine implements Template_Engine {
 		return __( 'Blade (requires PHP >= 8.2.0)', 'acf-views' );
 	}
 
-	public function create_renderer(): Template_Renderer {
+	public function create_renderer( string $render_folder ): Template_Renderer {
 		return new Blade_Renderer(
-			$this->uploads_folder,
+			$render_folder,
 			$this->logger,
 			$this->settings,
 			WP_Filesystem_Factory::get_wp_filesystem()

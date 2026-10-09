@@ -17,12 +17,10 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Template_Engine;
 class Twig_Template_Engine implements Template_Engine {
 	const NAME = 'twig';
 
-	protected string $uploads_folder;
 	protected Logger $logger;
 	protected Settings_Storage $settings;
 
-	public function __construct( string $uploads_folder, Logger $logger, Settings_Storage $settings ) {
-		$this->uploads_folder = $uploads_folder;
+	public function __construct( Logger $logger, Settings_Storage $settings ) {
 		$this->logger         = $logger;
 		$this->settings       = $settings;
 	}
@@ -35,9 +33,9 @@ class Twig_Template_Engine implements Template_Engine {
 		return __( 'Twig', 'acf-views' );
 	}
 
-	public function create_renderer(): Template_Renderer {
+	public function create_renderer( string $render_folder ): Template_Renderer {
 		return new Twig_Renderer(
-			$this->uploads_folder,
+			$render_folder,
 			$this->logger,
 			$this->settings,
 			WP_Filesystem_Factory::get_wp_filesystem()

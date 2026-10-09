@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Blade\Blade_Template_Engine;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Template_Engine;
@@ -24,22 +23,10 @@ final class Template_Engine_Factory extends Factory_Base {
 			$this->engine_classes()
 		);
 
-		return new Engines_Storage( $engines, $this->resolve( Twig_Template_Engine::class ) );
-	}
-
-	public function twig_engine(): Twig_Template_Engine {
-		return new Twig_Template_Engine(
-			Plugin::uploads_folder(),
-			$this->resolve( Logger::class ),
-			$this->resolve( Settings_Storage::class )
-		);
-	}
-
-	public function blade_engine(): Blade_Template_Engine {
-		return new Blade_Template_Engine(
-			Plugin::uploads_folder(),
-			$this->resolve( Logger::class ),
-			$this->resolve( Settings_Storage::class )
+		return new Engines_Storage(
+			$engines,
+			$this->resolve( Twig_Template_Engine::class ),
+			Plugin::uploads_folder()
 		);
 	}
 

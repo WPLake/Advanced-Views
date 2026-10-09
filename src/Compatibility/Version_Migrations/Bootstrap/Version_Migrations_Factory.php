@@ -27,7 +27,7 @@ use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_9
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 
 final class Version_Migrations_Factory extends Factory_Base {
-	public function register_migrations(): Version_Migrator {
+	public function version_migrator(): Version_Migrator {
 		$v1_migrations = $this->v1_migrations();
 		$v2_migrations = $this->v2_migrations();
 		$v3_migrations = $this->v3_migrations();

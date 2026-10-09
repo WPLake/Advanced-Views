@@ -23,6 +23,6 @@ final class Version_Migrations_Module extends Module_Base {
 		 * Migrations depend on the instances registered in the container by later modules,
 		 * so they are registered lazily, when the migrator is created.
 		 */
-		return array( Version_Migrator::class => fn() => $factory->register_migrations() );
+		return array( Version_Migrator::class => fn() => $factory->version_migrator() );
 	}
 }
