@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) || exit;
 use DateTime;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Base;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
@@ -30,7 +29,6 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\User_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Pods\Fields\Pods_Pick_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Pods\Fields\Pods_Upload_Field;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
@@ -39,6 +37,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Pods_Migrate_Packages;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 
 class Pods_Data_Vendor extends Field_Provider_Base {
 	const NAME = 'pods';
@@ -404,27 +404,17 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 		return function_exists( 'pods' );
 	}
 
-	public function make_integration_instance(
-		Item_Settings $item_settings,
-		Layout_Settings_Storage $layouts_settings_storage,
-		Field_Provider_Cluster $provider_cluster,
-		Layout_Save_Actions $layouts_cpt_save_actions,
-		Layout_Factory $layout_factory,
-		Repeater_Field_Settings $repeater_field_settings,
-		Layout_Shortcode $layout_shortcode,
-		Settings_Storage $settings,
-		Plugin_Cpt $plugin_cpt
-	): ?Field_Provider_Integration {
+	public function make_integration_instance( Instance_Container $container ): ?Field_Provider_Integration {
 		return new Pods_Integration(
-			$item_settings,
-			$layouts_settings_storage,
-			$provider_cluster,
-			$layouts_cpt_save_actions,
-			$layout_factory,
+			$container->resolve( Item_Settings::class ),
+			$container->resolve( Layout_Settings_Storage::class ),
+			$container->resolve( Field_Provider_Cluster::class ),
+			$container->resolve( Layout_Save_Actions::class ),
+			$container->resolve( Layout_Factory::class ),
 			$this,
-			$layout_shortcode,
-			$settings,
-			$plugin_cpt
+			$container->resolve( Layout_Shortcode::class ),
+			$container->resolve( Settings_Storage::class ),
+			$container->resolve( Layouts_Cpt::class )
 		);
 	}
 

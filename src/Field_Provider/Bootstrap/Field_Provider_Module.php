@@ -29,7 +29,7 @@ class Field_Provider_Module extends Module_Base {
 		$factory = $container->resolve( Field_Provider_Factory::class );
 
 		return array(
-			Field_Provider_Integrations::class => fn() => $factory->integrations(),
+			Integrations_Loader::class => fn() => $factory->integrations_loader(),
 		);
 	}
 }

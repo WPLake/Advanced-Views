@@ -9,10 +9,8 @@ defined( 'ABSPATH' ) || exit;
 use DateTime;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Base;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Integration;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Link_Field;
@@ -58,13 +56,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\User\User_Fields;
 use Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\User\User_First_Name_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\User\User_Last_Name_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\User\User_Website_Field;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 
 class Wp_Data_Vendor extends Field_Provider_Base {
 	// for back compatibility only.
@@ -237,17 +230,7 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 		return true;
 	}
 
-	public function make_integration_instance(
-		Item_Settings $item_settings,
-		Layout_Settings_Storage $layouts_settings_storage,
-		Field_Provider_Cluster $provider_cluster,
-		Layout_Save_Actions $layouts_cpt_save_actions,
-		Layout_Factory $layout_factory,
-		Repeater_Field_Settings $repeater_field_settings,
-		Layout_Shortcode $layout_shortcode,
-		Settings_Storage $settings,
-		Plugin_Cpt $plugin_cpt
-	): ?Field_Provider_Integration {
+	public function make_integration_instance( Instance_Container $container ): ?Field_Provider_Integration {
 		return null;
 	}
 

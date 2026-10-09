@@ -10,21 +10,15 @@ use DateTime;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -380,44 +374,16 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		);
 	}
 
-	public function make_integration_instances(
-		Route_Detector $route_detector,
-		Item_Settings $item_settings,
-		Layout_Settings_Storage $layouts_settings_storage,
-		Layout_Save_Actions $layouts_cpt_save_actions,
-		Layout_Factory $layout_factory,
-		Repeater_Field_Settings $repeater_field_settings,
-		Layout_Shortcode $layout_shortcode,
-		Settings_Storage $settings,
-		Plugin_Cpt $plugin_cpt
-	): void {
+	public function make_integration_instances( Route_Detector $route_detector ): void {
 		// 1. must on or later 'plugins_load', when meta plugins are loaded
 		// 2. must be on or later 'after_setup_theme', when FS only Layouts and Post Selections are available
 		File_System_Loader::instance()
 							->add_loaded_callback(
-								function () use (
-									$route_detector,
-									$item_settings,
-									$layouts_settings_storage,
-									$layouts_cpt_save_actions,
-									$layout_factory,
-									$repeater_field_settings,
-									$layout_shortcode,
-									$settings,
-									$plugin_cpt
-								): void {
+								function () use ( $route_detector ): void {
+									$layouts_settings_storage = $this->container->resolve( Layout_Settings_Storage::class );
+
 									foreach ( $this->provider_cluster as $vendor ) {
-										$integration_instance = $vendor->make_integration_instance(
-											$item_settings,
-											$layouts_settings_storage,
-											$this,
-											$layouts_cpt_save_actions,
-											$layout_factory,
-											$repeater_field_settings,
-											$layout_shortcode,
-											$settings,
-											$plugin_cpt
-										);
+										$integration_instance = $vendor->make_integration_instance( $this->container );
 
 										// integration instance is optional (e.g. Woo and WP don't have).
 										if ( null === $integration_instance ) {

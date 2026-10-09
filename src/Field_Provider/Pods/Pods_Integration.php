@@ -6,13 +6,13 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Pods;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Settings_Vendor_Integration;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
@@ -32,7 +32,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		Pods_Data_Vendor $pods_data_vendor,
 		Layout_Shortcode $layout_shortcode,
 		Cpt_Theme_Settings $settings,
-		Plugin_Cpt $plugin_cpt
+		Layouts_Cpt $layouts_cpt
 	) {
 		parent::__construct(
 			$item_settings,
@@ -43,7 +43,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			$pods_data_vendor,
 			$layout_shortcode,
 			$settings,
-			$plugin_cpt
+			$layouts_cpt
 		);
 
 		$this->pods_data_vendor = $pods_data_vendor;
