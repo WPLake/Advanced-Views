@@ -34,14 +34,14 @@ class Field_Provider_Factory extends Factory_Base {
 		return new $cluster_class(
 			$this->resolve( Logger::class ),
 			$this->resolve( Instance_Container::class ),
-			$this->provider_classes()
+			self::provider_classes()
 		);
 	}
 
 	/**
 	 * @return class-string<Field_Provider>[]
 	 */
-	protected function provider_classes(): array {
+	public static function provider_classes(): array {
 		return array(
 			Wp_Data_Vendor::class,
 			Woo_Data_Vendor::class,
