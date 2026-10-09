@@ -58,14 +58,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Post_Select
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre_Built_Tab;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Blade\Blade_Template_Engine;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory_Storage;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration_Storage;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\PHP\PHP_Template_Engine;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Twig\Twig_Template_Engine;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\CreatorInterface;
 
@@ -99,7 +93,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->settings = $this->resolve( Settings_Storage::class );
 		$this->wire( Cpt_Theme_Settings::class, $this->settings );
 
-		$uploads_folder = self::uploads_folder();
+		$uploads_folder = Plugin::uploads_folder();
 		$this->logger   = new Logger( $uploads_folder, $this->settings );
 		$this->wire( Logger::class, $this->logger );
 
@@ -113,19 +107,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->wire( Post_Selection_Settings::class, $this->post_selection_settings );
 
 		$this->html            = $this->resolve( Html_Printer::class );
-		$twig_engine           = new Twig_Template_Engine( $uploads_folder, $this->logger, $this->settings );
-		$this->engines_storage = new Engines_Storage(
-			array(
-				$twig_engine,
-				new Blade_Template_Engine( $uploads_folder, $this->logger, $this->settings ),
-				$this->resolve( PHP_Template_Engine::class ),
-			),
-			$twig_engine
-		);
-		$this->wire( Engines_Storage::class, $this->engines_storage );
-		$this->wire( Token_Factory_Storage::class, $this->engines_storage );
-		$this->wire( Template_Renderer_Storage::class, $this->engines_storage );
-		$this->wire( Template_Integration_Storage::class, $this->engines_storage );
 
 		$post_selections_file_system            = new File_System(
 			$this->logger,
@@ -154,12 +135,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 		$this->wire( Plugin::class, $this->plugin );
 		$this->asset_resolver = new Asset_Resolver( $this->plugin_file, $this->plugin->get_version() );
 		$this->wire( Asset_Resolver::class, $this->asset_resolver );
-		$this->templates_environment = new Templates_Environment(
-			$uploads_folder,
-			$this->logger,
-			$this->plugin,
-		);
-		$this->wire( Templates_Environment::class, $this->templates_environment );
 
 		$this->item_settings = $this->group_creator->create( Item_Settings::class );
 		$this->wire( Item_Settings::class, $this->item_settings );
@@ -257,7 +232,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 			$this->post_selections_settings_storage,
 			$this->group_creator->create( Git_Repository::class ),
 			$this->state_report,
-			$this->engines_storage
+			$this->resolve( Engines_Storage::class )
 		);
 
 		$this->admin_assets = new Admin_Assets(
@@ -286,7 +261,7 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 	 */
 	protected function environment(): array {
 		$this->plugin_environment = new Plugin_Environment(
-			$this->templates_environment,
+			$this->resolve( Templates_Environment::class ),
 			$this->state_report,
 			$this->usage_report,
 			$this->settings,

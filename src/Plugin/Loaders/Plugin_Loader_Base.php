@@ -61,8 +61,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_S
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Bootstrap\Selection_Integrations_Module;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Bootstrap\Selection_Tabs_Module;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Bootstrap\Template_Engine_Module;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 
 abstract class Plugin_Loader_Base extends Module_Loader {
@@ -72,7 +71,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public Logger $logger;
 	public Layout_Settings_Storage $layouts_settings_storage;
 
-	public Templates_Environment $templates_environment;
 	public Data_Vendors $provider_cluster;
 	public Front_Assets $front_assets;
 	public Live_Reloader_Component $live_reloader_component;
@@ -102,7 +100,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public Point_Mounter $point_mounter;
 	public Git_Lab_Api $git_lab_api;
 
-	public Engines_Storage $engines_storage;
 	public Selection_Settings_Storage $post_selections_settings_storage;
 
 	/**
@@ -186,7 +183,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			array(
 				$this->logger,
 				$this->plugin,
-				$this->templates_environment,
 				$this->front_assets,
 				$this->provider_cluster,
 				$this->live_reloader_component,
@@ -304,6 +300,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	protected static function get_bootstraps(): array {
 		return array(
 			Acf_Module::class,
+			Template_Engine_Module::class,
 			// layouts.
 			Layouts_Module::class,
 			Layout_Acf_Module::class,
@@ -317,11 +314,5 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 			// fixme other domain bootstraps.
 			Version_Migrations_Module::class,
 		);
-	}
-
-	protected static function uploads_folder(): string {
-		$uploads = wp_upload_dir();
-
-		return sprintf( '%s/acf-views', $uploads['basedir'] );
 	}
 }

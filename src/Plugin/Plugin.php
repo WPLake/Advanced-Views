@@ -297,6 +297,12 @@ class Plugin extends Actor_Base implements Actor {
 		return $this->is_pro_version;
 	}
 
+	public static function uploads_folder(): string {
+		$uploads = wp_upload_dir();
+
+		return sprintf( '%s/acf-views', $uploads['basedir'] );
+	}
+
 	public function get_plugin_path( string $inner_path ): string {
 		return $this->plugin_path . $inner_path;
 	}
