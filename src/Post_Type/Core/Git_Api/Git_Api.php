@@ -6,23 +6,27 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api;
 
 defined( 'ABSPATH' ) || exit;
 
+use LogicException;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 
 abstract class Git_Api extends Loggable_Actor implements Git_Api_Interface {
 	protected Options_Storage $options;
-	protected Public_Cpt $layout_public_cpt;
-	protected Public_Cpt $post_selection_public_cpt;
+	/**
+	 * @var Public_Cpt[]
+	 */
+	protected array $public_cpts;
 
-	public function __construct( Logger $logger, Options_Storage $options, Public_Cpt $layout_public_cpt, Public_Cpt $post_selection_public_cpt ) {
+	/**
+	 * @param Public_Cpt[] $public_cpts
+	 */
+	public function __construct( Logger $logger, Options_Storage $options, array $public_cpts ) {
 		parent::__construct( $logger );
 
-		$this->options                   = $options;
-		$this->layout_public_cpt         = $layout_public_cpt;
-		$this->post_selection_public_cpt = $post_selection_public_cpt;
+		$this->options     = $options;
+		$this->public_cpts = $public_cpts;
 	}
 
 	abstract protected function get_transient_prefix(): string;
@@ -91,9 +95,13 @@ abstract class Git_Api extends Loggable_Actor implements Git_Api_Interface {
 	}
 
 	protected function get_main_folder( string $cpt_name ): string {
-		return Hard_Layout_Cpt::cpt_name() === $cpt_name ?
-			$this->layout_public_cpt->folder_name() :
-			$this->post_selection_public_cpt->folder_name();
+		foreach ( $this->public_cpts as $public_cpt ) {
+			if ( $public_cpt->cpt_name() === $cpt_name ) {
+				return $public_cpt->folder_name();
+			}
+		}
+
+		throw new LogicException( sprintf( 'Unknown CPT "%s"', $cpt_name ) );
 	}
 
 	protected function get_transient_name( string $main_folder, string $repository_id ): string {

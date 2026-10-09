@@ -18,11 +18,11 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin_Environment;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Translations;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 
 class Plugin_Bootstrap extends Bootstrap_Base {
 	public static function get_type_definitions(): array {
-		// Plugin instance itself is wired by the loader (Lite or Pro edition).
-		return array(
+				return array(
 			Plugin_Assets::class      => Plugin::class,
 			Cpt_Theme_Settings::class => Settings_Storage::class,
 		);
@@ -32,13 +32,16 @@ class Plugin_Bootstrap extends Bootstrap_Base {
 		$factory = $container->resolve( Plugin_Factory::class );
 
 		return array(
-			Logger::class       => fn() => $factory->logger(),
-			Usage_Report::class => fn() => $factory->usage_report(),
+			Logger::class        => fn() => $factory->logger(),
+			Plugin::class        => fn() => $factory->plugin(),
+			Cache_Flusher::class => fn() => $factory->cache_flusher(),
+			Usage_Report::class  => fn() => $factory->usage_report(),
 		);
 	}
 
 	public static function get_actor_classes(): array {
 		return array(
+			Plugin::class,
 			State_Report::class,
 			Usage_Report::class,
 			Settings_Page::class,

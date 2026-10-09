@@ -12,8 +12,11 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Environment;
+use Org\Wplake\Advanced_Views\Plugin\Plugin_File;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Translations;
+use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre_Built_Tab;
@@ -22,6 +25,18 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environmen
 class Plugin_Factory extends Factory_Base {
 	public function logger(): Logger {
 		return new Logger( Plugin::uploads_folder(), $this->resolve( Settings_Storage::class ) );
+	}
+
+	public function plugin(): Plugin {
+		return new Plugin(
+			$this->resolve( Plugin_File::class )->path(),
+			$this->resolve( Options_Storage::class ),
+			$this->resolve( Settings_Storage::class )
+		);
+	}
+
+	public function cache_flusher(): Cache_Flusher {
+		return new Cache_Flusher( $this->resolve( Logger::class ), $this->cache_cleaners() );
 	}
 
 	public function usage_report(): Usage_Report {
@@ -68,5 +83,22 @@ class Plugin_Factory extends Factory_Base {
 			$this->resolve( Layout_Settings_Storage::class ),
 			$this->resolve( Selection_Settings_Storage::class ),
 		);
+	}
+
+	/**
+	 * @return array<string, callable():boolean>
+	 */
+	protected function cache_cleaners(): array {
+		$cache_cleaners = array(
+			// Redis - upgrades may have had direct DB changes.
+			'wpdb' => 'wp_cache_flush',
+		);
+
+		// Opcache - upgrades may have had FS changes (e.g. theme template updates).
+		if ( function_exists( 'opcache_reset' ) ) {
+			$cache_cleaners['opcache'] = 'opcache_reset';
+		}
+
+		return $cache_cleaners;
 	}
 }
