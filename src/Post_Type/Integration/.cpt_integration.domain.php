@@ -3,6 +3,8 @@
 namespace Org\Wplake\Advanced_Views\Post_Type\Integration;
 
 use Architecture\Policy\Domain_Policy;
+use Org\Wplake\Advanced_Views\Assets\assets_domain;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\dashboard_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Core\post_type_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\cpt_integration_namespace;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor\elementor_integration_namespace;
@@ -11,6 +13,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Gutenberg\gutenberg_integrat
 class cpt_integration_domain extends Domain_Policy {
 	const WHITELIST_DOMAINS = [
 		post_type_domain::class,
+		// todo break cycle-dependency (assets <-> cpt_integration)
+		assets_domain::class,
+		// todo break cycle-dependency (dashboard <-> cpt_integration)
+		dashboard_domain::class,
 	];
 	const WHITELIST_NAMESPACES = [
 		'Elementor',
