@@ -10,9 +10,9 @@ use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Resolver\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
-use Org\Wplake\Advanced_Views\Plugin\Core\Module\Module_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 
-class Assets_Module extends Module_Base {
+class Assets_Bootstrap extends Bootstrap_Base {
 	public static function get_instance_factories( Instance_Container $container ): array {
 		return array(
 			Front_Assets::class   => fn() => $container->resolve( Assets_Factory::class )

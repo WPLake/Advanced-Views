@@ -8,9 +8,9 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
-use Org\Wplake\Advanced_Views\Plugin\Core\Module\Module_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 
-class Field_Provider_Module extends Module_Base {
+class Field_Provider_Bootstrap extends Bootstrap_Base {
 	public static function get_instance_factories( Instance_Container $container ): array {
 		$factory = $container->resolve( Field_Provider_Factory::class );
 

@@ -8,10 +8,10 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
-use Org\Wplake\Advanced_Views\Plugin\Core\Module\Module_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 
-final class Version_Migrations_Module extends Module_Base {
+final class Version_Migrations_Bootstrap extends Bootstrap_Base {
 	public static function get_type_definitions(): array {
 		return array( Cpt_Settings_Migrator::class => Version_Migrator::class );
 	}

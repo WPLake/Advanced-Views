@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Bootstrap;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
-use Org\Wplake\Advanced_Views\Plugin\Core\Module\Module_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Bar;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Pages;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader;
@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Compo
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools_Page;
 
-class Dashboard_Module extends Module_Base {
+class Dashboard_Bootstrap extends Bootstrap_Base {
 	public static function get_instance_factories( Instance_Container $container ): array {
 		return array(
 			Admin_Pages::class => fn() => $container->resolve( Dashboard_Factory::class )

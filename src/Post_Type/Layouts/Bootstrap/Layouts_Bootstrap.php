@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Bootstrap;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
-use Org\Wplake\Advanced_Views\Plugin\Core\Module\Module_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Gutenberg_Editor_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
@@ -22,7 +22,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table\Layouts_Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 
-class Layouts_Module extends Module_Base {
+class Layouts_Bootstrap extends Bootstrap_Base {
 	public static function get_instance_factories( Instance_Container $container ): array {
 		return array(
 			Layout_Settings::class         => fn() => $container->resolve( Layouts_Factory::class )

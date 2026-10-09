@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Bootstrap;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
-use Org\Wplake\Advanced_Views\Plugin\Core\Module\Module_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Selection\Selection_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
@@ -23,7 +23,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Table\Post_Selection
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
 
-class Post_Selections_Module extends Module_Base {
+class Post_Selections_Bootstrap extends Bootstrap_Base {
 	public static function get_type_definitions(): array {
 		return array(
 			Post_Query_Builder::class => Selection_Query_Builder::class,

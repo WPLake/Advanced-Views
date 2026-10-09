@@ -11,9 +11,9 @@ use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tools_Settings_Integration;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
-use Org\Wplake\Advanced_Views\Plugin\Core\Module\Module_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 
-class Acf_Module extends Module_Base {
+class Acf_Bootstrap extends Bootstrap_Base {
 	public static function get_actor_classes(): array {
 		return array(
 			Acf_Dependency::class,

@@ -8,7 +8,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Module_Base implements Instance_Provider, Actor_Provider {
+abstract class Bootstrap_Base implements Instance_Provider, Actor_Provider {
 	public static function get_type_definitions(): array {
 		return array();
 	}

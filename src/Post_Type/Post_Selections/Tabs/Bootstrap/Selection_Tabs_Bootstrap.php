@@ -7,13 +7,13 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Bootstrap;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
-use Org\Wplake\Advanced_Views\Plugin\Core\Module\Module_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Fs_Only_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Bulk_Validation_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Selection_Git_Tabs;
 
-class Selection_Tabs_Module extends Module_Base {
+class Selection_Tabs_Bootstrap extends Bootstrap_Base {
 	public static function get_instance_factories( Instance_Container $container ): array {
 		return array(
 			Post_Selections_Pre_Built_Tab::class       => fn() =>

@@ -7,13 +7,13 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Bootst
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
-use Org\Wplake\Advanced_Views\Plugin\Core\Module\Module_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor\Cpt_Widget_Registrar;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Elementor\Selection_Elementor_Assets;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Gutenberg\Selection_Gutenberg_Block;
 
-class Selection_Integrations_Module extends Module_Base {
+class Selection_Integrations_Bootstrap extends Bootstrap_Base {
 	public static function get_actor_factories( Instance_Container $container ): array {
 		$factory = $container->resolve( Selection_Integrations_Factory::class );
 
