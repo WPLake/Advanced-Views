@@ -9,7 +9,8 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Bootstrap\Acf_Module;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\Bootstrap\Version_Migrations_Module;
-use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
+use Org\Wplake\Advanced_Views\Field_Provider\Bootstrap\Field_Provider_Module;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
@@ -38,14 +39,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Bootstrap\Layout_Acf_Module;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Bootstrap\Layouts_Module;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Bootstrap\Layout_Integrations_Module;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Bootstrap\Layout_Tabs_Module;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Bootstrap\Selection_Acf_Module;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Bootstrap\Post_Selections_Module;
@@ -64,7 +60,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	public Logger $logger;
 	public Layout_Settings_Storage $layouts_settings_storage;
 
-	public Data_Vendors $provider_cluster;
 	public Live_Reloader_Component $live_reloader_component;
 	/**
 	 * @var File_System[]
@@ -163,13 +158,12 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 */
 	protected function primary(): array {
 		// it's a hack, but there is no other way to pass data (constructor is always called automatically).
-		Field_Settings::set_provider_cluster( $this->provider_cluster );
+		Field_Settings::set_provider_cluster( $this->resolve( Field_Provider_Cluster::class ) );
 
 		return array_merge(
 			array(
 				$this->logger,
 				$this->plugin,
-				$this->provider_cluster,
 				$this->live_reloader_component,
 				$this->upgrade_notice,
 				File_System_Loader::instance(),
@@ -182,25 +176,6 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 	 * @return Actor[]
 	 */
 	protected function integration( Route_Detector $route_detector ): array {
-		$save_actions   = $this->resolve( Layout_Save_Actions::class );
-		$layout_factory = $this->resolve( Layout_Factory::class );
-		$repeater_field = $this->group_creator->create( Repeater_Field_Settings::class );
-		$shortcode      = $this->resolve( Layout_Shortcode::class );
-		$layouts_cpt    = $this->resolve( Layouts_Cpt::class );
-
-		// only now, when layouts() are called.
-		$this->provider_cluster->make_integration_instances(
-			$route_detector,
-			$this->item_settings,
-			$this->layouts_settings_storage,
-			$save_actions,
-			$layout_factory,
-			$repeater_field,
-			$shortcode,
-			$this->settings,
-			$layouts_cpt,
-		);
-
 		return array();
 	}
 
@@ -275,6 +250,7 @@ abstract class Plugin_Loader_Base extends Module_Loader {
 		return array(
 			Acf_Module::class,
 			Template_Engine_Module::class,
+			Field_Provider_Module::class,
 			Plugin_Module::class,
 			Assets_Module::class,
 			Bridge_Module::class,

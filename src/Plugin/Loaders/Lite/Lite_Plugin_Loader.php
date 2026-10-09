@@ -12,8 +12,6 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Plugin_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Tools_Settings;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Upgrade_Notice;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Usage_Report;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
@@ -96,9 +94,6 @@ final class Lite_Plugin_Loader extends Plugin_Loader_Base {
 
 		$this->item_settings = $this->group_creator->create( Item_Settings::class );
 		$this->wire( Item_Settings::class, $this->item_settings );
-
-		$this->provider_cluster = $this->resolve( Data_Vendors::class );
-		$this->wire( Field_Provider_Cluster::class, $this->provider_cluster );
 
 		$this->live_reloader_component = $this->resolve( Live_Reloader_Component::class );
 		$this->git_lab_api = new Git_Lab_Api(
