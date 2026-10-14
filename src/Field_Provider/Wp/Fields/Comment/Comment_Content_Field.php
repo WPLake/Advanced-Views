@@ -4,11 +4,11 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Comment;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 
@@ -23,8 +23,8 @@ class Comment_Content_Field extends Markup_Field_Base {
 		$var = $token_generator->variable( $field_id )
 								->add_item_path( 'value' );
 
+		// escaped by default, not raw - as commentId may point on a pending comment with unverified content.
 		$token_generator->to_echo( $var )
-						->set_is_raw( true )
 						->print();
 	}
 

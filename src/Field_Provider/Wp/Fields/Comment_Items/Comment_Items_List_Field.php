@@ -6,12 +6,12 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Comment_Items;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 use WP_Comment;
@@ -80,10 +80,11 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 								->variable( 'comment_item' )
 								->add_item_path( 'content' );
 
+		// escaped by default, even we query approved comments -
+		// reason is that HTML expectations in comments is rather an exception, than a rule.
 		$markup_field_data->get_token_factory()
 							->to_echo( $var )
-							->set_is_raw( true )
-		->print();
+							->print();
 
 		$token_factory->format()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
