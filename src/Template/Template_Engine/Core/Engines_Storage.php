@@ -46,7 +46,7 @@ class Engines_Storage implements
 		$this->token_factories = array();
 		$this->integrations    = array();
 		$this->fallback_engine = $fallback_engine;
-		$this->render_folder  = $render_folder;
+		$this->render_folder   = $render_folder;
 
 		foreach ( $engines as $engine ) {
 			$this->engines[ $engine->get_name() ] = $engine;

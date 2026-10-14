@@ -45,7 +45,7 @@ class Selection_Tabs_Factory extends Factory_Base {
 	public function pre_built_tab(): Post_Selections_Pre_Built_Tab {
 		$logger             = $this->resolve( Logger::class );
 		$selections_cpt     = $this->resolve( Selections_Cpt::class );
-		$plugin_meta             = $this->resolve( Plugin_Meta::class );
+		$plugin_meta        = $this->resolve( Plugin_Meta::class );
 		$engines_storage    = $this->resolve( Engines_Storage::class );
 		$selection_settings = $this->resolve( Post_Selection_Settings::class );
 		$provider_cluster   = $this->resolve( Field_Provider_Cluster::class );

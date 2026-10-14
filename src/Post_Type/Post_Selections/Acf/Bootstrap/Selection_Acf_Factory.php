@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 
 class Selection_Acf_Factory extends Factory_Base {
 	public function groups_loader(): Acf_Groups_Loader {
-		$plugin_meta        = $this->resolve( Plugin_Meta::class );
+		$plugin_meta   = $this->resolve( Plugin_Meta::class );
 		$groups_path   = $plugin_meta->get_root_path( 'src/Post_Type/Post_Selections/Acf/Groups' );
 		$namespace_map = array( 'Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups' => $groups_path );
 		$cpt_name      = $this->resolve( Selections_Cpt::class )->cpt_name();

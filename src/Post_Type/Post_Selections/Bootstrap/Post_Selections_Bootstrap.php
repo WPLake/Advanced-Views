@@ -33,7 +33,7 @@ class Post_Selections_Bootstrap extends Bootstrap_Base {
 
 	public static function get_instance_factories( Instance_Container $container ): array {
 		return array(
-			Post_Selection_Settings::class     => fn() => $container->resolve( Post_Selections_Factory::class )
+			Post_Selection_Settings::class    => fn() => $container->resolve( Post_Selections_Factory::class )
 				->selection_settings(),
 			Selection_Settings_Storage::class => fn() => $container->resolve( Post_Selections_Factory::class )
 				->settings_storage(),

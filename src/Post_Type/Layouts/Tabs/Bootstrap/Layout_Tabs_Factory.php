@@ -44,7 +44,7 @@ class Layout_Tabs_Factory extends Factory_Base {
 	public function pre_built_tab(): Layouts_Pre_Built_Tab {
 		$logger           = $this->resolve( Logger::class );
 		$layout_cpt       = $this->resolve( Layouts_Cpt::class );
-		$plugin_meta           = $this->resolve( Plugin_Meta::class );
+		$plugin_meta      = $this->resolve( Plugin_Meta::class );
 		$engines_storage  = $this->resolve( Engines_Storage::class );
 		$layout_settings  = $this->resolve( Layout_Settings::class );
 		$provider_cluster = $this->resolve( Field_Provider_Cluster::class );

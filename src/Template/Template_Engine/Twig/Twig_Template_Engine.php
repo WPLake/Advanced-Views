@@ -21,8 +21,8 @@ class Twig_Template_Engine implements Template_Engine {
 	protected Settings_Storage $settings;
 
 	public function __construct( Logger $logger, Settings_Storage $settings ) {
-		$this->logger         = $logger;
-		$this->settings       = $settings;
+		$this->logger   = $logger;
+		$this->settings = $settings;
 	}
 
 	public function get_name(): string {

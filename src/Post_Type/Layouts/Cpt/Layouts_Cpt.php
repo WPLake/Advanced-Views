@@ -14,6 +14,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 defined( 'ABSPATH' ) || exit;
 
 class Layouts_Cpt extends Cpt {
+	// phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod.Found -- narrows parameter types.
 	public function __construct( Plugin_Layouts_Cpt $plugin_cpt, Layout_Settings_Storage $settings_storage ) {
 		parent::__construct( $plugin_cpt, $settings_storage );
 	}

@@ -20,8 +20,8 @@ class Meta_Field_Settings extends Group implements Meta_Field_Rule {
 	const FIELD_DYNAMIC_POST_GROUP = 'dynamic_post_group';
 	const FIELD_DYNAMIC_POST_FIELD = 'dynamic_post_field';
 
-	const VALUE_TYPE_LITERAL            = 'literal';
-	const VALUE_TYPE_DYNAMIC            = 'dynamic';
+	const VALUE_TYPE_LITERAL = 'literal';
+	const VALUE_TYPE_DYNAMIC = 'dynamic';
 
 	/**
 	 * @a-type select

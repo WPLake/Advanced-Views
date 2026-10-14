@@ -153,7 +153,7 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 
 	protected function init_twig(): Environment {
 		$this->filesystem_loader = new FilesystemLoader( $this->get_templates_folder() );
-		$this->environment = new Environment(
+		$this->environment       = new Environment(
 			$this->filesystem_loader,
 			self::ENVIRONMENT_ARGS
 		);
