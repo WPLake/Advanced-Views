@@ -38,7 +38,7 @@ final class Version_Migrator extends Actor_Base implements Actor, Cpt_Settings_M
 		Upgrade_Notice $upgrade_notice,
 		Cache_Flusher $cache_flusher
 	) {
-		$this->plugin_meta         = $plugin_meta;
+		$this->plugin_meta    = $plugin_meta;
 		$this->settings       = $settings;
 		$this->logger         = $logger;
 		$this->upgrade_notice = $upgrade_notice;

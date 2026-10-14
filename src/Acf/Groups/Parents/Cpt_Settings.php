@@ -12,13 +12,13 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\PHP\PHP_Template_Engine;
 defined( 'ABSPATH' ) || exit;
 
 abstract class Cpt_Settings extends Group implements Cpt_Theme_Settings {
-	const FIELD_TEMPLATE_ENGINE    = 'template_engine';
-	const FIELD_WEB_COMPONENT      = 'web_component';
-	const FIELD_UNIQUE_ID          = 'uniqueId';
-	const FIELD_TITLE              = 'title';
-	const FIELD_CLASSES_GENERATION = 'classes_generation';
-	const FIELD_SASS_CODE          = 'sass_code';
-	const FIELD_TS_CODE            = 'ts_code';
+	const FIELD_TEMPLATE_ENGINE                = 'template_engine';
+	const FIELD_WEB_COMPONENT                  = 'web_component';
+	const FIELD_UNIQUE_ID                      = 'uniqueId';
+	const FIELD_TITLE                          = 'title';
+	const FIELD_CLASSES_GENERATION             = 'classes_generation';
+	const FIELD_SASS_CODE                      = 'sass_code';
+	const FIELD_TS_CODE                        = 'ts_code';
 	const WEB_COMPONENT_CLASSIC                = 'classic';
 	const WEB_COMPONENT_SHADOW_DOM_DECLARATIVE = 'shadow_root_template';
 	const WEB_COMPONENT_SHADOW_DOM             = 'shadow_dom';

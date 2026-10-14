@@ -20,6 +20,7 @@ class Meta_Value_Resolver {
 	/**
 	 * @return mixed
 	 */
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- overridden in Pro.
 	public function resolve_meta_value( string $raw_value, Field_Meta $field_meta ) {
 		return trim( $raw_value );
 	}

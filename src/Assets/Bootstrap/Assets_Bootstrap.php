@@ -15,9 +15,9 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 class Assets_Bootstrap extends Bootstrap_Base {
 	public static function get_instance_factories( Instance_Container $container ): array {
 		return array(
-			Front_Assets::class   => fn() => $container->resolve( Assets_Factory::class )
+			Front_Assets::class => fn() => $container->resolve( Assets_Factory::class )
 				->front_assets(),
-			Admin_Assets::class   => fn() => $container->resolve( Assets_Factory::class )
+			Admin_Assets::class => fn() => $container->resolve( Assets_Factory::class )
 				->admin_assets(),
 		);
 	}

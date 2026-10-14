@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 
 class Acf_Factory extends Factory_Base {
 	public function groups_loader(): Acf_Groups_Loader {
-		$plugin_meta        = $this->resolve( Plugin_Meta::class );
+		$plugin_meta   = $this->resolve( Plugin_Meta::class );
 		$groups_path   = $plugin_meta->get_root_path( 'src/Acf/Groups' );
 		$namespace_map = array( 'Org\Wplake\Advanced_Views\Acf\Groups' => $groups_path );
 		$cpt_names     = array(

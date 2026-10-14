@@ -101,7 +101,7 @@ abstract class Git_Api extends Loggable_Actor implements Git_Api_Interface {
 			}
 		}
 
-		throw new LogicException( sprintf( 'Unknown CPT "%s"', $cpt_name ) );
+		throw new LogicException( sprintf( 'Unknown CPT "%s"', esc_html( $cpt_name ) ) );
 	}
 
 	protected function get_transient_name( string $main_folder, string $repository_id ): string {

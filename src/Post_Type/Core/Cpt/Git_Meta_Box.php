@@ -46,7 +46,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 		$this->cpt_settings_storage = $cpt_settings_storage;
 		$this->git_api              = $git_api;
 		$this->pushing_unique_ids   = array();
-		$this->plugin_meta               = $plugin_meta;
+		$this->plugin_meta          = $plugin_meta;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
