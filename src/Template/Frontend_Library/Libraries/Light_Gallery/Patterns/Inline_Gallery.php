@@ -10,7 +10,6 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Patter
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Image_Element;
 
 final class Inline_Gallery implements Template_Pattern, JS_Pattern, CSS_Pattern {
 	public static function get_outer_wrappers(): array {
@@ -21,11 +20,7 @@ final class Inline_Gallery implements Template_Pattern, JS_Pattern, CSS_Pattern 
 
 	public static function get_inner_wrappers(): array {
 		return array(
-			'li' => array(
-				// fixme reuse.
-				'#data-src'      => Image_Element::FULL_SIZE,
-				'#data-sub-html' => Image_Element::CAPTION,
-			),
+			'li' => Lightbox_Single::DATA_PROPERTIES,
 		);
 	}
 

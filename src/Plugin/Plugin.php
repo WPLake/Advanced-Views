@@ -42,10 +42,6 @@ class Plugin extends Actor_Base implements Actor {
 		return $route_detector->is_admin_route();
 	}
 
-	public static function make_url_relative( string $url ): string {
-		return str_replace( get_site_url(), '', $url );
-	}
-
 	public static function get_theme_text_domain(): string {
 		$theme_text_domain = wp_get_theme()->get( 'TextDomain' );
 

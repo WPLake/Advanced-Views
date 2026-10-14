@@ -8,12 +8,16 @@ defined( 'ABSPATH' ) || exit;
 
 interface JS_Pattern {
 	/**
+	 * [propertyName=> value]
+	 *
+	 * Hash prefix in #propertyName means value is a JS literal.
+	 *
 	 * @return array<string, mixed>
 	 */
 	public static function get_js_settings(): array;
 
 	/**
-	 * @return string[]
+	 * @return string[] code lines
 	 */
 	public static function get_js_setup( JS_Variables $variables ): array;
 }

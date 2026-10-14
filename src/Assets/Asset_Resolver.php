@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Assets\Resolver;
+namespace Org\Wplake\Advanced_Views\Assets;
 
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 
@@ -13,6 +13,10 @@ class Asset_Resolver {
 
 	public function __construct( Plugin_Meta $plugin_meta ) {
 		$this->plugin_meta = $plugin_meta;
+	}
+
+	public static function make_url_relative( string $url ): string {
+		return str_replace( get_site_url(), '', $url );
 	}
 
 	public function get_asset_url( string $file ): string {

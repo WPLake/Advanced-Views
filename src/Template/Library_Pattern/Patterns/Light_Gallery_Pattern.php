@@ -6,12 +6,11 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Assets\Resolver\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern_Base;
 
@@ -89,7 +88,7 @@ class Light_Gallery_Pattern extends Template_Pattern_Base {
 		// font and image paths in CSS won't work, as CSS will be added right to the page,
 		// replacing with the related installation path avoids it.
 		$asset_url_base          = $this->get_asset_url( '' );
-		$relative_asset_url_base = Plugin::make_url_relative( $asset_url_base );
+		$relative_asset_url_base = Asset_Resolver::make_url_relative( $asset_url_base );
 		$relative_assets_url     = sprintf( 'url(%s', $relative_asset_url_base );
 
 		return str_replace( 'url(../', $relative_assets_url, $css_code );

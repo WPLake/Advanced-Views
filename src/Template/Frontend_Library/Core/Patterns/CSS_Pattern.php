@@ -8,6 +8,9 @@ defined( 'ABSPATH' ) || exit;
 
 interface CSS_Pattern {
 	/**
+	 * [property => value] OR
+	 * [innerSelector => [property => value]]
+	 *
 	 * @return array<string, string|array<string, string>>
 	 */
 	public static function get_css_rules(): array;

@@ -4,9 +4,6 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Assets;
 
-use Org\Wplake\Advanced_Views\Assets\Resolver\Asset_Resolver;
-defined( 'ABSPATH' ) || exit;
-
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -14,6 +11,8 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
 use WP_Screen;
+
+defined( 'ABSPATH' ) || exit;
 
 class Admin_Assets extends Actor_Base implements Actor {
 	private Asset_Resolver $asset_resolver;
