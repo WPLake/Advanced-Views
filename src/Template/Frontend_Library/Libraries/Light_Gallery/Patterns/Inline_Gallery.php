@@ -6,12 +6,21 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Ga
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
 
-final class Inline_Gallery implements Template_Pattern, JS_Pattern, CSS_Pattern {
+final class Inline_Gallery implements Frontend_Pattern, Template_Pattern, JS_Pattern, CSS_Pattern {
+	public static function get_id(): string {
+		return 'inline_gallery';
+	}
+
+	public static function get_label(): string {
+		return __( 'Inline Gallery', 'acf-views' );
+	}
+
 	public static function get_outer_wrappers(): array {
 		return array(
 			'ul' => array(),
@@ -22,6 +31,10 @@ final class Inline_Gallery implements Template_Pattern, JS_Pattern, CSS_Pattern 
 		return array(
 			'li' => Lightbox_Single::DATA_PROPERTIES,
 		);
+	}
+
+	public static function get_element_attributes(): array {
+		return array();
 	}
 
 	public static function get_js_settings(): array {

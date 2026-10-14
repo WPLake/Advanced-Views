@@ -4,18 +4,41 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery;
 
-use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
-
 defined( 'ABSPATH' ) || exit;
 
-final class Light_Gallery_Library implements Frontend_Library {
-	public static function get_name(): string {
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\CSS_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Inline_Gallery;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Lightbox_Multi;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Lightbox_Single;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Gallery_Element;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Image_Element;
+
+final class Light_Gallery_Library implements Frontend_Library, CSS_Library, JS_Library {
+	public static function get_id(): string {
 		return 'light-gallery';
+	}
+
+	public static function get_label(): string {
+		return __( 'LightGallery', 'acf-views' );
 	}
 
 	public static function get_docs_url(): string {
 		return 'https://www.lightgalleryjs.com/docs/settings/#lightgallery-core';
+	}
+
+	public static function get_patterns(): array {
+		return array(
+			Image_Element::KIND   => array(
+				Lightbox_Single::class,
+			),
+			Gallery_Element::KIND => array(
+				Inline_Gallery::class,
+				Lightbox_Multi::class,
+			),
+		);
 	}
 
 	public static function get_css_file_names(): array {
@@ -41,5 +64,9 @@ final class Light_Gallery_Library implements Frontend_Library {
 			'lightgallery',
 			'lg-thumbnail',
 		);
+	}
+
+	public static function get_js_extension_urls(): array {
+		return array();
 	}
 }

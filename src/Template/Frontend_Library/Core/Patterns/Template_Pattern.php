@@ -24,4 +24,12 @@ interface Template_Pattern {
 	 * @return array<string, array<string,string>>
 	 */
 	public static function get_inner_wrappers(): array;
+
+	/**
+	 * [ attributeName => value ]
+	 * Hash prefix in #attributeName means dynamic Markup_Element property.
+	 *
+	 * @return  array<string,string>
+	 */
+	public static function get_element_attributes(): array;
 }
