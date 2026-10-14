@@ -15,8 +15,8 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #: acf-views.php
-#: src/Plugin/Plugin.php:255
-#: src/Plugin/Plugin.php:395
+#: src/Plugin/Plugin.php:120
+#: src/Plugin/Plugin.php:276
 msgid "Advanced Views Lite"
 msgstr "アドバンスド ビューズ ライト"
 
@@ -25,746 +25,748 @@ msgstr "アドバンスド ビューズ ライト"
 msgid "WPLake"
 msgstr "WPLake"
 
-#: src/Acf/Groups/translations.php:120
-#: src/Cpt/Layouts/Cpt/Layout_Interactive_Fields.php:180
-#: src/Cpt/Post_Selections/Cpt/Selection_Interactive_Fields.php:178
+#: src/Acf/Groups/translations.php:219
+#: src/Post_Type/Layouts/Cpt/Layout_Interactive_Fields.php:178
+#: src/Post_Type/Post_Selections/Cpt/Selection_Interactive_Fields.php:176
 msgid "Default Template"
 msgstr "デフォルトテンプレート"
 
-#: src/Acf/Groups/translations.php:121
-#: src/Cpt/Layouts/Cpt/Layout_Interactive_Fields.php:188
-#: src/Cpt/Post_Selections/Cpt/Selection_Interactive_Fields.php:186
+#: src/Acf/Groups/translations.php:220
+#: src/Post_Type/Layouts/Cpt/Layout_Interactive_Fields.php:186
+#: src/Post_Type/Post_Selections/Cpt/Selection_Interactive_Fields.php:184
 msgid "Custom Template"
 msgstr "カスタムテンプレート"
 
-#: src/Acf/Groups/translations.php:124
-#: src/Acf/Groups/translations.php:406
-#: src/Cpt/Layouts/Cpt/Layout_Interactive_Fields.php:165
-#: src/Cpt/Post_Selections/Cpt/Selection_Interactive_Fields.php:156
+#: src/Acf/Groups/translations.php:223
+#: src/Acf/Groups/translations.php:438
+#: src/Post_Type/Layouts/Cpt/Layout_Interactive_Fields.php:163
+#: src/Post_Type/Post_Selections/Cpt/Selection_Interactive_Fields.php:154
 msgid "CSS Code"
 msgstr "CSS コード"
 
-#: src/Acf/Groups/translations.php:125
-#: src/Acf/Groups/translations.php:407
-#: src/Cpt/Layouts/Cpt/Layout_Interactive_Fields.php:172
-#: src/Cpt/Post_Selections/Cpt/Selection_Interactive_Fields.php:163
+#: src/Acf/Groups/translations.php:224
+#: src/Acf/Groups/translations.php:439
+#: src/Post_Type/Layouts/Cpt/Layout_Interactive_Fields.php:170
+#: src/Post_Type/Post_Selections/Cpt/Selection_Interactive_Fields.php:161
 msgid "JS Code"
 msgstr "JS コード"
 
-#: src/Acf/Groups/translations.php:385
-#: src/Cpt/Post_Selections/Cpt/Selection_Interactive_Fields.php:170
+#: src/Acf/Groups/translations.php:417
+#: src/Post_Type/Post_Selections/Cpt/Selection_Interactive_Fields.php:168
 msgid "Query Preview"
 msgstr "クエリプレビュー"
 
-#: src/Cpt/Base/Cpt/Cpt.php:128
+#: src/Post_Type/Core/Cpt/Cpt.php:130
 msgid "Add New"
 msgstr "新規追加"
 
-#: src/Cpt/Post_Selections/Cpt/Post_Selections_Cpt.php:79
-#: src/Cpt/Post_Selections/Cpt/Post_Selections_Cpt.php:82
+#: src/Post_Type/Post_Selections/Cpt/Post_Selections_Cpt.php:79
+#: src/Post_Type/Post_Selections/Cpt/Post_Selections_Cpt.php:82
 msgid "Card updated."
 msgstr "カードが更新されました。"
 
-#: src/Cpt/Base/Cpt/Cpt.php:150
+#: src/Post_Type/Core/Cpt/Cpt.php:152
 msgid "Not Found In Trash"
 msgstr "ゴミ箱内に見つかりません"
 
-#: src/Cpt/Post_Selections/Cpt/Post_Selections_Cpt.php:64
+#: src/Post_Type/Post_Selections/Cpt/Post_Selections_Cpt.php:64
 msgid "Card scheduled for:"
 msgstr "カードのスケジュール設定:"
 
-#: src/Cpt/Post_Selections/Cpt/Post_Selections_Cpt.php:73
+#: src/Post_Type/Post_Selections/Cpt/Post_Selections_Cpt.php:73
 msgid "Card restored to revision from"
 msgstr "以下のリビジョンからカードが復元されました"
 
-#: src/Cpt/Layouts/Cpt/Layouts_Cpt.php:68
-#: src/Cpt/Post_Selections/Cpt/Post_Selections_Cpt.php:80
+#: src/Post_Type/Layouts/Cpt/Layouts_Cpt.php:74
+#: src/Post_Type/Post_Selections/Cpt/Post_Selections_Cpt.php:80
 msgid "Custom field updated."
 msgstr "カスタムフィールドが更新されました。"
 
-#: src/Cpt/Layouts/Cpt/Layouts_Cpt.php:69
-#: src/Cpt/Post_Selections/Cpt/Post_Selections_Cpt.php:81
+#: src/Post_Type/Layouts/Cpt/Layouts_Cpt.php:75
+#: src/Post_Type/Post_Selections/Cpt/Post_Selections_Cpt.php:81
 msgid "Custom field deleted."
 msgstr "カスタムフィールドが削除されました。"
 
-#: src/Cpt/Post_Selections/Cpt/Post_Selections_Cpt.php:84
+#: src/Post_Type/Post_Selections/Cpt/Post_Selections_Cpt.php:84
 msgid "Card published."
 msgstr "カードが公開されました。"
 
-#: src/Cpt/Post_Selections/Cpt/Post_Selections_Cpt.php:85
+#: src/Post_Type/Post_Selections/Cpt/Post_Selections_Cpt.php:85
 msgid "Card saved."
 msgstr "カードが保存されました。"
 
-#: src/Cpt/Post_Selections/Cpt/Post_Selections_Cpt.php:86
+#: src/Post_Type/Post_Selections/Cpt/Post_Selections_Cpt.php:86
 msgid "Card submitted."
 msgstr "カードが送信されました。"
 
-#: src/Cpt/Post_Selections/Cpt/Post_Selections_Cpt.php:88
+#: src/Post_Type/Post_Selections/Cpt/Post_Selections_Cpt.php:88
 msgid "Card draft updated."
 msgstr "カードのドラフトが更新されました。"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:147
-#: src/Cpt/Layouts/Cpt/Table/Layouts_Cpt_Table.php:86
-#: src/Cpt/Post_Selections/Cpt/Table/Post_Selections_Table.php:113
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:139
+#: src/Post_Type/Layouts/Cpt/Table/Layouts_Cpt_Table.php:87
+#: src/Post_Type/Post_Selections/Cpt/Table/Post_Selections_Table.php:113
 msgid "Description"
 msgstr "説明"
 
-#: src/Cpt/Layouts/Cpt/Table/Layouts_Cpt_Table.php:94
-#: src/Cpt/Post_Selections/Cpt/Table/Post_Selections_Table.php:120
+#: src/Post_Type/Layouts/Cpt/Table/Layouts_Cpt_Table.php:95
+#: src/Post_Type/Post_Selections/Cpt/Table/Post_Selections_Table.php:120
 msgid "Last modified"
 msgstr "最終更新日"
 
-#: src/Acf/Groups/Plugin_Settings.php:151
-#: src/Dashboard/Admin_Pages.php:222
-#: src/Plugin/Settings/Settings_Page.php:90
-#: src/Plugin/Settings/Settings_Page.php:91
+#: src/Acf/Groups/Plugin_Settings.php:150
+#: src/Plugin/Dashboard/Admin_Pages.php:227
+#: src/Plugin/Settings/Settings_Page.php:104
+#: src/Plugin/Settings/Settings_Page.php:105
 msgid "Settings"
 msgstr "設定"
 
 #: src/Acf/Groups/Tools_Settings.php:179
-#: src/Dashboard/Admin_Pages.php:229
-#: src/Dashboard/Tools_Page.php:259
-#: src/Dashboard/Tools_Page.php:260
+#: src/Plugin/Dashboard/Admin_Pages.php:234
+#: src/Plugin/Dashboard/Tools_Page.php:261
+#: src/Plugin/Dashboard/Tools_Page.php:262
 msgid "Tools"
 msgstr "ツール"
 
-#: src/Dashboard/Admin_Pages.php:245
+#: src/Plugin/Dashboard/Admin_Pages.php:250
 msgid "Demo Import"
 msgstr "デモインポート"
 
-#: src/Dashboard/Admin_Pages.php:58
-#: src/Dashboard/Admin_Pages.php:252
+#: src/Plugin/Dashboard/Admin_Pages.php:86
+#: src/Plugin/Dashboard/Admin_Pages.php:257
 msgid "Docs"
 msgstr "ドキュメント"
 
-#: src/Dashboard/Admin_Pages.php:261
+#: src/Plugin/Dashboard/Admin_Pages.php:266
 msgid "Support"
 msgstr "サポート"
 
-#: src/Dashboard/Admin_Pages.php:59
+#: src/Plugin/Dashboard/Admin_Pages.php:87
 msgid "Demo import"
 msgstr "デモインポート"
 
-#: src/Dashboard/Tools/Demo_Importer.php:87
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:95
 msgid "Samsung Galaxy A53 (Demo)"
 msgstr "Samsung Galaxy A53 (デモ)"
 
-#: src/Dashboard/Tools/Demo_Importer.php:94
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:102
 msgid "Nokia X20 (Demo)"
 msgstr "Nokia X20 (デモ)"
 
-#: src/Dashboard/Tools/Demo_Importer.php:101
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:109
 msgid "Xiaomi 12T (Demo)"
 msgstr "Xiaomi 12T (デモ)"
 
-#: src/Dashboard/Tools/Demo_Importer.php:108
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:116
 msgid "Article about Samsung (Demo)"
 msgstr "Samsungに関する記事 (デモ)"
 
-#: src/Dashboard/Tools/Demo_Importer.php:115
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:123
 msgid "Most popular phones in 2023 (Demo)"
 msgstr "2023年の最も人気のある携帯電話 (デモ)"
 
-#: src/Dashboard/Tools/Demo_Importer.php:129
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:137
 msgid "Failed to create pages"
 msgstr "ページの作成に失敗しました"
 
-#: src/Dashboard/Tools/Demo_Importer.php:144
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:152
 msgid "\"Phone\" Demo View"
 msgstr "\"電話\" デモビュー"
 
-#: src/Dashboard/Tools/Demo_Importer.php:148
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:156
 msgid "Failed to create a View"
 msgstr "ビューの作成に失敗しました"
 
-#: src/Dashboard/Tools/Demo_Importer.php:159
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:167
 msgid "\"Phones\" Demo Card"
 msgstr "\"電話\" デモカード"
 
-#: src/Dashboard/Tools/Demo_Importer.php:163
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:171
 msgid "Failed to create a Card"
 msgstr "カードの作成に失敗しました"
 
-#: src/Dashboard/Tools/Demo_Importer.php:177
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:185
 msgid "ACF plugin is not available"
 msgstr "ACFプラグインは利用できません"
 
-#: src/Dashboard/Tools/Demo_Importer.php:183
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:191
 msgid "Advanced Views \"Phone\" Demo Group"
 msgstr "アドバンスドビューズ \"電話\" デモグループ"
 
-#: src/Dashboard/Tools/Demo_Importer.php:218
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:226
 msgid "Failed to import an ACF group"
 msgstr "ACFグループのインポートに失敗しました"
 
-#: src/Dashboard/Tools/Demo_Importer.php:241
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:249
 msgid "It's a demo View to display fields from the 'Phone' demo ACF Field Group."
 msgstr "'電話' デモACFフィールドグループからのフィールドを表示するデモビューです。"
 
-#: src/Dashboard/Tools/Demo_Importer.php:270
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:278
 msgid "Brand:"
 msgstr "ブランド:"
 
-#: src/Dashboard/Tools/Demo_Importer.php:286
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:294
 msgid "Model:"
 msgstr "モデル:"
 
-#: src/Dashboard/Tools/Demo_Importer.php:302
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:310
 msgid "Price:"
 msgstr "価格:"
 
-#: src/Dashboard/Tools/Demo_Importer.php:318
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:326
 msgid "Website:"
 msgstr "ウェブサイト:"
 
-#: src/Dashboard/Tools/Demo_Importer.php:319
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:327
 msgid "Visit"
 msgstr "訪問"
 
-#: src/Dashboard/Tools/Demo_Importer.php:344
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:352
 msgid "It's a demo Card for 'Phones'"
 msgstr "'電話'用のデモカードです"
 
-#: src/Dashboard/Tools/Demo_Importer.php:424
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:432
 msgid "\"Phone\" View to show fields of this page"
 msgstr "このページのフィールドを表示するための\"電話\"ビュー"
 
-#: src/Dashboard/Tools/Demo_Importer.php:445
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:453
 msgid "'Phone' View with the object-id argument to show Samsung Phone's fields"
 msgstr "Samsung電話のフィールドを表示するためのobject-id引数を持つ'電話'ビュー"
 
-#: src/Dashboard/Tools/Demo_Importer.php:464
+#: src/Plugin/Dashboard/Tools/Demo_Importer.php:472
 msgid "\"Phones\" Card to show the phones"
 msgstr "電話を表示するための\"電話\"カード"
 
-#: src/Plugin/Settings/Settings_Page.php:317
+#: src/Plugin/Settings/Settings_Page.php:331
 msgid "Fail to activate the file system storage. Check your FS permissions."
 msgstr "ファイルシステムストレージのアクティベーションに失敗しました。FSの権限を確認してください。"
 
-#: src/Plugin/Settings/Settings_Page.php:350
+#: src/Plugin/Settings/Settings_Page.php:364
 msgid "Fail to deactivate the file system storage. Check your FS permissions."
 msgstr "ファイルシステムストレージの非アクティベーションに失敗しました。FSの権限を確認してください。"
 
-#: src/Plugin/Settings/Settings_Page.php:84
+#: src/Plugin/Settings/Settings_Page.php:98
 msgid "Settings successfully updated."
 msgstr "設定が正常に更新されました。"
 
-#: src/Plugin/Settings/Settings_Page.php:94
+#: src/Plugin/Settings/Settings_Page.php:108
 msgid "Save changes"
 msgstr "変更を保存"
 
-#: src/Dashboard/Tools_Page.php:641
+#: src/Plugin/Dashboard/Tools_Page.php:643
 msgid "Import file not found."
 msgstr "インポートファイルが見つかりません。"
 
-#: src/Dashboard/Tools_Page.php:653
+#: src/Plugin/Dashboard/Tools_Page.php:655
 msgid "Import file is not a valid JSON."
 msgstr "インポートファイルは有効なJSONではありません。"
 
-#: src/Dashboard/Tools_Page.php:263
+#: src/Plugin/Dashboard/Tools_Page.php:265
 msgid "Process"
 msgstr "プロセス"
 
-#: src/Cpt/Data_Vendors/Acf/Acf_Data_Vendor.php:289
+#: src/Field_Provider/Acf/Acf_Data_Vendor.php:278
 msgid "(ACF)"
 msgstr "(ACF)"
 
-#: src/Cpt/Data_Vendors/Base/Data_Vendor.php:68
+#: src/Field_Provider/Core/Field_Provider_Base.php:67
 msgid "[PRO only]"
 msgstr "[PROのみ]"
 
-#: src/Cpt/Data_Vendors/Base/Settings_Vendor_Integration.php:82
+#: src/Field_Provider/Core/Settings_Vendor_Integration.php:85
 msgid "Advanced View"
 msgstr "アドバンスドビュー"
 
-#: src/Cpt/Base/Cpt/Cpt.php:64
-#: src/Cpt/Base/Cpt/Cpt.php:111
-#: src/Cpt/Data_Vendors/Base/Settings_Vendor_Integration.php:94
-#: src/Cpt/Data_Vendors/Base/Settings_Vendor_Integration.php:334
-#: src/Cpt/Data_Vendors/Pods/Pods_Integration.php:219
-#: src/Cpt/Integrations/Cpt_Gutenberg_Block.php:35
-#: src/Dashboard/Admin_Bar.php:47
+#: src/Field_Provider/Core/Settings_Vendor_Integration.php:97
+#: src/Field_Provider/Core/Settings_Vendor_Integration.php:337
+#: src/Field_Provider/Pods/Pods_Integration.php:219
+#: src/Plugin/Dashboard/Admin_Bar.php:55
+#: src/Post_Type/Core/Cpt/Cpt.php:78
+#: src/Post_Type/Core/Cpt/Cpt.php:113
+#: src/Post_Type/Integration/Core/Cpt_Integration_Category.php:15
 msgid "Advanced Views"
 msgstr "アドバンスドビュー"
 
-#: src/Cpt/Data_Vendors/Base/Settings_Vendor_Integration.php:192
+#: src/Field_Provider/Core/Settings_Vendor_Integration.php:195
 msgid "Add new"
 msgstr "新規追加"
 
-#: src/Cpt/Data_Vendors/Pods/Pods_Integration.php:296
+#: src/Field_Provider/Pods/Pods_Integration.php:296
 msgid "Assigned to View"
 msgstr "ビューに割り当てられました"
 
-#: src/Cpt/Data_Vendors/Base/Settings_Vendor_Integration.php:478
+#: src/Field_Provider/Core/Settings_Vendor_Integration.php:481
 msgid "Views associated with this group contain invalid Custom Markup"
 msgstr "このグループに関連するビューには無効なカスタムマークアップが含まれています"
 
-#: src/Cpt/Data_Vendors/Base/Fields/Pro_Stub_Field.php:18
+#: src/Field_Provider/Core/Fields/Pro_Stub_Field.php:17
 msgid "This field is available in the Pro version only"
 msgstr "このフィールドはProバージョンでのみ利用可能です"
 
-#: src/Acf/Group_Integrations/Meta_Field_Settings_Integration.php:62
-#: src/Acf/Group_Integrations/Tax_Field_Settings_Integration.php:26
-#: src/Acf/Group_Integrations/Tax_Field_Settings_Integration.php:43
-#: src/Cpt/Data_Vendors/Data_Vendors.php:89
-#: src/Cpt/Data_Vendors/Data_Vendors.php:114
-#: src/Cpt/Data_Vendors/Data_Vendors.php:148
+#: src/Field_Provider/Core/Field_Provider_Cluster.php:91
+#: src/Field_Provider/Core/Field_Provider_Cluster.php:116
+#: src/Field_Provider/Core/Field_Provider_Cluster.php:152
+#: src/Post_Type/Post_Selections/Acf/Integrations/Meta_Field_Settings_Integration.php:45
+#: src/Post_Type/Post_Selections/Acf/Integrations/Tax_Field_Settings_Integration.php:32
+#: src/Post_Type/Post_Selections/Acf/Integrations/Tax_Field_Settings_Integration.php:49
 msgid "Select"
 msgstr "選択"
 
-#: src/Cpt/Data_Vendors/Meta_Box/Meta_Box_Data_Vendor.php:176
+#: src/Field_Provider/Meta_Box/Meta_Box_Data_Vendor.php:175
 msgid "Hidden"
 msgstr "非表示"
 
-#: src/Cpt/Data_Vendors/Meta_Box/Meta_Box_Data_Vendor.php:451
+#: src/Field_Provider/Meta_Box/Meta_Box_Data_Vendor.php:440
 msgid "(Meta Box)"
 msgstr "(メタボックス)"
 
-#: src/Cpt/Data_Vendors/Meta_Box/Meta_Box_Data_Vendor.php:476
-#: src/Cpt/Data_Vendors/Meta_Box/Meta_Box_Data_Vendor.php:731
-#: src/Cpt/Data_Vendors/Pods/Pods_Data_Vendor.php:533
+#: src/Field_Provider/Meta_Box/Meta_Box_Data_Vendor.php:465
+#: src/Field_Provider/Meta_Box/Meta_Box_Data_Vendor.php:721
+#: src/Field_Provider/Pods/Pods_Data_Vendor.php:522
 msgid "repeatable"
 msgstr "繰り返し可能"
 
-#: src/Cpt/Data_Vendors/Pods/Pods_Data_Vendor.php:496
+#: src/Field_Provider/Pods/Pods_Data_Vendor.php:485
 msgid "(Pods)"
 msgstr "(Pods)"
 
-#: src/Cpt/Data_Vendors/Woo/Woo_Data_Vendor.php:56
+#: src/Field_Provider/Woo/Woo_Data_Vendor.php:48
 msgid "Gallery"
 msgstr "ギャラリー"
 
 #: src/Acf/Groups/translations.php:11
-#: src/Cpt/Data_Vendors/Woo/Woo_Data_Vendor.php:58
+#: src/Field_Provider/Woo/Woo_Data_Vendor.php:50
 msgid "Price"
 msgstr "価格"
 
-#: src/Cpt/Data_Vendors/Woo/Woo_Data_Vendor.php:60
+#: src/Field_Provider/Woo/Woo_Data_Vendor.php:52
 msgid "Regular price"
 msgstr "通常価格"
 
-#: src/Cpt/Data_Vendors/Woo/Woo_Data_Vendor.php:62
+#: src/Field_Provider/Woo/Woo_Data_Vendor.php:54
 msgid "Sale price"
 msgstr "セール価格"
 
-#: src/Cpt/Data_Vendors/Woo/Woo_Data_Vendor.php:64
+#: src/Field_Provider/Woo/Woo_Data_Vendor.php:56
 msgid "SKU"
 msgstr "SKU"
 
-#: src/Cpt/Data_Vendors/Woo/Woo_Data_Vendor.php:66
+#: src/Field_Provider/Woo/Woo_Data_Vendor.php:58
 msgid "Stock status"
 msgstr "在庫状況"
 
-#: src/Cpt/Data_Vendors/Woo/Woo_Data_Vendor.php:70
+#: src/Field_Provider/Woo/Woo_Data_Vendor.php:62
 msgid "Weight"
 msgstr "重量"
 
-#: src/Cpt/Data_Vendors/Woo/Woo_Data_Vendor.php:72
+#: src/Field_Provider/Woo/Woo_Data_Vendor.php:64
 msgid "Length"
 msgstr "長さ"
 
-#: src/Cpt/Data_Vendors/Woo/Woo_Data_Vendor.php:74
+#: src/Field_Provider/Woo/Woo_Data_Vendor.php:66
 msgid "Width"
 msgstr "幅"
 
-#: src/Cpt/Data_Vendors/Woo/Woo_Data_Vendor.php:76
+#: src/Field_Provider/Woo/Woo_Data_Vendor.php:68
 msgid "Height"
 msgstr "高さ"
 
-#: src/Acf/Groups/translations.php:470
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:81
+#: src/Acf/Groups/translations.php:502
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:73
 msgid "Title"
 msgstr "タイトル"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:83
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:75
 msgid "Title with link"
 msgstr "リンク付きタイトル"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:131
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:123
 msgid "Content"
 msgstr "コンテンツ"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:89
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:81
 msgid "Featured Image"
 msgstr "アイキャッチ画像"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:91
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:83
 msgid "Featured Image with link"
 msgstr "リンク付きアイキャッチ画像"
 
-#: src/Acf/Groups/translations.php:469
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:93
+#: src/Acf/Groups/translations.php:501
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:85
 msgid "Author"
 msgstr "著者"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:95
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:87
 msgid "Published date"
 msgstr "公開日"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:97
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:89
 msgid "Modified date"
 msgstr "更新日"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:105
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:97
 msgid "First Name"
 msgstr "名"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:107
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:99
 msgid "Last Name"
 msgstr "姓"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:109
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:101
 msgid "Display Name"
 msgstr "表示名"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:111
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:103
 msgid "Bio"
 msgstr "バイオ"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:113
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:105
 msgid "Email"
 msgstr "メール"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:115
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:107
 msgid "Author link"
 msgstr "著者リンク"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:117
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:109
 msgid "Website"
 msgstr "ウェブサイト"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:121
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:113
 msgid "List"
 msgstr "リスト"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:125
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:117
 msgid "Author Email"
 msgstr "著者のメール"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:127
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:119
 msgid "Author Name"
 msgstr "著者名"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:129
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:121
 msgid "Author Name link"
 msgstr "著者名リンク"
 
-#: src/Acf/Groups/translations.php:473
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:133
+#: src/Acf/Groups/translations.php:505
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:125
 msgid "Date"
 msgstr "日付"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:135
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:127
 msgid "Status"
 msgstr "ステータス"
 
-#: src/Acf/Groups/translations.php:475
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:137
+#: src/Acf/Groups/translations.php:507
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:129
 msgid "Parent"
 msgstr "親"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:139
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:131
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:35
 msgid "User"
 msgstr "ユーザー"
 
-#: src/Acf/Groups/translations.php:471
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:143
+#: src/Acf/Groups/translations.php:503
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:135
 msgid "Name"
 msgstr "名前"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:145
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:137
 msgid "Slug"
 msgstr "スラッグ"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:149
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:141
 msgid "Name link"
 msgstr "名前リンク"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:153
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:145
 msgid "Items"
 msgstr "アイテム"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:157
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:149
 msgid "Link"
 msgstr "リンク"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:261
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:243
 msgid "Taxonomy terms (WordPress)"
 msgstr "タクソノミー用語 (WordPress)"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:262
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:244
 msgid "Term (WordPress)"
 msgstr "用語 (WordPress)"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:263
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:245
 msgid "User (WordPress)"
 msgstr "ユーザー (WordPress)"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:266
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:248
 msgid "Menu (WordPress)"
 msgstr "メニュー (WordPress)"
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:267
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:249
 msgid "Menu item (WordPress)"
 msgstr "メニューアイテム (WordPress)"
 
-#: src/Acf/Groups/Post_Selection_Settings.php:497
+#: src/Post_Type/Post_Selections/Acf/Groups/Post_Selection_Settings.php:497
 msgid "Card settings"
 msgstr "カード設定"
 
-#: src/Acf/Group_Integrations/Field_Settings_Integration.php:200
+#: src/Post_Type/Layouts/Acf/Integrations/Field_Settings_Integration.php:207
 msgid "Full"
 msgstr "フル"
 
-#: src/Acf/Groups/translations.php:375
+#: src/Acf/Groups/translations.php:407
 msgid "Post Type"
 msgstr "投稿タイプ"
 
-#: src/Acf/Groups/translations.php:376
+#: src/Acf/Groups/translations.php:408
 msgid "Post Status"
 msgstr "投稿ステータス"
 
-#: src/Acf/Groups/translations.php:377
+#: src/Acf/Groups/translations.php:409
 msgid "Maximum number of posts"
 msgstr "最大投稿数"
 
-#: src/Acf/Groups/translations.php:378
+#: src/Acf/Groups/translations.php:410
 msgid "Sort by"
 msgstr "並び替え"
 
-#: src/Acf/Groups/translations.php:379
+#: src/Acf/Groups/translations.php:411
 msgid "Sort by Meta Field Group"
 msgstr "メタフィールドグループで並び替え"
 
-#: src/Acf/Groups/translations.php:380
+#: src/Acf/Groups/translations.php:412
 msgid "Sort by Meta Field"
 msgstr "メタフィールドで並び替え"
 
-#: src/Acf/Groups/translations.php:381
+#: src/Acf/Groups/translations.php:413
 msgid "Sort order"
 msgstr "ソート順"
 
-#: src/Acf/Groups/translations.php:391
+#: src/Acf/Groups/translations.php:423
 msgid "No Posts Found Message"
 msgstr "投稿が見つかりませんでしたメッセージ"
 
-#: src/Acf/Groups/translations.php:382
-#: src/Acf/Groups/translations.php:478
+#: src/Acf/Groups/translations.php:414
+#: src/Acf/Groups/translations.php:510
 msgid "Pool of posts"
 msgstr "投稿のプール"
 
-#: src/Acf/Groups/translations.php:383
+#: src/Acf/Groups/translations.php:415
 msgid "Exclude posts"
 msgstr "投稿を除外"
 
-#: src/Acf/Groups/translations.php:384
+#: src/Acf/Groups/translations.php:416
 msgid "Ignore Sticky Posts"
 msgstr "スティッキー投稿を無視"
 
-#: src/Acf/Groups/translations.php:119
-#: src/Acf/Groups/translations.php:401
+#: src/Acf/Groups/translations.php:218
+#: src/Acf/Groups/translations.php:433
 msgid "Template"
 msgstr "テンプレート"
 
-#: src/Acf/Groups/translations.php:134
-#: src/Acf/Groups/translations.php:412
+#: src/Acf/Groups/translations.php:233
+#: src/Acf/Groups/translations.php:444
 msgid "BEM Unique Name"
 msgstr "BEMユニークネーム"
 
-#: src/Acf/Groups/translations.php:135
-#: src/Acf/Groups/translations.php:413
+#: src/Acf/Groups/translations.php:234
+#: src/Acf/Groups/translations.php:445
 msgid "CSS classes"
 msgstr "CSSクラス"
 
-#: src/Plugin/Loaders/Plugin_Loader_Base.php:398
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Elementor_Widget.php:85
+#: src/Post_Type/Layouts/Layouts_Cpt.php:26
 msgid "Layout"
 msgstr "レイアウト"
 
-#: src/Acf/Groups/translations.php:30
-#: src/Acf/Groups/translations.php:392
+#: src/Acf/Groups/translations.php:141
+#: src/Acf/Groups/translations.php:424
 msgid "Enable Slider"
 msgstr "スライダーを有効にする"
 
-#: src/Acf/Groups/translations.php:238
-#: src/Acf/Groups/translations.php:388
+#: src/Acf/Groups/translations.php:341
+#: src/Acf/Groups/translations.php:420
 msgid "Meta Filters"
 msgstr "メタフィルター"
 
-#: src/Acf/Groups/translations.php:387
-#: src/Acf/Groups/translations.php:539
+#: src/Acf/Groups/translations.php:419
+#: src/Acf/Groups/translations.php:557
 msgid "Taxonomy Filters"
 msgstr "タクソノミーフィルター"
 
-#: src/Acf/Groups/translations.php:396
+#: src/Acf/Groups/translations.php:428
 msgid "Pagination"
 msgstr "ページネーション"
 
-#: src/Acf/Groups/translations.php:397
+#: src/Acf/Groups/translations.php:429
 msgid "With Pagination"
 msgstr "ページネーション付き"
 
-#: src/Acf/Groups/translations.php:398
+#: src/Acf/Groups/translations.php:430
 msgid "Pagination Type"
 msgstr "ページネーションタイプ"
 
-#: src/Acf/Groups/translations.php:400
+#: src/Acf/Groups/translations.php:432
 msgid "Posts Per Page"
 msgstr "ページごとの投稿数"
 
-#: src/Acf/Groups/translations.php:139
-#: src/Acf/Groups/translations.php:141
-#: src/Acf/Groups/translations.php:415
-#: src/Acf/Groups/translations.php:416
+#: src/Acf/Groups/translations.php:238
+#: src/Acf/Groups/translations.php:240
+#: src/Acf/Groups/translations.php:447
+#: src/Acf/Groups/translations.php:448
 msgid "Preview"
 msgstr "プレビュー"
 
-#: src/Acf/Groups/translations.php:105
-#: src/Acf/Groups/translations.php:208
+#: src/Acf/Groups/translations.php:204
+#: src/Acf/Groups/translations.php:313
 msgid "Select a target group"
 msgstr "ターゲットグループを選択"
 
-#: src/Acf/Groups/translations.php:49
-#: src/Acf/Groups/translations.php:209
+#: src/Acf/Groups/translations.php:160
+#: src/Acf/Groups/translations.php:314
 msgid "Select a target field"
 msgstr "ターゲットフィールドを選択"
 
-#: src/Acf/Groups/translations.php:247
-#: src/Acf/Groups/translations.php:458
-#: src/Acf/Groups/translations.php:548
+#: src/Acf/Groups/translations.php:350
+#: src/Acf/Groups/translations.php:490
+#: src/Acf/Groups/translations.php:566
 msgid "Add Rule"
 msgstr "ルールを追加"
 
-#: src/Acf/Groups/translations.php:464
+#: src/Acf/Groups/translations.php:496
 msgid "Default"
 msgstr "デフォルト"
 
-#: src/Acf/Groups/translations.php:465
+#: src/Acf/Groups/translations.php:497
 msgid "ID"
 msgstr "ID"
 
-#: src/Acf/Groups/translations.php:466
+#: src/Acf/Groups/translations.php:498
 msgid "Menu order"
 msgstr "メニュー順"
 
-#: src/Acf/Groups/translations.php:467
+#: src/Acf/Groups/translations.php:499
 msgid "Meta value"
 msgstr "メタ値"
 
-#: src/Acf/Groups/translations.php:468
+#: src/Acf/Groups/translations.php:500
 msgid "Meta value numeric"
 msgstr "メタ値（数値）"
 
-#: src/Acf/Groups/translations.php:472
+#: src/Acf/Groups/translations.php:504
 msgid "Type"
 msgstr "タイプ"
 
-#: src/Acf/Groups/translations.php:474
+#: src/Acf/Groups/translations.php:506
 msgid "Modified"
 msgstr "変更済み"
 
-#: src/Acf/Groups/translations.php:476
+#: src/Acf/Groups/translations.php:508
 msgid "Random"
 msgstr "ランダム"
 
-#: src/Acf/Groups/translations.php:477
+#: src/Acf/Groups/translations.php:509
 msgid "Comment count"
 msgstr "コメント数"
 
-#: src/Acf/Groups/translations.php:479
+#: src/Acf/Groups/translations.php:511
 msgid "Ascending"
 msgstr "昇順"
 
-#: src/Acf/Groups/translations.php:480
+#: src/Acf/Groups/translations.php:512
 msgid "Descending"
 msgstr "降順"
 
-#: src/Acf/Groups/translations.php:74
-#: src/Acf/Groups/translations.php:78
-#: src/Acf/Groups/translations.php:81
-#: src/Acf/Groups/translations.php:188
-#: src/Acf/Groups/translations.php:190
-#: src/Acf/Groups/translations.php:340
-#: src/Acf/Groups/translations.php:342
-#: src/Acf/Groups/translations.php:481
-#: src/Acf/Groups/translations.php:492
-#: src/Acf/Groups/translations.php:494
+#: src/Acf/Groups/translations.php:97
+#: src/Acf/Groups/translations.php:99
+#: src/Acf/Groups/translations.php:185
+#: src/Acf/Groups/translations.php:189
+#: src/Acf/Groups/translations.php:192
+#: src/Acf/Groups/translations.php:284
+#: src/Acf/Groups/translations.php:286
+#: src/Acf/Groups/translations.php:513
+#: src/Acf/Groups/translations.php:521
+#: src/Acf/Groups/translations.php:523
 msgid "None"
 msgstr "なし"
 
-#: src/Acf/Groups/translations.php:82
-#: src/Acf/Groups/translations.php:482
+#: src/Acf/Groups/translations.php:193
+#: src/Acf/Groups/translations.php:514
 msgid "Splide v4 (29.8KB js"
 msgstr "Splide v4 (29.8KB js)"
 
-#: src/Acf/Groups/translations.php:483
+#: src/Acf/Groups/translations.php:515
 msgid "Load More Button"
 msgstr "もっと読み込むボタン"
 
-#: src/Acf/Groups/translations.php:484
+#: src/Acf/Groups/translations.php:516
 msgid "Infinity Scroll"
 msgstr "無限スクロール"
 
-#: src/Acf/Groups/translations.php:485
+#: src/Acf/Groups/translations.php:517
 msgid "Page Numbers"
 msgstr "ページ番号"
 
-#: src/Acf/Groups/translations.php:346
+#: src/Acf/Groups/translations.php:378
 msgid "Screen Size"
 msgstr "画面サイズ"
 
-#: src/Acf/Groups/translations.php:348
+#: src/Acf/Groups/translations.php:380
 msgid "Amount of Columns"
 msgstr "列数"
 
-#: src/Acf/Groups/translations.php:349
+#: src/Acf/Groups/translations.php:381
 msgid "Horizontal gap"
 msgstr "水平方向の隙間"
 
-#: src/Acf/Groups/translations.php:350
+#: src/Acf/Groups/translations.php:382
 msgid "Vertical gap"
 msgstr "垂直方向の隙間"
 
-#: src/Acf/Groups/translations.php:354
+#: src/Acf/Groups/translations.php:386
 msgid "Controls to which screen size the rule applies"
 msgstr "どの画面サイズにルールを適用するかを制御"
 
-#: src/Acf/Groups/translations.php:356
+#: src/Acf/Groups/translations.php:388
 msgid "Define how many columns each row should have. By default, columns have equal width"
 msgstr "各行がいくつの列を持つべきか定義する。デフォルトでは、列の幅は等しい"
 
-#: src/Acf/Groups/translations.php:357
+#: src/Acf/Groups/translations.php:389
 msgid "Horizontal gap between items. Format: '10px'. Possible units are 'px', '%', 'em/rem'"
 msgstr "アイテム間の水平方向の隙間。フォーマット: '10px'。使用可能な単位は 'px', '%', 'em/rem'"
 
-#: src/Acf/Groups/translations.php:358
+#: src/Acf/Groups/translations.php:390
 msgid "Vertical gap between items. Format: '10px'. Possible units are 'px', '%', 'em/rem'"
 msgstr "アイテム間の垂直方向の隙間。フォーマット: '10px'。使用可能な単位は 'px', '%', 'em/rem'"
 
-#: src/Acf/Groups/translations.php:362
+#: src/Acf/Groups/translations.php:394
 msgid "Mobile"
 msgstr "モバイル"
 
-#: src/Acf/Groups/translations.php:363
+#: src/Acf/Groups/translations.php:395
 msgid "Tablet (> 576px)"
 msgstr "タブレット (> 576px)"
 
-#: src/Acf/Groups/translations.php:364
+#: src/Acf/Groups/translations.php:396
 msgid "Desktop (> 992px)"
 msgstr "デスクトップ (> 992px)"
 
-#: src/Acf/Groups/translations.php:365
+#: src/Acf/Groups/translations.php:397
 msgid "Large Desktop (> 1400px)"
 msgstr "大型デスクトップ (> 1400px)"
 
-#: src/Acf/Groups/translations.php:366
+#: src/Acf/Groups/translations.php:398
 msgid "Row"
 msgstr "行"
 
-#: src/Acf/Groups/translations.php:367
+#: src/Acf/Groups/translations.php:399
 msgid "Column"
 msgstr "列"
 
-#: src/Acf/Groups/translations.php:368
+#: src/Acf/Groups/translations.php:400
 msgid "Grid"
 msgstr "グリッド"
 
@@ -796,1549 +798,1538 @@ msgstr "HTC"
 msgid "Xiaomi"
 msgstr "シャオミ"
 
-#: src/Acf/Groups/translations.php:23
-#: src/Acf/Groups/translations.php:98
-#: src/Acf/Groups/translations.php:195
-#: src/Acf/Groups/translations.php:498
+#: src/Acf/Groups/translations.php:134
+#: src/Acf/Groups/translations.php:197
+#: src/Acf/Groups/translations.php:290
+#: src/Acf/Groups/translations.php:300
 msgid "Field"
 msgstr "フィールド"
 
-#: src/Acf/Groups/translations.php:24
+#: src/Acf/Groups/translations.php:135
 msgid "Label"
 msgstr "ラベル"
 
-#: src/Acf/Groups/translations.php:25
+#: src/Acf/Groups/translations.php:136
 msgid "Link Label"
 msgstr "リンクラベル"
 
-#: src/Acf/Groups/translations.php:26
+#: src/Acf/Groups/translations.php:137
 msgid "Image Size"
 msgstr "画像サイズ"
 
-#: src/Acf/Groups/translations.php:28
+#: src/Acf/Groups/translations.php:139
 msgid "Gallery layout"
 msgstr "ギャラリーレイアウト"
 
-#: src/Acf/Groups/translations.php:29
+#: src/Acf/Groups/translations.php:140
 msgid "Enable Lightbox"
 msgstr "ライトボックスを有効にする"
 
-#: src/Acf/Groups/translations.php:31
+#: src/Acf/Groups/translations.php:142
 msgid "Field Options"
 msgstr "フィールドオプション"
 
-#: src/Acf/Groups/translations.php:32
+#: src/Acf/Groups/translations.php:143
 msgid "Identifier"
 msgstr "識別子"
 
-#: src/Acf/Groups/translations.php:33
+#: src/Acf/Groups/translations.php:144
 msgid "Default Value"
 msgstr "デフォルト値"
 
-#: src/Acf/Groups/translations.php:34
+#: src/Acf/Groups/translations.php:145
 msgid "Show When Empty"
 msgstr "空の時に表示"
 
-#: src/Acf/Groups/translations.php:35
+#: src/Acf/Groups/translations.php:146
 msgid "Open link in a new tab"
 msgstr "リンクを新しいタブで開く"
 
-#: src/Acf/Groups/translations.php:36
+#: src/Acf/Groups/translations.php:147
 msgid "Map Marker Icon"
 msgstr "マップマーカーアイコン"
 
-#: src/Acf/Groups/translations.php:37
+#: src/Acf/Groups/translations.php:148
 msgid "Map Marker icon title"
 msgstr "マップマーカーアイコンのタイトル"
 
-#: src/Acf/Groups/translations.php:38
+#: src/Acf/Groups/translations.php:149
 msgid "Hide Map"
 msgstr "マップを隠す"
 
-#: src/Acf/Groups/translations.php:39
+#: src/Acf/Groups/translations.php:150
 msgid "Show address from the map"
 msgstr "マップからアドレスを表示"
 
-#: src/Acf/Groups/translations.php:40
+#: src/Acf/Groups/translations.php:151
 msgid "Values delimiter"
 msgstr "値の区切り文字"
 
-#: src/Acf/Groups/translations.php:41
+#: src/Acf/Groups/translations.php:152
 msgid "Map address format"
 msgstr "マップアドレス形式"
 
-#: src/Acf/Groups/translations.php:42
+#: src/Acf/Groups/translations.php:153
 msgid "Masonry: Row Min Height"
 msgstr "メーソンリー：行の最小高さ"
 
-#: src/Acf/Groups/translations.php:43
+#: src/Acf/Groups/translations.php:154
 msgid "Masonry: Gutter"
 msgstr "メーソンリー：ガター"
 
-#: src/Acf/Groups/translations.php:44
+#: src/Acf/Groups/translations.php:155
 msgid "Masonry: Mobile Gutter"
 msgstr "メーソンリー：モバイルガター"
 
-#: src/Acf/Groups/translations.php:45
+#: src/Acf/Groups/translations.php:156
 msgid "With Lightbox"
 msgstr "ライトボックス付き"
 
-#: src/Acf/Groups/translations.php:50
+#: src/Acf/Groups/translations.php:161
 msgid "If filled will be added to the markup as a prefix label of the field above"
 msgstr "入力された場合、上記のフィールドのプレフィックスラベルとしてマークアップに追加されます"
 
-#: src/Acf/Groups/translations.php:51
+#: src/Acf/Groups/translations.php:162
 msgid "You can set the link label here. Leave empty to use the default"
 msgstr "ここでリンクラベルを設定できます。デフォルトを使用するには空のままにしてください"
 
-#: src/Acf/Groups/translations.php:52
+#: src/Acf/Groups/translations.php:163
 msgid "Controls the size of the image, it changes the image src"
 msgstr "画像のサイズを制御し、画像のsrcを変更します"
 
-#: src/Acf/Groups/translations.php:57
+#: src/Acf/Groups/translations.php:168
 msgid "Used in the markup. <br> Allowed symbols : letters, numbers, underline and dash. <br> Important! Should be unique within the View"
 msgstr "マークアップで使用されます。<br>許可される記号：文字、数字、アンダースコア、ダッシュ。<br>重要！ビュー内でユニークである必要があります"
 
-#: src/Acf/Groups/translations.php:58
+#: src/Acf/Groups/translations.php:169
 msgid "Set up default value, only used when the field is empty"
 msgstr "デフォルト値を設定します。フィールドが空の場合にのみ使用されます"
 
-#: src/Acf/Groups/translations.php:59
+#: src/Acf/Groups/translations.php:170
 msgid "By default, empty fields are hidden. <br> Turn on to show even when field has no value"
 msgstr "デフォルトでは、空のフィールドは非表示になります。<br>フィールドに値がない場合でも表示するにはオンにします"
 
-#: src/Acf/Groups/translations.php:60
+#: src/Acf/Groups/translations.php:171
 msgid "By default, this setting is inherited from ACF, if available. Turn it on to always open in a new tab"
 msgstr "デフォルトでは、この設定はACFから継承されます（利用可能な場合）。常に新しいタブで開くようにオンにします"
 
-#: src/Acf/Groups/translations.php:61
+#: src/Acf/Groups/translations.php:172
 msgid "Customize the Map Marker by using your own icon or uploading an image from <a target='_blank' href='https://www.flaticon.com/free-icons/google-maps'>Flaticon</a> (.png, .jpg allowed). <br> Dimensions of 32x32px is recommended"
 msgstr "独自のアイコンを使用するか、<a target='_blank' href='https://www.flaticon.com/free-icons/google-maps'>Flaticon</a>から画像をアップロードしてマップマーカーをカスタマイズします（.png、.jpgが使用可能）。<br>32x32pxのサイズが推奨されます"
 
-#: src/Acf/Groups/translations.php:62
+#: src/Acf/Groups/translations.php:173
 msgid "Shown when mouse hovers on Map Marker"
 msgstr "マウスがマップマーカーにホバーしたときに表示されます"
 
-#: src/Acf/Groups/translations.php:63
+#: src/Acf/Groups/translations.php:174
 msgid "The Map is shown by default. Turn this on to hide the map"
 msgstr "マップはデフォルトで表示されます。これをオンにしてマップを隠します"
 
-#: src/Acf/Groups/translations.php:64
+#: src/Acf/Groups/translations.php:175
 msgid "The address is hidden by default. Turn this on to show the address from the map"
 msgstr "アドレスはデフォルトで隠されています。これをオンにしてマップからアドレスを表示します"
 
-#: src/Acf/Groups/translations.php:65
+#: src/Acf/Groups/translations.php:176
 msgid "If multiple values are chosen, you can define their delimiter here. HTML is supported"
 msgstr "複数の値が選択された場合、ここでその区切り文字を定義できます。HTMLがサポートされています"
 
-#: src/Acf/Groups/translations.php:66
+#: src/Acf/Groups/translations.php:177
 msgid "Use these variables to format your map address: <br> &#36;street_number&#36;, &#36;street_name&#36;, &#36;city&#36;, &#36;state&#36;, &#36;post_code&#36;, &#36;country&#36; <br> HTML is also supported. If left empty the address is not shown."
 msgstr "これらの変数を使用してマップアドレスをフォーマットします：<br>&#36;street_number&#36;、&#36;street_name&#36;、&#36;city&#36;、&#36;state&#36;、&#36;post_code&#36;、&#36;country&#36;<br>HTMLもサポートされています。空のままにするとアドレスは表示されません。"
 
-#: src/Acf/Groups/translations.php:67
+#: src/Acf/Groups/translations.php:178
 msgid "Minimum height of a row in px"
 msgstr "行の最小高さ（px）"
 
-#: src/Acf/Groups/translations.php:68
+#: src/Acf/Groups/translations.php:179
 msgid "Margin between items in px"
 msgstr "アイテム間のマージン（px）"
 
-#: src/Acf/Groups/translations.php:69
+#: src/Acf/Groups/translations.php:180
 msgid "Margin between items on mobile in px"
 msgstr "モバイル上のアイテム間のマージン（px）"
 
-#: src/Acf/Groups/translations.php:70
+#: src/Acf/Groups/translations.php:181
 msgid "If enabled, image(s) will include a zoom icon on hover, and when clicked, a popup with a larger image will appear"
 msgstr "有効にすると、画像にはホバー時にズームアイコンが含まれ、クリックすると大きな画像のポップアップが表示されます"
 
-#: src/Acf/Groups/translations.php:75
+#: src/Acf/Groups/translations.php:186
 msgid "Classic Masonry (macy v2"
 msgstr "クラシック・メイソンリー（macy v2）"
 
-#: src/Acf/Groups/translations.php:76
+#: src/Acf/Groups/translations.php:187
 msgid "Flat Masonry (acf-views"
 msgstr "フラット・メイソンリー（acf-views）"
 
-#: src/Acf/Groups/translations.php:77
+#: src/Acf/Groups/translations.php:188
 msgid "Inline-Gallery (lightgallery v2"
 msgstr "インライン・ギャラリー（lightgallery v2）"
 
-#: src/Acf/Groups/translations.php:79
+#: src/Acf/Groups/translations.php:190
 msgid "LightGallery v2 (47.1KB js"
 msgstr "LightGallery v2（47.1KB js）"
 
-#: src/Acf/Groups/translations.php:80
+#: src/Acf/Groups/translations.php:191
 msgid "Simple (no settings"
 msgstr "シンプル（設定なし）"
 
-#: src/Acf/Groups/translations.php:86
+#: src/Acf/Groups/translations.php:23
 msgid "Repository ID"
 msgstr "リポジトリID"
 
-#: src/Acf/Groups/translations.php:87
+#: src/Acf/Groups/translations.php:24
 msgid "Access Token"
 msgstr "アクセストークン"
 
-#: src/Acf/Groups/translations.php:88
+#: src/Acf/Groups/translations.php:25
 msgid "Repository Name"
 msgstr "リポジトリ名"
 
-#: src/Acf/Groups/translations.php:94
+#: src/Acf/Groups/translations.php:31
 msgid "Assign a name to your repository, which will appear as a new tab in the list table."
 msgstr "リポジトリに名前を割り当てます。これはリストテーブルの新しいタブとして表示されます。"
 
-#: src/Acf/Groups/translations.php:99
-#: src/Acf/Groups/translations.php:194
+#: src/Acf/Groups/translations.php:198
+#: src/Acf/Groups/translations.php:299
 msgid "Group"
 msgstr "グループ"
 
-#: src/Acf/Groups/translations.php:100
+#: src/Acf/Groups/translations.php:199
 msgid "Sub Fields"
 msgstr "サブフィールド"
 
-#: src/Acf/Groups/translations.php:101
+#: src/Acf/Groups/translations.php:200
 msgid "Sub fields"
 msgstr "サブフィールド"
 
-#: src/Acf/Groups/translations.php:106
+#: src/Acf/Groups/translations.php:205
 msgid "Setup sub fields here"
 msgstr "ここでサブフィールドを設定"
 
-#: src/Acf/Groups/translations.php:110
+#: src/Acf/Groups/translations.php:209
 msgid "Add Sub Field"
 msgstr "サブフィールドを追加"
 
-#: src/Acf/Groups/translations.php:196
-#: src/Acf/Groups/translations.php:508
+#: src/Acf/Groups/translations.php:301
+#: src/Acf/Groups/translations.php:528
 msgid "Comparison"
 msgstr "比較"
 
-#: src/Acf/Groups/translations.php:210
+#: src/Acf/Groups/translations.php:315
 msgid "Controls how field value will be compared"
 msgstr "フィールド値の比較方法を制御します"
 
-#: src/Acf/Groups/translations.php:222
-#: src/Acf/Groups/translations.php:529
+#: src/Acf/Groups/translations.php:327
+#: src/Acf/Groups/translations.php:549
 msgid "Equal to"
 msgstr "等しい"
 
-#: src/Acf/Groups/translations.php:223
-#: src/Acf/Groups/translations.php:530
+#: src/Acf/Groups/translations.php:328
+#: src/Acf/Groups/translations.php:550
 msgid "Not Equal to"
 msgstr "等しくない"
 
-#: src/Acf/Groups/translations.php:226
+#: src/Acf/Groups/translations.php:331
 msgid "Less than"
 msgstr "より小さい"
 
-#: src/Acf/Groups/translations.php:228
+#: src/Acf/Groups/translations.php:333
 msgid "Contains"
 msgstr "含む"
 
-#: src/Acf/Groups/translations.php:230
-#: src/Acf/Groups/translations.php:531
+#: src/Acf/Groups/translations.php:335
+#: src/Acf/Groups/translations.php:551
 msgid "Exists"
 msgstr "存在する"
 
-#: src/Acf/Groups/translations.php:532
+#: src/Acf/Groups/translations.php:552
 msgid "Does Not Exist"
 msgstr "存在しない"
 
-#: src/Acf/Groups/translations.php:242
+#: src/Acf/Groups/translations.php:345
 msgid "Controls how meta rules will be joined within the meta query"
 msgstr "メタクエリ内でメタルールがどのように結合されるかを制御します"
 
-#: src/Acf/Groups/translations.php:257
+#: src/Acf/Groups/translations.php:360
 msgid "Fields"
 msgstr "フィールド"
 
-#: src/Acf/Groups/translations.php:261
+#: src/Acf/Groups/translations.php:364
 msgid "Controls how the meta fields will be joined within the meta rule"
 msgstr "メタルール内でメタフィールドがどのように結合されるかを制御します"
 
-#: src/Acf/Groups/translations.php:262
+#: src/Acf/Groups/translations.php:365
 msgid "Fields for the meta rule. Multiple fields are supported"
 msgstr "メタルールのためのフィールドです。複数のフィールドがサポートされています"
 
-#: src/Acf/Groups/translations.php:174
-#: src/Acf/Groups/translations.php:266
+#: src/Acf/Groups/translations.php:273
+#: src/Acf/Groups/translations.php:369
 msgid "Add Field"
 msgstr "フィールドを追加"
 
-#: src/Acf/Groups/translations.php:275
+#: src/Acf/Groups/translations.php:35
 msgid "Specific posts"
 msgstr "特定の投稿"
 
-#: src/Acf/Groups/translations.php:276
+#: src/Acf/Groups/translations.php:36
 msgid "Post Types"
 msgstr "投稿タイプ"
 
-#: src/Acf/Groups/translations.php:277
+#: src/Acf/Groups/translations.php:37
 msgid "Mount Point"
 msgstr "マウントポイント"
 
-#: src/Acf/Groups/translations.php:278
+#: src/Acf/Groups/translations.php:38
 msgid "Mount Position"
 msgstr "マウント位置"
 
-#: src/Acf/Groups/translations.php:279
+#: src/Acf/Groups/translations.php:39
 msgid "Shortcode Arguments"
 msgstr "ショートコードの引数"
 
-#: src/Acf/Groups/translations.php:283
+#: src/Acf/Groups/translations.php:43
 msgid "Limit the mount point to only specific posts. Leave empty and use the 'Post Types' field to limit to specific post types"
 msgstr "マウントポイントを特定の投稿にのみ限定します。空のままにして、「投稿タイプ」フィールドを使用して特定の投稿タイプに限定します"
 
-#: src/Acf/Groups/translations.php:284
+#: src/Acf/Groups/translations.php:44
 msgid "Specific post types, to all items of which the shortcode should be mounted. Leave empty if you want to add to specific items only and use the 'Specific posts' field"
 msgstr "特定の投稿タイプで、ショートコードがマウントされるべきすべてのアイテムに対してです。特定のアイテムにのみ追加したい場合は空のままにして、「特定の投稿」フィールドを使用してください"
 
-#: src/Acf/Groups/translations.php:285
+#: src/Acf/Groups/translations.php:45
 msgid "To which unique Word, String or HTML piece to Mount to. Together with the 'Mount Position' controls the placement. If left empty all the content will be used as a mount point"
 msgstr "どのユニークなワード、文字列、またはHTML部分にマウントするか。「マウント位置」と合わせて配置を制御します。空のままにした場合、すべてのコンテンツがマウントポイントとして使用されます"
 
-#: src/Acf/Groups/translations.php:286
+#: src/Acf/Groups/translations.php:46
 msgid "Where the shortcode should be mounted"
 msgstr "ショートコードをどこにマウントすべきか"
 
-#: src/Acf/Groups/translations.php:291
+#: src/Acf/Groups/translations.php:51
 msgid "Before"
 msgstr "前"
 
-#: src/Acf/Groups/translations.php:292
+#: src/Acf/Groups/translations.php:52
 msgid "After"
 msgstr "後"
 
-#: src/Acf/Groups/translations.php:293
+#: src/Acf/Groups/translations.php:53
 msgid "Instead (replace)"
 msgstr "代わりに（置換）"
 
-#: src/Acf/Groups/translations.php:499
+#: src/Acf/Groups/translations.php:291
 msgid "Sub Field"
 msgstr "サブフィールド"
 
-#: src/Acf/Groups/translations.php:503
+#: src/Acf/Groups/translations.php:295
 msgid "This list contains fields for the selected repeater or group. <a target='_blank' href='https://www.advancedcustomfields.com/resources/repeater/'>Learn more about Repeater Fields</a>"
 msgstr "このリストには、選択されたリピーターまたはグループのフィールドが含まれています。<a target='_blank' href='https://www.advancedcustomfields.com/resources/repeater/'>リピーターフィールドについての詳細を見る</a>"
 
-#: src/Acf/Groups/translations.php:297
+#: src/Acf/Groups/translations.php:57
 msgid "General"
 msgstr "一般"
 
-#: src/Acf/Groups/translations.php:298
+#: src/Acf/Groups/translations.php:58
 msgid "Development mode"
 msgstr "開発モード"
 
-#: src/Acf/Groups/translations.php:299
+#: src/Acf/Groups/translations.php:59
 msgid "File system storage"
 msgstr "ファイルシステムストレージ"
 
-#: src/Acf/Groups/translations.php:310
+#: src/Acf/Groups/translations.php:70
 msgid "Git repositories"
 msgstr "Gitリポジトリ"
 
-#: src/Acf/Groups/translations.php:311
+#: src/Acf/Groups/translations.php:71
 msgid "Git Repositories"
 msgstr "Gitリポジトリ"
 
-#: src/Acf/Groups/translations.php:583
+#: src/Acf/Groups/translations.php:110
 msgid "Debugging"
 msgstr "デバッグ"
 
-#: src/Acf/Groups/translations.php:584
+#: src/Acf/Groups/translations.php:111
 msgid "Error logs"
 msgstr "エラーログ"
 
-#: src/Acf/Groups/translations.php:585
+#: src/Acf/Groups/translations.php:112
 msgid "Internal logs"
 msgstr "内部ログ"
 
-#: src/Acf/Groups/translations.php:586
+#: src/Acf/Groups/translations.php:113
 msgid "Generate debug dump"
 msgstr "デバッグダンプを生成"
 
-#: src/Acf/Groups/translations.php:315
+#: src/Acf/Groups/translations.php:75
 msgid "Enable to display quick access links on the front and make error messages more detailed (both for admins only)."
 msgstr "フロントエンドにクイックアクセスリンクを表示し、エラーメッセージをより詳細にするために有効にします（管理者のみ）。"
 
-#: src/Acf/Groups/translations.php:597
+#: src/Acf/Groups/translations.php:124
 msgid "Contains PHP warnings and errors related to the plugin. The error logs are deleted upon plugin upgrade or deactivation."
 msgstr "プラグインに関連するPHPの警告とエラーが含まれています。エラーログはプラグインのアップグレードまたは無効化時に削除されます。"
 
-#: src/Acf/Groups/translations.php:330
+#: src/Acf/Groups/translations.php:90
 msgid "Add Repository"
 msgstr "リポジトリを追加"
 
-#: src/Acf/Groups/translations.php:507
+#: src/Acf/Groups/translations.php:527
 msgid "Taxonomy"
 msgstr "タクソノミー"
 
-#: src/Acf/Groups/translations.php:518
+#: src/Acf/Groups/translations.php:538
 msgid "Select a target taxonomy"
 msgstr "対象のタクソノミーを選択"
 
-#: src/Acf/Groups/translations.php:519
+#: src/Acf/Groups/translations.php:539
 msgid "Controls how taxonomy will be compared"
 msgstr "タクソノミーの比較方法を制御します"
 
-#: src/Acf/Groups/translations.php:543
+#: src/Acf/Groups/translations.php:561
 msgid "Controls how taxonomy rules will be joined within the taxonomy query"
 msgstr "タクソノミークエリ内でタクソノミールールがどのように結合されるかを制御します"
 
-#: src/Acf/Groups/translations.php:558
+#: src/Acf/Groups/translations.php:576
 msgid "Taxonomies"
 msgstr "タクソノミー"
 
-#: src/Acf/Groups/translations.php:562
+#: src/Acf/Groups/translations.php:580
 msgid "Controls how the taxonomies will be joined within the taxonomy rule"
 msgstr "タクソノミールール内でタクソノミーがどのように結合されるかを制御します"
 
-#: src/Acf/Groups/translations.php:563
+#: src/Acf/Groups/translations.php:581
 msgid "Taxonomies for the taxonomy rule. Multiple taxonomies are supported"
 msgstr "タクソノミールールのためのタクソノミーです。複数のタクソノミーがサポートされています"
 
-#: src/Acf/Groups/translations.php:567
+#: src/Acf/Groups/translations.php:585
 msgid "Add Taxonomy"
 msgstr "タクソノミーを追加"
 
-#: src/Acf/Groups/translations.php:576
+#: src/Acf/Groups/translations.php:103
 msgid "Export"
 msgstr "エクスポート"
 
-#: src/Acf/Groups/translations.php:581
-#: src/Cpt/Base/Cpt/Git_Tabs.php:448
-#: src/Cpt/Base/Cpt/Git_Tabs.php:472
-#: src/Cpt/Base/Cpt/Table/Pre_Built_Tab.php:177
-#: src/Cpt/Base/Cpt/Table/Pre_Built_Tab.php:221
+#: src/Acf/Groups/translations.php:108
+#: src/Post_Type/Core/Cpt/Git_Tabs.php:440
+#: src/Post_Type/Core/Cpt/Git_Tabs.php:464
+#: src/Post_Type/Core/Cpt/Table/Pre_Built_Tab.php:177
+#: src/Post_Type/Core/Cpt/Table/Pre_Built_Tab.php:221
 msgid "Import"
 msgstr "インポート"
 
-#: src/Acf/Groups/translations.php:582
+#: src/Acf/Groups/translations.php:109
 msgid "Select a file to import"
 msgstr "インポートするファイルを選択"
 
-#: src/Acf/Groups/translations.php:118
+#: src/Acf/Groups/translations.php:217
 msgid "Parent field"
 msgstr "親フィールド"
 
-#: src/Acf/Groups/translations.php:136
+#: src/Acf/Groups/translations.php:235
 msgid "Add classification classes to the markup"
 msgstr "マークアップに分類クラスを追加"
 
-#: src/Acf/Groups/translations.php:137
+#: src/Acf/Groups/translations.php:236
 msgid "Do not skip unused wrappers"
 msgstr "使用されていないラッパーをスキップしない"
 
-#: src/Acf/Groups/translations.php:127
-msgid "Register Gutenberg Block"
-msgstr "Gutenbergブロックを登録"
-
-#: src/Acf/Groups/translations.php:128
+#: src/Acf/Groups/translations.php:227
 msgid "Render template when it's empty"
 msgstr "テンプレートが空の場合にレンダリング"
 
-#: src/Acf/Groups/translations.php:143
+#: src/Acf/Groups/translations.php:242
 msgid "Use the Post ID in the Gutenberg block's name"
 msgstr "Gutenbergブロックの名前に投稿IDを使用"
 
-#: src/Acf/Groups/translations.php:140
+#: src/Acf/Groups/translations.php:239
 msgid "Preview Object"
 msgstr "プレビューオブジェクト"
 
-#: src/Acf/Groups/translations.php:164
+#: src/Acf/Groups/translations.php:263
 msgid "By default, the field name is added as a prefix to all inner classes. For example, the image within the 'avatar' field will have the '__avatar-image' class. <br> Enabling this setting adds the generic class as well, such as '__image'. This feature can be useful if you want to apply styles based on field types."
 msgstr "デフォルトでは、フィールド名がすべての内部クラスの接頭辞として追加されます。例えば、'avatar'フィールド内の画像は'__avatar-image'クラスを持ちます。<br> この設定を有効にすると、'__image'のような汎用クラスも追加されます。この機能は、フィールドタイプに基づいてスタイルを適用したい場合に便利です。"
 
-#: src/Acf/Groups/translations.php:165
+#: src/Acf/Groups/translations.php:264
 msgid "By default, empty wrappers in the markup are skipped to optimize the output. For example, the '__row' wrapper will be skipped if there is no field label. <br> Enable this feature if you need all the wrappers in the output."
 msgstr "デフォルトでは、マークアップ内の空のラッパーは出力を最適化するためにスキップされます。例えば、フィールドラベルがない場合'__row'ラッパーはスキップされます。<br> 出力にすべてのラッパーが必要な場合は、この機能を有効にしてください。"
 
-#: src/Acf/Groups/translations.php:157
+#: src/Acf/Groups/translations.php:256
 msgid "By default, if all the selected fields are empty, the Twig template won't be rendered. <br> Enable this option if you have specific logic inside the template and you want to render it even when all the fields are empty."
 msgstr "デフォルトでは、選択されたすべてのフィールドが空の場合、Twigテンプレートはレンダリングされません。<br> テンプレート内に特定のロジックがあり、すべてのフィールドが空の場合でもそれをレンダリングしたい場合は、このオプションを有効にしてください。"
 
-#: src/Acf/Groups/translations.php:170
+#: src/Acf/Groups/translations.php:269
 msgid "Note: For backward compatibility purposes only."
 msgstr "注：後方互換性の目的のみです。"
 
-#: src/Acf/Groups/translations.php:181
+#: src/Acf/Groups/translations.php:277
 msgid "Off"
 msgstr "オフ"
 
-#: src/Acf/Groups/translations.php:182
+#: src/Acf/Groups/translations.php:278
 msgid "ACF Block"
 msgstr "ACFブロック"
 
-#: src/Acf/Groups/translations.php:183
+#: src/Acf/Groups/translations.php:279
 msgid "Meta Box Block"
 msgstr "メタボックスブロック"
 
-#: src/Acf/Groups/translations.php:184
+#: src/Acf/Groups/translations.php:280
 msgid "Pods Block"
 msgstr "Podsブロック"
 
-#: src/Acf/Groups/Layout_Settings.php:263
+#: src/Post_Type/Layouts/Acf/Groups/Layout_Settings.php:262
 msgid "View settings"
 msgstr "ビュー設定"
 
-#: src/Dashboard/Html_Printer.php:56
+#: src/Plugin/Dashboard/Html_Printer.php:57
 msgid "(internal use only)"
 msgstr "（内部使用のみ）"
 
-#: src/Dashboard/html/dashboard/import.php:36
+#: src/Plugin/Dashboard/html/dashboard/import.php:36
 msgid "Delete imported objects"
 msgstr "インポートされたオブジェクトを削除"
 
-#: src/Dashboard/html/dashboard/import.php:80
-#: src/Dashboard/html/dashboard/import_result.php:40
+#: src/Plugin/Dashboard/html/dashboard/import.php:80
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:40
 msgid "Display page's ACF fields on the same page"
 msgstr "同じページ上のページのACFフィールドを表示"
 
-#: src/Dashboard/html/dashboard/import.php:127
-#: src/Dashboard/html/dashboard/import_result.php:70
+#: src/Plugin/Dashboard/html/dashboard/import.php:127
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:70
 msgid "Display a specific post, page or CPT item with its fields"
 msgstr "特定の投稿、ページ、またはCPTアイテムとそのフィールドを表示"
 
-#: src/Dashboard/html/dashboard/import_result.php:80
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:80
 msgid "Display specific posts, pages or CPT items and their fields by using filters"
 msgstr "フィルターを使用して特定の投稿、ページ、またはCPTアイテムとそのフィールドを表示"
 
-#: src/Dashboard/html/dashboard/import_result.php:81
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:81
 msgid "or by manually assigning items"
 msgstr "またはアイテムを手動で割り当てることによって"
 
-#: src/Dashboard/html/dashboard/import_result.php:18
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:18
 msgid "Import was successful. You’re all set!"
 msgstr "インポートは成功しました。すべて設定されました！"
 
-#: src/Dashboard/html/dashboard/import_result.php:19
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:19
 msgid "All demo objects have been deleted."
 msgstr "すべてのデモオブジェクトが削除されました。"
 
-#: src/Dashboard/html/dashboard/import_result.php:22
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:22
 msgid "Request is failed."
 msgstr "リクエストは失敗しました。"
 
-#: src/Dashboard/html/dashboard/import_result.php:35
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:35
 msgid "Imported items"
 msgstr "インポートされたアイテム"
 
-#: src/Dashboard/html/dashboard/import_result.php:45
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:45
 msgid "\"Samsung Galaxy A53\" Page"
 msgstr "\"Samsung Galaxy A53\"ページ"
 
-#: src/Dashboard/html/dashboard/import_result.php:50
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:50
 msgid "\"Nokia X20\" Page"
 msgstr "\"Nokia X20\"ページ"
 
-#: src/Dashboard/html/dashboard/import_result.php:55
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:55
 msgid "\"Xiaomi 12T\" Page"
 msgstr "\"Xiaomi 12T\"ページ"
 
-#: src/Dashboard/html/dashboard/import_result.php:60
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:60
 msgid "\"Phone\" Field Group"
 msgstr "\"Phone\"フィールドグループ"
 
-#: src/Dashboard/html/dashboard/import_result.php:65
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:65
 msgid "\"Phone\" View"
 msgstr "\"電話\"ビュー"
 
-#: src/Dashboard/html/dashboard/import_result.php:75
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:75
 msgid "\"Article about Samsung\" page"
 msgstr "\"Samsungに関する記事\"ページ"
 
-#: src/Dashboard/html/dashboard/import_result.php:86
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:86
 msgid "\"Phones\" Card"
 msgstr "\"電話\"カード"
 
-#: src/Dashboard/html/dashboard/import_result.php:91
+#: src/Plugin/Dashboard/html/dashboard/import_result.php:91
 msgid "\"Most popular phones in 2022\" page"
 msgstr "\"2022年の最も人気のある電話\"ページ"
 
-#: src/Dashboard/html/postbox/shortcodes.php:52
-msgid "Copy to clipboard"
-msgstr "クリップボードにコピー"
-
-#: src/Cpt/Base/Cpt/Git_Tabs.php:89
-#: src/Cpt/Base/Cpt/Table/Fs_Only_Tab.php:80
-#: src/Cpt/Base/Cpt/Table/Pre_Built_Tab.php:98
-#: src/Plugin/Plugin.php:221
+#: src/Plugin/Plugin.php:467
+#: src/Post_Type/Core/Cpt/Git_Tabs.php:87
+#: src/Post_Type/Core/Cpt/Table/Fs_Only_Tab.php:80
+#: src/Post_Type/Core/Cpt/Table/Pre_Built_Tab.php:98
 msgid "Read more"
 msgstr "続きを読む"
 
-#: src/Dashboard/html/postbox/support.php:12
+#: src/Plugin/Dashboard/html/postbox/support.php:12
 msgid "We're here to help you with your questions. Support is handled through Wordpress.org"
 msgstr "質問にお答えします。サポートはWordpress.orgを通じて行われます"
 
-#: src/Dashboard/html/postbox/support.php:22
+#: src/Plugin/Dashboard/html/postbox/support.php:22
 msgid "Get support"
 msgstr "サポートを受ける"
 
-#: src/Cpt/Base/Cpt/Cpt.php:162
+#: src/Post_Type/Core/Cpt/Cpt.php:164
 msgid "enabled"
 msgstr "有効"
 
-#: src/Cpt/Base/Cpt/Cpt.php:163
+#: src/Post_Type/Core/Cpt/Cpt.php:165
 msgid "disabled"
 msgstr "無効"
 
-#: src/Cpt/Base/Cpt/Cpt.php:59
+#: src/Post_Type/Core/Cpt/Cpt.php:73
 msgid "Thank you for creating with"
 msgstr "ご利用いただきありがとうございます"
 
-#: src/Cpt/Base/Cpt/Cpt.php:61
+#: src/Post_Type/Core/Cpt/Cpt.php:75
 msgid "WordPress"
 msgstr "WordPress"
 
-#: src/Cpt/Base/Cpt/Cpt.php:62
+#: src/Post_Type/Core/Cpt/Cpt.php:76
 msgid "and"
 msgstr "と"
 
-#: src/Cpt/Base/Cpt/Cpt.php:68
+#: src/Post_Type/Core/Cpt/Cpt.php:82
 msgid "Take"
 msgstr "ぜひ"
 
-#: src/Cpt/Base/Cpt/Cpt.php:70
+#: src/Post_Type/Core/Cpt/Cpt.php:84
 msgid "2 minute survey"
 msgstr "2分間のアンケート"
 
-#: src/Cpt/Base/Cpt/Cpt_Meta_Boxes.php:89
+#: src/Post_Type/Core/Cpt/Cpt_Meta_Boxes.php:97
 msgid "Post Types:"
 msgstr "投稿タイプ："
 
-#: src/Cpt/Base/Cpt/Cpt_Meta_Boxes.php:99
+#: src/Post_Type/Core/Cpt/Cpt_Meta_Boxes.php:107
 msgid "Pages:"
 msgstr "ページ："
 
-#: src/Cpt/Base/Cpt/Table/Bulk_Validation_Tab.php:73
+#: src/Post_Type/Core/Cpt/Table/Bulk_Validation_Tab.php:73
 msgid "Bulk validation"
 msgstr "一括検証"
 
-#: src/Cpt/Base/Cpt/Table/Bulk_Validation_Tab.php:77
+#: src/Post_Type/Core/Cpt/Table/Bulk_Validation_Tab.php:77
 msgid "Bulk validation - Used to validate the Custom Template field of all existing items and displays items that have failed validation."
 msgstr "一括検証 - すべての既存アイテムのカスタムテンプレートフィールドを検証し、検証に失敗したアイテムを表示するために使用されます。"
 
-#: src/Cpt/Base/Cpt/Table/Bulk_Validation_Tab.php:125
-#: src/Cpt/Integrations/Shortcode_Base.php:226
+#: src/Post_Type/Core/Cpt/Table/Bulk_Validation_Tab.php:125
+#: src/Post_Type/Integration/Core/Shortcode/Shortcode_Base.php:264
 msgid "Edit"
 msgstr "編集"
 
-#: src/Cpt/Base/Cpt/Table/Cpt_Table.php:81
-#: src/Cpt/Base/Cpt/Table/Cpt_Table.php:312
+#: src/Post_Type/Core/Cpt/Table/Cpt_Table.php:110
+#: src/Post_Type/Core/Cpt/Table/Cpt_Table.php:337
 msgid "Clone"
 msgstr "複製"
 
-#: src/Cpt/Base/Cpt/Table/Cpt_Table.php:195
+#: src/Post_Type/Core/Cpt/Table/Cpt_Table.php:224
 msgid "Search for name."
 msgstr "名前で検索します。"
 
-#: src/Cpt/Base/Cpt/Table/Cpt_Table.php:296
+#: src/Post_Type/Core/Cpt/Table/Cpt_Table.php:321
 msgid "Delete"
 msgstr "削除"
 
 #. translators: %s: item title.
-#: src/Cpt/Base/Cpt/Table/Cpt_Table.php:413
+#: src/Post_Type/Core/Cpt/Table/Cpt_Table.php:438
 #, php-format
 msgid "Select %s"
 msgstr "%sを選択"
 
-#: src/Cpt/Base/Cpt/Table/Fs_Only_Tab.php:54
+#: src/Post_Type/Core/Cpt/Table/Fs_Only_Tab.php:54
 msgid "FS only"
 msgstr "FSのみ"
 
-#: src/Cpt/Base/Cpt/Table/Fs_Only_Tab.php:58
+#: src/Post_Type/Core/Cpt/Table/Fs_Only_Tab.php:58
 msgid "The \"FS only\" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI."
 msgstr "\"FSのみ\"タブは、WordPressの投稿テーブルにレコードがなく、UIを使用して編集できないアイテムのリストを表示します。"
 
-#: src/Cpt/Base/Cpt/Table/Fs_Only_Tab.php:65
+#: src/Post_Type/Core/Cpt/Table/Fs_Only_Tab.php:65
 msgid "If you need to amend such an item, you should \"sync\" it using the \"sync\" row or a bulk action."
 msgstr "そのようなアイテムを修正する必要がある場合は、\"同期\"行または一括アクションを使用して\"同期\"する必要があります。"
 
-#: src/Cpt/Base/Cpt/Table/Fs_Only_Tab.php:72
+#: src/Post_Type/Core/Cpt/Table/Fs_Only_Tab.php:72
 msgid "After doing so, the items will become editable using the UI (but the item data will still be stored in FS)."
 msgstr "これを行うと、アイテムはUIを使用して編集可能になります（ただし、アイテムデータはFSに引き続き保存されます）。"
 
-#: src/Cpt/Base/Cpt/Table/Fs_Only_Tab.php:97
-#: src/Cpt/Base/Cpt/Table/Fs_Only_Tab.php:177
+#: src/Post_Type/Core/Cpt/Table/Fs_Only_Tab.php:97
+#: src/Post_Type/Core/Cpt/Table/Fs_Only_Tab.php:177
 msgid "Sync"
 msgstr "同期"
 
-#: src/Cpt/Base/Cpt/Table/Fs_Only_Tab.php:159
+#: src/Post_Type/Core/Cpt/Table/Fs_Only_Tab.php:159
 msgid "items successfully synced"
 msgstr "アイテムが正常に同期されました"
 
-#: src/Cpt/Base/Cpt_Data_Storage/File_System.php:106
+#: src/Post_Type/Core/Cpt_Data_Storage/File_System.php:118
 msgid "The FS storage directory is not writable."
 msgstr "FSストレージディレクトリに書き込みできません。"
 
-#: src/Cpt/Base/Cpt_Data_Storage/File_System.php:109
+#: src/Post_Type/Core/Cpt_Data_Storage/File_System.php:121
 msgid "Check and fix file permissions to work with Views and Cards."
 msgstr "ビューとカードを使用するためにファイルの権限を確認して修正してください。"
 
-#: src/Cpt/Base/Cpt_Data_Storage/File_System.php:115
+#: src/Post_Type/Core/Cpt_Data_Storage/File_System.php:127
 msgid "Note: Do not disable the FS storage feature before fixing it, otherwise your data will be lost."
 msgstr "注意：修正する前にFSストレージ機能を無効にしないでください。そうしないとデータが失われます。"
 
-#: src/Dashboard/Admin_Pages.php:237
-#: src/Dashboard/html/postbox/upgrade.php:23
-#: src/Plugin/Plugin.php:141
+#: src/Plugin/Dashboard/Admin_Pages.php:242
+#: src/Plugin/Dashboard/html/postbox/upgrade.php:23
+#: src/Plugin/Plugin.php:398
 msgid "Upgrade to Pro"
 msgstr "プロにアップグレード"
 
-#: src/Plugin/Plugin.php:206
+#: src/Plugin/Plugin.php:452
 msgid "Compatibility issue detected! \"Advanced Views\" plugin requires \"PHPDoc\" comments in code."
 msgstr "互換性の問題が検出されました！\"Advanced Views\"プラグインはコード内に\"PHPDoc\"コメントが必要です。"
 
-#: src/Plugin/Plugin.php:210
+#: src/Plugin/Plugin.php:456
 msgid "Please change the \"opcache.save_comments\" option in your php.ini file to the default value of \"1\" on your hosting."
 msgstr "ホスティングでのデフォルト値\"1\"に設定するために、php.iniファイルの\"opcache.save_comments\"オプションを変更してください。"
 
-#: src/Plugin/Plugin.php:390
+#: src/Plugin/Plugin.php:271
 msgid "'Advanced Views Lite' and 'Advanced Views Pro' should not be active at the same time. We've automatically deactivated"
 msgstr "'Advanced Views Lite'と'Advanced Views Pro'は同時にアクティブにすべきではありません。自動的に無効化しました"
 
-#: src/Plugin/Plugin.php:396
+#: src/Plugin/Plugin.php:277
 msgid "Advanced Views Pro"
 msgstr "Advanced Views Pro"
 
-#: src/Cpt/Template/Templates_Environment.php:65
+#: src/Template/Template_Engine/Core/Templates_Environment.php:65
 msgid "The templates directory is not writable."
 msgstr "テンプレートディレクトリに書き込みできません。"
 
-#: src/Cpt/Template/Templates_Environment.php:67
+#: src/Template/Template_Engine/Core/Templates_Environment.php:67
 msgid "Most likely, the WordPress uploads directory is not writable."
 msgstr "おそらく、WordPressのアップロードディレクトリに書き込みできません。"
 
-#: src/Cpt/Template/Templates_Environment.php:69
+#: src/Template/Template_Engine/Core/Templates_Environment.php:69
 msgid "Check and fix file permissions, then deactivate and activate back the Advanced Views plugin. If the issue persists, contact support."
 msgstr "ファイルの権限を確認して修正し、Advanced Viewsプラグインを一度無効にしてから再度有効にしてください。問題が解決しない場合は、サポートに連絡してください。"
 
-#: src/Cpt/Layouts/Cpt/Layouts_Cpt.php:67
-#: src/Cpt/Layouts/Cpt/Layouts_Cpt.php:70
+#: src/Post_Type/Layouts/Cpt/Layouts_Cpt.php:73
+#: src/Post_Type/Layouts/Cpt/Layouts_Cpt.php:76
 msgid "View updated."
 msgstr "ビューを更新しました。"
 
-#: src/Cpt/Layouts/Cpt/Layouts_Cpt.php:52
+#: src/Post_Type/Layouts/Cpt/Layouts_Cpt.php:58
 msgid "View scheduled for:"
 msgstr "ビューのスケジュール設定："
 
-#: src/Cpt/Layouts/Cpt/Layouts_Cpt.php:61
+#: src/Post_Type/Layouts/Cpt/Layouts_Cpt.php:67
 msgid "View restored to revision from"
 msgstr "ビューをリビジョンから復元："
 
-#: src/Cpt/Layouts/Cpt/Layouts_Cpt.php:72
+#: src/Post_Type/Layouts/Cpt/Layouts_Cpt.php:78
 msgid "View published."
 msgstr "ビューが公開されました。"
 
-#: src/Cpt/Layouts/Cpt/Layouts_Cpt.php:73
+#: src/Post_Type/Layouts/Cpt/Layouts_Cpt.php:79
 msgid "View saved."
 msgstr "ビューが保存されました。"
 
-#: src/Cpt/Layouts/Cpt/Layouts_Cpt.php:74
+#: src/Post_Type/Layouts/Cpt/Layouts_Cpt.php:80
 msgid "View submitted."
 msgstr "ビューが送信されました。"
 
-#: src/Cpt/Layouts/Cpt/Layouts_Cpt.php:76
+#: src/Post_Type/Layouts/Cpt/Layouts_Cpt.php:82
 msgid "View draft updated."
 msgstr "ビューのドラフトが更新されました。"
 
-#: src/Cpt/Layouts/Cpt/Layout_Meta_Boxes.php:90
+#: src/Post_Type/Layouts/Cpt/Layout_Meta_Boxes.php:93
 msgid "No assigned ACF Groups."
 msgstr "割り当てられたACFグループがありません。"
 
-#: src/Cpt/Layouts/Integrations/Layout_Shortcode.php:175
+#: src/Post_Type/Layouts/Integration/Layout_Shortcode.php:174
 msgid "object-id argument contains the wrong value"
 msgstr "object-id引数に誤った値が含まれています"
 
-#: src/Cpt/Base/Cpt/Table/Pre_Built_Tab.php:80
+#: src/Post_Type/Core/Cpt/Table/Pre_Built_Tab.php:80
 msgid "Pre-built components"
 msgstr "プリビルトコンポーネント"
 
 #. translators: Successfully imported x Layout(s) and y Post Selection(s).
-#: src/Dashboard/Tools_Page.php:480
+#: src/Plugin/Dashboard/Tools_Page.php:482
 #, php-format
 msgid "Successfully imported %1$d %2$s and %3$d %4$s."
 msgstr "%1$d 個の%2$sと%3$d 個の%4$sを正常にインポートしました。"
 
 #. translators: Something went wrong. Imported x from y Layout(s) and x from y Post Selections.
-#: src/Dashboard/Tools_Page.php:491
+#: src/Plugin/Dashboard/Tools_Page.php:493
 #, php-format
 msgid "Something went wrong. Imported %1$d from %2$d %3$s and %4$d from %5$d %6$s."
 msgstr "何かがうまくいかなかった。%2$d 個の%3$sから%1$d 個、%5$d 個の%6$sから%4$d 個をインポートしました。"
 
 #. translators: Success! There were x View(s) and y Card(s) exported.
-#: src/Dashboard/Tools_Page.php:216
+#: src/Plugin/Dashboard/Tools_Page.php:218
 #, php-format
 msgid "Success! There were %1$d %2$s and %3$d %4$s exported."
 msgstr "成功！%1$d 個の%2$sと%3$d 個の%4$sがエクスポートされました。"
 
-#: src/Cpt/Base/Cpt/Table/External_Storage_Tab.php:190
+#: src/Post_Type/Core/Cpt/Table/External_Storage_Tab.php:186
 msgid "Success!"
 msgstr "成功！"
 
 #. translators: x items successfully imported.
-#: src/Cpt/Base/Cpt/Table/External_Storage_Tab.php:200
-#: src/Cpt/Base/Cpt/Table/External_Storage_Tab.php:237
-#: src/Cpt/Base/Cpt/Table/External_Storage_Tab.php:278
+#: src/Post_Type/Core/Cpt/Table/External_Storage_Tab.php:196
+#: src/Post_Type/Core/Cpt/Table/External_Storage_Tab.php:233
+#: src/Post_Type/Core/Cpt/Table/External_Storage_Tab.php:274
 msgid "successfully imported:"
 msgstr "正常にインポートされました："
 
-#: src/Cpt/Base/Cpt/Table/External_Storage_Tab.php:276
+#: src/Post_Type/Core/Cpt/Table/External_Storage_Tab.php:272
 msgid "group"
 msgid_plural "groups"
 msgstr[0] "グループ"
 msgstr[1] "グループ"
 
-#: src/Cpt/Base/Cpt/Table/Pre_Built_Tab.php:83
+#: src/Post_Type/Core/Cpt/Table/Pre_Built_Tab.php:83
 msgid "Import pre-built components."
 msgstr "プリビルトコンポーネントをインポートする。"
 
-#: src/Cpt/Layouts/Cpt/Table/Layouts_Pre_Built_Tab.php:82
+#: src/Post_Type/Layouts/Tabs/Layouts_Pre_Built_Tab.php:83
 msgid "Meta Fields and their Field Groups along with responsive CSS rules are included."
 msgstr "メタフィールドとそれらのフィールドグループ、およびレスポンシブCSSルールが含まれています。"
 
-#: src/Cpt/Base/Cpt/Table/Pre_Built_Tab.php:90
+#: src/Post_Type/Core/Cpt/Table/Pre_Built_Tab.php:90
 msgid "Hover on the title and click Import."
 msgstr "タイトルにカーソルを合わせて、インポートをクリックしてください。"
 
-#: src/Plugin/Automated_Reports/Usage_Report.php:138
+#: src/Plugin/Automated_Reports/Usage_Report.php:124
 msgid "The Advanced Views plugin sends automatic error and usage reports to developers, enabling faster issue resolution and plugin improvement."
 msgstr "Advanced Viewsプラグインは、自動的にエラー報告と使用状況報告を開発者に送信し、問題の解決とプラグインの改善を迅速に行います。"
 
-#: src/Plugin/Automated_Reports/Usage_Report.php:145
+#: src/Plugin/Automated_Reports/Usage_Report.php:131
 msgid "Automatic reports do not include any private or sensitive information and can be disabled in the plugin settings."
 msgstr "自動レポートにはプライベートまたは機密情報は含まれず、プラグイン設定で無効にすることができます。"
 
-#: src/Plugin/Automated_Reports/Usage_Report.php:162
+#: src/Plugin/Automated_Reports/Usage_Report.php:148
 msgid "Got it, hide"
 msgstr "了解しました、非表示にします"
 
-#: src/Plugin/Automated_Reports/State_Report.php:107
+#: src/Plugin/Automated_Reports/State_Report.php:105
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: src/Plugin/Automated_Reports/State_Report.php:108
+#: src/Plugin/Automated_Reports/State_Report.php:106
 msgid "Deactivate"
 msgstr "非アクティブ化"
 
-#: src/Acf/Groups/translations.php:303
+#: src/Acf/Groups/translations.php:63
 msgid "Disable automatic reports"
 msgstr "自動レポートを無効にする"
 
-#: src/Cpt/Base/Cpt/Cpt_Gutenberg_Editor_Settings.php:80
+#: src/Post_Type/Core/Cpt/Cpt_Gutenberg_Editor_Settings.php:98
 msgid "Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue."
 msgstr "Advanced Viewsエラー：Gutenbergエディターが無効になっています。これは互換性の問題があることを示しています。"
 
 #. translators: %1$s - link opening tag, %2$s - link closing tag.
-#: src/Cpt/Base/Cpt/Cpt_Gutenberg_Editor_Settings.php:89
+#: src/Post_Type/Core/Cpt/Cpt_Gutenberg_Editor_Settings.php:107
 #, php-format
 msgid "Please %1$s reach out %2$s to our support team for further assistance."
 msgstr "さらなる支援が必要な場合は、%1$sサポートチームに%2$s連絡してください。"
 
-#: src/Cpt/Post_Selections/Cpt/Table/Post_Selections_Pre_Built_Tab.php:59
+#: src/Post_Type/Post_Selections/Tabs/Post_Selections_Pre_Built_Tab.php:60
 msgid "View for Card along with responsive CSS rules are included."
 msgstr "カード用のビューとレスポンシブCSSルールが含まれています。"
 
-#: src/Dashboard/html/postbox/shortcodes.php:58
+#: src/Plugin/Dashboard/html/postbox/shortcodes.php:70
 msgid "See how to limit visibility by roles"
 msgstr "ロールによる表示制限の方法を見る"
 
-#: src/Cpt/Base/Cpt/Git_Tabs.php:109
-#: src/Dashboard/html/postbox/shortcodes.php:62
-#: src/Dashboard/html/postbox/shortcodes.php:70
+#: src/Plugin/Dashboard/html/postbox/shortcodes.php:74
+#: src/Plugin/Dashboard/html/postbox/shortcodes.php:82
+#: src/Post_Type/Core/Cpt/Git_Tabs.php:107
 msgid "here"
 msgstr "こちら"
 
-#: src/Dashboard/html/postbox/shortcodes.php:66
+#: src/Plugin/Dashboard/html/postbox/shortcodes.php:78
 msgid "See how to load from other sources or limit visibility by roles"
 msgstr "他のソースからの読み込み方法やロールによる表示制限の方法を見る"
 
-#: src/Plugin/Automated_Reports/State_Report.php:109
+#: src/Plugin/Automated_Reports/State_Report.php:107
 msgid "Delete data and deactivate"
 msgstr "データを削除して無効にする"
 
-#: src/Plugin/Automated_Reports/State_Report.php:116
+#: src/Plugin/Automated_Reports/State_Report.php:114
 msgid "Delete all the plugin data (cannot be undone)"
 msgstr "すべてのプラグインデータを削除します（取り消しできません）"
 
-#: src/Acf/Groups/translations.php:133
-#: src/Acf/Groups/translations.php:307
-#: src/Acf/Groups/translations.php:411
+#: src/Acf/Groups/translations.php:67
+#: src/Acf/Groups/translations.php:232
+#: src/Acf/Groups/translations.php:443
 msgid "Classes generation"
 msgstr "クラス生成"
 
-#: src/Acf/Groups/translations.php:161
-#: src/Acf/Groups/translations.php:450
+#: src/Acf/Groups/translations.php:260
+#: src/Acf/Groups/translations.php:482
 msgid "Controls classes generation in the Default Template."
 msgstr "デフォルトテンプレートでのクラス生成を制御します。"
 
-#: src/Acf/Groups/translations.php:189
-#: src/Acf/Groups/translations.php:341
-#: src/Acf/Groups/translations.php:493
+#: src/Acf/Groups/translations.php:98
+#: src/Acf/Groups/translations.php:285
+#: src/Acf/Groups/translations.php:522
 msgid "BEM style"
 msgstr "BEMスタイル"
 
-#: src/Acf/Groups/translations.php:304
+#: src/Acf/Groups/translations.php:64
 msgid "Defaults"
 msgstr "デフォルト"
 
-#: src/Acf/Groups/translations.php:306
+#: src/Acf/Groups/translations.php:66
 msgid "Web components type"
 msgstr "Webコンポーネントのタイプ"
 
-#: src/Acf/Groups/translations.php:132
-#: src/Acf/Groups/translations.php:410
+#: src/Acf/Groups/translations.php:231
+#: src/Acf/Groups/translations.php:442
 msgid "Web Component Type"
 msgstr "Webコンポーネントのタイプ"
 
-#: src/Acf/Groups/translations.php:399
+#: src/Acf/Groups/translations.php:431
 msgid "'Load More' button label"
 msgstr "「さらに読み込む」ボタンのラベル"
 
-#: src/Acf/Groups/translations.php:422
+#: src/Acf/Groups/translations.php:454
 msgid "Filter by post type. Multiple types can be selected."
 msgstr "投稿タイプでフィルタリングします。複数のタイプを選択できます。"
 
-#: src/Acf/Groups/translations.php:423
+#: src/Acf/Groups/translations.php:455
 msgid "Filter by post status. Multiple types can be selected."
 msgstr "投稿ステータスでフィルタリングします。複数のタイプを選択できます。"
 
-#: src/Acf/Groups/translations.php:424
+#: src/Acf/Groups/translations.php:456
 msgid "Use '-1' for unlimited."
 msgstr "'-1' を指定すると制限なしです。"
 
-#: src/Acf/Groups/translations.php:425
+#: src/Acf/Groups/translations.php:457
 msgid "Sort results by selecting an option. <br> 'Default' keeps the default order: latest first, while sticky flags may affect it."
 msgstr "オプションを選択して結果をソートします。<br>「デフォルト」はデフォルトの順序を維持します：最新のものが最初に表示され、スティッキーなフラグが影響する場合があります。"
 
-#: src/Acf/Groups/translations.php:426
+#: src/Acf/Groups/translations.php:458
 msgid "Select a target group."
 msgstr "対象のグループを選択します。"
 
-#: src/Acf/Groups/translations.php:427
+#: src/Acf/Groups/translations.php:459
 msgid "Select a target field."
 msgstr "対象のフィールドを選択します。"
 
-#: src/Acf/Groups/translations.php:428
+#: src/Acf/Groups/translations.php:460
 msgid "Defines the sorting order of posts."
 msgstr "投稿のソート順を定義します。"
 
-#: src/Acf/Groups/translations.php:434
+#: src/Acf/Groups/translations.php:466
 msgid "Add a message that will be displayed if there are no results. Leave empty for no message."
 msgstr "結果がない場合に表示されるメッセージを追加します。メッセージが不要な場合は空白のままにしてください。"
 
-#: src/Acf/Groups/translations.php:429
+#: src/Acf/Groups/translations.php:461
 msgid "Manually assign specific posts to limit the query to. Only this pool of posts will then be considered for other filters. The 'Pool of posts' option can be selected to 'Sort by'."
 msgstr "特定の投稿を手動で割り当ててクエリを制限します。この投稿プールのみが他のフィルターの対象となります。投稿プールのオプションは「ソート方法」に選択できます。"
 
-#: src/Acf/Groups/translations.php:430
+#: src/Acf/Groups/translations.php:462
 msgid "Here you can manually exclude specific posts from the query. It means the query will ignore posts from this list, even if they fit the filters. Warning : this field can't be used together with 'Pool of posts'."
 msgstr "ここでクエリから特定の投稿を手動で除外できます。これは、クエリがこのリストの投稿を無視することを意味し、フィルターに適合していても同様です。注意：このフィールドは「投稿プール」と同時に使用できません。"
 
-#: src/Acf/Groups/translations.php:431
+#: src/Acf/Groups/translations.php:463
 msgid "If unchecked then sticky posts will be at the top of results. <a target='_blank' href='https://wordpress.org/support/article/sticky-posts/'>Learn more about Sticky Posts</a>."
 msgstr "チェックを外すと、固定投稿が結果の一番上に表示されます。<a target='_blank' href='https://wordpress.org/support/article/sticky-posts/'>固定投稿について詳しく</a>。"
 
-#: src/Acf/Groups/translations.php:166
-#: src/Acf/Groups/translations.php:453
+#: src/Acf/Groups/translations.php:265
+#: src/Acf/Groups/translations.php:485
 msgid "Note: For backward compatibility purposes only. Enable this option if you have external CSS selectors that rely on outdated digital IDs."
 msgstr "注意: 後方互換性のためのみ。古いデジタルIDに依存する外部CSSセレクターがある場合にこのオプションを有効にします。"
 
-#: src/Acf/Groups/translations.php:452
+#: src/Acf/Groups/translations.php:484
 msgid "Add a class name without a dot (e.g. 'class-name') or multiple classes with single space as a delimiter (e.g. 'class-name1 class-name2'). These classes are added to the wrapping HTML element. <a target='_blank' href='https://www.w3schools.com/cssref/sel_class.asp'>Learn more about CSS Classes</a>."
 msgstr "ドットなしでクラス名を追加します（例：'class-name'）または区切り文字として単一のスペースで複数のクラスを追加します（例：'class-name1 class-name2'）。これらのクラスはラップされたHTML要素に追加されます。<a target='_blank' href='https://www.w3schools.com/cssref/sel_class.asp'>CSSクラスについて詳しく</a>。"
 
-#: src/Acf/Groups/translations.php:441
+#: src/Acf/Groups/translations.php:473
 msgid "Define a Custom label for the load more button."
 msgstr "さらに読み込むボタンのカスタムラベルを定義します。"
 
-#: src/Acf/Groups/translations.php:308
+#: src/Acf/Groups/translations.php:68
 msgid "Sass Template (for File System Storage)"
 msgstr "Sassテンプレート（ファイルシステムストレージ用）"
 
-#: src/Acf/Groups/translations.php:309
+#: src/Acf/Groups/translations.php:69
 msgid "TypeScript Template (for File System Storage)"
 msgstr "TypeScriptテンプレート（ファイルシステムストレージ用）"
 
-#: src/Acf/Groups/translations.php:163
+#: src/Acf/Groups/translations.php:262
 msgid "Add a class name without a dot (e.g. “class-name”) or multiple classes with single space as a delimiter (e.g. “class-name1 class-name2”). <br> These classes are added to the wrapping HTML element. <a target='_blank' href='https://www.w3schools.com/cssref/sel_class.asp'>Learn more about CSS Classes</a>."
 msgstr "ドットなしでクラス名を追加します（例：「class-name」）または単一スペースを区切りとする複数のクラス（例：「class-name1 class-name2」）。<br>これらのクラスはラッピングHTML要素に追加されます。<a target='_blank' href='https://www.w3schools.com/cssref/sel_class.asp'>CSSクラスについて詳しくはこちら</a>。"
 
-#: src/Acf/Groups/translations.php:167
+#: src/Acf/Groups/translations.php:266
 msgid "Select a data object (which field values will be used) and update the View. After reload the page to see the markup in the preview."
 msgstr "データオブジェクト（使用されるフィールド値）を選択してViewを更新します。プレビューでマークアップを確認するには、ページをリロードしてください。"
 
-#: src/Acf/Groups/translations.php:374
+#: src/Acf/Groups/translations.php:406
 msgid "Source"
 msgstr "ソース"
 
-#: src/Acf/Groups/translations.php:462
+#: src/Acf/Groups/translations.php:494
 msgid "Posts Query (WP_Query)"
 msgstr "投稿クエリ（WP_Query）"
 
-#: src/Acf/Groups/translations.php:463
+#: src/Acf/Groups/translations.php:495
 msgid "Page context (archive pages)"
 msgstr "ページコンテキスト（アーカイブページ）"
 
-#: src/Acf/Groups/translations.php:158
+#: src/Acf/Groups/translations.php:257
 msgid "Add a short description for your Views’ purpose. <br> Note : This description is only seen on the admin Advanced Views list."
 msgstr "Viewsの目的についての短い説明を追加します。<br>注意：この説明は管理者の詳細なViewsリストでのみ表示されます。"
 
-#: src/Cpt/Base/Cpt/Cpt_Assets_Reducer.php:239
+#: src/Post_Type/Core/Cpt/Cpt_Assets_Reducer.php:263
 msgid "Loading the Editor is taking longer than expected."
 msgstr ""
 
-#: src/Cpt/Post_Selections/Post_Selection_Markup.php:226
+#: src/Post_Type/Post_Selections/Post_Selection_Markup.php:226
 msgid "Manually edit these rules by disabling Layout Rules, otherwise these rules are updated every time you press the Update button"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:122
-#: src/Acf/Groups/translations.php:404
+#: src/Acf/Groups/translations.php:221
+#: src/Acf/Groups/translations.php:436
 msgid "Template Engine"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:179
-#: src/Acf/Groups/translations.php:335
-#: src/Acf/Groups/translations.php:487
+#: src/Template/Template_Engine/Twig/Twig_Template_Engine.php:33
 msgid "Twig"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:180
-#: src/Acf/Groups/translations.php:336
-#: src/Acf/Groups/translations.php:488
+#: src/Template/Template_Engine/Blade/Blade_Template_Engine.php:31
 msgid "Blade (requires PHP >= 8.2.0)"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:305
+#: src/Acf/Groups/translations.php:65
 msgid "Template engine"
 msgstr ""
 
 #. translators: %s is the template engine name.
-#: src/Cpt/Base/Instance.php:100
+#: src/Post_Type/Core/Instance.php:97
 #, php-format
 msgid "%s template engine is not available (PHP >= 8.2.0 is required)."
 msgstr ""
 
-#: src/Dashboard/Admin_Bar.php:51
+#: src/Plugin/Dashboard/Admin_Bar.php:59
 msgid "item"
 msgid_plural "items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Dashboard/Admin_Bar.php:59
+#: src/Plugin/Dashboard/Admin_Bar.php:67
 msgid "Enable on-page Dev Mode"
 msgstr ""
 
-#: src/Dashboard/Admin_Bar.php:60
+#: src/Plugin/Dashboard/Admin_Bar.php:68
 msgid "Disable on-page Dev Mode"
 msgstr ""
 
-#: src/Dashboard/Admin_Bar.php:62
+#: src/Plugin/Dashboard/Admin_Bar.php:70
 msgid "Enable on-page Live Reload"
 msgstr ""
 
-#: src/Dashboard/Admin_Bar.php:63
+#: src/Plugin/Dashboard/Admin_Bar.php:71
 msgid "Disable on-page Live Reload"
 msgstr ""
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:99
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:91
 msgid "Attachment link"
 msgstr ""
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:101
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:93
 msgid "Attachment video"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:185
-#: src/Acf/Groups/translations.php:337
-#: src/Acf/Groups/translations.php:489
+#: src/Acf/Groups/translations.php:94
+#: src/Acf/Groups/translations.php:281
+#: src/Acf/Groups/translations.php:518
 msgid "Classic (no CSS isolation)"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:186
-#: src/Acf/Groups/translations.php:338
-#: src/Acf/Groups/translations.php:490
+#: src/Acf/Groups/translations.php:95
+#: src/Acf/Groups/translations.php:282
+#: src/Acf/Groups/translations.php:519
 msgid "Declarative Shadow DOM (CSS isolated"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:187
-#: src/Acf/Groups/translations.php:339
-#: src/Acf/Groups/translations.php:491
+#: src/Acf/Groups/translations.php:96
+#: src/Acf/Groups/translations.php:283
+#: src/Acf/Groups/translations.php:520
 msgid "JS Shadow DOM (CSS isolated"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:300
+#: src/Acf/Groups/translations.php:60
 msgid "Live Reload mode: interval (in seconds)"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:301
+#: src/Acf/Groups/translations.php:61
 msgid "Live Reload mode: inactive delay (in seconds)"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:317
+#: src/Acf/Groups/translations.php:77
 msgid "Controls how often the refresh requests are sent when on-page Live Reload Mode is enabled. A smaller number means faster updates, but it also increases server load."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:318
+#: src/Acf/Groups/translations.php:78
 msgid "Controls the period after which Live Reload Mode is paused when no mouse events are registered. A smaller number decreases server load but may increase your waiting time."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:510
+#: src/Acf/Groups/translations.php:530
 msgid "Static Term"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:512
+#: src/Acf/Groups/translations.php:532
 msgid "Source meta group"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:513
+#: src/Acf/Groups/translations.php:533
 msgid "Source meta field"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:521
+#: src/Acf/Groups/translations.php:541
 msgid "Static term that will be compared."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:523
+#: src/Acf/Groups/translations.php:543
 msgid "Choose a Group that contains the source meta field."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:524
+#: src/Acf/Groups/translations.php:544
 msgid "Choose a Term field whose value should be used in the query."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:514
+#: src/Acf/Groups/translations.php:534
 msgid "Custom argument name"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:117
+#: src/Acf/Groups/translations.php:216
 msgid "Parent group (for Nested repeater or Flexible layout)"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:149
+#: src/Acf/Groups/translations.php:248
 msgid "Choose a Parent group when setting up Nested repeater or Flexible layout."
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Cpt.php:71
+#: src/Post_Type/Core/Cpt/Cpt.php:85
 msgid "to improve Advanced Views."
 msgstr ""
 
 #. translators: 1 is the opening tag, 2 is the closing tag.
-#: src/Cpt/Base/Cpt/Cpt_Assets_Reducer.php:244
+#: src/Post_Type/Core/Cpt/Cpt_Assets_Reducer.php:268
 #, php-format
 msgid "If you still see this message after an extended period, please visit the %1$s Settings %2$s and disable the screen performance optimization."
 msgstr ""
 
-#: src/Cpt/Data_Vendors/Woo/Fields/Woo_Featured_Field.php:22
+#: src/Field_Provider/Woo/Fields/Woo_Featured_Field.php:22
 msgid "Featured product"
 msgstr ""
 
-#: src/Cpt/Data_Vendors/Woo/Woo_Data_Vendor.php:68
+#: src/Field_Provider/Woo/Woo_Data_Vendor.php:60
 msgid "Stock quantity"
 msgstr ""
 
-#: src/Cpt/Data_Vendors/Woo/Woo_Data_Vendor.php:78
+#: src/Field_Provider/Woo/Woo_Data_Vendor.php:70
 msgid "Featured"
 msgstr ""
 
-#: src/Cpt/Data_Vendors/Woo/Woo_Data_Vendor.php:163
+#: src/Field_Provider/Woo/Woo_Data_Vendor.php:145
 msgid "Product specific fields (WooCommerce)"
 msgstr ""
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:260
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:242
 msgid "Post & Product fields (WordPress, WooCommerce)"
 msgstr ""
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:264
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:246
 msgid "Comments & Reviews (WordPress, WooCommerce)"
 msgstr ""
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:265
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:247
 msgid "Comment & Review fields (WordPress, WooCommerce)"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:598
+#: src/Acf/Groups/translations.php:125
 msgid "Contains plugin warnings and debug messages if the development mode is enabled in <a target='_blank' href='/wp-admin/edit.php?post_type=acf_views&page=acf-views-settings'>the settings</a>. The logs are deleted upon plugin deactivation."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:599
+#: src/Acf/Groups/translations.php:126
 msgid "Turn this on and click 'Process' to download the file. The above logs and other information about your server environment will be included. <br> Send this to Advanced Views Support on request."
 msgstr ""
 
-#: src/Cpt/Integrations/Shortcode_Base.php:120
+#: src/Post_Type/Integration/Core/Shortcode/Shortcode_Base.php:137
 msgid "AVF shortcode render error:"
 msgstr ""
 
-#: src/Dashboard/Tools_Page.php:205
+#: src/Plugin/Dashboard/Tools_Page.php:207
 msgid "Action successfully complete"
 msgstr ""
 
-#: src/Dashboard/html/postbox/upgrade.php:13
+#: src/Plugin/Dashboard/html/postbox/upgrade.php:13
 msgid "Enable advanced features like repeater fields, AJAX pagination, sliders, and lightboxes."
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Cpt_Meta_Boxes.php:48
+#: src/Post_Type/Core/Cpt/Cpt_Meta_Boxes.php:56
 msgid "Unlock with Pro"
 msgstr ""
 
-#: src/Plugin/Plugin.php:140
+#: src/Plugin/Plugin.php:397
 msgid "Unlock Pro"
 msgstr ""
 
 #. translators: %s is the plural name of the CPT.
-#: src/Cpt/Data_Vendors/Base/Settings_Vendor_Integration.php:239
+#: src/Field_Provider/Core/Settings_Vendor_Integration.php:242
 #, php-format
 msgid "Assigned to %s:"
 msgstr ""
 
 #. translators: %s is the plural name of the CPT.
-#: src/Cpt/Data_Vendors/Base/Settings_Vendor_Integration.php:241
-#: src/Cpt/Layouts/Cpt/Layout_Meta_Boxes.php:189
+#: src/Field_Provider/Core/Settings_Vendor_Integration.php:244
+#: src/Post_Type/Layouts/Cpt/Layout_Meta_Boxes.php:192
 #, php-format
 msgid "Not assigned to any %s."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:148
+#: src/Acf/Groups/translations.php:247
 msgid "Assign fields to your Layout. <br> Tip: hover mouse on the field number column and drag to reorder."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:287
+#: src/Acf/Groups/translations.php:47
 msgid "Add arguments to the shortcode, e.g. 'user-with-roles'. Only the Layout/Post Selection 'id' argument is filled by default"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:302
+#: src/Acf/Groups/translations.php:62
 msgid "Optimize Layout and Post Selection admin screen performance"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:322
+#: src/Acf/Groups/translations.php:82
 msgid "Controls the web component setting for new Layouts and Post Selections."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:323
+#: src/Acf/Groups/translations.php:83
 msgid "Controls classes generation in the Default Template for new Layouts and Post Selections."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:325
+#: src/Acf/Groups/translations.php:85
 msgid "When present, this value is used as the default for the 'script.ts' file of Layout and Post Selection. <br> If skipped, 'script.ts' creation will be omitted."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:414
+#: src/Acf/Groups/translations.php:446
 msgid "Use the Post ID as the Post Selection ID in the markup"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:433
+#: src/Acf/Groups/translations.php:465
 msgid "Assigned Layout is used to display every post from the query results."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:421
+#: src/Acf/Groups/translations.php:453
 msgid "'Posts Query (WP_query)' will get posts based on the defined query, while 'Page Context (archive pages)' will get posts from where the Post Selection is inserted (e.g. archive, author or category)."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:436
+#: src/Acf/Groups/translations.php:468
 msgid "Add a short description for your Post Selection's purpose. Only seen on the admin Post Selections list."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:578
+#: src/Acf/Groups/translations.php:105
 msgid "Export All Post Selections"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:580
+#: src/Acf/Groups/translations.php:107
 msgid "Export Post Selections"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:588
+#: src/Acf/Groups/translations.php:115
 msgid "Include specific Post Selections data in your debug dump"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:595
+#: src/Acf/Groups/translations.php:122
 msgid "Select Post Selections to be exported"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:596
+#: src/Acf/Groups/translations.php:123
 msgid "Note: Layouts and Post Selections with the same IDs are overridden."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:601
+#: src/Acf/Groups/translations.php:128
 msgid "Select the Post Selection items related to your issue to include them in the debug dump."
 msgstr ""
 
 #. translators: %s is the singular name of the CPT.
-#: src/Acf/Group_Integrations/Field_Settings_Integration.php:252
-#: src/Acf/Group_Integrations/Post_Selection_Settings_Integration.php:101
+#: src/Post_Type/Layouts/Acf/Integrations/Field_Settings_Integration.php:255
+#: src/Post_Type/Post_Selections/Acf/Integrations/Post_Selection_Settings_Integration.php:95
 #, php-format
 msgid "Add new %s"
 msgstr ""
 
 #. translators: %s is the plural name of the CPT.
-#: src/Cpt/Layouts/Cpt/Layout_Meta_Boxes.php:131
+#: src/Post_Type/Layouts/Cpt/Layout_Meta_Boxes.php:134
 #, php-format
 msgid "No assigned %s."
 msgstr ""
 
 #. translators: %s - singular name of the CPT.
-#: src/Cpt/Layouts/Cpt/Table/Layouts_Cpt_Table.php:91
+#: src/Post_Type/Layouts/Cpt/Table/Layouts_Cpt_Table.php:92
 #, php-format
 msgid "Assigned to %s"
 msgstr ""
 
 #. translators: %s - singular name of the CPT.
-#: src/Cpt/Base/Cpt/Cpt.php:44
+#: src/Post_Type/Core/Cpt/Cpt.php:58
 #, php-format
 msgid "Name your %s here (required)"
 msgstr ""
 
 #. translators: %1$s - plural name of the CPT, %2$s - link opening tag, %3$s - link closing tag.
-#: src/Cpt/Base/Cpt/Cpt.php:106
+#: src/Post_Type/Core/Cpt/Cpt.php:108
 #, php-format
 msgid "No %1$s yet. %2$s Add New %1$s %3$s"
 msgstr ""
 
 #. translators: %s - singular name of the CPT.
-#: src/Cpt/Base/Cpt/Cpt.php:114
+#: src/Post_Type/Core/Cpt/Cpt.php:116
 #, php-format
 msgid "Parent %s"
 msgstr ""
 
 #. translators: %s - singular name of the CPT.
-#: src/Cpt/Base/Cpt/Cpt.php:120
+#: src/Post_Type/Core/Cpt/Cpt.php:122
 #, php-format
 msgid "Browse %s"
 msgstr ""
 
 #. translators: %s - singular name of the CPT.
-#: src/Cpt/Base/Cpt/Cpt.php:125
+#: src/Post_Type/Core/Cpt/Cpt.php:127
 #, php-format
 msgid "Add New %s"
 msgstr ""
 
 #. translators: %s - singular name of the CPT.
-#: src/Cpt/Base/Cpt/Cpt.php:131
+#: src/Post_Type/Core/Cpt/Cpt.php:133
 #, php-format
 msgid "%s updated"
 msgstr ""
 
 #. translators: %s - singular name of the CPT.
-#: src/Cpt/Base/Cpt/Cpt.php:136
+#: src/Post_Type/Core/Cpt/Cpt.php:138
 #, php-format
 msgid "Edit %s"
 msgstr ""
 
 #. translators: %s - singular name of the CPT.
-#: src/Cpt/Base/Cpt/Cpt.php:141
+#: src/Post_Type/Core/Cpt/Cpt.php:143
 #, php-format
 msgid "Update %s"
 msgstr ""
 
 #. translators: %s - plural name of the CPT.
-#: src/Cpt/Base/Cpt/Cpt.php:146
+#: src/Post_Type/Core/Cpt/Cpt.php:148
 #, php-format
 msgid "Search %s"
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Table/Cpt_Table.php:194
+#: src/Post_Type/Core/Cpt/Table/Cpt_Table.php:223
 msgid "Search for name, description, labels or id."
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Table/External_Storage_Tab.php:196
-#: src/Cpt/Base/Cpt/Table/External_Storage_Tab.php:234
+#: src/Post_Type/Core/Cpt/Table/External_Storage_Tab.php:192
+#: src/Post_Type/Core/Cpt/Table/External_Storage_Tab.php:230
 msgid "Item"
 msgid_plural "Items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Plugin/Loaders/Plugin_Loader_Base.php:402
+#: src/Post_Type/Layouts/Layouts_Cpt.php:30
 msgid "Layouts"
 msgstr ""
 
-#: src/Plugin/Loaders/Post_Selections_Loader_Base.php:62
+#: src/Post_Type/Post_Selections/Integration/Elementor/Selection_Elementor_Widget.php:81
+#: src/Post_Type/Post_Selections/Selections_Cpt.php:25
 msgid "Post Selection"
 msgstr ""
 
-#: src/Plugin/Loaders/Post_Selections_Loader_Base.php:66
+#: src/Post_Type/Post_Selections/Selections_Cpt.php:29
 msgid "Post Selections"
 msgstr ""
 
 #. translators: %s - singular name of the CPT.
-#: src/Cpt/Post_Selections/Cpt/Selection_Meta_Boxes.php:52
+#: src/Post_Type/Post_Selections/Cpt/Selection_Meta_Boxes.php:52
 #, php-format
 msgid "No related %s."
 msgstr ""
 
 #. translators: %s - singular name of the CPT.
-#: src/Cpt/Layouts/Cpt/Layout_Meta_Boxes.php:252
-#: src/Cpt/Post_Selections/Cpt/Selection_Meta_Boxes.php:84
+#: src/Post_Type/Layouts/Cpt/Layout_Meta_Boxes.php:255
+#: src/Post_Type/Post_Selections/Cpt/Selection_Meta_Boxes.php:84
 #, php-format
 msgid "Your %s shortcode is available after publishing."
 msgstr ""
 
 #. translators: %s - singular name of the CPT.
-#: src/Cpt/Post_Selections/Cpt/Table/Post_Selections_Table.php:117
+#: src/Post_Type/Post_Selections/Cpt/Table/Post_Selections_Table.php:117
 #, php-format
 msgid "Related %s"
 msgstr ""
 
 #. translators: %s is a singular post-type name.
-#: src/Cpt/Layouts/Integrations/Layout_Shortcode.php:88
-#: src/Cpt/Post_Selections/Integrations/Post_Selection_Shortcode.php:63
+#: src/Post_Type/Layouts/Integration/Layout_Shortcode.php:87
+#: src/Post_Type/Post_Selections/Integration/Post_Selection_Shortcode.php:61
 #, php-format
 msgid "%s is missing"
 msgstr ""
 
 #. translators: %s - plural name of the CPT.
-#: src/Dashboard/Tools_Page.php:506
-#: src/Dashboard/Tools_Page.php:520
+#: src/Plugin/Dashboard/Tools_Page.php:508
+#: src/Plugin/Dashboard/Tools_Page.php:522
 #, php-format
 msgid "Imported %s"
 msgstr ""
 
 #. translators: %s - plural name of the CPT.
-#: src/Dashboard/Tools_Page.php:534
-#: src/Dashboard/Tools_Page.php:548
+#: src/Plugin/Dashboard/Tools_Page.php:536
+#: src/Plugin/Dashboard/Tools_Page.php:550
 #, php-format
 msgid "Wrong %s"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:116
+#: src/Acf/Groups/translations.php:215
 msgid "Assign Fields"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:138
+#: src/Acf/Groups/translations.php:237
 msgid "Use the Post ID as the Layout ID in the markup"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:577
+#: src/Acf/Groups/translations.php:104
 msgid "Export All Layouts"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:579
+#: src/Acf/Groups/translations.php:106
 msgid "Export Layout"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:587
+#: src/Acf/Groups/translations.php:114
 msgid "Include specific Layouts data in your debug dump"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:594
+#: src/Acf/Groups/translations.php:121
 msgid "Select Layouts to be exported"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:600
+#: src/Acf/Groups/translations.php:127
 msgid "Select the Layout items related to your issue to include them in the debug dump."
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:53
+#: src/Plugin/Dashboard/html/dashboard/import.php:53
 msgid "Import Demo to Get Started in Seconds"
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:58
+#: src/Plugin/Dashboard/html/dashboard/import.php:58
 msgid "Whether you're new to Advanced Views or just want a quick way to set up the basics, this demo import will automatically create a working example for you."
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:63
+#: src/Plugin/Dashboard/html/dashboard/import.php:63
 msgid "It's perfect for exploring how Layouts, Post Selections, and ACF fields work together."
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:73
+#: src/Plugin/Dashboard/html/dashboard/import.php:73
 msgid "What this demo does"
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:87
+#: src/Plugin/Dashboard/html/dashboard/import.php:87
 msgid "Creates 'draft' pages for 'Samsung Galaxy A53', 'Nokia X20' and 'Xiaomi 12T'."
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:97
+#: src/Plugin/Dashboard/html/dashboard/import.php:97
 msgid "Creates an ACF Field Group called \"Phone\" assigned to those pages."
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:107
+#: src/Plugin/Dashboard/html/dashboard/import.php:107
 msgid "Creates a Layout called \"Phone\" that displays fields from the \"Phone\" Field Group."
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:117
+#: src/Plugin/Dashboard/html/dashboard/import.php:117
 msgid "Populates each page’s ACF fields with sample text and adds the Layout shortcode to the page content."
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:133
+#: src/Plugin/Dashboard/html/dashboard/import.php:133
 msgid "Creates a \"draft\" page called \"Article about Samsung\""
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:139
+#: src/Plugin/Dashboard/html/dashboard/import.php:139
 msgid "Adds a Layout shortcode to the page content with \"object-id\" parameter pointing to \"Samsung Galaxy A53\"."
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:150
+#: src/Plugin/Dashboard/html/dashboard/import.php:150
 msgid "Display multiple items using Post Selections"
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:161
+#: src/Plugin/Dashboard/html/dashboard/import.php:161
 msgid "Creates a Post Selection called \"List of Phones\" using the \"Phone\" Layout and filtering for the phone pages."
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:171
+#: src/Plugin/Dashboard/html/dashboard/import.php:171
 msgid "Create a 'draft' page called 'Most popular phones in 2022' and adds the Post Selection shortcode to the page content."
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:184
+#: src/Plugin/Dashboard/html/dashboard/import.php:184
 msgid "Importing"
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:192
+#: src/Plugin/Dashboard/html/dashboard/import.php:192
 msgid "Click Import Demo and wait a few seconds."
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:196
+#: src/Plugin/Dashboard/html/dashboard/import.php:196
 msgid "When done, you'll see quick links to edit all imported items."
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:207
+#: src/Plugin/Dashboard/html/dashboard/import.php:207
 msgid "After Import"
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:215
+#: src/Plugin/Dashboard/html/dashboard/import.php:215
 msgid "A Delete Demo button will appear if you’d like to remove the demo content later."
 msgstr ""
 
-#: src/Dashboard/html/dashboard/import.php:226
+#: src/Plugin/Dashboard/html/dashboard/import.php:226
 msgid "Import Demo Now"
 msgstr ""
 
-#: src/Cpt/Layouts/Cpt/Table/Layouts_Cpt_Table.php:88
+#: src/Post_Type/Layouts/Cpt/Table/Layouts_Cpt_Table.php:89
 msgid "Assigned Field Group"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:319
+#: src/Acf/Groups/translations.php:79
 msgid "Enable this setting to improve loading speed by disabling third-party scripts on Layout and Post Selection screens. <br> Note: This can significantly reduce load times on plugin-heavy sites. However, with some themes, it may cause layout issues on these admin screens."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:320
+#: src/Acf/Groups/translations.php:80
 msgid "Automatic error and usage reports to developers, enabling faster issue resolution and plugin improvement. <br> The reports do not include any private or sensitive information. <br> Note: In Advanced Views Pro, the license key/domain pair is always sent, regardless of this setting."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:347
+#: src/Acf/Groups/translations.php:379
 msgid "Arrange"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:355
+#: src/Acf/Groups/translations.php:387
 msgid "Choose how items are arranged"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:394
+#: src/Acf/Groups/translations.php:426
 msgid "Enable Responsive rules"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:395
+#: src/Acf/Groups/translations.php:427
 msgid "Responsive Rules"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:432
+#: src/Acf/Groups/translations.php:464
 msgid "For debugging purposes, this shows the query used to fetch posts for this Post Selection. Tip: Publish or update your Post Selection, then reload the page to view the latest query."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:437
+#: src/Acf/Groups/translations.php:469
 msgid "When enabled responsive CSS styles are added to the CSS Code field. These styles are automatically updated each time you save. <br>Tip: If you’d like to edit the Post Selection CSS manually, simply disable this option. Disabling this does not remove the previously added CSS Code."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:438
+#: src/Acf/Groups/translations.php:470
 msgid "These rules control Post Selection items responsiveness. <br>Note: These rules are inherited from small to large. For example: If you’ve set up 'Mobile' and 'Desktop' screen rules, then 'Tablet' will have the same rules as 'Mobile' and 'Large Desktop' will have the same rules as 'Desktop'."
 msgstr ""
 
@@ -2348,576 +2339,570 @@ msgstr ""
 msgid "https://advanced-views.com/"
 msgstr ""
 
-#: src/Plugin/Automated_Reports/State_Report.php:99
+#: src/Plugin/Automated_Reports/State_Report.php:97
 msgid "We'd love to know why you're deactivating Advanced Views. Your feedback helps us improve (Optional)"
 msgstr ""
 
-#: src/Plugin/Automated_Reports/State_Report.php:103
+#: src/Plugin/Automated_Reports/State_Report.php:101
 msgid "Tell us a bit more about your situation - what didn't work or what you were hoping to achieve."
 msgstr ""
 
-#: src/Plugin/Automated_Reports/State_Report.php:111
+#: src/Plugin/Automated_Reports/State_Report.php:109
 msgid "Setup was too complex for me"
 msgstr ""
 
-#: src/Plugin/Automated_Reports/State_Report.php:112
+#: src/Plugin/Automated_Reports/State_Report.php:110
 msgid "Plugin conflicted with my theme or another plugin"
 msgstr ""
 
-#: src/Plugin/Automated_Reports/State_Report.php:113
+#: src/Plugin/Automated_Reports/State_Report.php:111
 msgid "Required coding or technical knowledge I don't have"
 msgstr ""
 
-#: src/Plugin/Automated_Reports/State_Report.php:114
+#: src/Plugin/Automated_Reports/State_Report.php:112
 msgid "Found a plugin that better fits my workflow"
 msgstr ""
 
-#: src/Compatibility/Migration/Upgrade_Notice.php:79
+#: src/Compatibility/Migration/Upgrade_Notice.php:82
 msgid "Advanced Views plugin has been successfully upgraded!"
 msgstr ""
 
-#: src/Compatibility/Migration/Upgrade_Notice.php:98
+#: src/Compatibility/Migration/Upgrade_Notice.php:101
 msgid "Thanks, hide"
 msgstr ""
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:85
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:77
 msgid "Post Content / Product Description"
 msgstr ""
 
-#: src/Cpt/Data_Vendors/Wp/Wp_Data_Vendor.php:87
+#: src/Field_Provider/Wp/Wp_Data_Vendor.php:79
 msgid "Post Excerpt / Short Product Description"
 msgstr ""
 
-#: src/Compatibility/Migration/Version/V_3/Migration_3_8_0.php:40
+#: src/Compatibility/Version_Migrations/V_3/Migration_3_8_0.php:43
 msgid "Views are now called Layouts and Cards are called Post Selections. Same great features, just easier to use!"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:589
+#: src/Acf/Groups/translations.php:116
 msgid "Upgrade from version"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:590
+#: src/Acf/Groups/translations.php:117
 msgid "Flush caches"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:602
+#: src/Acf/Groups/translations.php:129
 msgid "If the automatic version migration was interrupted, enter your previous Advanced Views version number here and press 'Process' to manually trigger the migration."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:603
+#: src/Acf/Groups/translations.php:130
 msgid "Activate the option and click 'Process' to flush caches. Note: use separately from other options."
 msgstr ""
 
-#: src/Dashboard/Tools_Page.php:340
+#: src/Plugin/Dashboard/Tools_Page.php:342
 msgid "You entered the invalid version number"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:27
+#: src/Acf/Groups/translations.php:138
 msgid "Object Layout"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:92
+#: src/Acf/Groups/translations.php:29
 msgid "To retrieve your GitLab repository ID, follow these steps: 1. Open your repository. 2. Look for the 'Project Information' block on the right-hand side. 3. Click on the three dots icon above the block. 4. Click on the 'Copy project ID' item."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:93
+#: src/Acf/Groups/translations.php:30
 msgid "To retrieve your GitLab access token, follow these steps: 1. Open your GitLab profile. 2. In the left menu, click on the 'Access -> Personal Access Tokens' tab. 3. Create a new token with the 'api' scope. 4. Copy the token value. (You can also use Group and Project tokens if you've a paid GitLab account)"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:131
-#: src/Acf/Groups/translations.php:409
-#: src/Cpt/Layouts/Cpt/Layout_Interactive_Fields.php:196
-#: src/Cpt/Post_Selections/Cpt/Selection_Interactive_Fields.php:194
+#: src/Acf/Groups/translations.php:230
+#: src/Acf/Groups/translations.php:441
+#: src/Post_Type/Layouts/Cpt/Layout_Interactive_Fields.php:194
+#: src/Post_Type/Post_Selections/Cpt/Selection_Interactive_Fields.php:192
 msgid "PHP Controller"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:162
+#: src/Acf/Groups/translations.php:261
 msgid "Define a unique <a target='_blank' href='https://getbem.com/introduction/'>BEM name</a> for the element that will be used in the markup, or leave it empty to use the default ('avf-layout')."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:154
+#: src/Acf/Groups/translations.php:253
 msgid "Define your CSS style rules. <br> Rules defined here will be added within &lt;style&gt;&lt;/style&gt; tags ONLY to pages that have this View. <br><br> Press Ctrl (Cmd) + Alt + L to format the code; Ctrl + F to search/replace; Ctrl + Space for autocomplete. <br><br> Magic shortcuts are available: <br><br>  1. '#layout' as a unique instance selector, will be replaced with '.avf-layout--id--{x}' <br> 2. '#layout__' as a full element selector, so '#layout__element' will be replaced with '.avf-layout--id--{x} .avf-layout__element' <br> 3. '#this' as a short element selector, so '#this__element' will be replaced with '.avf-layout__element' <br> Note: all the shortcuts are compatible with the BEM name option."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:451
+#: src/Acf/Groups/translations.php:483
 msgid "Define a unique <a target='_blank' href='https://getbem.com/introduction/'>BEM name</a> for the element that will be used in the markup, or leave it empty to use the default ('avf-selection')."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:446
+#: src/Acf/Groups/translations.php:478
 msgid "Define your CSS style rules. <br> Rules defined here will be added within &lt;style&gt;&lt;/style&gt; tags ONLY to pages that have this Post Selection. <br><br> Press Ctrl (Cmd) + Alt + L to format the code; Ctrl + F to search/replace; Ctrl + Space for autocomplete. <br><br> Magic shortcuts are available: <br><br>  1. '#selection' as a unique instance selector, will be replaced with '.avf-selection--id--{x}' <br> 2. '#selection__' as a full element selector, so '#selection__element' will be replaced with '.avf-selection--id--{x} .avf-selection__element' <br> 3. '#this' as a short element selector, so '#this__element' will be replaced with '.avf-selection__element' <br> Note: all the shortcuts are compatible with the BEM name option."
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Meta_Box.php:60
+#: src/Post_Type/Core/Cpt/Git_Meta_Box.php:79
 msgid "Save the item"
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Meta_Box.php:65
+#: src/Post_Type/Core/Cpt/Git_Meta_Box.php:84
 msgid "to your library"
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Meta_Box.php:78
+#: src/Post_Type/Core/Cpt/Git_Meta_Box.php:97
 msgid "Select repository"
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Meta_Box.php:96
+#: src/Post_Type/Core/Cpt/Git_Meta_Box.php:115
 msgid "Include related Meta groups"
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Meta_Box.php:106
+#: src/Post_Type/Core/Cpt/Git_Meta_Box.php:125
 msgid "Note: all changes must be already saved."
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Meta_Box.php:116
+#: src/Post_Type/Core/Cpt/Git_Meta_Box.php:135
 msgid "Push to the repository"
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Meta_Box.php:203
+#: src/Post_Type/Core/Cpt/Git_Meta_Box.php:222
 msgid "GitLab repositories"
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Meta_Box.php:207
+#: src/Post_Type/Core/Cpt/Git_Meta_Box.php:226
 msgid "GitLab repository actions are available after publishing."
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Meta_Box.php:241
-#: src/Cpt/Base/Cpt/Git_Meta_Box.php:250
+#: src/Post_Type/Core/Cpt/Git_Meta_Box.php:260
+#: src/Post_Type/Core/Cpt/Git_Meta_Box.php:269
 msgid "Error!"
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Meta_Box.php:264
+#: src/Post_Type/Core/Cpt/Git_Meta_Box.php:283
 msgid "Pushed!"
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Meta_Box.php:266
+#: src/Post_Type/Core/Cpt/Git_Meta_Box.php:285
 msgid "Failed!"
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Tabs.php:82
+#: src/Post_Type/Core/Cpt/Git_Tabs.php:80
 msgid "By saving items in your GitLab repository, you can create your own library and reuse them on other websites."
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Tabs.php:92
+#: src/Post_Type/Core/Cpt/Git_Tabs.php:90
 msgid "If you have made any external changes to this repository, please click"
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Tabs.php:111
+#: src/Post_Type/Core/Cpt/Git_Tabs.php:109
 msgid "to clear the cache."
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Tabs.php:430
+#: src/Post_Type/Core/Cpt/Git_Tabs.php:422
 msgid "Cache successfully cleared."
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Git_Tabs.php:465
+#: src/Post_Type/Core/Cpt/Git_Tabs.php:457
 msgid "gitlab"
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Table/Cpt_Table.php:121
+#: src/Post_Type/Core/Cpt/Table/Cpt_Table.php:150
 msgid "Item successfully cloned."
 msgstr ""
 
-#: src/Cpt/Layouts/Integrations/Layout_Shortcode.php:254
+#: src/Post_Type/Layouts/Integration/Layout_Shortcode.php:253
 msgid "Layout id is wrong"
 msgstr ""
 
-#: src/Cpt/Post_Selections/Integrations/Post_Selection_Shortcode.php:133
+#: src/Post_Type/Post_Selections/Integration/Post_Selection_Shortcode.php:130
 msgid "Post Selection ID is wrong"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:114
+#: src/Acf/Groups/translations.php:213
 msgid "Layout Name"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:147
+#: src/Acf/Groups/translations.php:246
 msgid "The internal name of the Layout, visible on the list screen."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:372
+#: src/Acf/Groups/translations.php:404
 msgid "Selection Name"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:420
+#: src/Acf/Groups/translations.php:452
 msgid "The internal name of the Post Selection, visible on the list screen."
 msgstr ""
 
-#: src/Cpt/Data_Vendors/Base/Settings_Vendor_Integration.php:357
+#: src/Field_Provider/Core/Settings_Vendor_Integration.php:360
 msgid "Assigned to Layout"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:53
+#: src/Acf/Groups/translations.php:164
 msgid "By default, an Object field is rendered in the Layout template as an HTML link to the selected object. <br><br> To display fields from within the selected object, assign a separate Layout with the target object fields. <br><br> Example: To display an excerpt from a Post Object, create a separate Layout with the Post Excerpt field and assign it here. <a target='_blank' href='https://docs.advanced-views.com/field-types/relational/relationship-field'>Read more</a>"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:142
+#: src/Acf/Groups/translations.php:241
 msgid "With Gutenberg Block"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:150
+#: src/Acf/Groups/translations.php:249
 msgid "If you're making an internal Layout for the <a target='_blank' href='https://docs.advanced-views.com/field-types/layout/group-field'>group</a>, <a target='_blank' href='https://docs.advanced-views.com/field-types/layout/repeater-field'>repeater</a> or <a target='_blank' href='https://docs.advanced-views.com/field-types/layout/flexible-field'>flexible</a> field, then fill out this field."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:151
+#: src/Acf/Groups/translations.php:250
 msgid "Output preview of the generated template, using the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>chosen template engine</a>. <br> Important! Publish or Update your Layout to see the latest markup."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:152
+#: src/Acf/Groups/translations.php:251
 msgid "Write your own template with full control over the HTML markup. <br> Copy the Default Template code and make your changes. <br><br> Check out our Docs to learn more about the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>available template engines</a>. <br><br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace)."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:153
+#: src/Acf/Groups/translations.php:252
 msgid "Choose one of the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>supported template engines</a>, which will be used for this Layout."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:159
+#: src/Acf/Groups/translations.php:258
 msgid "By customizing the PHP Controller instance you can add extra variables to the template and define the AJAX and REST API handlers. <a target='_blank' href='https://docs.advanced-views.com/layouts/code-fields/layout-controller'>Read more</a> <br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace)."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:155
+#: src/Acf/Groups/translations.php:254
 msgid "Add Custom Javascript code to your Layout. <br><br> By default, the Layout is a <a target='_blank' href='https://docs.advanced-views.com/layouts/code-fields/javascript-code'>web component</a>, so this code will be executed once for every instance, and 'this', that refers to the current instance, is available. <br><br> If the Web Component Type is set to none, the js code here is plain, and can be used for any goals, including <a target='_blank' href='https://docs.advanced-views.com/layouts/component-options/interactivity-api'>WP Interactivity API</a>. <br><br> The code snippet will be added within &lt;script type='module'&gt;&lt;/script&gt; tags ONLY to pages that have this View. <br><br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace)."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:156
-msgid "If a block vendor is selected then a separate Gutenberg block for this Layout will be available. <a target='_blank' href='https://docs.advanced-views.com/layouts/features/custom-gutenberg-blocks'>Read more</a>."
-msgstr ""
-
-#: src/Acf/Groups/translations.php:160
+#: src/Acf/Groups/translations.php:259
 msgid "By default, every Layout is a <a target='_blank' href='https://docs.advanced-views.com/layouts/code-fields/javascript-code'>web component</a>, which allows you to work easily with the element in the JS code field. <br><br> Set it to 'None' if you're going to use the <a target='_blank' href='https://docs.advanced-views.com/layouts/component-options/interactivity-api'>WP Interactivity API</a>."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:168
+#: src/Acf/Groups/translations.php:267
 msgid "Here you can see the preview of the Layout and play with CSS rules. <br>Important! Update the View after changes and reload the page to see the latest markup here. <br>Your changes to the preview won't be applied to the view automatically, if you want to keep them copy amended CSS to the 'CSS Code' field and press the 'Update' button. <br> Note: styles from your front page are included in the preview (some differences may appear)."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:169
+#: src/Acf/Groups/translations.php:268
 msgid "This field is deprecated."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:178
-#: src/Acf/Groups/translations.php:334
-#: src/Acf/Groups/translations.php:486
+#: src/Template/Template_Engine/PHP/PHP_Template_Engine.php:31
 msgid "PHP"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:243
+#: src/Acf/Groups/translations.php:346
 msgid "Rules for the meta query. Multiple rules are supported. <a target='_blank' href='https://docs.advanced-views.com/post-selections/filters/meta-filters'>Read more</a> <br>If you want to see the query that was created by your input, update the Post Selection and reload the page. After have a look at the 'Query Preview' field in the 'Advanced' tab"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:316
+#: src/Acf/Groups/translations.php:76
 msgid "Enable to store Layout and Post Selection data inside the child theme folder (instead of the database). <br> This allows you to edit files using your favourite editor (IDE), and do version control with auto sync. <a target='_blank' href='https://docs.advanced-views.com/features/file-system-storage'>Read more</a> <br> Important: you should use a <a target='_blank' href='https://developer.wordpress.org/themes/advanced-topics/child-themes/'>child theme</a>, otherwise automatic theme updates will erase the data."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:321
+#: src/Acf/Groups/translations.php:81
 msgid "Controls the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>template engine</a> setting for new Layouts and Post Selections."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:324
+#: src/Acf/Groups/translations.php:84
 msgid "When present, this value is used as the default for the 'style.scss' file of Layout and Post Selection, which is useful e.g. when <a target='_blank' href='https://docs.advanced-views.com/features/file-system-storage/advanced-usage'>Tailwind is in use</a>. <br> If skipped, 'style.scss' creation will be omitted."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:326
+#: src/Acf/Groups/translations.php:86
 msgid "By saving Layouts and Post Selections in your GitLab repository, you can create your own library and reuse them on other websites. <br> <a target='_blank' href='https://docs.advanced-views.com/features/workflow/cross-installation-components'>Read more</a>"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:449
+#: src/Acf/Groups/translations.php:481
 msgid "By default, every Post Selection is a <a target='_blank' href='https://docs.advanced-views.com/post-selections/code-fields/javascript-code'>web component</a>, which allows you to work easily with the element in the JS code field. <br><br> Set it to 'None' if you're going to use the <a target='_blank' href='https://docs.advanced-views.com/post-selections/component-options/interactivity-api'>WP Interactivity API</a>."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:443
+#: src/Acf/Groups/translations.php:475
 msgid "Output preview of the generated template using the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>chosen template engine</a>. <br> Important! Publish or Update your Post Selection to see the latest markup."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:444
+#: src/Acf/Groups/translations.php:476
 msgid "Write your own template with full control over the HTML markup. <br> Copy the Default Template code and make your changes. <br><br> Check out our Docs to learn more about the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>available template engines</a>. <br><br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace). <br><br> Make sure you've retained all the default classes; otherwise, pagination won't work."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:445
+#: src/Acf/Groups/translations.php:477
 msgid "Choose one of the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>supported template engines</a>, which will be used for this Post Selection."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:448
+#: src/Acf/Groups/translations.php:480
 msgid "By customizing the PHP Controller instance, you can add extra variables to the template, extra arguments to the <a target='_blank' href='https://developer.wordpress.org/reference/classes/wp_query/#parameters'>WP_Query instance</a>, and define the AJAX and REST API handlers. <a target='_blank' href='https://docs.advanced-views.com/post-selections/code-fields/selection-controller'>Read more</a> <br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace)."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:447
+#: src/Acf/Groups/translations.php:479
 msgid "Add Custom Javascript code to your Post Selection.<br><br> By default, the Post Selection is a <a target='_blank' href='https://docs.advanced-views.com/post-selections/code-fields/javascript-code'>web component</a>, so this code will be executed once for every instance, and 'this', that refers to the current instance, is available. <br><br> If the Web Component Type is set to none, the js code here is plain, and can be used for any goals, including <a target='_blank' href='https://docs.advanced-views.com/post-selections/component-options/interactivity-api'>WP Interactivity API</a>. <br><br> The code snippet will be added within &lt;script type='module'&gt;&lt;/script&gt; tags ONLY to pages that have this Post Selection. <br><br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace)."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:439
+#: src/Acf/Groups/translations.php:471
 msgid "If enabled then the selected pagination type is applied and the 'Posts per page' rule takes effect. <a target='_blank' href='https://docs.advanced-views.com/post-selections/features/posts-pagination'>Read more</a>."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:454
+#: src/Acf/Groups/translations.php:486
 msgid "See an output preview of your Post Selection, where you can test some CSS styles. <br> Styles from your front page are included in the preview (some differences may appear). <br>Note: Press 'Update' if you have changed Custom Markup (in the Template tab) to see the latest preview. <br> After testing: Copy and paste the Card styles to the CSS Code field. <br> Important! Don't style your View here, instead use the CSS Code field in your View for this goal."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:525
+#: src/Acf/Groups/translations.php:545
 msgid "Enter the <a target='_blank' href='https://docs.advanced-views.com/post-selections/embedding-shortcode'>custom shortcode argument</a> name which will be used in the query."
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Cpt.php:156
+#: src/Post_Type/Core/Cpt/Cpt.php:158
 msgid "<a target=\"_blank\" href=\"https://docs.advanced-views.com/features/file-system-storage\">File system storage</a> is"
 msgstr ""
 
-#: src/Dashboard/Admin_Pages.php:345
+#: src/Plugin/Dashboard/Admin_Pages.php:346
 msgid "Get Pro"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:54
+#: src/Acf/Groups/translations.php:165
 msgid "Select the gallery layout type. Customize the layout after saving, by editing the JS Code in the Styles & Scripts tab"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:55
+#: src/Acf/Groups/translations.php:166
 msgid "Select the lightbox library to enable. Customize the lightbox after saving, by editing the JS Code in the Styles & Scripts tab"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:56
+#: src/Acf/Groups/translations.php:167
 msgid "Select the slider library to enable. <br> Customize the slider after saving, by editing the JS Code in the Styles & Scripts tab"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:115
+#: src/Acf/Groups/translations.php:214
 msgid "Data"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:123
-#: src/Acf/Groups/translations.php:405
+#: src/Acf/Groups/translations.php:222
+#: src/Acf/Groups/translations.php:437
 msgid "Styles & Scripts"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:126
+#: src/Acf/Groups/translations.php:225
 msgid "Output"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:129
-#: src/Acf/Groups/translations.php:393
+#: src/Acf/Groups/translations.php:228
+#: src/Acf/Groups/translations.php:425
 msgid "Editorial description"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:130
-#: src/Acf/Groups/translations.php:408
+#: src/Acf/Groups/translations.php:229
+#: src/Acf/Groups/translations.php:440
 msgid "Developer"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:197
-#: src/Acf/Groups/translations.php:509
+#: src/Acf/Groups/translations.php:302
+#: src/Acf/Groups/translations.php:529
 msgid "Value Type"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:199
-#: src/Acf/Groups/translations.php:511
+#: src/Acf/Groups/translations.php:304
+#: src/Acf/Groups/translations.php:531
 msgid "Dynamic Source"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:200
+#: src/Acf/Groups/translations.php:305
 msgid "Post Field Group"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:201
+#: src/Acf/Groups/translations.php:306
 msgid "Post Field"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:202
+#: src/Acf/Groups/translations.php:307
 msgid "Date Modifier"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:203
+#: src/Acf/Groups/translations.php:308
 msgid "Query Parameter Name"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:204
+#: src/Acf/Groups/translations.php:309
 msgid "Custom Argument Name"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:211
-#: src/Acf/Groups/translations.php:520
+#: src/Acf/Groups/translations.php:316
+#: src/Acf/Groups/translations.php:540
 msgid "Choose the compared value type"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:212
+#: src/Acf/Groups/translations.php:317
 msgid "Static value that will be compared.<br>Can be empty, in case you want to compare with empty string."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:213
-#: src/Acf/Groups/translations.php:522
+#: src/Acf/Groups/translations.php:318
+#: src/Acf/Groups/translations.php:542
 msgid "Dynamic source that will be compared."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:214
+#: src/Acf/Groups/translations.php:319
 msgid "Select the group that contains the field whose value (from the current post) should be picked up dynamically."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:215
+#: src/Acf/Groups/translations.php:320
 msgid "Select the field (from the current post) whose value should be picked up dynamically."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:216
+#: src/Acf/Groups/translations.php:321
 msgid "Optionally enter a <a target='_blank' href='https://www.php.net/manual/en/function.strtotime.php'>relative date modifier</a> (e.g. <strong>+1 day</strong>, <strong>-1 week</strong>) to offset the current date/time. Leave empty to use the current date/time as-is."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:217
+#: src/Acf/Groups/translations.php:322
 msgid "Enter the name of the URL query parameter (from &#36;_GET) whose value should be picked up dynamically."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:218
+#: src/Acf/Groups/translations.php:323
 msgid "Enter the <a target='_blank' href='https://docs.advanced-views.com/post-selections/embedding-shortcode'>custom shortcode argument</a> name whose value should be picked up dynamically."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:224
+#: src/Acf/Groups/translations.php:329
 msgid "Greater than"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:225
+#: src/Acf/Groups/translations.php:330
 msgid "At least"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:227
+#: src/Acf/Groups/translations.php:332
 msgid "At most"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:229
+#: src/Acf/Groups/translations.php:334
 msgid "Does not contain"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:231
+#: src/Acf/Groups/translations.php:336
 msgid "Does not exist"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:237
-#: src/Acf/Groups/translations.php:256
-#: src/Acf/Groups/translations.php:538
-#: src/Acf/Groups/translations.php:557
+#: src/Acf/Groups/translations.php:340
+#: src/Acf/Groups/translations.php:359
+#: src/Acf/Groups/translations.php:556
+#: src/Acf/Groups/translations.php:575
 msgid "Condition"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:251
-#: src/Acf/Groups/translations.php:270
-#: src/Acf/Groups/translations.php:552
-#: src/Acf/Groups/translations.php:571
+#: src/Acf/Groups/translations.php:354
+#: src/Acf/Groups/translations.php:373
+#: src/Acf/Groups/translations.php:570
+#: src/Acf/Groups/translations.php:589
 msgid "Match ALL"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:252
-#: src/Acf/Groups/translations.php:271
-#: src/Acf/Groups/translations.php:553
-#: src/Acf/Groups/translations.php:572
+#: src/Acf/Groups/translations.php:355
+#: src/Acf/Groups/translations.php:374
+#: src/Acf/Groups/translations.php:571
+#: src/Acf/Groups/translations.php:590
 msgid "Match ANY"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:373
+#: src/Acf/Groups/translations.php:405
 msgid "Query"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:386
+#: src/Acf/Groups/translations.php:418
 msgid "Filters"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:389
+#: src/Acf/Groups/translations.php:421
 msgid "Display"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:390
-#: src/Cpt/Post_Selections/Cpt/Selection_Meta_Boxes.php:111
+#: src/Acf/Groups/translations.php:422
+#: src/Post_Type/Post_Selections/Cpt/Selection_Meta_Boxes.php:111
 msgid "Layout for Results"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:402
+#: src/Acf/Groups/translations.php:434
 msgid "Default Selection Template"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:403
+#: src/Acf/Groups/translations.php:435
 msgid "Custom Selection Template"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:435
+#: src/Acf/Groups/translations.php:467
 msgid "Select the slider library to enable. <br> Customize the slider after saving, by editing the JS Code in the Styles & Scripts tab."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:440
+#: src/Acf/Groups/translations.php:472
 msgid "Defines a way in which user can load more. For 'Load More Button' and 'Page Numbers' cases a special markup will be added to the Post Selection automatically, you can style it in the Styles & Scripts tab."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:442
+#: src/Acf/Groups/translations.php:474
 msgid "Controls how many posts will be displayed initially and how many posts will be appended every time when user triggers 'Load More'. Total amount of posts is limited by the 'Maximum number of posts' field in the 'Query' tab."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:533
+#: src/Post_Type/Post_Selections/Acf/Integrations/Tax_Field_Settings_Integration.php:84
 msgid "Static term"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:544
+#: src/Acf/Groups/translations.php:562
 msgid "Rules for the taxonomy query. Multiple rules are supported. <a target='_blank' href='https://docs.advanced-views.com/post-selections/filters/taxonomy-filters'>Read more</a> <br> If you want to see the query that was created by your input, update the Post Selection and reload the page. After have a look at the 'Query Preview' field in the 'Query' tab"
 msgstr ""
 
-#: src/Acf/Group_Integrations/Meta_Field_Settings_Integration.php:64
+#: src/Post_Type/Post_Selections/Acf/Integrations/Meta_Field_Settings_Integration.php:47
 msgid "Current post field"
 msgstr ""
 
-#: src/Acf/Group_Integrations/Meta_Field_Settings_Integration.php:65
+#: src/Post_Type/Post_Selections/Acf/Integrations/Meta_Field_Settings_Integration.php:48
 msgid "Current date/time"
 msgstr ""
 
-#: src/Acf/Group_Integrations/Meta_Field_Settings_Integration.php:66
+#: src/Post_Type/Post_Selections/Acf/Integrations/Meta_Field_Settings_Integration.php:49
 msgid "URL parameter"
 msgstr ""
 
-#: src/Acf/Group_Integrations/Meta_Field_Settings_Integration.php:67
+#: src/Post_Type/Post_Selections/Acf/Integrations/Meta_Field_Settings_Integration.php:50
 msgid "Shortcode argument"
 msgstr ""
 
-#: src/Acf/Group_Integrations/Tax_Field_Settings_Integration.php:93
+#: src/Post_Type/Post_Selections/Acf/Integrations/Tax_Field_Settings_Integration.php:94
 msgid "Current term (archive and category pages)"
 msgstr ""
 
-#: src/Acf/Group_Integrations/Tax_Field_Settings_Integration.php:94
+#: src/Post_Type/Post_Selections/Acf/Integrations/Tax_Field_Settings_Integration.php:95
 msgid "Meta field value"
 msgstr ""
 
-#: src/Acf/Group_Integrations/Tax_Field_Settings_Integration.php:95
+#: src/Post_Type/Post_Selections/Acf/Integrations/Tax_Field_Settings_Integration.php:96
 msgid "Custom shortcode argument"
 msgstr ""
 
-#: src/Cpt/Base/Cpt/Cpt_Meta_Boxes.php:34
+#: src/Post_Type/Core/Cpt/Cpt_Meta_Boxes.php:42
 msgid "Help & Documentation"
 msgstr ""
 
 #. translators: %s - singular name of the CPT.
-#: src/Cpt/Layouts/Cpt/Layouts_Cpt.php:23
+#: src/Post_Type/Layouts/Cpt/Layouts_Cpt.php:29
 #, php-format
 msgid "Create reusable displays for WordPress and custom-field data. <br>Use a <a target=\"_blank\" href=\"https://docs.advanced-views.com/getting-started/first-layout\">%s</a> directly, or use it to display each result in a Post Selection."
 msgstr ""
 
-#: src/Cpt/Layouts/Cpt/Layout_Meta_Boxes.php:230
+#: src/Post_Type/Layouts/Cpt/Layout_Meta_Boxes.php:233
 msgid "Query posts to display using this Layout"
 msgstr ""
 
-#: src/Cpt/Layouts/Cpt/Layout_Meta_Boxes.php:245
-#: src/Cpt/Layouts/Cpt/Table/Layouts_Cpt_Table.php:87
+#: src/Post_Type/Layouts/Cpt/Layout_Meta_Boxes.php:248
+#: src/Post_Type/Layouts/Cpt/Table/Layouts_Cpt_Table.php:88
 msgid "Embed the Layout"
 msgstr ""
 
 #. translators: %s - plural name of the CPT.
-#: src/Cpt/Layouts/Cpt/Layout_Meta_Boxes.php:283
+#: src/Post_Type/Layouts/Cpt/Layout_Meta_Boxes.php:286
 #, php-format
 msgid "Used by %s"
 msgstr ""
 
-#: src/Cpt/Layouts/Cpt/Layout_Meta_Boxes.php:300
+#: src/Post_Type/Layouts/Cpt/Layout_Meta_Boxes.php:303
 msgid "Field Groups"
 msgstr ""
 
 #. translators: %s is the plural name of the CPT.
-#: src/Cpt/Layouts/Cpt/Layout_Meta_Boxes.php:316
+#: src/Post_Type/Layouts/Cpt/Layout_Meta_Boxes.php:319
 #, php-format
 msgid "Nested %s"
 msgstr ""
 
 #. translators: %s - singular name of the CPT.
-#: src/Cpt/Post_Selections/Cpt/Post_Selections_Cpt.php:36
+#: src/Post_Type/Post_Selections/Cpt/Post_Selections_Cpt.php:36
 #, php-format
 msgid "Query posts, products or custom post types and display each result using a Layout with a <a target=\"_blank\" href=\"https://docs.advanced-views.com/getting-started/first-post-selection\">%s</a>. <br>Add filters, sorting and pagination as needed."
 msgstr ""
 
-#: src/Cpt/Post_Selections/Cpt/Selection_Meta_Boxes.php:77
-#: src/Cpt/Post_Selections/Cpt/Table/Post_Selections_Table.php:114
+#: src/Post_Type/Post_Selections/Cpt/Selection_Meta_Boxes.php:77
+#: src/Post_Type/Post_Selections/Cpt/Table/Post_Selections_Table.php:114
 msgid "Embed the Post Selection"
 msgstr ""
 
@@ -2926,56 +2911,198 @@ msgstr ""
 msgid "Display framework with full control over selection and layout. Lightweight and compatible with any theme or page builder."
 msgstr ""
 
-#: src/Acf/Groups/translations.php:198
+#: src/Acf/Groups/translations.php:303
 msgid "Static Value"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:232
+#: src/Post_Type/Post_Selections/Acf/Integrations/Meta_Field_Settings_Integration.php:35
 msgid "Static value"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:233
+#: src/Post_Type/Post_Selections/Acf/Integrations/Meta_Field_Settings_Integration.php:31
 msgid "Dynamic value"
 msgstr ""
 
-#: src/Acf/Groups/translations.php:534
+#: src/Post_Type/Post_Selections/Acf/Integrations/Tax_Field_Settings_Integration.php:80
 msgid "Dynamic term"
 msgstr ""
 
-#: src/Acf/Group_Integrations/Meta_Field_Settings_Integration.php:63
+#: src/Post_Type/Post_Selections/Acf/Integrations/Meta_Field_Settings_Integration.php:46
 msgid "Current post ID"
 msgstr ""
 
-#: src/Cpt/Integrations/Cpt_Gutenberg_Block.php:89
+#: src/Post_Type/Integration/Core/Cpt_Renderer.php:56
 msgid "No output to preview"
 msgstr ""
 
 #. translators: %s is a singular post-type name, e.g. "Layout".
-#: src/Cpt/Integrations/Cpt_Gutenberg_Block.php:97
+#: src/Post_Type/Integration/Core/Cpt_Renderer.php:66
 #, php-format
 msgid "Select a %s to see the preview"
 msgstr ""
 
-#: src/Cpt/Layouts/Integrations/Layout_Gutenberg_Block.php:68
-msgid "Layout: Advanced Views"
+#: src/Acf/Groups/translations.php:226
+msgid "Register custom Gutenberg Block"
 msgstr ""
 
-#: src/Cpt/Layouts/Integrations/Layout_Gutenberg_Block.php:69
+#: src/Acf/Groups/translations.php:255
+msgid "If a block vendor is selected then a <a target='_blank' href='https://docs.advanced-views.com/layouts/features/custom-gutenberg-blocks'>custom Gutenberg block</a> for this Layout will be available. <br><br> Note: this option is separate from the built-in Gutenberg integration block."
+msgstr ""
+
+#: src/Plugin/Dashboard/html/postbox/shortcodes.php:43
+msgid "Copy Shortcode"
+msgstr ""
+
+#: src/Plugin/Plugin.php:116
+msgid "[Pro-only]"
+msgstr ""
+
+#: src/Post_Type/Integration/Elementor/Cpt_Elementor_Widget.php:69
+msgid "AV settings"
+msgstr ""
+
+#: src/Post_Type/Integration/Elementor/Cpt_Elementor_Widget.php:125
+msgid "Additional CSS Class"
+msgstr ""
+
+#: src/Post_Type/Integration/Elementor/Cpt_Elementor_Widget.php:129
+msgid "Show for User Roles"
+msgstr ""
+
+#: src/Post_Type/Integration/Elementor/Cpt_Elementor_Widget.php:131
+msgid "Comma-separated list of roles. Leave empty to show for everyone."
+msgstr ""
+
+#: src/Post_Type/Integration/Elementor/Cpt_Elementor_Widget.php:134
+msgid "Hide for User Roles"
+msgstr ""
+
+#: src/Post_Type/Integration/Elementor/Cpt_Elementor_Widget.php:136
+msgid "Comma-separated list of roles."
+msgstr ""
+
+#: src/Post_Type/Integration/Elementor/Cpt_Elementor_Widget.php:139
+msgid "Custom Arguments"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Elementor_Widget.php:33
+msgid "AV Layout"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:21
+msgid "To pull it from another field, add that field inside the current Layout instead."
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:29
+msgid "Object Source"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:33
+msgid "Post"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:34
+msgid "Custom options page (ACF/MB)"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:36
+msgid "Term"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:37
+msgid "Menu"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:38
+msgid "Comment"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:46
+msgid "Look Up Post By"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:50
+msgid "Current Post"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:51
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:61
+msgid "Post ID"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:52
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:74
+msgid "Post Slug"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:87
+msgid "User ID"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:89
+msgid "Leave empty to use the current user."
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:98
+msgid "Term ID"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:100
+msgid "Leave empty to use the current term on a term page."
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:109
+msgid "Menu Slug"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Elementor/Layout_Object_Source.php:119
+msgid "Comment ID"
+msgstr ""
+
+#: src/Post_Type/Post_Selections/Integration/Elementor/Selection_Elementor_Widget.php:33
+msgid "AV Post Selection"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Gutenberg/block.json
+msgctxt "block title"
+msgid "AV Layout"
+msgstr ""
+
+#: src/Post_Type/Layouts/Integration/Gutenberg/block.json
+msgctxt "block description"
 msgid "Displays a Layout from Advanced Views."
 msgstr ""
 
-#: src/Cpt/Post_Selections/Integrations/Selection_Gutenberg_Block.php:68
-msgid "Post Selection: Advanced Views"
+#: src/Post_Type/Post_Selections/Integration/Gutenberg/block.json
+msgctxt "block title"
+msgid "AV Post Selection"
 msgstr ""
 
-#: src/Cpt/Post_Selections/Integrations/Selection_Gutenberg_Block.php:69
+#: src/Post_Type/Post_Selections/Integration/Gutenberg/block.json
+msgctxt "block description"
 msgid "Displays a Post Selection from Advanced Views."
 msgstr ""
 
-#: src/Dashboard/html/postbox/shortcodes.php:28
-msgid "Using in-Gutenberg integration"
+#: src/Plugin/Dashboard/html/postbox/shortcodes.php:49
+msgid "Using Gutenberg?"
 msgstr ""
 
-#: src/Dashboard/html/postbox/shortcodes.php:29
-msgid "Using shortcode:"
+#: src/Plugin/Dashboard/html/postbox/shortcodes.php:52
+msgid "Embed with the AV Layout block."
+msgstr ""
+
+#: src/Plugin/Dashboard/html/postbox/shortcodes.php:53
+msgid "Embed with the AV Post Selection block."
+msgstr ""
+
+#: src/Plugin/Dashboard/html/postbox/shortcodes.php:59
+msgid "Using Elementor?"
+msgstr ""
+
+#: src/Plugin/Dashboard/html/postbox/shortcodes.php:62
+msgid "Embed with the AV Layout widget."
+msgstr ""
+
+#: src/Plugin/Dashboard/html/postbox/shortcodes.php:63
+msgid "Embed with the AV Post Selection widget."
 msgstr ""

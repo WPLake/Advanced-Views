@@ -45,12 +45,24 @@ if ( ! $is_short ) {
 	</button>
 
 	<p>
-			<?php
-			echo ! $is_single ?
-				esc_html__( 'Using Gutenberg? Embed with the AV Layout block.', 'acf-views' ) :
-				esc_html__( 'Using Gutenberg? Embed with the AV Post Selection block.', 'acf-views' );
-			?>
-		</p>
+		<?php
+		esc_html_e( 'Using Gutenberg?', 'acf-views' );
+		echo '<br>';
+		echo ! $is_single ?
+			esc_html__( 'Embed with the AV Layout block.', 'acf-views' ) :
+			esc_html__( 'Embed with the AV Post Selection block.', 'acf-views' );
+		?>
+	</p>
+
+	<p>
+		<?php
+		esc_html_e( 'Using Elementor?', 'acf-views' );
+		echo '<br>';
+		echo ! $is_single ?
+			esc_html__( 'Embed with the AV Layout widget.', 'acf-views' ) :
+			esc_html__( 'Embed with the AV Post Selection widget.', 'acf-views' );
+		?>
+	</p>
 
 	<span>
 		<?php
