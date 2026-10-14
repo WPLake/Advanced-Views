@@ -1,0 +1,136 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups;
+
+use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Term_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+
+defined( 'ABSPATH' ) || exit;
+
+class Tax_Field_Settings extends Group implements Term_Settings {
+	// to fix the group name in case class name changes.
+	const CUSTOM_GROUP_NAME  = self::GROUP_NAME_PREFIX . 'tax-field';
+	const FIELD_TAXONOMY     = 'taxonomy';
+	const FIELD_VALUE_TYPE   = 'value_type';
+	const FIELD_TERM         = 'term';
+	const FIELD_DYNAMIC_TERM = 'dynamic_term';
+	const FIELD_META_GROUP   = 'meta_group';
+	const FIELD_META_FIELD   = 'meta_field';
+	const VALUE_TYPE_DYNAMIC = 'dynamic';
+	const VALUE_TYPE_STATIC  = 'static';
+
+	/**
+	 * @a-type select
+	 * @return_format value
+	 * @required 1
+	 * @ui 1
+	 * @label Taxonomy
+	 * @instructions Select a target taxonomy
+	 */
+	public string $taxonomy;
+	/**
+	 * @a-type select
+	 * @ui 1
+	 * @required 1
+	 * @label Comparison
+	 * @instructions Controls how taxonomy will be compared
+	 * @choices {"IN":"Equal to","NOT IN":"Not Equal to","EXISTS":"Exists","NOT EXISTS":"Does Not Exist"}
+	 * @default_value IN
+	 */
+	public string $comparison;
+	/**
+	 * @a-type select
+	 * @label Value Type
+	 * @instructions Choose the compared value type
+	 * @default_value static
+	 * @conditional_logic [[{"field": "local_acf_views_tax-field__comparison","operator": "!=","value": "EXISTS"},{"field": "local_acf_views_tax-field__comparison","operator": "!=","value": "NOT EXISTS"}]]
+	 */
+	public string $value_type;
+	/**
+	 * @a-type select
+	 * @return_format value
+	 * @label Static Term
+	 * @instructions Static term that will be compared.
+	 * @conditional_logic [[{"field": "local_acf_views_tax-field__value-type","operator": "==","value": "static"}]]
+	 */
+	public string $term;
+	/**
+	 * @a-pro 1
+	 * @a-type select
+	 * @return_format value
+	 * @label Dynamic Source
+	 * @instructions Dynamic source that will be compared.
+	 * @conditional_logic [[{"field": "local_acf_views_tax-field__value-type","operator": "==","value": "dynamic"}]]
+	 */
+	public string $dynamic_term;
+	/**
+	 * @a-pro 1
+	 * @a-type select
+	 * @return_format value
+	 * @label Source meta group
+	 * @instructions Choose a Group that contains the source meta field.
+	 * @conditional_logic [[{"field": "local_acf_views_tax-field__dynamic-term","operator": "==","value": "$meta$"}]]
+	 */
+	public string $meta_group;
+	/**
+	 * @a-pro 1
+	 * @a-type select
+	 * @return_format value
+	 * @label Source meta field
+	 * @instructions Choose a Term field whose value should be used in the query.
+	 * @conditional_logic [[{"field": "local_acf_views_tax-field__dynamic-term","operator": "==","value": "$meta$"}]]
+	 */
+	public string $meta_field;
+	/**
+	 * @a-pro 1
+	 * @label Custom argument name
+	 * @instructions Enter the <a target='_blank' href='https://docs.advanced-views.com/post-selections/embedding-shortcode'>custom shortcode argument</a> name which will be used in the query.
+	 * @conditional_logic [[{"field": "local_acf_views_tax-field__dynamic-term","operator": "==","value": "$custom-argument$"}]]
+	 */
+	public string $custom_argument_name;
+
+	public static function create_key( string $taxonomy_name, int $term_id ): string {
+		return $taxonomy_name . '|' . $term_id;
+	}
+
+	public static function get_term_id_by_key( string $key ): int {
+		$term_id = explode( '|', $key )[1] ?? 0;
+
+		return intval( $term_id );
+	}
+
+	public function is_dynamic_term(): bool {
+		return self::VALUE_TYPE_DYNAMIC === $this->value_type;
+	}
+
+	public function get_term_id(): int {
+		return self::get_term_id_by_key( $this->term );
+	}
+
+	public function get_vendor_key(): string {
+		return $this->meta_group;
+	}
+
+	public function get_field_id(): string {
+		return Field_Settings::get_field_id_by_key( $this->meta_field );
+	}
+
+	public function get_taxonomy(): string {
+		return $this->taxonomy;
+	}
+
+	public function get_comparison(): string {
+		return $this->comparison;
+	}
+
+	public function get_dynamic_term(): string {
+		return $this->dynamic_term;
+	}
+
+	public function get_custom_argument_name(): string {
+		return $this->custom_argument_name;
+	}
+}

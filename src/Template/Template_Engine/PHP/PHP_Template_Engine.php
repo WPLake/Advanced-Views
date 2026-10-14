@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\PHP;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration;
@@ -31,7 +31,7 @@ final class PHP_Template_Engine implements Template_Engine {
 		return __( 'PHP', 'acf-views' );
 	}
 
-	public function create_renderer(): Template_Renderer {
+	public function create_renderer( string $render_folder ): Template_Renderer {
 		return new PHP_Renderer( $this->logger, $this->settings );
 	}
 

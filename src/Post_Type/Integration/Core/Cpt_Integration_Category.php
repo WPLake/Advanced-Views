@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Core;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 
 defined( 'ABSPATH' ) || exit;
 

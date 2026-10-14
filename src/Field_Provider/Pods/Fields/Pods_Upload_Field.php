@@ -4,8 +4,8 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Pods\Fields;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\File_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Gallery_Field;
@@ -17,8 +17,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 defined( 'ABSPATH' ) || exit;
 
 class Pods_Upload_Field extends Markup_Field_Base {
-	const LOOP_ITEM_NAME = 'file_item';
-
 	private Image_Field $image_field;
 	private File_Field $file_field;
 	private Gallery_Field $gallery_field;

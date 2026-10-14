@@ -6,8 +6,8 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage;
 
 use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
@@ -76,5 +76,13 @@ class Selection_Settings_Storage extends Cpt_Settings_Storage {
 		return '' !== $unique_id ?
 			$this->get( $unique_id ) :
 			null;
+	}
+
+	protected function get_unique_id_field_name(): string {
+		return Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_UNIQUE_ID );
+	}
+
+	protected function get_title_field_name(): string {
+		return Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_TITLE );
 	}
 }

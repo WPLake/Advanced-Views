@@ -16,12 +16,6 @@ class Html_Token implements Template_Token {
 		$this->printer = $printer;
 	}
 
-	public function set_printer( callable $printer ): self {
-		$this->printer = $printer;
-
-		return $this;
-	}
-
 	public function print(): void {
 		( $this->printer )();
 	}

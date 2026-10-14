@@ -4,8 +4,8 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern;
 
 defined( 'ABSPATH' ) || exit;

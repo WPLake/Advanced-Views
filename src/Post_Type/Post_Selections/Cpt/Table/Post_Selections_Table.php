@@ -5,14 +5,14 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Table;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use WP_Query;
 
 defined( 'ABSPATH' ) || exit;
@@ -25,20 +25,20 @@ class Post_Selections_Table extends Cpt_Table {
 
 	private Html_Printer $html;
 	private Selection_Meta_Boxes $post_selections_cpt_meta_boxes;
-	private Plugin_Cpt $plugin_cpt;
+	private Layouts_Cpt $layout_cpt;
 
 	public function __construct(
 		Selection_Settings_Storage $post_selections_settings_storage,
-		Public_Cpt $public_cpt,
+		Selections_Cpt $public_cpt,
 		Html_Printer $html,
 		Selection_Meta_Boxes $post_selections_cpt_meta_boxes,
-		Plugin_Cpt $plugin_cpt
+		Layouts_Cpt $layout_cpt
 	) {
 		parent::__construct( $post_selections_settings_storage, $public_cpt );
 
 		$this->html                           = $html;
 		$this->post_selections_cpt_meta_boxes = $post_selections_cpt_meta_boxes;
-		$this->plugin_cpt                     = $plugin_cpt;
+		$this->layout_cpt                     = $layout_cpt;
 	}
 
 	protected function print_column( string $short_column_name, Cpt_Settings $cpt_settings ): void {
@@ -115,7 +115,7 @@ class Post_Selections_Table extends Cpt_Table {
 				self::COLUMN_RELATED_VIEW  => sprintf(
 					// translators: %s - singular name of the CPT.
 					__( 'Related %s', 'acf-views' ),
-					$this->plugin_cpt->labels()->singular_name()
+					$this->layout_cpt->labels()->singular_name()
 				),
 				self::COLUMN_LAST_MODIFIED => __( 'Last modified', 'acf-views' ),
 			)
@@ -136,17 +136,17 @@ class Post_Selections_Table extends Cpt_Table {
 		);
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
-		parent::set_hooks( $route_detector );
-
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		parent::set_route_hooks( $route_detector );
 
 		self::add_action( 'pre_get_posts', array( $this, 'add_sortable_columns_to_request' ) );
 		self::add_filter(
 			sprintf( 'manage_edit-%s_sortable_columns', $this->get_cpt_name() ),
 			array( $this, 'get_sortable_columns' )
 		);
+	}
+
+	protected function get_unique_id_prefix(): string {
+		return Post_Selection_Settings::UNIQUE_ID_PREFIX;
 	}
 }

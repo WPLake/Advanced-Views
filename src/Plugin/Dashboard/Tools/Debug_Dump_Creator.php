@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Tools_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Environment_Detector;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;

@@ -4,61 +4,46 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
+use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
-class Plugin extends Hookable implements Hooks_Interface {
-	const DOCS_URL          = 'https://docs.advanced-views.com/';
-	const PRO_VERSION_URL   = 'https://advanced-views.com/pro/';
-	const PRO_PRICING_URL   = 'https://advanced-views.com/pro/#pricing';
-	const BASIC_VERSION_URL = 'https://advanced-views.com';
-	const SURVEY_URL        = 'https://forms.gle/Wjb16B4mzgLEQvru6';
-	const CONFLICTS_URL     = 'https://docs.advanced-views.com/troubleshooting/debugging';
-	const PROLONG_POINT_URL = 'https://wplake.org';
+class Plugin extends Actor_Base implements Actor {
 	// single product slug. Do not override in Pro, as it's used as a prefix for Gutenberg blocks and more.
 	const PRODUCT_SLUG   = 'acf-views';
 	const REST_NAMESPACE = 'advanced_views/v1';
 
-	protected string $slug         = 'acf-views/acf-views.php';
-	protected string $short_slug   = 'acf-views';
 	protected bool $is_pro_version = false;
-	private string $version;
 	private bool $is_switching_versions;
-	private string $plugin_url;
-	private string $plugin_path;
 
 	private Options_Storage $options;
-	private Settings_Storage $settings;
+	private Cpt_Theme_Settings $settings;
 
-	public function __construct( string $main_file, Options_Storage $options, Settings_Storage $settings ) {
-		$this->plugin_url            = plugin_dir_url( $main_file );
-		$this->plugin_path           = plugin_dir_path( $main_file );
-		$this->version               = $this->detect_plugin_version_number( $main_file );
+	public function __construct( Options_Storage $options, Cpt_Theme_Settings $settings ) {
 		$this->options               = $options;
 		$this->settings              = $settings;
 		$this->is_switching_versions = false;
 	}
 
-	public static function make_url_relative( string $url ): string {
-		return str_replace( get_site_url(), '', $url );
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
 	}
 
-	// static, as called also in AcfGroup.
-	public static function is_acf_pro_plugin_available(): bool {
-		return class_exists( 'acf_pro' );
+	public static function make_url_relative( string $url ): string {
+		return str_replace( get_site_url(), '', $url );
 	}
 
 	public static function get_theme_text_domain(): string {
@@ -107,128 +92,6 @@ class Plugin extends Hookable implements Hooks_Interface {
 	}
 
 	/**
-	 * @param array<string,mixed> $field
-	 *
-	 * @return array<string,mixed>
-	 */
-	protected function amend_pro_field_label_and_instruction( array $field ): array {
-		$is_pro_field = key_exists( 'a-pro', $field ) &&
-							$this->is_pro_field_locked();
-
-		if ( ! $is_pro_field ) {
-			return $field;
-		}
-
-		$type             = $field['type'] ?? '';
-		$field['label'] ??= '';
-
-		$instructions = key_exists( 'instructions', $field ) &&
-						is_string( $field['instructions'] ) ?
-			$field['instructions'] :
-			'';
-
-		$field['instructions'] = $instructions;
-
-		if ( 'tab' === $type ) {
-			$field['class'] = string( $field, 'class' );
-
-			$field['class'] .= ' acf-views-tab__pro';
-		} else {
-			// labels do not support HTML, so we can't use a link.
-			$field['label'] = sprintf(
-				'%s (%s)',
-				esc_html( string( $field, 'label' ) ),
-				$this->is_pro_version() ?
-					esc_html__( 'Unlock Pro', 'acf-views' ) :
-					esc_html__( 'Upgrade to Pro', 'acf-views' )
-			);
-		}
-
-		return $field;
-	}
-
-	/**
-	 * @param array<string,mixed> $field
-	 *
-	 * @return array<string,mixed>
-	 */
-	protected function add_deprecated_field_class( array $field ): array {
-		if ( ! key_exists( 'a-deprecated', $field ) ) {
-			return $field;
-		}
-
-		if ( ! key_exists( 'wrapper', $field ) ||
-			false === is_array( $field['wrapper'] ) ) {
-			$field['wrapper'] = array();
-		}
-
-		if ( ! key_exists( 'class', $field['wrapper'] ) ) {
-			$field['wrapper']['class'] = '';
-		}
-
-		$field['wrapper']['class'] .= ' acf-field--deprecated';
-
-		return $field;
-	}
-
-	/**
-	 * @param array<string,mixed> $field
-	 *
-	 * @return array<string,mixed>
-	 */
-	protected function add_custom_field_class( array $field ): array {
-		$class_argument = 'a-html-class';
-
-		if ( key_exists( $class_argument, $field ) ) {
-			$wrapper          = arr( $field, 'wrapper' );
-			$class            = string( $wrapper, 'class' ) . ' ' . string( $field, $class_argument );
-			$field['wrapper'] = array_merge(
-				$wrapper,
-				array(
-					'class' => esc_html( $class ),
-				)
-			);
-		}
-
-		return $field;
-	}
-
-	protected function detect_plugin_version_number( string $plugin_file ): string {
-		// @phpcs:ignore
-		$plugin_file_content = (string)file_get_contents($plugin_file);
-
-		preg_match( '/Version:(.*)/', $plugin_file_content, $matches );
-
-		$current_version_number = $matches[1] ?? '1.0.0';
-
-		return trim( $current_version_number );
-	}
-
-	protected function print_opcache_compatibility_warning(): void {
-		$detected_message = __(
-			'Compatibility issue detected! "Advanced Views" plugin requires "PHPDoc" comments in code.',
-			'acf-views'
-		);
-		$action_message   = __(
-			'Please change the "opcache.save_comments" option in your php.ini file to the default value of "1" on your hosting.',
-			'acf-views'
-		);
-		printf(
-			'<div class="notice notice-error"><p>%s 
-<br>%s <a target="_blank" href="%s">%s</a>
-</p></div>',
-			esc_html( $detected_message ),
-			esc_html( $action_message ),
-			esc_url( self::CONFLICTS_URL ),
-			esc_html( __( 'Read more', 'acf-views' ) ),
-		);
-	}
-
-	protected function get_plugin_url(): string {
-		return $this->plugin_url;
-	}
-
-	/**
 	 * @param callable(): void $callback
 	 */
 	public static function on_translations_ready( callable $callback ): void {
@@ -249,75 +112,24 @@ class Plugin extends Hookable implements Hooks_Interface {
 		);
 	}
 
-	public function is_pro_field_locked(): bool {
-		return true;
+	public static function get_pro_only_label(): string {
+		return __( '[Pro-only]', 'acf-views' );
 	}
 
-	public function get_name(): string {
+	public static function get_name(): string {
 		return __( 'Advanced Views Lite', 'acf-views' );
 	}
 
-	public function get_slug(): string {
-		return $this->slug;
-	}
+	public static function uploads_folder(): string {
+		$uploads = wp_upload_dir();
 
-	public function get_short_slug(): string {
-		return $this->short_slug;
-	}
-
-	public function get_version(): string {
-		return $this->version;
-	}
-
-	public function is_pro_version(): bool {
-		return $this->is_pro_version;
-	}
-
-	public function get_assets_url( string $file ): string {
-		return $this->plugin_url . 'src/Assets/' . $file;
-	}
-
-	public function get_assets_path( string $file ): string {
-		return $this->plugin_path . 'src/Assets/' . $file;
-	}
-
-	public function get_plugin_path( string $inner_path ): string {
-		return $this->plugin_path . $inner_path;
-	}
-
-	public function get_relative_plugins_path( string $inner_path ): string {
-		return $this->short_slug . '/' . $inner_path;
-	}
-
-	public function get_acf_internal_assets_url( string $file ): string {
-		return $this->plugin_url . 'vendor/standalone/acf-internal-features/assets/' . $file;
-	}
-
-	public function get_standalone_vendor_dir( string $sub_path ): string {
-		return $this->plugin_path . 'vendor/standalone/' . $sub_path;
-	}
-
-	public function get_standalone_vendor_url( string $sub_path ): string {
-		return $this->plugin_url . 'vendor/standalone/' . $sub_path;
-	}
-
-	public function is_acf_plugin_available( bool $is_pro_only = false ): bool {
-		// don't use 'is_plugin_active()' as the function available lately.
-		return static::is_acf_pro_plugin_available() ||
-				( ! $is_pro_only && class_exists( 'ACF' ) );
-	}
-
-	public function maybe_show_compatibility_warnings(): void {
-		if ( function_exists( 'ini_get' ) &&
-			'0' === ini_get( 'opcache.save_comments' ) ) {
-			$this->print_opcache_compatibility_warning();
-		}
+		return sprintf( '%s/acf-views', $uploads['basedir'] );
 	}
 
 	/**
 	 * @param string[] $target_base
 	 */
-	public function is_cpt_screen( string $scpt_name, array $target_base = array( 'post', 'add' ) ): bool {
+	public static function is_cpt_screen( string $scpt_name, array $target_base = array( 'post', 'add' ) ): bool {
 		$current_screen = get_current_screen();
 
 		if ( null === $current_screen ) {
@@ -330,6 +142,73 @@ class Plugin extends Hookable implements Hooks_Interface {
 		// base = edit (list management), post (editing), add (adding).
 		return $is_target_post &&
 				in_array( $current_screen->base, $target_base, true );
+	}
+
+	public static function get_admin_url(
+		string $page = '',
+		?string $cpt_name = null,
+		string $base = 'edit.php'
+	): string {
+		$cpt_name = is_null( $cpt_name ) ?
+			Hard_Layout_Cpt::cpt_name() :
+			$cpt_name;
+
+		$page_arg = '' !== $page ?
+			'&page=' . $page :
+			'';
+
+		// don't use just '/wp-admin/x' as some websites can have custom admin url, like 'wp.org/wordpress/wp-admin'.
+		$page_url = get_admin_url( null, $base . '?post_type=' );
+
+		return $page_url . $cpt_name . $page_arg;
+	}
+
+	// for some reason, ACF ajax form validation doesn't work on the wordpress.com hosting. So need to use a special approach.
+	public static function is_wordpress_com_hosting(): bool {
+		return defined( 'WPCOMSH_VERSION' ) ||
+				defined( 'WPCOM_CORE_ATOMIC_PLUGINS' );
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'admin_notices', array( $this, 'maybe_show_compatibility_warnings' ) );
+		self::add_action( 'activated_plugin', array( $this, 'deactivate_other_instances' ) );
+		self::add_action( 'pre_current_active_plugins', array( $this, 'show_plugin_deactivated_notice' ) );
+
+		self::add_filter( 'acf/prepare_field', array( $this, 'amend_field_settings' ) );
+		self::add_filter( 'acf/field_wrapper_attributes', array( $this, 'add_class_to_admin_pro_field_classes' ), 10, 2 );
+
+		if ( $route_detector->is_cpt_admin_route( Hard_Layout_Cpt::cpt_name(), Route_Detector::CPT_ADD ) ||
+			$route_detector->is_cpt_admin_route( Hard_Post_Selection_Cpt::cpt_name(), Route_Detector::CPT_ADD ) ) {
+			self::add_filter( 'acf/prepare_field', array( $this, 'set_global_defaults_for_field' ) );
+		}
+	}
+
+	public function is_pro_field_locked(): bool {
+		return true;
+	}
+
+	public function get_pro_field_label( string $label ): string {
+		if ( $this->is_pro_field_locked() ) {
+			$parts = array(
+				$label,
+				self::get_pro_only_label(),
+			);
+
+			return join( ' ', $parts );
+		}
+
+		return $label;
+	}
+
+	public function is_pro_version(): bool {
+		return $this->is_pro_version;
+	}
+
+	public function maybe_show_compatibility_warnings(): void {
+		if ( function_exists( 'ini_get' ) &&
+			'0' === ini_get( 'opcache.save_comments' ) ) {
+			$this->print_opcache_compatibility_warning();
+		}
 	}
 
 	public function deactivate_other_instances( string $activated_plugin ): void {
@@ -478,50 +357,114 @@ class Plugin extends Hookable implements Hooks_Interface {
 		return $wrapper;
 	}
 
-	public function get_admin_url(
-		string $page = '',
-		?string $cpt_name = null,
-		string $base = 'edit.php'
-	): string {
-		$cpt_name = is_null( $cpt_name ) ?
-			Hard_Layout_Cpt::cpt_name() :
-			$cpt_name;
-
-		$page_arg = '' !== $page ?
-			'&page=' . $page :
-			'';
-
-		// don't use just '/wp-admin/x' as some websites can have custom admin url, like 'wp.org/wordpress/wp-admin'.
-		$page_url = get_admin_url( null, $base . '?post_type=' );
-
-		return $page_url . $cpt_name . $page_arg;
-	}
-
 	public function is_switching_versions(): bool {
 		return $this->is_switching_versions;
 	}
 
-	// for some reason, ACF ajax form validation doesn't work on the wordpress.com hosting. So need to use a special approach.
-	public function is_wordpress_com_hosting(): bool {
-		return defined( 'WPCOMSH_VERSION' ) ||
-				defined( 'WPCOM_CORE_ATOMIC_PLUGINS' );
+	/**
+	 * @param array<string,mixed> $field
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected function amend_pro_field_label_and_instruction( array $field ): array {
+		$is_pro_field = key_exists( 'a-pro', $field ) &&
+							$this->is_pro_field_locked();
+
+		if ( ! $is_pro_field ) {
+			return $field;
+		}
+
+		$type             = $field['type'] ?? '';
+		$field['label'] ??= '';
+
+		$instructions = key_exists( 'instructions', $field ) &&
+						is_string( $field['instructions'] ) ?
+			$field['instructions'] :
+			'';
+
+		$field['instructions'] = $instructions;
+
+		if ( 'tab' === $type ) {
+			$field['class'] = string( $field, 'class' );
+
+			$field['class'] .= ' acf-views-tab__pro';
+		} else {
+			// labels do not support HTML, so we can't use a link.
+			$field['label'] = sprintf(
+				'%s (%s)',
+				esc_html( string( $field, 'label' ) ),
+				$this->is_pro_version() ?
+					esc_html__( 'Unlock Pro', 'acf-views' ) :
+					esc_html__( 'Upgrade to Pro', 'acf-views' )
+			);
+		}
+
+		return $field;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
+	/**
+	 * @param array<string,mixed> $field
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected function add_deprecated_field_class( array $field ): array {
+		if ( ! key_exists( 'a-deprecated', $field ) ) {
+			return $field;
 		}
 
-		self::add_action( 'admin_notices', array( $this, 'maybe_show_compatibility_warnings' ) );
-		self::add_action( 'activated_plugin', array( $this, 'deactivate_other_instances' ) );
-		self::add_action( 'pre_current_active_plugins', array( $this, 'show_plugin_deactivated_notice' ) );
-
-		self::add_filter( 'acf/prepare_field', array( $this, 'amend_field_settings' ) );
-		self::add_filter( 'acf/field_wrapper_attributes', array( $this, 'add_class_to_admin_pro_field_classes' ), 10, 2 );
-
-		if ( $route_detector->is_cpt_admin_route( Hard_Layout_Cpt::cpt_name(), Route_Detector::CPT_ADD ) ||
-			$route_detector->is_cpt_admin_route( Hard_Post_Selection_Cpt::cpt_name(), Route_Detector::CPT_ADD ) ) {
-			self::add_filter( 'acf/prepare_field', array( $this, 'set_global_defaults_for_field' ) );
+		if ( ! key_exists( 'wrapper', $field ) ||
+			false === is_array( $field['wrapper'] ) ) {
+			$field['wrapper'] = array();
 		}
+
+		if ( ! key_exists( 'class', $field['wrapper'] ) ) {
+			$field['wrapper']['class'] = '';
+		}
+
+		$field['wrapper']['class'] .= ' acf-field--deprecated';
+
+		return $field;
+	}
+
+	/**
+	 * @param array<string,mixed> $field
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected function add_custom_field_class( array $field ): array {
+		$class_argument = 'a-html-class';
+
+		if ( key_exists( $class_argument, $field ) ) {
+			$wrapper          = arr( $field, 'wrapper' );
+			$class            = string( $wrapper, 'class' ) . ' ' . string( $field, $class_argument );
+			$field['wrapper'] = array_merge(
+				$wrapper,
+				array(
+					'class' => esc_html( $class ),
+				)
+			);
+		}
+
+		return $field;
+	}
+
+	protected function print_opcache_compatibility_warning(): void {
+		$detected_message = __(
+			'Compatibility issue detected! "Advanced Views" plugin requires "PHPDoc" comments in code.',
+			'acf-views'
+		);
+		$action_message   = __(
+			'Please change the "opcache.save_comments" option in your php.ini file to the default value of "1" on your hosting.',
+			'acf-views'
+		);
+		printf(
+			'<div class="notice notice-error"><p>%s 
+<br>%s <a target="_blank" href="%s">%s</a>
+</p></div>',
+			esc_html( $detected_message ),
+			esc_html( $action_message ),
+			esc_url( External_Links::CONFLICTS_URL ),
+			esc_html( __( 'Read more', 'acf-views' ) ),
+		);
 	}
 }

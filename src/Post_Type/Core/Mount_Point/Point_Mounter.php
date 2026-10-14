@@ -7,15 +7,15 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Mount_Point_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use WP_Post;
 
 /**
  * Common class for both Layout and Post_Selection
  */
-class Point_Mounter extends Hookable implements Hooks_Interface {
+class Point_Mounter extends Actor_Base implements Actor {
 	/**
 	 * @var Point_Provider[]
 	 */
@@ -28,7 +28,11 @@ class Point_Mounter extends Hookable implements Hooks_Interface {
 		$this->point_providers = $point_providers;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_filter(
 			'the_content',
 			function ( $content ) {

@@ -4,21 +4,39 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use WP_Post;
 use WPCom_Markdown;
 
 defined( 'ABSPATH' ) || exit;
 
-class Cpt_Gutenberg_Editor_Settings extends Hookable implements Hooks_Interface {
+class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 	private string $cpt_name;
 
 	public function __construct( string $cpt_name ) {
 		$this->cpt_name = $cpt_name;
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_filter(
+			'wp_insert_post_data',
+			array( $this, 'avoid_override_post_content_by_gutenberg_and_theme_builders' ),
+			// must be more than the default priority of 10.
+			99,
+			4
+		);
+
+		if ( $route_detector->is_admin_route() ) {
+			$this->set_admin_hooks( $route_detector );
+		}
 	}
 
 	/**
@@ -176,19 +194,7 @@ class Cpt_Gutenberg_Editor_Settings extends Hookable implements Hooks_Interface 
 		);
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
-		self::add_filter(
-			'wp_insert_post_data',
-			array( $this, 'avoid_override_post_content_by_gutenberg_and_theme_builders' ),
-			// must be more than the default priority of 10.
-			99,
-			4
-		);
-
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
-
+	protected function set_admin_hooks( Route_Detector $route_detector ): void {
 		self::add_action( 'post_edit_form_tag', array( $this, 'disable_autocomplete_for_post_edit' ) );
 
 		self::add_action( 'admin_footer', array( $this, 'maybe_show_error_that_gutenberg_editor_is_suppressed' ) );

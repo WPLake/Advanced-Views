@@ -6,32 +6,34 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard;
 
 use Exception;
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Tools_Settings;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Version_Migrator;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Debug_Dump_Creator;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use WP_Filesystem_Base;
 use WP_Post;
 use WP_Query;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Tools_Page extends Hookable implements Hooks_Interface {
+final class Tools_Page extends Actor_Base implements Actor {
 
 	const SLUG = 'avf-tools';
 	/**
@@ -41,7 +43,7 @@ final class Tools_Page extends Hookable implements Hooks_Interface {
 	private Tools_Settings $tools_settings;
 	private Selection_Settings_Storage $post_selections_settings_storage;
 	private Layout_Settings_Storage $layouts_settings_storage;
-	private Plugin $plugin;
+	private Plugin_Meta $plugin_meta;
 	private Logger $logger;
 	private Debug_Dump_Creator $debug_dump_creator;
 	/**
@@ -51,8 +53,8 @@ final class Tools_Page extends Hookable implements Hooks_Interface {
 	private bool $is_import_successful;
 	private string $import_result_message;
 	private ?WP_Filesystem_Base $wp_filesystem_base;
-	private Plugin_Cpt $layouts_cpt;
-	private Plugin_Cpt $post_selections_cpt;
+	private Layouts_Cpt $layouts_cpt;
+	private Selections_Cpt $post_selections_cpt;
 	private Settings_Storage $settings;
 	private Cache_Flusher $cache_flusher;
 
@@ -60,18 +62,18 @@ final class Tools_Page extends Hookable implements Hooks_Interface {
 		Tools_Settings $tools_settings,
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Plugin $plugin,
+		Plugin_Meta $plugin_meta,
 		Logger $logger,
 		Debug_Dump_Creator $debug_dump_creator,
-		Plugin_Cpt $layouts_cpt,
-		Plugin_Cpt $post_selections_cpt,
+		Layouts_Cpt $layouts_cpt,
+		Selections_Cpt $post_selections_cpt,
 		Settings_Storage $settings,
 		Cache_Flusher $cache_flusher
 	) {
 		$this->tools_settings                   = $tools_settings;
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
 		$this->layouts_settings_storage         = $layouts_settings_storage;
-		$this->plugin                           = $plugin;
+		$this->plugin_meta                      = $plugin_meta;
 		$this->logger                           = $logger;
 		$this->debug_dump_creator               = $debug_dump_creator;
 		$this->layouts_cpt                      = $layouts_cpt;
@@ -86,11 +88,11 @@ final class Tools_Page extends Hookable implements Hooks_Interface {
 		$this->wp_filesystem_base    = null;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
 
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		// init, not acf/init, as the method uses 'get_edit_post_link' which will be available only since this hook
 		// (because we sign up the CPTs in this hook).
 		self::add_action( 'init', array( $this, 'add_page' ) );
@@ -151,7 +153,7 @@ final class Tools_Page extends Hookable implements Hooks_Interface {
 		);
 		$count_of_card_ids = count( $card_ids );
 
-		$redirect_url = $this->plugin->get_admin_url( self::SLUG ) .
+		$redirect_url = Plugin::get_admin_url( self::SLUG ) .
 						sprintf( '&message=1&type=export&_views=%s&_cards=%s', $count_of_view_ids, $count_of_card_ids );
 		?>
 		<script>
@@ -332,7 +334,7 @@ final class Tools_Page extends Hookable implements Hooks_Interface {
 				break;
 			case 'version_upgrade':
 				$from_version    = $this->tools_settings->upgrade_from_version;
-				$current_version = $this->plugin->get_version();
+				$current_version = $this->plugin_meta->get_version();
 
 				if ( ! Version_Migrator::is_valid_version( $from_version ) ||
 					// allow entering only previous plugin versions.
@@ -663,7 +665,7 @@ final class Tools_Page extends Hookable implements Hooks_Interface {
 
 		wp_delete_attachment( $this->tools_settings->import_file, true );
 
-		$url = $this->plugin->get_admin_url( self::SLUG ) .
+		$url = Plugin::get_admin_url( self::SLUG ) .
 				sprintf(
 					'&message=1&type=import&isSuccess=%s&resultMessage=%s',
 					$this->is_import_successful,

@@ -7,9 +7,9 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields;
 defined( 'ABSPATH' ) || exit;
 
 use DateTime;
-use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout;

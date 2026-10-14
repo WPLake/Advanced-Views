@@ -5,20 +5,20 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Assets\Resolver\Asset_Resolver;
 
 defined( 'ABSPATH' ) || exit;
 
 abstract class Common_Template_Pattern extends Template_Pattern_Base {
 	private string $card_field_id;
 
-	public function __construct( Plugin $plugin, Field_Provider_Cluster $provider_cluster ) {
-		parent::__construct( $plugin, $provider_cluster );
+	public function __construct( Asset_Resolver $asset_resolver, Field_Provider_Cluster $provider_cluster ) {
+		parent::__construct( $asset_resolver, $provider_cluster );
 
 		$this->card_field_id = '';
 	}
@@ -31,11 +31,6 @@ abstract class Common_Template_Pattern extends Template_Pattern_Base {
 
 	protected function set_card_field_id( string $card_field_id ): void {
 		$this->card_field_id = $card_field_id;
-	}
-
-	protected function is_web_component_required_for_card( Post_Selection_Settings $post_selection_settings ): bool {
-		return $this->is_with_web_component() &&
-				$this->is_target_selection( $post_selection_settings );
 	}
 
 	protected function print_js_code( string $var_name, Field_Settings $field_settings, Layout_Settings $layout_settings ): void {
@@ -68,41 +63,43 @@ abstract class Common_Template_Pattern extends Template_Pattern_Base {
 		return array();
 	}
 
-	public function is_web_component_required( Cpt_Settings $cpt_settings ): bool {
-		return $cpt_settings instanceof Post_Selection_Settings ?
-			$this->is_web_component_required_for_card( $cpt_settings ) :
-			parent::is_web_component_required( $cpt_settings );
+	/**
+	 * @return array{css:array<string,string>,js:array<string,string>}
+	 */
+	public function generate_code( Cpt_Settings $cpt_settings ): array {
+		if ( $cpt_settings instanceof Post_Selection_Settings ) {
+			return $this->is_target_selection( $cpt_settings ) ?
+				$this->generate_selection_code( $cpt_settings ) :
+				array(
+					'css' => array(),
+					'js'  => array(),
+				);
+		}
+
+		return parent::generate_code( $cpt_settings );
 	}
 
 	/**
 	 * @return array{css:array<string,string>,js:array<string,string>}
 	 */
-	public function generate_code( Cpt_Settings $cpt_settings ): array {
+	protected function generate_selection_code( Post_Selection_Settings $selection_settings ): array {
 		$code = array(
 			'css' => array(),
 			'js'  => array(),
 		);
 
-		if ( ! ( $cpt_settings instanceof Post_Selection_Settings ) ) {
-			return parent::generate_code( $cpt_settings );
-		}
-
-		if ( ! $this->is_target_selection( $cpt_settings ) ) {
-			return $code;
-		}
+		$magic_selector = sprintf( '#%s', Post_Selection_Settings::MAGIC_CSS_SELECTOR );
 
 		ob_start();
-		$this->print_common_css_code(
-			sprintf( '#%s', Post_Selection_Settings::MAGIC_CSS_SELECTOR ),
-			$cpt_settings
-		);
+		$this->print_common_css_code( $magic_selector, $selection_settings );
 		$css_code = (string) ob_get_clean();
 
 		ob_start();
 		$this->print_common_js_code( $this->card_field_id );
 		$js_code = (string) ob_get_clean();
 
-		$selector = '.' . $cpt_settings->get_bem_name() . '__' . $this->card_field_id;
+		$bem_name = $selection_settings->get_bem_name();
+		$selector = sprintf( '.%s__%s', $bem_name, $this->card_field_id );
 
 		if ( '' !== $css_code ) {
 			ob_start();

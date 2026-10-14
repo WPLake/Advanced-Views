@@ -17,4 +17,10 @@ class field_provider_domain extends Domain_Policy {
 		// todo break concrete dependency.
 		layouts_cpt_domain::class,
 	];
+	const WHITELIST_GLOBALS = [
+		'WP_Comment',
+		'WP_Post',
+		'WP_Term',
+		'WP_User',
+	];
 }

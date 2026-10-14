@@ -1,0 +1,48 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups;
+
+use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Tax_Rule;
+
+defined( 'ABSPATH' ) || exit;
+
+class Tax_Rule_Settings extends Group implements Tax_Rule {
+	// to fix the group name in case class name changes.
+	const CUSTOM_GROUP_NAME = self::GROUP_NAME_PREFIX . 'tax-rule';
+
+	/**
+	 * @a-type select
+	 * @ui 1
+	 * @required 1
+	 * @label Condition
+	 * @instructions Controls how the taxonomies will be joined within the taxonomy rule
+	 * @choices {"AND":"Match ALL","OR":"Match ANY"}
+	 * @default_value AND
+	 * @conditional_logic [[{"field": "local_acf_views_tax-rule__taxonomies","operator": ">","value": "1"}]]
+	 */
+	public string $relation;
+	/**
+	 * @var Tax_Field_Settings[]
+	 * @item \Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Tax_Field_Settings
+	 * @button_label Add Taxonomy
+	 * @label Taxonomies
+	 * @instructions Taxonomies for the taxonomy rule. Multiple taxonomies are supported
+	 * @a-no-tab 1
+	 * @required 1
+	 */
+	public array $taxonomies;
+
+	public function get_relation(): string {
+		return $this->relation;
+	}
+
+	/**
+	 * @return Tax_Field_Settings[]
+	 */
+	public function get_terms(): array {
+		return $this->taxonomies;
+	}
+}

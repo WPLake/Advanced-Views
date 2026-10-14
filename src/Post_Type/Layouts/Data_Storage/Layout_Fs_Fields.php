@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Fs_Fields;
 

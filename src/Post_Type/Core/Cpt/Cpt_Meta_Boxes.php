@@ -5,21 +5,29 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Cpt_Meta_Boxes extends Hookable implements Hooks_Interface {
+abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	private Html_Printer $html;
 	private Plugin $plugin;
 
 	public function __construct( Html_Printer $html, Plugin $plugin ) {
 		$this->html   = $html;
 		$this->plugin = $plugin;
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 	}
 
 	abstract protected function get_cpt_name(): string;
@@ -98,13 +106,5 @@ abstract class Cpt_Meta_Boxes extends Hookable implements Hooks_Interface {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo __( 'Pages:', 'acf-views' ) . ' ' . join( ', ', $safe_post_links );
 		}
-	}
-
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
-
-		self::add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 	}
 }

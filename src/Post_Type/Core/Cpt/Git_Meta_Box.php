@@ -7,45 +7,64 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
+use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 
-abstract class Git_Meta_Box extends Hookable implements Hooks_Interface {
+abstract class Git_Meta_Box extends Actor_Base implements Actor {
 
 	const NONCE_PUSH = 'av-git-item-push';
 
 	private Settings_Storage $settings;
 	private string $cpt_name;
 	private Cpt_Settings_Storage $cpt_settings_storage;
-	private Git_Lab_Api $git_lab_api;
+	private Git_Api_Interface $git_api;
 	/**
 	 * Used to avoid potential recursion (if user made the recursion setup)
 	 *
 	 * @var array<string, bool>
 	 */
 	private array $pushing_unique_ids;
-	private Plugin $plugin;
+	private Plugin_Meta $plugin_meta;
 
 	public function __construct(
-		string $cpt_name,
+		Plugin_Cpt $cpt,
 		Settings_Storage $settings,
 		Cpt_Settings_Storage $cpt_settings_storage,
-		Git_Lab_Api $git_lab_api,
-		Plugin $plugin
+		Git_Api_Interface $git_api,
+		Plugin_Meta $plugin_meta
 	) {
-		$this->cpt_name             = $cpt_name;
+		$this->cpt_name             = $cpt->cpt_name();
 		$this->settings             = $settings;
 		$this->cpt_settings_storage = $cpt_settings_storage;
-		$this->git_lab_api          = $git_lab_api;
+		$this->git_api              = $git_api;
 		$this->pushing_unique_ids   = array();
-		$this->plugin               = $plugin;
+		$this->plugin_meta               = $plugin_meta;
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		if ( $route_detector->is_cpt_admin_route( $this->cpt_name, Route_Detector::CPT_EDIT ) ) {
+			// for feature-promotion, show the meta-box even there are no set repositories.
+			self::add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
+		}
+
+		if ( wp_doing_ajax() ) {
+			self::add_action(
+				sprintf( 'wp_ajax_acf-views__git_meta_box_%s', $this->cpt_name ),
+				array( $this, 'push_item_ajax' )
+			);
+		}
 	}
 
 	protected function print_git_lab_repositories_meta_box(): void {
@@ -145,7 +164,7 @@ abstract class Git_Meta_Box extends Hookable implements Hooks_Interface {
 		bool $is_with_meta_groups
 	): bool {
 		// set plugin version to be included in the data.json file.
-		$cpt_settings->plugin_version = $this->plugin->get_version();
+		$cpt_settings->plugin_version = $this->plugin_meta->get_version();
 
 		$fs_field_values = $this->get_export_fs_field_values( $cpt_settings, $is_with_meta_groups );
 
@@ -154,7 +173,7 @@ abstract class Git_Meta_Box extends Hookable implements Hooks_Interface {
 
 		$fs_title = $this->cpt_settings_storage->get_file_system()->get_fs_title( $cpt_settings->title );
 
-		return $this->git_lab_api->push(
+		return $this->git_api->push(
 			$repository_id,
 			$access_token,
 			$this->cpt_name,
@@ -267,19 +286,5 @@ abstract class Git_Meta_Box extends Hookable implements Hooks_Interface {
 		}
 
 		exit;
-	}
-
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( $route_detector->is_cpt_admin_route( $this->cpt_name, Route_Detector::CPT_EDIT ) ) {
-			// for feature-promotion, show the meta-box even there are no set repositories.
-			self::add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
-		}
-
-		if ( wp_doing_ajax() ) {
-			self::add_action(
-				sprintf( 'wp_ajax_acf-views__git_meta_box_%s', $this->cpt_name ),
-				array( $this, 'push_item_ajax' )
-			);
-		}
 	}
 }

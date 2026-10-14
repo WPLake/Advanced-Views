@@ -5,20 +5,36 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Cpt_Table_Tab extends Hookable implements Hooks_Interface {
+abstract class Cpt_Table_Tab extends Actor_Base implements Actor {
 
 	private Cpt_Table $cpt_table;
 
 	public function __construct( Cpt_Table $cpt_table ) {
 		$this->cpt_table = $cpt_table;
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		$cpt_name     = $this->get_cpt_name();
+		$is_list_page = $route_detector->is_cpt_admin_route( $cpt_name, Route_Detector::CPT_LIST );
+
+		if ( $is_list_page ) {
+			$this->cpt_table->add_new_tab_callback( array( $this, 'add_tab' ) );
+
+			self::add_action( 'admin_init', array( $this, 'maybe_perform_actions' ) );
+			self::add_action( 'admin_notices', array( $this, 'maybe_show_action_result_message' ) );
+		}
 	}
 
 	abstract protected function get_tab(): ?Tab_Data;
@@ -68,16 +84,5 @@ abstract class Cpt_Table_Tab extends Hookable implements Hooks_Interface {
 
 		$tab_data->set_pagination_per_page( $this->get_pagination_per_page() );
 		$this->cpt_table->add_tab( $tab_data );
-	}
-
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_cpt_admin_route( $this->get_cpt_name(), Route_Detector::CPT_LIST ) ) {
-			return;
-		}
-
-		$this->cpt_table->add_new_tab_callback( array( $this, 'add_tab' ) );
-
-		self::add_action( 'admin_init', array( $this, 'maybe_perform_actions' ) );
-		self::add_action( 'admin_notices', array( $this, 'maybe_show_action_result_message' ) );
 	}
 }

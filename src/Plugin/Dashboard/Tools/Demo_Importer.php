@@ -8,23 +8,23 @@ defined( 'ABSPATH' ) || exit;
 
 use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Demo_Group;
-use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Post\Post_Fields;
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 
-final class Demo_Importer extends Hookable implements Hooks_Interface {
+final class Demo_Importer extends Actor_Base implements Actor {
 
 	private int $samsung_id;
 	private int $xiaomi_id;
@@ -73,6 +73,14 @@ final class Demo_Importer extends Hookable implements Hooks_Interface {
 		$this->error             = '';
 		$this->is_processed      = false;
 		$this->is_import_request = false;
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'wp_loaded', array( $this, 'maybe_process_form' ) );
 	}
 
 	protected function add_error( string $error ): void {
@@ -706,13 +714,5 @@ final class Demo_Importer extends Hookable implements Hooks_Interface {
 		}
 
 		$this->delete();
-	}
-
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
-
-		self::add_action( 'wp_loaded', array( $this, 'maybe_process_form' ) );
 	}
 }

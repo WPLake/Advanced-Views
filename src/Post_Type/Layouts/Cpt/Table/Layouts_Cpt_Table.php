@@ -7,15 +7,16 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Table;
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Meta_Boxes;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use WP_Query;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 
@@ -28,20 +29,20 @@ class Layouts_Cpt_Table extends Cpt_Table {
 
 	private Html_Printer $html;
 	private Layout_Meta_Boxes $layouts_cpt_meta_boxes;
-	private Plugin_Cpt $plugin_cpt;
+	private Plugin_Cpt $selections_cpt;
 
 	public function __construct(
-		Cpt_Settings_Storage $cpt_settings_storage,
-		Public_Cpt $public_cpt,
+		Layout_Settings_Storage $cpt_settings_storage,
+		Layouts_Cpt $public_cpt,
 		Html_Printer $html,
 		Layout_Meta_Boxes $layouts_cpt_meta_boxes,
-		Plugin_Cpt $plugin_cpt
+		Selections_Cpt $plugin_cpt
 	) {
 		parent::__construct( $cpt_settings_storage, $public_cpt );
 
 		$this->html                   = $html;
 		$this->layouts_cpt_meta_boxes = $layouts_cpt_meta_boxes;
-		$this->plugin_cpt             = $plugin_cpt;
+		$this->selections_cpt         = $plugin_cpt;
 	}
 
 	/**
@@ -89,19 +90,15 @@ class Layouts_Cpt_Table extends Cpt_Table {
 				self::COLUMN_RELATED_POST_SELECTIONS => sprintf(
 					// translators: %s - singular name of the CPT.
 					__( 'Assigned to %s', 'acf-views' ),
-					$this->plugin_cpt->labels()->singular_name()
+					$this->selections_cpt->labels()->singular_name()
 				),
 				self::COLUMN_LAST_MODIFIED           => __( 'Last modified', 'acf-views' ),
 			)
 		);
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
-		parent::set_hooks( $route_detector );
-
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		parent::set_route_hooks( $route_detector );
 
 		self::add_action( 'pre_get_posts', array( $this, 'add_sortable_columns_to_request' ) );
 
@@ -161,5 +158,9 @@ class Layouts_Cpt_Table extends Cpt_Table {
 				echo esc_html( explode( ' ', $post->post_modified )[0] );
 			},
 		);
+	}
+
+	protected function get_unique_id_prefix(): string {
+		return Layout_Settings::UNIQUE_ID_PREFIX;
 	}
 }

@@ -10,14 +10,13 @@ use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
-use Org\Wplake\Advanced_Views\Plugin\Base\Action;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
@@ -27,7 +26,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
-abstract class Cpt_Save_Actions extends Action implements Hooks_Interface {
+abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 	use Safe_Array_Arguments;
 
 	private Cpt_Settings_Storage $cpt_settings_storage;
@@ -46,7 +45,6 @@ abstract class Cpt_Save_Actions extends Action implements Hooks_Interface {
 	 */
 	private array $validated_input_names;
 	private Front_Assets $front_assets;
-	protected Public_Cpt $public_plugin_cpt;
 	protected Template_Integration_Storage $template_integration_storage;
 	protected Instance_Factory $instance_factory;
 
@@ -56,7 +54,6 @@ abstract class Cpt_Save_Actions extends Action implements Hooks_Interface {
 		Plugin $plugin,
 		Cpt_Settings $cpt_settings,
 		Front_Assets $front_assets,
-		Public_Cpt $public_cpt,
 		Template_Integration_Storage $template_integration_storage,
 		Instance_Factory $instance_factory
 	) {
@@ -71,20 +68,19 @@ abstract class Cpt_Save_Actions extends Action implements Hooks_Interface {
 		$this->available_acf_fields         = array_keys( $this->cpt_settings->getFieldValues() );
 		$this->field_values                 = array();
 		$this->validated_input_names        = array();
-		$this->public_plugin_cpt            = $public_cpt;
 		$this->template_integration_storage = $template_integration_storage;
 		$this->instance_factory             = $instance_factory;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
 	// according to the tests, json in post_meta in 13 times quicker than ordinary postMeta way -
 	// (30ms per 10 objects vs 400ms).
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( ! $route_detector->is_admin_route() ) {
-			return;
-		}
-
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		// for some reason, ACF ajax form validation doesn't work on the wordpress.com hosting.
-		if ( ! $this->plugin->is_wordpress_com_hosting() ) {
+		if ( ! Plugin::is_wordpress_com_hosting() ) {
 			// priority is 20, to make sure it's run after the ACF's code.
 			self::add_manage_filter( 'acf/validate_value', array( $this, 'catch_field_value' ), 20, 4 );
 			self::add_manage_action( 'acf/validate_save_post', array( $this, 'custom_validation' ), 20 );
@@ -266,7 +262,7 @@ abstract class Cpt_Save_Actions extends Action implements Hooks_Interface {
 		}
 
 		// the difference that this code is called in different hooks, which require different approach.
-		if ( $this->plugin->is_wordpress_com_hosting() ) {
+		if ( Plugin::is_wordpress_com_hosting() ) {
 			// convert clone format
 			// also check to make sure it's array (can be empty string).
 			if ( in_array( $field_name, $validation_instance->getCloneFieldNames(), true ) &&
@@ -480,7 +476,7 @@ abstract class Cpt_Save_Actions extends Action implements Hooks_Interface {
 					return $is_updated;
 				}
 
-				if ( $this->plugin->is_wordpress_com_hosting() ) {
+				if ( Plugin::is_wordpress_com_hosting() ) {
 					$this->save_meta_field( $value, $field );
 				}
 
@@ -491,7 +487,7 @@ abstract class Cpt_Save_Actions extends Action implements Hooks_Interface {
 			4
 		);
 
-		if ( $this->plugin->is_wordpress_com_hosting() ) {
+		if ( Plugin::is_wordpress_com_hosting() ) {
 			// priority is 20, as current is with 10.
 			self::add_manage_action(
 				'acf/save_post',

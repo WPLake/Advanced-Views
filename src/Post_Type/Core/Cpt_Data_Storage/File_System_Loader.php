@@ -6,11 +6,11 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 
-final class File_System_Loader extends Hookable implements Hooks_Interface {
+final class File_System_Loader extends Actor_Base implements Actor {
 	private static ?self $instance = null;
 
 	/**
@@ -31,15 +31,11 @@ final class File_System_Loader extends Hookable implements Hooks_Interface {
 		$this->is_loaded        = false;
 	}
 
-	public static function instance(): self {
-		if ( is_null( self::$instance ) ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		// theme is loaded since this hook.
 		self::add_action(
 			'after_setup_theme',
@@ -48,6 +44,14 @@ final class File_System_Loader extends Hookable implements Hooks_Interface {
 				$this->post_load();
 			}
 		);
+	}
+
+	public static function instance(): self {
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	/**

@@ -4,23 +4,37 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Cpt extends Hookable implements Hooks_Interface {
+abstract class Cpt extends Actor_Base implements Actor {
 	private Cpt_Settings_Storage $cpt_settings_storage;
 	protected Plugin_Cpt $plugin_cpt;
 
 	public function __construct( Plugin_Cpt $plugin_cpt, Cpt_Settings_Storage $cpt_settings_storage ) {
 		$this->plugin_cpt           = $plugin_cpt;
 		$this->cpt_settings_storage = $cpt_settings_storage;
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'init', array( $this, 'add_cpt' ) );
+
+		if ( $route_detector->is_admin_route() ) {
+			self::add_filter( 'admin_footer_text', array( $this, 'print_survey_link' ) );
+			self::add_filter( 'post_updated_messages', array( $this, 'replace_post_updated_message' ) );
+			self::add_filter( 'enter_title_here', array( $this, 'get_title_placeholder' ) );
+		}
 	}
 
 	abstract public function add_cpt(): void;
@@ -60,13 +74,13 @@ abstract class Cpt extends Hookable implements Hooks_Interface {
 			'https://wordpress.org/',
 			__( 'WordPress', 'acf-views' ),
 			__( 'and', 'acf-views' ),
-			Plugin::BASIC_VERSION_URL,
+			External_Links::BASIC_VERSION_URL,
 			__( 'Advanced Views', 'acf-views' )
 		);
 		$content .= ' ' . sprintf(
 			"<span>%s <a target='_blank' href='%s'>%s</a> %s</span>",
 			__( 'Take', 'acf-views' ),
-			Plugin::SURVEY_URL,
+			External_Links::SURVEY_URL,
 			__( '2 minute survey', 'acf-views' ),
 			__( 'to improve Advanced Views.', 'acf-views' )
 		);
@@ -75,18 +89,6 @@ abstract class Cpt extends Hookable implements Hooks_Interface {
 			'<span id="footer-thankyou">%s</span>',
 			$content
 		);
-	}
-
-	public function set_hooks( Route_Detector $route_detector ): void {
-		self::add_action( 'init', array( $this, 'add_cpt' ) );
-
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
-
-		self::add_filter( 'admin_footer_text', array( $this, 'print_survey_link' ) );
-		self::add_filter( 'post_updated_messages', array( $this, 'replace_post_updated_message' ) );
-		self::add_filter( 'enter_title_here', array( $this, 'get_title_placeholder' ) );
 	}
 
 	protected function get_cpt_name(): string {

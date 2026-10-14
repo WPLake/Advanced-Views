@@ -9,9 +9,9 @@ defined( 'ABSPATH' ) || exit;
 use Elementor\Elements_Manager;
 use Elementor\Widget_Base;
 use Elementor\Widgets_Manager;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Integration_Category;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
@@ -21,7 +21,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
  * Editor/preview script enqueueing lives in a separate actor (Layout_Elementor_Assets/Selection_Elementor_Assets),
  * since asset paths/localized var names are the one piece of config that genuinely differs per CPT.
  */
-final class Cpt_Widget_Registrar extends Hookable implements Hooks_Interface {
+final class Cpt_Widget_Registrar extends Actor_Base implements Actor {
 	private Cpt_Item_Picker $item_picker;
 	private Cpt_Renderer $renderer;
 
@@ -36,14 +36,11 @@ final class Cpt_Widget_Registrar extends Hookable implements Hooks_Interface {
 		$this->widgets     = array();
 	}
 
-	/**
-	 * @param class-string<Widget_Base&Widget_Dependencies> $widget
-	 */
-	public function add_widget( string $widget ): void {
-		$this->widgets[] = $widget;
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_action(
 			'elementor/elements/categories_registered',
 			fn( Elements_Manager $elements_manager ) => $elements_manager->add_category(
@@ -56,6 +53,13 @@ final class Cpt_Widget_Registrar extends Hookable implements Hooks_Interface {
 		);
 
 		self::add_action( 'elementor/widgets/register', array( $this, 'register_widgets' ) );
+	}
+
+	/**
+	 * @param class-string<Widget_Base&Widget_Dependencies> $widget
+	 */
+	public function add_widget( string $widget ): void {
+		$this->widgets[] = $widget;
 	}
 
 	public function register_widgets( Widgets_Manager $widgets_manager ): void {

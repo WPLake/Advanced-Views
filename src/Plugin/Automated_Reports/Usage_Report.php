@@ -6,16 +6,17 @@ namespace Org\Wplake\Advanced_Views\Plugin\Automated_Reports;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
+use Org\Wplake\Advanced_Views\Plugin\Environment\Plugin_Environment;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Plugin\Plugin_Environment;
+use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
@@ -26,7 +27,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
  * Can be disabled in the plugin settings.
  * FYI: built-in WordPress growth counter was removed https://meta.trac.wordpress.org/ticket/6511
  */
-class Usage_Report extends Report_Base implements Hooks_Interface {
+class Usage_Report extends Report_Base implements Actor {
 	const DELAY_MIN_HR       = 12;
 	const DELAY_MAX_HRS      = 48;
 	const USAGE_ENDPOINT_URL = 'https://wplake.org/wp-json/wplake/v1/plugin_usage';
@@ -43,11 +44,12 @@ class Usage_Report extends Report_Base implements Hooks_Interface {
 	public function __construct(
 		Logger $logger,
 		Plugin $plugin,
+		Plugin_Meta $plugin_meta,
 		Settings_Storage $settings,
 		State_Report $state_report,
 		array $cpt_settings_storages
 	) {
-		parent::__construct( $logger, $plugin, $settings );
+		parent::__construct( $logger, $plugin, $plugin_meta, $settings );
 
 		$this->plugin                = $plugin;
 		$this->settings              = $settings;
@@ -55,38 +57,22 @@ class Usage_Report extends Report_Base implements Hooks_Interface {
 		$this->cpt_settings_storages = $cpt_settings_storages;
 	}
 
-	public static function hook(): string {
-		return Hard_Layout_Cpt::cpt_name() . '_refresh';
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( $this->settings->is_automatic_reports_disabled() ) {
-			// still sign-up the CRON job, so if it was scheduled before, then will be called without issues.
-			self::add_action(
-				self::hook(),
-				function (): void {
-					// nothing to do.
-				}
-			);
-		} else {
-			self::add_action( 'init', array( $this, 'init' ) );
-			// CRON job.
-			self::add_action( self::hook(), array( $this, 'send_and_schedule_next' ) );
+			$this->set_disabled_hooks();
 
-			$is_cpt_list_screen = $route_detector->is_cpt_admin_route(
-				Hard_Layout_Cpt::cpt_name(),
-				Route_Detector::CPT_LIST
-			) ||
-									$route_detector->is_cpt_admin_route(
-										Hard_Post_Selection_Cpt::cpt_name(),
-										Route_Detector::CPT_LIST
-									);
-
-			if ( $is_cpt_list_screen &&
-				! $this->settings->is_automatic_reports_confirmed() ) {
-				self::add_action( 'admin_notices', array( $this, 'show_automatic_reports_notice' ) );
-			}
+			return;
 		}
+
+		$this->set_enabled_hooks( $route_detector );
+	}
+
+	public static function hook(): string {
+		return Hard_Layout_Cpt::cpt_name() . '_refresh';
 	}
 
 	// WP Cron is unreliable. Execute also within the dashboard (in case the time has come).
@@ -304,5 +290,35 @@ class Usage_Report extends Report_Base implements Hooks_Interface {
 		}
 
 		return 0;
+	}
+
+	protected function set_disabled_hooks(): void {
+		// still sign-up the CRON job, so if it was scheduled before, then will be called without issues.
+		self::add_action(
+			self::hook(),
+			function (): void {
+				// nothing to do.
+			}
+		);
+	}
+
+	protected function set_enabled_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'init', array( $this, 'init' ) );
+		// CRON job.
+		self::add_action( self::hook(), array( $this, 'send_and_schedule_next' ) );
+
+		$is_cpt_list_screen = $route_detector->is_cpt_admin_route(
+			Hard_Layout_Cpt::cpt_name(),
+			Route_Detector::CPT_LIST
+		) ||
+			$route_detector->is_cpt_admin_route(
+				Hard_Post_Selection_Cpt::cpt_name(),
+				Route_Detector::CPT_LIST
+			);
+
+		if ( $is_cpt_list_screen &&
+			! $this->settings->is_automatic_reports_confirmed() ) {
+			self::add_action( 'admin_notices', array( $this, 'show_automatic_reports_notice' ) );
+		}
 	}
 }

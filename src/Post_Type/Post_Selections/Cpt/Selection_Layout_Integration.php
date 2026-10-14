@@ -6,19 +6,19 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Settings_Creator;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 
-class Selection_Layout_Integration extends Cpt_Settings_Creator implements Hooks_Interface {
+class Selection_Layout_Integration extends Cpt_Settings_Creator implements Actor {
 
 	private Selection_Settings_Storage $post_selections_settings_storage;
 	private Layout_Settings_Storage $layouts_settings_storage;
@@ -28,13 +28,21 @@ class Selection_Layout_Integration extends Cpt_Settings_Creator implements Hooks
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Selection_Save_Actions $post_selections_cpt_save_actions,
-		Settings_Storage $settings
+		Cpt_Theme_Settings $settings
 	) {
 		parent::__construct( $settings );
 
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
 		$this->layouts_settings_storage         = $layouts_settings_storage;
 		$this->post_selections_cpt_save_actions = $post_selections_cpt_save_actions;
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'current_screen', array( $this, 'maybe_create_selection_for_layout' ) );
 	}
 
 	public function maybe_create_selection_for_layout(): void {
@@ -82,13 +90,5 @@ class Selection_Layout_Integration extends Cpt_Settings_Creator implements Hooks
 
 		wp_safe_redirect( $selection_settings->get_edit_post_link( 'redirect' ) );
 		exit;
-	}
-
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
-
-		self::add_action( 'current_screen', array( $this, 'maybe_create_selection_for_layout' ) );
 	}
 }

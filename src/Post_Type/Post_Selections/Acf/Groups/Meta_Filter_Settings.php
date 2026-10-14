@@ -1,0 +1,48 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups;
+
+use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Meta_Filter;
+
+defined( 'ABSPATH' ) || exit;
+
+class Meta_Filter_Settings extends Group implements Meta_Filter {
+	// to fix the group name in case class name changes.
+	const CUSTOM_GROUP_NAME = self::GROUP_NAME_PREFIX . 'meta-filter';
+
+	/**
+	 * @a-type select
+	 * @ui 1
+	 * @required 1
+	 * @label Condition
+	 * @instructions Controls how meta rules will be joined within the meta query
+	 * @choices {"AND":"Match ALL","OR":"Match ANY"}
+	 * @default_value AND
+	 * @conditional_logic [[{"field": "local_acf_views_meta-filter__rules","operator": ">","value": "1"}]]
+	 */
+	public string $relation;
+	/**
+	 * @var Meta_Rule_Settings[]
+	 * @item \Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Meta_Rule_Settings
+	 * @label Meta Filters
+	 * @instructions Rules for the meta query. Multiple rules are supported. <a target='_blank' href='https://docs.advanced-views.com/post-selections/filters/meta-filters'>Read more</a> <br>If you want to see the query that was created by your input, update the Post Selection and reload the page. After have a look at the 'Query Preview' field in the 'Advanced' tab
+	 * @button_label Add Rule
+	 * @a-no-tab 1
+	 * @layout block
+	 */
+	public array $rules;
+
+	public function get_relation(): string {
+		return $this->relation;
+	}
+
+	/**
+	 * @return Meta_Rule_Settings[]
+	 */
+	public function get_rules(): array {
+		return $this->rules;
+	}
+}

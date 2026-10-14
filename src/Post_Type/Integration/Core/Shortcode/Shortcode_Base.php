@@ -8,25 +8,24 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
-abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Hooks_Interface {
+abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, Actor {
 	private Instance_Factory $instance_factory;
 	private Settings_Storage $settings;
 	private Cpt_Settings_Storage $cpt_settings_storage;
-	private Front_Assets $front_assets;
 	private Live_Reloader_Component $live_reloader_component;
 	/**
 	 * @var array<string,true>
@@ -39,7 +38,6 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 		Settings_Storage $settings,
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Instance_Factory $instance_factory,
-		Front_Assets $front_assets,
 		Live_Reloader_Component $live_reloader_component
 	) {
 		$this->public_cpt              = $public_cpt;
@@ -47,8 +45,21 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 		$this->settings                = $settings;
 		$this->cpt_settings_storage    = $cpt_settings_storage;
 		$this->instance_factory        = $instance_factory;
-		$this->front_assets            = $front_assets;
 		$this->live_reloader_component = $live_reloader_component;
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		if ( $route_detector->is_admin_route() ) {
+			self::add_action( 'rest_api_init', array( $this, 'register_rest_route' ) );
+		}
+
+		foreach ( $this->public_cpt->shortcodes() as $shortcode ) {
+			self::add_shortcode( $shortcode, array( $this, 'do_shortcode' ) );
+		}
 	}
 
 	protected function get_post_type(): string {
@@ -175,10 +186,8 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 		$shadow_css = '';
 
 		if ( $cpt_data->is_css_internal() ) {
-			$shadow_css = $this->front_assets->minify_code(
-				$cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY ),
-				Front_Assets::MINIFY_TYPE_CSS
-			);
+			$css_code   = $cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
+			$shadow_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
 			$shadow_css = sprintf(
 				'<style>:host{all: initial!important;}%s</style>',
 				$shadow_css
@@ -307,16 +316,6 @@ abstract class Shortcode_Base extends Hookable implements Shortcode_Renderer, Ho
 		$attrs = arr( $args );
 
 		return $this->render_shortcode( $attrs );
-	}
-
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( $route_detector->is_admin_route() ) {
-			self::add_action( 'rest_api_init', array( $this, 'register_rest_route' ) );
-		}
-
-		foreach ( $this->public_cpt->shortcodes() as $shortcode ) {
-			self::add_shortcode( $shortcode, array( $this, 'do_shortcode' ) );
-		}
 	}
 
 	/**

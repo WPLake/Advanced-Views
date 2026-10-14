@@ -13,11 +13,9 @@ use WP_REST_Request;
 
 abstract class Instance_Factory {
 	private Front_Assets $front_assets;
-	protected string $controller_template_engine;
 
-	public function __construct( Front_Assets $front_assets, string $controller_template_engine ) {
-		$this->front_assets               = $front_assets;
-		$this->controller_template_engine = $controller_template_engine;
+	public function __construct( Front_Assets $front_assets ) {
+		$this->front_assets = $front_assets;
 	}
 
 	/**
@@ -64,11 +62,6 @@ abstract class Instance_Factory {
 
 		return $variables_for_validation;
 	}
-
-	/**
-	 * @return array<string,mixed>
-	 */
-	abstract public function get_ajax_response( string $unique_id ): array;
 
 	/**
 	 * @return array<string,mixed>

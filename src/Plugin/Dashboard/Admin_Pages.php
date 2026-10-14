@@ -4,23 +4,25 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
+use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use WP_Screen;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
-class Admin_Pages extends Hookable implements Hooks_Interface {
+class Admin_Pages extends Actor_Base implements Actor {
 
 	const PAGE_DEMO_IMPORT = 'demo-import';
 	const PAGE_DOCS        = 'docs';
@@ -29,6 +31,7 @@ class Admin_Pages extends Hookable implements Hooks_Interface {
 	const URL_SUPPORT = 'https://wordpress.org/support/plugin/acf-views/';
 
 	private Plugin $plugin;
+	private Plugin_Meta $plugin_meta;
 	private Html_Printer $html;
 	private Demo_Importer $demo_import;
 	/**
@@ -41,14 +44,39 @@ class Admin_Pages extends Hookable implements Hooks_Interface {
 	 */
 	public function __construct(
 		Plugin $plugin,
+		Plugin_Meta $plugin_meta,
 		Html_Printer $html,
 		Demo_Importer $demo_import,
 		array $plugin_cpts
 	) {
 		$this->plugin      = $plugin;
+		$this->plugin_meta = $plugin_meta;
 		$this->html        = $html;
 		$this->demo_import = $demo_import;
 		$this->plugin_cpts = $plugin_cpts;
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		$plugin_slug = $this->plugin_meta->get_slug();
+
+		self::add_action( 'admin_menu', array( $this, 'add_subpages' ) );
+
+		self::add_action(
+			'current_screen',
+			function ( WP_Screen $wp_screen ): void {
+				if ( ! in_array( $wp_screen->post_type, array( Hard_Layout_Cpt::cpt_name(), Hard_Post_Selection_Cpt::cpt_name() ), true ) ) {
+					return;
+				}
+
+				self::add_action( 'in_admin_header', array( $this, 'get_header' ) );
+			}
+		);
+
+		self::add_filter( "plugin_action_links_{$plugin_slug}", array( $this, 'extend_plugin_action_links' ) );
 	}
 
 	public function add_subpages(): void {
@@ -68,7 +96,7 @@ class Admin_Pages extends Hookable implements Hooks_Interface {
 			function (): void {
 				printf(
 					'<iframe src="%s" style="border: 0;width: calc(100%% + 20px);height: calc(100vh - 32px - 65px);margin-left: -20px;"></iframe>',
-					esc_url( Plugin::DOCS_URL )
+					esc_url( External_Links::DOCS_URL )
 				);
 			}
 		);
@@ -89,8 +117,8 @@ class Admin_Pages extends Hookable implements Hooks_Interface {
 		$tabs = $this->get_pages();
 
 		$current_url        = $this->get_current_admin_url();
-		$acf_views_list_url = $this->plugin->get_admin_url();
-		$acf_cards_list_url = $this->plugin->get_admin_url( '', Hard_Post_Selection_Cpt::cpt_name() );
+		$acf_views_list_url = Plugin::get_admin_url();
+		$acf_cards_list_url = Plugin::get_admin_url( '', Hard_Post_Selection_Cpt::cpt_name() );
 
 		$current_screen            = get_current_screen();
 		$is_edit_screen            = $current_screen instanceof WP_Screen &&
@@ -121,7 +149,7 @@ class Admin_Pages extends Hookable implements Hooks_Interface {
 			break;
 		}
 
-		$this->html->print_dashboard_header( $this->plugin->get_name(), $this->plugin->get_version(), $tabs );
+		$this->html->print_dashboard_header( $this->plugin::get_name(), $this->plugin_meta->get_version(), $tabs );
 	}
 
 	public function get_import_page(): void {
@@ -166,29 +194,6 @@ class Admin_Pages extends Hookable implements Hooks_Interface {
 		return array_merge( $links, $this->get_promo_links() );
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
-
-		$plugin_slug = $this->plugin->get_slug();
-
-		self::add_action( 'admin_menu', array( $this, 'add_subpages' ) );
-
-		self::add_action(
-			'current_screen',
-			function ( WP_Screen $wp_screen ): void {
-				if ( ! in_array( $wp_screen->post_type, array( Hard_Layout_Cpt::cpt_name(), Hard_Post_Selection_Cpt::cpt_name() ), true ) ) {
-					return;
-				}
-
-				self::add_action( 'in_admin_header', array( $this, 'get_header' ) );
-			}
-		);
-
-		self::add_filter( "plugin_action_links_{$plugin_slug}", array( $this, 'extend_plugin_action_links' ) );
-	}
-
 	/**
 	 * @return array<int, array<string,mixed>>
 	 */
@@ -197,15 +202,15 @@ class Admin_Pages extends Hookable implements Hooks_Interface {
 		$is_https = wp_is_using_https();
 
 		$docs_url      = $is_https ?
-			$this->plugin->get_admin_url( self::PAGE_DOCS ) :
-			Plugin::DOCS_URL;
+			Plugin::get_admin_url( self::PAGE_DOCS ) :
+			External_Links::DOCS_URL;
 		$is_docs_blank = false === $is_https;
 
 		$cpts_labels = array_map(
 			fn( Plugin_Cpt $plugin_cpt )=>
 			array(
 				'isLeftBlock' => true,
-				'url'         => $this->plugin->get_admin_url( '', $plugin_cpt->cpt_name() ),
+				'url'         => Plugin::get_admin_url( '', $plugin_cpt->cpt_name() ),
 				'label'       => $plugin_cpt->labels()->plural_name(),
 				'isActive'    => false,
 				'isSecondary' => false,
@@ -218,21 +223,21 @@ class Admin_Pages extends Hookable implements Hooks_Interface {
 			array(
 				array(
 					'isLeftBlock' => true,
-					'url'         => $this->plugin->get_admin_url( Settings_Page::SLUG ),
+					'url'         => Plugin::get_admin_url( Settings_Page::SLUG ),
 					'label'       => __( 'Settings', 'acf-views' ),
 					'isActive'    => false,
 					'isSecondary' => false,
 				),
 				array(
 					'isLeftBlock' => true,
-					'url'         => $this->plugin->get_admin_url( Tools_Page::SLUG ),
+					'url'         => Plugin::get_admin_url( Tools_Page::SLUG ),
 					'label'       => __( 'Tools', 'acf-views' ),
 					'isActive'    => false,
 					'isSecondary' => false,
 				),
 				array(
 					'isLeftBlock' => true,
-					'url'         => Plugin::PRO_VERSION_URL,
+					'url'         => External_Links::PRO_VERSION_URL,
 					'isBlank'     => true,
 					'label'       => __( 'Upgrade to Pro', 'acf-views' ),
 					'class'       => 'av-toolbar__upgrade-link',
@@ -241,7 +246,7 @@ class Admin_Pages extends Hookable implements Hooks_Interface {
 				),
 				array(
 					'isRightBlock' => true,
-					'url'          => $this->plugin->get_admin_url( self::PAGE_DEMO_IMPORT ),
+					'url'          => Plugin::get_admin_url( self::PAGE_DEMO_IMPORT ),
 					'label'        => __( 'Demo Import', 'acf-views' ),
 					'isActive'     => false,
 					'isSecondary'  => true,
@@ -313,10 +318,6 @@ class Admin_Pages extends Hookable implements Hooks_Interface {
 		return admin_url( $uri );
 	}
 
-	protected function get_plugin(): Plugin {
-		return $this->plugin;
-	}
-
 	/**
 	 * @return string[]
 	 */
@@ -324,7 +325,7 @@ class Admin_Pages extends Hookable implements Hooks_Interface {
 		return array_map(
 			fn( Plugin_Cpt $plugin_cpt ) => sprintf(
 				'<a href="%s" target="_self">%s</a>',
-				esc_url( $this->plugin->get_admin_url( '', $plugin_cpt->cpt_name() ) ),
+				esc_url( Plugin::get_admin_url( '', $plugin_cpt->cpt_name() ) ),
 				$plugin_cpt->labels()->plural_name()
 			),
 			$this->plugin_cpts
@@ -340,7 +341,7 @@ class Admin_Pages extends Hookable implements Hooks_Interface {
 		return array(
 			sprintf(
 				'<a href="%s" target="_blank" style="%s" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">%s</a>',
-				Plugin::PRO_VERSION_URL,
+				External_Links::PRO_VERSION_URL,
 				esc_attr( $link_style ),
 				esc_html__( 'Get Pro', 'acf-views' )
 			),

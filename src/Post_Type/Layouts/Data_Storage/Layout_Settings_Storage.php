@@ -5,9 +5,9 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage;
 
 use Exception;
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Db_Management;
@@ -170,5 +170,13 @@ class Layout_Settings_Storage extends Cpt_Settings_Storage {
 		}
 
 		return $views;
+	}
+
+	protected function get_unique_id_field_name(): string {
+		return Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_UNIQUE_ID );
+	}
+
+	protected function get_title_field_name(): string {
+		return Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_TITLE );
 	}
 }

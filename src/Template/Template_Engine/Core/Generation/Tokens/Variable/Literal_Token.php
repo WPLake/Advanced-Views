@@ -25,15 +25,6 @@ abstract class Literal_Token implements Template_Token {
 		$this->value = $value;
 	}
 
-	/**
-	 * @param Literal_Value $value
-	 */
-	public function set_value( $value ): self {
-		$this->value = $value;
-
-		return $this;
-	}
-
 	public function print(): void {
 		$this->print_literally( $this->value );
 	}

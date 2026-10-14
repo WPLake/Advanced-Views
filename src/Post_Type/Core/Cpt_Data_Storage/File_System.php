@@ -4,19 +4,19 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Action;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
 use WP_Filesystem_Base;
 
 defined( 'ABSPATH' ) || exit;
 
-class File_System extends Action implements Hooks_Interface {
+class File_System extends Loggable_Actor implements Actor {
 	use Safe_Array_Arguments;
 
 	private static bool $is_fs_not_writable_notice_shown = false;
@@ -40,6 +40,18 @@ class File_System extends Action implements Hooks_Interface {
 		$this->base_folder          = $external_base_folder;
 		$this->is_read_item_folders = false;
 		$this->wp_filesystem_base   = null;
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		// set only if it isn't an external folder.
+		if ( 0 === strlen( $this->base_folder ) ) {
+			File_System_Loader::instance()
+								->add_onload_callback( fn() => $this->set_base_folder( $route_detector ) );
+		}
 	}
 
 	protected function read_item_folders(): void {
@@ -388,13 +400,5 @@ class File_System extends Action implements Hooks_Interface {
 		}
 
 		return $this->wp_filesystem_base;
-	}
-
-	public function set_hooks( Route_Detector $route_detector ): void {
-		// set only if it isn't an external folder.
-		if ( 0 === strlen( $this->base_folder ) ) {
-			File_System_Loader::instance()
-								->add_onload_callback( fn() => $this->set_base_folder( $route_detector ) );
-		}
 	}
 }

@@ -6,31 +6,33 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use WP_Block;
 use WP_Block_Template;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
-final class Shortcode_Gutenberg_Block extends Hookable implements Hooks_Interface {
+final class Shortcode_Gutenberg_Block extends Actor_Base implements Actor {
 	private int $context_post_id;
 	/**
 	 * @var string[]
 	 */
 	private array $supported_shortcode_names;
 
-	/**
-	 * @param string[] $supported_shortcode_names
-	 */
-	public function __construct( array $supported_shortcode_names ) {
-		$this->supported_shortcode_names = $supported_shortcode_names;
+	public function __construct( Layouts_Cpt $layouts_cpt ) {
+		$this->supported_shortcode_names = $layouts_cpt->shortcodes();
 		// don't use '0' as the default, because it can be 0 in the 'render_callback' hook.
 		$this->context_post_id = - 1;
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_filter( 'register_block_type_args', array( $this, 'extend_core_shortcode_block' ), 10, 2 );
 
 		self::add_filter( 'get_block_templates', array( $this, 'trim_shortcode_brackets' ) );

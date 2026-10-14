@@ -4,24 +4,48 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 
 defined( 'ABSPATH' ) || exit;
 
-class Cpt_Assets_Reducer extends Hookable implements Hooks_Interface {
+class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 	private Settings_Storage $settings;
 	private string $cpt_name;
-	protected Plugin $plugin;
 
-	public function __construct( Settings_Storage $settings, Plugin $plugin, string $cpt_name ) {
+	public function __construct( Settings_Storage $settings, string $cpt_name ) {
 		$this->settings = $settings;
 		$this->cpt_name = $cpt_name;
-		$this->plugin   = $plugin;
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		if ( ! $route_detector->is_cpt_admin_route( $this->cpt_name, Route_Detector::CPT_EDIT ) ||
+		! $this->settings->is_cpt_admin_optimization_enabled() ) {
+			return;
+		}
+
+		// in some cases assets reducer causes issues, so we must provide a fallback action for users.
+		self::add_action( 'admin_notices', array( $this, 'print_fallback_message' ) );
+
+		// 1. styles (in header)
+		// print is later than 'admin_enqueue_scripts'
+		// NOTE: priority 11 is ok, as it's bigger than the default 10.
+		// Do not use a big priority, as e.g. since 20+ priority the theme styles are already printed
+		self::add_action( 'admin_print_styles', array( $this, 'remove_unused_styles_from_edit_screen' ), 11 );
+
+		// 2. scripts (in header)
+		self::add_action( 'admin_print_scripts', array( $this, 'remove_unused_scripts_from_edit_screen' ), 11 );
+
+		// 3. scripts (in footer)
+		self::add_action( 'admin_footer', array( $this, 'remove_unused_scripts_from_edit_screen' ), 99 );
 	}
 
 	protected function is_necessary_handle( string $handle ): bool {
@@ -227,7 +251,7 @@ class Cpt_Assets_Reducer extends Hookable implements Hooks_Interface {
 	}
 
 	public function print_fallback_message(): void {
-		$settings_url = $this->plugin->get_admin_url( Settings_Page::SLUG );
+		$settings_url = Plugin::get_admin_url( Settings_Page::SLUG );
 
 		$safe_opening_tag = sprintf(
 			'<a href="%s" target="_blank">',
@@ -258,27 +282,5 @@ class Cpt_Assets_Reducer extends Hookable implements Hooks_Interface {
 		});
 		</script>
 		<?php
-	}
-
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( ! $route_detector->is_cpt_admin_route( $this->cpt_name, Route_Detector::CPT_EDIT ) ||
-		! $this->settings->is_cpt_admin_optimization_enabled() ) {
-			return;
-		}
-
-		// in some cases assets reducer causes issues, so we must provide a fallback action for users.
-		self::add_action( 'admin_notices', array( $this, 'print_fallback_message' ) );
-
-		// 1. styles (in header)
-		// print is later than 'admin_enqueue_scripts'
-		// NOTE: priority 11 is ok, as it's bigger than the default 10.
-		// Do not use a big priority, as e.g. since 20+ priority the theme styles are already printed
-		self::add_action( 'admin_print_styles', array( $this, 'remove_unused_styles_from_edit_screen' ), 11 );
-
-		// 2. scripts (in header)
-		self::add_action( 'admin_print_scripts', array( $this, 'remove_unused_scripts_from_edit_screen' ), 11 );
-
-		// 3. scripts (in footer)
-		self::add_action( 'admin_footer', array( $this, 'remove_unused_scripts_from_edit_screen' ), 99 );
 	}
 }

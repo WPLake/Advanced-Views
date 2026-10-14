@@ -10,14 +10,14 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 use Org\Wplake\Advanced_Views\Assets\ACE_Mods;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration;
@@ -31,12 +31,11 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 /**
  * @phpstan-type FieldsList array<int,array<string,mixed>>
  */
-abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interface {
+abstract class Cpt_Interactive_Fields extends Actor_Base implements Actor {
 	const REST_REFRESH_ROUTE = '';
 
 	protected Public_Cpt $public_cpt;
 	protected Html_Printer $html;
-	protected Plugin $plugin;
 	protected Instance_Factory $instance_factory;
 	protected Template_Integration_Storage $template_integration_storage;
 	protected Field_Provider_Cluster $provider_cluster;
@@ -46,7 +45,6 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 	public function __construct(
 		Public_Cpt $public_cpt,
 		Html_Printer $html,
-		Plugin $plugin,
 		Instance_Factory $instance_factory,
 		Template_Integration_Storage $template_integration_storage,
 		Field_Provider_Cluster $provider_cluster,
@@ -55,7 +53,6 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 	) {
 		$this->public_cpt                   = $public_cpt;
 		$this->html                         = $html;
-		$this->plugin                       = $plugin;
 		$this->instance_factory             = $instance_factory;
 		$this->template_integration_storage = $template_integration_storage;
 		$this->provider_cluster             = $provider_cluster;
@@ -63,11 +60,13 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 		$this->cpt_settings_storage         = $cpt_settings_storage;
 	}
 
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
 	// by tests, json in post_meta in 13 times quicker than ordinary postMeta way (30ms per 10 objects vs 400ms).
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( $route_detector->is_admin_route() ) {
-			self::add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
-		}
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 	}
 
 	public function register_rest_routes(): void {
@@ -127,7 +126,7 @@ abstract class Cpt_Interactive_Fields extends Hookable implements Hooks_Interfac
 			'mods'                     => ACE_Mods::get_all(),
 			'markupTextarea'           => $this->resolve_editor_data( $post ),
 			'fieldSelect'              => $this->get_select_fields(),
-			'isWordpressComHosting'    => $this->plugin->is_wordpress_com_hosting(),
+			'isWordpressComHosting'    => Plugin::is_wordpress_com_hosting(),
 			'isPostboxRequestRequired' => $is_post_box_request_required,
 			'allFieldChoicesInEnglish' => $this->get_all_field_choices_in_english(),
 			'enginesMeta'              => $engines_meta,

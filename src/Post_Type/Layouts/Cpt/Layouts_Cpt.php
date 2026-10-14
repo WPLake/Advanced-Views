@@ -4,14 +4,19 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt;
 
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt as Plugin_Layouts_Cpt;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 defined( 'ABSPATH' ) || exit;
 
 class Layouts_Cpt extends Cpt {
+	public function __construct( Plugin_Layouts_Cpt $plugin_cpt, Layout_Settings_Storage $settings_storage ) {
+		parent::__construct( $plugin_cpt, $settings_storage );
+	}
 
 	public function add_cpt(): void {
 		$labels        = $this->plugin_cpt->labels();
@@ -111,8 +116,8 @@ class Layouts_Cpt extends Cpt {
 		}
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
-		parent::set_hooks( $route_detector );
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		parent::set_route_hooks( $route_detector );
 
 		if ( false === $route_detector->is_admin_route() ) {
 			return;

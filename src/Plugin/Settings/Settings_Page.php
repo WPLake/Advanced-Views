@@ -6,16 +6,17 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Plugin\Settings;
 
 use Exception;
+use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
 use Org\Wplake\Advanced_Views\Acf\Groups\Git_Repository;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
 use Org\Wplake\Advanced_Views\Acf\Groups\Plugin_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\State_Report;
-use Org\Wplake\Advanced_Views\Plugin\Base\Action;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
@@ -23,7 +24,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Settings_Page extends Action implements Hooks_Interface {
+final class Settings_Page extends Loggable_Actor implements Actor {
 
 	const SLUG = 'avf-settings';
 	/**
@@ -63,25 +64,25 @@ final class Settings_Page extends Action implements Hooks_Interface {
 	}
 
 
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( $route_detector->is_admin_route() ) {
-			// init, not acf/init, as the method uses 'get_edit_post_link' which will be available only since this hook
-			// (because we sign up the CPTs in this hook).
-			self::add_action( 'init', array( $this, 'add_page' ) );
-			self::add_action( 'acf/save_post', array( $this, 'maybe_catch_values' ) );
-			// priority 20, as it's after the ACF's save_post hook.
-			self::add_action( 'acf/save_post', array( $this, 'maybe_process' ), 20 );
-			self::add_action( 'acf/input/admin_head', array( $this, 'maybe_inject_values' ) );
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
 
-			self::add_filter(
-				'acf/load_field/name=' . Plugin_Settings::getAcfFieldName( Plugin_Settings::FIELD_TEMPLATE_ENGINE ),
-				function ( array $field ) {
-					$field['choices'] = $this->engines_storage->get_choices();
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		// init, not acf/init, as the method uses 'get_edit_post_link' which will be available only since this hook
+		// (because we sign up the CPTs in this hook).
+		self::add_action( 'init', array( $this, 'add_page' ) );
+		self::add_action( 'acf/save_post', array( $this, 'maybe_catch_values' ) );
+		// priority 20, as it's after the ACF's save_post hook.
+		self::add_action( 'acf/save_post', array( $this, 'maybe_process' ), 20 );
+		self::add_action( 'acf/input/admin_head', array( $this, 'maybe_inject_values' ) );
 
-					return $field;
-				}
-			);
-		}
+		$choices_callbacks = array(
+			Plugin_Settings::FIELD_TEMPLATE_ENGINE =>
+				fn() => $this->engines_storage->get_choices(),
+		);
+
+		Acf_Utils::bind_field_choices( Plugin_Settings::class, $choices_callbacks );
 	}
 
 	public function add_page(): void {

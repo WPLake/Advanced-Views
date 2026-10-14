@@ -4,18 +4,17 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Shortcode\Shortcode_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Shortcode_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use WP_Comment;
 use WP_Term;
@@ -38,15 +37,14 @@ final class Layout_Shortcode extends Shortcode_Base {
 	private Shortcode_Gutenberg_Block $shortcode_block;
 
 	public function __construct(
-		Public_Cpt $public_cpt,
+		Layouts_Cpt $public_cpt,
 		Settings_Storage $settings,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Front_Assets $front_assets,
 		Live_Reloader_Component $live_reloader_component,
 		Layout_Factory $layout_factory,
 		Shortcode_Gutenberg_Block $shortcode_block
 	) {
-		parent::__construct( $public_cpt, $settings, $layouts_settings_storage, $layout_factory, $front_assets, $live_reloader_component );
+		parent::__construct( $public_cpt, $settings, $layouts_settings_storage, $layout_factory, $live_reloader_component );
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
 		$this->layout_factory           = $layout_factory;
@@ -55,8 +53,8 @@ final class Layout_Shortcode extends Shortcode_Base {
 		$this->displaying_views = array();
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
-		parent::set_hooks( $route_detector );
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		parent::set_route_hooks( $route_detector );
 
 		if ( wp_doing_ajax() ) {
 			self::add_action( 'wp_ajax_nopriv_advanced_views', array( $this, 'get_ajax_response' ) );

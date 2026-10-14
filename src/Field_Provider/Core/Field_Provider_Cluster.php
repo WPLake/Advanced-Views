@@ -7,27 +7,23 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core;
 defined( 'ABSPATH' ) || exit;
 
 use DateTime;
-use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Plugin\Base\Action;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
-abstract class Field_Provider_Cluster extends Action implements Hooks_Interface {
+abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	/**
 	 * 1. must be more than the default 10, so it's executed after the data vendor plugins fully loaded themselves (e.g. MetaBox has loading inside this hook)
 	 * 2. '15' gives the ability to shift back when it needs, while still been after the default one.
@@ -46,15 +42,29 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	 * @var array<string, array<string, Field_Meta>>
 	 */
 	private array $field_meta_cache;
+	private Instance_Container $container;
+	/**
+	 * @var class-string<Field_Provider>[]
+	 */
+	private array $provider_classes;
 
-	public function __construct( Logger $logger ) {
+	/**
+	 * @param class-string<Field_Provider>[] $provider_classes
+	 */
+	public function __construct( Logger $logger, Instance_Container $container, array $provider_classes ) {
 		parent::__construct( $logger );
 
+		$this->container        = $container;
+		$this->provider_classes = $provider_classes;
 		$this->provider_cluster = array();
 		$this->field_meta_cache = array();
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		// 1. with the higher priority than the default one, to make sure all vendor codes are loaded.
 		// 2. still small, to be earlier than the rest of AVF code listening to this hook
 		self::add_action(
@@ -62,6 +72,8 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 			array( $this, 'load_available_vendors' ),
 			self::PLUGINS_LOADED_HOOK_PRIORITY
 		);
+
+		$this->make_integration_instances( $route_detector );
 	}
 
 	/**
@@ -92,7 +104,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	}
 
 	/**
-	 * @return array<string|int, string|Field_Meta>
+	 * @return array<string,string>
 	 */
 	public function get_field_choices(
 		bool $is_only_meta_vendors = false,
@@ -123,7 +135,9 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 
 			$choices = array_merge(
 				$choices,
-				$data_vendor->get_field_choices( $only_field_types, false, $is_field_name_as_label )
+				self::get_label_choices(
+					$data_vendor->get_field_choices( $only_field_types, false, $is_field_name_as_label )
+				)
 			);
 		}
 
@@ -131,7 +145,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	}
 
 	/**
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string,string>
 	 */
 	public function get_sub_field_choices( bool $is_only_meta_vendors = false, bool $is_field_name_as_label = false ): array {
 		$choices = array(
@@ -144,7 +158,10 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 				continue;
 			}
 
-			$choices = array_merge( $choices, $data_vendor->get_sub_field_choices( false, $is_field_name_as_label ) );
+			$choices = array_merge(
+				$choices,
+				self::get_label_choices( $data_vendor->get_sub_field_choices( false, $is_field_name_as_label ) )
+			);
 		}
 
 		return $choices;
@@ -254,7 +271,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 
 	// use $isForceLoading for tests only.
 	public function load_available_vendors( bool $is_force_loading = false ): void {
-		foreach ( $this->get_vendors() as $vendor ) {
+		foreach ( $this->resolve_providers() as $vendor ) {
 			if ( ! $vendor->is_available() &&
 				! $is_force_loading ) {
 				continue;
@@ -289,7 +306,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 
 		foreach ( $layout_settings->items as $item ) {
 			foreach ( $item->repeater_fields as $repeater_field ) {
-				$vendor_name = $repeater_field->get_vendor_name();
+				$vendor_name = $this->get_vendor_name_by_key( $repeater_field->key );
 
 				if ( ! in_array( $asset_name, $this->get_field_front_assets( $vendor_name, $repeater_field ), true ) ) {
 					continue;
@@ -298,7 +315,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 				$fields[1][] = $repeater_field;
 			}
 
-			$vendor_name = $item->field->get_vendor_name();
+			$vendor_name = $this->get_vendor_name_by_key( $item->field->key );
 
 			if ( ! in_array( $asset_name, $this->get_field_front_assets( $vendor_name, $item->field ), true ) ) {
 				continue;
@@ -359,54 +376,13 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 		);
 	}
 
-	public function make_integration_instances(
-		Route_Detector $route_detector,
-		Item_Settings $item_settings,
-		Layout_Settings_Storage $layouts_settings_storage,
-		Layout_Save_Actions $layouts_cpt_save_actions,
-		Layout_Factory $layout_factory,
-		Repeater_Field_Settings $repeater_field_settings,
-		Layout_Shortcode $layout_shortcode,
-		Settings_Storage $settings,
-		Plugin_Cpt $plugin_cpt
-	): void {
-		// 1. must on or later 'plugins_load', when meta plugins are loaded
-		// 2. must be on or later 'after_setup_theme', when FS only Layouts and Post Selections are available
-		File_System_Loader::instance()
-							->add_loaded_callback(
-								function () use (
-									$route_detector,
-									$item_settings,
-									$layouts_settings_storage,
-									$layouts_cpt_save_actions,
-									$layout_factory,
-									$repeater_field_settings,
-									$layout_shortcode,
-									$settings,
-									$plugin_cpt
-								): void {
-									foreach ( $this->provider_cluster as $vendor ) {
-										$integration_instance = $vendor->make_integration_instance(
-											$item_settings,
-											$layouts_settings_storage,
-											$this,
-											$layouts_cpt_save_actions,
-											$layout_factory,
-											$repeater_field_settings,
-											$layout_shortcode,
-											$settings,
-											$plugin_cpt
-										);
+	public function get_vendor_name_by_key( string $key ): string {
+		// for ACF and custom fields source isn't set.
+		if ( false !== strpos( $key, ':' ) ) {
+			return explode( ':', $key )[0];
+		}
 
-										// integration instance is optional (e.g. Woo and WP don't have).
-										if ( null === $integration_instance ) {
-											continue;
-										}
-
-										$this->load_integration_instance( $route_detector, $integration_instance, $layouts_settings_storage );
-									}
-								}
-							);
+		return $this->resolve_legacy_vendor_name( Field_Settings::get_field_id_by_key( $key ) );
 	}
 
 	/**
@@ -414,7 +390,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	 */
 	public function get_group_link_by_group_id( string $group_id, string $vendor_name = '' ): ?array {
 		if ( '' === $vendor_name ) {
-			$vendor_name                    = Field_Settings::get_vendor_name_by_key( $group_id . '|fake-field-id' );
+			$vendor_name                    = $this->get_vendor_name_by_key( $group_id . '|fake-field-id' );
 			$group_id_without_vendor_prefix = explode( ':', $group_id )[1] ?? $group_id;
 		} else {
 			$group_id_without_vendor_prefix = $group_id;
@@ -517,7 +493,7 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 		foreach ( $layout_settings->items as $item ) {
 			$group_id = $item->field->get_group_id();
 
-			$vendor_name = $item->field->get_vendor_name();
+			$vendor_name = $this->get_vendor_name_by_key( $item->field->key );
 
 			if ( ! key_exists( $vendor_name, $this->get_provider_cluster() ) ) {
 				continue;
@@ -596,7 +572,17 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 	/**
 	 * @return Field_Provider[]
 	 */
-	abstract protected function get_vendors(): array;
+	protected function resolve_providers(): array {
+		return array_map(
+			fn( string $provider_class ): Field_Provider => $this->container->resolve( $provider_class ),
+			$this->provider_classes
+		);
+	}
+
+	/**
+	 * Back compatibility: keys without the vendor prefix.
+	 */
+	abstract protected function resolve_legacy_vendor_name( string $field_id ): string;
 
 	protected function load_integration_instance(
 		Route_Detector $route_detector,
@@ -642,5 +628,46 @@ abstract class Field_Provider_Cluster extends Action implements Hooks_Interface 
 		);
 
 		return in_array( Field_Settings::FIELD_ACF_VIEW_ID, $conditional_fields, true );
+	}
+
+	/**
+	 * Non-meta format choices are always labels, Field_Meta appears only in the meta format.
+	 *
+	 * @param array<string|int,Field_Meta|string> $choices
+	 *
+	 * @return array<string,string>
+	 */
+	protected static function get_label_choices( array $choices ): array {
+		$label_choices = array();
+
+		foreach ( $choices as $key => $label ) {
+			if ( is_string( $label ) ) {
+				$label_choices[ string( $key ) ] = $label;
+			}
+		}
+
+		return $label_choices;
+	}
+
+	protected function make_integration_instances( Route_Detector $route_detector ): void {
+		// 1. must on or later 'plugins_load', when meta plugins are loaded
+		// 2. must be on or later 'after_setup_theme', when FS only Layouts and Post Selections are available
+		File_System_Loader::instance()
+							->add_loaded_callback(
+								function () use ( $route_detector ): void {
+									$layouts_settings_storage = $this->container->resolve( Layout_Settings_Storage::class );
+
+									foreach ( $this->provider_cluster as $vendor ) {
+										$integration_instance = $vendor->make_integration_instance( $this->container );
+
+										// integration instance is optional (e.g. Woo and WP don't have).
+										if ( null === $integration_instance ) {
+											continue;
+										}
+
+										$this->load_integration_instance( $route_detector, $integration_instance, $layouts_settings_storage );
+									}
+								}
+							);
 	}
 }

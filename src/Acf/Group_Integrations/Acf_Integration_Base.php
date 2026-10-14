@@ -1,0 +1,58 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Acf\Group_Integrations;
+
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+
+defined( 'ABSPATH' ) || exit;
+
+abstract class Acf_Integration_Base extends Actor_Base implements Actor {
+	private string $target_cpt_name;
+
+	public function __construct( string $target_cpt_name ) {
+		$this->target_cpt_name = $target_cpt_name;
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		// load only on targetCpt pages
+		// (but not only on edit pages, as there are Settings & Tools groups).
+		if ( '' !== $this->target_cpt_name &&
+			false === $route_detector->is_cpt_admin_route( $this->target_cpt_name ) ) {
+			return;
+		}
+
+		$this->set_field_choices();
+
+		// Conditional field logic requires fields info to be already available.
+		// It means the data vendor must already be loaded.
+		// 'wp_loaded' is the first one from which MetaBox fields info become available.
+		self::add_action(
+			'wp_loaded',
+			function (): void {
+				$this->set_conditional_field_rules();
+			}
+		);
+	}
+
+	/**
+	 * @return string[]
+	 */
+	protected function get_post_type_choices(): array {
+		return get_post_types();
+	}
+
+
+	protected function set_field_choices(): void {
+	}
+
+	protected function set_conditional_field_rules(): void {
+	}
+}

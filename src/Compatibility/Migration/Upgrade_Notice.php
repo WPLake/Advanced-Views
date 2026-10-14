@@ -7,41 +7,44 @@ namespace Org\Wplake\Advanced_Views\Compatibility\Migration;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Version\Version_Migration;
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
-final class Upgrade_Notice extends Hookable implements Hooks_Interface {
-	private Plugin $plugin;
+final class Upgrade_Notice extends Actor_Base implements Actor {
+	private Plugin_Meta $plugin_meta;
 	private string $dismiss_key;
 	private string $dismiss_nonce_action;
 
-	public function __construct( Plugin $plugin ) {
-		$this->plugin = $plugin;
+	public function __construct( Plugin_Meta $plugin_meta ) {
+		$this->plugin_meta = $plugin_meta;
 
-		$this->dismiss_key          = sprintf( '_%s-upgrade-notice-dismiss', $this->plugin->get_short_slug() );
+		$this->dismiss_key          = sprintf( '_%s-upgrade-notice-dismiss', $this->plugin_meta->get_short_slug() );
 		$this->dismiss_nonce_action = 'avf-upgrade-notice';
 	}
 
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( $route_detector->is_admin_route() ) {
-			$upgrade_notice = $this->get_upgrade_notice();
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
 
-			if ( strlen( $upgrade_notice ) > 0 ) {
-				self::add_action(
-					'admin_notices',
-					function (): void {
-						if ( ! $this->hide_notice() ) {
-							$this->print_notice();
-						}
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		$upgrade_notice = $this->get_upgrade_notice();
+
+		if ( strlen( $upgrade_notice ) > 0 ) {
+			self::add_action(
+				'admin_notices',
+				function (): void {
+					if ( ! $this->hide_notice() ) {
+						$this->print_notice();
 					}
-				);
-			}
+				}
+			);
 		}
 	}
 

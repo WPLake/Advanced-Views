@@ -16,7 +16,7 @@ namespace Org\Wplake\Advanced_Views;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Loaders\Lite\Lite_Plugin_Loader;
+use Org\Wplake\Advanced_Views\Plugin\Loader\Plugin_Loader;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 
 ( function (): void {
@@ -27,6 +27,5 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 
 	require_once __DIR__ . '/src/autoloader.php';
 
-	$plugin_loader = new Lite_Plugin_Loader( __FILE__ );
-	$plugin_loader->load();
+	Plugin_Loader::load( __FILE__ );
 } )();

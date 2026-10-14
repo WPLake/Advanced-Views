@@ -7,13 +7,13 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 
-class Cpt_Settings_Creator extends Hookable {
-	private Settings_Storage $settings;
+class Cpt_Settings_Creator extends Actor_Base {
+	private Cpt_Theme_Settings $settings;
 
-	public function __construct( Settings_Storage $settings ) {
+	public function __construct( Cpt_Theme_Settings $settings ) {
 		$this->settings = $settings;
 	}
 

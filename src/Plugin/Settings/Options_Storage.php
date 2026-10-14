@@ -49,10 +49,6 @@ class Options_Storage {
 		update_option( $name, $value, $is_autoload );
 	}
 
-	public function delete_option( string $name ): void {
-		delete_option( $name );
-	}
-
 	public static function delete_all_options(): void {
 		global $wpdb;
 

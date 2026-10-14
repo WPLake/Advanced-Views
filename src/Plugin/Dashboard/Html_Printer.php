@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Dashboard;
 
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
+use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
 use WP_Filesystem_Base;
@@ -75,7 +76,7 @@ class Html_Printer {
 		$this->print(
 			'postbox/upgrade',
 			array(
-				'upgrade_link' => Plugin::PRO_VERSION_URL,
+				'upgrade_link' => External_Links::PRO_VERSION_URL,
 			)
 		);
 	}

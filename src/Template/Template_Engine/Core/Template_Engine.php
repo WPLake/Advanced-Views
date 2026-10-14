@@ -15,7 +15,7 @@ interface Template_Engine {
 
 	public function get_label(): string;
 
-	public function create_renderer(): Template_Renderer;
+	public function create_renderer( string $render_folder ): Template_Renderer;
 
 	public function create_integration(): Template_Integration;
 

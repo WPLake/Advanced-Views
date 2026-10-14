@@ -10,18 +10,18 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Migration;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Version\Version_Migration;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
-final class Version_Migrator extends Hookable implements Hooks_Interface, Cpt_Settings_Migrator {
-	private Plugin $plugin;
+final class Version_Migrator extends Actor_Base implements Actor, Cpt_Settings_Migrator {
+	private Plugin_Meta $plugin_meta;
 	private Settings_Storage $settings;
 	/**
 	 * @var array<string,Version_Migration> version => migrationInstance
@@ -32,19 +32,61 @@ final class Version_Migrator extends Hookable implements Hooks_Interface, Cpt_Se
 	private Cache_Flusher $cache_flusher;
 
 	public function __construct(
-		Plugin $plugin,
+		Plugin_Meta $plugin_meta,
 		Settings_Storage $settings,
 		Logger $logger,
 		Upgrade_Notice $upgrade_notice,
 		Cache_Flusher $cache_flusher
 	) {
-		$this->plugin         = $plugin;
+		$this->plugin_meta         = $plugin_meta;
 		$this->settings       = $settings;
 		$this->logger         = $logger;
 		$this->upgrade_notice = $upgrade_notice;
 		$this->cache_flusher  = $cache_flusher;
 
 		$this->version_migrations = array();
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		// avoid requests with incomplete hooks cycle.
+		return $route_detector->is_complete_cycle_request();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		// don't use 'upgrader_process_complete' hook, as user can update the plugin manually by FTP.
+		$db_version   = $this->settings->get_version();
+		$code_version = $this->plugin_meta->get_version();
+
+		/**
+		 * Run upgrade if the DB version is set, and different from the code version.
+		 * (it's unset until the plugin activation hook called, which happens later than wp_loaded)
+		 */
+		if ( '' === $db_version ||
+			$db_version === $code_version ) {
+			return;
+		}
+
+		// only at this hook can be sure that other plugin's functions are available.
+		self::add_action(
+			'plugins_loaded',
+			array(
+				$this,
+				'migrate_from_previous_version',
+			),
+			// with the priority higher than in the Data_Vendors.
+			Field_Provider_Cluster::PLUGINS_LOADED_HOOK_PRIORITY + 1
+		);
+
+		/**
+		 * Running lately, inside the "wp_loaded" hook ensures all migration hooks are called.
+		 *
+		 * Plus, we ensure that migration wasn't interrupted by some redirect or another request-breaker:
+		 * otherwise, we don't save the new version and will have another migration.
+		 */
+		self::add_action(
+			'wp_loaded',
+			array( $this, 'complete_version_migration' )
+		);
 	}
 
 	public static function is_version_lower( string $version, string $target_version ): bool {
@@ -97,48 +139,6 @@ final class Version_Migrator extends Hookable implements Hooks_Interface, Cpt_Se
 
 	public static function is_valid_version( string $version ): bool {
 		return 1 === preg_match( '/^\d+\.\d+\.\d+$/', $version );
-	}
-
-	public function set_hooks( Route_Detector $route_detector ): void {
-		// avoid requests with incomplete hooks cycle.
-		if ( ! $route_detector->is_complete_cycle_request() ) {
-			return;
-		}
-
-		// don't use 'upgrader_process_complete' hook, as user can update the plugin manually by FTP.
-		$db_version   = $this->settings->get_version();
-		$code_version = $this->plugin->get_version();
-
-		/**
-		 * Run upgrade if the DB version is set, and different from the code version.
-		 * (it's unset until the plugin activation hook called, which happens later than wp_loaded)
-		 */
-		if ( '' === $db_version ||
-			$db_version === $code_version ) {
-			return;
-		}
-
-		// only at this hook can be sure that other plugin's functions are available.
-		self::add_action(
-			'plugins_loaded',
-			array(
-				$this,
-				'migrate_from_previous_version',
-			),
-			// with the priority higher than in the Data_Vendors.
-			Field_Provider_Cluster::PLUGINS_LOADED_HOOK_PRIORITY + 1
-		);
-
-		/**
-		 * Running lately, inside the "wp_loaded" hook ensures all migration hooks are called.
-		 *
-		 * Plus, we ensure that migration wasn't interrupted by some redirect or another request-breaker:
-		 * otherwise, we don't save the new version and will have another migration.
-		 */
-		self::add_action(
-			'wp_loaded',
-			array( $this, 'complete_version_migration' )
-		);
 	}
 
 	/**
@@ -195,7 +195,7 @@ final class Version_Migrator extends Hookable implements Hooks_Interface, Cpt_Se
 			'Performing version upgrade',
 			array(
 				'previous_version' => $from_version,
-				'current_version'  => $this->plugin->get_version(),
+				'current_version'  => $this->plugin_meta->get_version(),
 				'migrations'       => $version_migration_names,
 			)
 		);
@@ -215,7 +215,7 @@ final class Version_Migrator extends Hookable implements Hooks_Interface, Cpt_Se
 	}
 
 	protected function update_db_plugin_version(): void {
-		$this->settings->set_version( $this->plugin->get_version() );
+		$this->settings->set_version( $this->plugin_meta->get_version() );
 		$this->settings->save();
 	}
 

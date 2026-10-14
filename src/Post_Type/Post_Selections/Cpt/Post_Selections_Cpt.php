@@ -5,10 +5,10 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt;
 
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -16,7 +16,7 @@ class Post_Selections_Cpt extends Cpt {
 
 	private Selection_Settings_Storage $post_selections_settings_storage;
 
-	public function __construct( Plugin_Cpt $plugin_cpt, Selection_Settings_Storage $post_selections_settings_storage ) {
+	public function __construct( Selections_Cpt $plugin_cpt, Selection_Settings_Storage $post_selections_settings_storage ) {
 		parent::__construct( $plugin_cpt, $post_selections_settings_storage );
 
 		$this->post_selections_settings_storage = $post_selections_settings_storage;

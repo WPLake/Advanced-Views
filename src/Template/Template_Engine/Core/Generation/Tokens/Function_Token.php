@@ -23,23 +23,11 @@ class Function_Token implements Template_Token {
 		echo ')';
 	}
 
-	public function set_name( string $name ): self {
-		$this->name = $name;
-
-		return $this;
-	}
-
 	/**
 	 * @param Template_Token[] $arguments
 	 */
 	public function set_arguments( array $arguments ): self {
 		$this->arguments = $arguments;
-
-		return $this;
-	}
-
-	public function add_argument( Template_Token $argument ): self {
-		$this->arguments[] = $argument;
 
 		return $this;
 	}

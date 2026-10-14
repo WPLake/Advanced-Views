@@ -5,19 +5,19 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core;
 
 use Exception;
-use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
+use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Settings_Creator;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
@@ -37,7 +37,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	private Layout_Factory $layout_factory;
 	private Field_Provider $data_vendor;
 	private Layout_Shortcode $layout_shortcode;
-	private Plugin_Cpt $plugin_cpt;
+	private Layouts_Cpt $layouts_cpt;
 
 	public function __construct(
 		Item_Settings $item_settings,
@@ -47,8 +47,8 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		Layout_Factory $layout_factory,
 		Field_Provider $data_vendor,
 		Layout_Shortcode $layout_shortcode,
-		Settings_Storage $settings,
-		Plugin_Cpt $plugin_cpt
+		Cpt_Theme_Settings $settings,
+		Layouts_Cpt $layouts_cpt
 	) {
 		parent::__construct( $settings );
 
@@ -59,7 +59,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		$this->layout_factory           = $layout_factory;
 		$this->data_vendor              = $data_vendor;
 		$this->layout_shortcode         = $layout_shortcode;
-		$this->plugin_cpt               = $plugin_cpt;
+		$this->layouts_cpt              = $layouts_cpt;
 	}
 
 	abstract protected function get_vendor_post_type(): string;
@@ -73,6 +73,10 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	 * @param array<string,mixed> $field
 	 */
 	abstract protected function fill_field_id_and_type( array $field, string &$field_id, string &$field_type ): void;
+
+	protected function get_provider_cluster(): Field_Provider_Cluster {
+		return $this->provider_cluster;
+	}
 
 	protected function get_block_description( Layout_Settings $layout_settings ): string {
 		return sprintf(
@@ -235,10 +239,10 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 
 		$label = array() !== $related_views ?
 			// translators: %s is the plural name of the CPT.
-			__( 'Assigned to %s:', 'acf-views' ) . ' Settings_Vendor_Integration.php' :
+			__( 'Assigned to %s:', 'acf-views' ) . ' ' :
 			// translators: %s is the plural name of the CPT.
 			__( 'Not assigned to any %s.', 'acf-views' );
-		$label = sprintf( $label, $this->plugin_cpt->labels()->plural_name() );
+		$label = sprintf( $label, $this->layouts_cpt->labels()->plural_name() );
 
 		if ( ! $is_list_look ) {
 			echo esc_html( $label );

@@ -6,13 +6,10 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
@@ -21,7 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\External_Storage_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Import_Result;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Tab_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Repository_Item;
 
 abstract class Git_Tabs extends External_Storage_Tab {
@@ -38,7 +35,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 	const KEY_CACHE_CLEARED      = self::KEY_PREFIX . 'cache-cleared';
 
 	private Settings_Storage $settings;
-	private Git_Lab_Api $git_lab_api;
+	private Git_Api_Interface $git_api;
 	private Cpt_Settings $cpt_settings;
 	/**
 	 * Used to avoid potential recursion (if user made the recursion setup)
@@ -51,7 +48,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 	public function __construct(
 		Cpt_Table $cpt_table,
 		Settings_Storage $settings,
-		Git_Lab_Api $git_lab_api,
+		Git_Api_Interface $git_api,
 		Cpt_Settings $cpt_settings,
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
@@ -61,11 +58,13 @@ abstract class Git_Tabs extends External_Storage_Tab {
 		parent::__construct( $cpt_table, $cpt_settings_storage, $provider_cluster, $cpt_settings_migrator, $logger );
 
 		$this->settings           = $settings;
-		$this->git_lab_api        = $git_lab_api;
+		$this->git_api            = $git_api;
 		$this->cpt_settings       = $cpt_settings->getDeepClone();
 		$this->pulling_unique_ids = array();
 		$this->provider_cluster   = $provider_cluster;
 	}
+
+	abstract protected function get_unique_id_prefix(): string;
 
 	abstract protected function import_related_cpt_data_items(
 		string $repository_id,
@@ -108,12 +107,6 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			esc_html__( 'here', 'acf-views' )
 		);
 		echo esc_html__( 'to clear the cache.', 'acf-views' );
-	}
-
-	protected function get_unique_id_prefix(): string {
-		return Hard_Layout_Cpt::cpt_name() === $this->get_cpt_name() ?
-			Layout_Settings::UNIQUE_ID_PREFIX :
-			Post_Selection_Settings::UNIQUE_ID_PREFIX;
 	}
 
 	/**
@@ -175,7 +168,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 
 		$access_token = $git_repository_info['accessToken'];
 
-		$data_json_repository_items_info = $this->git_lab_api->get_data_json_items_info(
+		$data_json_repository_items_info = $this->git_api->get_data_json_items_info(
 			$this->get_cpt_name(),
 			$repository_id,
 			$access_token,
@@ -248,7 +241,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 		$field_values = array();
 
 		foreach ( $repository_item_files as $repository_item_file ) {
-			$file_content = $this->git_lab_api->get_file_content(
+			$file_content = $this->git_api->get_file_content(
 				$repository_id,
 				$repository_access_token,
 				$repository_item_file->path
@@ -320,7 +313,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 		// include all vendor export files to the 'known' list of files.
 		$fs_field_file_names = array_merge( $fs_field_file_names, $this->provider_cluster->get_export_file_names() );
 
-		$all_repository_items = $this->git_lab_api->get_all_items(
+		$all_repository_items = $this->git_api->get_all_items(
 			$this->get_cpt_name(),
 			$repository_id,
 			$repository_access_token
@@ -405,7 +398,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			return;
 		}
 
-		$this->git_lab_api->clear_cache( $this->get_cpt_name(), $repository_id );
+		$this->git_api->clear_cache( $this->get_cpt_name(), $repository_id );
 
 		$success_message_url = $this->get_cpt_table()->get_tab_url(
 			$this->get_cpt_table()->get_current_tab(),

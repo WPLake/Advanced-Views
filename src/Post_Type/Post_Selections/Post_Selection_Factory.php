@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
@@ -23,13 +23,12 @@ class Post_Selection_Factory extends Instance_Factory {
 
 	public function __construct(
 		Front_Assets $front_assets,
-		string $controller_template_engine,
 		Post_Query $query_builder,
 		Post_Selection_Markup $post_selection_markup,
 		Template_Renderer_Storage $template_renderer_storage,
 		Selection_Settings_Storage $post_selections_settings_storage
 	) {
-		parent::__construct( $front_assets, $controller_template_engine );
+		parent::__construct( $front_assets );
 
 		$this->query_builder                    = $query_builder;
 		$this->post_selection_markup            = $post_selection_markup;
@@ -39,7 +38,7 @@ class Post_Selection_Factory extends Instance_Factory {
 
 	public function get_template_fields( Cpt_Theme_Settings $theme_settings ): array {
 		return array(
-			Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_EXTRA_QUERY_ARGUMENTS ) => $this->controller_template_engine,
+			Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_EXTRA_QUERY_ARGUMENTS ) => $theme_settings->get_controller_template_engine(),
 			Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_MARKUP ) => $theme_settings->get_template_engine(),
 			Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_CUSTOM_MARKUP ) => $theme_settings->get_template_engine(),
 		);
@@ -63,6 +62,9 @@ class Post_Selection_Factory extends Instance_Factory {
 		$this->add_used_cpt_data( $post_selection_settings );
 	}
 
+	/**
+	 * @return array<string,mixed>
+	 */
 	public function get_ajax_response( string $unique_id ): array {
 		$card = $this->make( $this->get_cards_data_storage()->get( $unique_id ) );
 

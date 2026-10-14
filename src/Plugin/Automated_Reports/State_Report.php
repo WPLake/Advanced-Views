@@ -6,29 +6,27 @@ namespace Org\Wplake\Advanced_Views\Plugin\Automated_Reports;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
-class State_Report extends Report_Base implements Hooks_Interface {
+class State_Report extends Report_Base implements Actor {
 	const STATE_ENDPOINT_URL = 'https://wplake.org/wp-json/wplake/v1/plugin_state';
 
-	public function set_hooks( Route_Detector $route_detector ): void {
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
 		if ( $this->is_activated_after_another_deactivation() &&
 			! $this->is_reporting_disabled() ) {
 			$this->send_active_installation_request( true );
 		}
 
 		if ( $route_detector->is_admin_route() ) {
-			$request_uri = Query_Arguments::get_string_for_non_action( 'REQUEST_URI', 'server' );
-
-			// deactivation survey includes the 'delete data' option, which should be visible even if reports are off
-			// (without the survey for sure).
-			if ( false !== strpos( $request_uri, '/wp-admin/plugins.php' ) ) {
-				self::add_action( 'admin_footer', array( $this, 'bind_deactivation_survey_popup' ) );
-			}
+			$this->set_admin_hooks();
 		}
 	}
 
@@ -84,7 +82,7 @@ class State_Report extends Report_Base implements Hooks_Interface {
 		return array_merge(
 			array(
 				'_domain'  => string( wp_parse_url( get_site_url(), PHP_URL_HOST ) ),
-				'_version' => $this->plugin->get_version(),
+				'_version' => $this->plugin_meta->get_version(),
 				'_isPro'   => $this->plugin->is_pro_version(),
 			),
 			Environment_Detector::get_theme_data()
@@ -92,7 +90,7 @@ class State_Report extends Report_Base implements Hooks_Interface {
 	}
 
 	public function bind_deactivation_survey_popup(): void {
-		$plugin_slug = $this->plugin->get_slug();
+		$plugin_slug = $this->plugin_meta->get_slug();
 
 		$data = array(
 			'plugin_slug'                 => $plugin_slug,
@@ -290,5 +288,15 @@ class State_Report extends Report_Base implements Hooks_Interface {
 	// logic is overridden in Pro.
 	protected function is_reporting_disabled(): bool {
 		return $this->settings->is_automatic_reports_disabled();
+	}
+
+	protected function set_admin_hooks(): void {
+		$request_uri = Query_Arguments::get_string_for_non_action( 'REQUEST_URI', 'server' );
+
+		// deactivation survey includes the 'delete data' option, which should be visible even if reports are off
+		// (without the survey for sure).
+		if ( false !== strpos( $request_uri, '/wp-admin/plugins.php' ) ) {
+			self::add_action( 'admin_footer', array( $this, 'bind_deactivation_survey_popup' ) );
+		}
 	}
 }

@@ -5,14 +5,14 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader;
 
 use Exception;
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
@@ -21,7 +21,7 @@ use WP_REST_Request;
 
 defined( 'ABSPATH' ) || exit;
 
-class Live_Reloader extends Hookable implements Hooks_Interface {
+class Live_Reloader extends Actor_Base implements Actor {
 	use Safe_Array_Arguments;
 
 	private Layout_Settings_Storage $layouts_settings_storage;
@@ -41,6 +41,14 @@ class Live_Reloader extends Hookable implements Hooks_Interface {
 		$this->layout_shortcode                 = $layout_shortcode;
 		$this->post_selection_shortcode         = $post_selection_shortcode;
 		$this->request_post_id                  = 0;
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 	}
 
 	/**
@@ -473,13 +481,5 @@ class Live_Reloader extends Hookable implements Hooks_Interface {
 				'permission_callback' => fn(): bool => Avf_User::can_manage(),
 			)
 		);
-	}
-
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
-
-		self::add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
 	}
 }

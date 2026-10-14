@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Twig;
 
 use Exception;
-use Org\Wplake\Advanced_Views\Plugin\Base\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
@@ -21,9 +21,14 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 defined( 'ABSPATH' ) || exit;
 
 class Twig_Renderer extends File_Template_Renderer_Base {
-	// @phpstan-ignore-next-line
+	const ENVIRONMENT_ARGS = array(
+		// will generate exception if a var doesn't exist instead of replace to NULL.
+		'strict_variables' => true,
+		// 'html' by default, just highlight that it's secure to not escape TWIG variable values in PHP
+		'autoescape'       => 'html',
+	);
+
 	private ?FilesystemLoader $filesystem_loader;
-	// @phpstan-ignore-next-line
 	private ?Environment $environment;
 
 	public function __construct( string $templates_folder, Logger $logger, Settings_Storage $settings, WP_Filesystem_Base $wp_filesystem_base ) {
@@ -38,7 +43,6 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 	 * @throws Exception
 	 */
 	protected function render( string $template_name, array $args ): string {
-		// @phpstan-ignore-next-line
 		return $this->get_twig()->render( $template_name . '.' . $this->get_extension(), $args );
 	}
 
@@ -147,19 +151,11 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 		);
 	}
 
-	// @phpstan-ignore-next-line
 	protected function init_twig(): Environment {
-		// @phpstan-ignore-next-line
 		$this->filesystem_loader = new FilesystemLoader( $this->get_templates_folder() );
-		// @phpstan-ignore-next-line
 		$this->environment = new Environment(
 			$this->filesystem_loader,
-			array(
-				// will generate exception if a var doesn't exist instead of replace to NULL.
-				'strict_variables' => true,
-				// 'html' by default, just highlight that it's secure to not escape TWIG variable values in PHP
-				'autoescape'       => 'html',
-			)
+			self::ENVIRONMENT_ARGS
 		);
 
 		// reminder: TwigFunctions automatically escape the output
@@ -198,9 +194,7 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 				continue;
 			}
 
-			// @phpstan-ignore-next-line
 			$this->environment->addFunction(
-			// @phpstan-ignore-next-line
 				new TwigFunction( $function_name, $function_callback, $function_args )
 			);
 		}
@@ -220,9 +214,7 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 				continue;
 			}
 
-			// @phpstan-ignore-next-line
 			$this->environment->addFilter(
-			// @phpstan-ignore-next-line
 				new TwigFilter( $filter_name, $filter_callback, $filter_args )
 			);
 		}
@@ -230,7 +222,6 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 		return $this->environment;
 	}
 
-	// @phpstan-ignore-next-line
 	protected function get_twig(): Environment {
 		if ( null === $this->environment ) {
 			return $this->init_twig();

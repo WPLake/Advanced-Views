@@ -35,16 +35,18 @@ class Engines_Storage implements
 	 */
 	private array $integrations;
 	private Template_Engine $fallback_engine;
+	private string $render_folder;
 
 	/**
 	 * @param Template_Engine[] $engines
 	 */
-	public function __construct( array $engines, Template_Engine $fallback_engine ) {
+	public function __construct( array $engines, Template_Engine $fallback_engine, string $render_folder ) {
 		$this->engines         = array();
 		$this->renderers       = array();
 		$this->token_factories = array();
 		$this->integrations    = array();
 		$this->fallback_engine = $fallback_engine;
+		$this->render_folder  = $render_folder;
 
 		foreach ( $engines as $engine ) {
 			$this->engines[ $engine->get_name() ] = $engine;
@@ -115,7 +117,7 @@ class Engines_Storage implements
 
 	protected function make_renderer( string $name ): ?Template_Renderer {
 		if ( key_exists( $name, $this->engines ) ) {
-			$renderer = $this->engines[ $name ]->create_renderer();
+			$renderer = $this->engines[ $name ]->create_renderer( $this->render_folder );
 
 			// not every renderer is guaranteed to be available (e.g. Blade requires PHP >= 8.2.0).
 			if ( $renderer instanceof File_Template_Renderer_Base &&

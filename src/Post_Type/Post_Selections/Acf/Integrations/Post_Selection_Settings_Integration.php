@@ -1,0 +1,116 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations;
+
+use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
+use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Acf_Integration_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
+use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
+use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
+
+defined( 'ABSPATH' ) || exit;
+
+class Post_Selection_Settings_Integration extends Acf_Integration_Base {
+	use Safe_Array_Arguments;
+
+	private Field_Provider_Cluster $provider_cluster;
+	private Plugin_Cpt $plugin_cpt;
+	private Engines_Storage $engines_storage;
+
+	public function __construct(
+		Selections_Cpt $selection_cpt,
+		Field_Provider_Cluster $provider_cluster,
+		Layouts_Cpt $plugin_cpt,
+		Engines_Storage $engines_storage
+	) {
+		parent::__construct( $selection_cpt->cpt_name() );
+
+		$this->provider_cluster = $provider_cluster;
+		$this->plugin_cpt       = $plugin_cpt;
+		$this->engines_storage  = $engines_storage;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	protected function get_post_status_choices(): array {
+		return get_post_statuses();
+	}
+
+	/**
+	 * @return array<string,callable(): array<string,string>>
+	 */
+	protected function get_choices_callbacks(): array {
+		return array(
+			Post_Selection_Settings::FIELD_ORDER_BY_META_FIELD_GROUP =>
+				fn() => $this->provider_cluster->get_group_choices( true ),
+			Post_Selection_Settings::FIELD_ORDER_BY_META_FIELD_KEY =>
+				fn() => $this->provider_cluster->get_field_choices( true ),
+			Post_Selection_Settings::FIELD_POST_TYPES      =>
+				fn() => $this->get_post_type_choices(),
+			Post_Selection_Settings::FIELD_POST_STATUSES   =>
+				fn() => $this->get_post_status_choices(),
+			Post_Selection_Settings::FIELD_TEMPLATE_ENGINE =>
+				fn() => $this->engines_storage->get_choices(),
+		);
+	}
+
+	protected function set_field_choices(): void {
+		$choices_callbacks = $this->get_choices_callbacks();
+
+		Acf_Utils::bind_field_choices( Post_Selection_Settings::class, $choices_callbacks );
+	}
+
+	/**
+	 * @param array<string,mixed> $field
+	 *
+	 * @return void
+	 */
+	public function print_add_new_view_link( array $field ): void {
+		$type = $this->get_string_arg( 'type', $field );
+
+		// this hook called twice, as our custom field inherits 'select',
+		// so we must skip the first call to avoid printing the link twice.
+		if ( 'av_slug_select' !== $type ) {
+			return;
+		}
+
+		$link = sprintf( '/wp-admin/post-new.php?post_type=%s', Hard_Layout_Cpt::cpt_name() );
+
+		printf(
+			'<a class="acf-views__add-new" target="_blank" href="%s">%s</a>',
+			esc_url( $link ),
+			esc_html(
+				sprintf(
+				// translators: %s is the singular name of the CPT.
+					__( 'Add new %s', 'acf-views' ),
+					$this->plugin_cpt->labels()->singular_name()
+				)
+			)
+		);
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		parent::set_route_hooks( $route_detector );
+
+		if ( false === $route_detector->is_cpt_admin_route(
+			Hard_Post_Selection_Cpt::cpt_name(),
+			Route_Detector::CPT_EDIT
+		) ) {
+			return;
+		}
+
+		$view_field_name = Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_ACF_VIEW_ID );
+
+		self::add_action( 'acf/render_field/name=' . $view_field_name, array( $this, 'print_add_new_view_link' ) );
+	}
+}

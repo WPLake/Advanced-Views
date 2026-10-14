@@ -5,17 +5,11 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core;
 
 use DateTime;
-use Org\Wplake\Advanced_Views\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Repeater_Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -26,17 +20,7 @@ interface Field_Provider {
 
 	public function is_available(): bool;
 
-	public function make_integration_instance(
-		Item_Settings $item_settings,
-		Layout_Settings_Storage $layouts_settings_storage,
-		Field_Provider_Cluster $provider_cluster,
-		Layout_Save_Actions $layouts_cpt_save_actions,
-		Layout_Factory $layout_factory,
-		Repeater_Field_Settings $repeater_field_settings,
-		Layout_Shortcode $layout_shortcode,
-		Settings_Storage $settings,
-		Plugin_Cpt $plugin_cpt
-	): ?Field_Provider_Integration;
+	public function make_integration_instance( Instance_Container $container ): ?Field_Provider_Integration;
 
 	public function get_group_key( string $group_id ): string;
 
@@ -52,6 +36,7 @@ interface Field_Provider {
 	 */
 	public function get_field_choices(
 		array $include_only_types = array(),
+		// todo different response must be separate methods, see ugly Field_Provider_Cluster::get_label_choices workaround.
 		bool $is_meta_format = false,
 		bool $is_field_name_as_label = false
 	): array;
@@ -59,7 +44,11 @@ interface Field_Provider {
 	/**
 	 * @return array<string|int, Field_Meta|string>
 	 */
-	public function get_sub_field_choices( bool $is_meta_format = false, bool $is_field_name_as_label = false ): array;
+	public function get_sub_field_choices(
+		// todo must be separate methods, same as get_field_choices.
+		bool $is_meta_format = false,
+		bool $is_field_name_as_label = false
+	): array;
 
 	/**
 	 * @return array<string, array<int,string|int>>

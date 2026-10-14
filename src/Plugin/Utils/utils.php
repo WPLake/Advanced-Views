@@ -10,11 +10,12 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * @template ItemType
+ * @template ResultType
  *
  * @param array<int|string, ItemType> $items
- * @param callable(ItemType $item, int|string $key):array<int|string, mixed> $mapper
+ * @param callable(ItemType $item, int|string $key):array<int|string, ResultType> $mapper
  *
- * @return mixed[]
+ * @return ResultType[]
  */
 function flat_map( array $items, callable $mapper ): array {
 	$chunks = array();

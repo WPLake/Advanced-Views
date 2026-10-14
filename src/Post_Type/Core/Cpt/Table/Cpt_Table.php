@@ -4,17 +4,14 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Base\Avf_User;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hookable;
-use Org\Wplake\Advanced_Views\Plugin\Base\Hooks_Interface;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use WP_List_Table;
 use WP_Post;
@@ -23,7 +20,7 @@ use WP_Query;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Cpt_Table extends Hookable implements Hooks_Interface {
+abstract class Cpt_Table extends Actor_Base implements Actor {
 	const COLUMN_PREFIX = Hard_Layout_Cpt::NAME . '_';
 
 	private Cpt_Settings_Storage $cpt_settings_storage;
@@ -54,6 +51,38 @@ abstract class Cpt_Table extends Hookable implements Hooks_Interface {
 		$this->current_search_value = null;
 		$this->pagination_per_page  = null;
 	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_filter(
+			sprintf( 'manage_%s_posts_columns', $this->get_cpt_name() ),
+			array( $this, 'get_columns' ),
+		);
+
+		if ( $route_detector->is_cpt_admin_route( $this->cpt_name, Route_Detector::CPT_LIST ) ) {
+			self::add_action( 'admin_init', array( $this, 'make_table_actions' ) );
+			self::add_action( 'admin_notices', array( $this, 'show_action_result_message' ) );
+			self::add_filter( 'admin_body_class', array( $this, 'add_acf_class_to_body' ) );
+			self::add_filter( sprintf( 'views_edit-%s', $this->cpt_name ), array( $this, 'modify_table_header' ) );
+		}
+
+		self::add_action(
+			sprintf( 'manage_%s_posts_custom_column', $this->cpt_name ),
+			array( $this, 'printTableColumn' ),
+			10,
+			2
+		);
+		self::add_action( 'pre_get_posts', array( $this, 'add_post_name_to_search' ) );
+
+		self::add_filter( 'post_row_actions', array( $this, 'get_row_actions' ), 10, 2 );
+		self::add_filter( sprintf( 'bulk_actions-edit-%s', $this->cpt_name ), array( $this, 'get_bulk_table_actions' ) );
+		self::add_filter( 'get_the_excerpt', array( $this, 'hide_excerpt_from_extended_list_view' ), 10, 2 );
+	}
+
+	abstract protected function get_unique_id_prefix(): string;
 
 	abstract protected function print_column( string $short_column_name, Cpt_Settings $cpt_settings ): void;
 
@@ -247,7 +276,7 @@ abstract class Cpt_Table extends Hookable implements Hooks_Interface {
 		$post_type = $wp_query->query_vars['post_type'] ?? '';
 
 		if ( ! is_admin() ||
-			! in_array( $post_type, array( Hard_Layout_Cpt::cpt_name(), Hard_Post_Selection_Cpt::cpt_name() ), true ) ||
+			$this->get_cpt_name() !== $post_type ||
 			! $wp_query->is_main_query() ||
 			! $wp_query->is_search() ) {
 			return;
@@ -260,12 +289,8 @@ abstract class Cpt_Table extends Hookable implements Hooks_Interface {
 			return;
 		}
 
-		$prefix = Hard_Layout_Cpt::cpt_name() === $post_type ?
-			Layout_Settings::UNIQUE_ID_PREFIX :
-			Post_Selection_Settings::UNIQUE_ID_PREFIX;
-
 		$wp_query->set( 's', '' );
-		$wp_query->set( 'name', $prefix . $search );
+		$wp_query->set( 'name', $this->get_unique_id_prefix() . $search );
 	}
 
 	public function make_table_actions(): void {
@@ -560,35 +585,5 @@ abstract class Cpt_Table extends Hookable implements Hooks_Interface {
 
 	public function add_new_tab_callback( callable $new_tab_callback ): void {
 		$this->add_tab_callbacks[] = $new_tab_callback;
-	}
-
-	public function set_hooks( Route_Detector $route_detector ): void {
-		if ( false === $route_detector->is_admin_route() ) {
-			return;
-		}
-
-		self::add_filter(
-			sprintf( 'manage_%s_posts_columns', $this->get_cpt_name() ),
-			array( $this, 'get_columns' ),
-		);
-
-		if ( $route_detector->is_cpt_admin_route( $this->cpt_name, Route_Detector::CPT_LIST ) ) {
-			self::add_action( 'admin_init', array( $this, 'make_table_actions' ) );
-			self::add_action( 'admin_notices', array( $this, 'show_action_result_message' ) );
-			self::add_filter( 'admin_body_class', array( $this, 'add_acf_class_to_body' ) );
-			self::add_filter( sprintf( 'views_edit-%s', $this->cpt_name ), array( $this, 'modify_table_header' ) );
-		}
-
-		self::add_action(
-			sprintf( 'manage_%s_posts_custom_column', $this->cpt_name ),
-			array( $this, 'printTableColumn' ),
-			10,
-			2
-		);
-		self::add_action( 'pre_get_posts', array( $this, 'add_post_name_to_search' ) );
-
-		self::add_filter( 'post_row_actions', array( $this, 'get_row_actions' ), 10, 2 );
-		self::add_filter( sprintf( 'bulk_actions-edit-%s', $this->cpt_name ), array( $this, 'get_bulk_table_actions' ) );
-		self::add_filter( 'get_the_excerpt', array( $this, 'hide_excerpt_from_extended_list_view' ), 10, 2 );
 	}
 }

@@ -6,8 +6,8 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Assets\Resolver\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
 
 abstract class Library_Pattern_Base implements Library_Pattern {
@@ -21,16 +21,14 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 	 * @var array<string, bool>
 	 */
 	private array $css_handles;
-	private Plugin $plugin;
+	private Asset_Resolver $asset_resolver;
 	private string $auto_discover_name;
-	private bool $is_with_web_component;
 
-	public function __construct( Plugin $plugin ) {
-		$this->plugin                = $plugin;
-		$this->js_handles            = array();
-		$this->css_handles           = array();
-		$this->auto_discover_name    = '';
-		$this->is_with_web_component = false;
+	public function __construct( Asset_Resolver $asset_resolver ) {
+		$this->asset_resolver     = $asset_resolver;
+		$this->js_handles         = array();
+		$this->css_handles        = array();
+		$this->auto_discover_name = '';
 	}
 
 	protected function print_code_piece( string $name, string $piece_safe ): void {
@@ -38,17 +36,18 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 		printf( '/* %s : %s (auto-discover-begin) */', esc_html( $this->auto_discover_name ), esc_html( $name ) );
 		echo "\n\n";
 		// @phpcs:ignore WordPress.Security.EscapeOutput
-		echo $piece_safe . "\n\n";
+		echo $piece_safe;
+		echo "\n\n";
 		printf( '/* %s : %s (auto-discover-end) */', esc_html( $this->auto_discover_name ), esc_html( $name ) );
 		echo "\n\n";
 	}
 
 	protected function get_asset_url( string $file ): string {
-		return $this->plugin->get_assets_url( $file );
+		return $this->asset_resolver->get_asset_url( $file );
 	}
 
 	protected function get_asset_path( string $file ): string {
-		return $this->plugin->get_assets_path( $file );
+		return $this->asset_resolver->get_asset_path( $file );
 	}
 
 	protected function print_js_code_piece(
@@ -77,16 +76,14 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 		$this->print_code_piece( $name, $js_code_safe );
 	}
 
-	protected function get_wp_handle( string $handle ): string {
-		return Hard_Layout_Cpt::cpt_name() . '_' . $handle;
+	protected static function get_wp_handle( string $handle ): string {
+		$cpt_name = Hard_Layout_Cpt::cpt_name();
+
+		return sprintf( '%s_%s', $cpt_name, $handle );
 	}
 
-	protected function get_plugin(): Plugin {
-		return $this->plugin;
-	}
-
-	protected function is_with_web_component(): bool {
-		return $this->is_with_web_component;
+	protected function get_asset_resolver(): Asset_Resolver {
+		return $this->asset_resolver;
 	}
 
 	/**
@@ -109,10 +106,6 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 				$this->js_handles[ $js_handle ];
 	}
 
-	protected function set_is_with_web_component( bool $is_with_web_component ): void {
-		$this->is_with_web_component = $is_with_web_component;
-	}
-
 	/**
 	 * @param array<string, bool> $css_handles
 	 */
@@ -125,21 +118,20 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 	}
 
 	public function enqueue_active(): string {
-		foreach ( $this->js_handles as $js_handle => $is_active ) {
-			if ( false === $is_active ) {
-				continue;
-			}
+		$script_args = array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		);
+		$version     = $this->asset_resolver->get_version();
 
-			wp_enqueue_script(
-				$this->get_wp_handle( $js_handle ),
-				$this->get_asset_url( 'js/front/' . $js_handle . '.min.js' ),
-				array(),
-				$this->plugin->get_version(),
-				array(
-					'in_footer' => true,
-					'strategy'  => 'defer',
-				)
-			);
+		foreach ( $this->js_handles as $js_handle => $is_active ) {
+			if ( $is_active ) {
+				$wp_handle   = self::get_wp_handle( $js_handle );
+				$script_file = sprintf( 'js/front/%s.min.js', $js_handle );
+				$script_url  = $this->get_asset_url( $script_file );
+
+				wp_enqueue_script( $wp_handle, $script_url, array(), $version, $script_args );
+			}
 		}
 
 		$css = '';
@@ -147,13 +139,12 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 		$wp_filesystem = WP_Filesystem_Factory::get_wp_filesystem();
 
 		foreach ( $this->css_handles as $css_handle => $is_active ) {
-			if ( ! $is_active ) {
-				continue;
+			if ( $is_active ) {
+				$style_file   = sprintf( 'css/front/%s.min.css', $css_handle );
+				$path_to_file = $this->get_asset_path( $style_file );
+
+				$css .= (string) $wp_filesystem->get_contents( $path_to_file );
 			}
-
-			$path_to_file = $this->get_asset_path( 'css/front/' . $css_handle . '.min.css' );
-
-			$css .= (string) $wp_filesystem->get_contents( $path_to_file );
 		}
 
 		return $css;
