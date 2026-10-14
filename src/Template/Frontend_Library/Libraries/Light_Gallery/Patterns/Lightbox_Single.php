@@ -15,8 +15,8 @@ final class Lightbox_Single implements JS_Pattern, CSS_Pattern {
 	public static function get_inner_wrappers(): array {
 		return array(
 			'div' => array(
-				'data-src'      => Image_Element::FULL_SIZE,
-				'data-sub-html' => Image_Element::CAPTION,
+				'#data-src'      => Image_Element::FULL_SIZE,
+				'#data-sub-html' => Image_Element::CAPTION,
 			),
 		);
 	}
@@ -30,10 +30,6 @@ final class Lightbox_Single implements JS_Pattern, CSS_Pattern {
 			'enableDrag'        => false,
 			'counter'           => false,
 		);
-	}
-
-	public static function get_js_literal_settings(): array {
-		return array();
 	}
 
 	public static function get_js_setup( JS_Variables $variables ): array {

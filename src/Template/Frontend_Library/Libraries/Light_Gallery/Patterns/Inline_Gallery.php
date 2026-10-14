@@ -22,9 +22,9 @@ final class Inline_Gallery implements Template_Pattern, JS_Pattern, CSS_Pattern 
 	public static function get_inner_wrappers(): array {
 		return array(
 			'li' => array(
-				'data-src'      => Image_Element::FULL_SIZE,
-				'data-sub-html' => Image_Element::CAPTION,
-				'data-literal'  => 'test', // fixme
+				// fixme reuse.
+				'#data-src'      => Image_Element::FULL_SIZE,
+				'#data-sub-html' => Image_Element::CAPTION,
 			),
 		);
 	}
@@ -36,13 +36,7 @@ final class Inline_Gallery implements Template_Pattern, JS_Pattern, CSS_Pattern 
 			'enableDrag'        => false,
 			'allowMediaOverlap' => false,
 			'closable'          => false,
-			'plugins'           => array( 'window.lgThumbnail' ),
-		);
-	}
-
-	public static function get_js_literal_settings(): array {
-		return array(
-			'plugins',
+			'#plugins'          => array( 'window.lgThumbnail' ),
 		);
 	}
 

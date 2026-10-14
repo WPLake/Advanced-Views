@@ -21,8 +21,8 @@ final class Lightbox_Multi implements JS_Pattern, CSS_Pattern {
 	public static function get_inner_wrappers(): array {
 		return array(
 			'li' => array(
-				'data-src'      => Image_Element::FULL_SIZE,
-				'data-sub-html' => Image_Element::CAPTION,
+				'#data-src'      => Image_Element::FULL_SIZE,
+				'#data-sub-html' => Image_Element::CAPTION,
 			),
 		);
 	}
@@ -34,13 +34,7 @@ final class Lightbox_Multi implements JS_Pattern, CSS_Pattern {
 			'allowMediaOverlap' => false,
 			'enableDrag'        => false,
 			'counter'           => true,
-			'plugins'           => array( 'window.lgThumbnail' ),
-		);
-	}
-
-	public static function get_js_literal_settings(): array {
-		return array(
-			'plugins',
+			'#plugins'          => array( 'window.lgThumbnail' ),
 		);
 	}
 

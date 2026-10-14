@@ -15,10 +15,5 @@ interface JS_Pattern {
 	/**
 	 * @return string[]
 	 */
-	public static function get_js_literal_settings(): array;
-
-	/**
-	 * @return string[]
-	 */
 	public static function get_js_setup( JS_Variables $variables ): array;
 }
