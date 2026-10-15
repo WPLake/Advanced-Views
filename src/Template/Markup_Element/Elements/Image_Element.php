@@ -6,10 +6,9 @@ namespace Org\Wplake\Advanced_Views\Template\Markup_Element\Elements;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Markup_Element_Base;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Markup_Element;
 
-final class Image_Element extends Markup_Element_Base {
-	const KIND      = 'image';
+final class Image_Element extends Markup_Element {
 	const FULL_SIZE = 'full_size';
 	const CAPTION   = 'caption';
 

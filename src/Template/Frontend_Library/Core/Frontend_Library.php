@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core;
 
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Markup_Element;
+
 defined( 'ABSPATH' ) || exit;
 
 interface Frontend_Library {
@@ -14,9 +16,7 @@ interface Frontend_Library {
 	public static function get_docs_url(): string;
 
 	/**
-	 * [ Markup_Element_Base::KIND => [patterns] ]
-	 *
-	 * @return array<string, class-string<Frontend_Pattern>[]>
+	 * @return array<class-string<Markup_Element>, class-string<Frontend_Pattern>[]>
 	 */
 	public static function get_patterns(): array;
 }

@@ -31,10 +31,10 @@ final class Light_Gallery_Library implements Frontend_Library, CSS_Library, JS_L
 
 	public static function get_patterns(): array {
 		return array(
-			Image_Element::KIND   => array(
+			Image_Element::class   => array(
 				Lightbox_Single::class,
 			),
-			Gallery_Element::KIND => array(
+			Gallery_Element::class => array(
 				Inline_Gallery::class,
 				Lightbox_Multi::class,
 			),

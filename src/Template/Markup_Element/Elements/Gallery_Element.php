@@ -6,8 +6,8 @@ namespace Org\Wplake\Advanced_Views\Template\Markup_Element\Elements;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Markup_Element_Base;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Markup_Element;
 
-final class Gallery_Element extends Markup_Element_Base {
-	const KIND = 'gallery';
+final class Gallery_Element extends Markup_Element {
+
 }
