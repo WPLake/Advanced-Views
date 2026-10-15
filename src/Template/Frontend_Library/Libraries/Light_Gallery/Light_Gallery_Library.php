@@ -9,7 +9,8 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\CSS_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\File_Context;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\JS_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Inline_Gallery;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Lightbox_Multi;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Lightbox_Single;
@@ -59,7 +60,7 @@ final class Light_Gallery_Library implements Frontend_Library, CSS_Library, JS_L
 		);
 	}
 
-	public static function get_js_files(): array {
+	public static function get_js_files( File_Context $context ): array {
 		return array(
 			'lightgallery',
 			'lg-thumbnail',

@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -13,5 +13,5 @@ interface JS_Library {
 	 *
 	 * @return string[]
 	 */
-	public static function get_js_files(): array;
+	public static function get_js_files( File_Context $context ): array;
 }
