@@ -33,7 +33,10 @@ final class Lightbox_Single implements Frontend_Pattern, Template_Pattern, JS_Pa
 
 	public static function get_inner_wrappers(): array {
 		return array(
-			'div' => self::DATA_PROPERTIES,
+			array(
+				'tag'   => 'div',
+				'attrs' => self::DATA_PROPERTIES,
+			),
 		);
 	}
 

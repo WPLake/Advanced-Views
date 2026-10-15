@@ -23,13 +23,13 @@ final class Masonry_Pattern implements Frontend_Pattern, Template_Pattern, JS_Pa
 
 	public static function get_outer_wrappers(): array {
 		return array(
-			'ul' => array(),
+			array( 'tag' => 'ul' ),
 		);
 	}
 
 	public static function get_inner_wrappers(): array {
 		return array(
-			'li' => array(),
+			array( 'tag' => 'li' ),
 		);
 	}
 

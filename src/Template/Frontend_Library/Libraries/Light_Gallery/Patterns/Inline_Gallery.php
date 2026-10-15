@@ -23,13 +23,16 @@ final class Inline_Gallery implements Frontend_Pattern, Template_Pattern, JS_Pat
 
 	public static function get_outer_wrappers(): array {
 		return array(
-			'ul' => array(),
+			array( 'tag' => 'ul' ),
 		);
 	}
 
 	public static function get_inner_wrappers(): array {
 		return array(
-			'li' => Lightbox_Single::DATA_PROPERTIES,
+			array(
+				'tag'   => 'li',
+				'attrs' => Lightbox_Single::DATA_PROPERTIES,
+			),
 		);
 	}
 

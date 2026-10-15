@@ -8,20 +8,20 @@ defined( 'ABSPATH' ) || exit;
 
 interface Template_Pattern {
 	/**
-	 * [ tag => [attributeName => value] ]
+	 * [ [tag => string, attrs? => [attributeName => value]] ]
 	 * Flat items present the nested structure, so the first one is the top parent.
 	 * Hash prefix in #attributeName means dynamic Markup_Element property.
 	 *
-	 * @return array<string, array<string,string>>
+	 * @return array<int, array{tag:string,attrs?:array<string,string>}>
 	 */
 	public static function get_outer_wrappers(): array;
 
 	/**
-	 * [ tag => [attributeName => value] ]
+	 * [ [tag => string, attrs? => [attributeName => value]] ]
 	 * Flat items present the nested structure, so the first one is the top parent.
 	 * Hash prefix in #attributeName means dynamic Markup_Element property.
 	 *
-	 * @return array<string, array<string,string>>
+	 * @return array<int, array{tag:string,attrs?:array<string,string>}>
 	 */
 	public static function get_inner_wrappers(): array;
 
