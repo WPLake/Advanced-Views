@@ -54,7 +54,7 @@ final class Inline_Gallery implements Frontend_Pattern, Template_Pattern, JS_Pat
 			'container.classList.add("_lg-inline")',
 			'',
 			sprintf(
-				'%s.container = container',
+				'%s = {...%1$s, container: container}',
 				esc_html( $variables->options ),
 			),
 			sprintf(
