@@ -2,15 +2,16 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Macy;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Macy_Masonry;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Macy_Masonry\Patterns\Masonry_Pattern;
 use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Gallery_Element;
 
-final class Macy_Library implements Frontend_Library, JS_Library {
+final class Macy_Masonry_Library implements Frontend_Library, JS_Library {
 	public static function get_id(): string {
 		return 'macy';
 	}
@@ -26,7 +27,7 @@ final class Macy_Library implements Frontend_Library, JS_Library {
 	public static function get_patterns(): array {
 		return array(
 			Gallery_Element::class => array(
-				Macy_Pattern::class,
+				Masonry_Pattern::class,
 			),
 		);
 	}
