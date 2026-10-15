@@ -205,7 +205,7 @@ Advanced Views lets you display fields from almost any WordPress data source:
 
 == Changelog ==
 
-= 3.9.7 (2026-09) =
+= 3.9.7 (2026-10-15) =
 - Feature: Elementor integration (Layout & Selection integration widgets)
 - Feature adoption: Post Selection - Meta filters (static values only)
 - Security enhancement: Layout - escape comment content field by default
