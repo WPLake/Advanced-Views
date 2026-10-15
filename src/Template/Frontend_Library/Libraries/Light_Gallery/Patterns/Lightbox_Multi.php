@@ -29,7 +29,7 @@ final class Lightbox_Multi implements Frontend_Pattern, Template_Pattern, JS_Pat
 		return Inline_Gallery::get_inner_wrappers();
 	}
 
-	public static function get_element_attributes(): array {
+	public static function get_item_attributes(): array {
 		return array();
 	}
 

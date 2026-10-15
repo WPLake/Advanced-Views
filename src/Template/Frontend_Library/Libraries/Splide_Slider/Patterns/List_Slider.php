@@ -47,7 +47,7 @@ final class List_Slider implements Frontend_Pattern, Template_Pattern, JS_Patter
 		);
 	}
 
-	public static function get_element_attributes(): array {
+	public static function get_item_attributes(): array {
 		return array();
 	}
 

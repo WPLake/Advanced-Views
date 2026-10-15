@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 interface Template_Pattern {
 	/**
 	 * [ [tag => string, attrs? => [attributeName => value]] ]
+	 *
 	 * Flat items present the nested structure, so the first one is the top parent.
 	 * Hash prefix in #attributeName means dynamic Markup_Element property.
 	 *
@@ -18,6 +19,7 @@ interface Template_Pattern {
 
 	/**
 	 * [ [tag => string, attrs? => [attributeName => value]] ]
+	 *
 	 * Flat items present the nested structure, so the first one is the top parent.
 	 * Hash prefix in #attributeName means dynamic Markup_Element property.
 	 *
@@ -27,9 +29,14 @@ interface Template_Pattern {
 
 	/**
 	 * [ attributeName => value ]
-	 * Hash prefix in #attributeName means dynamic Markup_Element property.
+	 *
+	 * Applied to the end item: the element itself, or every item when the element is a list.
+	 * A composite item (e.g. a row) takes them on its own root element.
+	 *
+	 * Hash prefix in #attributeName means dynamic property of the item's Markup_Element, so a pattern using it
+	 * must be attached to an element whose items have that property (e.g. Gallery_Element, not any List_Element).
 	 *
 	 * @return  array<string,string>
 	 */
-	public static function get_element_attributes(): array;
+	public static function get_item_attributes(): array;
 }

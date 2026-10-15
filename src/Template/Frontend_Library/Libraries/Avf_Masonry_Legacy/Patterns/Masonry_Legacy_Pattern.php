@@ -28,8 +28,8 @@ final class Masonry_Legacy_Pattern implements Frontend_Pattern, Template_Pattern
 		return Masonry_Pattern::get_inner_wrappers();
 	}
 
-	public static function get_element_attributes(): array {
-		return Masonry_Pattern::get_element_attributes();
+	public static function get_item_attributes(): array {
+		return Masonry_Pattern::get_item_attributes();
 	}
 
 	public static function get_css_rules(): array {

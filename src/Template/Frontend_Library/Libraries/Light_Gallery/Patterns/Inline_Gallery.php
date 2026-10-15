@@ -36,7 +36,7 @@ final class Inline_Gallery implements Frontend_Pattern, Template_Pattern, JS_Pat
 		);
 	}
 
-	public static function get_element_attributes(): array {
+	public static function get_item_attributes(): array {
 		return array();
 	}
 
