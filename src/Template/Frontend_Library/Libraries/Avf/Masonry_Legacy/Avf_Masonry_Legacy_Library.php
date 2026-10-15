@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf_Masonry_Legacy;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Masonry_Legacy;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Instance_Context;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Meta_JS_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf_Masonry_Legacy\Patterns\Masonry_Legacy_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Masonry_Legacy\Patterns\Masonry_Legacy_Pattern;
 use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\List_Element;
 
 final class Avf_Masonry_Legacy_Library implements Frontend_Library, Meta_JS_Library {

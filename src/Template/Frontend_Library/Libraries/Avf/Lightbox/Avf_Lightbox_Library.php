@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf_Lightbox;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Lightbox;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -11,8 +11,8 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\CSS_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Instance_Context;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Meta_JS_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf_Lightbox\Patterns\Gallery_Lightbox;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf_Lightbox\Patterns\Image_Lightbox;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Lightbox\Patterns\Gallery_Lightbox;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Lightbox\Patterns\Image_Lightbox;
 use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Gallery_Element;
 use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Image_Element;
 

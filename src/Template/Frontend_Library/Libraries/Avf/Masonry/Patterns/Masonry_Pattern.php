@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf_Masonry\Patterns;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Masonry\Patterns;
 
 defined( 'ABSPATH' ) || exit;
 

@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf_Masonry;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Masonry;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf_Masonry\Patterns\Masonry_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Masonry\Patterns\Masonry_Pattern;
 use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\List_Element;
 
 final class Avf_Masonry_Library implements Frontend_Library, JS_Library {
