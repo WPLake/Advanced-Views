@@ -50,14 +50,10 @@ final class Avf_Lightbox_Library implements Frontend_Library, CSS_Library, Meta_
 		return array();
 	}
 
-	public static function get_js_file_names(): array {
+	public static function get_js_files(): array {
 		return array(
 			'acf-views-lightbox',
 		);
-	}
-
-	public static function get_js_extension_urls(): array {
-		return array();
 	}
 
 	public static function get_js_instance_meta( Instance_Context $context ): array {

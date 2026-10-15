@@ -59,14 +59,10 @@ final class Light_Gallery_Library implements Frontend_Library, CSS_Library, JS_L
 		);
 	}
 
-	public static function get_js_file_names(): array {
+	public static function get_js_files(): array {
 		return array(
 			'lightgallery',
 			'lg-thumbnail',
 		);
-	}
-
-	public static function get_js_extension_urls(): array {
-		return array();
 	}
 }

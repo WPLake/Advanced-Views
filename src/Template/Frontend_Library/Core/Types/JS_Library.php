@@ -8,14 +8,10 @@ defined( 'ABSPATH' ) || exit;
 
 interface JS_Library {
 	/**
-	 * @return string[] without extension
-	 */
-	public static function get_js_file_names(): array;
-
-	/**
-	 * External script urls to be enqueued after the library JS (.e.g. google maps script)
+	 * Each item is either a file name without extension, or an external url.
+	 * The enqueue order must be preserved.
 	 *
 	 * @return string[]
 	 */
-	public static function get_js_extension_urls(): array;
+	public static function get_js_files(): array;
 }

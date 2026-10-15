@@ -46,13 +46,9 @@ final class Splide_Slider_Library implements Frontend_Library, CSS_Library, JS_L
 		return array();
 	}
 
-	public static function get_js_file_names(): array {
+	public static function get_js_files(): array {
 		return array(
 			'splide',
 		);
-	}
-
-	public static function get_js_extension_urls(): array {
-		return array();
 	}
 }

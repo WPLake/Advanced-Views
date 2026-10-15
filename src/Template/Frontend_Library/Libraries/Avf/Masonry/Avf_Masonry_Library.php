@@ -32,13 +32,9 @@ final class Avf_Masonry_Library implements Frontend_Library, JS_Library {
 		);
 	}
 
-	public static function get_js_file_names(): array {
+	public static function get_js_files(): array {
 		return array(
 			'acf-views-masonry',
 		);
-	}
-
-	public static function get_js_extension_urls(): array {
-		return array();
 	}
 }

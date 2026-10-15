@@ -33,14 +33,10 @@ final class Avf_Masonry_Legacy_Library implements Frontend_Library, Meta_JS_Libr
 		);
 	}
 
-	public static function get_js_file_names(): array {
+	public static function get_js_files(): array {
 		return array(
 			'acf-views-masonry-legacy',
 		);
-	}
-
-	public static function get_js_extension_urls(): array {
-		return array();
 	}
 
 	public static function get_js_instance_meta( Instance_Context $context ): array {
