@@ -14,7 +14,7 @@ interface JS_Pattern {
 	 *
 	 * @return array<string, mixed>
 	 */
-	public static function get_js_settings(): array;
+	public static function get_js_options(): array;
 
 	/**
 	 * @return string[] code lines

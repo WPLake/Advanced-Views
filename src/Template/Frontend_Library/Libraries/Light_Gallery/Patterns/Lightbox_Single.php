@@ -27,6 +27,10 @@ final class Lightbox_Single implements Frontend_Pattern, Template_Pattern, JS_Pa
 		return __( 'Lightbox', 'acf-views' );
 	}
 
+	public static function get_outer_wrappers(): array {
+		return array();
+	}
+
 	public static function get_inner_wrappers(): array {
 		return array(
 			'div' => self::DATA_PROPERTIES,
@@ -37,11 +41,7 @@ final class Lightbox_Single implements Frontend_Pattern, Template_Pattern, JS_Pa
 		return array();
 	}
 
-	public static function get_outer_wrappers(): array {
-		return array();
-	}
-
-	public static function get_js_settings(): array {
+	public static function get_js_options(): array {
 		return array(
 			'selector'          => 'this',
 			'closeOnTap'        => true,
@@ -56,8 +56,8 @@ final class Lightbox_Single implements Frontend_Pattern, Template_Pattern, JS_Pa
 		return array(
 			sprintf(
 				'new lightGallery(%s, %s)',
-				esc_html( $variables->field ),
-				esc_html( $variables->settings )
+				esc_html( $variables->inner_wrapper ),
+				esc_html( $variables->options )
 			),
 		);
 	}

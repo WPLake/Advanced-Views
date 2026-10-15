@@ -33,13 +33,13 @@ final class Lightbox_Multi implements Frontend_Pattern, Template_Pattern, JS_Pat
 		return array();
 	}
 
-	public static function get_js_settings(): array {
+	public static function get_js_options(): array {
 		return array_merge(
 			array(
 				'counter'  => true,
 				'#plugins' => array( 'window.lgThumbnail' ),
 			),
-			Lightbox_Single::get_js_settings(),
+			Lightbox_Single::get_js_options(),
 		);
 	}
 

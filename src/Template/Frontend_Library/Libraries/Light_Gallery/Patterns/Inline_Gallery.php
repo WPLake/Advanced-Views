@@ -37,7 +37,7 @@ final class Inline_Gallery implements Frontend_Pattern, Template_Pattern, JS_Pat
 		return array();
 	}
 
-	public static function get_js_settings(): array {
+	public static function get_js_options(): array {
 		return array(
 			'showMaximizeIcon'  => true,
 			'download'          => true,
@@ -51,15 +51,21 @@ final class Inline_Gallery implements Frontend_Pattern, Template_Pattern, JS_Pat
 	public static function get_js_setup( JS_Variables $variables ): array {
 		return array(
 			'let container = document.createElement("div")',
-			'container.classList.add("_lg-inline");',
+			'container.classList.add("_lg-inline")',
+			'',
 			sprintf(
-				'%s.parentElement.insertBefore(container, %1$s);',
-				esc_html( $variables->field ),
+				'%s.container = container',
+				esc_html( $variables->options ),
 			),
 			sprintf(
+				'%s.parentElement.insertBefore(container, %1$s)',
+				esc_html( $variables->outer_wrapper ),
+			),
+			'',
+			sprintf(
 				'new lightGallery(%s, %s).openGallery()',
-				esc_html( $variables->field ),
-				esc_html( $variables->settings )
+				esc_html( $variables->outer_wrapper ),
+				esc_html( $variables->options )
 			),
 		);
 	}
