@@ -6,7 +6,9 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS
 
 defined( 'ABSPATH' ) || exit;
 
-interface Meta_JS_Library {
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS_Library;
+
+interface Meta_JS_Library extends JS_Library {
 	/**
 	 * Meta of one library instance, collected per every place where the library is used.
 	 *
