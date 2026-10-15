@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\File_Context;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\JS_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Macy_Masonry\Patterns\Masonry_Pattern;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Gallery_Element;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Media\Gallery_Element;
 
 final class Macy_Masonry_Library implements Frontend_Library, JS_Library {
 	public static function get_id(): string {

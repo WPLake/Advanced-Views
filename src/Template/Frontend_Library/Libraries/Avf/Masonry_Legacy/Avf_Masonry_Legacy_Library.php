@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Insta
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\File_Context;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Meta_JS_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Masonry_Legacy\Patterns\Masonry_Legacy_Pattern;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\List_Element;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\List_Element;
 
 final class Avf_Masonry_Legacy_Library implements Frontend_Library, Meta_JS_Library {
 	public static function get_id(): string {

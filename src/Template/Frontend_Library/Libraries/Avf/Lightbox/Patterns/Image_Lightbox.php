@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Image_Element;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Media\Image_Element;
 
 final class Image_Lightbox implements Frontend_Pattern, Template_Pattern, CSS_Pattern {
 	public static function get_id(): string {

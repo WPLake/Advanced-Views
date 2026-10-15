@@ -9,8 +9,8 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Map_Element;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Map_Marker_Element;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Map\Map_Element;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Map\Map_Marker_Element;
 
 final class Map_Pattern implements Frontend_Pattern, Template_Pattern, CSS_Pattern {
 	public static function get_id(): string {

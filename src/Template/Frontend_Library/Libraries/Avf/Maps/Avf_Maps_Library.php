@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\File_Conte
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Instance_Context;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Meta_JS_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Maps\Patterns\Map_Pattern;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Map_Element;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Map\Map_Element;
 
 final class Avf_Maps_Library implements Frontend_Library, Meta_JS_Library {
 	public static function get_id(): string {

@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\File_Conte
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\JS_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Splide_Slider\Patterns\Div_Slider;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Splide_Slider\Patterns\List_Slider;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\List_Element;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\List_Element;
 
 final class Splide_Slider_Library implements Frontend_Library, CSS_Library, JS_Library {
 	public static function get_id(): string {

@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Markup_Element\Elements;
+namespace Org\Wplake\Advanced_Views\Template\Markup_Element\Media;
 
 defined( 'ABSPATH' ) || exit;
 

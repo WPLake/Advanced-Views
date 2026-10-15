@@ -14,8 +14,8 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\JS_Library
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Inline_Gallery;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Lightbox_Multi;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Lightbox_Single;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Gallery_Element;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Image_Element;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Media\Gallery_Element;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Media\Image_Element;
 
 final class Light_Gallery_Library implements Frontend_Library, CSS_Library, JS_Library {
 	public static function get_id(): string {

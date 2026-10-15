@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Patter
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Image_Element;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Media\Image_Element;
 
 defined( 'ABSPATH' ) || exit;
 

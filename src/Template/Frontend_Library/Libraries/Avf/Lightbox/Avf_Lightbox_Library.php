@@ -14,8 +14,8 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Insta
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Meta_JS_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Lightbox\Patterns\Gallery_Lightbox;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Lightbox\Patterns\Image_Lightbox;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Gallery_Element;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Elements\Image_Element;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Media\Gallery_Element;
+use Org\Wplake\Advanced_Views\Template\Markup_Element\Media\Image_Element;
 
 final class Avf_Lightbox_Library implements Frontend_Library, CSS_Library, Meta_JS_Library {
 	public static function get_id(): string {
