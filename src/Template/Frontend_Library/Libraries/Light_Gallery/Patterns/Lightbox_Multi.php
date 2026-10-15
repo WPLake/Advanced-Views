@@ -34,17 +34,24 @@ final class Lightbox_Multi implements Frontend_Pattern, Template_Pattern, JS_Pat
 	}
 
 	public static function get_js_options(): array {
-		return array_merge(
-			array(
-				'counter'  => true,
-				'#plugins' => array( 'window.lgThumbnail' ),
-			),
-			Lightbox_Single::get_js_options(),
+		return array(
+			'closeOnTap'        => true,
+			'download'          => false,
+			'allowMediaOverlap' => false,
+			'enableDrag'        => false,
+			'counter'           => true,
+			'#plugins'          => array( 'window.lgThumbnail' ),
 		);
 	}
 
 	public static function get_js_setup( JS_Variables $variables ): array {
-		return Lightbox_Single::get_js_setup( $variables );
+		return array(
+			sprintf(
+				'new lightGallery(%s, %s)',
+				esc_html( $variables->outer_wrapper ),
+				esc_html( $variables->options )
+			),
+		);
 	}
 
 	public static function get_css_rules(): array {
