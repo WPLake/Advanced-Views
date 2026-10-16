@@ -238,14 +238,14 @@ class Live_Reloader extends Actor_Base implements Actor {
 
 		$response = array();
 
-		foreach ( $items as $markup_element_id => $item_data ) {
+		foreach ( $items as $item_id => $item_data ) {
 			if ( false === is_array( $item_data ) ) {
 				continue;
 			}
 
 			$parent_card_id = sanitize_text_field( $this->get_string_arg( 'parent_card_id', $item_data ) );
 
-			$markup_element_id = sanitize_text_field( (string) $markup_element_id );
+			$item_id = sanitize_text_field( (string) $item_id );
 			$unique_id         = sanitize_text_field( $this->get_string_arg( 'unique_id', $item_data ) );
 			/**
 			 * @var array<string,string> $code_hashes
@@ -282,7 +282,7 @@ class Live_Reloader extends Actor_Base implements Actor {
 			// we don't need to update Html if it's an item inside a Card.
 			$is_assets_only = '' !== $parent_card_id;
 
-			$response[ $markup_element_id ] = $this->get_item_response_arguments(
+			$response[ $item_id ] = $this->get_item_response_arguments(
 				$cpt_data,
 				$shortcode_arguments,
 				$code_hashes,
@@ -359,12 +359,12 @@ class Live_Reloader extends Actor_Base implements Actor {
 
 		$response = array();
 
-		foreach ( $items as $markup_element_id => $item_data ) {
+		foreach ( $items as $item_id => $item_data ) {
 			if ( false === is_array( $item_data ) ) {
 				continue;
 			}
 
-			$markup_element_id = sanitize_text_field( (string) $markup_element_id );
+			$item_id = sanitize_text_field( (string) $item_id );
 			$unique_id         = sanitize_text_field( $this->get_string_arg( 'unique_id', $item_data ) );
 
 			if ( ! in_array( $unique_id, $card_ids_on_top_level_to_refresh, true ) ) {
@@ -396,7 +396,7 @@ class Live_Reloader extends Actor_Base implements Actor {
 				return array();
 			}
 
-			$response[ $markup_element_id ] = $this->get_item_response_arguments(
+			$response[ $item_id ] = $this->get_item_response_arguments(
 				$card_data,
 				$shortcode_arguments,
 				$code_hashes,

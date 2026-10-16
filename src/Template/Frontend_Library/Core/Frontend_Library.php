@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core;
 
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Markup_Element;
+use Org\Wplake\Advanced_Views\Field_Value\Core\Field_Value;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -16,7 +16,7 @@ interface Frontend_Library {
 	public static function get_docs_url(): string;
 
 	/**
-	 * @return array<class-string<Markup_Element>, class-string<Frontend_Pattern>[]>
+	 * @return array<class-string<Field_Value>, class-string<Frontend_Pattern>[]>
 	 */
 	public static function get_patterns(): array;
 }

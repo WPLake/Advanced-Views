@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Media\Image_Element;
+use Org\Wplake\Advanced_Views\Field_Value\Core\Media\Image_Value;
 
 final class Image_Lightbox implements Frontend_Pattern, Template_Pattern, CSS_Pattern {
 	public static function get_id(): string {
@@ -32,7 +32,7 @@ final class Image_Lightbox implements Frontend_Pattern, Template_Pattern, CSS_Pa
 
 	public static function get_item_attributes(): array {
 		return array(
-			'#data-full-size' => Image_Element::FULL_SIZE,
+			'#data-full-size' => Image_Value::FULL_SIZE,
 		);
 	}
 

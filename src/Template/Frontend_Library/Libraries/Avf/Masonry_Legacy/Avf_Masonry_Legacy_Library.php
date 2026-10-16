@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Insta
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\File_Context;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Meta_JS_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Masonry_Legacy\Patterns\Masonry_Legacy_Pattern;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Media\Gallery_Element;
+use Org\Wplake\Advanced_Views\Field_Value\Core\Media\Gallery_Value;
 
 final class Avf_Masonry_Legacy_Library implements Frontend_Library, Meta_JS_Library {
 	public static function get_id(): string {
@@ -28,7 +28,7 @@ final class Avf_Masonry_Legacy_Library implements Frontend_Library, Meta_JS_Libr
 
 	public static function get_patterns(): array {
 		return array(
-			Gallery_Element::class => array(
+			Gallery_Value::class => array(
 				Masonry_Legacy_Pattern::class,
 			),
 		);

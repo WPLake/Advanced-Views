@@ -9,8 +9,8 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Map\Map_Element;
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Map\Map_Marker_Element;
+use Org\Wplake\Advanced_Views\Field_Value\Core\Map\Map_Value;
+use Org\Wplake\Advanced_Views\Field_Value\Core\Map\Map_Marker_Value;
 
 final class Map_Pattern implements Frontend_Pattern, Template_Pattern, CSS_Pattern {
 	public static function get_id(): string {
@@ -26,9 +26,9 @@ final class Map_Pattern implements Frontend_Pattern, Template_Pattern, CSS_Patte
 			array(
 				'tag'   => 'div',
 				'attrs' => array(
-					'#data-zoom'       => Map_Element::ZOOM,
-					'#data-center-lat' => Map_Element::CENTER_LAT,
-					'#data-center-lng' => Map_Element::CENTER_LNG,
+					'#data-zoom'       => Map_Value::ZOOM,
+					'#data-center-lat' => Map_Value::CENTER_LAT,
+					'#data-center-lng' => Map_Value::CENTER_LNG,
 				),
 			),
 		);
@@ -39,10 +39,10 @@ final class Map_Pattern implements Frontend_Pattern, Template_Pattern, CSS_Patte
 			array(
 				'tag'   => 'div',
 				'attrs' => array(
-					'#data-lat'   => Map_Marker_Element::LAT,
-					'#data-lng'   => Map_Marker_Element::LNG,
-					'#data-icon'  => Map_Marker_Element::ICON,
-					'#data-title' => Map_Marker_Element::TITLE,
+					'#data-lat'   => Map_Marker_Value::LAT,
+					'#data-lng'   => Map_Marker_Value::LNG,
+					'#data-icon'  => Map_Marker_Value::ICON,
+					'#data-title' => Map_Marker_Value::TITLE,
 				),
 			),
 		);

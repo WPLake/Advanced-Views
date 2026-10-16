@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Markup_Element\Pagination;
+namespace Org\Wplake\Advanced_Views\Field_Value\Core\Pagination;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Markup_Element\Markup_Element;
+use Org\Wplake\Advanced_Views\Field_Value\Core\Field_Value;
 
-abstract class Pagination_Page_Element implements Markup_Element {
+abstract class Pagination_Page_Value implements Field_Value {
 	const PAGE_NUMBER = 'page_number';
 
 	abstract public function get_page_number(): string;

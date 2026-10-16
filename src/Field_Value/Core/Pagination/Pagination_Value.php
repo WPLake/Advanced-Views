@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Markup_Element\Pagination;
+namespace Org\Wplake\Advanced_Views\Field_Value\Core\Pagination;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Markup_Element\List_Element;
+use Org\Wplake\Advanced_Views\Field_Value\Core\List_Value;
 
-abstract class Pagination_Element extends List_Element {
+abstract class Pagination_Value extends List_Value {
 	const TYPE         = 'type';
 	const PAGES_AMOUNT = 'pages_amount';
 	const CARD_ID      = 'card_id';
@@ -16,7 +16,7 @@ abstract class Pagination_Element extends List_Element {
 	/**
 	 * Only the page numbers type has items, the other types return an empty array.
 	 *
-	 * @return Pagination_Page_Element[]
+	 * @return Pagination_Page_Value[]
 	 */
 	abstract public function get_items(): array;
 
