@@ -7,6 +7,7 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Pagi
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\File_Context;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Instance_Context;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Meta_JS_Library;
@@ -58,7 +59,7 @@ class Pagination_Library implements Frontend_Library, Meta_JS_Library {
 	}
 
 	/**
-	 * @return class-string<\Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern>[]
+	 * @return class-string<Frontend_Pattern>[]
 	 */
 	protected static function get_pagination_patterns(): array {
 		return array(
