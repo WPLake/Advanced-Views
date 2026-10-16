@@ -25,6 +25,7 @@ final class Page_Numbers_Pattern implements Frontend_Pattern, Template_Pattern {
 			array(
 				'tag'   => 'div',
 				'attrs' => array(
+					'class'                 => 'avf-pagination',
 					'#data-pagination-type' => Pagination_Element::TYPE,
 					'#data-pages-amount'    => Pagination_Element::PAGES_AMOUNT,
 					'#data-card-id'         => Pagination_Element::CARD_ID,
@@ -39,6 +40,7 @@ final class Page_Numbers_Pattern implements Frontend_Pattern, Template_Pattern {
 
 	public static function get_item_attributes(): array {
 		return array(
+			'class'             => 'avf-pagination__page',
 			'#data-page-number' => Pagination_Page_Element::PAGE_NUMBER,
 		);
 	}
