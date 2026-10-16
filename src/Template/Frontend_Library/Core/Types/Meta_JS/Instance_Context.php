@@ -9,6 +9,12 @@ defined( 'ABSPATH' ) || exit;
 interface Instance_Context {
 	public function get_bem_name(): string;
 
+	public function get_component_selector(): string;
+
+	public function get_load_more_ajax_url(): string;
+
+	public function get_load_more_ajax_action(): string;
+
 	public function get_masonry_row_min_height(): int;
 
 	public function get_masonry_gutter(): int;
