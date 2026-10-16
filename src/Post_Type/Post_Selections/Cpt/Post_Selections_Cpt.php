@@ -4,10 +4,13 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt;
 
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Selection_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 
 defined( 'ABSPATH' ) || exit;
@@ -15,11 +18,17 @@ defined( 'ABSPATH' ) || exit;
 class Post_Selections_Cpt extends Cpt {
 
 	private Selection_Settings_Storage $post_selections_settings_storage;
+	private Post_Selection_Factory $post_selection_factory;
 
-	public function __construct( Selections_Cpt $plugin_cpt, Selection_Settings_Storage $post_selections_settings_storage ) {
+	public function __construct(
+		Selections_Cpt $plugin_cpt,
+		Selection_Settings_Storage $post_selections_settings_storage,
+		Post_Selection_Factory $post_selection_factory
+	) {
 		parent::__construct( $plugin_cpt, $post_selections_settings_storage );
 
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
+		$this->post_selection_factory           = $post_selection_factory;
 	}
 
 	protected function get_cards_data_storage(): Selection_Settings_Storage {
@@ -50,6 +59,68 @@ class Post_Selections_Cpt extends Cpt {
 		);
 
 		$this->register_cpt( $cpt_args );
+	}
+
+	public function load_more_ajax(): void {
+		$response = array(
+			'error' => '',
+			'html'  => '',
+		);
+
+		// string, as unique_id is expected (or int for back compatibility).
+		$card_id     = Query_Arguments::get_string_for_non_action( '_acfCardId', 'post' );
+		$page_number = Query_Arguments::get_int_for_non_action( '_pageNumber', 'post' );
+
+		if ( '0' === $card_id ||
+			0 === $page_number ) {
+			$response['error'] .= __( 'Request is wrong, required fields are missing.', 'acf-views' );
+			echo wp_json_encode( $response );
+
+			exit;
+		}
+
+		// can be post id for back compatibility
+		// type and post_status will be verified in this call.
+		$card_unique_id = $this->get_cards_data_storage()->get_unique_id_from_shortcode_id( $card_id, $this->get_cpt_name() );
+
+		if ( '' === $card_unique_id ) {
+			$response['error'] .= __( 'Request is wrong, Selection is missing.', 'acf-views' );
+			echo wp_json_encode( $response );
+
+			exit;
+		}
+
+		$card_data = $this->get_cards_data_storage()->get( $card_unique_id );
+
+		if ( ! $card_data->is_with_pagination ) {
+			$response['error'] .= __( 'Request is wrong, Selection is unavailable.', 'acf-views' );
+			echo wp_json_encode( $response );
+
+			exit;
+		}
+
+		$query_context = Query_Context::new_instance()
+			->set_page_number( $page_number );
+
+		ob_start();
+		$this->post_selection_factory->make_and_print_html(
+			$card_data,
+			$query_context,
+			true
+		);
+		$response['html'] = (string) ob_get_clean();
+
+		echo wp_json_encode( $response );
+
+		exit;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		parent::set_route_hooks( $route_detector );
+
+		// do not use $isAdmin, because they're ajax hooks and both to the wp-admin, even the 'nopriv' one.
+		self::add_action( 'wp_ajax_nopriv_' . $this->get_cpt_name(), array( $this, 'load_more_ajax' ) );
+		self::add_action( 'wp_ajax_' . $this->get_cpt_name(), array( $this, 'load_more_ajax' ) );
 	}
 
 	/**
