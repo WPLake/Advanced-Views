@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappe
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
@@ -53,7 +54,7 @@ final class Label_Printer {
 			->tab( ++$tabs_number );
 
 		$token_factory->variable( $field_id )
-							->add_item_path( 'label' )
+							->add_item_path( Markup_Field_Base::LABEL )
 							->display();
 
 		$token_factory->formatter()

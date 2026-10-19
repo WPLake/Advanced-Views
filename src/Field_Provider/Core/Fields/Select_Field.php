@@ -37,7 +37,9 @@ class Select_Field extends List_Field {
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		$token_factory->variable( $twig_name )->add_item_path( self::TITLE )->display();
+		$token_factory->variable( $twig_name )
+						->add_item_path( self::TITLE )
+						->display();
 
 		$token_factory->formatter()
 						->new_line();

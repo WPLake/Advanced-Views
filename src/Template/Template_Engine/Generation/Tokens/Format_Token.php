@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Utils\repeat_str;
 
@@ -16,11 +15,6 @@ use function Org\Wplake\Advanced_Views\Utils\repeat_str;
 class Format_Token {
 	protected const NEW_LINE = "\r\n";
 	protected const TAB      = "\t";
-
-	protected Token_Factory $token_factory;
-	public function __construct( Token_Factory $token_factory ) {
-		$this->token_factory = $token_factory;
-	}
 
 	/**
 	 * @deprecated use dynamic methods below

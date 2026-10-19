@@ -18,6 +18,7 @@ abstract class Token_Factory_Base implements Token_Factory {
 	 * @var class-string<Token_Printer>
 	 */
 	protected string $printer_class;
+	protected ?Format_Token $format_token = null;
 
 	/**
 	 * @param class-string<Token_Printer> $printer_class
@@ -43,6 +44,8 @@ abstract class Token_Factory_Base implements Token_Factory {
 	}
 
 	public function formatter(): Format_Token {
-		return new Format_Token( $this );
+		$this->format_token ??= new Format_Token();
+
+		return $this->format_token;
 	}
 }
