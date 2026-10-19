@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Format_Token;
 
 final class Wrapper_Printer {
@@ -62,36 +61,6 @@ final class Wrapper_Printer {
 		echo '>';
 
 		++$tabs_number;
-	}
-
-	public static function print_label(
-		Token_Factory $token_factory,
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		int &$tabs_number,
-		string $field_id
-	): void {
-		$classes = Wrapper_Class_Resolver::resolve_label_classes( $layout_settings, $field_settings );
-
-		Format_Token::tabulation( $tabs_number );
-
-		printf( '<p class="%s">', esc_html( $classes ) );
-
-		Format_Token::next_line();
-		Format_Token::tabulation( ++$tabs_number );
-
-		$var = $token_factory->variable( $field_id )
-								->add_item_path( 'label' );
-
-		$token_factory->to_echo( $var )
-						->print();
-
-		Format_Token::next_line();
-		Format_Token::tabulation( --$tabs_number );
-
-		echo '</p>';
-
-		Format_Token::next_line();
 	}
 
 	/**

@@ -60,21 +60,6 @@ final class Wrapper_Class_Resolver {
 		return self::join_classes( $classes );
 	}
 
-	public static function resolve_label_classes( Layout_Settings $layout_settings, Field_Settings $field_settings ): string {
-		$classes = array();
-
-		if ( Layout_Settings::CLASS_GENERATION_NONE !== $layout_settings->classes_generation ) {
-			$bem_name  = $layout_settings->get_bem_name();
-			$classes[] = sprintf( '%s__%s-label', $bem_name, $field_settings->id );
-
-			if ( $layout_settings->is_with_common_classes ) {
-				$classes[] = sprintf( '%s__label', $bem_name );
-			}
-		}
-
-		return self::join_classes( $classes );
-	}
-
 	/**
 	 * @param string[] $classes
 	 */

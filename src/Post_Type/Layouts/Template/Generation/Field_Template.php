@@ -13,6 +13,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Label_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Outer_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Wrapper_Printer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
@@ -149,7 +150,7 @@ class Field_Template {
 
 		if ( strlen( $field_settings->label ) > 0 &&
 			$is_label_out_of_row ) {
-			Wrapper_Printer::print_label( $token_factory, $layout_settings, $field_settings, $tabs_number, $field_id );
+			Label_Printer::print( $token_factory, $layout_settings, $field_settings, $tabs_number, $field_id );
 		}
 
 		if ( $is_with_row_wrapper ) {
@@ -167,7 +168,7 @@ class Field_Template {
 
 		if ( '' !== $field_settings->label &&
 			! $is_label_out_of_row ) {
-			Wrapper_Printer::print_label( $token_factory, $layout_settings, $field_settings, $tabs_number, $field_id );
+			Label_Printer::print( $token_factory, $layout_settings, $field_settings, $tabs_number, $field_id );
 		}
 
 		if ( $is_with_field_wrapper ) {
