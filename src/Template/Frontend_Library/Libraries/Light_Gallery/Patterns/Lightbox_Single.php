@@ -9,14 +9,14 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Patter
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
-use Org\Wplake\Advanced_Views\Field_Value\Core\Media\Image_Value;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 
 defined( 'ABSPATH' ) || exit;
 
 final class Lightbox_Single implements Frontend_Pattern, Template_Pattern, JS_Pattern, CSS_Pattern {
 	const DATA_PROPERTIES = array(
-		'#data-src'      => Image_Value::FULL_SIZE,
-		'#data-sub-html' => Image_Value::CAPTION,
+		'#data-src'      => Image_Field::FULL_SIZE,
+		'#data-sub-html' => Image_Field::CAPTION,
 	);
 
 	public static function get_id(): string {

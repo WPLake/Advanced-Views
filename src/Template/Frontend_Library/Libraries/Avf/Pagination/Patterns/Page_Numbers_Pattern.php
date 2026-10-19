@@ -8,8 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
-use Org\Wplake\Advanced_Views\Field_Value\Core\Pagination\Pagination_Value;
-use Org\Wplake\Advanced_Views\Field_Value\Core\Pagination\Pagination_Page_Value;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Pagination_Field_Base;
 
 final class Page_Numbers_Pattern implements Frontend_Pattern, Template_Pattern {
 	public static function get_id(): string {
@@ -26,9 +25,9 @@ final class Page_Numbers_Pattern implements Frontend_Pattern, Template_Pattern {
 				'tag'   => 'div',
 				'attrs' => array(
 					'class'                 => 'avf-pagination',
-					'#data-pagination-type' => Pagination_Value::TYPE,
-					'#data-pages-amount'    => Pagination_Value::PAGES_AMOUNT,
-					'#data-card-id'         => Pagination_Value::CARD_ID,
+					'#data-pagination-type' => Pagination_Field_Base::TYPE,
+					'#data-pages-amount'    => Pagination_Field_Base::PAGES_AMOUNT,
+					'#data-card-id'         => Pagination_Field_Base::CARD_ID,
 				),
 			),
 		);
@@ -41,7 +40,7 @@ final class Page_Numbers_Pattern implements Frontend_Pattern, Template_Pattern {
 	public static function get_item_attributes(): array {
 		return array(
 			'class'             => 'avf-pagination__page',
-			'#data-page-number' => Pagination_Page_Value::PAGE_NUMBER,
+			'#data-page-number' => Pagination_Field_Base::PAGE_NUMBER,
 		);
 	}
 }

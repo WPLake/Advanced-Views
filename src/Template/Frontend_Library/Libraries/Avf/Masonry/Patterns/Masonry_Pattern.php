@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Patter
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
-use Org\Wplake\Advanced_Views\Field_Value\Core\Media\Image_Value;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 
 final class Masonry_Pattern implements Frontend_Pattern, Template_Pattern, JS_Pattern, CSS_Pattern {
 	public static function get_id(): string {
@@ -33,8 +33,8 @@ final class Masonry_Pattern implements Frontend_Pattern, Template_Pattern, JS_Pa
 			array(
 				'tag'   => 'li',
 				'attrs' => array(
-					'#data-width'  => Image_Value::WIDTH,
-					'#data-height' => Image_Value::HEIGHT,
+					'#data-width'  => Image_Field::WIDTH,
+					'#data-height' => Image_Field::HEIGHT,
 				),
 			),
 		);

@@ -14,8 +14,8 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\JS_Library
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Inline_Gallery;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Lightbox_Multi;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Lightbox_Single;
-use Org\Wplake\Advanced_Views\Field_Value\Core\Media\Gallery_Value;
-use Org\Wplake\Advanced_Views\Field_Value\Core\Media\Image_Value;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Gallery_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 
 final class Light_Gallery_Library implements Frontend_Library, CSS_Library, JS_Library {
 	public static function get_id(): string {
@@ -32,10 +32,10 @@ final class Light_Gallery_Library implements Frontend_Library, CSS_Library, JS_L
 
 	public static function get_patterns(): array {
 		return array(
-			Image_Value::class   => array(
+			Image_Field::class   => array(
 				Lightbox_Single::class,
 			),
-			Gallery_Value::class => array(
+			Gallery_Field::class => array(
 				Inline_Gallery::class,
 				Lightbox_Multi::class,
 			),

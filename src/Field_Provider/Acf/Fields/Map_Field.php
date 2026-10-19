@@ -9,20 +9,15 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Map_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map_Pattern;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
-class Map_Field extends Markup_Field_Base {
-	const LAT        = 'lat';
-	const LNG        = 'lng';
-	const ZOOM       = 'zoom';
-	const CENTER_LAT = 'center_lat';
-	const CENTER_LNG = 'center_lng';
-	const MAP        = 'map';
+class Map_Field extends Map_Field_Base {
+	const MAP = 'map';
 
 	protected function print_map_marker_attributes(
 		string $field_id,

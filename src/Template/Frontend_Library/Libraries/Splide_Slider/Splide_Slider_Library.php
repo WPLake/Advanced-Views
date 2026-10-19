@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\File_Conte
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\JS_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Splide_Slider\Patterns\Div_Slider;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Splide_Slider\Patterns\List_Slider;
-use Org\Wplake\Advanced_Views\Field_Value\Core\List_Value;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\List_Field;
 
 final class Splide_Slider_Library implements Frontend_Library, CSS_Library, JS_Library {
 	public static function get_id(): string {
@@ -30,7 +30,7 @@ final class Splide_Slider_Library implements Frontend_Library, CSS_Library, JS_L
 
 	public static function get_patterns(): array {
 		return array(
-			List_Value::class => array(
+			List_Field::class => array(
 				List_Slider::class,
 				Div_Slider::class,
 			),
