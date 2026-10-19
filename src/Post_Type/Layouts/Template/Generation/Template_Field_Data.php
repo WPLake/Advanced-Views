@@ -53,36 +53,48 @@ final class Template_Field_Data extends Field_Data {
 	}
 
 	/**
+	 * Merges the outers of every asset by depth: the n-th outers of all assets form the n-th result item.
+	 *
+	 * @param Html_Wrapper[][] $assets_outers
+	 *
 	 * @return Html_Wrapper[]
 	 */
-	public function get_item_outers( string $field_id, string $item_id ): array {
+	public static function merge_outers( array $assets_outers ): array {
 		/**
-		 * @var Html_Wrapper[] $item_outers
+		 * @var Html_Wrapper[] $merged_outers
 		 */
-		$item_outers = array();
+		$merged_outers = array();
 
-		$layout_settings = $this->get_view_data();
-		$field_settings  = $this->get_field_data();
+		foreach ( $assets_outers as $asset_outers ) {
+			$counter = 0;
 
-		foreach ( $this->field_assets as $field_asset ) {
-			$asset_outers = $field_asset->get_item_outers( $layout_settings, $field_settings, $field_id, $item_id );
+			foreach ( $asset_outers as $asset_outer ) {
+				$merged_outers[ $counter ] = key_exists( $counter, $merged_outers ) ?
+					$merged_outers[ $counter ] :
+					new Html_Wrapper( '', array() );
 
-			if ( array() !== $asset_outers ) {
-				$counter = 0;
+				$merged_outers[ $counter ]->merge( $asset_outer );
 
-				foreach ( $asset_outers as $asset_outer ) {
-					$item_outers[ $counter ] = key_exists( $counter, $item_outers ) ?
-						$item_outers[ $counter ] :
-						new Html_Wrapper( '', array() );
-
-					$item_outers[ $counter ]->merge( $asset_outer );
-
-					++$counter;
-				}
+				++$counter;
 			}
 		}
 
-		return $item_outers;
+		return $merged_outers;
+	}
+
+	/**
+	 * @return Html_Wrapper[]
+	 */
+	public function get_item_outers( string $field_id, string $item_id ): array {
+		$layout_settings = $this->get_view_data();
+		$field_settings  = $this->get_field_data();
+		$assets_outers   = array();
+
+		foreach ( $this->field_assets as $field_asset ) {
+			$assets_outers[] = $field_asset->get_item_outers( $layout_settings, $field_settings, $field_id, $item_id );
+		}
+
+		return self::merge_outers( $assets_outers );
 	}
 
 	/**

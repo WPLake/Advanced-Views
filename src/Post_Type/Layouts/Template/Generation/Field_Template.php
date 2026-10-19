@@ -477,30 +477,13 @@ class Field_Template {
 		string $field_id,
 		string $row_type
 	): array {
-		/**
-		 * @var Html_Wrapper[] $field_outers
-		 */
-		$field_outers = array();
+		$assets_outers = array();
 
 		foreach ( $field_assets as $field_asset ) {
-			$asset_outers = $field_asset->get_field_outers( $layout_settings, $field_settings, $field_id, $row_type );
-
-			if ( array() !== $asset_outers ) {
-				$counter = 0;
-
-				foreach ( $asset_outers as $asset_outer ) {
-					$field_outers[ $counter ] = key_exists( $counter, $field_outers ) ?
-						$field_outers[ $counter ] :
-						new Html_Wrapper( '', array() );
-
-					$field_outers[ $counter ]->merge( $asset_outer );
-
-					++$counter;
-				}
-			}
+			$assets_outers[] = $field_asset->get_field_outers( $layout_settings, $field_settings, $field_id, $row_type );
 		}
 
-		return $field_outers;
+		return Template_Field_Data::merge_outers( $assets_outers );
 	}
 
 	/**
