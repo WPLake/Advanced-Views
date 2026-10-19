@@ -26,8 +26,8 @@ class User_Website_Field extends Link_Field {
 		}
 
 		$field_args = array(
-			'url'   => $user->user_url,
-			'title' => $user->user_url,
+			self::URL   => $user->user_url,
+			self::TITLE => $user->user_url,
 		);
 
 		$variable_field_data->set_value( $field_args );

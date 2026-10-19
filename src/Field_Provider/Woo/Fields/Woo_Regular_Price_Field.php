@@ -20,7 +20,7 @@ class Woo_Regular_Price_Field extends Markup_Field_Base {
 	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
 		$var = $markup_field_data->get_token_factory()
 								->variable( $field_id )
-								->add_item_path( 'value' );
+								->add_item_path( self::VALUE );
 
 		$markup_field_data->get_token_factory()
 							->to_echo( $var )
@@ -32,7 +32,7 @@ class Woo_Regular_Price_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'value' => $variable_field_data->get_field_data()->default_value,
+			self::VALUE => $variable_field_data->get_field_data()->default_value,
 		);
 
 		$product = $this->get_product( $variable_field_data->get_value() );
@@ -41,7 +41,7 @@ class Woo_Regular_Price_Field extends Markup_Field_Base {
 			return $args;
 		}
 
-		$args['value'] = $product->get_regular_price();
+		$args[ self::VALUE ] = $product->get_regular_price();
 
 		return $args;
 	}
@@ -51,7 +51,7 @@ class Woo_Regular_Price_Field extends Markup_Field_Base {
 	 */
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
 		return array(
-			'value' => '10',
+			self::VALUE => '10',
 		);
 	}
 

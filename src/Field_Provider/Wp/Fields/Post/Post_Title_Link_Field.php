@@ -27,9 +27,9 @@ class Post_Title_Link_Field extends Link_Field {
 
 		$field_args = array(
 			// @phpstan-ignore-next-line
-			'url'   => (string) get_the_permalink( $post ),
+			self::URL => (string) get_the_permalink( $post ),
 			// decode to avoid double encoding in Twig.
-			'title' => html_entity_decode( get_the_title( $post ), ENT_QUOTES ),
+			self::TITLE => html_entity_decode( get_the_title( $post ), ENT_QUOTES ),
 		);
 
 		$variable_field_data->set_value( $field_args );

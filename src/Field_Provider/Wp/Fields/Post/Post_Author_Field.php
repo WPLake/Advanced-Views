@@ -43,7 +43,7 @@ class Post_Author_Field extends User_Field {
 
 		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
 			return array(
-				'value' => $variable_field_data->get_value(),
+				self::VALUE => $variable_field_data->get_value(),
 			);
 		}
 
@@ -56,7 +56,7 @@ class Post_Author_Field extends User_Field {
 	protected function get_validation_item_template_args( Variable_Field_Data $variable_field_data ): array {
 		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
 			return array(
-				'value' => $variable_field_data->get_value(),
+				self::VALUE => $variable_field_data->get_value(),
 			);
 		}
 

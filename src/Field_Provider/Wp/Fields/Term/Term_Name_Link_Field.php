@@ -32,9 +32,9 @@ class Term_Name_Link_Field extends Link_Field {
 			'';
 
 		$field_args = array(
-			'url'   => $term_link,
+			self::URL => $term_link,
 			// decode to avoid double encoding in Twig.
-			'title' => html_entity_decode( $term->name, ENT_QUOTES ),
+			self::TITLE => html_entity_decode( $term->name, ENT_QUOTES ),
 		);
 
 		$variable_field_data->set_value( $field_args );

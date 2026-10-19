@@ -18,7 +18,7 @@ class Post_Modified_Field extends Markup_Field_Base {
 	use Custom_Field;
 
 	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
-		$var = $markup_field_data->get_token_factory()->variable( $field_id )->add_item_path( 'value' );
+		$var = $markup_field_data->get_token_factory()->variable( $field_id )->add_item_path( self::VALUE );
 		$markup_field_data->get_token_factory()->to_echo( $var )->print();
 	}
 
@@ -27,7 +27,7 @@ class Post_Modified_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'value' => $variable_field_data->get_field_data()->default_value,
+			self::VALUE => $variable_field_data->get_field_data()->default_value,
 		);
 
 		$post = $this->get_post( $variable_field_data->get_value() );
@@ -38,9 +38,9 @@ class Post_Modified_Field extends Markup_Field_Base {
 
 		$date = get_the_modified_date( '', $post );
 
-		$args['value'] = false !== $date ?
+		$args[ self::VALUE ] = false !== $date ?
 			$date :
-			$args['value'];
+			$args[ self::VALUE ];
 
 		return $args;
 	}
@@ -50,7 +50,7 @@ class Post_Modified_Field extends Markup_Field_Base {
 	 */
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
 		return array(
-			'value' => '2000-01-01',
+			self::VALUE => '2000-01-01',
 		);
 	}
 

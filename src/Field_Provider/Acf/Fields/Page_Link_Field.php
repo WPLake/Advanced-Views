@@ -27,8 +27,8 @@ class Page_Link_Field extends List_Field {
 	 */
 	protected function get_post_info( string $id_or_url ): array {
 		$post_info = array(
-			'url'   => '',
-			'title' => '',
+			Link_Field::URL   => '',
+			Link_Field::TITLE => '',
 		);
 
 		if ( is_numeric( $id_or_url ) ) {
@@ -53,9 +53,9 @@ class Page_Link_Field extends List_Field {
 		$title = get_the_title( $post );
 
 		return array(
-			'url'   => (string) get_permalink( $post->ID ),
+			Link_Field::URL => (string) get_permalink( $post->ID ),
 			// avoid double encoding in Twig.
-			'title' => html_entity_decode( $title, ENT_QUOTES ),
+			Link_Field::TITLE => html_entity_decode( $title, ENT_QUOTES ),
 		);
 	}
 

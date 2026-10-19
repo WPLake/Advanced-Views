@@ -17,6 +17,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 defined( 'ABSPATH' ) || exit;
 
 class Post_Thumbnail_Link_Field extends Markup_Field_Base {
+	const HREF = 'href';
+
 	use Custom_Field;
 
 	protected Image_Field $image_field;
@@ -29,9 +31,9 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$target_var = $token_factory->variable( $field_id )
-										->add_item_path( 'target' );
+										->add_item_path( Link_Field::TARGET );
 		$href_var   = $token_factory->variable( $field_id )
-										->add_item_path( 'href' );
+										->add_item_path( self::HREF );
 
 		echo '<a';
 
@@ -71,10 +73,10 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'target' => $variable_field_data->get_field_data()->is_link_target_blank ?
+			Link_Field::TARGET => $variable_field_data->get_field_data()->is_link_target_blank ?
 				'_blank' :
 				'_self',
-			'href'   => '',
+			self::HREF         => '',
 		);
 
 		$post = $this->get_post( $variable_field_data->get_value() );
@@ -89,7 +91,7 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 		}
 
 		// @phpstan-ignore-next-line
-		$args['href'] = (string) get_the_permalink( $post );
+		$args[ self::HREF ] = (string) get_the_permalink( $post );
 		$image_id     = (int) get_post_thumbnail_id( $post );
 
 		$variable_field_data->set_value( $image_id );
@@ -105,10 +107,10 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 	 */
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'target' => $variable_field_data->get_field_data()->is_link_target_blank ?
+			Link_Field::TARGET => $variable_field_data->get_field_data()->is_link_target_blank ?
 				'_blank' :
 				'_self',
-			'href'   => '',
+			self::HREF         => '',
 		);
 
 		$link_args = $this->image_field->get_validation_template_variables( $variable_field_data );

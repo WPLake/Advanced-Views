@@ -55,12 +55,12 @@ class Map_Field extends Markup_Field_Base {
 	protected function get_template_args_for_google( Variable_Field_Data $variable_field_data ): array {
 		$args = ! $variable_field_data->get_field_meta()->is_multiple() ?
 			array(
-				'value' => '',
-				'lat'   => 0,
-				'lng'   => 0,
+				self::VALUE => '',
+				'lat'       => 0,
+				'lng'       => 0,
 			) :
 			array(
-				'value' => array(),
+				self::VALUE => array(),
 			);
 
 		// common args.
@@ -84,7 +84,7 @@ class Map_Field extends Markup_Field_Base {
 		if ( ! $variable_field_data->get_field_meta()->is_multiple() ) {
 			$lat = string( $value, 'lat' );
 
-			$args['value'] = strlen( $lat ) > 0;
+			$args[ self::VALUE ] = strlen( $lat ) > 0;
 			$args['zoom']  = string( $value, 'zoom', '16' );
 			$args['lat']   = $lat;
 			$args['lng']   = string( $value, 'lng' );
@@ -92,12 +92,12 @@ class Map_Field extends Markup_Field_Base {
 			// the plugin doesn't support zoom, so use the default from the ACF field settings.
 			$args['zoom'] = $variable_field_data->get_field_meta()->get_zoom();
 
-			$args['value'] = array();
+			$args[ self::VALUE ] = array();
 
 			foreach ( $value as $item ) {
 				$item = arr( $item );
 
-				$args['value'][] = array(
+				$args[ self::VALUE ][] = array(
 					'lat' => string( $item, 'lat' ),
 					'lng' => string( $item, 'lng' ),
 				);
@@ -112,7 +112,7 @@ class Map_Field extends Markup_Field_Base {
 	 */
 	protected function get_template_args_for_os( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'value' => $variable_field_data->get_field_data()->is_map_with_address ?
+			self::VALUE => $variable_field_data->get_field_data()->is_map_with_address ?
 				array() :
 				false,
 			'map'   => '',
@@ -139,7 +139,7 @@ class Map_Field extends Markup_Field_Base {
 							is_array( $variable_field_data->get_value()['markers'] ) ?
 				$variable_field_data->get_value()['markers'] :
 				array();
-			$args['value'] = array() !== $markers;
+			$args[ self::VALUE ] = array() !== $markers;
 		}
 
 		return $args;
@@ -152,11 +152,11 @@ class Map_Field extends Markup_Field_Base {
 		if ( 'open_street_map' !== $variable_field_data->get_field_meta()->get_type() ) {
 			$args = ! $variable_field_data->get_field_meta()->is_multiple() ?
 				array(
-					'value' => '',
-					'lat'   => 0,
-					'lng'   => 0,
+					self::VALUE => '',
+					'lat'       => 0,
+					'lng'       => 0,
 				) :
-				array( 'value' => array() );
+				array( self::VALUE => array() );
 
 			// common args.
 			$args = array_merge(
@@ -180,8 +180,8 @@ class Map_Field extends Markup_Field_Base {
 				return array_merge(
 					$validation_args,
 					array(
-						'value' => '1',
-						'zoom'  => '1',
+						self::VALUE => '1',
+						'zoom'      => '1',
 					)
 				);
 			}
@@ -189,13 +189,13 @@ class Map_Field extends Markup_Field_Base {
 			return array_merge(
 				$args,
 				array(
-					'value' => array( $validation_args ),
+					self::VALUE => array( $validation_args ),
 				)
 			);
 		}
 
 		return array(
-			'value' => $variable_field_data->get_field_data()->is_map_with_address ?
+			self::VALUE => $variable_field_data->get_field_data()->is_map_with_address ?
 				array() :
 				true,
 			'map'   => '<iframe src="https://www.openstreetmap.org/export/embed.html?bbox=5.390371665521,50.7343356,14.857431134479,56.3593356&amp;marker=53.5500279,10.0136948" height="400" width="425" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>',
@@ -262,7 +262,7 @@ class Map_Field extends Markup_Field_Base {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$source_var = $token_factory->variable( $field_id )
-										->add_item_path( 'value' );
+										->add_item_path( self::VALUE );
 		$item_var   = $token_factory->variable( 'marker' );
 
 		$loop_body = $token_factory->html(
@@ -290,7 +290,7 @@ class Map_Field extends Markup_Field_Base {
 	protected function print_conditional_item( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 		$value_var     = $token_factory->variable( $field_id )
-										->add_item_path( 'value' );
+										->add_item_path( self::VALUE );
 
 		$if_body = $token_factory->html(
 			function () use ( $field_id, $item_id, $markup_field_data, $token_factory ) {

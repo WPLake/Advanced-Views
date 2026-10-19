@@ -102,7 +102,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$id_var         = $token_factory->variable( $field_id )
-											->add_item_path( 'layout_id' );
+											->add_item_path( self::LAYOUT_ID );
 		$comment_id_var = $token_factory->variable( $item_id )
 											->add_item_path( 'comment_id' );
 
@@ -214,7 +214,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$value_var = $token_factory->variable( $field_id )
-			->add_item_path( 'value' );
+			->add_item_path( self::VALUE );
 
 		$item_var = $token_factory->variable( 'comment_item' );
 
@@ -253,9 +253,9 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
 
 		$args = array(
-			'value'     => array(),
-			'view_id'   => $layout_id,
-			'layout_id' => $layout_id,
+			self::VALUE     => array(),
+			self::VIEW_ID   => $layout_id,
+			self::LAYOUT_ID => $layout_id,
 		);
 
 		$post = $this->get_post( $variable_field_data->get_value() );
@@ -278,7 +278,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		$comments = $this->group_comments_by_parent( $comments );
 
 		foreach ( $comments as $comment ) {
-			$args['value'][] = $this->get_item_twig_args( $comment, $variable_field_data->get_field_data() );
+			$args[ self::VALUE ][] = $this->get_item_twig_args( $comment, $variable_field_data->get_field_data() );
 		}
 
 		return $args;
@@ -291,11 +291,11 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
 
 		return array(
-			'value'     => array(
+			self::VALUE => array(
 				$this->get_item_twig_args( null, $variable_field_data->get_field_data(), true ),
 			),
-			'view_id'   => $layout_id,
-			'layout_id' => $layout_id,
+			self::VIEW_ID   => $layout_id,
+			self::LAYOUT_ID => $layout_id,
 		);
 	}
 

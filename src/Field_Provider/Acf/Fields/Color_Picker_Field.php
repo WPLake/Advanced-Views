@@ -19,7 +19,7 @@ class Color_Picker_Field extends Markup_Field_Base {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		if ( 'string' === $markup_field_data->get_field_meta()->get_return_format() ) {
-			$var = $token_factory->variable( $field_id )->add_item_path( 'value' );
+			$var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 			$token_factory->to_echo( $var )->print();
 
 			return;
@@ -47,11 +47,11 @@ class Color_Picker_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'value' => '',
-			'red'   => '',
-			'green' => '',
-			'blue'  => '',
-			'alpha' => '',
+			self::VALUE => '',
+			'red'       => '',
+			'green'     => '',
+			'blue'      => '',
+			'alpha'     => '',
 		);
 
 		$value = null;
@@ -68,11 +68,11 @@ class Color_Picker_Field extends Markup_Field_Base {
 		}
 
 		if ( 'string' === $variable_field_data->get_field_meta()->get_return_format() ) {
-			$args['value'] = $value;
+			$args[ self::VALUE ] = $value;
 		} else {
 			$red = string( $value, 'red' );
 			// value is just bool, as 'red' can be zero, but still be a value.
-			$args['value'] = (bool) $red;
+			$args[ self::VALUE ] = (bool) $red;
 			$args['red']   = $red;
 			$args['green'] = string( $value, 'green' );
 			$args['blue']  = string( $value, 'blue' );
@@ -84,11 +84,11 @@ class Color_Picker_Field extends Markup_Field_Base {
 
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
 		return array(
-			'value' => true,
-			'red'   => '1',
-			'green' => '1',
-			'blue'  => '1',
-			'alpha' => '1',
+			self::VALUE => true,
+			'red'       => '1',
+			'green'     => '1',
+			'blue'      => '1',
+			'alpha'     => '1',
 		);
 	}
 

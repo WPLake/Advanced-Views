@@ -16,8 +16,6 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Va
 abstract class List_Field extends Markup_Field_Base {
 	const LOOP_ITEM_NAME    = 'item';
 	const OPTIONS_DELIMITER = 'options_delimiter';
-	const VIEW_ID           = 'view_id';
-	const LAYOUT_ID         = 'layout_id';
 
 	/**
 	 * @return array<string, mixed>

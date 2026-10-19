@@ -32,8 +32,8 @@ class Post_Attachment_Link extends Link_Field {
 
 			$variable_field_data->set_value(
 				array(
-					'title' => $title,
-					'url'   => (string) wp_get_attachment_url( $post->ID ),
+					self::TITLE => $title,
+					self::URL   => (string) wp_get_attachment_url( $post->ID ),
 				)
 			);
 		}

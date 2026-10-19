@@ -21,7 +21,7 @@ class Comment_Content_Field extends Markup_Field_Base {
 		$token_generator = $markup_field_data->get_token_factory();
 
 		$var = $token_generator->variable( $field_id )
-								->add_item_path( 'value' );
+								->add_item_path( self::VALUE );
 
 		// escaped by default, not raw - as commentId may point on a pending comment with unverified content.
 		$token_generator->to_echo( $var )
@@ -33,7 +33,7 @@ class Comment_Content_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'value' => $variable_field_data->get_field_data()->default_value,
+			self::VALUE => $variable_field_data->get_field_data()->default_value,
 		);
 
 		$comment = $this->get_comment( $variable_field_data->get_value() );
@@ -46,12 +46,12 @@ class Comment_Content_Field extends Markup_Field_Base {
 
 		// 1. avoid double encoding
 		// 2. do not use get_comment_text() because it adds 'In reply to' text
-		$args['value'] = '' !== $content ?
+		$args[ self::VALUE ] = '' !== $content ?
 			html_entity_decode( $content, ENT_QUOTES ) :
-			$args['value'];
+			$args[ self::VALUE ];
 
 		// replace new lines with <br>.
-		$args['value'] = str_replace( "\n", '<br>', $args['value'] );
+		$args[ self::VALUE ] = str_replace( "\n", '<br>', $args[ self::VALUE ] );
 
 		return $args;
 	}
@@ -61,7 +61,7 @@ class Comment_Content_Field extends Markup_Field_Base {
 	 */
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
 		return array(
-			'value' => 'content',
+			self::VALUE => 'content',
 		);
 	}
 

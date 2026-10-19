@@ -75,7 +75,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 				)
 			),
 		);
-		$var = $token_factory->variable( $field_id )->add_item_path( 'value' );
+		$var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 		$token_factory->to_echo( $var )->print();
 
 		echo '"></i>';
@@ -112,7 +112,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 			),
 		);
 		$var = $token_factory->variable( $field_id )
-							->add_item_path( 'value' );
+							->add_item_path( self::VALUE );
 		$token_factory->to_echo( $var )
 						->print();
 
@@ -127,8 +127,8 @@ class Icon_Picker_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'type'  => '',
-			'value' => '',
+			'type'      => '',
+			self::VALUE => '',
 		);
 
 		$value = $variable_field_data->get_value();
@@ -142,7 +142,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 		switch ( $args['type'] ) {
 			case 'dashicons':
 			case 'url':
-				$args['value'] = $this->get_string_arg( 'value', $value );
+				$args[ self::VALUE ] = $this->get_string_arg( 'value', $value );
 				break;
 			case 'media_library':
 				$attachment_id = $this->get_string_arg( 'value', $value );
@@ -158,8 +158,8 @@ class Icon_Picker_Field extends Markup_Field_Base {
 
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
 		return array(
-			'type'  => 'dashicons',
-			'value' => 'dashicons-admin-generic',
+			'type'      => 'dashicons',
+			self::VALUE => 'dashicons-admin-generic',
 		);
 	}
 

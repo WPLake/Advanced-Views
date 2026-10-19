@@ -36,9 +36,9 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$id_var        = $token_factory->variable( $field_id )
-										->add_item_path( 'layout_id' );
+										->add_item_path( self::LAYOUT_ID );
 		$object_id_var = $token_factory->variable( $item_id )
-										->add_item_path( 'value' );
+										->add_item_path( self::VALUE );
 
 		printf( '[%s', esc_html( Hard_Layout_Cpt::cpt_name() ) );
 
@@ -57,7 +57,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$value_var = $token_factory->variable( $field_id )
-			->add_item_path( 'value' );
+			->add_item_path( self::VALUE );
 		$item_var  = $token_factory->variable( 'menu_item' );
 		$loop_body = $token_factory->html(
 			fn()=>$this->print_loop_body( $field_id, $item_var->get_name(), $markup_field_data )
@@ -288,7 +288,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 	): array {
 		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
 			$args = array(
-				'value'         => 0,
+				self::VALUE     => 0,
 				'isActive'      => false,
 				'isChildActive' => false,
 				'children'      => array(),
@@ -299,7 +299,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 			}
 
 			$is_child_active = false;
-			$args['value']   = null !== $wp_post ?
+			$args[ self::VALUE ]   = null !== $wp_post ?
 				$wp_post->ID :
 				0;
 
@@ -307,8 +307,8 @@ class Menu_Items_Field extends Markup_Field_Base {
 				$is_sub_active = $this->is_active_item( $child );
 
 				$args['children'][] = array(
-					'value'    => $child->ID,
-					'isActive' => $is_sub_active,
+					self::VALUE => $child->ID,
+					'isActive'  => $is_sub_active,
 				);
 
 				$is_child_active = $is_child_active || $is_sub_active;
@@ -392,9 +392,9 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
 
 		$args = array(
-			'value'     => array(),
-			'view_id'   => $layout_id,
-			'layout_id' => $layout_id,
+			self::VALUE     => array(),
+			self::VIEW_ID   => $layout_id,
+			self::LAYOUT_ID => $layout_id,
 		);
 
 		$menu = $this->get_term( $variable_field_data->get_value(), 'nav_menu' );
@@ -423,7 +423,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 				continue;
 			}
 
-			$args['value'][] = $this->get_item_twig_args(
+			$args[ self::VALUE ][] = $this->get_item_twig_args(
 				$menu_item,
 				$children[ $menu_item->ID ] ?? array(),
 				$variable_field_data
@@ -445,7 +445,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		);
 
 		return array(
-			'value' => array(
+			self::VALUE => array(
 				$item_args,
 			),
 		);

@@ -44,9 +44,9 @@ class Comment_Author_Name_Link_Field extends Markup_Field_Base {
 		$author_url  = get_comment_author_url( $comment );
 
 		$filed_args = array(
-			'url'   => $author_url,
+			Link_Field::URL   => $author_url,
 			// avoid double escaping in Twig.
-			'title' => html_entity_decode( $author_name, ENT_QUOTES ),
+			Link_Field::TITLE => html_entity_decode( $author_name, ENT_QUOTES ),
 		);
 
 		$variable_field_data->set_value( $filed_args );

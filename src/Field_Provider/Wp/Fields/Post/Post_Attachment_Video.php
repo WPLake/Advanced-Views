@@ -35,7 +35,7 @@ class Post_Attachment_Video extends Markup_Field_Base {
 		$markup_field_data->increment_and_print_tabs();
 
 		$src_var  = $token_factory->variable( $field_id )
-									->add_item_path( 'value' );
+									->add_item_path( self::VALUE );
 		$type_var = $token_factory->variable( $field_id )
 									->add_item_path( 'mime_type' );
 
@@ -68,7 +68,7 @@ class Post_Attachment_Video extends Markup_Field_Base {
 			'attachment' !== $post->post_type ||
 			0 !== strpos( $post->post_mime_type, 'video/' ) ) {
 			return array(
-				'value'     => '',
+				self::VALUE => '',
 				'mime_type' => '',
 			);
 		}
@@ -76,14 +76,14 @@ class Post_Attachment_Video extends Markup_Field_Base {
 		$attachment_url = (string) wp_get_attachment_url( $post->ID );
 
 		return array(
-			'value'     => $attachment_url,
+			self::VALUE => $attachment_url,
 			'mime_type' => $post->post_mime_type,
 		);
 	}
 
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
 		return array(
-			'value'     => 'https://site.com/video.mp4',
+			self::VALUE => 'https://site.com/video.mp4',
 			'mime_type' => 'video/mp4',
 		);
 	}
