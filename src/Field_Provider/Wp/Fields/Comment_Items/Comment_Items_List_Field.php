@@ -54,9 +54,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		$var = $token_factory
 								->variable( $item_id )
 								->add_item_path( self::AUTHOR_NAME );
-		$token_factory
-							->to_echo( $var )
-							->print();
+		echo $var->to_display();
 
 		$token_factory->format()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
@@ -86,9 +84,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 
 		// escaped by default, even we query approved comments -
 		// reason is that HTML expectations in comments is rather an exception, than a rule.
-		$markup_field_data->get_token_factory()
-							->to_echo( $var )
-							->print();
+		echo $var->to_display();
 
 		$token_factory->format()->new_line();
 		$markup_field_data->decrement_and_print_tabs();

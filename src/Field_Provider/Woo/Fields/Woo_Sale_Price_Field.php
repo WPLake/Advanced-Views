@@ -22,8 +22,7 @@ class Woo_Sale_Price_Field extends Markup_Field_Base {
 								->variable( $field_id )
 								->add_item_path( self::VALUE );
 
-		$markup_field_data->get_token_factory()
-							->to_echo( $var )->print();
+		echo $var->to_display();
 	}
 
 	/**

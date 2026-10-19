@@ -19,7 +19,7 @@ class User_Last_Name_Field extends Markup_Field_Base {
 
 	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$var = $markup_field_data->get_token_factory()->variable( $field_id )->add_item_path( self::VALUE );
-		$markup_field_data->get_token_factory()->to_echo( $var )->print();
+		echo $var->to_display();
 	}
 
 	/**

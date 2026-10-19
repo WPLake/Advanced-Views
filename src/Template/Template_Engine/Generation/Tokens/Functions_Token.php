@@ -31,10 +31,7 @@ abstract class Functions_Token {
 			)
 		);
 
-		$this->token_factory
-			->to_echo( $function )
-			->set_is_raw( true )
-			->print();
+		echo $function->to_display()->set_is_raw( true );
 	}
 
 	public function include_inner_layout( string $field_id, string $data_field_id, string $inner_view_class ): void {
@@ -54,10 +51,7 @@ abstract class Functions_Token {
 			)
 		);
 
-		$this->token_factory
-			->to_echo( $function )
-			->set_is_raw( true )
-			->print();
+		echo $function->to_display()->set_is_raw( true );
 	}
 
 	/**
@@ -86,10 +80,7 @@ abstract class Functions_Token {
 											)
 										);
 
-		$this->token_factory
-			->to_echo( $function )
-			->set_is_raw( true )
-			->print();
+		echo $function->to_display()->set_is_raw( true );
 	}
 
 	abstract protected function include_inner_layout_for_flexible_name(): string;

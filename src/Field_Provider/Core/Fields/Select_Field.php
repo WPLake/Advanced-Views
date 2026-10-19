@@ -40,9 +40,7 @@ class Select_Field extends List_Field {
 		$var = $token_factory
 								->variable( $twig_name )
 								->add_item_path( self::TITLE );
-		$token_factory
-							->to_echo( $var )
-							->print();
+		echo $var->to_display();
 
 		$token_factory->format()
 						->new_line();
