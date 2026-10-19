@@ -2,11 +2,11 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens;
+namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 
 abstract class Functions_Token {
 	protected Token_Factory $token_factory;

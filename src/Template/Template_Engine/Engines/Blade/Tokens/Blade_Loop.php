@@ -6,8 +6,8 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Token
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Loop_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Loop_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 
 final class Blade_Loop extends Loop_Token {
 	public function print(): void {

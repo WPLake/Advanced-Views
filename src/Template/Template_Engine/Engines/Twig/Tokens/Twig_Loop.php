@@ -4,8 +4,8 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Loop_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Loop_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 
 defined( 'ABSPATH' ) || exit;
 

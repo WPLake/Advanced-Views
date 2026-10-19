@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens;
+namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token_Base;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Variable\Variable_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 
 abstract class Loop_Token extends Template_Token_Base {
 	protected const LOOP_INDEX_KEY = 'index';

@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Token
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Echo_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Echo_Token;
 
 final class Blade_Echo extends Echo_Token {
 	public function print(): void {

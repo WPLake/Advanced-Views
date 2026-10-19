@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Format_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
 
 final class Label_Printer {
 	public static function print(
@@ -52,11 +52,8 @@ final class Label_Printer {
 			->new_line()
 			->tab( ++$tabs_number );
 
-		// $factory->echo()->variable([$field_id, 'label']);
-		// variable ->
-		echo $token_factory->variable( $field_id )
-								->add_item_path( 'label' )
-								->to_display();
+		$var = $token_factory->variable( $field_id )->add_item_path( 'label' );
+		$token_factory->to_echo( $var )->print();
 
 		$token_factory->format()
 						->new_line()

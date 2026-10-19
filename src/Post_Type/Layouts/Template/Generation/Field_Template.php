@@ -17,8 +17,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Labe
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Outer_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Wrapper_Printer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory_Storage;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Format_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
 
 class Field_Template {
 	private Field_Provider_Cluster $provider_cluster;

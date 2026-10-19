@@ -2,12 +2,12 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Conditional;
+namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token_Base;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 
 class Comparison_Token extends Template_Token_Base {
 	const COMPARISON_GREATER = ' > ';

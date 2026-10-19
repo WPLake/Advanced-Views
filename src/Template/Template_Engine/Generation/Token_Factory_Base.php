@@ -2,15 +2,15 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation;
+namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Conditional\Comparison_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Conditional\Conditional_Value_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Format_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Function_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Html_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Comparison_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Conditional_Value_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Function_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Html_Token;
 
 abstract class Token_Factory_Base implements Token_Factory {
 	public function html( callable $printer ): Html_Token {

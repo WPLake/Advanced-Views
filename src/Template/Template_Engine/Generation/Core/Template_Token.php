@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token;
+namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core;
 
 defined( 'ABSPATH' ) || exit;
 

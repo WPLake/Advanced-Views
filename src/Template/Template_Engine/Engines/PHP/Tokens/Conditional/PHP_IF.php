@@ -6,9 +6,9 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Tokens\
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Conditional\IF_Branch;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Conditional\IF_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 
 final class PHP_IF extends IF_Token {
 	public function print(): void {

@@ -6,11 +6,11 @@ use Architecture\Policy\Domain_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Core\post_type_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\layouts_cpt_domain;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\library_patterns_domain;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\template_engine_domain;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\template_generation_domain;
 
 class field_provider_domain extends Domain_Policy {
 	const WHITELIST_DOMAINS = [
-		template_engine_domain::class,
+		template_generation_domain::class,
 		// todo break cycle-dependency
 		post_type_domain::class,
 		library_patterns_domain::class,

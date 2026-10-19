@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Functions_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Functions_Token;
 
 final class Twig_Functions extends Functions_Token {
 	protected function include_inner_layout_for_flexible_name(): string {
