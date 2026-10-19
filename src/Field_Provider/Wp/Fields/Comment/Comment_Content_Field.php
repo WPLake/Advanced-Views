@@ -24,8 +24,7 @@ class Comment_Content_Field extends Markup_Field_Base {
 								->add_item_path( self::VALUE );
 
 		// escaped by default, not raw - as commentId may point on a pending comment with unverified content.
-		$token_generator->to_echo( $var )
-						->print();
+		echo $var->to_display();
 	}
 
 	/**

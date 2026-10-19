@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\V
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Echo_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token_Base;
 
 abstract class Variable_Token extends Template_Token_Base {
@@ -18,7 +19,12 @@ abstract class Variable_Token extends Template_Token_Base {
 	protected array $item_path = array();
 	protected bool $is_object  = false;
 
-	public function __construct( string $name ) {
+	/**
+	 * @param class-string<Echo_Token> $echo_token_class
+	 */
+	public function __construct( string $echo_token_class, string $name ) {
+		parent::__construct( $echo_token_class );
+
 		$this->set_name( $name );
 	}
 

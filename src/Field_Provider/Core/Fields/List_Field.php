@@ -150,8 +150,7 @@ abstract class List_Field extends Markup_Field_Base {
 
 		$delimiter_var = $token_factory->variable( $field_id )
 										->add_item_path( self::OPTIONS_DELIMITER );
-		$token_factory->to_echo( $delimiter_var )
-						->print();
+		echo $delimiter_var->to_display();
 
 		$token_factory->format()
 						->new_line();

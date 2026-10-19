@@ -10,14 +10,12 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Comment
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Comparison_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Conditional_Value_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Echo_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Function_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Functions_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Html_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Loop_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Range_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Assignment_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Literal_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
@@ -27,8 +25,6 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variabl
  */
 interface Token_Factory {
 	public function comment( string $content ): Comment_Token;
-
-	public function to_echo( Template_Token $content ): Echo_Token;
 
 	public function variable( string $name ): Variable_Token;
 

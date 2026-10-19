@@ -50,8 +50,7 @@ class Format_Token {
 		printf( ' %s="', esc_html( $name ) );
 
 		if ( $value instanceof Variable_Token ) {
-			$this->token_factory->to_echo( $value )
-								->print();
+			echo $value->to_display();
 		} else {
 			echo esc_html( $value );
 		}

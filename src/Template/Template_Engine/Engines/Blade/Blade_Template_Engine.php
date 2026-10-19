@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Tokens\Blade_Echo;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer;
@@ -45,6 +46,6 @@ final class Blade_Template_Engine implements Template_Engine {
 	}
 
 	public function create_token_factory(): Token_Factory {
-		return new Blade_Tokens();
+		return new Blade_Tokens( Blade_Echo::class );
 	}
 }

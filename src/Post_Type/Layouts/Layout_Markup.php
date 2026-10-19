@@ -115,7 +115,7 @@ class Layout_Markup {
 		if ( Layout_Settings::CLASS_GENERATION_NONE !== $layout_settings->classes_generation ) {
 			$var = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
 								->add_item_path( 'classes' );
-			$token_factory->to_echo( $var )->print();
+			echo $var->to_display();
 
 			echo esc_html( $bem_name );
 
@@ -124,7 +124,7 @@ class Layout_Markup {
 				printf( ' %s--id--', esc_html( $bem_name ) );
 				$var = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
 											->add_item_path( 'id' );
-				$token_factory->to_echo( $var )->print();
+				echo $var->to_display();
 
 			}
 
@@ -132,8 +132,7 @@ class Layout_Markup {
 
 			$var = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
 								->add_item_path( 'object_id' );
-			$token_factory->to_echo( $var )
-							->print();
+			echo $var->to_display();
 
 		}
 		echo '">';

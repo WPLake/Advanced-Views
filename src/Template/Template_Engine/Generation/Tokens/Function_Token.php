@@ -16,7 +16,12 @@ class Function_Token extends Template_Token_Base {
 	 */
 	protected array $arguments;
 
-	public function __construct( string $name ) {
+	/**
+	 * @param class-string<Echo_Token> $echo_token_class
+	 */
+	public function __construct( string $echo_token_class, string $name ) {
+		parent::__construct( $echo_token_class );
+
 		$this->name = $name;
 	}
 

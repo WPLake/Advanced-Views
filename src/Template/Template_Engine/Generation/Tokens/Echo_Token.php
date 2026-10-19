@@ -14,6 +14,8 @@ abstract class Echo_Token extends Template_Token_Base {
 	protected bool $is_raw;
 
 	public function __construct( Template_Token $content ) {
+		parent::__construct( static::class );
+
 		$this->content = $content;
 
 		$this->is_raw = false;

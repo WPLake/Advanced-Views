@@ -14,7 +14,12 @@ class Html_Token extends Template_Token_Base {
 	 */
 	protected $printer;
 
-	public function __construct( callable $printer ) {
+	/**
+	 * @param class-string<Echo_Token> $echo_token_class
+	 */
+	public function __construct( string $echo_token_class, callable $printer ) {
+		parent::__construct( $echo_token_class );
+
 		$this->printer = $printer;
 	}
 

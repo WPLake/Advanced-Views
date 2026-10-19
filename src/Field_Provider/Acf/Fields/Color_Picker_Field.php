@@ -25,7 +25,7 @@ class Color_Picker_Field extends Markup_Field_Base {
 
 		if ( 'string' === $markup_field_data->get_field_meta()->get_return_format() ) {
 			$var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
-			$token_factory->to_echo( $var )->print();
+			echo $var->to_display();
 
 			return;
 		}
@@ -41,7 +41,7 @@ class Color_Picker_Field extends Markup_Field_Base {
 			}
 
 			$var = $token_factory->variable( $field_id )->add_item_path( $parts[ $i ] );
-			$token_factory->to_echo( $var )->print();
+			echo $var->to_display();
 		}
 
 		echo ')';

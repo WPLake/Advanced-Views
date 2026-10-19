@@ -14,11 +14,9 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Tokens\Vari
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Comment_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Echo_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Functions_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Loop_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Range_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Assignment_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Literal_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
@@ -29,31 +27,27 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Tokens\Variab
 
 final class Blade_Tokens extends Token_Factory_Base {
 	public function comment( string $content ): Comment_Token {
-		return new Blade_Comment( $content );
-	}
-
-	public function to_echo( Template_Token $content ): Echo_Token {
-		return new Blade_Echo( $content );
+		return new Blade_Comment( $this->echo_token_class, $content );
 	}
 
 	public function variable( string $name ): Variable_Token {
-		return new PHP_Variable( $name );
+		return new PHP_Variable( $this->echo_token_class, $name );
 	}
 
 	public function if(): IF_Token {
-		return new Blade_IF();
+		return new Blade_IF( $this->echo_token_class );
 	}
 
 	public function loop(): Loop_Token {
-		return new Blade_Loop( $this );
+		return new Blade_Loop( $this->echo_token_class, $this );
 	}
 
 	public function assignment(): Assignment_Token {
-		return new Blade_Assignment();
+		return new Blade_Assignment( $this->echo_token_class );
 	}
 
 	public function literal( $value ): Literal_Token {
-		return new PHP_Literal( $value );
+		return new PHP_Literal( $this->echo_token_class, $value );
 	}
 
 	public function functions(): Functions_Token {
@@ -61,6 +55,6 @@ final class Blade_Tokens extends Token_Factory_Base {
 	}
 
 	public function range(): Range_Token {
-		return new PHP_Range();
+		return new PHP_Range( $this->echo_token_class );
 	}
 }

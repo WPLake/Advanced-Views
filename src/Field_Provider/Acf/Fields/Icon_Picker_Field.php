@@ -78,7 +78,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 			),
 		);
 		$var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
-		$token_factory->to_echo( $var )->print();
+		echo $var->to_display();
 
 		echo '"></i>';
 
@@ -115,8 +115,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 		);
 		$var = $token_factory->variable( $field_id )
 							->add_item_path( self::VALUE );
-		$token_factory->to_echo( $var )
-						->print();
+		echo $var->to_display();
 
 		echo '" loading="lazy" alt="icon">';
 

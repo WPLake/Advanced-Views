@@ -213,9 +213,8 @@ class Map_Field extends Map_Field_Base {
 			$var = $token_factory->variable( $field_id )
 								->add_item_path( self::MAP );
 
-			$token_factory->to_echo( $var )
-							->set_is_raw( true )
-							->print();
+			echo $var->to_display()
+							->set_is_raw( true );
 
 			return;
 		}

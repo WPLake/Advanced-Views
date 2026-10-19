@@ -21,7 +21,12 @@ abstract class Loop_Token extends Template_Token_Base {
 
 	protected ?Template_Token $body = null;
 
-	public function __construct( Token_Factory $token_factory ) {
+	/**
+	 * @param class-string<Echo_Token> $echo_token_class
+	 */
+	public function __construct( string $echo_token_class, Token_Factory $token_factory ) {
+		parent::__construct( $echo_token_class );
+
 		$this->index_var = $token_factory->variable( self::LOOP_INDEX_KEY );
 	}
 

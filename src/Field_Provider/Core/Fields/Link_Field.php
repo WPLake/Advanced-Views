@@ -63,8 +63,7 @@ class Link_Field extends Markup_Field_Base {
 			->set_comparison_empty()
 			->set_right_operand( $title_var );
 
-		$token_factory->to_echo( $comparison )
-						->print();
+		echo $comparison->to_display();
 
 		$token_factory->format()
 						->new_line();

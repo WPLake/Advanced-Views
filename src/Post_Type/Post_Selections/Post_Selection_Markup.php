@@ -405,8 +405,7 @@ class Post_Selection_Markup {
 		$var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 							->add_item_path( 'classes' );
 
-		$token_factory->to_echo( $var )
-						->print();
+		echo $var->to_display();
 
 		echo esc_html( $post_selection_settings->get_bem_name() );
 
@@ -416,7 +415,7 @@ class Post_Selection_Markup {
 			$var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 								->add_item_path( 'id' );
 
-			$token_factory->to_echo( $var )->print();
+			echo $var->to_display();
 
 		}
 		echo '">';
@@ -475,7 +474,7 @@ class Post_Selection_Markup {
 		);
 		$var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 							->add_item_path( 'no_posts_found_message' );
-		$token_factory->to_echo( $var )->print();
+		echo $var->to_display();
 
 		echo '</div>';
 
