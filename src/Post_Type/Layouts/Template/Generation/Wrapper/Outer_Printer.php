@@ -1,0 +1,88 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper;
+
+defined( 'ABSPATH' ) || exit;
+
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Format_Token;
+
+final class Outer_Printer {
+	/**
+	 * @param Template_Pattern[] $field_assets
+	 *
+	 * @return Html_Wrapper[]
+	 */
+	public static function get_field_outers(
+		array $field_assets,
+		Layout_Settings $layout_settings,
+		Field_Settings $field_settings,
+		string $field_id,
+		string $row_type
+	): array {
+		$assets_outers = array();
+
+		foreach ( $field_assets as $field_asset ) {
+			$assets_outers[] = $field_asset->get_field_outers( $layout_settings, $field_settings, $field_id, $row_type );
+		}
+
+		return Template_Field_Data::merge_outers( $assets_outers );
+	}
+
+	/**
+	 * @param Html_Wrapper[] $field_outers
+	 */
+	public static function print_opening_field_outers(
+		array $field_outers,
+		int &$tabs_number,
+		Token_Factory $token_factory
+	): void {
+		foreach ( $field_outers as $outer ) {
+			$tabs = str_repeat( "\t", $tabs_number );
+
+			printf( "\r\n%s", esc_html( $tabs ) );
+			printf( '<%s', esc_html( $outer->tag ) );
+
+			Wrapper_Printer::print_attrs( $outer->attrs );
+			self::print_variable_attrs( $outer->variable_attrs, $token_factory );
+
+			echo '>';
+
+			$token_factory->format()
+							->new_line();
+
+			++$tabs_number;
+		}
+	}
+
+	/**
+	 * @param Html_Wrapper[] $field_outers
+	 */
+	public static function print_closing_field_outers( array $field_outers, int &$tabs_number ): void {
+		foreach ( $field_outers as $outer ) {
+			Format_Token::tabulation( --$tabs_number );
+			printf( '</%s>', esc_html( $outer->tag ) );
+			Format_Token::next_line();
+		}
+	}
+
+	/**
+	 * @param array<string,array{field_id:string,item_key:string}> $variable_attrs
+	 */
+	protected static function print_variable_attrs( array $variable_attrs, Token_Factory $token_factory ): void {
+		foreach ( $variable_attrs as $attr => $variable_info ) {
+			$var = $token_factory->variable( $variable_info['field_id'] )
+								->add_item_path( $variable_info['item_key'] );
+
+			$token_factory->format()
+							->attribute( $attr, $var );
+		}
+	}
+}

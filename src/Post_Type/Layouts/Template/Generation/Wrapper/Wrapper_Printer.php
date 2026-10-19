@@ -8,7 +8,6 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Format_Token;
 
@@ -62,43 +61,6 @@ final class Wrapper_Printer {
 		++$tabs_number;
 	}
 
-	/**
-	 * @param Html_Wrapper[] $field_outers
-	 */
-	public static function print_opening_field_outers(
-		array $field_outers,
-		int &$tabs_number,
-		Token_Factory $token_factory
-	): void {
-		foreach ( $field_outers as $outer ) {
-			$tabs = str_repeat( "\t", $tabs_number );
-
-			printf( "\r\n%s", esc_html( $tabs ) );
-			printf( '<%s', esc_html( $outer->tag ) );
-
-			self::print_attrs( $outer->attrs );
-			self::print_variable_attrs( $outer->variable_attrs, $token_factory );
-
-			echo '>';
-
-			$token_factory->format()
-							->new_line();
-
-			++$tabs_number;
-		}
-	}
-
-	/**
-	 * @param Html_Wrapper[] $field_outers
-	 */
-	public static function print_closing_field_outers( array $field_outers, int &$tabs_number ): void {
-		foreach ( $field_outers as $outer ) {
-			Format_Token::tabulation( --$tabs_number );
-			printf( '</%s>', esc_html( $outer->tag ) );
-			Format_Token::next_line();
-		}
-	}
-
 	public static function print_label(
 		Token_Factory $token_factory,
 		Layout_Settings $layout_settings,
@@ -132,31 +94,19 @@ final class Wrapper_Printer {
 	/**
 	 * @param array<string,string> $attrs
 	 */
-	protected static function print_opening_tag( string $tag, string $classes, array $attrs ): void {
-		printf( '<%s class="%s"', esc_html( $tag ), esc_html( $classes ) );
-
-		self::print_attrs( $attrs );
-	}
-
-	/**
-	 * @param array<string,string> $attrs
-	 */
-	protected static function print_attrs( array $attrs ): void {
+	public static function print_attrs( array $attrs ): void {
 		foreach ( $attrs as $attr => $value ) {
 			printf( ' %s="%s"', esc_html( $attr ), esc_html( $value ) );
 		}
 	}
 
 	/**
-	 * @param array<string,array{field_id:string,item_key:string}> $variable_attrs
+	 * @param array<string,string> $attrs
 	 */
-	protected static function print_variable_attrs( array $variable_attrs, Token_Factory $token_factory ): void {
-		foreach ( $variable_attrs as $attr => $variable_info ) {
-			$var = $token_factory->variable( $variable_info['field_id'] )
-								->add_item_path( $variable_info['item_key'] );
+	protected static function print_opening_tag( string $tag, string $classes, array $attrs ): void {
+		printf( '<%s class="%s"', esc_html( $tag ), esc_html( $classes ) );
 
-			$token_factory->format()
-							->attribute( $attr, $var );
-		}
+		self::print_attrs( $attrs );
 	}
+
 }
