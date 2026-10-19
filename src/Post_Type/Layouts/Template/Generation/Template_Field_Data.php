@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Fac
 
 defined( 'ABSPATH' ) || exit;
 
-class Template_Field_Data extends Field_Data {
+final class Template_Field_Data extends Field_Data {
 	/**
 	 * @var Template_Pattern[]
 	 */
@@ -61,28 +61,24 @@ class Template_Field_Data extends Field_Data {
 		 */
 		$item_outers = array();
 
+		$layout_settings = $this->get_view_data();
+		$field_settings  = $this->get_field_data();
+
 		foreach ( $this->field_assets as $field_asset ) {
-			$asset_outers = $field_asset->get_item_outers(
-				$this->get_view_data(),
-				$this->get_field_data(),
-				$field_id,
-				$item_id
-			);
+			$asset_outers = $field_asset->get_item_outers( $layout_settings, $field_settings, $field_id, $item_id );
 
-			if ( array() === $asset_outers ) {
-				continue;
-			}
+			if ( array() !== $asset_outers ) {
+				$counter = 0;
 
-			$counter = 0;
+				foreach ( $asset_outers as $asset_outer ) {
+					$item_outers[ $counter ] = key_exists( $counter, $item_outers ) ?
+						$item_outers[ $counter ] :
+						new Html_Wrapper( '', array() );
 
-			foreach ( $asset_outers as $asset_outer ) {
-				$item_outers[ $counter ] = key_exists( $counter, $item_outers ) ?
-					$item_outers[ $counter ] :
-					new Html_Wrapper( '', array() );
+					$item_outers[ $counter ]->merge( $asset_outer );
 
-				$item_outers[ $counter ]->merge( $asset_outer );
-
-				++$counter;
+					++$counter;
+				}
 			}
 		}
 
@@ -95,12 +91,14 @@ class Template_Field_Data extends Field_Data {
 	public function print_opening_item_outers( array $item_outers, bool $is_without_last_item_tabs = false ): void {
 		$counter          = 0;
 		$last_item_number = count( $item_outers ) - 1;
+		$layout_settings  = $this->get_view_data();
+		$field_settings   = $this->get_field_data();
 
 		foreach ( $item_outers as $outer ) {
 			$attr_class = $outer->attrs['class'] ?? '';
 			$class      = '' !== $attr_class ?
 				$attr_class :
-				$this->get_view_data()->get_item_class( 'item', $this->get_field_data() );
+				$layout_settings->get_item_class( 'item', $field_settings );
 			// trick to add class as the first key.
 			$outer->attrs = array_merge( array( 'class' => $class ), $outer->attrs );
 

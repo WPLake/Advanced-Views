@@ -30,33 +30,353 @@ class Field_Template {
 		$this->token_factory_storage = $token_factory_storage;
 	}
 
+	// public, as used in Upgrades.
+
+	/**
+	 * @param Template_Pattern[] $field_assets
+	 */
+	public function print_field_markup(
+		array $field_assets,
+		Layout_Settings $layout_settings,
+		?Item_Settings $item_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta,
+		int &$tabs_number,
+		string $field_id,
+		bool $is_with_outer_wrappers
+	): void {
+		$field_type = $field_meta->get_type();
+
+		if ( false === $field_meta->is_field_exist() ) {
+			return;
+		}
+
+		$vendor_name           = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
+		$markup_field_instance = $this->get_markup_field_instance( $vendor_name, $field_type );
+
+		if ( ! $markup_field_instance instanceof Markup_Field ) {
+			return;
+		}
+
+		$is_with_wrapper = $this->is_with_field_wrapper( $field_assets, $layout_settings, $field_settings, $field_meta, 'field' );
+
+		if ( $is_with_wrapper &&
+			false === $is_with_outer_wrappers ) {
+			Format_Token::next_line();
+		}
+
+		$token_factory     = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
+		$markup_field_data = new Template_Field_Data(
+			$layout_settings,
+			$item_settings,
+			$field_settings,
+			$field_meta,
+			$this,
+			$markup_field_instance,
+			$token_factory
+		);
+
+		$is_with_row_wrapper = $this->is_with_row_wrapper( $layout_settings, $field_settings, $field_meta );
+
+		$markup_field_data->set_field_assets( $field_assets );
+		$markup_field_data->set_tabs_number( $tabs_number );
+		$markup_field_data->set_is_with_field_wrapper( $is_with_wrapper );
+		$markup_field_data->set_is_with_row_wrapper( $is_with_row_wrapper );
+
+		Format_Token::tabulation( $tabs_number );
+
+		$markup_field_instance->print_markup( $field_id, $markup_field_data );
+
+		Format_Token::next_line();
+
+		// read back, as it may be changed in getMarkup().
+		$tabs_number = $markup_field_data->get_tabs_number();
+	}
+
+	/**
+	 * $customFieldMarkup is used in RepeaterField
+	 *
+	 * @return int current tabs number
+	 */
+	public function print_row_markup(
+		string $row_type,
+		string $row_suffix,
+		Layout_Settings $layout_settings,
+		?Item_Settings $item_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta,
+		int $tabs_number,
+		string $field_id,
+		string $custom_field_markup = ''
+	): int {
+		$vendor_name         = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
+		$front_assets        = $this->provider_cluster->get_field_front_assets( $vendor_name, $field_settings );
+		$field_assets        = $this->front_assets->resolve_template_patterns( $front_assets );
+		$is_label_out_of_row = self::is_label_out_of_row( $field_assets );
+		$token_factory       = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
+
+		$row_tag = '';
+
+		foreach ( $field_assets as $field_asset ) {
+			$row_tag = $field_asset->get_row_wrapper_tag( $field_settings, $row_type );
+
+			if ( '' !== $row_tag ) {
+				break;
+			}
+		}
+
+		$is_with_row_wrapper   = $this->is_with_row_wrapper( $layout_settings, $field_settings, $field_meta ) ||
+								'' !== $row_tag;
+		$is_with_field_wrapper = $this->is_with_field_wrapper(
+			$field_assets,
+			$layout_settings,
+			$field_settings,
+			$field_meta,
+			$row_type
+		);
+		$bem_name              = $layout_settings->get_bem_name();
+		$field_name_class      = sprintf( '%s__%s%s', $bem_name, $field_settings->id, $row_suffix );
+
+		$row_tag   = 0 === strlen( $row_tag ) ?
+			'div' :
+			$row_tag;
+		$field_tag = $is_with_field_wrapper ?
+			$this->get_field_wrapper_tag( $field_assets, $field_settings, $row_type ) :
+			'';
+		$field_tag = 0 === strlen( $field_tag ) ?
+			'div' :
+			$field_tag;
+
+		if ( strlen( $field_settings->label ) > 0 &&
+			$is_label_out_of_row ) {
+			self::print_label( $layout_settings, $field_settings, $tabs_number, $field_id );
+		}
+
+		if ( $is_with_row_wrapper ) {
+			$row_class = self::get_row_wrapper_class( $field_assets, $row_type );
+
+			self::print_row_wrapper(
+				$field_name_class,
+				$layout_settings,
+				$field_settings,
+				$row_type,
+				$row_class,
+				$tabs_number,
+				$row_tag
+			);
+		}
+
+		if ( '' !== $field_settings->label &&
+			! $is_label_out_of_row ) {
+			self::print_label( $layout_settings, $field_settings, $tabs_number, $field_id );
+		}
+
+		if ( $is_with_field_wrapper ) {
+			$this->print_field_wrapper(
+				$field_assets,
+				$field_id,
+				$tabs_number,
+				$is_with_row_wrapper,
+				$layout_settings,
+				$field_settings,
+				$field_name_class,
+				$field_tag
+			);
+		}
+
+		$field_outers = self::get_field_outers( $field_assets, $layout_settings, $field_settings, $field_id, $row_type );
+
+		$is_with_outer_wrappers = array() !== $field_outers;
+
+		self::print_opening_field_outers( $field_outers, $tabs_number, $token_factory );
+
+		if ( strlen( $custom_field_markup ) > 0 ) {
+			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $custom_field_markup;
+		} else {
+			$this->print_field_markup(
+				$field_assets,
+				$layout_settings,
+				$item_settings,
+				$field_settings,
+				$field_meta,
+				$tabs_number,
+				$field_id,
+				$is_with_outer_wrappers
+			);
+		}
+
+		self::print_closing_field_outers( $field_outers, $tabs_number );
+
+		if ( $is_with_field_wrapper ) {
+			Format_Token::tabulation( --$tabs_number );
+
+			printf( '</%s>', esc_html( $field_tag ) );
+
+			Format_Token::next_line();
+		}
+
+		if ( $is_with_row_wrapper ) {
+			Format_Token::tabulation( --$tabs_number );
+
+			printf( '</%s>', esc_html( $row_tag ) );
+
+			Format_Token::next_line();
+		}
+
+		return $tabs_number;
+	}
+
+	/**
+	 * @param Template_Pattern[] $field_assets
+	 */
+	public function is_with_field_wrapper(
+		array $field_assets,
+		Layout_Settings $layout_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta,
+		string $row_type
+	): bool {
+		if ( $field_meta->is_field_exist() ) {
+			$field_type            = $field_meta->get_type();
+			$vendor_name           = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
+			$markup_field_instance = $this->get_markup_field_instance( $vendor_name, $field_type );
+
+			if ( $markup_field_instance instanceof Markup_Field ) {
+				return '' !== $this->get_field_wrapper_tag( $field_assets, $field_settings, $row_type ) ||
+						$markup_field_instance->is_with_field_wrapper( $layout_settings, $field_settings, $field_meta );
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public function is_with_row_wrapper(
+		Layout_Settings $layout_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta
+	): bool {
+		$vendor_name = $field_meta->get_vendor_name();
+		$field_type  = $field_meta->get_type();
+
+		return $layout_settings->is_with_unnecessary_wrappers ||
+				'' !== $field_settings->label ||
+				$this->provider_cluster->is_field_type_with_sub_fields( $vendor_name, $field_type );
+	}
+
 	protected function get_markup_field_instance( string $vendor_name, string $field_type ): ?Markup_Field {
 		return $this->provider_cluster->get_markup_field_instance( $vendor_name, $field_type );
 	}
 
 	/**
 	 * @param Template_Pattern[] $field_assets
-	 * @param string $row_type
-	 *
-	 * @return string
 	 */
-	protected function get_row_wrapper_class( array $field_assets, string $row_type ): string {
+	protected function print_field_wrapper(
+		array $field_assets,
+		string $field_id,
+		int &$tabs_number,
+		bool $is_with_row_wrapper,
+		Layout_Settings $layout_settings,
+		Field_Settings $field_settings,
+		string $field_name_class,
+		string $tag
+	): void {
+		$field_classes = '';
+
+		if ( Layout_Settings::CLASS_GENERATION_NONE !== $layout_settings->classes_generation ) {
+			$bem_name = $layout_settings->get_bem_name();
+
+			if ( $is_with_row_wrapper ) {
+				$field_classes .= sprintf( '%s__%s-field', $bem_name, $field_settings->id );
+				$field_classes .= $layout_settings->is_with_common_classes ?
+					sprintf( ' %s__field', $bem_name ) :
+					'';
+			} else {
+				$field_classes .= $field_name_class;
+
+				if ( $layout_settings->is_with_common_classes ) {
+					$field_classes .= sprintf( ' %s__field', $bem_name );
+				}
+			}
+		}
+
+		$attrs_data = array();
+
+		foreach ( $field_assets as $field_asset ) {
+			$asset_attrs = $field_asset->get_field_wrapper_attrs( $field_settings, $field_id );
+			$attrs_data  = array_merge( $attrs_data, $asset_attrs );
+		}
+
+		$attr_class = $attrs_data['class'] ?? '';
+		unset( $attrs_data['class'] );
+
+		// do not consider classes_generation=none, as external classes, e.g. 'splide', are required for js.
+		if ( '' !== $attr_class ) {
+			$field_classes .= '' !== $field_classes ?
+				' ' :
+				'';
+			$field_classes .= $attr_class;
+		}
+
+		Format_Token::tabulation( $tabs_number );
+
+		printf(
+			'<%s class="%s"',
+			esc_html( $tag ),
+			esc_html( $field_classes ),
+		);
+
+		foreach ( $attrs_data as $attr => $value ) {
+			printf( ' %s="%s"', esc_html( $attr ), esc_html( $value ) );
+		}
+
+		echo '>';
+
+		++$tabs_number;
+	}
+
+	/**
+	 * @param Template_Pattern[] $field_assets
+	 */
+	protected function get_field_wrapper_tag( array $field_assets, Field_Settings $field_settings, string $row_type ): string {
+		foreach ( $field_assets as $field_asset ) {
+			$tag = $field_asset->get_field_wrapper_tag( $field_settings, $row_type );
+
+			if ( strlen( $tag ) > 0 ) {
+				return $tag;
+			}
+		}
+
+		$vendor_name           = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
+		$field_meta            = $field_settings->get_field_meta();
+		$field_type            = $field_meta->get_type();
+		$markup_field_instance = $this->get_markup_field_instance( $vendor_name, $field_type );
+
+		return $markup_field_instance instanceof Markup_Field ?
+			$markup_field_instance->get_custom_field_wrapper_tag() :
+			'';
+	}
+
+	/**
+	 * @param Template_Pattern[] $field_assets
+	 */
+	protected static function get_row_wrapper_class( array $field_assets, string $row_type ): string {
 		$classes = array();
 
 		foreach ( $field_assets as $field_asset ) {
 			$class = $field_asset->get_row_wrapper_class( $row_type );
 
-			if ( '' === $class ) {
-				continue;
+			if ( '' !== $class ) {
+				$classes[] = $class;
 			}
-
-			$classes[] = $class;
 		}
 
 		return implode( ' ', $classes );
 	}
 
-	protected function print_row_wrapper(
+	protected static function print_row_wrapper(
 		string $field_name_class,
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
@@ -71,7 +391,8 @@ class Field_Template {
 			$row_classes .= $field_name_class;
 
 			if ( $layout_settings->is_with_common_classes ) {
-				$row_classes .= ' ' . $layout_settings->get_bem_name() . '__' . $type;
+				$bem_name     = $layout_settings->get_bem_name();
+				$row_classes .= sprintf( ' %s__%s', $bem_name, $type );
 			}
 		}
 
@@ -92,10 +413,8 @@ class Field_Template {
 
 	/**
 	 * @param Template_Pattern[] $field_assets
-	 *
-	 * @return bool
 	 */
-	protected function is_label_out_of_row( array $field_assets ): bool {
+	protected static function is_label_out_of_row( array $field_assets ): bool {
 		foreach ( $field_assets as $field_asset ) {
 			if ( $field_asset->is_label_out_of_row() ) {
 				return true;
@@ -114,10 +433,12 @@ class Field_Template {
 		$label_class = '';
 
 		if ( Layout_Settings::CLASS_GENERATION_NONE !== $layout_settings->classes_generation ) {
-			$label_class .= $layout_settings->get_bem_name() . '__' . $field_settings->id . '-label';
+			$bem_name = $layout_settings->get_bem_name();
+
+			$label_class .= sprintf( '%s__%s-label', $bem_name, $field_settings->id );
 
 			$label_class .= $layout_settings->is_with_common_classes ?
-				' ' . $layout_settings->get_bem_name() . '__label' :
+				sprintf( ' %s__label', $bem_name ) :
 				'';
 		}
 
@@ -149,7 +470,7 @@ class Field_Template {
 	 *
 	 * @return Html_Wrapper[]
 	 */
-	protected function get_field_outers(
+	protected static function get_field_outers(
 		array $field_assets,
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
@@ -164,20 +485,18 @@ class Field_Template {
 		foreach ( $field_assets as $field_asset ) {
 			$asset_outers = $field_asset->get_field_outers( $layout_settings, $field_settings, $field_id, $row_type );
 
-			if ( array() === $asset_outers ) {
-				continue;
-			}
+			if ( array() !== $asset_outers ) {
+				$counter = 0;
 
-			$counter = 0;
+				foreach ( $asset_outers as $asset_outer ) {
+					$field_outers[ $counter ] = key_exists( $counter, $field_outers ) ?
+						$field_outers[ $counter ] :
+						new Html_Wrapper( '', array() );
 
-			foreach ( $asset_outers as $asset_outer ) {
-				$field_outers[ $counter ] = key_exists( $counter, $field_outers ) ?
-					$field_outers[ $counter ] :
-					new Html_Wrapper( '', array() );
+					$field_outers[ $counter ]->merge( $asset_outer );
 
-				$field_outers[ $counter ]->merge( $asset_outer );
-
-				++$counter;
+					++$counter;
+				}
 			}
 		}
 
@@ -187,13 +506,15 @@ class Field_Template {
 	/**
 	 * @param Html_Wrapper[] $field_outers
 	 */
-	protected function print_opening_field_outers(
+	protected static function print_opening_field_outers(
 		array $field_outers,
 		int &$tabs_number,
 		Token_Factory $token_factory
 	): void {
 		foreach ( $field_outers as $outer ) {
-			echo "\r\n" . esc_html( str_repeat( "\t", $tabs_number ) );
+			$tabs = str_repeat( "\t", $tabs_number );
+
+			printf( "\r\n%s", esc_html( $tabs ) );
 
 			printf( '<%s', esc_html( $outer->tag ) );
 
@@ -219,337 +540,13 @@ class Field_Template {
 	}
 
 	/**
-	 * @param Template_Pattern[] $field_assets
-	 * @param Field_Settings $field_settings
-	 * @param string $row_type
-	 *
-	 * @return string
-	 */
-	protected function get_field_wrapper_tag( array $field_assets, Field_Settings $field_settings, string $row_type ): string {
-		foreach ( $field_assets as $field_asset ) {
-			$tag = $field_asset->get_field_wrapper_tag( $field_settings, $row_type );
-
-			if ( strlen( $tag ) > 0 ) {
-				return $tag;
-			}
-		}
-
-		$markup_field_instance = $this->get_markup_field_instance( $this->provider_cluster->get_vendor_name_by_key( $field_settings->key ), $field_settings->get_field_meta()->get_type() );
-
-		return $markup_field_instance instanceof Markup_Field ?
-			$markup_field_instance->get_custom_field_wrapper_tag() :
-			'';
-	}
-
-	/**
-	 * @param Template_Pattern[] $field_assets
-	 */
-	protected function print_field_wrapper(
-		array $field_assets,
-		string $field_id,
-		int &$tabs_number,
-		bool $is_with_row_wrapper,
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		string $field_name_class,
-		string $tag
-	): void {
-		$field_classes = '';
-
-		if ( Layout_Settings::CLASS_GENERATION_NONE !== $layout_settings->classes_generation ) {
-			if ( $is_with_row_wrapper ) {
-				$field_classes .= $layout_settings->get_bem_name() . '__' . $field_settings->id . '-field';
-				$field_classes .= $layout_settings->is_with_common_classes ?
-					' ' . $layout_settings->get_bem_name() . '__field' :
-					'';
-			} else {
-				$field_classes .= $field_name_class;
-
-				if ( $layout_settings->is_with_common_classes ) {
-					$field_classes .= ' ' . $layout_settings->get_bem_name() . '__field';
-				}
-			}
-		}
-
-		$attrs_data = array();
-
-		foreach ( $field_assets as $field_asset ) {
-			$attrs_data = array_merge( $attrs_data, $field_asset->get_field_wrapper_attrs( $field_settings, $field_id ) );
-		}
-
-		$attr_class = $attrs_data['class'] ?? '';
-		unset( $attrs_data['class'] );
-
-		// do not consider classes_generation=none, as external classes, e.g. 'splide', are required for js.
-		if ( '' !== $attr_class ) {
-			$field_classes .= '' !== $field_classes ?
-				' ' :
-				'';
-			$field_classes .= $attr_class;
-		}
-
-		Format_Token::tabulation( $tabs_number );
-
-		printf(
-			'<%s class="%s"',
-			esc_html( $tag ),
-			esc_html( $field_classes ),
-		);
-
-		foreach ( $attrs_data as $attr => $value ) {
-			printf( ' %s="%s"', esc_html( $attr ), esc_html( $value ) );
-		}
-
-		echo '>';
-
-		++$tabs_number;
-	}
-
-	// public, as used in Upgrades.
-
-	/**
-	 * @param Template_Pattern[] $field_assets
-	 */
-	public function print_field_markup(
-		array $field_assets,
-		Layout_Settings $layout_settings,
-		?Item_Settings $item_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta,
-		int &$tabs_number,
-		string $field_id,
-		bool $is_with_outer_wrappers
-	): void {
-		$field_type = $field_meta->get_type();
-
-		if ( false === $field_meta->is_field_exist() ) {
-			return;
-		}
-
-		$vendor_name           = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
-		$markup_field_instance = $this->get_markup_field_instance( $vendor_name, $field_type );
-
-		if ( null === $markup_field_instance ) {
-			return;
-		}
-
-		$is_with_wrapper = $this->is_with_field_wrapper( $field_assets, $layout_settings, $field_settings, $field_meta, 'field' );
-
-		if ( $is_with_wrapper &&
-			false === $is_with_outer_wrappers ) {
-			Format_Token::next_line();
-		}
-
-		$token_factory     = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
-		$markup_field_data = new Template_Field_Data(
-			$layout_settings,
-			$item_settings,
-			$field_settings,
-			$field_meta,
-			$this,
-			$markup_field_instance,
-			$token_factory
-		);
-
-		$markup_field_data->set_field_assets( $field_assets );
-		$markup_field_data->set_tabs_number( $tabs_number );
-		$markup_field_data->set_is_with_field_wrapper( $is_with_wrapper );
-		$markup_field_data->set_is_with_row_wrapper( $this->is_with_row_wrapper( $layout_settings, $field_settings, $field_meta ) );
-
-		Format_Token::tabulation( $tabs_number );
-
-		$markup_field_instance->print_markup( $field_id, $markup_field_data );
-
-		Format_Token::next_line();
-
-		// read back, as it may be changed in getMarkup().
-		$tabs_number = $markup_field_data->get_tabs_number();
-	}
-
-	/**
 	 * @param Html_Wrapper[] $field_outers
 	 */
-	protected function print_closing_field_outers( array $field_outers, int &$tabs_number ): void {
+	protected static function print_closing_field_outers( array $field_outers, int &$tabs_number ): void {
 		foreach ( $field_outers as $outer ) {
 			Format_Token::tabulation( --$tabs_number );
 			printf( '</%s>', esc_html( $outer->tag ) );
 			Format_Token::next_line();
 		}
-	}
-
-	/**
-	 * $customFieldMarkup is used in RepeaterField
-	 *
-	 * @return int current tabs number
-	 */
-	public function print_row_markup(
-		string $row_type,
-		string $row_suffix,
-		Layout_Settings $layout_settings,
-		?Item_Settings $item_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta,
-		int $tabs_number,
-		string $field_id,
-		string $custom_field_markup = ''
-	): int {
-		$field_assets        = $this->front_assets->resolve_template_patterns(
-			$this->provider_cluster->get_field_front_assets( $this->provider_cluster->get_vendor_name_by_key( $field_settings->key ), $field_settings )
-		);
-		$is_label_out_of_row = $this->is_label_out_of_row( $field_assets );
-		$token_factory       = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
-
-		$row_tag = '';
-
-		foreach ( $field_assets as $field_asset ) {
-			$row_tag = $field_asset->get_row_wrapper_tag( $field_settings, $row_type );
-
-			if ( '' !== $row_tag ) {
-				break;
-			}
-		}
-
-		$is_with_row_wrapper   = $this->is_with_row_wrapper( $layout_settings, $field_settings, $field_meta ) ||
-								'' !== $row_tag;
-		$is_with_field_wrapper = $this->is_with_field_wrapper(
-			$field_assets,
-			$layout_settings,
-			$field_settings,
-			$field_meta,
-			$row_type
-		);
-		$field_name_class      = $layout_settings->get_bem_name() . '__' . $field_settings->id . $row_suffix;
-
-		$row_tag   = 0 === strlen( $row_tag ) ?
-			'div' :
-			$row_tag;
-		$field_tag = $is_with_field_wrapper ?
-			$this->get_field_wrapper_tag( $field_assets, $field_settings, $row_type ) :
-			'';
-		$field_tag = 0 === strlen( $field_tag ) ?
-			'div' :
-			$field_tag;
-
-		if ( strlen( $field_settings->label ) > 0 &&
-			$is_label_out_of_row ) {
-			$this->print_label( $layout_settings, $field_settings, $tabs_number, $field_id );
-		}
-
-		if ( $is_with_row_wrapper ) {
-			$this->print_row_wrapper(
-				$field_name_class,
-				$layout_settings,
-				$field_settings,
-				$row_type,
-				$this->get_row_wrapper_class( $field_assets, $row_type ),
-				$tabs_number,
-				$row_tag
-			);
-		}
-
-		if ( '' !== $field_settings->label &&
-			! $is_label_out_of_row ) {
-			$this->print_label( $layout_settings, $field_settings, $tabs_number, $field_id );
-		}
-
-		if ( $is_with_field_wrapper ) {
-			$this->print_field_wrapper(
-				$field_assets,
-				$field_id,
-				$tabs_number,
-				$is_with_row_wrapper,
-				$layout_settings,
-				$field_settings,
-				$field_name_class,
-				$field_tag
-			);
-		}
-
-		$field_outers = $this->get_field_outers( $field_assets, $layout_settings, $field_settings, $field_id, $row_type );
-
-		$is_with_outer_wrappers = array() !== $field_outers;
-
-		$this->print_opening_field_outers( $field_outers, $tabs_number, $token_factory );
-
-		if ( strlen( $custom_field_markup ) > 0 ) {
-			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $custom_field_markup;
-		} else {
-			$this->print_field_markup(
-				$field_assets,
-				$layout_settings,
-				$item_settings,
-				$field_settings,
-				$field_meta,
-				$tabs_number,
-				$field_id,
-				$is_with_outer_wrappers
-			);
-		}
-
-		$this->print_closing_field_outers( $field_outers, $tabs_number );
-
-		if ( $is_with_field_wrapper ) {
-			Format_Token::tabulation( --$tabs_number );
-
-			printf( '</%s>', esc_html( $field_tag ) );
-
-			Format_Token::next_line();
-		}
-
-		if ( $is_with_row_wrapper ) {
-			Format_Token::tabulation( --$tabs_number );
-
-			printf( '</%s>', esc_html( $row_tag ) );
-
-			Format_Token::next_line();
-		}
-
-		return $tabs_number;
-	}
-
-	/**
-	 * @param Template_Pattern[] $field_assets
-	 * @param Layout_Settings $layout_settings
-	 * @param Field_Settings $field_settings
-	 * @param Field_Meta $field_meta
-	 * @param string $row_type
-	 *
-	 * @return bool
-	 */
-	public function is_with_field_wrapper(
-		array $field_assets,
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta,
-		string $row_type
-	): bool {
-		$field_type = $field_meta->get_type();
-
-		if ( ! $field_meta->is_field_exist() ) {
-			return false;
-		}
-
-		$markup_field_instance = $this->get_markup_field_instance( $this->provider_cluster->get_vendor_name_by_key( $field_settings->key ), $field_type );
-
-		if ( null === $markup_field_instance ) {
-			return true;
-		}
-
-		return '' !== $this->get_field_wrapper_tag( $field_assets, $field_settings, $row_type ) ||
-				$markup_field_instance->is_with_field_wrapper( $layout_settings, $field_settings, $field_meta );
-	}
-
-	public function is_with_row_wrapper(
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta
-	): bool {
-		return $layout_settings->is_with_unnecessary_wrappers ||
-				'' !== $field_settings->label ||
-				$this->provider_cluster->is_field_type_with_sub_fields(
-					$field_meta->get_vendor_name(),
-					$field_meta->get_type()
-				);
 	}
 }

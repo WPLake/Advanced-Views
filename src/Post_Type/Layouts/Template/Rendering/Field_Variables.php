@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Template;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
-class Field_Variables {
+final class Field_Variables {
 	private Field_Provider_Cluster $provider_cluster;
 	private Field_Template $field_template;
 
@@ -43,10 +43,9 @@ class Field_Variables {
 		bool $is_for_validation = false,
 		$formatted_value = null
 	): array {
-		$markup_field = $this->provider_cluster->get_markup_field_instance(
-			$this->provider_cluster->get_vendor_name_by_key( $field_settings->key ),
-			$field_meta->get_type()
-		);
+		$vendor_name  = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
+		$field_type   = $field_meta->get_type();
+		$markup_field = $this->provider_cluster->get_markup_field_instance( $vendor_name, $field_type );
 
 		if ( null === $markup_field ) {
 			return array();
@@ -74,7 +73,9 @@ class Field_Variables {
 			$markup_field->get_template_variables( $variable_field_data ) :
 			$markup_field->get_validation_template_variables( $variable_field_data );
 
-		return $this->apply_field_data_filter( $field_data, $field_meta, $layout_settings->get_unique_id( true ) );
+		$short_unique_id = $layout_settings->get_unique_id( true );
+
+		return $this->apply_field_data_filter( $field_data, $field_meta, $short_unique_id );
 	}
 
 	/**
@@ -87,6 +88,9 @@ class Field_Variables {
 		Field_Meta $field_meta,
 		string $short_unique_view_id
 	): array {
+		$field_type = $field_meta->get_type();
+		$field_name = $field_meta->get_name();
+
 		$field_data = Plugin::apply_filters(
 			array(
 				'advanced_views/layout/field_data',
@@ -100,8 +104,8 @@ class Field_Variables {
 		if ( $field_meta->is_native_type() ) {
 			$field_data = Plugin::apply_filters(
 				array(
-					sprintf( 'advanced_views/layout/field_data/type=%s', $field_meta->get_type() ),
-					sprintf( 'acf_views/view/field_data/type=%s', $field_meta->get_type() ),
+					sprintf( 'advanced_views/layout/field_data/type=%s', $field_type ),
+					sprintf( 'acf_views/view/field_data/type=%s', $field_type ),
 				),
 				$field_data,
 				$field_meta,
@@ -111,8 +115,8 @@ class Field_Variables {
 
 		$field_data = Plugin::apply_filters(
 			array(
-				sprintf( 'advanced_views/layout/field_data/name=%s', $field_meta->get_name() ),
-				sprintf( 'acf_views/view/field_data/name=%s', $field_meta->get_name() ),
+				sprintf( 'advanced_views/layout/field_data/name=%s', $field_name ),
+				sprintf( 'acf_views/view/field_data/name=%s', $field_name ),
 			),
 			$field_data,
 			$field_meta,

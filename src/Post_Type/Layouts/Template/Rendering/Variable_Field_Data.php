@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Template;
 
-class Variable_Field_Data extends Field_Data {
+final class Variable_Field_Data extends Field_Data {
 	/**
 	 * In case of repeater field, the formatted value isn't available directly
 	 *
@@ -75,12 +75,11 @@ class Variable_Field_Data extends Field_Data {
 		}
 
 		// get the formatted value on fly (as it's used for some fields only, and shouldn't be called for all fields).
-		return $this->layout->get_field_value(
-			$this->get_field_data(),
-			$this->get_field_meta(),
-			$this->get_item_data(),
-			true
-		);
+		$field_settings = $this->get_field_data();
+		$field_meta     = $this->get_field_meta();
+		$item_settings  = $this->get_item_data();
+
+		return $this->layout->get_field_value( $field_settings, $field_meta, $item_settings, true );
 	}
 
 	public function convert_value_to_date_time(): ?DateTime {
@@ -88,7 +87,9 @@ class Variable_Field_Data extends Field_Data {
 			return null;
 		}
 
-		return $this->layout->convert_string_to_date_time( $this->get_field_meta(), $this->value );
+		$field_meta = $this->get_field_meta();
+
+		return $this->layout->convert_string_to_date_time( $field_meta, $this->value );
 	}
 
 	/**
