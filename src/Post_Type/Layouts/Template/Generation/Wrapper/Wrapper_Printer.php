@@ -2,25 +2,17 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Format_Token;
 
-final class Row_Wrapper_Printer {
-	private Token_Factory_Storage $token_factory_storage;
-
-	public function __construct( Token_Factory_Storage $token_factory_storage ) {
-		$this->token_factory_storage = $token_factory_storage;
-	}
-
+final class Wrapper_Printer {
 	public static function print_row_wrapper(
 		string $field_name_class,
 		Layout_Settings $layout_settings,
@@ -40,11 +32,10 @@ final class Row_Wrapper_Printer {
 	}
 
 	/**
-	 * @param Template_Pattern[] $field_assets
+	 * @param array<string,string> $attrs
 	 */
 	public static function print_field_wrapper(
-		array $field_assets,
-		string $field_id,
+		array $attrs,
 		int &$tabs_number,
 		bool $is_with_row_wrapper,
 		Layout_Settings $layout_settings,
@@ -52,7 +43,6 @@ final class Row_Wrapper_Printer {
 		string $field_name_class,
 		string $tag
 	): void {
-		$attrs      = self::merge_field_wrapper_attrs( $field_assets, $field_settings, $field_id );
 		$attr_class = $attrs['class'] ?? '';
 
 		unset( $attrs['class'] );
@@ -109,7 +99,8 @@ final class Row_Wrapper_Printer {
 		}
 	}
 
-	public function print_label(
+	public static function print_label(
+		Token_Factory $token_factory,
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
 		int &$tabs_number,
@@ -124,12 +115,10 @@ final class Row_Wrapper_Printer {
 		Format_Token::next_line();
 		Format_Token::tabulation( ++$tabs_number );
 
-		$token_generator = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
-
-		$var = $token_generator->variable( $field_id )
+		$var = $token_factory->variable( $field_id )
 								->add_item_path( 'label' );
 
-		$token_generator->to_echo( $var )
+		$token_factory->to_echo( $var )
 						->print();
 
 		Format_Token::next_line();
@@ -138,22 +127,6 @@ final class Row_Wrapper_Printer {
 		echo '</p>';
 
 		Format_Token::next_line();
-	}
-
-	/**
-	 * @param Template_Pattern[] $field_assets
-	 *
-	 * @return array<string,string>
-	 */
-	protected static function merge_field_wrapper_attrs( array $field_assets, Field_Settings $field_settings, string $field_id ): array {
-		$attrs = array();
-
-		foreach ( $field_assets as $field_asset ) {
-			$asset_attrs = $field_asset->get_field_wrapper_attrs( $field_settings, $field_id );
-			$attrs       = array_merge( $attrs, $asset_attrs );
-		}
-
-		return $attrs;
 	}
 
 	/**

@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Wrapper_Printer;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Wrapper_Printer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory_Storage;
@@ -23,13 +23,11 @@ class Field_Template {
 	private Field_Provider_Cluster $provider_cluster;
 	private Front_Assets $front_assets;
 	private Token_Factory_Storage $token_factory_storage;
-	private Row_Wrapper_Printer $wrapper_printer;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
 		$this->provider_cluster      = $provider_cluster;
 		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;
-		$this->wrapper_printer       = new Row_Wrapper_Printer( $token_factory_storage );
 	}
 
 	// public, as used in Upgrades.
@@ -151,13 +149,13 @@ class Field_Template {
 
 		if ( strlen( $field_settings->label ) > 0 &&
 			$is_label_out_of_row ) {
-			$this->wrapper_printer->print_label( $layout_settings, $field_settings, $tabs_number, $field_id );
+			Wrapper_Printer::print_label( $token_factory, $layout_settings, $field_settings, $tabs_number, $field_id );
 		}
 
 		if ( $is_with_row_wrapper ) {
 			$row_class = self::get_row_wrapper_class( $field_assets, $row_type );
 
-			Row_Wrapper_Printer::print_row_wrapper(
+			Wrapper_Printer::print_row_wrapper(
 				$field_name_class,
 				$layout_settings,
 				$row_type,
@@ -169,13 +167,14 @@ class Field_Template {
 
 		if ( '' !== $field_settings->label &&
 			! $is_label_out_of_row ) {
-			$this->wrapper_printer->print_label( $layout_settings, $field_settings, $tabs_number, $field_id );
+			Wrapper_Printer::print_label( $token_factory, $layout_settings, $field_settings, $tabs_number, $field_id );
 		}
 
 		if ( $is_with_field_wrapper ) {
-			Row_Wrapper_Printer::print_field_wrapper(
-				$field_assets,
-				$field_id,
+			$wrapper_attrs = self::merge_field_wrapper_attrs( $field_assets, $field_settings, $field_id );
+
+			Wrapper_Printer::print_field_wrapper(
+				$wrapper_attrs,
 				$tabs_number,
 				$is_with_row_wrapper,
 				$layout_settings,
@@ -189,7 +188,7 @@ class Field_Template {
 
 		$is_with_outer_wrappers = array() !== $field_outers;
 
-		Row_Wrapper_Printer::print_opening_field_outers( $field_outers, $tabs_number, $token_factory );
+		Wrapper_Printer::print_opening_field_outers( $field_outers, $tabs_number, $token_factory );
 
 		if ( strlen( $custom_field_markup ) > 0 ) {
 			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -207,7 +206,7 @@ class Field_Template {
 			);
 		}
 
-		Row_Wrapper_Printer::print_closing_field_outers( $field_outers, $tabs_number );
+		Wrapper_Printer::print_closing_field_outers( $field_outers, $tabs_number );
 
 		if ( $is_with_field_wrapper ) {
 			Format_Token::tabulation( --$tabs_number );
@@ -342,5 +341,21 @@ class Field_Template {
 		}
 
 		return Template_Field_Data::merge_outers( $assets_outers );
+	}
+
+	/**
+	 * @param Template_Pattern[] $field_assets
+	 *
+	 * @return array<string,string>
+	 */
+	protected static function merge_field_wrapper_attrs( array $field_assets, Field_Settings $field_settings, string $field_id ): array {
+		$attrs = array();
+
+		foreach ( $field_assets as $field_asset ) {
+			$asset_attrs = $field_asset->get_field_wrapper_attrs( $field_settings, $field_id );
+			$attrs       = array_merge( $attrs, $asset_attrs );
+		}
+
+		return $attrs;
 	}
 }
