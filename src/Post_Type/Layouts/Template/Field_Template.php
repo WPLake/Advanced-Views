@@ -341,7 +341,7 @@ class Field_Template {
 		}
 
 		$token_factory     = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
-		$markup_field_data = new Markup_Field_Data(
+		$markup_field_data = new Template_Field_Data(
 			$layout_settings,
 			$item_settings,
 			$field_settings,

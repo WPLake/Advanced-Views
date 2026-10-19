@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 
-class Variable_Field_Data extends Template_Field_Data {
+class Variable_Field_Data extends Field_Data {
 	/**
 	 * In case of repeater field, the formatted value isn't available directly
 	 *
