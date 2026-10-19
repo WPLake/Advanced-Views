@@ -30,6 +30,7 @@ class Variable_Field_Data extends Template_Field_Data {
 	 */
 	private $value;
 	private Layout $layout;
+	private Field_Variables $field_variables;
 
 	public function __construct(
 		Layout_Settings $layout_settings,
@@ -39,12 +40,14 @@ class Variable_Field_Data extends Template_Field_Data {
 		Field_Template $field_markup,
 		Layout $layout,
 		Source $source,
-		Markup_Field $markup_field
+		Markup_Field $markup_field,
+		Field_Variables $field_variables
 	) {
 		parent::__construct( $layout_settings, $item_settings, $field_settings, $field_meta, $field_markup, $markup_field );
 
 		$this->layout                 = $layout;
 		$this->source                 = $source;
+		$this->field_variables        = $field_variables;
 		$this->formatted_value        = null;
 		$this->is_set_formatted_value = false;
 
@@ -98,6 +101,10 @@ class Variable_Field_Data extends Template_Field_Data {
 	 */
 	public function set_value( $value ): void {
 		$this->value = $value;
+	}
+
+	public function get_field_variables(): Field_Variables {
+		return $this->field_variables;
 	}
 
 	public function get_source(): Source {

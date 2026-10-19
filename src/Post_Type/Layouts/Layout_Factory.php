@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Template;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Variables;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use WP_REST_Request;
 
@@ -20,7 +20,7 @@ class Layout_Factory extends Instance_Factory {
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Layout_Markup $layout_markup;
 	protected Template_Renderer_Storage $template_renderer_storage;
-	protected Field_Template $field_markup;
+	protected Field_Variables $field_variables;
 	protected Field_Provider_Cluster $provider_cluster;
 
 	public function __construct(
@@ -28,7 +28,7 @@ class Layout_Factory extends Instance_Factory {
 		Layout_Settings_Storage $layouts_settings_storage,
 		Layout_Markup $layout_markup,
 		Template_Renderer_Storage $template_renderer_storage,
-		Field_Template $field_markup,
+		Field_Variables $field_variables,
 		Field_Provider_Cluster $provider_cluster
 	) {
 		parent::__construct( $front_assets );
@@ -36,7 +36,7 @@ class Layout_Factory extends Instance_Factory {
 		$this->layouts_settings_storage  = $layouts_settings_storage;
 		$this->layout_markup             = $layout_markup;
 		$this->template_renderer_storage = $template_renderer_storage;
-		$this->field_markup              = $field_markup;
+		$this->field_variables           = $field_variables;
 		$this->provider_cluster          = $provider_cluster;
 	}
 
@@ -125,7 +125,7 @@ class Layout_Factory extends Instance_Factory {
 			$markup,
 			$settings,
 			$source,
-			$this->field_markup,
+			$this->field_variables,
 			$classes
 		);
 	}

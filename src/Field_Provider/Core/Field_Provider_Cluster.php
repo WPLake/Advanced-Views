@@ -42,6 +42,12 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	 * @var array<string, array<string, Field_Meta>>
 	 */
 	private array $field_meta_cache;
+	/**
+	 * Vendor => field_type => Markup_Field.
+	 *
+	 * @var array<string, array<string, Markup_Field|null>>
+	 */
+	private array $markup_field_cache;
 	private Instance_Container $container;
 	/**
 	 * @var class-string<Field_Provider>[]
@@ -58,6 +64,7 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		$this->provider_classes = $provider_classes;
 		$this->provider_cluster = array();
 		$this->field_meta_cache = array();
+		$this->markup_field_cache = array();
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -196,7 +203,11 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 			return null;
 		}
 
-		return $this->provider_cluster[ $vendor_name ]->get_markup_field_instance( $field_type );
+		if ( ! key_exists( $field_type, $this->markup_field_cache[ $vendor_name ] ?? array() ) ) {
+			$this->markup_field_cache[ $vendor_name ][ $field_type ] = $this->provider_cluster[ $vendor_name ]->get_markup_field_instance( $field_type );
+		}
+
+		return $this->markup_field_cache[ $vendor_name ][ $field_type ];
 	}
 
 	public function is_empty_value_supported_in_markup( string $vendor_name, string $field_type ): bool {

@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Template;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Variables;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
@@ -26,7 +26,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 class Layout extends Instance {
 	private Layout_Settings $layout_settings;
 	private Field_Provider_Cluster $provider_cluster;
-	private Field_Template $field_markup;
+	private Field_Variables $field_variables;
 	private Template_Renderer_Storage $template_renderer_storage;
 	/**
 	 * @var array<string, mixed>
@@ -46,7 +46,7 @@ class Layout extends Instance {
 		string $twig_template,
 		Layout_Settings $layout_settings,
 		Source $source,
-		Field_Template $field_markup,
+		Field_Variables $field_variables,
 		string $classes = ''
 	) {
 		parent::__construct( $layout_settings, $twig_template, $classes );
@@ -54,7 +54,7 @@ class Layout extends Instance {
 		$this->layout_settings           = $layout_settings;
 		$this->provider_cluster          = $provider_cluster;
 		$this->source                    = $source;
-		$this->field_markup              = $field_markup;
+		$this->field_variables           = $field_variables;
 		$this->template_renderer_storage = $template_renderer_storage;
 		$this->field_values              = array();
 		$this->local_data                = null;
@@ -222,7 +222,7 @@ class Layout extends Instance {
 		$field_value,
 		bool $is_for_validation
 	): array {
-		$twig_args = $this->field_markup->get_field_twig_args(
+		$twig_args = $this->field_variables->get_field_twig_args(
 			$this->layout_settings,
 			$item_settings,
 			$item_settings->field,
