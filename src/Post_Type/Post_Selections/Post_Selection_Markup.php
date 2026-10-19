@@ -412,10 +412,10 @@ class Post_Selection_Markup {
 		if ( ! $post_selection_settings->has_unique_bem_name() ) {
 			echo ' ' . sprintf( '%s--id--', esc_html( $post_selection_settings->get_bem_name() ) );
 
-			$var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
-								->add_item_path( 'id' );
-
-			echo $var->to_display();
+			echo $token_factory
+				->variable( Hard_Post_Selection_Cpt::variable_name() )
+				->add_item_path( 'id' )
+				->to_display();
 
 		}
 		echo '">';
@@ -472,9 +472,10 @@ class Post_Selection_Markup {
 			'<div class="%s">',
 			esc_html( $no_posts_message_class )
 		);
-		$var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
-							->add_item_path( 'no_posts_found_message' );
-		echo $var->to_display();
+		echo $token_factory
+			->variable( Hard_Post_Selection_Cpt::variable_name() )
+			->add_item_path( 'no_posts_found_message' )
+			->to_display();
 
 		echo '</div>';
 

@@ -18,11 +18,12 @@ class Woo_Regular_Price_Field extends Markup_Field_Base {
 	use Custom_Field;
 
 	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
-		$var = $markup_field_data->get_token_factory()
-								->variable( $field_id )
-								->add_item_path( self::VALUE );
+		$token_factory = $markup_field_data->get_token_factory();
 
-		echo $var->to_display();
+		echo $token_factory
+			->variable( $field_id )
+			->add_item_path( self::VALUE )
+			->to_display();
 	}
 
 	/**

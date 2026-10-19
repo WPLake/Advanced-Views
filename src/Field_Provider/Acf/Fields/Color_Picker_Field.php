@@ -40,8 +40,7 @@ class Color_Picker_Field extends Markup_Field_Base {
 				echo ';';
 			}
 
-			$var = $token_factory->variable( $field_id )->add_item_path( $parts[ $i ] );
-			echo $var->to_display();
+			echo $token_factory->variable( $field_id )->add_item_path( $parts[ $i ] )->to_display();
 		}
 
 		echo ')';

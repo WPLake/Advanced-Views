@@ -18,13 +18,10 @@ class Comment_Content_Field extends Markup_Field_Base {
 	use Custom_Field;
 
 	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
-		$token_generator = $markup_field_data->get_token_factory();
-
-		$var = $token_generator->variable( $field_id )
-								->add_item_path( self::VALUE );
+		$token_factory = $markup_field_data->get_token_factory();
 
 		// escaped by default, not raw - as commentId may point on a pending comment with unverified content.
-		echo $var->to_display();
+		echo $token_factory->variable( $field_id )->add_item_path( self::VALUE )->to_display();
 	}
 
 	/**

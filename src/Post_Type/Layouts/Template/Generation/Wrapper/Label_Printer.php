@@ -52,8 +52,7 @@ final class Label_Printer {
 			->new_line()
 			->tab( ++$tabs_number );
 
-		$var = $token_factory->variable( $field_id )->add_item_path( 'label' );
-		echo $var->to_display();
+		echo $token_factory->variable( $field_id )->add_item_path( 'label' )->to_display();
 
 		$token_factory->format()
 						->new_line()

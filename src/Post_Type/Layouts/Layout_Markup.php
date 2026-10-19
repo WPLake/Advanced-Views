@@ -130,9 +130,10 @@ class Layout_Markup {
 
 			printf( ' %s--object-id--', esc_html( $bem_name ) );
 
-			$var = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
-								->add_item_path( 'object_id' );
-			echo $var->to_display();
+			echo $token_factory
+				->variable( Hard_Layout_Cpt::variable_name() )
+				->add_item_path( 'object_id' )
+				->to_display();
 
 		}
 		echo '">';

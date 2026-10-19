@@ -26,9 +26,7 @@ class True_False_Field extends Markup_Field_Base {
 		);
 
 		ob_start();
-		$var = $token_factory->variable( $field_id )
-							->add_item_path( self::STATE );
-		echo $var->to_display();
+		echo $token_factory->variable( $field_id )->add_item_path( self::STATE )->to_display();
 
 		$code = (string) ob_get_clean();
 

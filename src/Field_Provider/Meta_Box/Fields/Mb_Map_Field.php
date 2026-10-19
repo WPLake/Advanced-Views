@@ -15,10 +15,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Fiel
 
 class Mb_Map_Field extends Markup_Field_Base {
 	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
-		$var = $markup_field_data->get_token_factory()->variable( $field_id )
-								->add_item_path( self::VALUE );
+		$token_factory = $markup_field_data->get_token_factory();
 
-		echo $var->to_display()->set_is_raw( true );
+		echo $token_factory
+			->variable( $field_id )
+			->add_item_path( self::VALUE )
+			->to_display()
+			->set_is_raw( true );
 	}
 
 	/**
