@@ -8,8 +8,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Link_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\List_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Template_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 
 defined( 'ABSPATH' ) || exit;
 

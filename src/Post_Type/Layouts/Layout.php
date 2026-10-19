@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Variables;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Field_Variables;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
@@ -222,7 +222,7 @@ class Layout extends Instance {
 		$field_value,
 		bool $is_for_validation
 	): array {
-		$twig_args = $this->field_variables->get_field_twig_args(
+		$twig_args = $this->field_variables->get_field_variables(
 			$this->layout_settings,
 			$item_settings,
 			$item_settings->field,
