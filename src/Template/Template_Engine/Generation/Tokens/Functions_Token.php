@@ -25,9 +25,7 @@ abstract class Functions_Token {
 			->token_factory
 			->function( $this->include_inner_layout_for_flexible_name() )
 			->set_arguments( array( $views_variable, $item_variable, $classes_literal ) )
-			->to_display()
-			->set_is_raw( true )
-			->print_token();
+			->raw_display();
 	}
 
 	public function include_inner_layout( string $field_id, string $data_field_id, string $inner_view_class ): void {
@@ -41,9 +39,7 @@ abstract class Functions_Token {
 			->token_factory
 			->function( $this->include_inner_layout_name() )
 			->set_arguments( array( $layout_id_var, $data_var, $class_literal ) )
-			->to_display()
-			->set_is_raw( true )
-			->print_token();
+			->raw_display();
 	}
 
 	/**
@@ -69,9 +65,7 @@ abstract class Functions_Token {
 			->token_factory
 			->function( 'paginate_links' )
 			->set_arguments( array( $settings_literal ) )
-			->to_display()
-			->set_is_raw( true )
-			->print_token();
+			->raw_display();
 	}
 
 	abstract protected function include_inner_layout_for_flexible_name(): string;

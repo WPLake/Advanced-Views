@@ -33,7 +33,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 				$this->get_field_class( 'comment', $markup_field_data )
 			),
 		);
-		$token_factory->format()->
+		$token_factory->formatter()->
 		new_line();
 		$markup_field_data->increment_and_print_tabs();
 
@@ -48,21 +48,21 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 			)
 		);
 
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
 		$var = $token_factory
 								->variable( $item_id )
 								->add_item_path( self::AUTHOR_NAME );
-		$var->to_display()->print_token();
+		$var->display();
 
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 
 		echo '</div>';
 
 		// comment author email.
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 		$markup_field_data->print_tabs();
 
 		printf(
@@ -75,7 +75,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 			)
 		);
 
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
 		// escaped by default, even we query approved comments -
@@ -84,16 +84,15 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 			->get_token_factory()
 			->variable( 'comment_item' )
 			->add_item_path( self::CONTENT )
-			->to_display()
-			->print_token();
+			->display();
 
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 
 		echo '</div>';
 
 		// closing 'comment' div.
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 
 		echo '</div>';
@@ -109,7 +108,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 
 		printf( '[%s', esc_html( Hard_Layout_Cpt::cpt_name() ) );
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->attributes(
 							array(
 								'id'         => $id_var,
@@ -221,19 +220,19 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 
 		$body = $token_factory->html(
 			function () use ( $token_factory, $markup_field_data, $field_id, $item_var ) {
-				$token_factory->format()
+				$token_factory->formatter()
 							->new_line();
 				$markup_field_data->increment_and_print_tabs();
 
 				$this->print_item( $field_id, $item_var->get_name(), $markup_field_data );
 
-				$token_factory->format()
+				$token_factory->formatter()
 							->new_line();
 				$markup_field_data->decrement_and_print_tabs();
 			}
 		);
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->print_tabs();
 
@@ -243,7 +242,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 				->set_body( $body )
 			->print_token();
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 	}
 
@@ -292,7 +291,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
 
 		return array(
-			self::VALUE => array(
+			self::VALUE     => array(
 				$this->get_item_twig_args( null, $variable_field_data->get_field_data(), true ),
 			),
 			self::VIEW_ID   => $layout_id,

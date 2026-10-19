@@ -51,5 +51,5 @@ interface Token_Factory {
 
 	public function range(): Range_Token;
 
-	public function format(): Format_Token;
+	public function formatter(): Format_Token;
 }

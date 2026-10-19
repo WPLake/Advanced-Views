@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\V
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Echo_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token_Base;
 
 abstract class Variable_Token extends Template_Token_Base {
@@ -20,10 +20,10 @@ abstract class Variable_Token extends Template_Token_Base {
 	protected bool $is_object  = false;
 
 	/**
-	 * @param class-string<Echo_Token> $echo_token_class
+	 * @param class-string<Token_Printer> $printer_class
 	 */
-	public function __construct( string $echo_token_class, string $name ) {
-		parent::__construct( $echo_token_class );
+	public function __construct( string $printer_class, string $name ) {
+		parent::__construct( $printer_class );
 
 		$this->set_name( $name );
 	}

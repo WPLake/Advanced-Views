@@ -65,7 +65,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 	protected function print_icon_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
 		printf(
@@ -77,30 +77,30 @@ class Icon_Picker_Field extends Markup_Field_Base {
 				)
 			),
 		);
-		$token_factory->variable( $field_id )->add_item_path( self::VALUE )->to_display()->print_token();
+		$token_factory->variable( $field_id )->add_item_path( self::VALUE )->display();
 
 		echo '"></i>';
 
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 	}
 
 	protected function print_icon_image_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
 		$this->image_field->print_markup( $field_id, $markup_field_data );
 
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 	}
 
 	protected function print_custom_image_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
 		printf(
@@ -112,11 +112,11 @@ class Icon_Picker_Field extends Markup_Field_Base {
 				)
 			),
 		);
-		$token_factory->variable( $field_id )->add_item_path( self::VALUE )->to_display()->print_token();
+		$token_factory->variable( $field_id )->add_item_path( self::VALUE )->display();
 
 		echo '" loading="lazy" alt="icon">';
 
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 	}
 

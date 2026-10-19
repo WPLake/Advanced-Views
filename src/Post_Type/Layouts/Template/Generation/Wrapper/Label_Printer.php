@@ -19,7 +19,7 @@ final class Label_Printer {
 		int &$tabs_number,
 		string $field_id
 	): void {
-		$token_factory->format()
+		$token_factory->formatter()
 						->tab( $tabs_number );
 
 		$classes = self::resolve_classes( $layout_settings, $field_settings );
@@ -48,16 +48,15 @@ final class Label_Printer {
 	}
 
 	protected static function print_variable( Token_Factory $token_factory, int &$tabs_number, string $field_id ): void {
-		$token_factory->format()
+		$token_factory->formatter()
 			->new_line()
 			->tab( ++$tabs_number );
 
 		$token_factory->variable( $field_id )
 							->add_item_path( 'label' )
-							->to_display()
-							->print_token();
+							->display();
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line()
 						->tab( --$tabs_number );
 	}

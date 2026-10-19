@@ -23,8 +23,7 @@ class Woo_Height_Field extends Markup_Field_Base {
 		$token_factory
 			->variable( $field_id )
 			->add_item_path( self::VALUE )
-			->to_display()
-			->print_token();
+			->display();
 	}
 
 	/**

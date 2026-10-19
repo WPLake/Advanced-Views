@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Tokens\Blade_Comment;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Tokens\Blade_Echo;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Tokens\Blade_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Tokens\Blade_Loop;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Tokens\Conditional\Blade_IF;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Tokens\Variable\Blade_Assignment;
@@ -27,27 +27,27 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Tokens\Variab
 
 final class Blade_Tokens extends Token_Factory_Base {
 	public function comment( string $content ): Comment_Token {
-		return new Blade_Comment( $this->echo_token_class, $content );
+		return new Blade_Comment( $this->printer_class, $content );
 	}
 
 	public function variable( string $name ): Variable_Token {
-		return new PHP_Variable( $this->echo_token_class, $name );
+		return new PHP_Variable( $this->printer_class, $name );
 	}
 
 	public function if(): IF_Token {
-		return new Blade_IF( $this->echo_token_class );
+		return new Blade_IF( $this->printer_class );
 	}
 
 	public function loop(): Loop_Token {
-		return new Blade_Loop( $this->echo_token_class, $this );
+		return new Blade_Loop( $this->printer_class, $this );
 	}
 
 	public function assignment(): Assignment_Token {
-		return new Blade_Assignment( $this->echo_token_class );
+		return new Blade_Assignment( $this->printer_class );
 	}
 
 	public function literal( $value ): Literal_Token {
-		return new PHP_Literal( $this->echo_token_class, $value );
+		return new PHP_Literal( $this->printer_class, $value );
 	}
 
 	public function functions(): Functions_Token {
@@ -55,6 +55,6 @@ final class Blade_Tokens extends Token_Factory_Base {
 	}
 
 	public function range(): Range_Token {
-		return new PHP_Range( $this->echo_token_class );
+		return new PHP_Range( $this->printer_class );
 	}
 }

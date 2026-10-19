@@ -36,7 +36,7 @@ class Link_Field extends Markup_Field_Base {
 
 		echo '<a';
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->attribute( 'target', $target_var );
 
 		printf(
@@ -49,12 +49,12 @@ class Link_Field extends Markup_Field_Base {
 			)
 		);
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->attribute( 'href', $href_var );
 
 		echo '>';
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
@@ -63,10 +63,9 @@ class Link_Field extends Markup_Field_Base {
 			->set_left_operand( $link_label_var )
 			->set_comparison_empty()
 			->set_right_operand( $title_var )
-			->to_display()
-			->print_token();
+			->display();
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 

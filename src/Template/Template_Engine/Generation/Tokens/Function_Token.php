@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Printer;
 
 class Function_Token extends Template_Token_Base {
 	protected string $name;
@@ -17,10 +18,10 @@ class Function_Token extends Template_Token_Base {
 	protected array $arguments;
 
 	/**
-	 * @param class-string<Echo_Token> $echo_token_class
+	 * @param class-string<Token_Printer> $printer_class
 	 */
-	public function __construct( string $echo_token_class, string $name ) {
-		parent::__construct( $echo_token_class );
+	public function __construct( string $printer_class, string $name ) {
+		parent::__construct( $printer_class );
 
 		$this->name = $name;
 	}

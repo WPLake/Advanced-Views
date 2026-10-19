@@ -77,7 +77,7 @@ abstract class List_Field extends Markup_Field_Base {
 			fn() => $this->print_loop_body( $loop->get_index_variable(), $field_id, $markup_field_data )
 		);
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->print_tabs();
 
@@ -85,7 +85,7 @@ abstract class List_Field extends Markup_Field_Base {
 						->set_body( $loop_body )
 						->print_token();
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 	}
 
@@ -93,7 +93,7 @@ abstract class List_Field extends Markup_Field_Base {
 		$token_factory    = $markup_field_data->get_token_factory();
 		$is_delimiter_set = strlen( $markup_field_data->get_field_data()->options_delimiter ) > 0;
 
-		$token_factory->format()
+		$token_factory->formatter()
 			->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
@@ -109,7 +109,7 @@ abstract class List_Field extends Markup_Field_Base {
 				->set_condition( $secondary_element_comparison )
 				->set_body( $token_factory->html( fn() => $this->print_item_delimiter( $field_id, $markup_field_data ) ) );
 
-			$token_factory->format()
+			$token_factory->formatter()
 						->new_line();
 			$markup_field_data->print_tabs();
 
@@ -121,7 +121,7 @@ abstract class List_Field extends Markup_Field_Base {
 
 		$this->print_inner_item( $field_id, $markup_field_data );
 
-		$token_factory->format()
+		$token_factory->formatter()
 			->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 	}
@@ -129,7 +129,7 @@ abstract class List_Field extends Markup_Field_Base {
 	protected function print_item_delimiter( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
@@ -144,19 +144,19 @@ abstract class List_Field extends Markup_Field_Base {
 			)
 		);
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		$token_factory->variable( $field_id )->add_item_path( self::OPTIONS_DELIMITER )->to_display()->print_token();
+		$token_factory->variable( $field_id )->add_item_path( self::OPTIONS_DELIMITER )->display();
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 
 		echo '</span>';
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 	}

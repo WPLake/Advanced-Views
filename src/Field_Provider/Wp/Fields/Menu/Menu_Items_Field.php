@@ -46,7 +46,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 
 		printf( '[%s', esc_html( Hard_Layout_Cpt::cpt_name() ) );
 
-		$token_factory->format()
+		$token_factory->formatter()
 			->attributes(
 				array(
 					'id'        => $id_var,
@@ -67,7 +67,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 			fn()=>$this->print_loop_body( $field_id, $item_var->get_name(), $markup_field_data )
 		);
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->print_tabs();
 
@@ -77,14 +77,14 @@ class Menu_Items_Field extends Markup_Field_Base {
 						->set_body( $loop_body )
 						->print_token();
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 	}
 
 	protected function print_loop_body( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
@@ -136,7 +136,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 
 		echo '</li>';
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 	}
@@ -144,7 +144,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 	protected function print_children( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
@@ -159,7 +159,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 			)
 		);
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line( 2 );
 		$markup_field_data->increment_and_print_tabs();
 
@@ -176,13 +176,13 @@ class Menu_Items_Field extends Markup_Field_Base {
 						->set_body( $loop_body )
 						->print_token();
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line( 2 );
 		$markup_field_data->decrement_and_print_tabs();
 
 		echo '</ul>';
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 	}
@@ -190,7 +190,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 	protected function print_sub_loop_body( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$token_factory->format()
+		$token_factory->formatter()
 		->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
@@ -210,19 +210,19 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$this->print_conditional_class( 'sub-menu-item--active', $is_active_var, $markup_field_data );
 		echo '">';
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
 		$this->print_item_markup( $field_id, $item_id, $markup_field_data );
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 
 		echo '</li>';
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 	}

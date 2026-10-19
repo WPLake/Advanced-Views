@@ -32,7 +32,7 @@ class Post_Attachment_Video extends Markup_Field_Base {
 			),
 		);
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
@@ -43,7 +43,7 @@ class Post_Attachment_Video extends Markup_Field_Base {
 
 		echo '<source';
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->attributes(
 							array(
 								'src'  => $src_var,
@@ -53,7 +53,7 @@ class Post_Attachment_Video extends Markup_Field_Base {
 
 		echo '>';
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 

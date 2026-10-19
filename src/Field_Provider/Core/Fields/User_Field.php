@@ -65,7 +65,7 @@ class User_Field extends List_Field {
 
 		printf( '[%s', esc_html( Hard_Layout_Cpt::cpt_name() ) );
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->attributes(
 							array(
 								'id'        => $id_var,

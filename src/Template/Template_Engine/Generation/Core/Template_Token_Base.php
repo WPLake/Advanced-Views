@@ -6,22 +6,24 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Echo_Token;
-
 abstract class Template_Token_Base implements Template_Token {
 	/**
-	 * @var class-string<Echo_Token>
+	 * @var class-string<Token_Printer>
 	 */
-	protected string $echo_token_class;
+	protected string $printer_class;
 
 	/**
-	 * @param class-string<Echo_Token> $echo_token_class
+	 * @param class-string<Token_Printer> $printer_class
 	 */
-	public function __construct( string $echo_token_class ) {
-		$this->echo_token_class = $echo_token_class;
+	public function __construct( string $printer_class ) {
+		$this->printer_class = $printer_class;
 	}
 
-	public function to_display(): Echo_Token {
-		return new $this->echo_token_class( $this );
+	public function display(): void {
+		$this->printer_class::display( $this );
+	}
+
+	public function raw_display(): void {
+		$this->printer_class::raw_display( $this );
 	}
 }

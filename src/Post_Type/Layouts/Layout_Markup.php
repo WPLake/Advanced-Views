@@ -68,7 +68,7 @@ class Layout_Markup {
 					$row_type = $field_type;
 				}
 
-				$token_factory->format()
+				$token_factory->formatter()
 								->new_line();
 
 				$this->field_markup->print_row_markup(
@@ -82,7 +82,7 @@ class Layout_Markup {
 					$field_id
 				);
 
-				$token_factory->format()->tab();
+				$token_factory->formatter()->tab();
 			}
 		);
 
@@ -97,12 +97,12 @@ class Layout_Markup {
 			->set_condition( $condition )
 			->set_body( $markup );
 
-		$token_factory->format()->new_line();
-		$token_factory->format()->tab();
+		$token_factory->formatter()->new_line();
+		$token_factory->formatter()->tab();
 
 		$if->print_token();
 
-		$token_factory->format()->new_line( 2 );
+		$token_factory->formatter()->new_line( 2 );
 	}
 
 	protected function generate_markup( Layout_Settings $layout_settings ): void {
@@ -115,7 +115,7 @@ class Layout_Markup {
 		if ( Layout_Settings::CLASS_GENERATION_NONE !== $layout_settings->classes_generation ) {
 			$var = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
 								->add_item_path( 'classes' );
-			$var->to_display()->print_token();
+			$var->display();
 
 			echo esc_html( $bem_name );
 
@@ -124,7 +124,7 @@ class Layout_Markup {
 				printf( ' %s--id--', esc_html( $bem_name ) );
 				$var = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
 											->add_item_path( 'id' );
-				$var->to_display()->print_token();
+				$var->display();
 
 			}
 
@@ -133,18 +133,17 @@ class Layout_Markup {
 			$token_factory
 				->variable( Hard_Layout_Cpt::variable_name() )
 				->add_item_path( 'object_id' )
-				->to_display()
-				->print_token();
+				->display();
 
 		}
 		echo '">';
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 
 		if ( Layout_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $layout_settings->web_component ) {
 			echo '<template shadowrootmode="open">';
-			$token_factory->format()
+			$token_factory->formatter()
 							->new_line();
 		}
 
@@ -158,13 +157,13 @@ class Layout_Markup {
 
 		if ( Cpt_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $layout_settings->web_component ) {
 			echo '</template>';
-			$token_factory->format()
+			$token_factory->formatter()
 							->new_line();
 		}
 
 		printf( '</%s>', esc_html( $tag_name ) );
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 	}
 

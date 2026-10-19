@@ -6,11 +6,11 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
@@ -44,7 +44,7 @@ class Post_Selection_Markup {
 				$pages_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 											->add_item_path( 'pages_amount' );
 
-				$token_factory->format()->new_line();
+				$token_factory->formatter()->new_line();
 				echo "\t\t<div>\r\n";
 				echo "\t\t\t";
 				$token_factory->functions()
@@ -69,7 +69,7 @@ class Post_Selection_Markup {
 
 		$if->print_token();
 
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 	}
 
 	protected function print_items_opening_wrapper(
@@ -95,11 +95,11 @@ class Post_Selection_Markup {
 				' ' . $external;
 		}
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->tab( ++$tabs_number );
 
 		printf( '<div class="%s">', esc_html( $classes ) );
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 	}
 
 	/**
@@ -111,7 +111,7 @@ class Post_Selection_Markup {
 		Token_Factory $token_factory
 	): void {
 		foreach ( $item_outers as $outer ) {
-			$token_factory->format()->tab( ++$tabs_number );
+			$token_factory->formatter()->tab( ++$tabs_number );
 			printf( '<%s', esc_html( $outer->tag ) );
 
 			foreach ( $outer->attrs as $attr => $value ) {
@@ -122,12 +122,12 @@ class Post_Selection_Markup {
 				$var = $token_factory->variable( $variable_info['field_id'] )
 									->add_item_path( $variable_info['item_key'] );
 
-				$token_factory->format()
+				$token_factory->formatter()
 								->attribute( $attr, $var );
 			}
 
 			echo '>';
-			$token_factory->format()
+			$token_factory->formatter()
 							->new_line();
 		}
 	}
@@ -143,10 +143,10 @@ class Post_Selection_Markup {
 	 */
 	protected function print_closing_item_outers( Token_Factory $token_factory, array $item_outers, int &$tabs_number ): void {
 		foreach ( $item_outers as $outer ) {
-			$token_factory->format()
+			$token_factory->formatter()
 							->tab( --$tabs_number );
 			printf( '</%s>', esc_html( $outer->tag ) );
-			$token_factory->format()->new_line();
+			$token_factory->formatter()->new_line();
 		}
 	}
 
@@ -159,7 +159,7 @@ class Post_Selection_Markup {
 
 		printf( '[%s', esc_html( $this->layout_cpt->shortcode() ) );
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->attributes(
 							array(
 								'id'        => $id_var,
@@ -174,7 +174,7 @@ class Post_Selection_Markup {
 		}
 
 		echo ']';
-		$token_factory->format()->new_line();
+		$token_factory->formatter()->new_line();
 	}
 
 	public function print_markup(
@@ -332,7 +332,7 @@ class Post_Selection_Markup {
 	): int {
 		$item_outers = $this->front_assets->get_card_item_outers( $post_selection_settings );
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 
 		$this->print_items_opening_wrapper( $token_factory, $post_selection_settings, $tabs_number );
@@ -344,12 +344,12 @@ class Post_Selection_Markup {
 		$tabs_number = $this->print_items_closing_wrapper( $tabs_number );
 
 		if ( strlen( $post_selection_settings->no_posts_found_message ) > 0 ) {
-			$token_factory->format()
+			$token_factory->formatter()
 							->tab( --$tabs_number );
 		}
 
 		// endif in any case.
-		$token_factory->format()
+		$token_factory->formatter()
 						->tab( --$tabs_number );
 
 		return $tabs_number;
@@ -369,18 +369,18 @@ class Post_Selection_Markup {
 			function () use ( $tabs_number, $post_selection_settings, $token_factory ) {
 				$tabs_number += 2;
 
-				$token_factory->format()
+				$token_factory->formatter()
 					->new_line()
 								->tab( $tabs_number );
 
 				$this->print_shortcode( $post_selection_settings );
 
-				$token_factory->format()
+				$token_factory->formatter()
 								->tab( --$tabs_number );
 			}
 		);
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->tab( ++$tabs_number );
 
 		$token_factory->loop()
@@ -389,7 +389,7 @@ class Post_Selection_Markup {
 						->set_body( $loop_body )
 						->print_token();
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 
 		return $tabs_number;
@@ -405,7 +405,7 @@ class Post_Selection_Markup {
 		$var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 							->add_item_path( 'classes' );
 
-		$var->to_display()->print_token();
+		$var->display();
 
 		echo esc_html( $post_selection_settings->get_bem_name() );
 
@@ -415,19 +415,18 @@ class Post_Selection_Markup {
 			$token_factory
 				->variable( Hard_Post_Selection_Cpt::variable_name() )
 				->add_item_path( 'id' )
-				->to_display()
-				->print_token();
+				->display();
 
 		}
 		echo '">';
 
 		if ( Post_Selection_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $post_selection_settings->web_component ) {
-			$token_factory->format()
+			$token_factory->formatter()
 							->new_line();
 			echo '<template shadowrootmode="open">';
 		}
 
-		$token_factory->format()
+		$token_factory->formatter()
 					->new_line( 2 )
 						->tab( $tabs_number );
 
@@ -435,23 +434,23 @@ class Post_Selection_Markup {
 	}
 
 	protected function print_closing_tag( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): void {
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 
 		$this->print_extra_markup( $post_selection_settings );
 
 		if ( Post_Selection_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $post_selection_settings->web_component ) {
-			$token_factory->format()
+			$token_factory->formatter()
 							->new_line();
 			echo '</template>';
 		}
 
-		$token_factory->format()
+		$token_factory->formatter()
 			->new_line();
 
 		printf( '</%s>', esc_html( $post_selection_settings->get_tag_name() ) );
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 	}
 
@@ -462,7 +461,7 @@ class Post_Selection_Markup {
 	): int {
 		$tabs_number += 2;
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line()
 						->tab( $tabs_number );
 
@@ -476,12 +475,11 @@ class Post_Selection_Markup {
 		$token_factory
 			->variable( Hard_Post_Selection_Cpt::variable_name() )
 			->add_item_path( 'no_posts_found_message' )
-			->to_display()
-			->print_token();
+			->display();
 
 		echo '</div>';
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line()
 			->tab( --$tabs_number );
 

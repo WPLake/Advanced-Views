@@ -44,7 +44,7 @@ class Image_Field extends Markup_Field_Base {
 			$var = $token_factory->variable( $variable_info['field_id'] )
 									->add_item_path( $variable_info['item_key'] );
 
-			$token_factory->format()
+			$token_factory->formatter()
 				->attribute( $name, $var );
 		}
 	}
@@ -76,7 +76,7 @@ class Image_Field extends Markup_Field_Base {
 			$var = $token_factory->variable( $field_id )
 									->add_item_path( $item_key );
 
-			$token_factory->format()
+			$token_factory->formatter()
 							->attribute( $attribute_name, $var );
 		}
 
@@ -146,7 +146,7 @@ class Image_Field extends Markup_Field_Base {
 		$args[ self::DESCRIPTION ] = get_post_field( 'post_content', $value );
 
 		if ( false !== strpos( $image_src, '.svg' ) ) {
-			$attached_file       = (string) get_attached_file( $value );
+			$attached_file             = (string) get_attached_file( $value );
 			$args[ self::SVG_CONTENT ] = '' !== $attached_file ?
 				// @phpcs:ignore
 				(string) file_get_contents( $attached_file ) :

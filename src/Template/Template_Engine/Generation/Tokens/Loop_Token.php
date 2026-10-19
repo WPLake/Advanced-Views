@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 
@@ -22,10 +23,10 @@ abstract class Loop_Token extends Template_Token_Base {
 	protected ?Template_Token $body = null;
 
 	/**
-	 * @param class-string<Echo_Token> $echo_token_class
+	 * @param class-string<Token_Printer> $printer_class
 	 */
-	public function __construct( string $echo_token_class, Token_Factory $token_factory ) {
-		parent::__construct( $echo_token_class );
+	public function __construct( string $printer_class, Token_Factory $token_factory ) {
+		parent::__construct( $printer_class );
 
 		$this->index_var = $token_factory->variable( self::LOOP_INDEX_KEY );
 	}

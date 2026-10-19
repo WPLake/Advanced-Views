@@ -42,7 +42,7 @@ class Map_Field extends Map_Field_Base {
 		$lng_var = $token_factory->variable( $item_id )
 									->add_item_path( self::LNG );
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->attributes(
 							array(
 								'data-lat' => $lat_var,
@@ -213,9 +213,7 @@ class Map_Field extends Map_Field_Base {
 			$var = $token_factory->variable( $field_id )
 								->add_item_path( self::MAP );
 
-			$var->to_display()
-							->set_is_raw( true )
-				->print_token();
+			$var->raw_display();
 
 			return;
 		}
@@ -236,12 +234,12 @@ class Map_Field extends Map_Field_Base {
 			$var = $token_factory->variable( $field_id )
 								->add_item_path( $key );
 
-			$token_factory->format()
+			$token_factory->formatter()
 			->attribute( $attribute, $var );
 		}
 		echo '>';
 
-		$token_factory->format()
+		$token_factory->formatter()
 			->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
@@ -253,7 +251,7 @@ class Map_Field extends Map_Field_Base {
 			$this->print_inner_item( $field_id, $field_id, $markup_field_data );
 		}
 
-		$token_factory->format()
+		$token_factory->formatter()
 			->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 
@@ -269,14 +267,14 @@ class Map_Field extends Map_Field_Base {
 
 		$loop_body = $token_factory->html(
 			function () use ( $field_id, $item_var, $markup_field_data, $token_factory ) {
-				$token_factory->format()
+				$token_factory->formatter()
 								->new_line();
 
 				$markup_field_data->increment_and_print_tabs();
 
 				$this->print_inner_item( $field_id, $item_var->get_name(), $markup_field_data );
 
-				$token_factory->format()
+				$token_factory->formatter()
 								->new_line();
 				$markup_field_data->decrement_and_print_tabs();
 			}
@@ -296,13 +294,13 @@ class Map_Field extends Map_Field_Base {
 
 		$if_body = $token_factory->html(
 			function () use ( $field_id, $item_id, $markup_field_data, $token_factory ) {
-				$token_factory->format()
+				$token_factory->formatter()
 								->new_line();
 				$markup_field_data->increment_and_print_tabs();
 
 				$this->print_inner_item( $field_id, $item_id, $markup_field_data );
 
-				$token_factory->format()
+				$token_factory->formatter()
 								->new_line();
 				$markup_field_data->decrement_and_print_tabs();
 			}

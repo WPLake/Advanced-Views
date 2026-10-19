@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Tokens\PHP_Echo;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Tokens\PHP_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer;
@@ -41,6 +41,6 @@ final class PHP_Template_Engine implements Template_Engine {
 	}
 
 	public function create_token_factory(): Token_Factory {
-		return new PHP_Tokens( PHP_Echo::class );
+		return new PHP_Tokens( PHP_Printer::class );
 	}
 }

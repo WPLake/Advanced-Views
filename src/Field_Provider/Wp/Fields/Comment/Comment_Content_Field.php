@@ -21,7 +21,7 @@ class Comment_Content_Field extends Markup_Field_Base {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		// escaped by default, not raw - as commentId may point on a pending comment with unverified content.
-		$token_factory->variable( $field_id )->add_item_path( self::VALUE )->to_display()->print_token();
+		$token_factory->variable( $field_id )->add_item_path( self::VALUE )->display();
 	}
 
 	/**

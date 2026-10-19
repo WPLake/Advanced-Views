@@ -33,13 +33,13 @@ class Select_Field extends List_Field {
 
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		$token_factory->variable( $twig_name )->add_item_path( self::TITLE )->to_display()->print_token();
+		$token_factory->variable( $twig_name )->add_item_path( self::TITLE )->display();
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 

@@ -19,7 +19,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variabl
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Conditional\Twig_Comparison;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Conditional\Twig_IF;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Comment;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Echo;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Functions;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Loop;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Range;
@@ -29,31 +29,31 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Varia
 
 final class Twig_Tokens extends Token_Factory_Base {
 	public function comment( string $content ): Comment_Token {
-		return new Twig_Comment( $this->echo_token_class, $content );
+		return new Twig_Comment( $this->printer_class, $content );
 	}
 
 	public function variable( string $name ): Variable_Token {
-		return new Twig_Variable( $this->echo_token_class, $name );
+		return new Twig_Variable( $this->printer_class, $name );
 	}
 
 	public function if(): IF_Token {
-		return new Twig_IF( $this->echo_token_class );
+		return new Twig_IF( $this->printer_class );
 	}
 
 	public function loop(): Loop_Token {
-		return new Twig_Loop( $this->echo_token_class, $this );
+		return new Twig_Loop( $this->printer_class, $this );
 	}
 
 	public function assignment(): Assignment_Token {
-		return new Twig_Assignnment( $this->echo_token_class );
+		return new Twig_Assignnment( $this->printer_class );
 	}
 
 	public function comparison(): Comparison_Token {
-		return new Twig_Comparison( $this->echo_token_class );
+		return new Twig_Comparison( $this->printer_class );
 	}
 
 	public function literal( $value ): Literal_Token {
-		return new Twig_Literal( $this->echo_token_class, $value );
+		return new Twig_Literal( $this->printer_class, $value );
 	}
 
 	public function functions(): Functions_Token {
@@ -61,6 +61,6 @@ final class Twig_Tokens extends Token_Factory_Base {
 	}
 
 	public function range(): Range_Token {
-		return new Twig_Range( $this->echo_token_class );
+		return new Twig_Range( $this->printer_class );
 	}
 }

@@ -124,20 +124,20 @@ final class Template_Field_Data extends Field_Data {
 				$var = $this->token_factory->variable( $variable_info['field_id'] )
 											->add_item_path( $variable_info['item_key'] );
 
-				$this->token_factory->format()
+				$this->token_factory->formatter()
 									->attribute( $attr, $var );
 			}
 
 			echo '>';
 
-			$this->token_factory->format()
+			$this->token_factory->formatter()
 				->new_line();
 
 			++$this->tabs_number;
 
 			if ( false === $is_without_last_item_tabs ||
 				$counter !== $last_item_number ) {
-				$this->token_factory->format()
+				$this->token_factory->formatter()
 					->tab( $this->tabs_number );
 			}
 
@@ -157,11 +157,11 @@ final class Template_Field_Data extends Field_Data {
 		foreach ( $item_outers as $outer ) {
 			if ( 0 !== $counter ||
 				false === $is_without_first_item_new_line ) {
-				$this->token_factory->format()
+				$this->token_factory->formatter()
 					->new_line();
 			}
 
-			$this->token_factory->format()
+			$this->token_factory->formatter()
 				->tab( --$this->tabs_number );
 
 			printf( '</%s>', esc_html( $outer->tag ) );
@@ -217,17 +217,17 @@ final class Template_Field_Data extends Field_Data {
 	}
 
 	public function print_tabs(): void {
-		$this->token_factory->format()
+		$this->token_factory->formatter()
 							->tab( $this->get_tabs_number() );
 	}
 
 	public function increment_and_print_tabs(): void {
-		$this->token_factory->format()
+		$this->token_factory->formatter()
 							->tab( $this->increment_and_get_tabs_number() );
 	}
 
 	public function decrement_and_print_tabs(): void {
-		$this->token_factory->format()
+		$this->token_factory->formatter()
 							->tab( $this->decrement_and_get_tabs_number() );
 	}
 

@@ -79,7 +79,7 @@ final class Outer_Printer {
 
 			echo '>';
 
-			$token_factory->format()
+			$token_factory->formatter()
 							->new_line();
 
 			++$tabs_number;
@@ -105,7 +105,7 @@ final class Outer_Printer {
 			$var = $token_factory->variable( $variable_info['field_id'] )
 								->add_item_path( $variable_info['item_key'] );
 
-			$token_factory->format()
+			$token_factory->formatter()
 							->attribute( $attr, $var );
 		}
 	}

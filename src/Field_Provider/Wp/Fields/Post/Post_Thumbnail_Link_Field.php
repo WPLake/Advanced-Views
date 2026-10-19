@@ -38,7 +38,7 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 
 		echo '<a';
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->attribute( 'target', $target_var );
 
 		printf(
@@ -48,12 +48,12 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 			)
 		);
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->attribute( 'href', $href_var );
 
 		echo '>';
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 
 		$markup_field_data->increment_and_print_tabs();
@@ -61,7 +61,7 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 		$markup_field_data->set_is_with_field_wrapper( true );
 		$this->image_field->print_markup( $field_id, $markup_field_data );
 
-		$token_factory->format()
+		$token_factory->formatter()
 						->new_line();
 
 		$markup_field_data->decrement_and_print_tabs();
