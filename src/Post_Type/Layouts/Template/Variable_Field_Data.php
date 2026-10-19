@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -36,7 +36,7 @@ class Variable_Field_Data extends Template_Field_Data {
 		?Item_Settings $item_settings,
 		Field_Settings $field_settings,
 		Field_Meta $field_meta,
-		Field_Markup $field_markup,
+		Field_Template $field_markup,
 		Layout $layout,
 		Source $source,
 		Markup_Field $markup_field

@@ -4,15 +4,15 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Post;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Link_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Template_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Variable_Field_Data;
 
 
 defined( 'ABSPATH' ) || exit;
@@ -28,7 +28,7 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 		$this->image_field = $image_field;
 	}
 
-	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$target_var = $token_factory->variable( $field_id )
@@ -93,7 +93,7 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 
 		// @phpstan-ignore-next-line
 		$args[ self::HREF ] = (string) get_the_permalink( $post );
-		$image_id     = (int) get_post_thumbnail_id( $post );
+		$image_id           = (int) get_post_thumbnail_id( $post );
 
 		$variable_field_data->set_value( $image_id );
 

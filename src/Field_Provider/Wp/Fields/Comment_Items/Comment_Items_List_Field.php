@@ -12,8 +12,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Template_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Variable_Field_Data;
 use WP_Comment;
 
 class Comment_Items_List_Field extends Markup_Field_Base {
@@ -23,7 +23,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 
 	use Custom_Field;
 
-	protected function print_internal_item_layout( string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		// opening 'comment' div.
@@ -102,7 +102,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		echo '</div>';
 	}
 
-	protected function print_external_item_layout( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$id_var         = $token_factory->variable( $field_id )
@@ -214,7 +214,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		return $grouped;
 	}
 
-	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$value_var = $token_factory->variable( $field_id )

@@ -6,13 +6,13 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Field_Markup;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Template;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory_Storage;
 
 class Layout_Markup {
@@ -22,11 +22,11 @@ class Layout_Markup {
 	 * @var array<string, string>
 	 */
 	private array $markups_safe;
-	private Field_Markup $field_markup;
+	private Field_Template $field_markup;
 	private Field_Provider_Cluster $provider_cluster;
 	private Token_Factory_Storage $token_factory_storage;
 
-	public function __construct( Field_Markup $field_markup, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage ) {
+	public function __construct( Field_Template $field_markup, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage ) {
 		$this->field_markup          = $field_markup;
 		$this->provider_cluster      = $provider_cluster;
 		$this->token_factory_storage = $token_factory_storage;

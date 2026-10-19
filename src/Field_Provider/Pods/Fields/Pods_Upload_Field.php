@@ -11,8 +11,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\File_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Gallery_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Template_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Variable_Field_Data;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -37,7 +37,7 @@ class Pods_Upload_Field extends Markup_Field_Base {
 			$this->image_field;
 	}
 
-	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$this->get_field_instance( $markup_field_data->get_field_meta() )
 			->print_markup( $field_id, $markup_field_data );
 	}

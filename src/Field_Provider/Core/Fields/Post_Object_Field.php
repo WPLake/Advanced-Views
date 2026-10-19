@@ -4,12 +4,12 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Template_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Variable_Field_Data;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
@@ -48,7 +48,7 @@ class Post_Object_Field extends List_Field {
 		);
 	}
 
-	protected function print_internal_item_layout( string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
 		$markup_field_data->set_is_with_field_wrapper(
 			$markup_field_data->get_field_meta()->is_multiple() ||
 			$markup_field_data->is_with_field_wrapper()
@@ -57,7 +57,7 @@ class Post_Object_Field extends List_Field {
 		$this->link_field->print_markup( $item_id, $markup_field_data );
 	}
 
-	protected function print_external_item_layout( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$object_id_source = $markup_field_data->get_field_meta()->is_multiple() ?
 			static::LOOP_ITEM_NAME :
 			$field_id;

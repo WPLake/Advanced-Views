@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Template_Field_Data;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -21,7 +21,7 @@ abstract class Markup_Field_Base implements Markup_Field {
 	const LAYOUT_ID = 'layout_id';
 	const LABEL     = 'label';
 
-	protected function print_item_markup( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		if ( $markup_field_data->get_field_data()->has_external_layout() ) {
 			$this->print_external_item_layout( $field_id, $item_id, $markup_field_data );
 		} else {
@@ -29,13 +29,13 @@ abstract class Markup_Field_Base implements Markup_Field {
 		}
 	}
 
-	protected function print_external_item_layout( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 	}
 
-	protected function print_internal_item_layout( string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
 	}
 
-	protected function print_item( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$item_outers = $markup_field_data->get_item_outers( $field_id, $item_id );
 
 		$markup_field_data->print_opening_item_outers( $item_outers );
@@ -43,7 +43,7 @@ abstract class Markup_Field_Base implements Markup_Field {
 		$markup_field_data->print_closing_item_outers( $item_outers );
 	}
 
-	protected function get_field_class( string $suffix, Markup_Field_Data $markup_field_data ): string {
+	protected function get_field_class( string $suffix, Template_Field_Data $markup_field_data ): string {
 		if ( Cpt_Settings::CLASS_GENERATION_NONE === $markup_field_data->get_view_data()->classes_generation ) {
 			return '';
 		}

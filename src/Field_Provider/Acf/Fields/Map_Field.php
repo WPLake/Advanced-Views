@@ -6,12 +6,12 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Acf\Fields;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Map_Field_Base;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Template_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map_Pattern;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -22,7 +22,7 @@ class Map_Field extends Map_Field_Base {
 	protected function print_map_marker_attributes(
 		string $field_id,
 		string $item_id,
-		Markup_Field_Data $markup_field_data
+		Template_Field_Data $markup_field_data
 	): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
@@ -136,7 +136,7 @@ class Map_Field extends Map_Field_Base {
 
 		// if withAddress, will be filled in the Pro class.
 		if ( ! $variable_field_data->get_field_data()->is_map_with_address ) {
-			$markers       = is_array( $variable_field_data->get_value() ) &&
+			$markers             = is_array( $variable_field_data->get_value() ) &&
 							key_exists( 'markers', $variable_field_data->get_value() ) &&
 							is_array( $variable_field_data->get_value()['markers'] ) ?
 				$variable_field_data->get_value()['markers'] :
@@ -204,7 +204,7 @@ class Map_Field extends Map_Field_Base {
 		);
 	}
 
-	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 		$field_meta    = $markup_field_data->get_field_meta();
 		$field_data    = $markup_field_data->get_field_data();
@@ -260,7 +260,7 @@ class Map_Field extends Map_Field_Base {
 		echo '</div>';
 	}
 
-	protected function print_item_loop( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_item_loop( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$source_var = $token_factory->variable( $field_id )
@@ -289,7 +289,7 @@ class Map_Field extends Map_Field_Base {
 						->print();
 	}
 
-	protected function print_conditional_item( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_conditional_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 		$value_var     = $token_factory->variable( $field_id )
 										->add_item_path( self::VALUE );
@@ -317,7 +317,7 @@ class Map_Field extends Map_Field_Base {
 		$if->print();
 	}
 
-	protected function print_inner_item( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_inner_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		echo '<div ';
 		$this->print_map_marker_attributes( $field_id, $item_id, $markup_field_data );
 		echo '></div>';

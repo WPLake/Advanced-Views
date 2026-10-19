@@ -6,11 +6,11 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Template_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Variable\Variable_Token;
 
 abstract class List_Field extends Markup_Field_Base {
@@ -52,7 +52,7 @@ abstract class List_Field extends Markup_Field_Base {
 		return '';
 	}
 
-	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		if ( $markup_field_data->get_field_meta()->is_multiple() ) {
 			$this->print_item_loop( $field_id, $markup_field_data );
 
@@ -62,7 +62,7 @@ abstract class List_Field extends Markup_Field_Base {
 		$this->print_inner_item( $field_id, $markup_field_data );
 	}
 
-	protected function print_item_loop( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_item_loop( string $field_id, Template_Field_Data $markup_field_data ): void {
 
 		$token_factory = $markup_field_data->get_token_factory();
 
@@ -89,7 +89,7 @@ abstract class List_Field extends Markup_Field_Base {
 						->new_line();
 	}
 
-	protected function print_loop_body( Variable_Token $index_var, string $field_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_loop_body( Variable_Token $index_var, string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory    = $markup_field_data->get_token_factory();
 		$is_delimiter_set = strlen( $markup_field_data->get_field_data()->options_delimiter ) > 0;
 
@@ -126,7 +126,7 @@ abstract class List_Field extends Markup_Field_Base {
 		$markup_field_data->decrement_and_print_tabs();
 	}
 
-	protected function print_item_delimiter( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_item_delimiter( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$token_factory->format()
@@ -164,7 +164,7 @@ abstract class List_Field extends Markup_Field_Base {
 		$markup_field_data->decrement_and_print_tabs();
 	}
 
-	protected function print_inner_item( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_inner_item( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$item_id = $markup_field_data->get_field_meta()->is_multiple() ?
 			static::LOOP_ITEM_NAME :
 			$field_id;

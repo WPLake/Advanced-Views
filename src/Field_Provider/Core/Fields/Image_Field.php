@@ -7,8 +7,8 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Template_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox_Pattern;
 
@@ -29,7 +29,7 @@ class Image_Field extends Markup_Field_Base {
 	const SVG_CONTENT = 'svg_content';
 	const ID          = 'id';
 
-	protected function print_inner_attributes( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_inner_attributes( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory    = $markup_field_data->get_token_factory();
 		$inner_attributes = array();
 
@@ -49,7 +49,7 @@ class Image_Field extends Markup_Field_Base {
 		}
 	}
 
-	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory  = $markup_field_data->get_token_factory();
 		$attributes_map = array(
 			'src'      => self::VALUE,

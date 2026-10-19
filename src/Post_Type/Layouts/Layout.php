@@ -7,9 +7,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts;
 defined( 'ABSPATH' ) || exit;
 
 use DateTime;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Bridge\Controllers\Layout\Layout_Template_Controller;
 use Org\Wplake\Advanced_Views\Bridge\Controllers\Request_Controller;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
@@ -17,7 +14,10 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Field_Markup;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Template;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
@@ -26,7 +26,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 class Layout extends Instance {
 	private Layout_Settings $layout_settings;
 	private Field_Provider_Cluster $provider_cluster;
-	private Field_Markup $field_markup;
+	private Field_Template $field_markup;
 	private Template_Renderer_Storage $template_renderer_storage;
 	/**
 	 * @var array<string, mixed>
@@ -46,7 +46,7 @@ class Layout extends Instance {
 		string $twig_template,
 		Layout_Settings $layout_settings,
 		Source $source,
-		Field_Markup $field_markup,
+		Field_Template $field_markup,
 		string $classes = ''
 	) {
 		parent::__construct( $layout_settings, $twig_template, $classes );

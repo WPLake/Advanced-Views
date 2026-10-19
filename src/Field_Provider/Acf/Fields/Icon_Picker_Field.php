@@ -4,14 +4,14 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Acf\Fields;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Template_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Variable_Field_Data;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -26,7 +26,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 		$this->image_field = $image_field;
 	}
 
-	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$type_var = $token_factory->variable( $field_id )
@@ -62,7 +62,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 		$if->print();
 	}
 
-	protected function print_icon_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_icon_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$token_factory->format()->new_line();
@@ -86,7 +86,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 		$markup_field_data->decrement_and_print_tabs();
 	}
 
-	protected function print_icon_image_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_icon_image_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$token_factory->format()->new_line();
@@ -98,7 +98,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 		$markup_field_data->decrement_and_print_tabs();
 	}
 
-	protected function print_custom_image_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_custom_image_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$token_factory->format()->new_line();

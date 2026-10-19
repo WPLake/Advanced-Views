@@ -6,15 +6,15 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Menu;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Link_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Template_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Template_Token;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
@@ -32,11 +32,11 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$this->link_field = $link_field;
 	}
 
-	protected function print_internal_item_layout( string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
 		$this->link_field->print_markup( $item_id, $markup_field_data );
 	}
 
-	protected function print_external_item_layout( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$id_var        = $token_factory->variable( $field_id )
@@ -57,7 +57,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		echo ']';
 	}
 
-	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$value_var = $token_factory->variable( $field_id )
@@ -81,7 +81,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 						->new_line();
 	}
 
-	protected function print_loop_body( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_loop_body( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$token_factory->format()
@@ -141,7 +141,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$markup_field_data->decrement_and_print_tabs();
 	}
 
-	protected function print_children( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_children( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$token_factory->format()
@@ -187,7 +187,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$markup_field_data->decrement_and_print_tabs();
 	}
 
-	protected function print_sub_loop_body( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
+	protected function print_sub_loop_body( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$token_factory->format()
@@ -230,7 +230,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 	protected function print_conditional_class(
 		string $classes,
 		Template_Token $comparison,
-		Markup_Field_Data $markup_field_data
+		Template_Field_Data $markup_field_data
 	): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
@@ -302,8 +302,8 @@ class Menu_Items_Field extends Markup_Field_Base {
 				return $args;
 			}
 
-			$is_child_active = false;
-			$args[ self::VALUE ]   = null !== $wp_post ?
+			$is_child_active     = false;
+			$args[ self::VALUE ] = null !== $wp_post ?
 				$wp_post->ID :
 				0;
 
