@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 
 final class Twig_Variable extends Variable_Token {
-	public function print(): void {
+	public function print_token(): void {
 		echo esc_html( $this->name );
 
 		foreach ( $this->item_path as $item_key ) {

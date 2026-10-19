@@ -23,7 +23,7 @@ class Html_Token extends Template_Token_Base {
 		$this->printer = $printer;
 	}
 
-	public function print(): void {
+	public function print_token(): void {
 		( $this->printer )();
 	}
 }

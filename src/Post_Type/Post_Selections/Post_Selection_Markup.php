@@ -67,7 +67,7 @@ class Post_Selection_Markup {
 
 		echo "\r\n\t";
 
-		$if->print();
+		$if->print_token();
 
 		$token_factory->format()->new_line();
 	}
@@ -321,7 +321,7 @@ class Post_Selection_Markup {
 		}
 
 		$tabs_number = $this->print_opening_tag( $token_factory, $post_selection_settings, $tabs_number );
-		$if->print();
+		$if->print_token();
 		$this->print_closing_tag( $token_factory, $post_selection_settings );
 	}
 
@@ -387,7 +387,7 @@ class Post_Selection_Markup {
 						->set_source_variable( $post_ids_var )
 						->set_item_variable( $post_id_var )
 						->set_body( $loop_body )
-						->print();
+						->print_token();
 
 		$token_factory->format()
 						->new_line();
@@ -405,17 +405,18 @@ class Post_Selection_Markup {
 		$var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 							->add_item_path( 'classes' );
 
-		echo $var->to_display();
+		$var->to_display()->print_token();
 
 		echo esc_html( $post_selection_settings->get_bem_name() );
 
 		if ( ! $post_selection_settings->has_unique_bem_name() ) {
 			echo ' ' . sprintf( '%s--id--', esc_html( $post_selection_settings->get_bem_name() ) );
 
-			echo $token_factory
+			$token_factory
 				->variable( Hard_Post_Selection_Cpt::variable_name() )
 				->add_item_path( 'id' )
-				->to_display();
+				->to_display()
+				->print_token();
 
 		}
 		echo '">';
@@ -472,10 +473,11 @@ class Post_Selection_Markup {
 			'<div class="%s">',
 			esc_html( $no_posts_message_class )
 		);
-		echo $token_factory
+		$token_factory
 			->variable( Hard_Post_Selection_Cpt::variable_name() )
 			->add_item_path( 'no_posts_found_message' )
-			->to_display();
+			->to_display()
+			->print_token();
 
 		echo '</div>';
 

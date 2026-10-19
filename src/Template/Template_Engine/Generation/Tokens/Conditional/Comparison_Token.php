@@ -56,9 +56,9 @@ class Comparison_Token extends Template_Token_Base {
 		return $this;
 	}
 
-	public function print(): void {
+	public function print_token(): void {
 		if ( $this->left instanceof Template_Token ) {
-			$this->left->print();
+			$this->left->print_token();
 		}
 
 		if ( strlen( $this->operator_escaped ) > 0 ) {
@@ -67,7 +67,7 @@ class Comparison_Token extends Template_Token_Base {
 		}
 
 		if ( $this->right instanceof Template_Token ) {
-			$this->right->print();
+			$this->right->print_token();
 		}
 	}
 }

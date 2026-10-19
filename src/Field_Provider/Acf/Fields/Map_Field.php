@@ -213,8 +213,9 @@ class Map_Field extends Map_Field_Base {
 			$var = $token_factory->variable( $field_id )
 								->add_item_path( self::MAP );
 
-			echo $var->to_display()
-							->set_is_raw( true );
+			$var->to_display()
+							->set_is_raw( true )
+				->print_token();
 
 			return;
 		}
@@ -285,7 +286,7 @@ class Map_Field extends Map_Field_Base {
 						->set_source_variable( $source_var )
 						->set_item_variable( $item_var )
 						->set_body( $loop_body )
-						->print();
+						->print_token();
 	}
 
 	protected function print_conditional_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
@@ -313,7 +314,7 @@ class Map_Field extends Map_Field_Base {
 			->set_condition( $value_var )
 			->set_body( $if_body );
 
-		$if->print();
+		$if->print_token();
 	}
 
 	protected function print_inner_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {

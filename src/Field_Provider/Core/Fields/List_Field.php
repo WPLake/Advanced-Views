@@ -83,7 +83,7 @@ abstract class List_Field extends Markup_Field_Base {
 
 		$loop
 						->set_body( $loop_body )
-						->print();
+						->print_token();
 
 		$token_factory->format()
 						->new_line();
@@ -113,7 +113,7 @@ abstract class List_Field extends Markup_Field_Base {
 						->new_line();
 			$markup_field_data->print_tabs();
 
-			$if->print();
+			$if->print_token();
 
 			echo "\r\n\r\n";
 			$markup_field_data->print_tabs();
@@ -148,7 +148,7 @@ abstract class List_Field extends Markup_Field_Base {
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		echo $token_factory->variable( $field_id )->add_item_path( self::OPTIONS_DELIMITER )->to_display();
+		$token_factory->variable( $field_id )->add_item_path( self::OPTIONS_DELIMITER )->to_display()->print_token();
 
 		$token_factory->format()
 						->new_line();

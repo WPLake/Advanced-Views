@@ -21,12 +21,13 @@ abstract class Functions_Token {
 		$item_variable   = $this->token_factory->variable( 'item' );
 		$classes_literal = $this->token_factory->literal( array( 'class' => $classes ) );
 
-		echo $this
+		$this
 			->token_factory
 			->function( $this->include_inner_layout_for_flexible_name() )
 			->set_arguments( array( $views_variable, $item_variable, $classes_literal ) )
 			->to_display()
-			->set_is_raw( true );
+			->set_is_raw( true )
+			->print_token();
 	}
 
 	public function include_inner_layout( string $field_id, string $data_field_id, string $inner_view_class ): void {
@@ -36,12 +37,13 @@ abstract class Functions_Token {
 
 		$class_literal = $this->token_factory->literal( array( 'class' => $inner_view_class ) );
 
-		echo $this
+		$this
 			->token_factory
 			->function( $this->include_inner_layout_name() )
 			->set_arguments( array( $layout_id_var, $data_var, $class_literal ) )
 			->to_display()
-			->set_is_raw( true );
+			->set_is_raw( true )
+			->print_token();
 	}
 
 	/**
@@ -63,12 +65,13 @@ abstract class Functions_Token {
 		);
 
 		// it's a built-in WordPress function.
-		echo $this
+		$this
 			->token_factory
 			->function( 'paginate_links' )
 			->set_arguments( array( $settings_literal ) )
 			->to_display()
-			->set_is_raw( true );
+			->set_is_raw( true )
+			->print_token();
 	}
 
 	abstract protected function include_inner_layout_for_flexible_name(): string;

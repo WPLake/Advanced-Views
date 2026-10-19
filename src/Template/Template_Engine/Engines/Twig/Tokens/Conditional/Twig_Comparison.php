@@ -12,8 +12,8 @@ final class Twig_Comparison extends Comparison_Token {
 	public const COMPARISON_EMPTY = '|default(';
 	public const COMPARISON_OR    = ' or ';
 
-	public function print(): void {
-		parent::print();
+	public function print_token(): void {
+		parent::print_token();
 
 		if ( self::COMPARISON_EMPTY === $this->operator_escaped ) {
 			echo ')';

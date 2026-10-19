@@ -10,17 +10,17 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Assignment_Token;
 
 final class Twig_Assignnment extends Assignment_Token {
-	public function print(): void {
+	public function print_token(): void {
 		echo '{% set ';
 
 		if ( $this->variable instanceof Template_Token ) {
-			$this->variable->print();
+			$this->variable->print_token();
 		}
 
 		echo ' = ';
 
 		if ( $this->value instanceof Template_Token ) {
-			$this->value->print();
+			$this->value->print_token();
 		}
 
 		echo ' %}';

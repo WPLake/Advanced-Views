@@ -59,7 +59,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 		$if->new_else_branch()
 			->set_body( $custom_image_body );
 
-		$if->print();
+		$if->print_token();
 	}
 
 	protected function print_icon_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
@@ -77,7 +77,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 				)
 			),
 		);
-		echo $token_factory->variable( $field_id )->add_item_path( self::VALUE )->to_display();
+		$token_factory->variable( $field_id )->add_item_path( self::VALUE )->to_display()->print_token();
 
 		echo '"></i>';
 
@@ -112,7 +112,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 				)
 			),
 		);
-		echo $token_factory->variable( $field_id )->add_item_path( self::VALUE )->to_display();
+		$token_factory->variable( $field_id )->add_item_path( self::VALUE )->to_display()->print_token();
 
 		echo '" loading="lazy" alt="icon">';
 

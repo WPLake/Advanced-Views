@@ -24,12 +24,4 @@ abstract class Template_Token_Base implements Template_Token {
 	public function to_display(): Echo_Token {
 		return new $this->echo_token_class( $this );
 	}
-
-	public function __toString(): string {
-		ob_start();
-
-		$this->print();
-
-		return (string) ob_get_clean();
-	}
 }

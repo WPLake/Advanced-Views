@@ -30,7 +30,7 @@ abstract class Literal_Token extends Template_Token_Base {
 		$this->value = $value;
 	}
 
-	public function print(): void {
+	public function print_token(): void {
 		$this->print_literally( $this->value );
 	}
 
@@ -57,7 +57,7 @@ abstract class Literal_Token extends Template_Token_Base {
 			$this->print_array( $value );
 		} elseif ( $value instanceof Literal_Token ) {
 			// e.g. Variable_Token.
-			$value->print();
+			$value->print_token();
 		} else {
 			echo esc_html(
 				string( $value )

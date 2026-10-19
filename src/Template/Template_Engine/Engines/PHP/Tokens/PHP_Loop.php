@@ -10,26 +10,26 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Loop_To
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 
 final class PHP_Loop extends Loop_Token {
-	public function print(): void {
+	public function print_token(): void {
 		echo '<? foreach (';
 
 		if ( $this->source_var instanceof Template_Token ) {
-			$this->source_var->print();
+			$this->source_var->print_token();
 		}
 
 		echo ' as ';
 
-		$this->index_var->print();
+		$this->index_var->print_token();
 		echo ' => ';
 
 		if ( $this->item_var instanceof Template_Token ) {
-			$this->item_var->print();
+			$this->item_var->print_token();
 		}
 
 		echo '): ?>';
 
 		if ( $this->body instanceof Template_Token ) {
-			$this->body->print();
+			$this->body->print_token();
 		}
 
 		echo '<? endforeach; ?>';

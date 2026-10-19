@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditi
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 
 final class PHP_IF extends IF_Token {
-	public function print(): void {
+	public function print_token(): void {
 		if ( $this->if_branch instanceof IF_Branch ) {
 			$this->print_branch( 'if', $this->if_branch );
 		}
@@ -33,14 +33,14 @@ final class PHP_IF extends IF_Token {
 
 		if ( $branch->condition instanceof Template_Token ) {
 			echo ' (';
-			$branch->condition->print();
+			$branch->condition->print_token();
 			echo ')';
 		}
 
 		echo ': ?>';
 
 		if ( $branch->body instanceof Template_Token ) {
-			$branch->body->print();
+			$branch->body->print_token();
 		}
 	}
 

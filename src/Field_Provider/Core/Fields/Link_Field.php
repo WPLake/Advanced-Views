@@ -58,12 +58,13 @@ class Link_Field extends Markup_Field_Base {
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		echo $token_factory
+		$token_factory
 			->comparison()
 			->set_left_operand( $link_label_var )
 			->set_comparison_empty()
 			->set_right_operand( $title_var )
-			->to_display();
+			->to_display()
+			->print_token();
 
 		$token_factory->format()
 						->new_line();

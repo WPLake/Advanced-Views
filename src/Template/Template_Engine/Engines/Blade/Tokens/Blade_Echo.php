@@ -9,12 +9,12 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Echo_Token;
 
 final class Blade_Echo extends Echo_Token {
-	public function print(): void {
+	public function print_token(): void {
 		echo $this->is_raw ?
 			'{!! ' :
 			'{{ ';
 
-		$this->content->print();
+		$this->content->print_token();
 
 		echo $this->is_raw ?
 			' !!}' :

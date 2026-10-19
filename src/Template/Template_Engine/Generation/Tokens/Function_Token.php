@@ -25,7 +25,7 @@ class Function_Token extends Template_Token_Base {
 		$this->name = $name;
 	}
 
-	public function print(): void {
+	public function print_token(): void {
 		printf( '%s(', esc_html( $this->name ) );
 		$this->print_arguments();
 		echo ')';
@@ -50,7 +50,7 @@ class Function_Token extends Template_Token_Base {
 				echo ', ';
 			}
 
-			$argument->print();
+			$argument->print_token();
 		}
 	}
 }

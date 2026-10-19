@@ -32,21 +32,21 @@ class Conditional_Value_Token extends Template_Token_Base {
 		return $this;
 	}
 
-	public function print(): void {
+	public function print_token(): void {
 		if ( $this->comparison instanceof Template_Token ) {
-			$this->comparison->print();
+			$this->comparison->print_token();
 		}
 
 		echo ' ? ';
 
 		if ( $this->accept_value instanceof Template_Token ) {
-			$this->accept_value->print();
+			$this->accept_value->print_token();
 		}
 
 		echo ' : ';
 
 		if ( $this->decline_value instanceof Template_Token ) {
-			$this->decline_value->print();
+			$this->decline_value->print_token();
 		}
 	}
 }
