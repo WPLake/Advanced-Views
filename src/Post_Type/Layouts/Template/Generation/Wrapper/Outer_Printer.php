@@ -17,10 +17,34 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Fo
 final class Outer_Printer {
 	/**
 	 * @param Template_Pattern[] $field_assets
+	 * @param callable(bool $is_with_outers): void $print_content
+	 */
+	public static function print_with_outers(
+		array $field_assets,
+		Layout_Settings $layout_settings,
+		Field_Settings $field_settings,
+		string $field_id,
+		string $row_type,
+		int &$tabs_number,
+		Token_Factory $token_factory,
+		callable $print_content
+	): void {
+		$field_outers   = self::get_field_outers( $field_assets, $layout_settings, $field_settings, $field_id, $row_type );
+		$is_with_outers = array() !== $field_outers;
+
+		self::print_opening_field_outers( $field_outers, $tabs_number, $token_factory );
+
+		$print_content( $is_with_outers );
+
+		self::print_closing_field_outers( $field_outers, $tabs_number );
+	}
+
+	/**
+	 * @param Template_Pattern[] $field_assets
 	 *
 	 * @return Html_Wrapper[]
 	 */
-	public static function get_field_outers(
+	protected static function get_field_outers(
 		array $field_assets,
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
@@ -39,7 +63,7 @@ final class Outer_Printer {
 	/**
 	 * @param Html_Wrapper[] $field_outers
 	 */
-	public static function print_opening_field_outers(
+	protected static function print_opening_field_outers(
 		array $field_outers,
 		int &$tabs_number,
 		Token_Factory $token_factory
@@ -65,7 +89,7 @@ final class Outer_Printer {
 	/**
 	 * @param Html_Wrapper[] $field_outers
 	 */
-	public static function print_closing_field_outers( array $field_outers, int &$tabs_number ): void {
+	protected static function print_closing_field_outers( array $field_outers, int &$tabs_number ): void {
 		foreach ( $field_outers as $outer ) {
 			Format_Token::tabulation( --$tabs_number );
 			printf( '</%s>', esc_html( $outer->tag ) );

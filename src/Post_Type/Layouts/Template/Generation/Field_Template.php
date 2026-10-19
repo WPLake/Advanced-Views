@@ -171,10 +171,9 @@ class Field_Template {
 		}
 
 		if ( $is_with_field_wrapper ) {
-			$wrapper_attrs = self::merge_field_wrapper_attrs( $field_assets, $field_settings, $field_id );
-
 			Wrapper_Printer::print_field_wrapper(
-				$wrapper_attrs,
+				$field_assets,
+				$field_id,
 				$tabs_number,
 				$is_with_row_wrapper,
 				$layout_settings,
@@ -184,29 +183,43 @@ class Field_Template {
 			);
 		}
 
-		$field_outers = Outer_Printer::get_field_outers( $field_assets, $layout_settings, $field_settings, $field_id, $row_type );
+		$print_content = function ( bool $is_with_outer_wrappers ) use (
+			$custom_field_markup,
+			$field_assets,
+			$layout_settings,
+			$item_settings,
+			$field_settings,
+			$field_meta,
+			&$tabs_number,
+			$field_id
+		): void {
+			if ( strlen( $custom_field_markup ) > 0 ) {
+				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo $custom_field_markup;
+			} else {
+				$this->print_field_markup(
+					$field_assets,
+					$layout_settings,
+					$item_settings,
+					$field_settings,
+					$field_meta,
+					$tabs_number,
+					$field_id,
+					$is_with_outer_wrappers
+				);
+			}
+		};
 
-		$is_with_outer_wrappers = array() !== $field_outers;
-
-		Outer_Printer::print_opening_field_outers( $field_outers, $tabs_number, $token_factory );
-
-		if ( strlen( $custom_field_markup ) > 0 ) {
-			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $custom_field_markup;
-		} else {
-			$this->print_field_markup(
-				$field_assets,
-				$layout_settings,
-				$item_settings,
-				$field_settings,
-				$field_meta,
-				$tabs_number,
-				$field_id,
-				$is_with_outer_wrappers
-			);
-		}
-
-		Outer_Printer::print_closing_field_outers( $field_outers, $tabs_number );
+		Outer_Printer::print_with_outers(
+			$field_assets,
+			$layout_settings,
+			$field_settings,
+			$field_id,
+			$row_type,
+			$tabs_number,
+			$token_factory,
+			$print_content
+		);
 
 		if ( $is_with_field_wrapper ) {
 			Format_Token::tabulation( --$tabs_number );
@@ -320,21 +333,5 @@ class Field_Template {
 		}
 
 		return false;
-	}
-
-	/**
-	 * @param Template_Pattern[] $field_assets
-	 *
-	 * @return array<string,string>
-	 */
-	protected static function merge_field_wrapper_attrs( array $field_assets, Field_Settings $field_settings, string $field_id ): array {
-		$attrs = array();
-
-		foreach ( $field_assets as $field_asset ) {
-			$asset_attrs = $field_asset->get_field_wrapper_attrs( $field_settings, $field_id );
-			$attrs       = array_merge( $attrs, $asset_attrs );
-		}
-
-		return $attrs;
 	}
 }
