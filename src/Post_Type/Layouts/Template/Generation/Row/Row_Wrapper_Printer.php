@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -24,33 +24,16 @@ final class Row_Wrapper_Printer {
 	public static function print_row_wrapper(
 		string $field_name_class,
 		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
 		string $type,
 		string $row_class,
 		int &$tab_number,
 		string $tag
 	): void {
-		$row_classes = '';
-
-		if ( Layout_Settings::CLASS_GENERATION_NONE !== $layout_settings->classes_generation ) {
-			$row_classes .= $field_name_class;
-
-			if ( $layout_settings->is_with_common_classes ) {
-				$bem_name     = $layout_settings->get_bem_name();
-				$row_classes .= sprintf( ' %s__%s', $bem_name, $type );
-			}
-		}
-
-		// do not consider classes_generation=none, as external classes, e.g. 'splide', are required for js.
-		if ( '' !== $row_class ) {
-			$row_classes .= '' !== $row_classes ?
-				' ' :
-				'';
-			$row_classes .= $row_class;
-		}
+		$classes = Wrapper_Class_Resolver::resolve_row_classes( $layout_settings, $field_name_class, $type, $row_class );
 
 		Format_Token::tabulation( $tab_number );
-		printf( '<%s class="%s">', esc_html( $tag ), esc_html( $row_classes ) );
+		self::print_opening_tag( $tag, $classes, array() );
+		echo '>';
 		Format_Token::next_line();
 
 		++$tab_number;
@@ -69,55 +52,21 @@ final class Row_Wrapper_Printer {
 		string $field_name_class,
 		string $tag
 	): void {
-		$field_classes = '';
+		$attrs      = self::merge_field_wrapper_attrs( $field_assets, $field_settings, $field_id );
+		$attr_class = $attrs['class'] ?? '';
 
-		if ( Layout_Settings::CLASS_GENERATION_NONE !== $layout_settings->classes_generation ) {
-			$bem_name = $layout_settings->get_bem_name();
+		unset( $attrs['class'] );
 
-			if ( $is_with_row_wrapper ) {
-				$field_classes .= sprintf( '%s__%s-field', $bem_name, $field_settings->id );
-				$field_classes .= $layout_settings->is_with_common_classes ?
-					sprintf( ' %s__field', $bem_name ) :
-					'';
-			} else {
-				$field_classes .= $field_name_class;
-
-				if ( $layout_settings->is_with_common_classes ) {
-					$field_classes .= sprintf( ' %s__field', $bem_name );
-				}
-			}
-		}
-
-		$attrs_data = array();
-
-		foreach ( $field_assets as $field_asset ) {
-			$asset_attrs = $field_asset->get_field_wrapper_attrs( $field_settings, $field_id );
-			$attrs_data  = array_merge( $attrs_data, $asset_attrs );
-		}
-
-		$attr_class = $attrs_data['class'] ?? '';
-		unset( $attrs_data['class'] );
-
-		// do not consider classes_generation=none, as external classes, e.g. 'splide', are required for js.
-		if ( '' !== $attr_class ) {
-			$field_classes .= '' !== $field_classes ?
-				' ' :
-				'';
-			$field_classes .= $attr_class;
-		}
-
-		Format_Token::tabulation( $tabs_number );
-
-		printf(
-			'<%s class="%s"',
-			esc_html( $tag ),
-			esc_html( $field_classes ),
+		$classes = Wrapper_Class_Resolver::resolve_field_classes(
+			$layout_settings,
+			$field_settings,
+			$is_with_row_wrapper,
+			$field_name_class,
+			$attr_class
 		);
 
-		foreach ( $attrs_data as $attr => $value ) {
-			printf( ' %s="%s"', esc_html( $attr ), esc_html( $value ) );
-		}
-
+		Format_Token::tabulation( $tabs_number );
+		self::print_opening_tag( $tag, $classes, $attrs );
 		echo '>';
 
 		++$tabs_number;
@@ -135,20 +84,10 @@ final class Row_Wrapper_Printer {
 			$tabs = str_repeat( "\t", $tabs_number );
 
 			printf( "\r\n%s", esc_html( $tabs ) );
-
 			printf( '<%s', esc_html( $outer->tag ) );
 
-			foreach ( $outer->attrs as $attr => $value ) {
-				printf( ' %s="%s"', esc_html( $attr ), esc_html( $value ) );
-			}
-
-			foreach ( $outer->variable_attrs as $attr => $variable_info ) {
-				$var = $token_factory->variable( $variable_info['field_id'] )
-									->add_item_path( $variable_info['item_key'] );
-
-				$token_factory->format()
-				->attribute( $attr, $var );
-			}
+			self::print_attrs( $outer->attrs );
+			self::print_variable_attrs( $outer->variable_attrs, $token_factory );
 
 			echo '>';
 
@@ -176,21 +115,11 @@ final class Row_Wrapper_Printer {
 		int &$tabs_number,
 		string $field_id
 	): void {
-		$label_class = '';
-
-		if ( Layout_Settings::CLASS_GENERATION_NONE !== $layout_settings->classes_generation ) {
-			$bem_name = $layout_settings->get_bem_name();
-
-			$label_class .= sprintf( '%s__%s-label', $bem_name, $field_settings->id );
-
-			$label_class .= $layout_settings->is_with_common_classes ?
-				sprintf( ' %s__label', $bem_name ) :
-				'';
-		}
+		$classes = Wrapper_Class_Resolver::resolve_label_classes( $layout_settings, $field_settings );
 
 		Format_Token::tabulation( $tabs_number );
 
-		printf( '<p class="%s">', esc_html( $label_class ) );
+		printf( '<p class="%s">', esc_html( $classes ) );
 
 		Format_Token::next_line();
 		Format_Token::tabulation( ++$tabs_number );
@@ -209,5 +138,52 @@ final class Row_Wrapper_Printer {
 		echo '</p>';
 
 		Format_Token::next_line();
+	}
+
+	/**
+	 * @param Template_Pattern[] $field_assets
+	 *
+	 * @return array<string,string>
+	 */
+	protected static function merge_field_wrapper_attrs( array $field_assets, Field_Settings $field_settings, string $field_id ): array {
+		$attrs = array();
+
+		foreach ( $field_assets as $field_asset ) {
+			$asset_attrs = $field_asset->get_field_wrapper_attrs( $field_settings, $field_id );
+			$attrs       = array_merge( $attrs, $asset_attrs );
+		}
+
+		return $attrs;
+	}
+
+	/**
+	 * @param array<string,string> $attrs
+	 */
+	protected static function print_opening_tag( string $tag, string $classes, array $attrs ): void {
+		printf( '<%s class="%s"', esc_html( $tag ), esc_html( $classes ) );
+
+		self::print_attrs( $attrs );
+	}
+
+	/**
+	 * @param array<string,string> $attrs
+	 */
+	protected static function print_attrs( array $attrs ): void {
+		foreach ( $attrs as $attr => $value ) {
+			printf( ' %s="%s"', esc_html( $attr ), esc_html( $value ) );
+		}
+	}
+
+	/**
+	 * @param array<string,array{field_id:string,item_key:string}> $variable_attrs
+	 */
+	protected static function print_variable_attrs( array $variable_attrs, Token_Factory $token_factory ): void {
+		foreach ( $variable_attrs as $attr => $variable_info ) {
+			$var = $token_factory->variable( $variable_info['field_id'] )
+								->add_item_path( $variable_info['item_key'] );
+
+			$token_factory->format()
+							->attribute( $attr, $var );
+		}
 	}
 }
