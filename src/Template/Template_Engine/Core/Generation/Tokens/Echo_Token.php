@@ -6,7 +6,10 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tok
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Echo_Token implements Template_Token {
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token_Base;
+
+abstract class Echo_Token extends Template_Token_Base {
 	protected Template_Token $content;
 	protected bool $is_raw;
 

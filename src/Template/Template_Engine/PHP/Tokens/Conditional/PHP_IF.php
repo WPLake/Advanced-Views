@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Conditional\IF_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token;
 
 final class PHP_IF extends IF_Token {
 	public function print(): void {

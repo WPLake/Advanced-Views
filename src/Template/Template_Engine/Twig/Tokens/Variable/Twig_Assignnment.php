@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Twig\Tokens\Variabl
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Variable\Assignment_Token;
 
 final class Twig_Assignnment extends Assignment_Token {

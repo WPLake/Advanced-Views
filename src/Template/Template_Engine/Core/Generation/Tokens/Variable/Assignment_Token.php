@@ -4,11 +4,12 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Variable;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Assignment_Token implements Template_Token {
+abstract class Assignment_Token extends Template_Token_Base {
 	protected ?Variable_Token $variable = null;
 	protected ?Template_Token $value    = null;
 

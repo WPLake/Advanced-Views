@@ -54,11 +54,9 @@ final class Label_Printer {
 
 		// $factory->echo()->variable([$field_id, 'label']);
 		// variable ->
-		$var = $token_factory->variable( $field_id )
-								->add_item_path( 'label' );
-
-		$token_factory->to_echo( $var )
-						->print();
+		echo $token_factory->variable( $field_id )
+								->add_item_path( 'label' )
+								->to_display();
 
 		$token_factory->format()
 						->new_line()

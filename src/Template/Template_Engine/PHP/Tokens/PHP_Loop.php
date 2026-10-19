@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\PHP\Tokens;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Loop_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token;
 
 final class PHP_Loop extends Loop_Token {
 	public function print(): void {

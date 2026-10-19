@@ -6,9 +6,9 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tok
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token_Base;
 
-abstract class Variable_Token implements Template_Token {
+abstract class Variable_Token extends Template_Token_Base {
 	const ITEM_PATH_SEPARATOR = '.';
 
 	protected string $name;

@@ -6,7 +6,9 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tok
 
 defined( 'ABSPATH' ) || exit;
 
-class Html_Token implements Template_Token {
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token_Base;
+
+class Html_Token extends Template_Token_Base {
 	/**
 	 * @var callable
 	 */

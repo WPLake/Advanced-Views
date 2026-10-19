@@ -6,13 +6,14 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tok
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
  * @phpstan-type Literal_Value string|numeric|bool|Template_Token|mixed[]
  */
-abstract class Literal_Token implements Template_Token {
+abstract class Literal_Token extends Template_Token_Base {
 	/**
 	 * @var Literal_Value
 	 */

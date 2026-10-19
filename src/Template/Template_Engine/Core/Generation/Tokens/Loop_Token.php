@@ -6,10 +6,12 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tok
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Variable\Variable_Token;
 
-abstract class Loop_Token implements Template_Token {
+abstract class Loop_Token extends Template_Token_Base {
 	protected const LOOP_INDEX_KEY = 'index';
 
 	protected Variable_Token $index_var;

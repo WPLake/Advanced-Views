@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Ec
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Functions_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Loop_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Range_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token\Template_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Variable\Assignment_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Variable\Literal_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Variable\Variable_Token;
