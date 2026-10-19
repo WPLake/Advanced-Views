@@ -17,6 +17,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 use WP_Comment;
 
 class Comment_Items_List_Field extends Markup_Field_Base {
+	const AUTHOR_NAME = 'author_name';
+	const CONTENT     = 'content';
+	const COMMENT_ID  = 'comment_id';
+
 	use Custom_Field;
 
 	protected function print_internal_item_layout( string $item_id, Markup_Field_Data $markup_field_data ): void {
@@ -49,7 +53,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 
 		$var = $token_factory
 								->variable( $item_id )
-								->add_item_path( 'author_name' );
+								->add_item_path( self::AUTHOR_NAME );
 		$token_factory
 							->to_echo( $var )
 							->print();
@@ -78,7 +82,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 
 		$var = $markup_field_data->get_token_factory()
 								->variable( 'comment_item' )
-								->add_item_path( 'content' );
+								->add_item_path( self::CONTENT );
 
 		// escaped by default, even we query approved comments -
 		// reason is that HTML expectations in comments is rather an exception, than a rule.
@@ -104,7 +108,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		$id_var         = $token_factory->variable( $field_id )
 											->add_item_path( self::LAYOUT_ID );
 		$comment_id_var = $token_factory->variable( $item_id )
-											->add_item_path( 'comment_id' );
+											->add_item_path( self::COMMENT_ID );
 
 		printf( '[%s', esc_html( Hard_Layout_Cpt::cpt_name() ) );
 
@@ -131,7 +135,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		if ( $field_settings->has_external_layout() ) {
 			if ( $is_for_validation ) {
 				return array(
-					'comment_id' => '1',
+					self::COMMENT_ID => '1',
 				);
 			}
 
@@ -140,22 +144,22 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 				0;
 
 			return array(
-				'comment_id' => (string) $comment_id,
+				self::COMMENT_ID => (string) $comment_id,
 			);
 		}
 
 		if ( $is_for_validation ||
 			null === $wp_comment ) {
 			return array(
-				'author_name' => 'Name',
-				'content'     => 'Comment content',
+				self::AUTHOR_NAME => 'Name',
+				self::CONTENT     => 'Comment content',
 			);
 		}
 
 		return array(
 			// avoid double encoding in Twig.
-			'author_name' => html_entity_decode( $wp_comment->comment_author, ENT_QUOTES ),
-			'content'     => html_entity_decode( $wp_comment->comment_content, ENT_QUOTES ),
+			self::AUTHOR_NAME => html_entity_decode( $wp_comment->comment_author, ENT_QUOTES ),
+			self::CONTENT     => html_entity_decode( $wp_comment->comment_content, ENT_QUOTES ),
 		);
 	}
 

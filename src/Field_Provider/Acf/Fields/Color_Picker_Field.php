@@ -15,6 +15,11 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 defined( 'ABSPATH' ) || exit;
 
 class Color_Picker_Field extends Markup_Field_Base {
+	const RED   = 'red';
+	const GREEN = 'green';
+	const BLUE  = 'blue';
+	const ALPHA = 'alpha';
+
 	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
@@ -48,10 +53,10 @@ class Color_Picker_Field extends Markup_Field_Base {
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
 			self::VALUE => '',
-			'red'       => '',
-			'green'     => '',
-			'blue'      => '',
-			'alpha'     => '',
+			self::RED   => '',
+			self::GREEN => '',
+			self::BLUE  => '',
+			self::ALPHA => '',
 		);
 
 		$value = null;
@@ -73,10 +78,10 @@ class Color_Picker_Field extends Markup_Field_Base {
 			$red = string( $value, 'red' );
 			// value is just bool, as 'red' can be zero, but still be a value.
 			$args[ self::VALUE ] = (bool) $red;
-			$args['red']   = $red;
-			$args['green'] = string( $value, 'green' );
-			$args['blue']  = string( $value, 'blue' );
-			$args['alpha'] = string( $value, 'alpha' );
+			$args[ self::RED ]   = $red;
+			$args[ self::GREEN ] = string( $value, 'green' );
+			$args[ self::BLUE ]  = string( $value, 'blue' );
+			$args[ self::ALPHA ] = string( $value, 'alpha' );
 		}
 
 		return $args;
@@ -85,10 +90,10 @@ class Color_Picker_Field extends Markup_Field_Base {
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
 		return array(
 			self::VALUE => true,
-			'red'       => '1',
-			'green'     => '1',
-			'blue'      => '1',
-			'alpha'     => '1',
+			self::RED   => '1',
+			self::GREEN => '1',
+			self::BLUE  => '1',
+			self::ALPHA => '1',
 		);
 	}
 

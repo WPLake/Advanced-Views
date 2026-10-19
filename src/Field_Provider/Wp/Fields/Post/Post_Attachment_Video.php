@@ -15,6 +15,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 
 class Post_Attachment_Video extends Markup_Field_Base {
+	const MIME_TYPE = 'mime_type';
+
 	use Custom_Field;
 
 	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
@@ -37,7 +39,7 @@ class Post_Attachment_Video extends Markup_Field_Base {
 		$src_var  = $token_factory->variable( $field_id )
 									->add_item_path( self::VALUE );
 		$type_var = $token_factory->variable( $field_id )
-									->add_item_path( 'mime_type' );
+									->add_item_path( self::MIME_TYPE );
 
 		echo '<source';
 
@@ -68,23 +70,23 @@ class Post_Attachment_Video extends Markup_Field_Base {
 			'attachment' !== $post->post_type ||
 			0 !== strpos( $post->post_mime_type, 'video/' ) ) {
 			return array(
-				self::VALUE => '',
-				'mime_type' => '',
+				self::VALUE     => '',
+				self::MIME_TYPE => '',
 			);
 		}
 
 		$attachment_url = (string) wp_get_attachment_url( $post->ID );
 
 		return array(
-			self::VALUE => $attachment_url,
-			'mime_type' => $post->post_mime_type,
+			self::VALUE     => $attachment_url,
+			self::MIME_TYPE => $post->post_mime_type,
 		);
 	}
 
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
 		return array(
-			self::VALUE => 'https://site.com/video.mp4',
-			'mime_type' => 'video/mp4',
+			self::VALUE     => 'https://site.com/video.mp4',
+			self::MIME_TYPE => 'video/mp4',
 		);
 	}
 

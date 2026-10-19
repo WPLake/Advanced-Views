@@ -20,6 +20,10 @@ use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
 class Menu_Items_Field extends Markup_Field_Base {
+	const IS_ACTIVE       = 'isActive';
+	const IS_CHILD_ACTIVE = 'isChildActive';
+	const CHILDREN        = 'children';
+
 	use Custom_Field;
 
 	private Link_Field $link_field;
@@ -96,9 +100,9 @@ class Menu_Items_Field extends Markup_Field_Base {
 		);
 
 		$is_active_var        = $token_factory->variable( $item_id )
-												->add_item_path( 'isActive' );
+												->add_item_path( self::IS_ACTIVE );
 		$is_child_active_var  = $token_factory->variable( $item_id )
-												->add_item_path( 'isChildActive' );
+												->add_item_path( self::IS_CHILD_ACTIVE );
 		$is_active_comparison = $token_factory->comparison()
 												->set_left_operand( $is_active_var )
 												->set_comparison_or()
@@ -116,7 +120,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$markup_field_data->print_tabs();
 
 		$children_var  = $token_factory->variable( $item_id )
-			->add_item_path( 'children' );
+			->add_item_path( self::CHILDREN );
 		$children_body = $token_factory->html( fn()=>$this->print_children( $field_id, $item_id, $markup_field_data ) );
 
 		$if = $token_factory->if();
@@ -160,7 +164,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$markup_field_data->increment_and_print_tabs();
 
 		$children_var      = $token_factory->variable( $item_id )
-											->add_item_path( 'children' );
+											->add_item_path( self::CHILDREN );
 		$sub_menu_item_var = $token_factory->variable( 'sub_menu_item' );
 		$loop_body         = $token_factory->html(
 			fn ()=>$this->print_sub_loop_body( $field_id, $sub_menu_item_var->get_name(), $markup_field_data )
@@ -202,7 +206,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		);
 
 		$is_active_var = $token_factory->variable( $item_id )
-										->add_item_path( 'isActive' );
+										->add_item_path( self::IS_ACTIVE );
 		$this->print_conditional_class( 'sub-menu-item--active', $is_active_var, $markup_field_data );
 		echo '">';
 
@@ -288,10 +292,10 @@ class Menu_Items_Field extends Markup_Field_Base {
 	): array {
 		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
 			$args = array(
-				self::VALUE     => 0,
-				'isActive'      => false,
-				'isChildActive' => false,
-				'children'      => array(),
+				self::VALUE           => 0,
+				self::IS_ACTIVE       => false,
+				self::IS_CHILD_ACTIVE => false,
+				self::CHILDREN        => array(),
 			);
 
 			if ( $is_for_validation ) {
@@ -306,9 +310,9 @@ class Menu_Items_Field extends Markup_Field_Base {
 			foreach ( $children as $child ) {
 				$is_sub_active = $this->is_active_item( $child );
 
-				$args['children'][] = array(
-					self::VALUE => $child->ID,
-					'isActive'  => $is_sub_active,
+				$args[ self::CHILDREN ][] = array(
+					self::VALUE     => $child->ID,
+					self::IS_ACTIVE => $is_sub_active,
 				);
 
 				$is_child_active = $is_child_active || $is_sub_active;
@@ -317,8 +321,8 @@ class Menu_Items_Field extends Markup_Field_Base {
 			return array_merge(
 				$args,
 				array(
-					'isActive'      => null !== $wp_post && $this->is_active_item( $wp_post ),
-					'isChildActive' => $is_child_active,
+					self::IS_ACTIVE       => null !== $wp_post && $this->is_active_item( $wp_post ),
+					self::IS_CHILD_ACTIVE => $is_child_active,
 				)
 			);
 		}
@@ -336,19 +340,19 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$args = array_merge(
 			$args,
 			array(
-				'isActive'      => false,
-				'isChildActive' => false,
-				'children'      => array(),
+				self::IS_ACTIVE       => false,
+				self::IS_CHILD_ACTIVE => false,
+				self::CHILDREN        => array(),
 			)
 		);
 
 		if ( $is_for_validation ) {
 			$child_args = $this->link_field->get_validation_template_variables( $variable_field_data );
 
-			$args['children'][] = array_merge(
+			$args[ self::CHILDREN ][] = array_merge(
 				$child_args,
 				array(
-					'isActive' => false,
+					self::IS_ACTIVE => false,
 				)
 			);
 
@@ -366,10 +370,10 @@ class Menu_Items_Field extends Markup_Field_Base {
 
 			$is_sub_active = $this->is_active_item( $child_menu_item );
 
-			$args['children'][] = array_merge(
+			$args[ self::CHILDREN ][] = array_merge(
 				$child_args,
 				array(
-					'isActive' => $is_sub_active,
+					self::IS_ACTIVE => $is_sub_active,
 				)
 			);
 
@@ -379,8 +383,8 @@ class Menu_Items_Field extends Markup_Field_Base {
 		return array_merge(
 			$args,
 			array(
-				'isActive'      => null !== $wp_post && $this->is_active_item( $wp_post ),
-				'isChildActive' => $is_child_active,
+				self::IS_ACTIVE       => null !== $wp_post && $this->is_active_item( $wp_post ),
+				self::IS_CHILD_ACTIVE => $is_child_active,
 			)
 		);
 	}

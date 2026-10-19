@@ -17,6 +17,13 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 class Map_Field extends Markup_Field_Base {
+	const LAT        = 'lat';
+	const LNG        = 'lng';
+	const ZOOM       = 'zoom';
+	const CENTER_LAT = 'center_lat';
+	const CENTER_LNG = 'center_lng';
+	const MAP        = 'map';
+
 	protected function print_map_marker_attributes(
 		string $field_id,
 		string $item_id,
@@ -36,9 +43,9 @@ class Map_Field extends Markup_Field_Base {
 		);
 
 		$lat_var = $token_factory->variable( $item_id )
-									->add_item_path( 'lat' );
+									->add_item_path( self::LAT );
 		$lng_var = $token_factory->variable( $item_id )
-									->add_item_path( 'lng' );
+									->add_item_path( self::LNG );
 
 		$token_factory->format()
 						->attributes(
@@ -56,8 +63,8 @@ class Map_Field extends Markup_Field_Base {
 		$args = ! $variable_field_data->get_field_meta()->is_multiple() ?
 			array(
 				self::VALUE => '',
-				'lat'       => 0,
-				'lng'       => 0,
+				self::LAT   => 0,
+				self::LNG   => 0,
 			) :
 			array(
 				self::VALUE => array(),
@@ -69,9 +76,9 @@ class Map_Field extends Markup_Field_Base {
 			array(
 				// set default values, so if the field has no markers, and showWhenEmpty flag,
 				// then it can show the map in right position.
-				'zoom'       => $variable_field_data->get_field_meta()->get_zoom(),
-				'center_lat' => $variable_field_data->get_field_meta()->get_center_lat(),
-				'center_lng' => $variable_field_data->get_field_meta()->get_center_lng(),
+				self::ZOOM       => $variable_field_data->get_field_meta()->get_zoom(),
+				self::CENTER_LAT => $variable_field_data->get_field_meta()->get_center_lat(),
+				self::CENTER_LNG => $variable_field_data->get_field_meta()->get_center_lng(),
 			)
 		);
 
@@ -85,12 +92,12 @@ class Map_Field extends Markup_Field_Base {
 			$lat = string( $value, 'lat' );
 
 			$args[ self::VALUE ] = strlen( $lat ) > 0;
-			$args['zoom']  = string( $value, 'zoom', '16' );
-			$args['lat']   = $lat;
-			$args['lng']   = string( $value, 'lng' );
+			$args[ self::ZOOM ]  = string( $value, 'zoom', '16' );
+			$args[ self::LAT ]   = $lat;
+			$args[ self::LNG ]   = string( $value, 'lng' );
 		} else {
 			// the plugin doesn't support zoom, so use the default from the ACF field settings.
-			$args['zoom'] = $variable_field_data->get_field_meta()->get_zoom();
+			$args[ self::ZOOM ] = $variable_field_data->get_field_meta()->get_zoom();
 
 			$args[ self::VALUE ] = array();
 
@@ -98,8 +105,8 @@ class Map_Field extends Markup_Field_Base {
 				$item = arr( $item );
 
 				$args[ self::VALUE ][] = array(
-					'lat' => string( $item, 'lat' ),
-					'lng' => string( $item, 'lng' ),
+					self::LAT => string( $item, 'lat' ),
+					self::LNG => string( $item, 'lng' ),
 				);
 			}
 		}
@@ -115,7 +122,7 @@ class Map_Field extends Markup_Field_Base {
 			self::VALUE => $variable_field_data->get_field_data()->is_map_with_address ?
 				array() :
 				false,
-			'map'   => '',
+			self::MAP   => '',
 		);
 
 		switch ( $variable_field_data->get_field_meta()->get_return_format() ) {
@@ -126,7 +133,7 @@ class Map_Field extends Markup_Field_Base {
 					$args,
 					array(
 						// todo it doesn't work if return format is not set to 'leaflet js' (e.g. the default 'Raw data' value).
-						'map' => $variable_field_data->get_formatted_value(),
+						self::MAP => $variable_field_data->get_formatted_value(),
 					)
 				);
 				break;
@@ -153,8 +160,8 @@ class Map_Field extends Markup_Field_Base {
 			$args = ! $variable_field_data->get_field_meta()->is_multiple() ?
 				array(
 					self::VALUE => '',
-					'lat'       => 0,
-					'lng'       => 0,
+					self::LAT   => 0,
+					self::LNG   => 0,
 				) :
 				array( self::VALUE => array() );
 
@@ -163,15 +170,15 @@ class Map_Field extends Markup_Field_Base {
 				$args,
 				array(// set default values, so if the field has no markers, and showWhenEmpty flag,
 					// then it can show the map in right position.
-					'zoom'       => $variable_field_data->get_field_meta()->get_zoom(),
-					'center_lat' => $variable_field_data->get_field_meta()->get_center_lat(),
-					'center_lng' => $variable_field_data->get_field_meta()->get_center_lng(),
+					self::ZOOM       => $variable_field_data->get_field_meta()->get_zoom(),
+					self::CENTER_LAT => $variable_field_data->get_field_meta()->get_center_lat(),
+					self::CENTER_LNG => $variable_field_data->get_field_meta()->get_center_lng(),
 				)
 			);
 
 			$validation_args = array(
-				'lat' => '1',
-				'lng' => '1',
+				self::LAT => '1',
+				self::LNG => '1',
 			);
 
 			if ( ! $variable_field_data->get_field_meta()->is_multiple() ) {
@@ -181,7 +188,7 @@ class Map_Field extends Markup_Field_Base {
 					$validation_args,
 					array(
 						self::VALUE => '1',
-						'zoom'      => '1',
+						self::ZOOM  => '1',
 					)
 				);
 			}
@@ -198,7 +205,7 @@ class Map_Field extends Markup_Field_Base {
 			self::VALUE => $variable_field_data->get_field_data()->is_map_with_address ?
 				array() :
 				true,
-			'map'   => '<iframe src="https://www.openstreetmap.org/export/embed.html?bbox=5.390371665521,50.7343356,14.857431134479,56.3593356&amp;marker=53.5500279,10.0136948" height="400" width="425" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>',
+			self::MAP   => '<iframe src="https://www.openstreetmap.org/export/embed.html?bbox=5.390371665521,50.7343356,14.857431134479,56.3593356&amp;marker=53.5500279,10.0136948" height="400" width="425" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>',
 		);
 	}
 
@@ -209,7 +216,7 @@ class Map_Field extends Markup_Field_Base {
 
 		if ( 'open_street_map' === $field_meta->get_type() ) {
 			$var = $token_factory->variable( $field_id )
-								->add_item_path( 'map' );
+								->add_item_path( self::MAP );
 
 			$token_factory->to_echo( $var )
 							->set_is_raw( true )
@@ -219,9 +226,9 @@ class Map_Field extends Markup_Field_Base {
 		}
 
 		$attributes_map = array(
-			'data-zoom'       => 'zoom',
-			'data-center-lat' => 'center_lat',
-			'data-center-lng' => 'center_lng',
+			'data-zoom'       => self::ZOOM,
+			'data-center-lat' => self::CENTER_LAT,
+			'data-center-lng' => self::CENTER_LNG,
 		);
 
 		printf(

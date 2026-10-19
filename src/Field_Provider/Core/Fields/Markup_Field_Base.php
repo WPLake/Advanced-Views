@@ -19,6 +19,7 @@ abstract class Markup_Field_Base implements Markup_Field {
 	const VALUE     = 'value';
 	const VIEW_ID   = 'view_id';
 	const LAYOUT_ID = 'layout_id';
+	const LABEL     = 'label';
 
 	protected function print_item_markup( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
 		if ( $markup_field_data->get_field_data()->has_external_layout() ) {

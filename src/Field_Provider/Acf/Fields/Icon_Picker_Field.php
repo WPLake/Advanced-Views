@@ -16,6 +16,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 defined( 'ABSPATH' ) || exit;
 
 class Icon_Picker_Field extends Markup_Field_Base {
+	const TYPE = 'type';
+
 	use Safe_Array_Arguments;
 
 	private Image_Field $image_field;
@@ -28,7 +30,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$type_var = $token_factory->variable( $field_id )
-									->add_item_path( 'type' );
+									->add_item_path( self::TYPE );
 
 		$dashicons_condition = $token_factory->comparison()
 									->set_left_operand( $type_var )
@@ -127,7 +129,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'type'      => '',
+			self::TYPE  => '',
 			self::VALUE => '',
 		);
 
@@ -137,9 +139,9 @@ class Icon_Picker_Field extends Markup_Field_Base {
 			return $args;
 		}
 
-		$args['type'] = $this->get_string_arg( 'type', $value );
+		$args[ self::TYPE ] = $this->get_string_arg( 'type', $value );
 
-		switch ( $args['type'] ) {
+		switch ( $args[ self::TYPE ] ) {
 			case 'dashicons':
 			case 'url':
 				$args[ self::VALUE ] = $this->get_string_arg( 'value', $value );
@@ -158,7 +160,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
 		return array(
-			'type'      => 'dashicons',
+			self::TYPE  => 'dashicons',
 			self::VALUE => 'dashicons-admin-generic',
 		);
 	}
