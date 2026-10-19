@@ -15,7 +15,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Format_Token;
 
@@ -23,11 +22,13 @@ class Field_Template {
 	private Field_Provider_Cluster $provider_cluster;
 	private Front_Assets $front_assets;
 	private Token_Factory_Storage $token_factory_storage;
+	private Row_Wrapper_Printer $wrapper_printer;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
 		$this->provider_cluster      = $provider_cluster;
 		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;
+		$this->wrapper_printer       = new Row_Wrapper_Printer( $token_factory_storage );
 	}
 
 	// public, as used in Upgrades.
@@ -149,13 +150,13 @@ class Field_Template {
 
 		if ( strlen( $field_settings->label ) > 0 &&
 			$is_label_out_of_row ) {
-			self::print_label( $layout_settings, $field_settings, $tabs_number, $field_id );
+			$this->wrapper_printer->print_label( $layout_settings, $field_settings, $tabs_number, $field_id );
 		}
 
 		if ( $is_with_row_wrapper ) {
 			$row_class = self::get_row_wrapper_class( $field_assets, $row_type );
 
-			self::print_row_wrapper(
+			Row_Wrapper_Printer::print_row_wrapper(
 				$field_name_class,
 				$layout_settings,
 				$field_settings,
@@ -168,11 +169,11 @@ class Field_Template {
 
 		if ( '' !== $field_settings->label &&
 			! $is_label_out_of_row ) {
-			self::print_label( $layout_settings, $field_settings, $tabs_number, $field_id );
+			$this->wrapper_printer->print_label( $layout_settings, $field_settings, $tabs_number, $field_id );
 		}
 
 		if ( $is_with_field_wrapper ) {
-			$this->print_field_wrapper(
+			Row_Wrapper_Printer::print_field_wrapper(
 				$field_assets,
 				$field_id,
 				$tabs_number,
@@ -188,7 +189,7 @@ class Field_Template {
 
 		$is_with_outer_wrappers = array() !== $field_outers;
 
-		self::print_opening_field_outers( $field_outers, $tabs_number, $token_factory );
+		Row_Wrapper_Printer::print_opening_field_outers( $field_outers, $tabs_number, $token_factory );
 
 		if ( strlen( $custom_field_markup ) > 0 ) {
 			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -206,7 +207,7 @@ class Field_Template {
 			);
 		}
 
-		self::print_closing_field_outers( $field_outers, $tabs_number );
+		Row_Wrapper_Printer::print_closing_field_outers( $field_outers, $tabs_number );
 
 		if ( $is_with_field_wrapper ) {
 			Format_Token::tabulation( --$tabs_number );
@@ -273,73 +274,6 @@ class Field_Template {
 	/**
 	 * @param Template_Pattern[] $field_assets
 	 */
-	protected function print_field_wrapper(
-		array $field_assets,
-		string $field_id,
-		int &$tabs_number,
-		bool $is_with_row_wrapper,
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		string $field_name_class,
-		string $tag
-	): void {
-		$field_classes = '';
-
-		if ( Layout_Settings::CLASS_GENERATION_NONE !== $layout_settings->classes_generation ) {
-			$bem_name = $layout_settings->get_bem_name();
-
-			if ( $is_with_row_wrapper ) {
-				$field_classes .= sprintf( '%s__%s-field', $bem_name, $field_settings->id );
-				$field_classes .= $layout_settings->is_with_common_classes ?
-					sprintf( ' %s__field', $bem_name ) :
-					'';
-			} else {
-				$field_classes .= $field_name_class;
-
-				if ( $layout_settings->is_with_common_classes ) {
-					$field_classes .= sprintf( ' %s__field', $bem_name );
-				}
-			}
-		}
-
-		$attrs_data = array();
-
-		foreach ( $field_assets as $field_asset ) {
-			$asset_attrs = $field_asset->get_field_wrapper_attrs( $field_settings, $field_id );
-			$attrs_data  = array_merge( $attrs_data, $asset_attrs );
-		}
-
-		$attr_class = $attrs_data['class'] ?? '';
-		unset( $attrs_data['class'] );
-
-		// do not consider classes_generation=none, as external classes, e.g. 'splide', are required for js.
-		if ( '' !== $attr_class ) {
-			$field_classes .= '' !== $field_classes ?
-				' ' :
-				'';
-			$field_classes .= $attr_class;
-		}
-
-		Format_Token::tabulation( $tabs_number );
-
-		printf(
-			'<%s class="%s"',
-			esc_html( $tag ),
-			esc_html( $field_classes ),
-		);
-
-		foreach ( $attrs_data as $attr => $value ) {
-			printf( ' %s="%s"', esc_html( $attr ), esc_html( $value ) );
-		}
-
-		echo '>';
-
-		++$tabs_number;
-	}
-
-	/**
-	 * @param Template_Pattern[] $field_assets
-	 */
 	protected function get_field_wrapper_tag( array $field_assets, Field_Settings $field_settings, string $row_type ): string {
 		foreach ( $field_assets as $field_asset ) {
 			$tag = $field_asset->get_field_wrapper_tag( $field_settings, $row_type );
@@ -376,41 +310,6 @@ class Field_Template {
 		return implode( ' ', $classes );
 	}
 
-	protected static function print_row_wrapper(
-		string $field_name_class,
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		string $type,
-		string $row_class,
-		int &$tab_number,
-		string $tag
-	): void {
-		$row_classes = '';
-
-		if ( Layout_Settings::CLASS_GENERATION_NONE !== $layout_settings->classes_generation ) {
-			$row_classes .= $field_name_class;
-
-			if ( $layout_settings->is_with_common_classes ) {
-				$bem_name     = $layout_settings->get_bem_name();
-				$row_classes .= sprintf( ' %s__%s', $bem_name, $type );
-			}
-		}
-
-		// do not consider classes_generation=none, as external classes, e.g. 'splide', are required for js.
-		if ( '' !== $row_class ) {
-			$row_classes .= '' !== $row_classes ?
-				' ' :
-				'';
-			$row_classes .= $row_class;
-		}
-
-		Format_Token::tabulation( $tab_number );
-		printf( '<%s class="%s">', esc_html( $tag ), esc_html( $row_classes ) );
-		Format_Token::next_line();
-
-		++$tab_number;
-	}
-
 	/**
 	 * @param Template_Pattern[] $field_assets
 	 */
@@ -422,47 +321,6 @@ class Field_Template {
 		}
 
 		return false;
-	}
-
-	protected function print_label(
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		int &$tabs_number,
-		string $field_id
-	): void {
-		$label_class = '';
-
-		if ( Layout_Settings::CLASS_GENERATION_NONE !== $layout_settings->classes_generation ) {
-			$bem_name = $layout_settings->get_bem_name();
-
-			$label_class .= sprintf( '%s__%s-label', $bem_name, $field_settings->id );
-
-			$label_class .= $layout_settings->is_with_common_classes ?
-				sprintf( ' %s__label', $bem_name ) :
-				'';
-		}
-
-		Format_Token::tabulation( $tabs_number );
-
-		printf( '<p class="%s">', esc_html( $label_class ) );
-
-		Format_Token::next_line();
-		Format_Token::tabulation( ++$tabs_number );
-
-		$token_generator = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
-
-		$var = $token_generator->variable( $field_id )
-								->add_item_path( 'label' );
-
-		$token_generator->to_echo( $var )
-						->print();
-
-		Format_Token::next_line();
-		Format_Token::tabulation( --$tabs_number );
-
-		echo '</p>';
-
-		Format_Token::next_line();
 	}
 
 	/**
@@ -484,52 +342,5 @@ class Field_Template {
 		}
 
 		return Template_Field_Data::merge_outers( $assets_outers );
-	}
-
-	/**
-	 * @param Html_Wrapper[] $field_outers
-	 */
-	protected static function print_opening_field_outers(
-		array $field_outers,
-		int &$tabs_number,
-		Token_Factory $token_factory
-	): void {
-		foreach ( $field_outers as $outer ) {
-			$tabs = str_repeat( "\t", $tabs_number );
-
-			printf( "\r\n%s", esc_html( $tabs ) );
-
-			printf( '<%s', esc_html( $outer->tag ) );
-
-			foreach ( $outer->attrs as $attr => $value ) {
-				printf( ' %s="%s"', esc_html( $attr ), esc_html( $value ) );
-			}
-
-			foreach ( $outer->variable_attrs as $attr => $variable_info ) {
-				$var = $token_factory->variable( $variable_info['field_id'] )
-									->add_item_path( $variable_info['item_key'] );
-
-				$token_factory->format()
-				->attribute( $attr, $var );
-			}
-
-			echo '>';
-
-			$token_factory->format()
-							->new_line();
-
-			++$tabs_number;
-		}
-	}
-
-	/**
-	 * @param Html_Wrapper[] $field_outers
-	 */
-	protected static function print_closing_field_outers( array $field_outers, int &$tabs_number ): void {
-		foreach ( $field_outers as $outer ) {
-			Format_Token::tabulation( --$tabs_number );
-			printf( '</%s>', esc_html( $outer->tag ) );
-			Format_Token::next_line();
-		}
 	}
 }
