@@ -11,10 +11,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 
 class Select_Field extends List_Field {
 	const LOOP_ITEM_NAME = 'choice_item';
+	const TITLE          = 'title';
+	const CHOICES        = 'choices';
 
 	protected function print_item_markup( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
 		$twig_name = $markup_field_data->get_field_meta()->is_multiple() ?
-			'choice_item' :
+			static::LOOP_ITEM_NAME :
 			$field_id;
 
 		$markup_field_data->set_is_with_field_wrapper(
@@ -37,7 +39,7 @@ class Select_Field extends List_Field {
 
 		$var = $token_factory
 								->variable( $twig_name )
-								->add_item_path( 'title' );
+								->add_item_path( self::TITLE );
 		$token_factory
 							->to_echo( $var )
 							->print();
@@ -58,8 +60,8 @@ class Select_Field extends List_Field {
 			'';
 
 		return array(
-			'title' => $variable_field_data->get_field_meta()->get_choices()[ $value ] ?? '',
-			'value' => $value,
+			self::TITLE => $variable_field_data->get_field_meta()->get_choices()[ $value ] ?? '',
+			self::VALUE => $value,
 		);
 	}
 
@@ -70,7 +72,7 @@ class Select_Field extends List_Field {
 		return array_merge(
 			parent::get_template_variables( $variable_field_data ),
 			array(
-				'choices' => $variable_field_data->get_field_meta()->get_choices(),
+				self::CHOICES => $variable_field_data->get_field_meta()->get_choices(),
 			)
 		);
 	}
@@ -80,8 +82,8 @@ class Select_Field extends List_Field {
 	 */
 	protected function get_validation_item_template_args( Variable_Field_Data $variable_field_data ): array {
 		return array(
-			'title' => 'Option',
-			'value' => 'option',
+			self::TITLE => 'Option',
+			self::VALUE => 'option',
 		);
 	}
 
@@ -92,7 +94,7 @@ class Select_Field extends List_Field {
 		return array_merge(
 			parent::get_validation_template_variables( $variable_field_data ),
 			array(
-				'choices' => array(
+				self::CHOICES => array(
 					'option' => 'Option',
 				),
 			)

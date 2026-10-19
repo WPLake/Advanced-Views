@@ -16,17 +16,23 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 class Link_Field extends Markup_Field_Base {
+	const TARGET     = 'target';
+	const TITLE      = 'title';
+	const LINK_LABEL = 'linkLabel';
+	// keys of the source link value.
+	const URL = 'url';
+
 	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$target_var     = $token_factory->variable( $field_id )
-										->add_item_path( 'target' );
+										->add_item_path( self::TARGET );
 		$href_var       = $token_factory->variable( $field_id )
-										->add_item_path( 'value' );
+										->add_item_path( self::VALUE );
 		$link_label_var = $token_factory->variable( $field_id )
-											->add_item_path( 'linkLabel' );
+											->add_item_path( self::LINK_LABEL );
 		$title_var      = $token_factory->variable( $field_id )
-									->add_item_path( 'title' );
+									->add_item_path( self::TITLE );
 
 		echo '<a';
 
@@ -72,10 +78,10 @@ class Link_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'value'     => '',
-			'target'    => '_self',
-			'title'     => '',
-			'linkLabel' => $variable_field_data->get_field_data()->get_link_label_translation(),
+			self::VALUE      => '',
+			self::TARGET     => '_self',
+			self::TITLE      => '',
+			self::LINK_LABEL => $variable_field_data->get_field_data()->get_link_label_translation(),
 		);
 
 		$value = arr( $variable_field_data->get_value() );
@@ -84,12 +90,12 @@ class Link_Field extends Markup_Field_Base {
 			return $args;
 		}
 
-		$target        = string( $value, 'target' );
-		$is_target_set = strlen( $target ) > 0 || bool( $value, 'target' );
+		$target        = string( $value, self::TARGET );
+		$is_target_set = strlen( $target ) > 0 || bool( $value, self::TARGET );
 
-		$args['value']  = string( $value, 'url' );
-		$args['title']  = string( $value, 'title' );
-		$args['target'] = $variable_field_data->get_field_data()->is_link_target_blank || $is_target_set ?
+		$args[ self::VALUE ]  = string( $value, self::URL );
+		$args[ self::TITLE ]  = string( $value, self::TITLE );
+		$args[ self::TARGET ] = $variable_field_data->get_field_data()->is_link_target_blank || $is_target_set ?
 			'_blank' :
 			'_self';
 
@@ -101,10 +107,10 @@ class Link_Field extends Markup_Field_Base {
 	 */
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
 		return array(
-			'value'     => 'https://wordpress.org/',
-			'target'    => '_self',
-			'title'     => 'wordpress.org',
-			'linkLabel' => $variable_field_data->get_field_data()->get_link_label_translation(),
+			self::VALUE      => 'https://wordpress.org/',
+			self::TARGET     => '_self',
+			self::TITLE      => 'wordpress.org',
+			self::LINK_LABEL => $variable_field_data->get_field_data()->get_link_label_translation(),
 		);
 	}
 

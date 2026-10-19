@@ -16,6 +16,8 @@ defined( 'ABSPATH' ) || exit;
 abstract class Markup_Field_Base implements Markup_Field {
 	use Safe_Array_Arguments;
 
+	const VALUE = 'value';
+
 	protected function print_item_markup( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
 		if ( $markup_field_data->get_field_data()->has_external_layout() ) {
 			$this->print_external_item_layout( $field_id, $item_id, $markup_field_data );

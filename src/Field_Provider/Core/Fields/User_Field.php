@@ -28,8 +28,8 @@ class User_Field extends List_Field {
 	 */
 	protected function get_user_info( int $id ): array {
 		$user_info = array(
-			'url'   => '',
-			'title' => '',
+			Link_Field::URL   => '',
+			Link_Field::TITLE => '',
 		);
 
 		$user = get_user_by( 'ID', $id );
@@ -39,8 +39,8 @@ class User_Field extends List_Field {
 		}
 
 		return array(
-			'url'   => get_author_posts_url( $user->ID ),
-			'title' => $user->display_name,
+			Link_Field::URL   => get_author_posts_url( $user->ID ),
+			Link_Field::TITLE => $user->display_name,
 		);
 	}
 
@@ -55,13 +55,13 @@ class User_Field extends List_Field {
 	): void {
 		$token_factory    = $markup_field_data->get_token_factory();
 		$object_id_source = $markup_field_data->get_field_meta()->is_multiple() ?
-			'user_item' :
+			static::LOOP_ITEM_NAME :
 			$field_id;
 
 		$id_var      = $token_factory->variable( $field_id )
-										->add_item_path( 'layout_id' );
+										->add_item_path( self::LAYOUT_ID );
 		$user_id_var = $token_factory->variable( $object_id_source )
-										->add_item_path( 'value' );
+										->add_item_path( self::VALUE );
 
 		printf( '[%s', esc_html( Hard_Layout_Cpt::cpt_name() ) );
 
@@ -86,8 +86,8 @@ class User_Field extends List_Field {
 		return array_merge(
 			parent::get_template_variables( $variable_field_data ),
 			array(
-				'view_id'   => $layout_id,
-				'layout_id' => $layout_id,
+				self::VIEW_ID   => $layout_id,
+				self::LAYOUT_ID => $layout_id,
 			)
 		);
 	}
@@ -101,8 +101,8 @@ class User_Field extends List_Field {
 		return array_merge(
 			parent::get_validation_template_variables( $variable_field_data ),
 			array(
-				'view_id'   => $layout_id,
-				'layout_id' => $layout_id,
+				self::VIEW_ID   => $layout_id,
+				self::LAYOUT_ID => $layout_id,
 			)
 		);
 	}
@@ -113,7 +113,7 @@ class User_Field extends List_Field {
 	protected function get_item_template_args( Variable_Field_Data $variable_field_data ): array {
 		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
 			return array(
-				'value' => $variable_field_data->get_value(),
+				self::VALUE => $variable_field_data->get_value(),
 			);
 		}
 
@@ -130,7 +130,7 @@ class User_Field extends List_Field {
 	protected function get_validation_item_template_args( Variable_Field_Data $variable_field_data ): array {
 		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
 			return array(
-				'value' => '',
+				self::VALUE => '',
 			);
 		}
 

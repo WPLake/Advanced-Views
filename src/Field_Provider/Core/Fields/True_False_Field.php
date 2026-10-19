@@ -13,6 +13,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 defined( 'ABSPATH' ) || exit;
 
 class True_False_Field extends Markup_Field_Base {
+	const STATE = 'state';
+
 	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 		$safe_classes  = esc_html(
@@ -25,7 +27,7 @@ class True_False_Field extends Markup_Field_Base {
 
 		ob_start();
 		$var = $token_factory->variable( $field_id )
-							->add_item_path( 'state' );
+							->add_item_path( self::STATE );
 		$token_factory->to_echo( $var )
 			->print();
 
@@ -53,8 +55,8 @@ class True_False_Field extends Markup_Field_Base {
 		$is_checked = in_array( $variable_field_data->get_value(), array( 1, '1', true ), true );
 
 		$args = array(
-			'value' => $is_checked,
-			'state' => $is_checked ?
+			self::VALUE => $is_checked,
+			self::STATE => $is_checked ?
 				'checked' :
 				'unchecked',
 		);
@@ -69,8 +71,8 @@ class True_False_Field extends Markup_Field_Base {
 		$is_checked = in_array( $variable_field_data->get_value(), array( 1, '1', true ), true );
 
 		$args = array(
-			'value' => $is_checked,
-			'state' => $is_checked ?
+			self::VALUE => $is_checked,
+			self::STATE => $is_checked ?
 				'checked' :
 				'unchecked',
 		);

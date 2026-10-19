@@ -14,7 +14,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Generation\Tokens\Variable\Variable_Token;
 
 abstract class List_Field extends Markup_Field_Base {
-	const LOOP_ITEM_NAME = 'item';
+	const LOOP_ITEM_NAME    = 'item';
+	const OPTIONS_DELIMITER = 'options_delimiter';
+	const VIEW_ID           = 'view_id';
+	const LAYOUT_ID         = 'layout_id';
 
 	/**
 	 * @return array<string, mixed>
@@ -66,7 +69,7 @@ abstract class List_Field extends Markup_Field_Base {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$source_var = $token_factory->variable( $field_id )
-										->add_item_path( 'value' );
+										->add_item_path( self::VALUE );
 		$item_var   = $token_factory->variable( static::LOOP_ITEM_NAME );
 		$loop       = $token_factory->loop()
 			->set_source_variable( $source_var )
@@ -148,7 +151,7 @@ abstract class List_Field extends Markup_Field_Base {
 		$markup_field_data->increment_and_print_tabs();
 
 		$delimiter_var = $token_factory->variable( $field_id )
-										->add_item_path( 'options_delimiter' );
+										->add_item_path( self::OPTIONS_DELIMITER );
 		$token_factory->to_echo( $delimiter_var )
 						->print();
 
@@ -176,11 +179,11 @@ abstract class List_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'value' => array(),
+			self::VALUE => array(),
 		);
 
 		if ( $variable_field_data->get_field_meta()->is_multiple() ) {
-			$args['options_delimiter'] = $variable_field_data->get_field_data()->options_delimiter;
+			$args[ self::OPTIONS_DELIMITER ] = $variable_field_data->get_field_data()->options_delimiter;
 		}
 
 		$value = $this->get_value( $variable_field_data->get_field_meta(), $variable_field_data->get_value() );
@@ -206,7 +209,7 @@ abstract class List_Field extends Markup_Field_Base {
 			foreach ( $value as $item ) {
 				$variable_field_data->set_value( $item );
 
-				$args['value'][] = $this->get_item_template_args( $variable_field_data );
+				$args[ self::VALUE ][] = $this->get_item_template_args( $variable_field_data );
 			}
 		} else {
 			$variable_field_data->set_value( $value );
@@ -226,11 +229,11 @@ abstract class List_Field extends Markup_Field_Base {
 	 */
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'value' => array(),
+			self::VALUE => array(),
 		);
 
 		if ( $variable_field_data->get_field_meta()->is_multiple() ) {
-			$args['options_delimiter'] = $variable_field_data->get_field_data()->options_delimiter;
+			$args[ self::OPTIONS_DELIMITER ] = $variable_field_data->get_field_data()->options_delimiter;
 		}
 
 		$item_args = $this->get_validation_item_template_args( $variable_field_data );
@@ -242,7 +245,7 @@ abstract class List_Field extends Markup_Field_Base {
 			return array_merge(
 				$args,
 				array(
-					'value' => $item,
+					self::VALUE => $item,
 				)
 			);
 		}

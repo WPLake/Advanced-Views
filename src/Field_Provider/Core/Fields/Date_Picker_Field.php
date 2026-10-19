@@ -14,8 +14,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 defined( 'ABSPATH' ) || exit;
 
 class Date_Picker_Field extends Markup_Field_Base {
+	const TIMESTAMP = 'timestamp';
+
 	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
-		$var = $markup_field_data->get_token_factory()->variable( $field_id )->add_item_path( 'value' );
+		$var = $markup_field_data->get_token_factory()->variable( $field_id )->add_item_path( self::VALUE );
 		$markup_field_data->get_token_factory()->to_echo( $var )->print();
 	}
 
@@ -24,8 +26,8 @@ class Date_Picker_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'value'     => '',
-			'timestamp' => 0,
+			self::VALUE     => '',
+			self::TIMESTAMP => 0,
 		);
 
 		$date_time = $variable_field_data->convert_value_to_date_time();
@@ -38,11 +40,11 @@ class Date_Picker_Field extends Markup_Field_Base {
 			$args,
 			array(
 				// date_i18n() unlike the '$date->format($displayFormat)' supports different languages.
-				'value'     => date_i18n(
+				self::VALUE     => date_i18n(
 					$variable_field_data->get_field_meta()->get_display_format(),
 					$date_time->getTimestamp()
 				),
-				'timestamp' => $date_time->getTimestamp(),
+				self::TIMESTAMP => $date_time->getTimestamp(),
 			)
 		);
 	}
@@ -54,8 +56,8 @@ class Date_Picker_Field extends Markup_Field_Base {
 		$now = new DateTime();
 
 		return array(
-			'value'     => $now->format( $variable_field_data->get_field_meta()->get_display_format() ),
-			'timestamp' => $now->getTimestamp(),
+			self::VALUE     => $now->format( $variable_field_data->get_field_meta()->get_display_format() ),
+			self::TIMESTAMP => $now->getTimestamp(),
 		);
 	}
 

@@ -13,6 +13,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
 defined( 'ABSPATH' ) || exit;
 
 class Html_Field extends Markup_Field_Base {
+	const RAW_VALUE = 'raw_value';
+
 	private bool $is_formatted_value_in_use;
 	private bool $is_with_replace_new_line_to_br;
 
@@ -30,7 +32,7 @@ class Html_Field extends Markup_Field_Base {
 
 	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
 		$var = $markup_field_data->get_token_factory()->variable( $field_id )
-								->add_item_path( 'value' );
+								->add_item_path( self::VALUE );
 
 		$markup_field_data->get_token_factory()->to_echo( $var )
 							->set_is_raw( true )
@@ -42,8 +44,8 @@ class Html_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$twig_args = array(
-			'value'     => '',
-			'raw_value' => '',
+			self::VALUE     => '',
+			self::RAW_VALUE => '',
 		);
 
 		// by default use the formatted value, as we need html (e.g. for oembed) instead of the pure value.
@@ -62,10 +64,10 @@ class Html_Field extends Markup_Field_Base {
 		return array_merge(
 			$twig_args,
 			array(
-				'value'     => $value,
+				self::VALUE     => $value,
 				// always provide the raw value alongside with the current,
 				// e.g. in oEmbed case, it allows to get the url instead of the iframe's html.
-				'raw_value' => $variable_field_data->get_value(),
+				self::RAW_VALUE => $variable_field_data->get_value(),
 			)
 		);
 	}
@@ -75,8 +77,8 @@ class Html_Field extends Markup_Field_Base {
 	 */
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
 		return array(
-			'value'     => '1',
-			'raw_value' => '1',
+			self::VALUE     => '1',
+			self::RAW_VALUE => '1',
 		);
 	}
 

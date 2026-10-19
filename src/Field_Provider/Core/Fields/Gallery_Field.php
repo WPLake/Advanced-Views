@@ -33,7 +33,7 @@ class Gallery_Field extends Markup_Field_Base {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$source_var = $token_factory->variable( $field_id )
-									->add_item_path( 'value' );
+									->add_item_path( self::VALUE );
 		$item_var   = $token_factory->variable( 'image_item' );
 		$loop_body  = $token_factory->html(
 			function () use ( $markup_field_data, $field_id, $item_var, $token_factory ) {
@@ -69,7 +69,7 @@ class Gallery_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'value' => array(),
+			self::VALUE => array(),
 		);
 
 		$value = is_array( $variable_field_data->get_value() ) ?
@@ -83,7 +83,7 @@ class Gallery_Field extends Markup_Field_Base {
 		foreach ( $value as $image ) {
 			$variable_field_data->set_value( $image );
 
-			$args['value'][] = $this->image_field->get_template_variables( $variable_field_data );
+			$args[ self::VALUE ][] = $this->image_field->get_template_variables( $variable_field_data );
 		}
 
 		return $args;
@@ -94,7 +94,7 @@ class Gallery_Field extends Markup_Field_Base {
 	 */
 	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
 		$args = array(
-			'value' => array(),
+			self::VALUE => array(),
 		);
 
 		$value   = array();
@@ -103,7 +103,7 @@ class Gallery_Field extends Markup_Field_Base {
 		return array_merge(
 			$args,
 			array(
-				'value' => $value,
+				self::VALUE => $value,
 			)
 		);
 	}

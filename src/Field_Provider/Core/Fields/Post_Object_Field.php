@@ -36,15 +36,15 @@ class Post_Object_Field extends List_Field {
 			$title = get_the_title( $post );
 
 			return array(
-				'url'   => (string) get_permalink( $post->ID ),
+				Link_Field::URL   => (string) get_permalink( $post->ID ),
 				// avoid double encoding in the template.
-				'title' => html_entity_decode( $title, ENT_QUOTES ),
+				Link_Field::TITLE => html_entity_decode( $title, ENT_QUOTES ),
 			);
 		}
 
 		return array(
-			'url'   => '',
-			'title' => '',
+			Link_Field::URL   => '',
+			Link_Field::TITLE => '',
 		);
 	}
 
@@ -59,14 +59,16 @@ class Post_Object_Field extends List_Field {
 
 	protected function print_external_item_layout( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
 		$object_id_source = $markup_field_data->get_field_meta()->is_multiple() ?
-			'post_item' :
+			static::LOOP_ITEM_NAME :
 			$field_id;
 
 		printf(
-			'[%s id="{{ %s.layout_id }}" object-id="{{ %s.value }}"]',
+			'[%s id="{{ %s.%s }}" object-id="{{ %s.%s }}"]',
 			esc_html( Hard_Layout_Cpt::cpt_name() ),
 			esc_html( $field_id ),
-			esc_html( $object_id_source )
+			esc_html( self::LAYOUT_ID ),
+			esc_html( $object_id_source ),
+			esc_html( self::VALUE )
 		);
 	}
 
@@ -79,8 +81,8 @@ class Post_Object_Field extends List_Field {
 		return array_merge(
 			parent::get_template_variables( $variable_field_data ),
 			array(
-				'view_id'   => $layout_id,
-				'layout_id' => $layout_id,
+				self::VIEW_ID   => $layout_id,
+				self::LAYOUT_ID => $layout_id,
 			)
 		);
 	}
@@ -94,8 +96,8 @@ class Post_Object_Field extends List_Field {
 		return array_merge(
 			parent::get_validation_template_variables( $variable_field_data ),
 			array(
-				'view_id'   => $layout_id,
-				'layout_id' => $layout_id,
+				self::VIEW_ID   => $layout_id,
+				self::LAYOUT_ID => $layout_id,
 			)
 		);
 	}
@@ -106,7 +108,7 @@ class Post_Object_Field extends List_Field {
 	protected function get_item_template_args( Variable_Field_Data $variable_field_data ): array {
 		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
 			return array(
-				'value' => $variable_field_data->get_value(),
+				self::VALUE => $variable_field_data->get_value(),
 			);
 		}
 
@@ -128,7 +130,7 @@ class Post_Object_Field extends List_Field {
 	protected function get_validation_item_template_args( Variable_Field_Data $variable_field_data ): array {
 		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
 			return array(
-				'value' => '',
+				self::VALUE => '',
 			);
 
 		}
