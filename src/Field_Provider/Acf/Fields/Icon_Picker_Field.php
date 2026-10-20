@@ -97,7 +97,9 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$condition = self::type_comparison( 'dashicons', $field_id, $markup_field_data );
-		$body      = $token_factory->html( fn() => $this->print_icon_markup( $field_id, $markup_field_data ) );
+		$body      = $token_factory->html(
+			fn() => $this->print_icon_markup( $field_id, $markup_field_data )
+		);
 
 		return $token_factory->if_branch()
 			->set_condition( $condition )
@@ -119,7 +121,9 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	protected function custom_image_branch( string $field_id, Template_Field_Data $markup_field_data ): IF_Branch {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$body = $token_factory->html( fn() => $this->print_custom_image_markup( $field_id, $markup_field_data ) );
+		$body = $token_factory->html(
+			fn() => $this->print_custom_image_markup( $field_id, $markup_field_data )
+		);
 
 		return $token_factory->if_branch()
 			->set_body( $body );

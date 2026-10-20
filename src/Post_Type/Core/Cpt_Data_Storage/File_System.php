@@ -50,7 +50,9 @@ class File_System extends Loggable_Actor implements Actor {
 		// set only if it isn't an external folder.
 		if ( 0 === strlen( $this->base_folder ) ) {
 			File_System_Loader::instance()
-								->add_onload_callback( fn() => $this->set_base_folder( $route_detector ) );
+								->add_onload_callback(
+									fn() => $this->set_base_folder( $route_detector )
+								);
 		}
 	}
 

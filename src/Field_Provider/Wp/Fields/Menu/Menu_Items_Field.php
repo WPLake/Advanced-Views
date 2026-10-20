@@ -141,7 +141,9 @@ class Menu_Items_Field extends Markup_Field_Base {
 
 		$children_var = $token_factory->variable( $item_id )
 			->add_item_path( self::CHILDREN );
-		$body         = $token_factory->html( fn() => $this->print_children( $field_id, $item_id, $markup_field_data ) );
+		$body         = $token_factory->html(
+			fn() => $this->print_children( $field_id, $item_id, $markup_field_data )
+		);
 
 		return $token_factory->if_branch()
 			->set_condition( $children_var )
