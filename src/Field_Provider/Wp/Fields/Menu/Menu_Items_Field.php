@@ -75,7 +75,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 						->set_source_variable( $value_var )
 						->set_item_variable( $item_var )
 						->set_body( $loop_body )
-						->print_token();
+						->display();
 
 		$token_factory->formatter()
 						->new_line();
@@ -129,7 +129,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 			->set_condition( $children_var )
 			->set_body( $children_body );
 
-		$if->print_token();
+		$if->display();
 
 		echo "\r\n\r\n";
 		$markup_field_data->decrement_and_print_tabs();
@@ -174,7 +174,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 						->set_source_variable( $children_var )
 						->set_item_variable( $sub_menu_item_var )
 						->set_body( $loop_body )
-						->print_token();
+						->display();
 
 		$token_factory->formatter()
 						->new_line( 2 );
@@ -253,7 +253,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 			->set_condition( $comparison )
 			->set_body( $active_body );
 
-		$if->print_token();
+		$if->display();
 	}
 
 	protected function is_active_item( WP_Post $wp_post ): bool {

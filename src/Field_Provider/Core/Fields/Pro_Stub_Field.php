@@ -20,7 +20,7 @@ class Pro_Stub_Field extends Markup_Field_Base {
 
 		$token_factory
 							->comment( $message )
-							->print_token();
+							->display();
 	}
 
 	/**

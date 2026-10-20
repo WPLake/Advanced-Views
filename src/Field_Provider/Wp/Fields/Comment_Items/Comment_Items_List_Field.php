@@ -240,7 +240,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 			->set_source_variable( $value_var )
 			->set_item_variable( $item_var )
 				->set_body( $body )
-			->print_token();
+			->display();
 
 		$token_factory->formatter()
 						->new_line();

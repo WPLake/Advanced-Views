@@ -58,7 +58,7 @@ class Gallery_Field extends Markup_Field_Base {
 						->new_line();
 		$markup_field_data->print_tabs();
 
-		$loop->print_token();
+		$loop->display();
 
 		$token_factory->formatter()
 						->new_line();

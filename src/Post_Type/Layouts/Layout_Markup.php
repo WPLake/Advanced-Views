@@ -100,7 +100,7 @@ class Layout_Markup {
 		$token_factory->formatter()->new_line();
 		$token_factory->formatter()->tab();
 
-		$if->print_token();
+		$if->display();
 
 		$token_factory->formatter()->new_line( 2 );
 	}

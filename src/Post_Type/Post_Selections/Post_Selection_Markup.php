@@ -67,7 +67,7 @@ class Post_Selection_Markup {
 
 		echo "\r\n\t";
 
-		$if->print_token();
+		$if->display();
 
 		$token_factory->formatter()->new_line();
 	}
@@ -321,7 +321,7 @@ class Post_Selection_Markup {
 		}
 
 		$tabs_number = $this->print_opening_tag( $token_factory, $post_selection_settings, $tabs_number );
-		$if->print_token();
+		$if->display();
 		$this->print_closing_tag( $token_factory, $post_selection_settings );
 	}
 
@@ -387,7 +387,7 @@ class Post_Selection_Markup {
 						->set_source_variable( $post_ids_var )
 						->set_item_variable( $post_id_var )
 						->set_body( $loop_body )
-						->print_token();
+						->display();
 
 		$token_factory->formatter()
 						->new_line();

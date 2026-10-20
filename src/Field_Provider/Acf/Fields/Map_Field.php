@@ -283,7 +283,7 @@ class Map_Field extends Map_Field_Base {
 						->set_source_variable( $source_var )
 						->set_item_variable( $item_var )
 						->set_body( $loop_body )
-						->print_token();
+						->display();
 	}
 
 	protected function print_conditional_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
@@ -311,7 +311,7 @@ class Map_Field extends Map_Field_Base {
 			->set_condition( $value_var )
 			->set_body( $if_body );
 
-		$if->print_token();
+		$if->display();
 	}
 
 	protected function print_inner_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {

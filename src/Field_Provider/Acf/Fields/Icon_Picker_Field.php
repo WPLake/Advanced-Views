@@ -59,7 +59,7 @@ class Icon_Picker_Field extends Markup_Field_Base {
 		$if->new_else_branch()
 			->set_body( $custom_image_body );
 
-		$if->print_token();
+		$if->display();
 	}
 
 	protected function print_icon_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
