@@ -53,9 +53,8 @@ class Acf_Dependency extends Actor_Base implements Actor {
 
 		// Hide ACF admin menu (as we loaded ACF only for our plugin).
 		self::add_filter( 'acf/settings/show_admin', '__return_false' );
-		$acf_settings_url_callback = fn() => $acf_plugin_url;
 		// ensure right url, otherwise internal ACF asset paths are incorrect.
-		self::add_filter( 'acf/settings/url', $acf_settings_url_callback );
+		self::add_filter( 'acf/settings/url', fn() => $acf_plugin_url );
 
 		require_once $acf_file;
 

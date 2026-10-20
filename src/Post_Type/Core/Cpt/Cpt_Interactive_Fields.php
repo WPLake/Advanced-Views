@@ -108,13 +108,12 @@ abstract class Cpt_Interactive_Fields extends Actor_Base implements Actor {
 			$this->instance_factory->get_autocomplete_variables( $post->post_name ) :
 			array();
 
-		$mapper = fn ( Template_Integration $integration )=>array(
-			'autocompleteFunctions' => $integration->get_autocomplete_functions(),
-			'autocompleteFilters'   => $integration->get_autocomplete_filters(),
-			'provocativeSymbolsMap' => $integration->get_provocative_symbols_map(),
-		);
 		$engines_meta = array_map(
-			$mapper,
+			fn ( Template_Integration $integration )=>array(
+				'autocompleteFunctions' => $integration->get_autocomplete_functions(),
+				'autocompleteFilters'   => $integration->get_autocomplete_filters(),
+				'provocativeSymbolsMap' => $integration->get_provocative_symbols_map(),
+			),
 			$this->template_integration_storage->get_integrations()
 		);
 

@@ -173,66 +173,65 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	}
 
 	public function add_tab_to_meta_group(): void {
-		$pods_view_output_callback = function ( string $output, string $view_file ): string {
-			if ( false === strpos( $view_file, 'pods/ui/admin/setup-edit.php' ) ) {
-				return $output;
-			}
-
-			$id = Query_Arguments::get_string_for_non_action( 'id' );
-
-			if ( false === function_exists( 'pods_api' ) ||
-				'' === $id ) {
-				return $output;
-			}
-
-			$pods_api = pods_api();
-
-			if ( false === is_object( $pods_api ) ||
-				false === method_exists( $pods_api, 'load_pod' ) ) {
-				return $output;
-			}
-
-			$pod = $pods_api->load_pod(
-				array(
-					'id' => $id,
-				)
-			);
-
-			if ( false === is_object( $pod ) ||
-				false === method_exists( $pod, 'get_args' ) ) {
-				return $output;
-			}
-
-			$args     = $pod->get_args();
-			$args     = is_array( $args ) ?
-				$args :
-				array();
-			$pod_name = $this->get_string_arg( 'name', $args );
-
-			ob_start();
-			echo '<div class="advanced-views postbox-container" style="width:70%%;margin:100px 0 0;"><div class="postbox pods-no-toggle" style="padding:0 20px 20px;">';
-
-			printf(
-				'<h4 class="advanced-views__heading">%s</h4>',
-				esc_html( __( 'Advanced Views', 'acf-views' ) )
-			);
-
-			$this->print_related_acf_views(
-				null,
-				false,
-				$this->get_related_acf_views( $pod_name, $pod )
-			);
-
-			$this->print_add_new_links_for_groups( $pod );
-
-			echo '</div></div>';
-			$related_block = (string) ob_get_clean();
-
-			return $output . $related_block;
-		};
 		self::add_filter(
 			'pods_view_output',
-			$pods_view_output_callback,
+			function ( string $output, string $view_file ): string {
+				if ( false === strpos( $view_file, 'pods/ui/admin/setup-edit.php' ) ) {
+					return $output;
+				}
+
+				$id = Query_Arguments::get_string_for_non_action( 'id' );
+
+				if ( false === function_exists( 'pods_api' ) ||
+					'' === $id ) {
+					return $output;
+				}
+
+				$pods_api = pods_api();
+
+				if ( false === is_object( $pods_api ) ||
+					false === method_exists( $pods_api, 'load_pod' ) ) {
+					return $output;
+				}
+
+				$pod = $pods_api->load_pod(
+					array(
+						'id' => $id,
+					)
+				);
+
+				if ( false === is_object( $pod ) ||
+					false === method_exists( $pod, 'get_args' ) ) {
+					return $output;
+				}
+
+				$args     = $pod->get_args();
+				$args     = is_array( $args ) ?
+					$args :
+					array();
+				$pod_name = $this->get_string_arg( 'name', $args );
+
+				ob_start();
+				echo '<div class="advanced-views postbox-container" style="width:70%%;margin:100px 0 0;"><div class="postbox pods-no-toggle" style="padding:0 20px 20px;">';
+
+				printf(
+					'<h4 class="advanced-views__heading">%s</h4>',
+					esc_html( __( 'Advanced Views', 'acf-views' ) )
+				);
+
+				$this->print_related_acf_views(
+					null,
+					false,
+					$this->get_related_acf_views( $pod_name, $pod )
+				);
+
+				$this->print_add_new_links_for_groups( $pod );
+
+				echo '</div></div>';
+				$related_block = (string) ob_get_clean();
+
+				return $output . $related_block;
+			},
 			10,
 			2
 		);
@@ -280,46 +279,45 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	}
 
 	public function add_column_to_list_table(): void {
-		$pods_ui_pre_init_callback = function ( array $options ): array {
-			$page = Query_Arguments::get_string_for_non_action( 'page' );
-
-			if ( 'pods' !== $page ) {
-				return $options;
-			}
-
-			$options['fields']           = $this->get_array_arg( 'fields', $options );
-			$options['fields']['manage'] = $this->get_array_arg( 'manage', $options['fields'] );
-			$options['data']             = $this->get_array_arg( 'data', $options );
-
-			$options['fields']['manage']['acf_views'] = array(
-				'label' => __( 'Assigned to View', 'acf-views' ),
-				'width' => '20%',
-				'type'  => 'raw',
-			);
-
-			foreach ( $options['data'] as &$item ) {
-				if ( false === is_array( $item ) ) {
-					continue;
-				}
-
-				// post, page, taxonomy.
-				$name = $this->get_string_arg( 'name', $item );
-
-				ob_start();
-				$this->print_related_acf_views(
-					null,
-					true,
-					$this->get_related_acf_views( $name, $item['pod_object'] ?? null )
-				);
-
-				$item['acf_views'] = ob_get_clean();
-			}
-
-			return $options;
-		};
 		self::add_filter(
 			'pods_ui_pre_init',
-			$pods_ui_pre_init_callback
+			function ( array $options ): array {
+				$page = Query_Arguments::get_string_for_non_action( 'page' );
+
+				if ( 'pods' !== $page ) {
+					return $options;
+				}
+
+				$options['fields']           = $this->get_array_arg( 'fields', $options );
+				$options['fields']['manage'] = $this->get_array_arg( 'manage', $options['fields'] );
+				$options['data']             = $this->get_array_arg( 'data', $options );
+
+				$options['fields']['manage']['acf_views'] = array(
+					'label' => __( 'Assigned to View', 'acf-views' ),
+					'width' => '20%',
+					'type'  => 'raw',
+				);
+
+				foreach ( $options['data'] as &$item ) {
+					if ( false === is_array( $item ) ) {
+						continue;
+					}
+
+					// post, page, taxonomy.
+					$name = $this->get_string_arg( 'name', $item );
+
+					ob_start();
+					$this->print_related_acf_views(
+						null,
+						true,
+						$this->get_related_acf_views( $name, $item['pod_object'] ?? null )
+					);
+
+					$item['acf_views'] = ob_get_clean();
+				}
+
+				return $options;
+			}
 		);
 	}
 

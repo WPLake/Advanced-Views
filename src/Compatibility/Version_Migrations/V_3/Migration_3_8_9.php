@@ -23,20 +23,18 @@ final class Migration_3_8_9 extends Version_Migration_Base {
 	) {
 		parent::__construct( $logger );
 
-		$layouts_bem_name_setter = fn ( Cpt_Settings $cpt_settings ) => $this->set_default_bem_name( $cpt_settings, 'acf-view' );
-		$selections_bem_name_setter = fn ( Cpt_Settings $cpt_settings ) => $this->set_default_bem_name( $cpt_settings, 'acf-card' );
 		$this->migrations = array(
 			new Migration_Field_Values(
 				$logger,
 				$layouts_settings_storage,
 				// keep old bem_name to ensure the default template produces the same markup for existing layouts.
-				$layouts_bem_name_setter
+				fn ( Cpt_Settings $cpt_settings ) => $this->set_default_bem_name( $cpt_settings, 'acf-view' )
 			),
 			new Migration_Field_Values(
 				$logger,
 				$post_selections_settings_storage,
 				// keep old bem_name to ensure the default template produces the same markup for existing post selections.
-				$selections_bem_name_setter
+				fn ( Cpt_Settings $cpt_settings ) => $this->set_default_bem_name( $cpt_settings, 'acf-card' )
 			),
 		);
 	}

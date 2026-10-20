@@ -67,9 +67,8 @@ final class Repository_Factory {
 			);
 		}
 
-		$mapper = fn( string $class_name ): Reference => get( $class_name );
 		return array_map(
-			$mapper,
+			fn( string $class_name ): Reference => get( $class_name ),
 			$type_definitions
 		);
 	}

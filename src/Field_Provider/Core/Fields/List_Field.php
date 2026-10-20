@@ -6,12 +6,12 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 
 abstract class List_Field extends Markup_Field_Base {
@@ -74,8 +74,9 @@ abstract class List_Field extends Markup_Field_Base {
 			->set_source_variable( $source_var )
 			->set_item_variable( $item_var );
 
-		$body_printer = fn() => $this->print_loop_body( $loop->get_index_variable(), $field_id, $markup_field_data );
-		$loop_body = $token_factory->html( $body_printer );
+		$loop_body = $token_factory->html(
+			fn() => $this->print_loop_body( $loop->get_index_variable(), $field_id, $markup_field_data )
+		);
 
 		$token_factory->formatter()
 						->new_line();
@@ -127,8 +128,9 @@ abstract class List_Field extends Markup_Field_Base {
 			->set_comparison_greater()
 			->set_right_operand( $token_factory->literal( 0 ) );
 
-		$body_printer = fn() => $this->print_item_delimiter( $field_id, $markup_field_data );
-		$body = $token_factory->html( $body_printer );
+		$body = $token_factory->html(
+			fn() => $this->print_item_delimiter( $field_id, $markup_field_data )
+		);
 
 		return $token_factory->if_branch()
 			->set_condition( $secondary_element_comparison )

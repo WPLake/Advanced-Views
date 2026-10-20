@@ -6,12 +6,12 @@ namespace Org\Wplake\Advanced_Views\Post_Query\Selection;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Query_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Context_Container_Base;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context_Container;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
-use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Query_Settings;
 use Org\Wplake\Advanced_Views\Post_Query\Entity\Entity_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Entity\Order_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Entity\Pagination_Query_Builder;
@@ -51,12 +51,9 @@ class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Conta
 	}
 
 	public function build_post_query( Query_Settings $selection_settings ): array {
-		$flat_mapper = fn( Post_Query_Builder $query_builder ) =>
-			$query_builder->build_post_query( $selection_settings );
-
 		return flat_map(
 			$this->query_builders,
-			$flat_mapper
+			fn( Post_Query_Builder $query_builder ) =>  $query_builder->build_post_query( $selection_settings )
 		);
 	}
 

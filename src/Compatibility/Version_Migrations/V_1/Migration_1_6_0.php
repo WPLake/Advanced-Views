@@ -35,13 +35,12 @@ final class Migration_1_6_0 extends Version_Migration_Base {
 			)
 		);
 
-		$mapper = fn( $my_post ) => get_post( $my_post->ID );
 		// direct $wpdb queries return strings for int columns, wrap into get_post to get right types.
 		/**
 		 * @var WP_Post[] $my_posts
 		 */
 		$my_posts = array_map(
-			$mapper,
+			fn( $my_post ) => get_post( $my_post->ID ),
 			$my_posts
 		);
 

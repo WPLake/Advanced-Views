@@ -38,10 +38,9 @@ final class Actor_Bootstrap {
 		if ( ! $this->is_test_bootstrap ) {
 			$this->set_route_hooks( $actors );
 
-			$plugins_loaded_callback = fn() => $this->bootstrap_extension_actors( $provider_classes );
 			add_action(
 				'plugins_loaded',
-				$plugins_loaded_callback,
+				fn() => $this->bootstrap_extension_actors( $provider_classes ),
 				11
 			);
 		}

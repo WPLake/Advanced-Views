@@ -31,15 +31,14 @@ abstract class Acf_Integration_Base extends Actor_Base implements Actor {
 
 		$this->set_field_choices();
 
-		$wp_loaded_callback = function (): void {
-			$this->set_conditional_field_rules();
-		};
 		// Conditional field logic requires fields info to be already available.
 		// It means the data vendor must already be loaded.
 		// 'wp_loaded' is the first one from which MetaBox fields info become available.
 		self::add_action(
 			'wp_loaded',
-			$wp_loaded_callback
+			function (): void {
+				$this->set_conditional_field_rules();
+			}
 		);
 	}
 

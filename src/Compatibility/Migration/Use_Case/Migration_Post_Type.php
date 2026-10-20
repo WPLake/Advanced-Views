@@ -34,9 +34,8 @@ final class Migration_Post_Type extends Migration_Base {
 	public function migrate(): void {
 		$this->replace_type_in_posts_table();
 
-		$loaded_callback = fn() => $this->replace_type_in_file_system();
 		File_System_Loader::instance()
-			->add_loaded_callback( $loaded_callback );
+			->add_loaded_callback( fn() => $this->replace_type_in_file_system() );
 	}
 
 	public function replace_type_in_file_system(): void {

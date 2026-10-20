@@ -64,8 +64,9 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$value_var = $token_factory->variable( $field_id )
 			->add_item_path( self::VALUE );
 		$item_var  = $token_factory->variable( 'menu_item' );
-		$body_printer = fn()=>$this->print_loop_body( $field_id, $item_var->get_name(), $markup_field_data );
-		$loop_body = $token_factory->html( $body_printer );
+		$loop_body = $token_factory->html(
+			fn()=>$this->print_loop_body( $field_id, $item_var->get_name(), $markup_field_data )
+		);
 
 		$token_factory->formatter()
 						->new_line();
@@ -140,8 +141,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 
 		$children_var = $token_factory->variable( $item_id )
 			->add_item_path( self::CHILDREN );
-		$body_printer = fn() => $this->print_children( $field_id, $item_id, $markup_field_data );
-		$body         = $token_factory->html( $body_printer );
+		$body         = $token_factory->html( fn() => $this->print_children( $field_id, $item_id, $markup_field_data ) );
 
 		return $token_factory->if_branch()
 			->set_condition( $children_var )
@@ -173,8 +173,9 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$children_var      = $token_factory->variable( $item_id )
 											->add_item_path( self::CHILDREN );
 		$sub_menu_item_var = $token_factory->variable( 'sub_menu_item' );
-		$body_printer = fn ()=>$this->print_sub_loop_body( $field_id, $sub_menu_item_var->get_name(), $markup_field_data );
-		$loop_body         = $token_factory->html( $body_printer );
+		$loop_body         = $token_factory->html(
+			fn ()=>$this->print_sub_loop_body( $field_id, $sub_menu_item_var->get_name(), $markup_field_data )
+		);
 
 		$token_factory->loop()
 						->set_source_variable( $children_var )
@@ -250,17 +251,18 @@ class Menu_Items_Field extends Markup_Field_Base {
 	protected function class_branch( string $classes, Template_Token $comparison, Template_Field_Data $markup_field_data ): IF_Branch {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$body_printer = function () use ( $classes, $markup_field_data ) {
-			echo ' ';
-			echo esc_html(
-				$this->get_item_class(
-					$classes,
-					$markup_field_data->get_view_data(),
-					$markup_field_data->get_field_data()
-				)
-			);
-		};
-		$body = $token_factory->html( $body_printer );
+		$body = $token_factory->html(
+			function () use ( $classes, $markup_field_data ) {
+				echo ' ';
+				echo esc_html(
+					$this->get_item_class(
+						$classes,
+						$markup_field_data->get_view_data(),
+						$markup_field_data->get_field_data()
+					)
+				);
+			}
+		);
 
 		return $token_factory->if_branch()
 			->set_condition( $comparison )

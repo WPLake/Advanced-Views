@@ -105,29 +105,28 @@ final class Tools_Page extends Actor_Base implements Actor {
 	}
 
 	public function maybe_inject_values(): void {
-		$acf_pre_load_value_callback = function ( $value, $post_id, $field ) {
-			// extra check, as probably it's about another post.
-			if ( false === $this->is_my_source( $post_id ) ) {
-				return $value;
-			}
-
-			$field_name = $field['name'];
-			$value      = '';
-
-			switch ( $field_name ) {
-				case Tools_Settings::getAcfFieldName( Tools_Settings::FIELD_LOGS ):
-					$value = $this->logger->get_logs();
-					break;
-				case Tools_Settings::getAcfFieldName( Tools_Settings::FIELD_ERROR_LOGS ):
-					$value = $this->logger->get_error_logs();
-					break;
-			}
-
-			return $value;
-		};
 		self::add_filter(
 			'acf/pre_load_value',
-			$acf_pre_load_value_callback,
+			function ( $value, $post_id, $field ) {
+				// extra check, as probably it's about another post.
+				if ( false === $this->is_my_source( $post_id ) ) {
+					return $value;
+				}
+
+				$field_name = $field['name'];
+				$value      = '';
+
+				switch ( $field_name ) {
+					case Tools_Settings::getAcfFieldName( Tools_Settings::FIELD_LOGS ):
+						$value = $this->logger->get_logs();
+						break;
+					case Tools_Settings::getAcfFieldName( Tools_Settings::FIELD_ERROR_LOGS ):
+						$value = $this->logger->get_error_logs();
+						break;
+				}
+
+				return $value;
+			},
 			10,
 			3
 		);
@@ -143,16 +142,14 @@ final class Tools_Page extends Actor_Base implements Actor {
 		}
 
 		$ids               = array_keys( $this->export_data );
-		$view_filter = fn( $id ) => false !== strpos( $id, Layout_Settings::UNIQUE_ID_PREFIX );
 		$view_ids          = array_filter(
 			$ids,
-			$view_filter
+			fn( $id ) => false !== strpos( $id, Layout_Settings::UNIQUE_ID_PREFIX )
 		);
 		$count_of_view_ids = count( $view_ids );
-		$post_selection_filter = fn( $id ) => false !== strpos( $id, Post_Selection_Settings::UNIQUE_ID_PREFIX );
 		$card_ids          = array_filter(
 			$ids,
-			$post_selection_filter
+			fn( $id ) => false !== strpos( $id, Post_Selection_Settings::UNIQUE_ID_PREFIX )
 		);
 		$count_of_card_ids = count( $card_ids );
 
@@ -279,22 +276,21 @@ final class Tools_Page extends Actor_Base implements Actor {
 			return;
 		}
 
-		$acf_pre_update_value_callback = function ( $is_updated, $value, $post_id, array $field ): bool {
-			// extra check, as probably it's about another post.
-			if ( ! $this->is_my_source( $post_id ) ) {
-				return $is_updated;
-			}
-
-			$field_name = (string) ( $field['name'] ?? '' );
-
-			$this->values[ $field_name ] = $value;
-
-			// avoid saving to the postmeta.
-			return true;
-		};
 		self::add_filter(
 			'acf/pre_update_value',
-			$acf_pre_update_value_callback,
+			function ( $is_updated, $value, $post_id, array $field ): bool {
+				// extra check, as probably it's about another post.
+				if ( ! $this->is_my_source( $post_id ) ) {
+					return $is_updated;
+				}
+
+				$field_name = (string) ( $field['name'] ?? '' );
+
+				$this->values[ $field_name ] = $value;
+
+				// avoid saving to the postmeta.
+				return true;
+			},
 			10,
 			4
 		);

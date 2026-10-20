@@ -64,8 +64,7 @@ final class Wrapper_Class_Resolver {
 	 * @param string[] $classes
 	 */
 	protected static function join_classes( array $classes ): string {
-		$filter = static fn( string $class ): bool => '' !== $class;
-		$non_empty = array_filter( $classes, $filter );
+		$non_empty = array_filter( $classes, static fn( string $class ): bool => '' !== $class );
 
 		return join( ' ', $non_empty );
 	}

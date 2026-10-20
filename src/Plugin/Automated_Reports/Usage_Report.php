@@ -173,16 +173,17 @@ class Usage_Report extends Report_Base implements Actor {
 	}
 
 	protected function make_usage_request(): void {
-		$loaded_callback = function () {
-			$fields = array_merge(
-				$this->state_report->get_primary_fields(),
-				$this->get_usage_data(),
-			);
-
-			$this->send_json_request( self::USAGE_ENDPOINT_URL, $fields );
-		};
 		File_System_Loader::instance()
-							->add_loaded_callback( $loaded_callback );
+							->add_loaded_callback(
+								function () {
+									$fields = array_merge(
+										$this->state_report->get_primary_fields(),
+										$this->get_usage_data(),
+									);
+
+									$this->send_json_request( self::USAGE_ENDPOINT_URL, $fields );
+								}
+							);
 	}
 
 	protected function schedule_next(): void {
@@ -292,13 +293,12 @@ class Usage_Report extends Report_Base implements Actor {
 	}
 
 	protected function set_disabled_hooks(): void {
-		$hook_callback = function (): void {
-			// nothing to do.
-		};
 		// still sign-up the CRON job, so if it was scheduled before, then will be called without issues.
 		self::add_action(
 			self::hook(),
-			$hook_callback
+			function (): void {
+				// nothing to do.
+			}
 		);
 	}
 

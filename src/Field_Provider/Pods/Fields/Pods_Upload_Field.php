@@ -45,21 +45,20 @@ class Pods_Upload_Field extends Markup_Field_Base {
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
 		if ( $variable_field_data->get_field_meta()->is_multiple() ) {
 			if ( is_array( $variable_field_data->get_value() ) ) {
-				$mapper = function ( $value ) {
-					if ( false === is_array( $value ) ) {
-						return 0;
-					}
-
-					$id = $this->get_int_arg( 'ID', $value );
-
-					// in Pod Blocks 'id' is in lower case.
-					return 0 !== $id ?
-						$id :
-						$this->get_int_arg( 'id', $value );
-				};
 				$variable_field_data->set_value(
 					array_map(
-						$mapper,
+						function ( $value ) {
+							if ( false === is_array( $value ) ) {
+								return 0;
+							}
+
+							$id = $this->get_int_arg( 'ID', $value );
+
+							// in Pod Blocks 'id' is in lower case.
+							return 0 !== $id ?
+								$id :
+								$this->get_int_arg( 'id', $value );
+						},
 						$variable_field_data->get_value()
 					)
 				);

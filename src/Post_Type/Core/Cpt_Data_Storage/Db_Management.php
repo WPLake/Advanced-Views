@@ -55,9 +55,8 @@ class Db_Management extends Loggable_Actor {
 
 		if ( $this->file_system->is_active() ) {
 			$short_unique_ids = array_keys( $this->file_system->get_item_folders() );
-			$mapper = fn( string $short_unique_id ) => $this->get_unique_id_prefix() . $short_unique_id;
 			$unique_ids       = array_map(
-				$mapper,
+				fn( string $short_unique_id ) => $this->get_unique_id_prefix() . $short_unique_id,
 				$short_unique_ids
 			);
 

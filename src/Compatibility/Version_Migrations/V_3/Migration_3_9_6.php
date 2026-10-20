@@ -24,12 +24,11 @@ final class Migration_3_9_6 extends Version_Migration_Base {
 	) {
 		parent::__construct( $logger );
 
-		$item_migrator = fn ( Cpt_Settings $cpt_settings ) => self::migrate_item( $cpt_settings );
 		$this->migrations = array(
 			new Migration_Field_Values(
 				$logger,
 				$post_selections_settings_storage,
-				$item_migrator
+				fn ( Cpt_Settings $cpt_settings ) => self::migrate_item( $cpt_settings )
 			),
 		);
 	}

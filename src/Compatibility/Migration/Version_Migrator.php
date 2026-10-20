@@ -186,9 +186,8 @@ final class Version_Migrator extends Actor_Base implements Actor, Cpt_Settings_M
 	public function migrate_from_version( string $from_version ): void {
 		$version_migrations = $this->get_version_migrations( $from_version );
 
-		$mapper = fn( Version_Migration $version_migration )=> $this->get_migration_name( $version_migration );
 		$version_migration_names = array_map(
-			$mapper,
+			fn( Version_Migration $version_migration )=> $this->get_migration_name( $version_migration ),
 			$version_migrations
 		);
 
@@ -224,19 +223,17 @@ final class Version_Migrator extends Actor_Base implements Actor, Cpt_Settings_M
 	 * @return Version_Migration[]
 	 */
 	protected function get_version_migrations( string $from_version ): array {
-		$filter = fn( Version_Migration $version_migration ) =>
-		self::is_version_lower( $from_version, $version_migration->introduced_version() );
 		$target_migrations = array_filter(
 			$this->version_migrations,
-			$filter
+			fn( Version_Migration $version_migration ) =>
+			self::is_version_lower( $from_version, $version_migration->introduced_version() )
 		);
 
-		$sorter = fn( Version_Migration $first, Version_Migration $second ) =>
-			$first->get_order() <=> $second->get_order();
 		// ASC sort.
 		usort(
 			$target_migrations,
-			$sorter
+			fn( Version_Migration $first, Version_Migration $second ) =>
+				$first->get_order() <=> $second->get_order()
 		);
 
 		return $target_migrations;

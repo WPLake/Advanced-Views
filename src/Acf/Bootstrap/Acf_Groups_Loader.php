@@ -40,16 +40,15 @@ final class Acf_Groups_Loader implements Actor {
 							wp_doing_ajax();
 
 		if ( $is_target_route ) {
-			$acf_init_callback = function (): void {
-				$loader = new Loader();
-
-				foreach ( $this->namespace_to_path as $namespace => $path ) {
-					$loader->signUpGroups( $namespace, $path );
-				}
-			};
 			Actor_Base::add_action(
 				'acf/init',
-				$acf_init_callback,
+				function (): void {
+					$loader = new Loader();
+
+					foreach ( $this->namespace_to_path as $namespace => $path ) {
+						$loader->signUpGroups( $namespace, $path );
+					}
+				},
 				// make sure it's after translations.
 				9
 			);

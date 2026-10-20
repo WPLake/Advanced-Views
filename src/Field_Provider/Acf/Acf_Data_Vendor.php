@@ -63,20 +63,19 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 
 		$acf_groups = acf_get_field_groups();
 
-		$filter = function ( $acf_group ) {
-			$is_private = $this->get_bool_arg( 'private', $acf_group );
-			$is_own     = 0 === strpos( $this->get_string_arg( 'key', $acf_group ), Group::GROUP_NAME_PREFIX );
-			// don't check for 'local' at all, as 'local' not presented only when json is disabled.
-			// in other cases contains 'php' or 'json'.
-
-			return ( ! $is_private &&
-					! $is_own );
-		};
 		// Important! To avoid recursion, otherwise within 'getChoices()' will be available the same group as the current
 		// and this class will call 'acf_get_fields()' that will call 'getChoices()'.
 		return array_filter(
 			$acf_groups,
-			$filter
+			function ( $acf_group ) {
+				$is_private = $this->get_bool_arg( 'private', $acf_group );
+				$is_own     = 0 === strpos( $this->get_string_arg( 'key', $acf_group ), Group::GROUP_NAME_PREFIX );
+				// don't check for 'local' at all, as 'local' not presented only when json is disabled.
+				// in other cases contains 'php' or 'json'.
+
+				return ( ! $is_private &&
+						! $is_own );
+			}
 		);
 	}
 

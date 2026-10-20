@@ -96,10 +96,9 @@ class Pods_Pick_Field extends Markup_Field_Base {
 
 		if ( $variable_field_data->get_field_meta()->is_multiple() ) {
 			if ( is_array( $variable_field_data->get_value() ) ) {
-				$mapper = fn( $value ) => $this->get_instance_value( $field_instance, $value );
 				$variable_field_data->set_value(
 					array_map(
-						$mapper,
+						fn( $value ) => $this->get_instance_value( $field_instance, $value ),
 						$variable_field_data->get_value()
 					)
 				);

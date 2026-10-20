@@ -24,12 +24,11 @@ final class Migration_2_4_5 extends Version_Migration_Base {
 	}
 
 	public function migrate_previous_version(): void {
-		$acf_init_callback = function (): void {
-			$this->enable_name_back_compatibility_checkbox_for_views_with_gutenberg();
-		};
 		self::add_action(
 			'acf/init',
-			$acf_init_callback
+			function (): void {
+				$this->enable_name_back_compatibility_checkbox_for_views_with_gutenberg();
+			}
 		);
 	}
 

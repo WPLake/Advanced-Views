@@ -19,13 +19,12 @@ class Mb_Taxonomy_Field extends Taxonomy_Field {
 					0
 			);
 		} else {
-			$mapper = fn( $term ) =>  $term instanceof WP_Term ?
-					$term->term_id :
-					0;
 			$variable_field_data->set_value(
 				is_array( $variable_field_data->get_value() ) ?
 					array_map(
-						$mapper,
+						fn( $term ) =>  $term instanceof WP_Term ?
+								$term->term_id :
+								0,
 						$variable_field_data->get_value()
 					) :
 					array()

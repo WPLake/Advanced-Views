@@ -36,14 +36,13 @@ final class File_System_Loader extends Actor_Base implements Actor {
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {
-		$after_setup_theme_callback = function (): void {
-			$this->onload();
-			$this->post_load();
-		};
 		// theme is loaded since this hook.
 		self::add_action(
 			'after_setup_theme',
-			$after_setup_theme_callback
+			function (): void {
+				$this->onload();
+				$this->post_load();
+			}
 		);
 	}
 

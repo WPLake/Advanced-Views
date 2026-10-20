@@ -72,10 +72,9 @@ final class Layout_Elementor_Widget extends Widget_Base implements Widget_Depend
 			$common_attrs
 		);
 
-		$filter = fn( string $value ): bool => strlen( $value ) > 0;
 		$attrs = array_filter(
 			$merged_attrs,
-			$filter
+			fn( string $value ): bool => strlen( $value ) > 0
 		);
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

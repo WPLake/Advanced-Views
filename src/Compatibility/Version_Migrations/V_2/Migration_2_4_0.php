@@ -32,17 +32,16 @@ final class Migration_2_4_0 extends Version_Migration_Base {
 	}
 
 	public function migrate_previous_version(): void {
-		$acf_init_callback = function (): void {
-			$this->disable_web_components_for_existing_views_and_cards();
-
-			// add acf-views-masonry CSS to the Views' CSS.
-			$this->layouts_cpt_save_actions->perform_save_actions_on_all_posts();
-
-			$this->setup_light_box_simple_from_old_checkbox();
-		};
 		self::add_action(
 			'acf/init',
-			$acf_init_callback
+			function (): void {
+				$this->disable_web_components_for_existing_views_and_cards();
+
+				// add acf-views-masonry CSS to the Views' CSS.
+				$this->layouts_cpt_save_actions->perform_save_actions_on_all_posts();
+
+				$this->setup_light_box_simple_from_old_checkbox();
+			}
 		);
 	}
 

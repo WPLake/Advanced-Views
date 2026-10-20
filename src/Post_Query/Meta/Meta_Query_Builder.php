@@ -38,16 +38,14 @@ final class Meta_Query_Builder implements Post_Query_Builder {
 	 * @return mixed[] | null
 	 */
 	protected function get_meta_arguments( Meta_Filter $meta_filter ): ?array {
-		$mapper = fn( Meta_Rule $rule ) => $this->get_rule_arguments( $rule );
 		$rule_queries = array_map(
-			$mapper,
+			fn( Meta_Rule $rule ) => $this->get_rule_arguments( $rule ),
 			$meta_filter->get_rules()
 		);
 
-		$filter = fn( $group_query ) => is_array( $group_query );
 		$sub_queries = array_filter(
 			$rule_queries,
-			$filter,
+			fn( $group_query ) => is_array( $group_query ),
 		);
 
 		if ( count( $sub_queries ) > 0 ) {
@@ -66,16 +64,14 @@ final class Meta_Query_Builder implements Post_Query_Builder {
 	 * @return mixed[] | null
 	 */
 	protected function get_rule_arguments( Meta_Rule $rule ): ?array {
-		$mapper = fn( Meta_Field_Rule $field ) => $this->get_field_arguments( $field );
 		$field_queries = array_map(
-			$mapper,
+			fn( Meta_Field_Rule $field ) => $this->get_field_arguments( $field ),
 			$rule->get_fields()
 		);
 
-		$filter = fn( $field_query ) => is_array( $field_query );
 		$sub_queries = array_filter(
 			$field_queries,
-			$filter
+			fn( $field_query ) => is_array( $field_query )
 		);
 
 		if ( count( $sub_queries ) > 0 ) {

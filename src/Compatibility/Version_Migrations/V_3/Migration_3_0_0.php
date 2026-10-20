@@ -33,25 +33,23 @@ final class Migration_3_0_0 extends Version_Migration_Base {
 	}
 
 	public function migrate_previous_version(): void {
-		$acf_init_callback = function (): void {
-			$this->fill_unique_id_and_post_title_in_json();
-		};
 		self::add_action(
 			'acf/init',
-			$acf_init_callback,
+			function (): void {
+				$this->fill_unique_id_and_post_title_in_json();
+			},
 			1
 		);
 
-		$acf_init_callback_2 = function (): void {
-			$this->remove_old_theme_labels_folder();
-			$this->put_new_default_into_existing_empty_php_variable_field();
-			$this->put_new_default_into_existing_empty_query_args_field();
-			$this->replace_gutenberg_checkbox_with_select();
-		};
 		// theme is loaded since this hook.
 		self::add_action(
 			'acf/init',
-			$acf_init_callback_2
+			function (): void {
+				$this->remove_old_theme_labels_folder();
+				$this->put_new_default_into_existing_empty_php_variable_field();
+				$this->put_new_default_into_existing_empty_query_args_field();
+				$this->replace_gutenberg_checkbox_with_select();
+			}
 		);
 	}
 

@@ -38,16 +38,14 @@ final class Taxonomy_Query_Builder implements Post_Query_Builder {
 	 * @return mixed[]|null
 	 */
 	protected function get_taxonomy_arguments( Tax_Filter $filter ): ?array {
-		$mapper = fn ( Tax_Rule $term_group ) => $this->get_group_arguments( $term_group );
 		$group_queries = array_map(
-			$mapper,
+			fn ( Tax_Rule $term_group ) => $this->get_group_arguments( $term_group ),
 			$filter->get_rules()
 		);
 
-		$group_query_filter = fn( $group_query ) => is_array( $group_query );
 		$sub_queries = array_filter(
 			$group_queries,
-			$group_query_filter
+			fn( $group_query ) => is_array( $group_query )
 		);
 
 		if ( count( $sub_queries ) > 0 ) {
@@ -76,9 +74,8 @@ final class Taxonomy_Query_Builder implements Post_Query_Builder {
 		$has_terms = count( $term_group->get_terms() ) > 0;
 
 		if ( $has_terms ) {
-			$mapper = fn( Term_Settings $term ) => $this->term_query_builder->build_term_query( $term );
 			$term_queries = array_map(
-				$mapper,
+				fn( Term_Settings $term ) => $this->term_query_builder->build_term_query( $term ),
 				$term_group->get_terms()
 			);
 

@@ -109,10 +109,9 @@ class Layout_Settings_Storage extends Cpt_Settings_Storage {
 
 		// 2. parse json-only items, to get with the group (there is no other way atm)
 
-		$filter = fn( $post_id ) => 0 === $post_id;
 		$items_without_posts = array_filter(
 			$this->get_db_management()->get_post_ids(),
-			$filter
+			fn( $post_id ) => 0 === $post_id
 		);
 
 		foreach ( array_keys( $items_without_posts ) as $unique_id ) {
@@ -155,10 +154,9 @@ class Layout_Settings_Storage extends Cpt_Settings_Storage {
 
 		// 2. parse json-only items, to get with the active feature (there is no other way atm)
 
-		$filter = fn( $post_id ) => 0 === $post_id;
 		$items_without_posts = array_filter(
 			$this->get_db_management()->get_post_ids(),
-			$filter
+			fn( $post_id ) => 0 === $post_id
 		);
 
 		foreach ( array_keys( $items_without_posts ) as $unique_id ) {

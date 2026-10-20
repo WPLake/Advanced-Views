@@ -157,8 +157,7 @@ class Post_Selection extends Instance {
 		$this->pages_amount = int( $posts_data, 'pagesAmount' );
 
 		$post_ids       = arr( $posts_data, 'postIds' );
-		$mapper = fn( $post_id ) => int( $post_id );
-		$this->post_ids = array_map( $mapper, $post_ids );
+		$this->post_ids = array_map( fn( $post_id ) => int( $post_id ), $post_ids );
 
 		ob_start();
 		$this->post_selection_markup->print_markup( $this->settings, $is_load_more );

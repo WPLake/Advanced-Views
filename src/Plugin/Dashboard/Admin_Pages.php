@@ -65,16 +65,15 @@ class Admin_Pages extends Actor_Base implements Actor {
 
 		self::add_action( 'admin_menu', array( $this, 'add_subpages' ) );
 
-		$current_screen_callback = function ( WP_Screen $wp_screen ): void {
-			if ( ! in_array( $wp_screen->post_type, array( Hard_Layout_Cpt::cpt_name(), Hard_Post_Selection_Cpt::cpt_name() ), true ) ) {
-				return;
-			}
-
-			self::add_action( 'in_admin_header', array( $this, 'get_header' ) );
-		};
 		self::add_action(
 			'current_screen',
-			$current_screen_callback
+			function ( WP_Screen $wp_screen ): void {
+				if ( ! in_array( $wp_screen->post_type, array( Hard_Layout_Cpt::cpt_name(), Hard_Post_Selection_Cpt::cpt_name() ), true ) ) {
+					return;
+				}
+
+				self::add_action( 'in_admin_header', array( $this, 'get_header' ) );
+			}
 		);
 
 		self::add_filter( "plugin_action_links_{$plugin_slug}", array( $this, 'extend_plugin_action_links' ) );
@@ -88,19 +87,18 @@ class Admin_Pages extends Actor_Base implements Actor {
 			self::PAGE_DEMO_IMPORT => __( 'Demo import', 'acf-views' ),
 		);
 
-		$submenu_page_callback = function (): void {
-			printf(
-				'<iframe src="%s" style="border: 0;width: calc(100%% + 20px);height: calc(100vh - 32px - 65px);margin-left: -20px;"></iframe>',
-				esc_url( External_Links::DOCS_URL )
-			);
-		};
 		add_submenu_page(
 			$parent_slug,
 			$page_titles[ self::PAGE_DOCS ],
 			$page_titles[ self::PAGE_DOCS ],
 			Avf_User::get_manage_capability(),
 			self::PAGE_DOCS,
-			$submenu_page_callback
+			function (): void {
+				printf(
+					'<iframe src="%s" style="border: 0;width: calc(100%% + 20px);height: calc(100vh - 32px - 65px);margin-left: -20px;"></iframe>',
+					esc_url( External_Links::DOCS_URL )
+				);
+			}
 		);
 
 		add_submenu_page(
@@ -208,16 +206,15 @@ class Admin_Pages extends Actor_Base implements Actor {
 			External_Links::DOCS_URL;
 		$is_docs_blank = false === $is_https;
 
-		$mapper = fn( Plugin_Cpt $plugin_cpt )=>
-		array(
-			'isLeftBlock' => true,
-			'url'         => Plugin::get_admin_url( '', $plugin_cpt->cpt_name() ),
-			'label'       => $plugin_cpt->labels()->plural_name(),
-			'isActive'    => false,
-			'isSecondary' => false,
-		);
 		$cpts_labels = array_map(
-			$mapper,
+			fn( Plugin_Cpt $plugin_cpt )=>
+			array(
+				'isLeftBlock' => true,
+				'url'         => Plugin::get_admin_url( '', $plugin_cpt->cpt_name() ),
+				'label'       => $plugin_cpt->labels()->plural_name(),
+				'isActive'    => false,
+				'isSecondary' => false,
+			),
 			$this->plugin_cpts
 		);
 
@@ -293,14 +290,13 @@ class Admin_Pages extends Actor_Base implements Actor {
 			Query_Arguments::SOURCE_SERVER
 		);
 
-		$filter = function ( $page_slug ) use ( $current_uri, $parent_slug ) {
-			$page_uri = sprintf( '%s&page=%s', $parent_slug, $page_slug );
-
-			return false !== strpos( $current_uri, $page_uri );
-		};
 		$active_page_slugs = array_filter(
 			$page_slugs,
-			$filter
+			function ( $page_slug ) use ( $current_uri, $parent_slug ) {
+				$page_uri = sprintf( '%s&page=%s', $parent_slug, $page_slug );
+
+				return false !== strpos( $current_uri, $page_uri );
+			}
 		);
 		$active_page_slug  = array_pop( $active_page_slugs );
 
@@ -326,13 +322,12 @@ class Admin_Pages extends Actor_Base implements Actor {
 	 * @return string[]
 	 */
 	protected function get_cpt_links(): array {
-		$mapper = fn( Plugin_Cpt $plugin_cpt ) => sprintf(
-			'<a href="%s" target="_self">%s</a>',
-			esc_url( Plugin::get_admin_url( '', $plugin_cpt->cpt_name() ) ),
-			$plugin_cpt->labels()->plural_name()
-		);
 		return array_map(
-			$mapper,
+			fn( Plugin_Cpt $plugin_cpt ) => sprintf(
+				'<a href="%s" target="_self">%s</a>',
+				esc_url( Plugin::get_admin_url( '', $plugin_cpt->cpt_name() ) ),
+				$plugin_cpt->labels()->plural_name()
+			),
 			$this->plugin_cpts
 		);
 	}

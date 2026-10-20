@@ -64,13 +64,12 @@ class Point_Provider {
 		// @phpcs:ignore
 		$source_posts = $wpdb->get_results( $query );
 
-		$mapper = fn( $source_post ) => get_post( $source_post->ID );
 		// direct $wpdb queries return strings for int columns, wrap into get_post to get right types.
 		/**
 		 * @var WP_Post[] $source_posts
 		 */
 		$source_posts = array_map(
-			$mapper,
+			fn( $source_post ) => get_post( $source_post->ID ),
 			$source_posts
 		);
 

@@ -34,9 +34,8 @@ final class Migration_Field_Values extends Migration_Base {
 	}
 
 	public function migrate(): void {
-		$loaded_callback = fn() => $this->migrate_field_values();
 		File_System_Loader::instance()
-			->add_loaded_callback( $loaded_callback );
+			->add_loaded_callback( fn() => $this->migrate_field_values() );
 	}
 
 	protected function migrate_field_values(): void {

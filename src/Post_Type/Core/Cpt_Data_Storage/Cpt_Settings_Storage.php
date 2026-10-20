@@ -107,22 +107,21 @@ abstract class Cpt_Settings_Storage extends Item_Management {
 	}
 
 	public function get_fs_only_items_count( string $search_value ): int {
-		$filter = function ( int $post_id, string $unique_id ) use ( $search_value ) {
-			if ( 0 !== $post_id ) {
-				return false;
-			}
-
-			if ( '' === $search_value ) {
-				return true;
-			}
-
-			$cpt_data = $this->get( $unique_id );
-
-			return false !== stripos( $cpt_data->title, $search_value );
-		};
 		$fs_only_items = array_filter(
 			$this->get_db_management()->get_post_ids(),
-			$filter,
+			function ( int $post_id, string $unique_id ) use ( $search_value ) {
+				if ( 0 !== $post_id ) {
+					return false;
+				}
+
+				if ( '' === $search_value ) {
+					return true;
+				}
+
+				$cpt_data = $this->get( $unique_id );
+
+				return false !== stripos( $cpt_data->title, $search_value );
+			},
 			ARRAY_FILTER_USE_BOTH
 		);
 

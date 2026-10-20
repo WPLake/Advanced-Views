@@ -102,26 +102,18 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 	abstract protected function update_markup( Cpt_Settings $cpt_settings ): void;
 
 	protected function mock_acf_saving(): void {
-		$acf_save_post_callback = function ( $post_id ) {
-			if ( $this->is_my_post( $post_id ) ) {
-				$this->mock_saving_to_postmeta();
-			}
-		};
 		self::add_manage_action(
 			'acf/save_post',
 			/**
 			 * @param int|string $post_id
 			 */
-			$acf_save_post_callback
+			function ( $post_id ) {
+				if ( $this->is_my_post( $post_id ) ) {
+					$this->mock_saving_to_postmeta();
+				}
+			}
 		);
 
-		$skip_save_callback = function ( $skip_save, int $post_id ) {
-			if ( $this->is_my_post( $post_id ) ) {
-				return true;
-			}
-
-			return $skip_save;
-		};
 		// this hook is introduced since ACF 6.8.1 as part of their custom post-revision.
 		self::add_manage_filter(
 			'acf/form-post/skip_save',
@@ -130,7 +122,13 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 			 *
 			 * return bool|mixed
 			 */
-			$skip_save_callback,
+			function ( $skip_save, int $post_id ) {
+				if ( $this->is_my_post( $post_id ) ) {
+					return true;
+				}
+
+				return $skip_save;
+			},
 			10,
 			2
 		);
@@ -470,47 +468,45 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 	}
 
 	protected function mock_saving_to_postmeta(): void {
-		$acf_pre_update_value_callback = function ( $is_updated, $value, int $post_id, array $field ): bool {
-			// extra check, as probably it's about another post.
-			if ( ! $this->is_my_post( $post_id ) ) {
-				return $is_updated;
-			}
-
-			if ( Plugin::is_wordpress_com_hosting() ) {
-				$this->save_meta_field( $value, $field );
-			}
-
-			// avoid saving to the postmeta.
-			return true;
-		};
 		self::add_manage_filter(
 			'acf/pre_update_value',
-			$acf_pre_update_value_callback,
+			function ( $is_updated, $value, int $post_id, array $field ): bool {
+				// extra check, as probably it's about another post.
+				if ( ! $this->is_my_post( $post_id ) ) {
+					return $is_updated;
+				}
+
+				if ( Plugin::is_wordpress_com_hosting() ) {
+					$this->save_meta_field( $value, $field );
+				}
+
+				// avoid saving to the postmeta.
+				return true;
+			},
 			10,
 			4
 		);
 
 		if ( Plugin::is_wordpress_com_hosting() ) {
-			$acf_save_post_callback = function ( $post_id ): void {
-				// check again, as probably it's about another post.
-				if ( ! $this->is_my_post( $post_id ) ) {
-					return;
-				}
-
-				$this->get_logger()->debug(
-					'skipping custom save validation on the wordpress.com hosting',
-					array(
-						'post_id' => $post_id,
-					)
-				);
-
-				$this->load_validation_instance( $post_id );
-				$this->save_caught_fields( $post_id );
-			};
 			// priority is 20, as current is with 10.
 			self::add_manage_action(
 				'acf/save_post',
-				$acf_save_post_callback,
+				function ( $post_id ): void {
+					// check again, as probably it's about another post.
+					if ( ! $this->is_my_post( $post_id ) ) {
+						return;
+					}
+
+					$this->get_logger()->debug(
+						'skipping custom save validation on the wordpress.com hosting',
+						array(
+							'post_id' => $post_id,
+						)
+					);
+
+					$this->load_validation_instance( $post_id );
+					$this->save_caught_fields( $post_id );
+				},
 				20
 			);
 		}
@@ -528,28 +524,27 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 		// as it takes resources (to go through all inner objects).
 		$values = array();
 
-		$acf_pre_load_value_callback = function ( $value, $post_id, $field ) use ( &$values ) {
-			// extra check, as probably it's about another post.
-			if ( ! $this->is_my_post( $post_id ) ) {
-				return $value;
-			}
-
-			$unique_id = get_post( $post_id )->post_name ?? '';
-
-			if ( ! key_exists( $post_id, $values ) ) {
-				$instance_data = $this->cpt_settings_storage->get( $unique_id );
-
-				// not loaded if it's a new post.
-				$values[ $post_id ] = $instance_data->isLoaded() ?
-					$instance_data->getFieldValues() :
-					array();
-			}
-
-			return $this->get_acf_field_from_instance( $value, $unique_id, $field, $values[ $post_id ] );
-		};
 		self::add_filter(
 			'acf/pre_load_value',
-			$acf_pre_load_value_callback,
+			function ( $value, $post_id, $field ) use ( &$values ) {
+				// extra check, as probably it's about another post.
+				if ( ! $this->is_my_post( $post_id ) ) {
+					return $value;
+				}
+
+				$unique_id = get_post( $post_id )->post_name ?? '';
+
+				if ( ! key_exists( $post_id, $values ) ) {
+					$instance_data = $this->cpt_settings_storage->get( $unique_id );
+
+					// not loaded if it's a new post.
+					$values[ $post_id ] = $instance_data->isLoaded() ?
+						$instance_data->getFieldValues() :
+						array();
+				}
+
+				return $this->get_acf_field_from_instance( $value, $unique_id, $field, $values[ $post_id ] );
+			},
 			10,
 			3
 		);

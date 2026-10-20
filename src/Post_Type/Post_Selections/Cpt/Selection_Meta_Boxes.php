@@ -72,34 +72,33 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 	}
 
 	public function add_meta_boxes(): void {
-		$shortcode_callback = function ( $post ): void {
-			if ( ! $post ||
-				'publish' !== $post->post_status ) {
-				echo esc_html(
-					sprintf(
-						// translators: %s - singular name of the CPT.
-						__( 'Your %s shortcode is available after publishing.', 'acf-views' ),
-						$this->public_cpt->labels()->singular_name()
-					)
-				);
-
-				return;
-			}
-
-			$card_unique_id = $this->post_selections_settings_storage->get( $post->post_name )->get_unique_id( true );
-
-			$this->get_html()->print_postbox_shortcode(
-				$card_unique_id,
-				false,
-				$this->public_cpt,
-				get_the_title( $post ),
-				true
-			);
-		};
 		add_meta_box(
 			'acf-cards_shortcode_cpt',
 			__( 'Embed the Post Selection', 'acf-views' ),
-			$shortcode_callback,
+			function ( $post ): void {
+				if ( ! $post ||
+					'publish' !== $post->post_status ) {
+					echo esc_html(
+						sprintf(
+							// translators: %s - singular name of the CPT.
+							__( 'Your %s shortcode is available after publishing.', 'acf-views' ),
+							$this->public_cpt->labels()->singular_name()
+						)
+					);
+
+					return;
+				}
+
+				$card_unique_id = $this->post_selections_settings_storage->get( $post->post_name )->get_unique_id( true );
+
+				$this->get_html()->print_postbox_shortcode(
+					$card_unique_id,
+					false,
+					$this->public_cpt,
+					get_the_title( $post ),
+					true
+				);
+			},
 			array(
 				Hard_Post_Selection_Cpt::cpt_name(),
 			),
@@ -107,15 +106,14 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 			'high'
 		);
 
-		$layout_callback = function ( WP_Post $wp_post ): void {
-			$card_data = $this->post_selections_settings_storage->get( $wp_post->post_name );
-
-			$this->print_related_acf_view_meta_box( $card_data );
-		};
 		add_meta_box(
 			'acf-cards_related_view',
 			__( 'Layout for Results', 'acf-views' ),
-			$layout_callback,
+			function ( WP_Post $wp_post ): void {
+				$card_data = $this->post_selections_settings_storage->get( $wp_post->post_name );
+
+				$this->print_related_acf_view_meta_box( $card_data );
+			},
 			array(
 				Hard_Post_Selection_Cpt::cpt_name(),
 			),
