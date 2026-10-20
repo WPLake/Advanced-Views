@@ -187,12 +187,12 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	 * @param array<string,mixed> $field
 	 */
 	protected function fill_field_id_and_type( array $field, string &$field_id, string &$field_type ): void {
-		$field_id = $this->get_string_arg( 'name', $field );
 		// filled in $this->getGroupFields() method.
 		$pod_type = $this->get_string_arg( '_pod_name', $field );
+		$name     = $this->get_string_arg( 'name', $field );
 
 		$field_type = $this->get_string_arg( 'type', $field );
-		$field_id   = $this->pods_data_vendor->get_pods_field_id( $pod_type, $field_id );
+		$field_id   = $this->pods_data_vendor->get_pods_field_id( $pod_type, $name );
 	}
 
 	protected function render_postbox( object $pod ): string {
@@ -202,7 +202,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			'class' => array(
 				'advanced-views',
 				'postbox-container',
-				),
+			),
 			'style' => array(
 				'width'  => '70%',
 				'margin' => '100px 0 0',
@@ -228,7 +228,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			'class' => array(
 				'postbox',
 				'pods-no-toggle',
-				),
+			),
 			'style' => array( 'padding' => '0 20px 20px' ),
 		);
 		$heading_attributes = array( 'class' => 'advanced-views__heading' );
@@ -250,7 +250,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 					array(
 						'tag'   => 'h4',
 						'attrs' => $heading_attributes,
-					),
+				),
 					$print_heading_text,
 				),
 				fn() => $this->print_related_acf_views( null, false, $related_views ),
@@ -367,27 +367,22 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	}
 
 	protected static function load_group( int $id ): ?object {
-		if ( ! function_exists( 'pods_api' ) ) {
-			return null;
+		$pods_api = self::get_pods_api( 'load_group' );
+
+		if ( is_object( $pods_api ) ) {
+			$group_args = array(
+				'id' => $id,
+			);
+			$group      = $pods_api->load_group( $group_args );
+
+			return is_object( $group ) &&
+				method_exists( $group, 'get_fields' ) &&
+				method_exists( $group, 'get_parent_object' ) ?
+				$group :
+				null;
 		}
 
-		$pods_api = pods_api();
-
-		if ( false === is_object( $pods_api ) ||
-			false === method_exists( $pods_api, 'load_group' ) ) {
-			return null;
-		}
-
-		$group_args = array(
-			'id' => $id,
-		);
-		$group      = $pods_api->load_group( $group_args );
-
-		return is_object( $group ) &&
-			method_exists( $group, 'get_fields' ) &&
-			method_exists( $group, 'get_parent_object' ) ?
-			$group :
-			null;
+		return null;
 	}
 
 	/**
@@ -430,25 +425,29 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	}
 
 	protected static function load_pod( string $id ): ?object {
-		if ( false === function_exists( 'pods_api' ) ||
-			0 === strlen( $id ) ) {
-			return null;
+		$pods_api = self::get_pods_api( 'load_pod' );
+
+		if ( is_object( $pods_api ) && strlen( $id ) > 0 ) {
+			$pod_args = array(
+				'id' => $id,
+			);
+			$pod      = $pods_api->load_pod( $pod_args );
+
+			return is_object( $pod ) && method_exists( $pod, 'get_args' ) ?
+				$pod :
+				null;
 		}
 
-		$pods_api = pods_api();
+		return null;
+	}
 
-		if ( false === is_object( $pods_api ) ||
-			false === method_exists( $pods_api, 'load_pod' ) ) {
-			return null;
-		}
+	protected static function get_pods_api( string $required_method ): ?object {
+		$pods_api = function_exists( 'pods_api' ) ?
+			pods_api() :
+			null;
 
-		$pod_args = array(
-			'id' => $id,
-		);
-		$pod      = $pods_api->load_pod( $pod_args );
-
-		return is_object( $pod ) && method_exists( $pod, 'get_args' ) ?
-			$pod :
+		return is_object( $pods_api ) && method_exists( $pods_api, $required_method ) ?
+			$pods_api :
 			null;
 	}
 }
