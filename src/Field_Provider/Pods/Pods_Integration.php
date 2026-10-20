@@ -52,20 +52,9 @@ class Pods_Integration extends Settings_Vendor_Integration {
 
 	public function add_tab_to_meta_group(): void {
 		$append_related_block = function ( string $output, string $view_file ): string {
-			$setup_position = strpos( $view_file, 'pods/ui/admin/setup-edit.php' );
+			$related_block = $this->create_related_block( $view_file );
 
-			if ( is_int( $setup_position ) ) {
-				$id  = Query_Arguments::get_string_for_non_action( 'id' );
-				$pod = self::load_pod( $id );
-
-				if ( is_object( $pod ) ) {
-					$related_block = $this->render_postbox( $pod );
-
-					return $output . $related_block;
-				}
-			}
-
-			return $output;
+			return $output . $related_block;
 		};
 
 		self::add_filter( 'pods_view_output', $append_related_block, 10, 2 );
@@ -76,32 +65,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			$page = Query_Arguments::get_string_for_non_action( 'page' );
 
 			if ( 'pods' === $page ) {
-				$options['fields']           = $this->get_array_arg( 'fields', $options );
-				$options['fields']['manage'] = $this->get_array_arg( 'manage', $options['fields'] );
-				$options['data']             = $this->get_array_arg( 'data', $options );
-
-				$options['fields']['manage']['acf_views'] = array(
-					'label' => __( 'Assigned to View', 'acf-views' ),
-					'width' => '20%',
-					'type'  => 'raw',
-				);
-
-				foreach ( $options['data'] as &$item ) {
-					if ( false === is_array( $item ) ) {
-						continue;
-					}
-
-					// post, page, taxonomy.
-					$name = $this->get_string_arg( 'name', $item );
-
-					$pod_object    = $item['pod_object'] ?? null;
-					$related_views = $this->get_related_acf_views( $name, $pod_object );
-
-					ob_start();
-					$this->print_related_acf_views( null, true, $related_views );
-
-					$item['acf_views'] = ob_get_clean();
-				}
+				return $this->append_views_column( $options );
 			}
 
 			return $options;
@@ -122,61 +86,78 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	 * @return mixed[]
 	 */
 	protected function get_group_fields( WP_Post $wp_post ): array {
-		if ( ! function_exists( 'pods_api' ) ) {
-			return array();
-		}
+		$group = self::load_group( $wp_post->ID );
 
-		$pods_api = pods_api();
+		if ( is_object( $group ) ) {
+			$pod_name = $this->get_group_pod_name( $group );
 
-		if ( false === is_object( $pods_api ) ||
-			false === method_exists( $pods_api, 'load_group' ) ) {
-			return array();
-		}
-
-		$group_args = array(
-			'id' => $wp_post->ID,
-		);
-		$wp_post    = $pods_api->load_group( $group_args );
-
-		if ( false === is_object( $wp_post ) ||
-			false === method_exists( $wp_post, 'get_fields' ) ||
-			false === method_exists( $wp_post, 'get_parent_object' ) ) {
-			return array();
-		}
-
-		$pod = $wp_post->get_parent_object();
-		if ( false === is_object( $pod ) ||
-			false === method_exists( $pod, 'get_args' ) ) {
-			return array();
-		}
-
-		$pod_args = $pod->get_args();
-		$pod_args = is_array( $pod_args ) ?
-			$pod_args :
-			array();
-		$pod_name = $this->get_string_arg( 'name', $pod_args );
-
-		$fields     = array();
-		$pod_fields = $wp_post->get_fields();
-
-		foreach ( $pod_fields as $field ) {
-			if ( false === is_object( $field ) ||
-				false === method_exists( $field, 'get_args' ) ) {
-				continue;
+			if ( is_string( $pod_name ) ) {
+				return self::get_fields_args( $group, $pod_name );
 			}
-
-			$field_args = $field->get_args();
-			$field_args = is_array( $field_args ) ?
-				$field_args :
-				array();
-
-			// to be used in fillFieldIdAndType.
-			$field_args['_pod_name'] = $pod_name;
-
-			$fields[] = $field_args;
 		}
 
-		return $fields;
+		return array();
+	}
+
+	/**
+	 * @param array<string,mixed> $options
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected function append_views_column( array $options ): array {
+		$options['fields']           = $this->get_array_arg( 'fields', $options );
+		$options['fields']['manage'] = $this->get_array_arg( 'manage', $options['fields'] );
+		$options['data']             = $this->get_array_arg( 'data', $options );
+
+		$options['fields']['manage']['acf_views'] = array(
+			'label' => __( 'Assigned to View', 'acf-views' ),
+			'width' => '20%',
+			'type'  => 'raw',
+		);
+
+		foreach ( $options['data'] as &$item ) {
+			if ( is_array( $item ) ) {
+				$item['acf_views'] = $this->render_views_cell( $item );
+			}
+		}
+
+		return $options;
+	}
+
+	/**
+	 * @param array<string,mixed> $item
+	 */
+	protected function render_views_cell( array $item ): string {
+		// post, page, taxonomy.
+		$name = $this->get_string_arg( 'name', $item );
+
+		$pod_object    = $item['pod_object'] ?? null;
+		$related_views = $this->get_related_acf_views( $name, $pod_object );
+
+		ob_start();
+		$this->print_related_acf_views( null, true, $related_views );
+
+		return (string) ob_get_clean();
+	}
+
+	protected function create_related_block( string $view_file ): string {
+		$pod = self::get_pod_by_file( $view_file );
+
+		if ( is_object( $pod ) ) {
+			return $this->render_postbox( $pod );
+		}
+
+		return '';
+	}
+
+	protected function get_group_pod_name( object $group ): ?string {
+		$pod = $group->get_parent_object();
+
+		if ( is_object( $pod ) && method_exists( $pod, 'get_args' ) ) {
+			return $this->get_pod_name( $pod );
+		}
+
+		return null;
 	}
 
 	protected function get_pod_name( object $pod ): string {
@@ -218,7 +199,10 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		$pod_name = $this->get_pod_name( $pod );
 
 		$container_attributes = array(
-			'class' => array( 'advanced-views', 'postbox-container' ),
+			'class' => array(
+					'advanced-views',
+					'postbox-container',
+				),
 			'style' => array(
 				'width'  => '70%',
 				'margin' => '100px 0 0',
@@ -241,7 +225,10 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	 */
 	protected function print_related_postbox( string $pod_name, $pod ): void {
 		$postbox_attributes = array(
-			'class' => array( 'postbox', 'pods-no-toggle' ),
+			'class' => array(
+					'postbox',
+					'pods-no-toggle',
+				),
 			'style' => array( 'padding' => '0 20px 20px' ),
 		);
 		$heading_attributes = array( 'class' => 'advanced-views__heading' );
@@ -346,6 +333,81 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		$unique_views = array_unique( $views, SORT_REGULAR );
 
 		return array_values( $unique_views );
+	}
+
+	protected static function get_pod_by_file( string $view_file ): ?object {
+		$setup_position = strpos( $view_file, 'pods/ui/admin/setup-edit.php' );
+
+		if ( is_int( $setup_position ) ) {
+			$id = Query_Arguments::get_string_for_non_action( 'id' );
+
+			return self::load_pod( $id );
+		}
+
+		return null;
+	}
+
+	protected static function load_group( int $id ): ?object {
+		if ( ! function_exists( 'pods_api' ) ) {
+			return null;
+		}
+
+		$pods_api = pods_api();
+
+		if ( false === is_object( $pods_api ) ||
+			false === method_exists( $pods_api, 'load_group' ) ) {
+			return null;
+		}
+
+		$group_args = array(
+			'id' => $id,
+		);
+		$group      = $pods_api->load_group( $group_args );
+
+		return is_object( $group ) &&
+			method_exists( $group, 'get_fields' ) &&
+			method_exists( $group, 'get_parent_object' ) ?
+			$group :
+			null;
+	}
+
+	/**
+	 * @return mixed[]
+	 */
+	protected static function get_fields_args( object $group, string $pod_name ): array {
+		$fields     = array();
+		$pod_fields = $group->get_fields();
+
+		foreach ( $pod_fields as $field ) {
+			$field_args = self::get_field_args( $field, $pod_name );
+
+			if ( is_array( $field_args ) ) {
+				$fields[] = $field_args;
+			}
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * @param mixed $field
+	 *
+	 * @return ?array<string,mixed>
+	 */
+	protected static function get_field_args( $field, string $pod_name ): ?array {
+		if ( is_object( $field ) && method_exists( $field, 'get_args' ) ) {
+			$field_args = $field->get_args();
+			$field_args = is_array( $field_args ) ?
+				$field_args :
+				array();
+
+			// to be used in fillFieldIdAndType.
+			$field_args['_pod_name'] = $pod_name;
+
+			return $field_args;
+		}
+
+		return null;
 	}
 
 	protected static function load_pod( string $id ): ?object {
