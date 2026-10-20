@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Utils\Html;
 
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\stringExtended;
 
 defined( 'ABSPATH' ) || exit;
@@ -17,63 +18,51 @@ final class Attribute_Normalizer {
 	public static function safe_normalize( string $name, $value ): string {
 		$normalizers = self::attribute_normalizers();
 
-		$parts = array( $value );
-
 		if ( is_array( $value ) ) {
-			$parts = key_exists( $name, $normalizers ) ?
+			return key_exists( $name, $normalizers ) ?
 				$normalizers[ $name ]( $value ) :
-				array();
+				'';
 		}
 
-		$escaped_parts = array_map( fn( $part ) => self::escape_value( $part ), $parts );
-
-		return join( '', $escaped_parts );
+		return self::escape_value( $value );
 	}
 
 	/**
-	 * Every normalizer turns an array value into a flat list of parts (values and separators), to be escaped one by one
-	 *
-	 * @return array<string,callable(array<mixed>):array<mixed>>
+	 * @return array<string,callable(array<mixed>):string>
 	 */
 	protected static function attribute_normalizers(): array {
 		return array(
-			'class' => fn( array $classes ) => self::get_class_parts( $classes ),
-			'style' => fn( array $declarations ) => self::get_style_parts( $declarations ),
+			'class' => fn( array $classes ) => self::normalize_class( $classes ),
+			'style' => fn( array $declarations ) => self::normalize_style( $declarations ),
 		);
 	}
 
 	/**
 	 * @param array<mixed> $classes
-	 *
-	 * @return array<mixed>
 	 */
-	protected static function get_class_parts( array $classes ): array {
-		$parts = array();
+	protected static function normalize_class( array $classes ): string {
+		$escaped_classes = array_map(
+			fn( $tag_class ) => self::escape_value( $tag_class ),
+			$classes
+		);
 
-		foreach ( array_values( $classes ) as $index => $class ) {
-			if ( $index > 0 ) {
-				$parts[] = ' ';
-			}
-
-			$parts[] = $class;
-		}
-
-		return $parts;
+		return join( ' ', $escaped_classes );
 	}
 
 	/**
 	 * @param array<mixed> $declarations
-	 *
-	 * @return array<mixed>
 	 */
-	protected static function get_style_parts( array $declarations ): array {
-		$parts = array();
+	protected static function normalize_style( array $declarations ): string {
+		$lines = array();
 
 		foreach ( $declarations as $property => $value ) {
-			array_push( $parts, $property, ':', $value, ';' );
+			$property_name = string( $property );
+			$style_value   = self::escape_value( $value );
+
+			$lines[] = sprintf( '%s:%s;', esc_html( $property_name ), $style_value );
 		}
 
-		return $parts;
+		return join( '', $lines );
 	}
 
 	/**
