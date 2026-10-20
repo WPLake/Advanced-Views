@@ -11,42 +11,18 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 defined( 'ABSPATH' ) || exit;
 
 class Acf_Integration extends Settings_Vendor_Integration {
-	protected function get_vendor_post_type(): string {
-		return 'acf-field-group';
-	}
-
-	/**
-	 * @return mixed[]
-	 */
-	protected function get_group_fields( WP_Post $wp_post ): array {
-		if ( false === function_exists( 'acf_get_fields' ) ) {
-			return array();
-		}
-
-		return acf_get_fields( $wp_post->ID );
-	}
-
-	/**
-	 * @param mixed[] $field
-	 */
-	protected function fill_field_id_and_type( array $field, string &$field_id, string &$field_type ): void {
-		$field_id = string( $field, 'key' );
-
-		$field_type = string( $field, 'type' );
-	}
-
 	/**
 	 * @param array<string,mixed> $tabs
 	 *
 	 * @return array<string|int,mixed>
 	 */
 	public function add_tab( array $tabs ): array {
-		return array_merge(
-			$tabs,
-			array(
-				'advanced_views' => $this->get_tab_label(),
-			)
+		$tab_label = $this->get_tab_label();
+		$new_tabs  = array(
+			'advanced_views' => $tab_label,
 		);
+
+		return array_merge( $tabs, $new_tabs );
 	}
 
 	/**
@@ -60,23 +36,18 @@ class Acf_Integration extends Settings_Vendor_Integration {
 
 		$post = get_post( $group_id );
 
-		if ( null === $post ) {
-			return;
-		}
-
-		$this->print_related_acf_views(
-			$post,
-			false,
-			array(),
-			array(
+		if ( $post instanceof WP_Post ) {
+			$button_args = array(
 				'class'       => 'button add-location-group',
 				'style'       => '',
 				'onmouseover' => '',
 				'onmouseout'  => '',
 				'icon_class'  => 'acf-icon acf-icon-plus',
 				'icon_style'  => 'margin-left:-4px;margin-right:6px;',
-			)
-		);
+			);
+
+			$this->print_related_acf_views( $post, false, array(), $button_args );
+		}
 	}
 
 	public function add_tab_to_meta_group(): void {
@@ -86,5 +57,29 @@ class Acf_Integration extends Settings_Vendor_Integration {
 
 	public function get_vendor_name(): string {
 		return Acf_Data_Vendor::NAME;
+	}
+
+	protected function get_vendor_post_type(): string {
+		return 'acf-field-group';
+	}
+
+	/**
+	 * @return mixed[]
+	 */
+	protected function get_group_fields( WP_Post $wp_post ): array {
+		if ( function_exists( 'acf_get_fields' ) ) {
+			return acf_get_fields( $wp_post->ID );
+		}
+
+		return array();
+	}
+
+	/**
+	 * @param mixed[] $field
+	 */
+	protected function fill_field_id_and_type( array $field, string &$field_id, string &$field_type ): void {
+		$field_id = string( $field, 'key' );
+
+		$field_type = string( $field, 'type' );
 	}
 }
