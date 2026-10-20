@@ -19,6 +19,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
@@ -211,11 +212,12 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 
 		echo '>';
 		if ( '' !== $link_attrs['icon_class'] ) {
-			printf(
-				'<i class="%s" style="%s"></i>',
-				esc_html( $link_attrs['icon_class'] ),
-				esc_attr( $link_attrs['icon_style'] )
+			$icon_attributes = array(
+				'class' => $link_attrs['icon_class'],
+				'style' => $link_attrs['icon_style'],
 			);
+
+			Tag_Renderer::print_tag( 'i', $icon_attributes );
 		}
 		echo esc_html( $label );
 		echo '</a>';

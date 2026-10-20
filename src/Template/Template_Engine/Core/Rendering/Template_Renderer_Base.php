@@ -9,6 +9,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use Throwable;
 
 abstract class Template_Renderer_Base extends Loggable_Actor implements Template_Renderer {
@@ -32,10 +33,29 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 	}
 
 	protected static function print_error_message( string $unique_view_id, string $error_message ): void {
-		printf(
-			'<p style="color:red;" class="acf-views__error">Advanced Views (%s) template: <span class="acf-views__error-message">%s</span></p>',
-			esc_html( $unique_view_id ),
-			esc_html( $error_message )
+		$paragraph_attributes = array(
+			'style' => 'color:red;',
+			'class' => 'acf-views__error',
+		);
+
+		Tag_Renderer::print_tag(
+			'p',
+			$paragraph_attributes,
+			fn() => static::print_error_paragraph( $unique_view_id, $error_message )
+		);
+	}
+
+	protected static function print_error_paragraph( string $unique_view_id, string $error_message ): void {
+		$span_attributes = array( 'class' => 'acf-views__error-message' );
+
+		printf( 'Advanced Views (%s) template: ', esc_html( $unique_view_id ) );
+
+		Tag_Renderer::print_tag(
+			'span',
+			$span_attributes,
+			function () use ( $error_message ) {
+				echo esc_html( $error_message );
+			}
 		);
 	}
 

@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Acf\Fields;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Map_Field_Base;
@@ -224,38 +225,40 @@ class Map_Field extends Map_Field_Base {
 			'data-center-lng' => self::CENTER_LNG,
 		);
 
-		printf(
-			'<div class="%s" style="width:100%%;height:400px;"',
-			esc_html(
-				$this->get_field_class( 'map', $markup_field_data )
+		$div_attributes = array(
+			'class' => $this->get_field_class( 'map', $markup_field_data ),
+			'style' => array(
+				'width'  => '100%',
+				'height' => '400px',
 			),
 		);
+
 		foreach ( $attributes_map as $attribute_name => $key ) {
-			$attribute = $factory->variable( $field_id )
-								->add_item_path( $key );
-
-			$factory->formatter()
-				->attribute( $attribute_name, $attribute );
-		}
-		echo '>';
-
-		$factory->formatter()
-			->new_line();
-		$markup_field_data->increment_and_print_tabs();
-
-		if ( $field_meta->is_multiple() ) {
-			$this->print_item_loop( $field_id, $markup_field_data );
-		} elseif ( $field_data->is_visible_when_empty ) {
-			$this->print_conditional_item( $field_id, $field_id, $markup_field_data );
-		} else {
-			$this->print_inner_item( $field_id, $field_id, $markup_field_data );
+			$div_attributes[ $attribute_name ] = $factory->variable( $field_id )
+														->add_item_path( $key );
 		}
 
-		$factory->formatter()
-			->new_line();
-		$markup_field_data->decrement_and_print_tabs();
+		Tag_Renderer::print_tag(
+			'div',
+			$div_attributes,
+			function () use ( $factory, $markup_field_data, $field_id, $field_meta, $field_data ) {
+				$factory->formatter()
+					->new_line();
+				$markup_field_data->increment_and_print_tabs();
 
-		echo '</div>';
+				if ( $field_meta->is_multiple() ) {
+					$this->print_item_loop( $field_id, $markup_field_data );
+				} elseif ( $field_data->is_visible_when_empty ) {
+					$this->print_conditional_item( $field_id, $field_id, $markup_field_data );
+				} else {
+					$this->print_inner_item( $field_id, $field_id, $markup_field_data );
+				}
+
+				$factory->formatter()
+					->new_line();
+				$markup_field_data->decrement_and_print_tabs();
+			}
+		);
 	}
 
 	protected function print_item_loop( string $field_id, Template_Field_Data $markup_field_data ): void {

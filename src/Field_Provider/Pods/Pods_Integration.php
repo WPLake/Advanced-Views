@@ -17,6 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use WP_Post;
 
 class Pods_Integration extends Settings_Vendor_Integration {
@@ -141,6 +142,36 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	/**
 	 * @param object $pod
 	 */
+	protected function print_related_postbox( string $pod_name, $pod ): void {
+		$postbox_attributes = array(
+			'class' => array( 'postbox', 'pods-no-toggle' ),
+			'style' => array( 'padding' => '0 20px 20px' ),
+		);
+		$heading_attributes = array( 'class' => 'advanced-views__heading' );
+		$related_views      = $this->get_related_acf_views( $pod_name, $pod );
+
+		Tag_Renderer::print_tag(
+			'div',
+			$postbox_attributes,
+			function () use ( $heading_attributes, $related_views, $pod ) {
+				Tag_Renderer::print_tag(
+					'h4',
+					$heading_attributes,
+					function () {
+						echo esc_html( __( 'Advanced Views', 'acf-views' ) );
+					}
+				);
+
+				$this->print_related_acf_views( null, false, $related_views );
+
+				$this->print_add_new_links_for_groups( $pod );
+			}
+		);
+	}
+
+	/**
+	 * @param object $pod
+	 */
 	protected function print_add_new_links_for_groups( $pod ): void {
 		if ( false === method_exists( $pod, 'get_groups' ) ) {
 			return;
@@ -212,22 +243,19 @@ class Pods_Integration extends Settings_Vendor_Integration {
 				$pod_name = $this->get_string_arg( 'name', $args );
 
 				ob_start();
-				echo '<div class="advanced-views postbox-container" style="width:70%%;margin:100px 0 0;"><div class="postbox pods-no-toggle" style="padding:0 20px 20px;">';
-
-				printf(
-					'<h4 class="advanced-views__heading">%s</h4>',
-					esc_html( __( 'Advanced Views', 'acf-views' ) )
+				$container_attributes = array(
+					'class' => array( 'advanced-views', 'postbox-container' ),
+					'style' => array(
+						'width'  => '70%',
+						'margin' => '100px 0 0',
+					),
 				);
 
-				$this->print_related_acf_views(
-					null,
-					false,
-					$this->get_related_acf_views( $pod_name, $pod )
+				Tag_Renderer::print_tag(
+					'div',
+					$container_attributes,
+					fn() => $this->print_related_postbox( $pod_name, $pod )
 				);
-
-				$this->print_add_new_links_for_groups( $pod );
-
-				echo '</div></div>';
 				$related_block = (string) ob_get_clean();
 
 				return $output . $related_block;

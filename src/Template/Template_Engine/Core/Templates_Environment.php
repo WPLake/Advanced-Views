@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use WP_Filesystem_Base;
 
 class Templates_Environment extends Loggable_Actor implements Actor {
@@ -61,17 +62,15 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 			return;
 		}
 
-		echo '<div class="notice notice-error"><p>';
-		echo esc_html( __( 'The templates directory is not writable.', 'acf-views' ) );
-		echo ' (path = ' . esc_html( $this->uploads_folder ) . ')<br>';
-		echo esc_html( __( 'Most likely, the WordPress uploads directory is not writable.', 'acf-views' ) ) . '<br>';
-		echo esc_html(
-			__(
-				'Check and fix file permissions, then deactivate and activate back the Advanced Views plugin. If the issue persists, contact support.',
-				'acf-views'
-			)
+		$notice_attributes = array(
+			'class' => array( 'notice', 'notice-error' ),
 		);
-		echo '</p></div>';
+
+		Tag_Renderer::print_tag(
+			'div',
+			$notice_attributes,
+			fn() => Tag_Renderer::print_tag( 'p', array(), fn() => $this->print_not_writable_message() )
+		);
 	}
 
 	public function create_templates_dir(): void {
@@ -124,6 +123,18 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 
 		// remove the dir.
 		$wp_filesystem->rmdir( $templates_dir, true );
+	}
+
+	protected function print_not_writable_message(): void {
+		echo esc_html( __( 'The templates directory is not writable.', 'acf-views' ) );
+		echo ' (path = ' . esc_html( $this->uploads_folder ) . ')<br>';
+		echo esc_html( __( 'Most likely, the WordPress uploads directory is not writable.', 'acf-views' ) ) . '<br>';
+		echo esc_html(
+			__(
+				'Check and fix file permissions, then deactivate and activate back the Advanced Views plugin. If the issue persists, contact support.',
+				'acf-views'
+			)
+		);
 	}
 
 	protected function is_templates_dir_writable(): bool {

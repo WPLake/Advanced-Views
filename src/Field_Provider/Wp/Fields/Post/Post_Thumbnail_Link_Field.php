@@ -13,6 +13,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 
 
 defined( 'ABSPATH' ) || exit;
@@ -36,37 +37,30 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 		$href_var   = $token_factory->variable( $field_id )
 										->add_item_path( self::HREF );
 
-		echo '<a';
-
-		$token_factory->formatter()
-						->attribute( 'target', $target_var );
-
-		printf(
-			' class="%s"',
-			esc_html(
-				$this->get_field_class( 'link', $markup_field_data )
-			)
+		$link_attributes = array(
+			'target' => $target_var,
+			'class'  => $this->get_field_class( 'link', $markup_field_data ),
+			'href'   => $href_var,
 		);
 
-		$token_factory->formatter()
-						->attribute( 'href', $href_var );
+		Tag_Renderer::print_tag(
+			'a',
+			$link_attributes,
+			function () use ( $token_factory, $markup_field_data, $field_id ) {
+				$token_factory->formatter()
+								->new_line();
 
-		echo '>';
+				$markup_field_data->increment_and_print_tabs();
 
-		$token_factory->formatter()
-						->new_line();
+				$markup_field_data->set_is_with_field_wrapper( true );
+				$this->image_field->print_markup( $field_id, $markup_field_data );
 
-		$markup_field_data->increment_and_print_tabs();
+				$token_factory->formatter()
+								->new_line();
 
-		$markup_field_data->set_is_with_field_wrapper( true );
-		$this->image_field->print_markup( $field_id, $markup_field_data );
-
-		$token_factory->formatter()
-						->new_line();
-
-		$markup_field_data->decrement_and_print_tabs();
-
-		echo '</a>';
+				$markup_field_data->decrement_and_print_tabs();
+			}
+		);
 	}
 
 	/**

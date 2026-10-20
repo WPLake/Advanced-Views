@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Menu;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
@@ -157,39 +158,39 @@ class Menu_Items_Field extends Markup_Field_Base {
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		printf(
-			'<ul class="%s">',
-			esc_html(
-				$this->get_item_class(
-					'sub-menu',
-					$markup_field_data->get_view_data(),
-					$markup_field_data->get_field_data()
-				)
-			)
+		$item_class     = $this->get_item_class(
+			'sub-menu',
+			$markup_field_data->get_view_data(),
+			$markup_field_data->get_field_data()
 		);
+		$ul_attributes = array( 'class' => $item_class );
 
-		$token_factory->formatter()
-						->new_line( 2 );
-		$markup_field_data->increment_and_print_tabs();
+		Tag_Renderer::print_tag(
+			'ul',
+			$ul_attributes,
+			function () use ( $token_factory, $markup_field_data, $field_id, $item_id ) {
+				$token_factory->formatter()
+								->new_line( 2 );
+				$markup_field_data->increment_and_print_tabs();
 
-		$children_var      = $token_factory->variable( $item_id )
-											->add_item_path( self::CHILDREN );
-		$sub_menu_item_var = $token_factory->variable( 'sub_menu_item' );
-		$loop_body         = $token_factory->html(
-			fn ()=>$this->print_sub_loop_body( $field_id, $sub_menu_item_var->get_name(), $markup_field_data )
+				$children_var      = $token_factory->variable( $item_id )
+													->add_item_path( self::CHILDREN );
+				$sub_menu_item_var = $token_factory->variable( 'sub_menu_item' );
+				$loop_body         = $token_factory->html(
+					fn ()=>$this->print_sub_loop_body( $field_id, $sub_menu_item_var->get_name(), $markup_field_data )
+				);
+
+				$token_factory->loop()
+								->set_source_variable( $children_var )
+								->set_item_variable( $sub_menu_item_var )
+								->set_body( $loop_body )
+								->display();
+
+				$token_factory->formatter()
+								->new_line( 2 );
+				$markup_field_data->decrement_and_print_tabs();
+			}
 		);
-
-		$token_factory->loop()
-						->set_source_variable( $children_var )
-						->set_item_variable( $sub_menu_item_var )
-						->set_body( $loop_body )
-						->display();
-
-		$token_factory->formatter()
-						->new_line( 2 );
-		$markup_field_data->decrement_and_print_tabs();
-
-		echo '</ul>';
 
 		$token_factory->formatter()
 						->new_line();

@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use WP_Comment;
 
 class Comment_Items_List_Field extends Markup_Field_Base {
@@ -24,78 +25,65 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 	use Custom_Field;
 
 	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
+		$comment_attributes = array( 'class' => $this->get_field_class( 'comment', $markup_field_data ) );
+
+		Tag_Renderer::print_tag(
+			'div',
+			$comment_attributes,
+			fn() => $this->print_comment_content( $item_id, $markup_field_data )
+		);
+	}
+
+	protected function print_comment_content( string $item_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		// opening 'comment' div.
-		printf(
-			'<div class="%s">',
-			esc_html(
-				$this->get_field_class( 'comment', $markup_field_data )
-			),
-		);
-		$token_factory->formatter()->
-		new_line();
-		$markup_field_data->increment_and_print_tabs();
-
-		// comment author name.
-		printf(
-			'<div class="%s">',
-			esc_html(
-				$this->get_field_class(
-					'comment-author-name',
-					$markup_field_data
-				)
-			)
-		);
+		$author_attributes  = array( 'class' => $this->get_field_class( 'comment-author-name', $markup_field_data ) );
+		$content_attributes = array( 'class' => $this->get_field_class( 'comment-content', $markup_field_data ) );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		$var = $token_factory
-								->variable( $item_id )
-								->add_item_path( self::AUTHOR_NAME );
-		$var->display();
+		Tag_Renderer::print_tag(
+			'div',
+			$author_attributes,
+			function () use ( $token_factory, $markup_field_data, $item_id ) {
+				$token_factory->formatter()->new_line();
+				$markup_field_data->increment_and_print_tabs();
 
-		$token_factory->formatter()->new_line();
-		$markup_field_data->decrement_and_print_tabs();
+				$var = $token_factory
+										->variable( $item_id )
+										->add_item_path( self::AUTHOR_NAME );
+				$var->display();
 
-		echo '</div>';
+				$token_factory->formatter()->new_line();
+				$markup_field_data->decrement_and_print_tabs();
+			}
+		);
 
-		// comment author email.
 		$token_factory->formatter()->new_line();
 		$markup_field_data->print_tabs();
 
-		printf(
-			'<div class="%s">',
-			esc_html(
-				$this->get_field_class(
-					'comment-content',
-					$markup_field_data
-				)
-			)
+		Tag_Renderer::print_tag(
+			'div',
+			$content_attributes,
+			function () use ( $token_factory, $markup_field_data ) {
+				$token_factory->formatter()->new_line();
+				$markup_field_data->increment_and_print_tabs();
+
+				// escaped by default, even we query approved comments -
+				// reason is that HTML expectations in comments is rather an exception, than a rule.
+				$token_factory
+					->variable( 'comment_item' )
+					->add_item_path( self::CONTENT )
+					->display();
+
+				$token_factory->formatter()->new_line();
+				$markup_field_data->decrement_and_print_tabs();
+			}
 		);
 
 		$token_factory->formatter()->new_line();
-		$markup_field_data->increment_and_print_tabs();
-
-		// escaped by default, even we query approved comments -
-		// reason is that HTML expectations in comments is rather an exception, than a rule.
-		$markup_field_data
-			->get_token_factory()
-			->variable( 'comment_item' )
-			->add_item_path( self::CONTENT )
-			->display();
-
-		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
-
-		echo '</div>';
-
-		// closing 'comment' div.
-		$token_factory->formatter()->new_line();
-		$markup_field_data->decrement_and_print_tabs();
-
-		echo '</div>';
 	}
 
 	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
