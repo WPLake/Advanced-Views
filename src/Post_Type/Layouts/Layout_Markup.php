@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
@@ -92,10 +93,11 @@ class Layout_Markup {
 			$token_factory->literal( true ) :
 			$value_var;
 
-		$if = $token_factory->if();
-		$if->new_if_branch()
-			->set_condition( $condition )
-			->set_body( $markup );
+		$if = $token_factory->if()->new_if_branch(
+			fn( IF_Branch $branch ) => $branch
+				->set_condition( $condition )
+				->set_body( $markup )
+		);
 
 		$token_factory->formatter()->new_line();
 		$token_factory->formatter()->tab();

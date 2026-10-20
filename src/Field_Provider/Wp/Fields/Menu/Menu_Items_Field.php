@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Menu;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Link_Field;
@@ -123,11 +124,11 @@ class Menu_Items_Field extends Markup_Field_Base {
 			->add_item_path( self::CHILDREN );
 		$children_body = $token_factory->html( fn()=>$this->print_children( $field_id, $item_id, $markup_field_data ) );
 
-		$if = $token_factory->if();
-
-		$if->new_if_branch()
-			->set_condition( $children_var )
-			->set_body( $children_body );
+		$if = $token_factory->if()->new_if_branch(
+			fn( IF_Branch $branch ) => $branch
+				->set_condition( $children_var )
+				->set_body( $children_body )
+		);
 
 		$if->display();
 
@@ -247,11 +248,11 @@ class Menu_Items_Field extends Markup_Field_Base {
 			}
 		);
 
-		$if = $token_factory->if();
-
-		$if->new_if_branch()
-			->set_condition( $comparison )
-			->set_body( $active_body );
+		$if = $token_factory->if()->new_if_branch(
+			fn( IF_Branch $branch ) => $branch
+				->set_condition( $comparison )
+				->set_body( $active_body )
+		);
 
 		$if->display();
 	}

@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
@@ -59,11 +60,11 @@ class Post_Selection_Markup {
 			}
 		);
 
-		$if = $token_factory->if();
-
-		$if->new_if_branch()
-			->set_condition( $comparison )
-			->set_body( $body );
+		$if = $token_factory->if()->new_if_branch(
+			fn( IF_Branch $branch ) => $branch
+				->set_condition( $comparison )
+				->set_body( $body )
+		);
 
 		echo "\r\n\t";
 
@@ -309,15 +310,14 @@ class Post_Selection_Markup {
 			}
 		);
 
-		$if = $token_factory->if();
-
-		$if->new_if_branch()
-			->set_condition( $post_ids_var )
-			->set_body( $body );
+		$if = $token_factory->if()->new_if_branch(
+			fn( IF_Branch $branch ) => $branch
+				->set_condition( $post_ids_var )
+				->set_body( $body )
+		);
 
 		if ( strlen( $post_selection_settings->no_posts_found_message ) > 0 ) {
-			$if->new_else_branch()
-				->set_body( $no_posts_found );
+			$if->new_else_branch( fn( IF_Branch $branch ) => $branch->set_body( $no_posts_found ) );
 		}
 
 		$tabs_number = $this->print_opening_tag( $token_factory, $post_selection_settings, $tabs_number );

@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -98,16 +99,16 @@ abstract class List_Field extends Markup_Field_Base {
 		$markup_field_data->increment_and_print_tabs();
 
 		if ( $is_delimiter_set ) {
-			$if = $token_factory->if();
-
 			$secondary_element_comparison = $token_factory->comparison()
 				->set_left_operand( $index_var )
 				->set_comparison_greater()
 				->set_right_operand( $token_factory->literal( 0 ) );
 
-			$if->new_if_branch()
-				->set_condition( $secondary_element_comparison )
-				->set_body( $token_factory->html( fn() => $this->print_item_delimiter( $field_id, $markup_field_data ) ) );
+			$if = $token_factory->if()->new_if_branch(
+				fn( IF_Branch $branch ) => $branch
+					->set_condition( $secondary_element_comparison )
+					->set_body( $token_factory->html( fn() => $this->print_item_delimiter( $field_id, $markup_field_data ) ) )
+			);
 
 			$token_factory->formatter()
 						->new_line();

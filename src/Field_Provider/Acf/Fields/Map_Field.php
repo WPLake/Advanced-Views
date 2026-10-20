@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Acf\Fields;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Map_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
@@ -305,11 +306,11 @@ class Map_Field extends Map_Field_Base {
 			}
 		);
 
-		$if = $token_factory->if();
-
-		$if->new_if_branch()
-			->set_condition( $value_var )
-			->set_body( $if_body );
+		$if = $token_factory->if()->new_if_branch(
+			fn( IF_Branch $branch ) => $branch
+				->set_condition( $value_var )
+				->set_body( $if_body )
+		);
 
 		$if->display();
 	}

@@ -4,6 +4,9 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Acf\Fields;
 
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Comparison_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
@@ -32,34 +35,43 @@ class Icon_Picker_Field extends Markup_Field_Base {
 		$type_var = $token_factory->variable( $field_id )
 									->add_item_path( self::TYPE );
 
-		$dashicons_condition = $token_factory->comparison()
-									->set_left_operand( $type_var )
-									->set_comparison_equal()
-									->set_right_operand( $token_factory->literal( 'dashicons' ) );
-		$dashicons_body      = $token_factory->html( fn() => $this->print_icon_markup( $field_id, $markup_field_data ) );
+		$token_factory
+			->if()
+			->new_if_branch( fn( IF_Branch $branch ) => $this->set_dashicons_branch( $branch, $type_var, $field_id, $markup_field_data ) )
+			->new_elseif_branch( fn( IF_Branch $branch ) => $this->set_media_library_branch( $branch, $type_var, $field_id, $markup_field_data ) )
+			->new_else_branch( fn( IF_Branch $branch ) => $this->set_custom_image_branch( $branch, $field_id, $markup_field_data ) )
+			->display();
+	}
 
-		$media_library_condition = $token_factory->comparison()
+	protected function set_dashicons_branch( IF_Branch $branch, Variable_Token $type_var, string $field_id, Template_Field_Data $markup_field_data ): void {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$branch
+			->set_condition( $this->type_comparison( $type_var, 'dashicons', $markup_field_data ) )
+			->set_body( $token_factory->html( fn() => $this->print_icon_markup( $field_id, $markup_field_data ) ) );
+	}
+
+	protected function set_media_library_branch( IF_Branch $branch, Variable_Token $type_var, string $field_id, Template_Field_Data $markup_field_data ): void {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$branch
+			->set_condition( $this->type_comparison( $type_var, 'media_library', $markup_field_data ) )
+			->set_body( $token_factory->html( fn() => $this->print_icon_image_markup( $field_id, $markup_field_data ) ) );
+	}
+
+	protected function set_custom_image_branch( IF_Branch $branch, string $field_id, Template_Field_Data $markup_field_data ): void {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$branch->set_body( $token_factory->html( fn() => $this->print_custom_image_markup( $field_id, $markup_field_data ) ) );
+	}
+
+	protected function type_comparison( Variable_Token $type_var, string $type, Template_Field_Data $markup_field_data ): Comparison_Token {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		return $token_factory->comparison()
 			->set_left_operand( $type_var )
 			->set_comparison_equal()
-			->set_right_operand( $token_factory->literal( 'media_library' ) );
-		$media_library_body      = $token_factory->html( fn() => $this->print_icon_image_markup( $field_id, $markup_field_data ) );
-
-		$custom_image_body = $token_factory->html( fn() => $this->print_custom_image_markup( $field_id, $markup_field_data ) );
-
-		$if = $token_factory->if();
-
-		$if->new_if_branch()
-			->set_condition( $dashicons_condition )
-			->set_body( $dashicons_body );
-
-		$if->new_elseif_branch()
-			->set_condition( $media_library_condition )
-			->set_body( $media_library_body );
-
-		$if->new_else_branch()
-			->set_body( $custom_image_body );
-
-		$if->display();
+			->set_right_operand( $token_factory->literal( $type ) );
 	}
 
 	protected function print_icon_markup( string $field_id, Template_Field_Data $markup_field_data ): void {

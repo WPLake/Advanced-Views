@@ -16,28 +16,40 @@ abstract class IF_Token extends Template_Token_Base {
 	protected array $elseif_branches  = array();
 	protected ?IF_Branch $else_branch = null;
 
-	public function new_if_branch(): IF_Branch {
-		$this->if_branch = new IF_Branch();
-
-		return $this->if_branch;
-	}
-
-	public function new_else_branch(): IF_Branch {
-		$this->else_branch = new IF_Branch();
-
-		return $this->else_branch;
-	}
-
-	public function add_elseif_branch( IF_Branch $branch ): self {
-		$this->elseif_branches[] = $branch;
+	/**
+	 * @param callable(IF_Branch): mixed $setup
+	 */
+	public function new_if_branch( callable $setup ): self {
+		$this->if_branch = $this->new_branch( $setup );
 
 		return $this;
 	}
 
-	public function new_elseif_branch(): IF_Branch {
+	/**
+	 * @param callable(IF_Branch): mixed $setup
+	 */
+	public function new_else_branch( callable $setup ): self {
+		$this->else_branch = $this->new_branch( $setup );
+
+		return $this;
+	}
+
+	/**
+	 * @param callable(IF_Branch): mixed $setup
+	 */
+	public function new_elseif_branch( callable $setup ): self {
+		$this->elseif_branches[] = $this->new_branch( $setup );
+
+		return $this;
+	}
+
+	/**
+	 * @param callable(IF_Branch): mixed $setup
+	 */
+	protected function new_branch( callable $setup ): IF_Branch {
 		$branch = new IF_Branch();
 
-		$this->add_elseif_branch( $branch );
+		$setup( $branch );
 
 		return $branch;
 	}
