@@ -99,16 +99,9 @@ abstract class List_Field extends Markup_Field_Base {
 		$markup_field_data->increment_and_print_tabs();
 
 		if ( $is_delimiter_set ) {
-			$secondary_element_comparison = $token_factory->comparison()
-				->set_left_operand( $index_var )
-				->set_comparison_greater()
-				->set_right_operand( $token_factory->literal( 0 ) );
+			$delimiter_branch = $this->delimiter_branch( $index_var, $field_id, $markup_field_data );
 
-			$if = $token_factory->if()->new_if_branch(
-				fn( IF_Branch $branch ) => $branch
-					->set_condition( $secondary_element_comparison )
-					->set_body( $token_factory->html( fn() => $this->print_item_delimiter( $field_id, $markup_field_data ) ) )
-			);
+			$if = $token_factory->if()->set_if_branch( $delimiter_branch );
 
 			$token_factory->formatter()
 						->new_line();
@@ -125,6 +118,21 @@ abstract class List_Field extends Markup_Field_Base {
 		$token_factory->formatter()
 			->new_line();
 		$markup_field_data->decrement_and_print_tabs();
+	}
+
+	protected function delimiter_branch( Variable_Token $index_var, string $field_id, Template_Field_Data $markup_field_data ): IF_Branch {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$secondary_element_comparison = $token_factory->comparison()
+			->set_left_operand( $index_var )
+			->set_comparison_greater()
+			->set_right_operand( $token_factory->literal( 0 ) );
+
+		$body = $token_factory->html( fn() => $this->print_item_delimiter( $field_id, $markup_field_data ) );
+
+		return $token_factory->if_branch()
+			->set_condition( $secondary_element_comparison )
+			->set_body( $body );
 	}
 
 	protected function print_item_delimiter( string $field_id, Template_Field_Data $markup_field_data ): void {

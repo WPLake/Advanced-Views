@@ -120,15 +120,9 @@ class Menu_Items_Field extends Markup_Field_Base {
 		echo "\r\n\r\n";
 		$markup_field_data->print_tabs();
 
-		$children_var  = $token_factory->variable( $item_id )
-			->add_item_path( self::CHILDREN );
-		$children_body = $token_factory->html( fn()=>$this->print_children( $field_id, $item_id, $markup_field_data ) );
+		$children_branch = $this->children_branch( $field_id, $item_id, $markup_field_data );
 
-		$if = $token_factory->if()->new_if_branch(
-			fn( IF_Branch $branch ) => $branch
-				->set_condition( $children_var )
-				->set_body( $children_body )
-		);
+		$if = $token_factory->if()->set_if_branch( $children_branch );
 
 		$if->display();
 
@@ -140,6 +134,18 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$token_factory->formatter()
 						->new_line();
 		$markup_field_data->decrement_and_print_tabs();
+	}
+
+	protected function children_branch( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): IF_Branch {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$children_var = $token_factory->variable( $item_id )
+			->add_item_path( self::CHILDREN );
+		$body         = $token_factory->html( fn() => $this->print_children( $field_id, $item_id, $markup_field_data ) );
+
+		return $token_factory->if_branch()
+			->set_condition( $children_var )
+			->set_body( $body );
 	}
 
 	protected function print_children( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
@@ -235,7 +241,17 @@ class Menu_Items_Field extends Markup_Field_Base {
 	): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$active_body = $token_factory->html(
+		$class_branch = $this->class_branch( $classes, $comparison, $markup_field_data );
+
+		$if = $token_factory->if()->set_if_branch( $class_branch );
+
+		$if->display();
+	}
+
+	protected function class_branch( string $classes, Template_Token $comparison, Template_Field_Data $markup_field_data ): IF_Branch {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$body = $token_factory->html(
 			function () use ( $classes, $markup_field_data ) {
 				echo ' ';
 				echo esc_html(
@@ -248,13 +264,9 @@ class Menu_Items_Field extends Markup_Field_Base {
 			}
 		);
 
-		$if = $token_factory->if()->new_if_branch(
-			fn( IF_Branch $branch ) => $branch
-				->set_condition( $comparison )
-				->set_body( $active_body )
-		);
-
-		$if->display();
+		return $token_factory->if_branch()
+			->set_condition( $comparison )
+			->set_body( $body );
 	}
 
 	protected function is_active_item( WP_Post $wp_post ): bool {

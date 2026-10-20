@@ -289,10 +289,20 @@ class Map_Field extends Map_Field_Base {
 
 	protected function print_conditional_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
+
+		$item_branch = $this->item_branch( $field_id, $item_id, $markup_field_data );
+
+		$if = $token_factory->if()->set_if_branch( $item_branch );
+
+		$if->display();
+	}
+
+	protected function item_branch( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): IF_Branch {
+		$token_factory = $markup_field_data->get_token_factory();
 		$value_var     = $token_factory->variable( $field_id )
 										->add_item_path( self::VALUE );
 
-		$if_body = $token_factory->html(
+		$body = $token_factory->html(
 			function () use ( $field_id, $item_id, $markup_field_data, $token_factory ) {
 				$token_factory->formatter()
 								->new_line();
@@ -306,13 +316,9 @@ class Map_Field extends Map_Field_Base {
 			}
 		);
 
-		$if = $token_factory->if()->new_if_branch(
-			fn( IF_Branch $branch ) => $branch
-				->set_condition( $value_var )
-				->set_body( $if_body )
-		);
-
-		$if->display();
+		return $token_factory->if_branch()
+			->set_condition( $value_var )
+			->set_body( $body );
 	}
 
 	protected function print_inner_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {

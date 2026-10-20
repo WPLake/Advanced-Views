@@ -6,8 +6,8 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Layout_Settings;
@@ -34,6 +34,18 @@ class Post_Selection_Markup {
 
 		$token_factory = $this->token_factory_storage->resolve_token_factory( $post_selection_settings->template_engine );
 
+		$pagination_branch = $this->pagination_branch( $token_factory );
+
+		$if = $token_factory->if()->set_if_branch( $pagination_branch );
+
+		echo "\r\n\t";
+
+		$if->display();
+
+		$token_factory->formatter()->new_line();
+	}
+
+	protected function pagination_branch( Token_Factory $token_factory ): IF_Branch {
 		$pages_var  = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 									->add_item_path( 'pages_amount' );
 		$comparison = $token_factory->comparison()
@@ -60,17 +72,9 @@ class Post_Selection_Markup {
 			}
 		);
 
-		$if = $token_factory->if()->new_if_branch(
-			fn( IF_Branch $branch ) => $branch
-				->set_condition( $comparison )
-				->set_body( $body )
-		);
-
-		echo "\r\n\t";
-
-		$if->display();
-
-		$token_factory->formatter()->new_line();
+		return $token_factory->if_branch()
+			->set_condition( $comparison )
+			->set_body( $body );
 	}
 
 	protected function print_items_opening_wrapper(
@@ -296,33 +300,44 @@ class Post_Selection_Markup {
 	}
 
 	protected function print_full_markup( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings, int $tabs_number ): void {
-		$post_ids_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
-										->add_item_path( 'post_ids' );
+		$items_branch = $this->items_branch( $token_factory, $post_selection_settings, $tabs_number );
 
-		$body           = $token_factory->html(
-			function () use ( $post_selection_settings, $token_factory, &$tabs_number ) {
-				$tabs_number = $this->print_items_markup( $token_factory, $post_selection_settings, $tabs_number );
-			}
-		);
-		$no_posts_found = $token_factory->html(
-			function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
-				$tabs_number = $this->print_not_found_markup( $token_factory, $post_selection_settings, $tabs_number );
-			}
-		);
-
-		$if = $token_factory->if()->new_if_branch(
-			fn( IF_Branch $branch ) => $branch
-				->set_condition( $post_ids_var )
-				->set_body( $body )
-		);
+		$if = $token_factory->if()->set_if_branch( $items_branch );
 
 		if ( strlen( $post_selection_settings->no_posts_found_message ) > 0 ) {
-			$if->new_else_branch( fn( IF_Branch $branch ) => $branch->set_body( $no_posts_found ) );
+			$not_found_branch = $this->not_found_branch( $token_factory, $post_selection_settings, $tabs_number );
+
+			$if->set_else_branch( $not_found_branch );
 		}
 
 		$tabs_number = $this->print_opening_tag( $token_factory, $post_selection_settings, $tabs_number );
 		$if->display();
 		$this->print_closing_tag( $token_factory, $post_selection_settings );
+	}
+
+	protected function items_branch( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings, int &$tabs_number ): IF_Branch {
+		$post_ids_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
+										->add_item_path( 'post_ids' );
+		$body         = $token_factory->html(
+			function () use ( $post_selection_settings, $token_factory, &$tabs_number ) {
+				$tabs_number = $this->print_items_markup( $token_factory, $post_selection_settings, $tabs_number );
+			}
+		);
+
+		return $token_factory->if_branch()
+			->set_condition( $post_ids_var )
+			->set_body( $body );
+	}
+
+	protected function not_found_branch( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings, int &$tabs_number ): IF_Branch {
+		$body = $token_factory->html(
+			function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
+				$tabs_number = $this->print_not_found_markup( $token_factory, $post_selection_settings, $tabs_number );
+			}
+		);
+
+		return $token_factory->if_branch()
+			->set_body( $body );
 	}
 
 	protected function print_items_markup(

@@ -6,13 +6,13 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Template;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
 
@@ -45,6 +45,25 @@ class Layout_Markup {
 			return;
 		}
 
+		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
+
+		$row_branch = $this->row_branch( $layout_settings, $field_meta, $item_settings );
+
+		$if = $token_factory->if()->set_if_branch( $row_branch );
+
+		$token_factory->formatter()->new_line();
+		$token_factory->formatter()->tab();
+
+		$if->display();
+
+		$token_factory->formatter()->new_line( 2 );
+	}
+
+	protected function row_branch(
+		Layout_Settings $layout_settings,
+		Field_Meta $field_meta,
+		Item_Settings $item_settings
+	): IF_Branch {
 		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
 
 		$field_id   = $item_settings->field->get_template_field_id();
@@ -93,18 +112,9 @@ class Layout_Markup {
 			$token_factory->literal( true ) :
 			$value_var;
 
-		$if = $token_factory->if()->new_if_branch(
-			fn( IF_Branch $branch ) => $branch
-				->set_condition( $condition )
-				->set_body( $markup )
-		);
-
-		$token_factory->formatter()->new_line();
-		$token_factory->formatter()->tab();
-
-		$if->display();
-
-		$token_factory->formatter()->new_line( 2 );
+		return $token_factory->if_branch()
+			->set_condition( $condition )
+			->set_body( $markup );
 	}
 
 	protected function generate_markup( Layout_Settings $layout_settings ): void {
