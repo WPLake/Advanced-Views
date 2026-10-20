@@ -200,8 +200,8 @@ class Pods_Integration extends Settings_Vendor_Integration {
 
 		$container_attributes = array(
 			'class' => array(
-					'advanced-views',
-					'postbox-container',
+				'advanced-views',
+				'postbox-container',
 				),
 			'style' => array(
 				'width'  => '70%',
@@ -226,8 +226,8 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	protected function print_related_postbox( string $pod_name, $pod ): void {
 		$postbox_attributes = array(
 			'class' => array(
-					'postbox',
-					'pods-no-toggle',
+				'postbox',
+				'pods-no-toggle',
 				),
 			'style' => array( 'padding' => '0 20px 20px' ),
 		);
