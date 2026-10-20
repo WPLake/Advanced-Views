@@ -58,35 +58,14 @@ class Pods_Integration extends Settings_Vendor_Integration {
 				return $output;
 			}
 
-			$id = Query_Arguments::get_string_for_non_action( 'id' );
+			$id  = Query_Arguments::get_string_for_non_action( 'id' );
+			$pod = $this->load_pod( $id );
 
-			if ( false === function_exists( 'pods_api' ) ||
-				0 === strlen( $id ) ) {
+			if ( ! is_object( $pod ) ) {
 				return $output;
 			}
 
-			$pods_api = pods_api();
-
-			if ( false === is_object( $pods_api ) ||
-				false === method_exists( $pods_api, 'load_pod' ) ) {
-				return $output;
-			}
-
-			$pod_args = array(
-				'id' => $id,
-			);
-			$pod      = $pods_api->load_pod( $pod_args );
-
-			if ( false === is_object( $pod ) ||
-				false === method_exists( $pod, 'get_args' ) ) {
-				return $output;
-			}
-
-			$args     = $pod->get_args();
-			$args     = is_array( $args ) ?
-				$args :
-				array();
-			$pod_name = $this->get_string_arg( 'name', $args );
+			$pod_name = $this->get_pod_name( $pod );
 
 			$container_attributes = array(
 				'class' => array( 'advanced-views', 'postbox-container' ),
@@ -218,6 +197,40 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		}
 
 		return $fields;
+	}
+
+	protected function load_pod( string $id ): ?object {
+		if ( false === function_exists( 'pods_api' ) ||
+			0 === strlen( $id ) ) {
+			return null;
+		}
+
+		$pods_api = pods_api();
+
+		if ( false === is_object( $pods_api ) ||
+			false === method_exists( $pods_api, 'load_pod' ) ) {
+			return null;
+		}
+
+		$pod_args = array(
+			'id' => $id,
+		);
+		$pod      = $pods_api->load_pod( $pod_args );
+
+		return is_object( $pod ) && method_exists( $pod, 'get_args' ) ?
+			$pod :
+			null;
+	}
+
+	protected function get_pod_name( object $pod ): string {
+		$args = method_exists( $pod, 'get_args' ) ?
+			$pod->get_args() :
+			array();
+		$args = is_array( $args ) ?
+			$args :
+			array();
+
+		return $this->get_string_arg( 'name', $args );
 	}
 
 	/**
