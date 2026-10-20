@@ -37,13 +37,14 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 		$upgrade_notice = $this->get_upgrade_notice();
 
 		if ( strlen( $upgrade_notice ) > 0 ) {
+			$admin_notices_callback = function (): void {
+				if ( ! $this->hide_notice() ) {
+					$this->print_notice();
+				}
+			};
 			self::add_action(
 				'admin_notices',
-				function (): void {
-					if ( ! $this->hide_notice() ) {
-						$this->print_notice();
-					}
-				}
+				$admin_notices_callback
 			);
 		}
 	}
@@ -52,25 +53,24 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 	 * @param Version_Migration[] $version_migrations
 	 */
 	public function setup_upgrade_notice( array $version_migrations ): void {
-		Plugin::on_translations_ready(
-			function () use ( $version_migrations ): void {
-				$upgrade_notices = array();
+		$translations_ready_callback = function () use ( $version_migrations ): void {
+			$upgrade_notices = array();
 
-				foreach ( $version_migrations as $version_migration ) {
-					$version_upgrade_notice = $version_migration->get_upgrade_notice_text();
+			foreach ( $version_migrations as $version_migration ) {
+				$version_upgrade_notice = $version_migration->get_upgrade_notice_text();
 
-					if ( is_string( $version_upgrade_notice ) ) {
-						$upgrade_notices[] = sprintf( '%s (v. %s)', $version_upgrade_notice, $version_migration->introduced_version() );
-					}
-				}
-
-				if ( count( $upgrade_notices ) > 0 ) {
-					$upgrade_notice = implode( "\n", $upgrade_notices );
-
-					Options_Storage::set_transient( Options_Storage::TRANSIENT_UPGRADE_NOTICE, $upgrade_notice, WEEK_IN_SECONDS );
+				if ( is_string( $version_upgrade_notice ) ) {
+					$upgrade_notices[] = sprintf( '%s (v. %s)', $version_upgrade_notice, $version_migration->introduced_version() );
 				}
 			}
-		);
+
+			if ( count( $upgrade_notices ) > 0 ) {
+				$upgrade_notice = implode( "\n", $upgrade_notices );
+
+				Options_Storage::set_transient( Options_Storage::TRANSIENT_UPGRADE_NOTICE, $upgrade_notice, WEEK_IN_SECONDS );
+			}
+		};
+		Plugin::on_translations_ready( $translations_ready_callback );
 	}
 
 	public function print_notice(): void {

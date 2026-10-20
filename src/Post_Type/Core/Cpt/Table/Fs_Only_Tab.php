@@ -52,35 +52,34 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 		$tab_data = new Tab_Data( $this );
 		$tab_data->set_name( self::NAME );
 		$tab_data->set_label( __( 'FS only', 'acf-views' ) );
-		$tab_data->set_description_callback(
-			function (): void {
-				echo esc_html(
-					__(
-						'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
-						'acf-views'
-					)
-				);
-				echo '<br>';
-				echo esc_html(
-					__(
-						'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
-						'acf-views'
-					)
-				);
-				echo '<br>';
-				echo esc_html(
-					__(
-						'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
-						'acf-views'
-					)
-				);
-				printf(
-					' <a target="_blank" href="%s">%s</a>',
-					esc_url( 'https://docs.advanced-views.com/features/file-system-storage' ),
-					esc_html( __( 'Read more', 'acf-views' ) )
-				);
-			}
-		);
+		$description_callback = function (): void {
+			echo esc_html(
+				__(
+					'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
+					'acf-views'
+				)
+			);
+			echo '<br>';
+			echo esc_html(
+				__(
+					'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
+					'acf-views'
+				)
+			);
+			echo '<br>';
+			echo esc_html(
+				__(
+					'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
+					'acf-views'
+				)
+			);
+			printf(
+				' <a target="_blank" href="%s">%s</a>',
+				esc_url( 'https://docs.advanced-views.com/features/file-system-storage' ),
+				esc_html( __( 'Read more', 'acf-views' ) )
+			);
+		};
+		$tab_data->set_description_callback( $description_callback );
 		$tab_data->set_label_in_brackets( (string) $fs_only_items_count );
 		$tab_data->set_bulk_actions( $this->get_bulk_actions() );
 		$tab_data->set_total_items_count( $fs_only_items_count );

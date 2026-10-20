@@ -113,9 +113,10 @@ final class Layout_Gutenberg_Block extends Actor_Base implements Actor {
 			Cpt_Gutenberg_Block::parse_attributes( $attributes ),
 		);
 
+		$filter = fn( string $value ): bool => strlen( $value ) > 0;
 		return array_filter(
 			$attrs,
-			fn( string $value ): bool => strlen( $value ) > 0
+			$filter
 		);
 	}
 

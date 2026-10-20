@@ -52,8 +52,9 @@ final class List_Query_Builder {
 	 * @return array<string, mixed>
 	 */
 	protected function get_list_arguments( array $list_values ): array {
+		$mapper = fn( $item ) => $this->get_item_arguments( $item );
 		$items = array_map(
-			fn( $item ) => $this->get_item_arguments( $item ),
+			$mapper,
 			$list_values
 		);
 

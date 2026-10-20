@@ -52,25 +52,24 @@ class Post_Selection_Markup {
 									->set_left_operand( $pages_var )
 									->set_comparison_greater()
 									->set_right_operand( $token_factory->literal( 1 ) );
-		$body       = $token_factory->html(
-			function () use ( $token_factory ) {
-				$pages_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
-											->add_item_path( 'pages_amount' );
+		$body_printer = function () use ( $token_factory ) {
+			$pages_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
+										->add_item_path( 'pages_amount' );
 
-				$token_factory->formatter()->new_line();
-				echo "\t\t<div>\r\n";
-				echo "\t\t\t";
-				$token_factory->functions()
-								->paginate_links(
-									array(
-										'total' => $pages_var,
-									)
-								);
-				echo "\n";
-				echo "\t\t" . '</div>' . "\r\n";
-				echo "\t";
-			}
-		);
+			$token_factory->formatter()->new_line();
+			echo "\t\t<div>\r\n";
+			echo "\t\t\t";
+			$token_factory->functions()
+							->paginate_links(
+								array(
+									'total' => $pages_var,
+								)
+							);
+			echo "\n";
+			echo "\t\t" . '</div>' . "\r\n";
+			echo "\t";
+		};
+		$body       = $token_factory->html( $body_printer );
 
 		return $token_factory->if_branch()
 			->set_condition( $comparison )
@@ -318,11 +317,10 @@ class Post_Selection_Markup {
 	protected function items_branch( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings, int &$tabs_number ): IF_Branch {
 		$post_ids_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 										->add_item_path( 'post_ids' );
-		$body         = $token_factory->html(
-			function () use ( $post_selection_settings, $token_factory, &$tabs_number ) {
-				$tabs_number = $this->print_items_markup( $token_factory, $post_selection_settings, $tabs_number );
-			}
-		);
+		$body_printer = function () use ( $post_selection_settings, $token_factory, &$tabs_number ) {
+			$tabs_number = $this->print_items_markup( $token_factory, $post_selection_settings, $tabs_number );
+		};
+		$body         = $token_factory->html( $body_printer );
 
 		return $token_factory->if_branch()
 			->set_condition( $post_ids_var )
@@ -330,11 +328,10 @@ class Post_Selection_Markup {
 	}
 
 	protected function not_found_branch( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings, int &$tabs_number ): IF_Branch {
-		$body = $token_factory->html(
-			function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
-				$tabs_number = $this->print_not_found_markup( $token_factory, $post_selection_settings, $tabs_number );
-			}
-		);
+		$body_printer = function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
+			$tabs_number = $this->print_not_found_markup( $token_factory, $post_selection_settings, $tabs_number );
+		};
+		$body = $token_factory->html( $body_printer );
 
 		return $token_factory->if_branch()
 			->set_body( $body );
@@ -380,20 +377,19 @@ class Post_Selection_Markup {
 
 		$post_id_var = $token_factory->variable( 'post_id' );
 
-		$loop_body = $token_factory->html(
-			function () use ( $tabs_number, $post_selection_settings, $token_factory ) {
-				$tabs_number += 2;
+		$body_printer = function () use ( $tabs_number, $post_selection_settings, $token_factory ) {
+			$tabs_number += 2;
 
-				$token_factory->formatter()
-					->new_line()
-								->tab( $tabs_number );
+			$token_factory->formatter()
+				->new_line()
+							->tab( $tabs_number );
 
-				$this->print_shortcode( $post_selection_settings );
+			$this->print_shortcode( $post_selection_settings );
 
-				$token_factory->formatter()
-								->tab( --$tabs_number );
-			}
-		);
+			$token_factory->formatter()
+							->tab( --$tabs_number );
+		};
+		$loop_body = $token_factory->html( $body_printer );
 
 		$token_factory->formatter()
 						->tab( ++$tabs_number );

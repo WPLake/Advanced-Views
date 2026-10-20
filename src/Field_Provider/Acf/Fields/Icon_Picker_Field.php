@@ -70,7 +70,8 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 				$variable_field_data->set_value( $attachment_id );
 
-				$args = array_merge( $args, $this->image_field->get_template_variables( $variable_field_data ) );
+				$image_variables = $this->image_field->get_template_variables( $variable_field_data );
+				$args            = array_merge( $args, $image_variables );
 				break;
 		}
 
@@ -95,8 +96,9 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	protected function dashicons_branch( string $field_id, Template_Field_Data $markup_field_data ): IF_Branch {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$condition = self::type_comparison( 'dashicons', $field_id, $markup_field_data );
-		$body      = $token_factory->html( fn() => $this->print_icon_markup( $field_id, $markup_field_data ) );
+		$condition    = self::type_comparison( 'dashicons', $field_id, $markup_field_data );
+		$body_printer = fn() => $this->print_icon_markup( $field_id, $markup_field_data );
+		$body         = $token_factory->html( $body_printer );
 
 		return $token_factory->if_branch()
 			->set_condition( $condition )
@@ -106,8 +108,9 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	protected function media_library_branch( string $field_id, Template_Field_Data $markup_field_data ): IF_Branch {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$condition = self::type_comparison( 'media_library', $field_id, $markup_field_data );
-		$body      = $token_factory->html( fn() => $this->print_icon_image_markup( $field_id, $markup_field_data ) );
+		$condition    = self::type_comparison( 'media_library', $field_id, $markup_field_data );
+		$body_printer = fn() => $this->print_icon_image_markup( $field_id, $markup_field_data );
+		$body         = $token_factory->html( $body_printer );
 
 		return $token_factory->if_branch()
 			->set_condition( $condition )
@@ -117,7 +120,8 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	protected function custom_image_branch( string $field_id, Template_Field_Data $markup_field_data ): IF_Branch {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$body = $token_factory->html( fn() => $this->print_custom_image_markup( $field_id, $markup_field_data ) );
+		$body_printer = fn() => $this->print_custom_image_markup( $field_id, $markup_field_data );
+		$body         = $token_factory->html( $body_printer );
 
 		return $token_factory->if_branch()
 			->set_body( $body );

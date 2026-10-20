@@ -159,9 +159,10 @@ abstract class Layout_Object_Source {
 			'comment-id' => string( $settings, 'comment_id' ),
 		);
 
+		$filter = fn( string $value ): bool => strlen( $value ) > 0;
 		return array_filter(
 			$attrs,
-			fn( string $value ): bool => strlen( $value ) > 0
+			$filter
 		);
 	}
 }

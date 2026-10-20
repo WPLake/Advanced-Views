@@ -49,8 +49,9 @@ class File_System extends Loggable_Actor implements Actor {
 	public function set_route_hooks( Route_Detector $route_detector ): void {
 		// set only if it isn't an external folder.
 		if ( 0 === strlen( $this->base_folder ) ) {
+			$onload_callback = fn() => $this->set_base_folder( $route_detector );
 			File_System_Loader::instance()
-								->add_onload_callback( fn() => $this->set_base_folder( $route_detector ) );
+								->add_onload_callback( $onload_callback );
 		}
 	}
 
@@ -104,33 +105,34 @@ class File_System extends Loggable_Actor implements Actor {
 	}
 
 	protected function show_folder_is_not_writable_warning(): void {
+		$admin_notices_callback = function (): void {
+			// it's going to be checked in both CPTs, but we need only one notice.
+			if ( self::$is_fs_not_writable_notice_shown ) {
+				return;
+			}
+
+			self::$is_fs_not_writable_notice_shown = true;
+
+			echo '<div class="notice notice-error"><p>';
+			echo esc_html( __( 'The FS storage directory is not writable.', 'acf-views' ) );
+			echo ' (path = ' . esc_html( $this->base_folder ) . ')<br>';
+			echo esc_html(
+				__(
+					'Check and fix file permissions to work with Views and Cards.',
+					'acf-views'
+				)
+			) . '<br>';
+			echo esc_html(
+				__(
+					'Note: Do not disable the FS storage feature before fixing it, otherwise your data will be lost.',
+					'acf-views'
+				)
+			);
+			echo '</p></div>';
+		};
 		self::add_action(
 			'admin_notices',
-			function (): void {
-				// it's going to be checked in both CPTs, but we need only one notice.
-				if ( self::$is_fs_not_writable_notice_shown ) {
-					return;
-				}
-
-				self::$is_fs_not_writable_notice_shown = true;
-
-				echo '<div class="notice notice-error"><p>';
-				echo esc_html( __( 'The FS storage directory is not writable.', 'acf-views' ) );
-				echo ' (path = ' . esc_html( $this->base_folder ) . ')<br>';
-				echo esc_html(
-					__(
-						'Check and fix file permissions to work with Views and Cards.',
-						'acf-views'
-					)
-				) . '<br>';
-				echo esc_html(
-					__(
-						'Note: Do not disable the FS storage feature before fixing it, otherwise your data will be lost.',
-						'acf-views'
-					)
-				);
-				echo '</p></div>';
-			}
+			$admin_notices_callback
 		);
 	}
 

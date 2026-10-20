@@ -60,10 +60,11 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 			return null;
 		}
 
+		$sorter = fn(Cpt_Settings $a, Cpt_Settings $b) => strcasecmp( $a->title, $b->title );
 		// sort by names asc.
 		usort(
 			$all_pre_built_items,
-			fn(Cpt_Settings $a, Cpt_Settings $b) => strcasecmp( $a->title, $b->title )
+			$sorter
 		);
 
 		/**
@@ -78,28 +79,27 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		$tab_data = new Tab_Data( $this );
 		$tab_data->set_name( self::NAME );
 		$tab_data->set_label( __( 'Pre-built components', 'acf-views' ) );
-		$tab_data->set_description_callback(
-			function (): void {
-				esc_html_e(
-					'Import pre-built components.',
-					'acf-views'
-				);
-				echo '<br>';
-				$this->print_tab_description_middle();
-				echo '<br>';
-				esc_html_e(
-					'Hover on the title and click Import.',
-					'acf-views'
-				);
-				echo ' ';
-				printf(
-					' <a target="_blank" href="%s">%s</a>',
-					esc_url( 'https://docs.advanced-views.com/layouts/features/pre-built-components' ),
-					esc_html__( 'Read more', 'acf-views' )
-				);
-				echo '.';
-			}
-		);
+		$description_callback = function (): void {
+			esc_html_e(
+				'Import pre-built components.',
+				'acf-views'
+			);
+			echo '<br>';
+			$this->print_tab_description_middle();
+			echo '<br>';
+			esc_html_e(
+				'Hover on the title and click Import.',
+				'acf-views'
+			);
+			echo ' ';
+			printf(
+				' <a target="_blank" href="%s">%s</a>',
+				esc_url( 'https://docs.advanced-views.com/layouts/features/pre-built-components' ),
+				esc_html__( 'Read more', 'acf-views' )
+			);
+			echo '.';
+		};
+		$tab_data->set_description_callback( $description_callback );
 		$tab_data->set_label_in_brackets( (string) $items_count );
 		$tab_data->set_bulk_actions( $this->get_bulk_actions() );
 		$tab_data->set_total_items_count( $items_count );

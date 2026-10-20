@@ -131,14 +131,13 @@ final class Plugin_Environment implements Actor {
 	protected function get_transient_jobs(): array {
 		return array(
 			Options_Storage::TRANSIENT_FIRST_INSTALLATION => function () {
-				File_System_Loader::instance()
-									->add_loaded_callback(
-										function () {
-											$this->prepare_first_installation();
+				$loaded_callback = function () {
+					$this->prepare_first_installation();
 
-											Options_Storage::delete_transient( Options_Storage::TRANSIENT_FIRST_INSTALLATION );
-										}
-									);
+					Options_Storage::delete_transient( Options_Storage::TRANSIENT_FIRST_INSTALLATION );
+				};
+				File_System_Loader::instance()
+									->add_loaded_callback( $loaded_callback );
 			},
 		);
 	}

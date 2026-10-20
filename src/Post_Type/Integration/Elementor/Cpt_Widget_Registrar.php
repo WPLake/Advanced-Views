@@ -41,15 +41,16 @@ final class Cpt_Widget_Registrar extends Actor_Base implements Actor {
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {
+		$elementor_elements_categories_registered_callback = fn( Elements_Manager $elements_manager ) => $elements_manager->add_category(
+			Cpt_Integration_Category::NAME,
+			array(
+				'title' => Cpt_Integration_Category::get_label(),
+				'icon'  => 'fa fa-plug',
+			)
+		);
 		self::add_action(
 			'elementor/elements/categories_registered',
-			fn( Elements_Manager $elements_manager ) => $elements_manager->add_category(
-				Cpt_Integration_Category::NAME,
-				array(
-					'title' => Cpt_Integration_Category::get_label(),
-					'icon'  => 'fa fa-plug',
-				)
-			)
+			$elementor_elements_categories_registered_callback
 		);
 
 		self::add_action( 'elementor/widgets/register', array( $this, 'register_widgets' ) );

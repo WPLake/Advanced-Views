@@ -29,11 +29,12 @@ final class Migration_2_4_2 extends Version_Migration_Base {
 	}
 
 	public function migrate_previous_version(): void {
+		$acf_init_callback = function (): void {
+			$this->replace_post_comments_and_menu_link_fields_to_separate();
+		};
 		self::add_action(
 			'acf/init',
-			function (): void {
-				$this->replace_post_comments_and_menu_link_fields_to_separate();
-			}
+			$acf_init_callback
 		);
 	}
 

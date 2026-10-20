@@ -95,10 +95,11 @@ if ( class_exists( 'acf_field_select' ) ) {
 
 			$search_term = Query_Arguments::get_string_for_non_action( 's', 'post' );
 
+			$filter = fn( $name ) => false !== stripos( $name, $search_term );
 			$filtered_items = '' !== $search_term ?
 				array_filter(
 					$this->layouts_settings_storage->get_unique_id_with_name_items_list(),
-					fn( $name ) => false !== stripos( $name, $search_term )
+					$filter
 				) :
 				$this->layouts_settings_storage->get_unique_id_with_name_items_list();
 

@@ -198,18 +198,20 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 		self::add_action( 'post_edit_form_tag', array( $this, 'disable_autocomplete_for_post_edit' ) );
 
 		self::add_action( 'admin_footer', array( $this, 'maybe_show_error_that_gutenberg_editor_is_suppressed' ) );
+		$init_callback = function () use ( $route_detector ): void {
+			$this->disable_jetpack_markdown_module( $route_detector );
+		};
 		// priority '9' is earlier than Jetpack's.
 		self::add_action(
 			'init',
-			function () use ( $route_detector ): void {
-				$this->disable_jetpack_markdown_module( $route_detector );
-			},
+			$init_callback,
 			9
 		);
 
+		$classic_editor_plugin_settings_callback = fn( $settings ) => $this->classic_editor_plugin_settings_patch( $settings, $route_detector );
 		self::add_filter(
 			'classic_editor_plugin_settings',
-			fn( $settings ) => $this->classic_editor_plugin_settings_patch( $settings, $route_detector )
+			$classic_editor_plugin_settings_callback
 		);
 		self::add_filter(
 			'classic_editor_enabled_editors_for_post_type',
@@ -220,9 +222,10 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 
 		// very important to avoid Gutenberg to be suppressed on CPT pages by some theme or plugins (Divi theme, etc).
 		self::add_filter( 'use_block_editor_for_post_type', array( $this, 'force_gutenberg_for_cpt_pages' ), 99999, 2 );
+		$block_editor_settings_all_callback = fn( array $editor_settings ): array => $this->disable_gutenberg_auto_save( $editor_settings, $route_detector );
 		self::add_filter(
 			'block_editor_settings_all',
-			fn( array $editor_settings ): array => $this->disable_gutenberg_auto_save( $editor_settings, $route_detector )
+			$block_editor_settings_all_callback
 		);
 	}
 }

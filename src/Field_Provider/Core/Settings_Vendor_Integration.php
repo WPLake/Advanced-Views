@@ -363,70 +363,71 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	}
 
 	public function maybe_create_view_for_group(): void {
+		$current_screen_callback = function (): void {
+			$screen = get_current_screen();
+
+			if ( null === $screen ) {
+				return;
+			}
+
+			$from      = Query_Arguments::get_int_for_admin_action( self::ARGUMENT_FROM, self::NONCE_ADD_NEW );
+			$from_post = 0 !== $from ?
+				get_post( $from ) :
+				null;
+
+			$is_add_screen = 'post' === $screen->base &&
+							'add' === $screen->action;
+
+			if ( Hard_Layout_Cpt::cpt_name() !== $screen->post_type ||
+				false === $is_add_screen ||
+				null === $from_post ||
+				$this->get_vendor_post_type() !== $from_post->post_type ||
+				'publish' !== $from_post->post_status ||
+				! Avf_User::can_manage() ) {
+				return;
+			}
+
+			$layout_settings = $this->layouts_settings_storage->create_new( 'publish', $from_post->post_title );
+
+			if ( null === $layout_settings ) {
+				return;
+			}
+
+			$supported_field_types = $this->provider_cluster->get_supported_field_types( $this->get_vendor_name() );
+			$group_fields          = $this->get_group_fields( $from_post );
+			$group_key             = '';
+
+			$layout_settings->title = $from_post->post_title;
+			$this->set_defaults_from_settings( $layout_settings );
+
+			// get group field key if at least one field is present
+			// (e.g. Pods requires a field data to get the '_pod_name' part).
+			if ( count( $group_fields ) > 0 ) {
+				$group_key = $this->get_group_key_by_from_post( $from_post, arr( $group_fields[0] ) );
+				// Leave global group filter empty, so beginners can easily mix fields from different groups.
+				// $view_data->group = $group_key;.
+			}
+
+			foreach ( $group_fields as $field ) {
+				$field = arr( $field );
+
+				$this->add_item_to_view(
+					$group_key,
+					$field,
+					$layout_settings,
+					$supported_field_types
+				);
+			}
+
+			// it'll save the data above too.
+			$this->layouts_cpt_save_actions->perform_save_actions( $layout_settings->get_post_id() );
+
+			wp_safe_redirect( $layout_settings->get_edit_post_link( 'redirect' ) );
+			exit;
+		};
 		self::add_action(
 			'current_screen',
-			function (): void {
-				$screen = get_current_screen();
-
-				if ( null === $screen ) {
-					return;
-				}
-
-				$from      = Query_Arguments::get_int_for_admin_action( self::ARGUMENT_FROM, self::NONCE_ADD_NEW );
-				$from_post = 0 !== $from ?
-					get_post( $from ) :
-					null;
-
-				$is_add_screen = 'post' === $screen->base &&
-								'add' === $screen->action;
-
-				if ( Hard_Layout_Cpt::cpt_name() !== $screen->post_type ||
-					false === $is_add_screen ||
-					null === $from_post ||
-					$this->get_vendor_post_type() !== $from_post->post_type ||
-					'publish' !== $from_post->post_status ||
-					! Avf_User::can_manage() ) {
-					return;
-				}
-
-				$layout_settings = $this->layouts_settings_storage->create_new( 'publish', $from_post->post_title );
-
-				if ( null === $layout_settings ) {
-					return;
-				}
-
-				$supported_field_types = $this->provider_cluster->get_supported_field_types( $this->get_vendor_name() );
-				$group_fields          = $this->get_group_fields( $from_post );
-				$group_key             = '';
-
-				$layout_settings->title = $from_post->post_title;
-				$this->set_defaults_from_settings( $layout_settings );
-
-				// get group field key if at least one field is present
-				// (e.g. Pods requires a field data to get the '_pod_name' part).
-				if ( count( $group_fields ) > 0 ) {
-					$group_key = $this->get_group_key_by_from_post( $from_post, arr( $group_fields[0] ) );
-					// Leave global group filter empty, so beginners can easily mix fields from different groups.
-					// $view_data->group = $group_key;.
-				}
-
-				foreach ( $group_fields as $field ) {
-					$field = arr( $field );
-
-					$this->add_item_to_view(
-						$group_key,
-						$field,
-						$layout_settings,
-						$supported_field_types
-					);
-				}
-
-				// it'll save the data above too.
-				$this->layouts_cpt_save_actions->perform_save_actions( $layout_settings->get_post_id() );
-
-				wp_safe_redirect( $layout_settings->get_edit_post_link( 'redirect' ) );
-				exit;
-			}
+			$current_screen_callback
 		);
 	}
 
@@ -445,47 +446,48 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	}
 
 	public function validate_related_views_on_group_change(): void {
+		$post_updated_messages_callback = function ( array $messages ) {
+			if ( ! key_exists( $this->get_vendor_post_type(), $messages ) ) {
+				return $messages;
+			}
+
+			global $post;
+
+			if ( null === $post ||
+				$this->get_vendor_post_type() !== $post->post_type ||
+				'publish' !== $post->post_status ) {
+				return $messages;
+			}
+
+			$related_views = $this->layouts_settings_storage->get_all_with_meta_group_in_use(
+				$this->data_vendor->get_group_key( $post->post_name )
+			);
+
+			$this->update_markup_preview( $related_views );
+
+			$related_view_links_with_invalid_custom_markup = $this->get_related_view_links_with_invalid_custom_markup(
+				$related_views
+			);
+
+			if ( array() === $related_view_links_with_invalid_custom_markup ) {
+				return $messages;
+			}
+
+			$extra  = sprintf(
+				"<br><br><span style='color:#dc3232;'>%s %s:</span><br><br>",
+				count( $related_view_links_with_invalid_custom_markup ),
+				__( 'Views associated with this group contain invalid Custom Markup', 'acf-views' )
+			);
+			$extra .= implode( '<br>', $related_view_links_with_invalid_custom_markup );
+
+			$messages[ $this->get_vendor_post_type() ][1] .= $extra;
+
+			return $messages;
+		};
 		// with '20', to make sure it's after ACF.
 		self::add_filter(
 			'post_updated_messages',
-			function ( array $messages ) {
-				if ( ! key_exists( $this->get_vendor_post_type(), $messages ) ) {
-					return $messages;
-				}
-
-				global $post;
-
-				if ( null === $post ||
-					$this->get_vendor_post_type() !== $post->post_type ||
-					'publish' !== $post->post_status ) {
-					return $messages;
-				}
-
-				$related_views = $this->layouts_settings_storage->get_all_with_meta_group_in_use(
-					$this->data_vendor->get_group_key( $post->post_name )
-				);
-
-				$this->update_markup_preview( $related_views );
-
-				$related_view_links_with_invalid_custom_markup = $this->get_related_view_links_with_invalid_custom_markup(
-					$related_views
-				);
-
-				if ( array() === $related_view_links_with_invalid_custom_markup ) {
-					return $messages;
-				}
-
-				$extra  = sprintf(
-					"<br><br><span style='color:#dc3232;'>%s %s:</span><br><br>",
-					count( $related_view_links_with_invalid_custom_markup ),
-					__( 'Views associated with this group contain invalid Custom Markup', 'acf-views' )
-				);
-				$extra .= implode( '<br>', $related_view_links_with_invalid_custom_markup );
-
-				$messages[ $this->get_vendor_post_type() ][1] .= $extra;
-
-				return $messages;
-			},
+			$post_updated_messages_callback,
 			20
 		);
 	}

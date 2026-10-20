@@ -119,28 +119,29 @@ final class Settings_Page extends Loggable_Actor implements Actor {
 			return;
 		}
 
+		$acf_pre_update_value_callback = function ( $is_updated, $value, $post_id, array $field ): bool {
+			// extra check, as probably it's about another post.
+			if ( ! $this->is_my_source( $post_id ) ) {
+				return $is_updated;
+			}
+
+			$field_name = (string) ( $field['name'] ?? '' );
+
+			// convert repeater format. don't check simply 'is_array(value)' as not every array is a repeater
+			// also check to make sure it's array (can be empty string).
+			if ( Plugin_Settings::getAcfFieldName( Plugin_Settings::FIELD_GIT_REPOSITORIES ) === $field_name &&
+				is_array( $value ) ) {
+				$value = Group::convertRepeaterFieldValues( $field_name, $value );
+			}
+
+			$this->values[ $field_name ] = $value;
+
+			// avoid saving to the postmeta.
+			return true;
+		};
 		self::add_filter(
 			'acf/pre_update_value',
-			function ( $is_updated, $value, $post_id, array $field ): bool {
-				// extra check, as probably it's about another post.
-				if ( ! $this->is_my_source( $post_id ) ) {
-					return $is_updated;
-				}
-
-				$field_name = (string) ( $field['name'] ?? '' );
-
-				// convert repeater format. don't check simply 'is_array(value)' as not every array is a repeater
-				// also check to make sure it's array (can be empty string).
-				if ( Plugin_Settings::getAcfFieldName( Plugin_Settings::FIELD_GIT_REPOSITORIES ) === $field_name &&
-					is_array( $value ) ) {
-					$value = Group::convertRepeaterFieldValues( $field_name, $value );
-				}
-
-				$this->values[ $field_name ] = $value;
-
-				// avoid saving to the postmeta.
-				return true;
-			},
+			$acf_pre_update_value_callback,
 			10,
 			4
 		);
@@ -153,22 +154,23 @@ final class Settings_Page extends Loggable_Actor implements Actor {
 
 		$acf_field_values = $this->get_acf_field_values();
 
+		$acf_pre_load_value_callback = function ( $value, $post_id, $field ) use ( $acf_field_values ) {
+			// extra check, as probably it's about another post.
+			if ( ! $this->is_my_source( $post_id ) ) {
+				return $value;
+			}
+
+			$field_name = string( $field, 'name' );
+
+			if ( key_exists( $field_name, $acf_field_values ) ) {
+				return $acf_field_values[ $field_name ];
+			}
+
+			return $value;
+		};
 		self::add_filter(
 			'acf/pre_load_value',
-			function ( $value, $post_id, $field ) use ( $acf_field_values ) {
-				// extra check, as probably it's about another post.
-				if ( ! $this->is_my_source( $post_id ) ) {
-					return $value;
-				}
-
-				$field_name = string( $field, 'name' );
-
-				if ( key_exists( $field_name, $acf_field_values ) ) {
-					return $acf_field_values[ $field_name ];
-				}
-
-				return $value;
-			},
+			$acf_pre_load_value_callback,
 			10,
 			3
 		);

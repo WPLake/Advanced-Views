@@ -15,14 +15,16 @@ abstract class Query_Utils {
 	 * @return array<string, mixed>
 	 */
 	public static function filter_arguments( array $conditional_arguments ): array {
+		$mapper = fn( array $filter ) => self::filter_argument( $filter );
 		$active_arguments = array_map(
-			fn( array $filter ) => self::filter_argument( $filter ),
+			$mapper,
 			$conditional_arguments
 		);
 
+		$non_null_filter = fn( $argument_value ) => ! is_null( $argument_value );
 		return array_filter(
 			$active_arguments,
-			fn( $argument_value ) => ! is_null( $argument_value )
+			$non_null_filter
 		);
 	}
 

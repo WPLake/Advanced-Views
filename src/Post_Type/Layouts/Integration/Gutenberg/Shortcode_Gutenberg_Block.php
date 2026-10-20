@@ -135,17 +135,19 @@ final class Shortcode_Gutenberg_Block extends Actor_Base implements Actor {
 	}
 
 	protected function is_supported_shortcode_in_use( string $content ): bool {
+		$mapper = fn( $shortcode_name ) => '[' . $shortcode_name;
 		$supported_shortcode_prefixes = array_map(
-			fn( $shortcode_name ) => '[' . $shortcode_name,
+			$mapper,
 			$this->supported_shortcode_names
 		);
 
 		// shortcode can be both wrapped and not wrapped in the brackets.
 		$supported_shortcodes = array_merge( $this->supported_shortcode_names, $supported_shortcode_prefixes );
 
+		$filter = fn( $supported_shortcode ) => is_int( strpos( $content, $supported_shortcode ) );
 		$matched_shortcodes = array_filter(
 			$supported_shortcodes,
-			fn( $supported_shortcode ) => is_int( strpos( $content, $supported_shortcode ) )
+			$filter
 		);
 
 		return count( $matched_shortcodes ) > 0;
@@ -199,19 +201,20 @@ final class Shortcode_Gutenberg_Block extends Actor_Base implements Actor {
 			preg_quote( $shortcode_name, '/' )
 		);
 
+		$replacer = function ( array $matches ) use ( $block_name ) {
+			$shortcode = $matches[1] ?? '';
+
+			$shortcode_without_brackets = trim( $shortcode, '[] ' );
+
+			return sprintf(
+				"<!-- %s -->\n%s\n<!-- /%1\$s -->",
+				$block_name,
+				$shortcode_without_brackets
+			);
+		};
 		return (string) preg_replace_callback(
 			$pattern,
-			function ( array $matches ) use ( $block_name ) {
-				$shortcode = $matches[1] ?? '';
-
-				$shortcode_without_brackets = trim( $shortcode, '[] ' );
-
-				return sprintf(
-					"<!-- %s -->\n%s\n<!-- /%1\$s -->",
-					$block_name,
-					$shortcode_without_brackets
-				);
-			},
+			$replacer,
 			$template
 		);
 	}

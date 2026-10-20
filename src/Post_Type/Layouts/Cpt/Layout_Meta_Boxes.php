@@ -173,12 +173,13 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		// @phpcs:ignore
 		$related_cards = $wpdb->get_results( $query );
 
+		$mapper = fn( $related_card ) => get_post( $related_card->ID );
 		// direct $wpdb queries return strings for int columns, wrap into get_post to get right types.
 		/**
 		 * @var WP_Post[] $related_cards
 		 */
 		$related_cards = array_map(
-			fn( $related_card ) => get_post( $related_card->ID ),
+			$mapper,
 			$related_cards
 		);
 
@@ -243,35 +244,36 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 
 	public function add_meta_boxes(): void {
 
+		$shortcode_callback = function ( $post ): void {
+			if ( ! $post ||
+				'publish' !== $post->post_status ) {
+				echo esc_html(
+					sprintf(
+						// translators: %s - singular name of the CPT.
+						__( 'Your %s shortcode is available after publishing.', 'acf-views' ),
+						$this->layouts_cpt->labels()->singular_name()
+					)
+				);
+
+				return;
+			}
+
+			$view_data            = $this->layouts_settings_storage->get( $post->post_name );
+			$short_view_unique_id = $view_data->get_unique_id( true );
+
+			$this->get_html()->print_postbox_shortcode(
+				$short_view_unique_id,
+				false,
+				$this->layouts_cpt,
+				get_the_title( $post ),
+				false,
+				$view_data->is_for_internal_usage_only()
+			);
+		};
 		add_meta_box(
 			'acf-views_shortcode',
 			__( 'Embed the Layout', 'acf-views' ),
-			function ( $post ): void {
-				if ( ! $post ||
-					'publish' !== $post->post_status ) {
-					echo esc_html(
-						sprintf(
-							// translators: %s - singular name of the CPT.
-							__( 'Your %s shortcode is available after publishing.', 'acf-views' ),
-							$this->layouts_cpt->labels()->singular_name()
-						)
-					);
-
-					return;
-				}
-
-				$view_data            = $this->layouts_settings_storage->get( $post->post_name );
-				$short_view_unique_id = $view_data->get_unique_id( true );
-
-				$this->get_html()->print_postbox_shortcode(
-					$short_view_unique_id,
-					false,
-					$this->layouts_cpt,
-					get_the_title( $post ),
-					false,
-					$view_data->is_for_internal_usage_only()
-				);
-			},
+			$shortcode_callback,
 			array(
 				$this->get_cpt_name(),
 			),
@@ -279,6 +281,11 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			'high'
 		);
 
+		$related_cards_callback = function ( WP_Post $wp_post ): void {
+			$view_data = $this->layouts_settings_storage->get( $wp_post->post_name );
+
+			$this->print_related_acf_cards_meta_box( $view_data );
+		};
 		add_meta_box(
 			'acf-views_related_cards',
 			sprintf(
@@ -286,11 +293,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				__( 'Used by %s', 'acf-views' ),
 				$this->selections_cpt->labels()->plural_name()
 			),
-			function ( WP_Post $wp_post ): void {
-				$view_data = $this->layouts_settings_storage->get( $wp_post->post_name );
-
-				$this->print_related_acf_cards_meta_box( $view_data );
-			},
+			$related_cards_callback,
 			array(
 				$this->get_cpt_name(),
 			),
@@ -298,13 +301,14 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			'core'
 		);
 
+		$related_groups_callback = function ( WP_Post $wp_post ): void {
+			$view_data = $this->layouts_settings_storage->get( $wp_post->post_name );
+			$this->print_related_groups_meta_box( $view_data );
+		};
 		add_meta_box(
 			'acf-views_related_groups',
 			__( 'Field Groups', 'acf-views' ),
-			function ( WP_Post $wp_post ): void {
-				$view_data = $this->layouts_settings_storage->get( $wp_post->post_name );
-				$this->print_related_groups_meta_box( $view_data );
-			},
+			$related_groups_callback,
 			array(
 				$this->get_cpt_name(),
 			),
@@ -312,6 +316,11 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			'core'
 		);
 
+		$related_views_callback = function ( WP_Post $wp_post ): void {
+			$view_data = $this->layouts_settings_storage->get( $wp_post->post_name );
+
+			$this->print_related_views_meta_box( $view_data );
+		};
 		add_meta_box(
 			'acf-views_related_views',
 			sprintf(
@@ -319,11 +328,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				__( 'Nested %s', 'acf-views' ),
 				$this->layouts_cpt->labels()->plural_name()
 			),
-			function ( WP_Post $wp_post ): void {
-				$view_data = $this->layouts_settings_storage->get( $wp_post->post_name );
-
-				$this->print_related_views_meta_box( $view_data );
-			},
+			$related_views_callback,
 			array(
 				$this->get_cpt_name(),
 			),

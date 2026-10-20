@@ -18,8 +18,9 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Twig_Templat
 
 final class Template_Engine_Factory extends Factory_Base {
 	public function engines_storage(): Engines_Storage {
+		$mapper = fn( string $class_name ): Template_Engine => $this->resolve( $class_name );
 		$engines = array_map(
-			fn( string $class_name ): Template_Engine => $this->resolve( $class_name ),
+			$mapper,
 			$this->engine_classes()
 		);
 

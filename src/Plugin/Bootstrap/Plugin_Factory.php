@@ -58,8 +58,9 @@ class Plugin_Factory extends Factory_Base {
 
 	public function plugin_environment(): Plugin_Environment {
 		$storages     = $this->settings_storages();
+		$mapper = fn( $storage ) => $storage->get_file_system();
 		$file_systems = array_map(
-			fn( $storage ) => $storage->get_file_system(),
+			$mapper,
 			$storages
 		);
 

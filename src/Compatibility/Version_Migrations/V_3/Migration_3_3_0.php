@@ -34,8 +34,9 @@ final class Migration_3_3_0 extends Version_Migration_Base {
 	}
 
 	public function migrate_previous_version(): void {
+		$loaded_callback = fn() => $this->move_all_is_without_web_component_to_select();
 		File_System_Loader::instance()
-			->add_loaded_callback( fn() => $this->move_all_is_without_web_component_to_select() );
+			->add_loaded_callback( $loaded_callback );
 	}
 
 	public function migrate_previous_cpt_settings( Cpt_Settings $cpt_settings ): void {

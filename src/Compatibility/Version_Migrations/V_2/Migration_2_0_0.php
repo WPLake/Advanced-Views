@@ -29,13 +29,14 @@ final class Migration_2_0_0 extends Version_Migration_Base {
 	public function migrate_previous_version(): void {
 		$this->replace_post_identifiers();
 
+		$acf_init_callback = function (): void {
+			$this->layouts_cpt_save_actions->perform_save_actions_on_all_posts();
+			$this->post_selections_cpt_save_actions->perform_save_actions_on_all_posts();
+		};
 		// trigger save to refresh the markup preview.
 		self::add_action(
 			'acf/init',
-			function (): void {
-				$this->layouts_cpt_save_actions->perform_save_actions_on_all_posts();
-				$this->post_selections_cpt_save_actions->perform_save_actions_on_all_posts();
-			}
+			$acf_init_callback
 		);
 	}
 

@@ -33,8 +33,9 @@ final class Version_Migrations_Factory extends Factory_Base {
 		$v3_migrations = $this->v3_migrations();
 
 		$migrations          = array_merge( $v1_migrations, $v2_migrations, $v3_migrations );
+		$mapper = fn( string $class_name ): Version_Migration => $this->resolve( $class_name );
 		$migration_instances = array_map(
-			fn( string $class_name ): Version_Migration => $this->resolve( $class_name ),
+			$mapper,
 			$migrations
 		);
 

@@ -50,17 +50,18 @@ class Meta_Box_Integration extends Settings_Vendor_Integration {
 	}
 
 	public function add_tab_to_meta_group(): void {
+		$add_meta_boxes_callback = function (): void {
+			add_meta_box(
+				'advanced_views',
+				$this->get_tab_label(),
+				array( $this, 'render_meta_box' ),
+				$this->get_vendor_post_type(),
+				'side'
+			);
+		};
 		self::add_action(
 			'add_meta_boxes',
-			function (): void {
-				add_meta_box(
-					'advanced_views',
-					$this->get_tab_label(),
-					array( $this, 'render_meta_box' ),
-					$this->get_vendor_post_type(),
-					'side'
-				);
-			}
+			$add_meta_boxes_callback
 		);
 	}
 

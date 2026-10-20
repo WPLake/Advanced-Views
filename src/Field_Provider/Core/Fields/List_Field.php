@@ -74,9 +74,8 @@ abstract class List_Field extends Markup_Field_Base {
 			->set_source_variable( $source_var )
 			->set_item_variable( $item_var );
 
-		$loop_body = $token_factory->html(
-			fn() => $this->print_loop_body( $loop->get_index_variable(), $field_id, $markup_field_data )
-		);
+		$body_printer = fn() => $this->print_loop_body( $loop->get_index_variable(), $field_id, $markup_field_data );
+		$loop_body = $token_factory->html( $body_printer );
 
 		$token_factory->formatter()
 						->new_line();
@@ -128,7 +127,8 @@ abstract class List_Field extends Markup_Field_Base {
 			->set_comparison_greater()
 			->set_right_operand( $token_factory->literal( 0 ) );
 
-		$body = $token_factory->html( fn() => $this->print_item_delimiter( $field_id, $markup_field_data ) );
+		$body_printer = fn() => $this->print_item_delimiter( $field_id, $markup_field_data );
+		$body = $token_factory->html( $body_printer );
 
 		return $token_factory->if_branch()
 			->set_condition( $secondary_element_comparison )

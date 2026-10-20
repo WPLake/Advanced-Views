@@ -265,20 +265,19 @@ class Map_Field extends Map_Field_Base {
 										->add_item_path( self::VALUE );
 		$item_var   = $token_factory->variable( 'marker' );
 
-		$loop_body = $token_factory->html(
-			function () use ( $field_id, $item_var, $markup_field_data, $token_factory ) {
-				$token_factory->formatter()
-								->new_line();
+		$body_printer = function () use ( $field_id, $item_var, $markup_field_data, $token_factory ) {
+			$token_factory->formatter()
+							->new_line();
 
-				$markup_field_data->increment_and_print_tabs();
+			$markup_field_data->increment_and_print_tabs();
 
-				$this->print_inner_item( $field_id, $item_var->get_name(), $markup_field_data );
+			$this->print_inner_item( $field_id, $item_var->get_name(), $markup_field_data );
 
-				$token_factory->formatter()
-								->new_line();
-				$markup_field_data->decrement_and_print_tabs();
-			}
-		);
+			$token_factory->formatter()
+							->new_line();
+			$markup_field_data->decrement_and_print_tabs();
+		};
+		$loop_body = $token_factory->html( $body_printer );
 
 		$token_factory->loop()
 						->set_source_variable( $source_var )
@@ -302,19 +301,18 @@ class Map_Field extends Map_Field_Base {
 		$value_var     = $token_factory->variable( $field_id )
 										->add_item_path( self::VALUE );
 
-		$body = $token_factory->html(
-			function () use ( $field_id, $item_id, $markup_field_data, $token_factory ) {
-				$token_factory->formatter()
-								->new_line();
-				$markup_field_data->increment_and_print_tabs();
+		$body_printer = function () use ( $field_id, $item_id, $markup_field_data, $token_factory ) {
+			$token_factory->formatter()
+							->new_line();
+			$markup_field_data->increment_and_print_tabs();
 
-				$this->print_inner_item( $field_id, $item_id, $markup_field_data );
+			$this->print_inner_item( $field_id, $item_id, $markup_field_data );
 
-				$token_factory->formatter()
-								->new_line();
-				$markup_field_data->decrement_and_print_tabs();
-			}
-		);
+			$token_factory->formatter()
+							->new_line();
+			$markup_field_data->decrement_and_print_tabs();
+		};
+		$body = $token_factory->html( $body_printer );
 
 		return $token_factory->if_branch()
 			->set_condition( $value_var )

@@ -68,9 +68,10 @@ final class Selection_Elementor_Widget extends Widget_Base implements Widget_Dep
 			$common_attrs
 		);
 
+		$filter = fn( string $value ): bool => strlen( $value ) > 0;
 		$attrs = array_filter(
 			$merged_attrs,
-			fn( string $value ): bool => strlen( $value ) > 0
+			$filter
 		);
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

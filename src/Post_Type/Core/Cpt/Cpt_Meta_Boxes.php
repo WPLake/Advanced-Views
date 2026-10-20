@@ -37,12 +37,13 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	}
 
 	public function add_meta_boxes(): void {
+		$support_callback = function (): void {
+			$this->html->print_postbox_support();
+		};
 		add_meta_box(
 			'acf-views_support',
 			__( 'Help & Documentation', 'acf-views' ),
-			function (): void {
-				$this->html->print_postbox_support();
-			},
+			$support_callback,
 			array(
 				$this->get_cpt_name(),
 			),
@@ -51,12 +52,13 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 		);
 
 		if ( ! $this->plugin->is_pro_version() ) {
+			$upgrade_callback = function (): void {
+				$this->html->print_postbox_upgrade();
+			};
 			add_meta_box(
 				'acf-views_upgrade',
 				__( 'Unlock with Pro', 'acf-views' ),
-				function (): void {
-					$this->html->print_postbox_upgrade();
-				},
+				$upgrade_callback,
 				array(
 					$this->get_cpt_name(),
 				),

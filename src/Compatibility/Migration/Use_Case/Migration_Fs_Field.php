@@ -26,8 +26,9 @@ final class Migration_Fs_Field extends Migration_Base {
 	}
 
 	public function migrate(): void {
+		$loaded_callback = fn() => $this->rename_field_files();
 		File_System_Loader::instance()
-			->add_loaded_callback( fn() => $this->rename_field_files() );
+			->add_loaded_callback( $loaded_callback );
 	}
 
 	protected function rename_field_files(): void {

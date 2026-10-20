@@ -75,36 +75,35 @@ class Layout_Markup {
 								$field_type
 							);
 
-		$markup = $token_factory->html(
-			function () use ( $field_meta, $layout_settings, $item_settings, $field_id, $field_type, $token_factory ) {
-				$row_tabs_number = 2;
+		$body_printer = function () use ( $field_meta, $layout_settings, $item_settings, $field_id, $field_type, $token_factory ) {
+			$row_tabs_number = 2;
 
-				$row_type = 'row';
+			$row_type = 'row';
 
-				if ( $this->provider_cluster->is_field_type_with_sub_fields(
-					$field_meta->get_vendor_name(),
-					$field_meta->get_type()
-				) ) {
-					$row_type = $field_type;
-				}
-
-				$token_factory->formatter()
-								->new_line();
-
-				$this->field_markup->print_row_markup(
-					$row_type,
-					'',
-					$layout_settings,
-					$item_settings,
-					$item_settings->field,
-					$field_meta,
-					$row_tabs_number,
-					$field_id
-				);
-
-				$token_factory->formatter()->tab();
+			if ( $this->provider_cluster->is_field_type_with_sub_fields(
+				$field_meta->get_vendor_name(),
+				$field_meta->get_type()
+			) ) {
+				$row_type = $field_type;
 			}
-		);
+
+			$token_factory->formatter()
+							->new_line();
+
+			$this->field_markup->print_row_markup(
+				$row_type,
+				'',
+				$layout_settings,
+				$item_settings,
+				$item_settings->field,
+				$field_meta,
+				$row_tabs_number,
+				$field_id
+			);
+
+			$token_factory->formatter()->tab();
+		};
+		$markup = $token_factory->html( $body_printer );
 
 		$value_var = $token_factory->variable( $field_id )
 									->add_item_path( 'value' );

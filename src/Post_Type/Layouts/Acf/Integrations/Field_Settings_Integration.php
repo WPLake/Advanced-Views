@@ -78,13 +78,14 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 			Field_Settings::getAcfFieldName( Field_Settings::FIELD_KEY ) :
 			Repeater_Field_Settings::getAcfFieldName( Repeater_Field_Settings::FIELD_KEY );
 
+		$override_field_settings_callback = fn( array $field ) => $this->get_conditional_rules(
+			$field,
+			$acf_key,
+			$target_choices
+		);
 		Acf_Utils::override_field_settings(
 			$acf_field_name,
-			fn( array $field ) => $this->get_conditional_rules(
-				$field,
-				$acf_key,
-				$target_choices
-			)
+			$override_field_settings_callback
 		);
 	}
 
@@ -100,13 +101,14 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 		foreach ( $masonry_fields as $masonry_field ) {
 			$acf_field_name = Field_Settings::getAcfFieldName( $masonry_field );
 
+			$override_field_settings_callback = fn( array $field ) => $this->get_conditional_rules(
+				$field,
+				Field_Settings::getAcfFieldName( Field_Settings::FIELD_GALLERY_TYPE ),
+				array( 'masonry' ),
+			);
 			Acf_Utils::override_field_settings(
 				$acf_field_name,
-				fn( array $field ) => $this->get_conditional_rules(
-					$field,
-					Field_Settings::getAcfFieldName( Field_Settings::FIELD_GALLERY_TYPE ),
-					array( 'masonry' ),
-				)
+				$override_field_settings_callback
 			);
 		}
 
@@ -119,13 +121,14 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 		foreach ( $masonry_repeater_fields as $masonry_repeater_field ) {
 			$acf_field_name = Repeater_Field_Settings::getAcfFieldName( $masonry_repeater_field );
 
+			$override_field_settings_callback_2 = fn( array $field ) => $this->get_conditional_rules(
+				$field,
+				Repeater_Field_Settings::getAcfFieldName( Repeater_Field_Settings::FIELD_GALLERY_TYPE ),
+				array( 'masonry' ),
+			);
 			Acf_Utils::override_field_settings(
 				$acf_field_name,
-				fn( array $field ) => $this->get_conditional_rules(
-					$field,
-					Repeater_Field_Settings::getAcfFieldName( Repeater_Field_Settings::FIELD_GALLERY_TYPE ),
-					array( 'masonry' ),
-				)
+				$override_field_settings_callback_2
 			);
 		}
 
@@ -133,25 +136,26 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 
 		$repeater_tab_name = Item_Settings::getAcfFieldName( Item_Settings::FIELD_REPEATER_FIELDS_TAB );
 
+		$override_field_settings_callback_3 = function ( array $field ) {
+			// using exactly the negative (excludeTypes) filter,
+			// otherwise if there are no such fields the field will be visible.
+			$sub_field_choices = $this->provider_cluster->get_field_choices( false, true );
+			$sub_field_choices = array_keys( $sub_field_choices );
+
+			// if there are no repeater fields, then we add a dummy option to hide the field.
+			if ( array() === $sub_field_choices ) {
+				$sub_field_choices[] = '_not_exising_option';
+			}
+
+			return $this->get_conditional_rules(
+				$field,
+				Field_Settings::getAcfFieldName( Field_Settings::FIELD_KEY ),
+				$sub_field_choices
+			);
+		};
 		Acf_Utils::override_field_settings(
 			$repeater_tab_name,
-			function ( array $field ) {
-				// using exactly the negative (excludeTypes) filter,
-				// otherwise if there are no such fields the field will be visible.
-				$sub_field_choices = $this->provider_cluster->get_field_choices( false, true );
-				$sub_field_choices = array_keys( $sub_field_choices );
-
-				// if there are no repeater fields, then we add a dummy option to hide the field.
-				if ( array() === $sub_field_choices ) {
-					$sub_field_choices[] = '_not_exising_option';
-				}
-
-				return $this->get_conditional_rules(
-					$field,
-					Field_Settings::getAcfFieldName( Field_Settings::FIELD_KEY ),
-					$sub_field_choices
-				);
-			}
+			$override_field_settings_callback_3
 		);
 	}
 

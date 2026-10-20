@@ -33,8 +33,9 @@ final class Cache_Flusher {
 	}
 
 	public function flush_caches(): void {
+		$mapper = fn( $cleaner ) => $cleaner();
 		$clean_results = array_map(
-			fn( $cleaner ) => $cleaner(),
+			$mapper,
 			$this->cache_cleaners
 		);
 

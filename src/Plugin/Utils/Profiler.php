@@ -97,9 +97,10 @@ abstract class Profiler {
 			);
 		}
 
+		$sorter = fn( array $first, array $second ) => $second['time_sec'] <=> $first['time_sec'];
 		uasort(
 			$classes_total_usage,
-			fn( array $first, array $second ) => $second['time_sec'] <=> $first['time_sec']
+			$sorter
 		);
 
 		return $classes_total_usage;

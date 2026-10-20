@@ -217,19 +217,20 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	public function add_meta_box(): void {
 		// for feature-promotion, show the meta-box even there are no set repositories.
 
+		$repositories_callback = function ( $post ): void {
+			if ( null === $post ||
+				'publish' !== $post->post_status ) {
+				echo esc_html( __( 'GitLab repository actions are available after publishing.', 'acf-views' ) );
+
+				return;
+			}
+
+			$this->print_git_lab_repositories_meta_box();
+		};
 		add_meta_box(
 			'acf-views_gitlab_repositories',
 			__( 'GitLab repositories', 'acf-views' ),
-			function ( $post ): void {
-				if ( null === $post ||
-					'publish' !== $post->post_status ) {
-					echo esc_html( __( 'GitLab repository actions are available after publishing.', 'acf-views' ) );
-
-					return;
-				}
-
-				$this->print_git_lab_repositories_meta_box();
-			},
+			$repositories_callback,
 			array(
 				$this->cpt_name,
 			),

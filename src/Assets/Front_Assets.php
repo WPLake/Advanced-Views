@@ -126,11 +126,12 @@ class Front_Assets extends Actor_Base implements Actor {
 			$this->is_custom_interactivity_api_import_map_required = true;
 		}
 
+		$replacer = fn( $matches ) => strtoupper( $matches[1] );
 		// dashes to camelCase.
 		$component_name = $cpt_settings->is_web_component() ?
 			preg_replace_callback(
 				'/-([a-z0-9])/',
-				fn( $matches ) => strtoupper( $matches[1] ),
+				$replacer,
 				$tag_name
 			) :
 			null;
@@ -492,9 +493,10 @@ class Front_Assets extends Actor_Base implements Actor {
 		$names_keys       = array_flip( $names );
 		$patterns_by_name = array_intersect_key( $this->patterns, $names_keys );
 
+		$filter = fn( $pattern ) => $pattern instanceof Template_Pattern;
 		return array_filter(
 			$patterns_by_name,
-			fn( $pattern ) => $pattern instanceof Template_Pattern
+			$filter
 		);
 	}
 

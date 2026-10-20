@@ -24,11 +24,12 @@ final class Migration_2_3_0 extends Version_Migration_Base {
 	}
 
 	public function migrate_previous_version(): void {
+		$init_callback = function (): void {
+			$this->templates_environment->create_templates_dir();
+		};
 		self::add_action(
 			'init',
-			function (): void {
-				$this->templates_environment->create_templates_dir();
-			}
+			$init_callback
 		);
 	}
 }

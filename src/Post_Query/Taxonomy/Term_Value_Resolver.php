@@ -107,8 +107,9 @@ class Term_Value_Resolver implements Query_Context_Container {
 		if ( is_array( $meta_value ) &&
 			key_exists( 0, $meta_value ) &&
 			is_numeric( $meta_value[0] ) ) {
+			$mapper = fn( $item ) => int( $item );
 			return array_map(
-				fn( $item ) => int( $item ),
+				$mapper,
 				$meta_value
 			);
 		}

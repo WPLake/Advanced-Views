@@ -30,21 +30,22 @@ abstract class Report_Base extends Loggable_Actor {
 	 * @param array<string,mixed> $fields
 	 */
 	protected function send_json_request( string $url, array $fields ): void {
+		$get_callback = function () use ( $url, $fields ): void {
+			wp_remote_post(
+				$url,
+				array(
+					'headers'  => array( 'Content-Type' => 'application/json; charset=utf-8' ),
+					'method'   => 'POST',
+					'body'     => (string) wp_json_encode( $fields ),
+					// we don't need the response, so it's non-blocking.
+					'blocking' => false,
+				)
+			);
+		};
 		$send_request = Profiler::get_callback(
 			Profiler::SOURCE_NETWORK,
 			$url,
-			function () use ( $url, $fields ): void {
-				wp_remote_post(
-					$url,
-					array(
-						'headers'  => array( 'Content-Type' => 'application/json; charset=utf-8' ),
-						'method'   => 'POST',
-						'body'     => (string) wp_json_encode( $fields ),
-						// we don't need the response, so it's non-blocking.
-						'blocking' => false,
-					)
-				);
-			}
+			$get_callback
 		);
 
 		call_user_func( $send_request );

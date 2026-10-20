@@ -33,19 +33,20 @@ class Point_Mounter extends Actor_Base implements Actor {
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {
+		$the_content_callback = function ( $content ) {
+			$queried_object = get_queried_object();
+
+			if ( is_string( $content ) &&
+				$queried_object instanceof WP_Post &&
+				$this->is_supported_place() ) {
+				return $this->mount_all( $queried_object, $content );
+			}
+
+			return $content;
+		};
 		self::add_filter(
 			'the_content',
-			function ( $content ) {
-				$queried_object = get_queried_object();
-
-				if ( is_string( $content ) &&
-					$queried_object instanceof WP_Post &&
-					$this->is_supported_place() ) {
-					return $this->mount_all( $queried_object, $content );
-				}
-
-				return $content;
-			}
+			$the_content_callback
 		);
 	}
 

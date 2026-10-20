@@ -112,9 +112,10 @@ final class Selection_Gutenberg_Block extends Actor_Base implements Actor {
 			$common_attrs
 		);
 
+		$filter = fn( string $value ): bool => strlen( $value ) > 0;
 		return array_filter(
 			$attrs,
-			fn( string $value ): bool => strlen( $value ) > 0
+			$filter
 		);
 	}
 }

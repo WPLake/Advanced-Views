@@ -218,19 +218,18 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 
 		$item_var = $token_factory->variable( 'comment_item' );
 
-		$body = $token_factory->html(
-			function () use ( $token_factory, $markup_field_data, $field_id, $item_var ) {
-				$token_factory->formatter()
-							->new_line();
-				$markup_field_data->increment_and_print_tabs();
+		$body_printer = function () use ( $token_factory, $markup_field_data, $field_id, $item_var ) {
+			$token_factory->formatter()
+						->new_line();
+			$markup_field_data->increment_and_print_tabs();
 
-				$this->print_item( $field_id, $item_var->get_name(), $markup_field_data );
+			$this->print_item( $field_id, $item_var->get_name(), $markup_field_data );
 
-				$token_factory->formatter()
-							->new_line();
-				$markup_field_data->decrement_and_print_tabs();
-			}
-		);
+			$token_factory->formatter()
+						->new_line();
+			$markup_field_data->decrement_and_print_tabs();
+		};
+		$body = $token_factory->html( $body_printer );
 
 		$token_factory->formatter()
 						->new_line();
