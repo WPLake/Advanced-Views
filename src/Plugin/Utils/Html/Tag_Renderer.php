@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Utils\Html;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Tag_Renderer {
+final class Tag_Renderer {
 	protected const SELF_CLOSING_TAGS = array(
 		'area',
 		'base',
@@ -34,13 +34,13 @@ abstract class Tag_Renderer {
 		array $attributes = array(),
 		?callable $content_printer = null
 	): void {
-		static::print_opening_tag( $tag, $attributes );
+		self::print_opening_tag( $tag, $attributes );
 
 		if ( is_callable( $content_printer ) ) {
 			$content_printer();
 		}
 
-		if ( ! static::is_self_closing( $tag ) ) {
+		if ( ! self::is_self_closing( $tag ) ) {
 			printf( '</%s>', esc_html( $tag ) );
 		}
 	}
@@ -54,9 +54,7 @@ abstract class Tag_Renderer {
 	 */
 	protected static function print_opening_tag( string $tag, array $attributes ): void {
 		printf( '<%s', esc_html( $tag ) );
-
 		Attribute_Renderer::print_attributes( $attributes );
-
 		echo '>';
 	}
 }
