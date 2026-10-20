@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Comparison_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Conditional_Value_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Function_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Html_Token;
@@ -33,6 +34,10 @@ abstract class Token_Factory_Base implements Token_Factory {
 
 	public function comparison(): Comparison_Token {
 		return new Comparison_Token( $this->printer_class );
+	}
+
+	public function if_branch(): IF_Branch {
+		return new IF_Branch();
 	}
 
 	public function function( string $name ): Function_Token {

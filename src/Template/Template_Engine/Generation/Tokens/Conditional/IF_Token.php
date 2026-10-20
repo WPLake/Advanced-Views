@@ -43,6 +43,24 @@ abstract class IF_Token extends Template_Token_Base {
 		return $this;
 	}
 
+	public function set_if_branch( IF_Branch $branch ): self {
+		$this->if_branch = $branch;
+
+		return $this;
+	}
+
+	public function set_elseif_branch( IF_Branch $branch ): self {
+		$this->elseif_branches[] = $branch;
+
+		return $this;
+	}
+
+	public function set_else_branch( IF_Branch $branch ): self {
+		$this->else_branch = $branch;
+
+		return $this;
+	}
+
 	/**
 	 * @param callable(IF_Branch): mixed $setup
 	 */

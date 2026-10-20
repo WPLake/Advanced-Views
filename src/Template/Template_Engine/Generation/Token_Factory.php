@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Comment_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Comparison_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Conditional_Value_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Function_Token;
@@ -29,6 +30,8 @@ interface Token_Factory {
 	public function variable( string $name ): Variable_Token;
 
 	public function if(): IF_Token;
+
+	public function if_branch(): IF_Branch;
 
 	public function loop(): Loop_Token;
 
