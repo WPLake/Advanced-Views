@@ -12,6 +12,31 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 class Meta_Box_Integration extends Settings_Vendor_Integration {
+	public function add_tab_to_meta_group(): void {
+		$tab_label = $this->get_tab_label();
+		$post_type = $this->get_vendor_post_type();
+
+		$add_tab = function () use ( $tab_label, $post_type ): void {
+			add_meta_box(
+				'advanced_views',
+				$tab_label,
+				array( $this, 'render_meta_box' ),
+				$post_type,
+				'side'
+			);
+		};
+
+		self::add_action( 'add_meta_boxes', $add_tab );
+	}
+
+	public function render_meta_box( WP_Post $wp_post ): void {
+		$this->print_related_acf_views( $wp_post );
+	}
+
+	public function get_vendor_name(): string {
+		return Meta_Box_Data_Vendor::NAME;
+	}
+
 	protected function get_vendor_post_type(): string {
 		return 'meta-box';
 	}
@@ -24,7 +49,9 @@ class Meta_Box_Integration extends Settings_Vendor_Integration {
 			return array();
 		}
 
-		$fields = rwmb_get_registry( 'meta_box' )->get_by( array( 'id' => $wp_post->post_name ) );
+		$registry   = rwmb_get_registry( 'meta_box' );
+		$query_args = array( 'id' => $wp_post->post_name );
+		$fields     = $registry->get_by( $query_args );
 
 		$fields = is_array( $fields ) &&
 					count( $fields ) > 0 ?
@@ -47,28 +74,5 @@ class Meta_Box_Integration extends Settings_Vendor_Integration {
 		$field_id = string( $field, 'id' );
 
 		$field_type = string( $field, 'type' );
-	}
-
-	public function add_tab_to_meta_group(): void {
-		self::add_action(
-			'add_meta_boxes',
-			function (): void {
-				add_meta_box(
-					'advanced_views',
-					$this->get_tab_label(),
-					array( $this, 'render_meta_box' ),
-					$this->get_vendor_post_type(),
-					'side'
-				);
-			}
-		);
-	}
-
-	public function render_meta_box( WP_Post $wp_post ): void {
-		$this->print_related_acf_views( $wp_post );
-	}
-
-	public function get_vendor_name(): string {
-		return Meta_Box_Data_Vendor::NAME;
 	}
 }
