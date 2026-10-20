@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use WP_Post;
 
 class Pods_Integration extends Settings_Vendor_Integration {
@@ -50,6 +50,111 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		$this->pods_data_vendor = $pods_data_vendor;
 	}
 
+	public function add_tab_to_meta_group(): void {
+		$append_related_block = function ( string $output, string $view_file ): string {
+			$setup_position = strpos( $view_file, 'pods/ui/admin/setup-edit.php' );
+
+			if ( ! is_int( $setup_position ) ) {
+				return $output;
+			}
+
+			$id = Query_Arguments::get_string_for_non_action( 'id' );
+
+			if ( false === function_exists( 'pods_api' ) ||
+				0 === strlen( $id ) ) {
+				return $output;
+			}
+
+			$pods_api = pods_api();
+
+			if ( false === is_object( $pods_api ) ||
+				false === method_exists( $pods_api, 'load_pod' ) ) {
+				return $output;
+			}
+
+			$pod_args = array(
+				'id' => $id,
+			);
+			$pod      = $pods_api->load_pod( $pod_args );
+
+			if ( false === is_object( $pod ) ||
+				false === method_exists( $pod, 'get_args' ) ) {
+				return $output;
+			}
+
+			$args     = $pod->get_args();
+			$args     = is_array( $args ) ?
+				$args :
+				array();
+			$pod_name = $this->get_string_arg( 'name', $args );
+
+			$container_attributes = array(
+				'class' => array( 'advanced-views', 'postbox-container' ),
+				'style' => array(
+					'width'  => '70%',
+					'margin' => '100px 0 0',
+				),
+			);
+
+			$tags = array(
+				array(
+					'tag'   => 'div',
+					'attrs' => $container_attributes,
+				),
+				fn() => $this->print_related_postbox( $pod_name, $pod ),
+			);
+
+			$related_block = Tags_Renderer::render_tags( $tags );
+
+			return $output . $related_block;
+		};
+
+		self::add_filter( 'pods_view_output', $append_related_block, 10, 2 );
+	}
+
+	public function add_column_to_list_table(): void {
+		$add_views_column = function ( array $options ): array {
+			$page = Query_Arguments::get_string_for_non_action( 'page' );
+
+			if ( 'pods' === $page ) {
+				$options['fields']           = $this->get_array_arg( 'fields', $options );
+				$options['fields']['manage'] = $this->get_array_arg( 'manage', $options['fields'] );
+				$options['data']             = $this->get_array_arg( 'data', $options );
+
+				$options['fields']['manage']['acf_views'] = array(
+					'label' => __( 'Assigned to View', 'acf-views' ),
+					'width' => '20%',
+					'type'  => 'raw',
+				);
+
+				foreach ( $options['data'] as &$item ) {
+					if ( false === is_array( $item ) ) {
+						continue;
+					}
+
+					// post, page, taxonomy.
+					$name = $this->get_string_arg( 'name', $item );
+
+					$pod_object    = $item['pod_object'] ?? null;
+					$related_views = $this->get_related_acf_views( $name, $pod_object );
+
+					ob_start();
+					$this->print_related_acf_views( null, true, $related_views );
+
+					$item['acf_views'] = ob_get_clean();
+				}
+			}
+
+			return $options;
+		};
+
+		self::add_filter( 'pods_ui_pre_init', $add_views_column );
+	}
+
+	public function get_vendor_name(): string {
+		return Pods_Data_Vendor::NAME;
+	}
+
 	protected function get_vendor_post_type(): string {
 		return '_pods_group';
 	}
@@ -69,11 +174,10 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			return array();
 		}
 
-		$wp_post = pods_api()->load_group(
-			array(
-				'id' => $wp_post->ID,
-			)
+		$group_args = array(
+			'id' => $wp_post->ID,
 		);
+		$wp_post    = $pods_api->load_group( $group_args );
 
 		if ( false === is_object( $wp_post ) ||
 			false === method_exists( $wp_post, 'get_fields' ) ||
@@ -93,9 +197,10 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			array();
 		$pod_name = $this->get_string_arg( 'name', $pod_args );
 
-		$fields = array();
+		$fields     = array();
+		$pod_fields = $wp_post->get_fields();
 
-		foreach ( $wp_post->get_fields() as $field ) {
+		foreach ( $pod_fields as $field ) {
 			if ( false === is_object( $field ) ||
 				false === method_exists( $field, 'get_args' ) ) {
 				continue;
@@ -150,119 +255,62 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		$heading_attributes = array( 'class' => 'advanced-views__heading' );
 		$related_views      = $this->get_related_acf_views( $pod_name, $pod );
 
-		Tag_Renderer::print_tag(
-			'div',
-			$postbox_attributes,
-			function () use ( $heading_attributes, $related_views, $pod ) {
-				Tag_Renderer::print_tag(
-					'h4',
-					$heading_attributes,
-					function () {
-						echo esc_html( __( 'Advanced Views', 'acf-views' ) );
-					}
-				);
+		$print_heading_text = function (): void {
+			$title = __( 'Advanced Views', 'acf-views' );
 
-				$this->print_related_acf_views( null, false, $related_views );
+			echo esc_html( $title );
+		};
 
-				$this->print_add_new_links_for_groups( $pod );
-			}
+		$tags = array(
+			array(
+				'tag'   => 'div',
+				'attrs' => $postbox_attributes,
+			),
+			array(
+				array(
+					array(
+						'tag'   => 'h4',
+						'attrs' => $heading_attributes,
+					),
+					$print_heading_text,
+				),
+				fn() => $this->print_related_acf_views( null, false, $related_views ),
+				fn() => $this->print_add_new_links_for_groups( $pod ),
+			),
 		);
+
+		Tags_Renderer::print_tags( $tags );
 	}
 
 	/**
 	 * @param object $pod
 	 */
 	protected function print_add_new_links_for_groups( $pod ): void {
-		if ( false === method_exists( $pod, 'get_groups' ) ) {
-			return;
-		}
+		if ( method_exists( $pod, 'get_groups' ) ) {
+			$groups = $pod->get_groups();
 
-		$groups = $pod->get_groups();
+			echo '<div style="display: flex;gap:10px;flex-wrap:wrap;margin:20px 0 0;">';
 
-		echo '<div style="display: flex;gap:10px;flex-wrap:wrap;margin:20px 0 0;">';
+			foreach ( $groups as $group ) {
+				if ( false === is_object( $group ) ||
+					false === method_exists( $group, 'get_args' ) ) {
+					continue;
+				}
 
-		foreach ( $groups as $group ) {
-			if ( false === is_object( $group ) ||
-				false === method_exists( $group, 'get_args' ) ) {
-				continue;
+				$group_info = $group->get_args();
+				$group_info = is_array( $group_info ) ?
+					$group_info :
+					array();
+
+				$group_title = $this->get_string_arg( 'label', $group_info );
+				$link_title  = sprintf( ' %s', $group_title );
+				$group_id    = $this->get_int_arg( 'id', $group_info );
+
+				$this->print_add_new_link( $group_id, $link_title );
 			}
 
-			$group_info = $group->get_args();
-			$group_info = is_array( $group_info ) ?
-				$group_info :
-				array();
-
-			$group_title = $this->get_string_arg( 'label', $group_info );
-
-			$this->print_add_new_link(
-				$this->get_int_arg( 'id', $group_info ),
-				' ' . $group_title
-			);
+			echo '</div>';
 		}
-
-		echo '</div>';
-	}
-
-	public function add_tab_to_meta_group(): void {
-		self::add_filter(
-			'pods_view_output',
-			function ( string $output, string $view_file ): string {
-				if ( false === strpos( $view_file, 'pods/ui/admin/setup-edit.php' ) ) {
-					return $output;
-				}
-
-				$id = Query_Arguments::get_string_for_non_action( 'id' );
-
-				if ( false === function_exists( 'pods_api' ) ||
-					'' === $id ) {
-					return $output;
-				}
-
-				$pods_api = pods_api();
-
-				if ( false === is_object( $pods_api ) ||
-					false === method_exists( $pods_api, 'load_pod' ) ) {
-					return $output;
-				}
-
-				$pod = $pods_api->load_pod(
-					array(
-						'id' => $id,
-					)
-				);
-
-				if ( false === is_object( $pod ) ||
-					false === method_exists( $pod, 'get_args' ) ) {
-					return $output;
-				}
-
-				$args     = $pod->get_args();
-				$args     = is_array( $args ) ?
-					$args :
-					array();
-				$pod_name = $this->get_string_arg( 'name', $args );
-
-				ob_start();
-				$container_attributes = array(
-					'class' => array( 'advanced-views', 'postbox-container' ),
-					'style' => array(
-						'width'  => '70%',
-						'margin' => '100px 0 0',
-					),
-				);
-
-				Tag_Renderer::print_tag(
-					'div',
-					$container_attributes,
-					fn() => $this->print_related_postbox( $pod_name, $pod )
-				);
-				$related_block = (string) ob_get_clean();
-
-				return $output . $related_block;
-			},
-			10,
-			2
-		);
 	}
 
 	/**
@@ -295,61 +343,16 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			$group_id  = $this->pods_data_vendor->get_pods_group_id( $pod_name, $group_id );
 			$group_key = $this->pods_data_vendor->get_group_key( $group_id );
 
-			$views = array_merge(
-				$views,
-				$this->get_views_data_storage()->get_all_with_meta_group_in_use( $group_key )
-			);
+			$views_storage = $this->get_views_data_storage();
+			$group_views   = $views_storage->get_all_with_meta_group_in_use( $group_key );
+
+			$views = array_merge( $views, $group_views );
 		}
 
 		// several groups may have the same View, so we need to remove duplicates
 		// it works, as ViewData for the same id has the same instance.
-		return array_values( array_unique( $views, SORT_REGULAR ) );
-	}
+		$unique_views = array_unique( $views, SORT_REGULAR );
 
-	public function add_column_to_list_table(): void {
-		self::add_filter(
-			'pods_ui_pre_init',
-			function ( array $options ): array {
-				$page = Query_Arguments::get_string_for_non_action( 'page' );
-
-				if ( 'pods' !== $page ) {
-					return $options;
-				}
-
-				$options['fields']           = $this->get_array_arg( 'fields', $options );
-				$options['fields']['manage'] = $this->get_array_arg( 'manage', $options['fields'] );
-				$options['data']             = $this->get_array_arg( 'data', $options );
-
-				$options['fields']['manage']['acf_views'] = array(
-					'label' => __( 'Assigned to View', 'acf-views' ),
-					'width' => '20%',
-					'type'  => 'raw',
-				);
-
-				foreach ( $options['data'] as &$item ) {
-					if ( false === is_array( $item ) ) {
-						continue;
-					}
-
-					// post, page, taxonomy.
-					$name = $this->get_string_arg( 'name', $item );
-
-					ob_start();
-					$this->print_related_acf_views(
-						null,
-						true,
-						$this->get_related_acf_views( $name, $item['pod_object'] ?? null )
-					);
-
-					$item['acf_views'] = ob_get_clean();
-				}
-
-				return $options;
-			}
-		);
-	}
-
-	public function get_vendor_name(): string {
-		return Pods_Data_Vendor::NAME;
+		return array_values( $unique_views );
 	}
 }
