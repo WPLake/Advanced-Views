@@ -271,21 +271,15 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			echo '<div style="display: flex;gap:10px;flex-wrap:wrap;margin:20px 0 0;">';
 
 			foreach ( $groups as $group ) {
-				if ( false === is_object( $group ) ||
-					false === method_exists( $group, 'get_args' ) ) {
-					continue;
+				$group_info = self::get_group_args( $group );
+
+				if ( is_array( $group_info ) ) {
+					$group_title = $this->get_string_arg( 'label', $group_info );
+					$link_title  = sprintf( ' %s', $group_title );
+					$group_id    = $this->get_int_arg( 'id', $group_info );
+
+					$this->print_add_new_link( $group_id, $link_title );
 				}
-
-				$group_info = $group->get_args();
-				$group_info = is_array( $group_info ) ?
-					$group_info :
-					array();
-
-				$group_title = $this->get_string_arg( 'label', $group_info );
-				$link_title  = sprintf( ' %s', $group_title );
-				$group_id    = $this->get_int_arg( 'id', $group_info );
-
-				$this->print_add_new_link( $group_id, $link_title );
 			}
 
 			echo '</div>';
@@ -298,41 +292,66 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	 * @return Layout_Settings[]
 	 */
 	protected function get_related_acf_views( string $pod_name, $pod ): array {
-		if ( false === is_object( $pod ) ||
-			false === method_exists( $pod, 'get_groups' ) ) {
-			return array();
-		}
+		if ( is_object( $pod ) && method_exists( $pod, 'get_groups' ) ) {
+			$groups = $pod->get_groups();
+			$views  = array();
 
-		$groups = $pod->get_groups();
+			foreach ( $groups as $group ) {
+				$group_views = $this->get_group_views( $pod_name, $group );
 
-		$views = array();
+				if ( false === is_array( $group_views ) ) {
+					return array();
+				}
 
-		foreach ( $groups as $group ) {
-			if ( false === is_object( $group ) ||
-				false === method_exists( $group, 'get_args' ) ) {
-				return array();
+				$views = array_merge( $views, $group_views );
 			}
 
-			$group_info = $group->get_args();
-			$group_info = is_array( $group_info ) ?
-				$group_info :
-				array();
+			// several groups may have the same View, so we need to remove duplicates
+			// it works, as ViewData for the same id has the same instance.
+			$unique_views = array_unique( $views, SORT_REGULAR );
 
-			$group_id  = $this->get_string_arg( 'name', $group_info );
-			$group_id  = $this->pods_data_vendor->get_pods_group_id( $pod_name, $group_id );
-			$group_key = $this->pods_data_vendor->get_group_key( $group_id );
-
-			$views_storage = $this->get_views_data_storage();
-			$group_views   = $views_storage->get_all_with_meta_group_in_use( $group_key );
-
-			$views = array_merge( $views, $group_views );
+			return array_values( $unique_views );
 		}
 
-		// several groups may have the same View, so we need to remove duplicates
-		// it works, as ViewData for the same id has the same instance.
-		$unique_views = array_unique( $views, SORT_REGULAR );
+		return array();
+	}
 
-		return array_values( $unique_views );
+	/**
+	 * @param mixed $group
+	 *
+	 * @return ?Layout_Settings[]
+	 */
+	protected function get_group_views( string $pod_name, $group ): ?array {
+		$group_info = self::get_group_args( $group );
+
+		if ( is_array( $group_info ) ) {
+			$group_name = $this->get_string_arg( 'name', $group_info );
+			$group_id   = $this->pods_data_vendor->get_pods_group_id( $pod_name, $group_name );
+			$group_key  = $this->pods_data_vendor->get_group_key( $group_id );
+
+			$views_storage = $this->get_views_data_storage();
+
+			return $views_storage->get_all_with_meta_group_in_use( $group_key );
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param mixed $group
+	 *
+	 * @return ?array<string,mixed>
+	 */
+	protected static function get_group_args( $group ): ?array {
+		if ( is_object( $group ) && method_exists( $group, 'get_args' ) ) {
+			$group_args = $group->get_args();
+
+			return is_array( $group_args ) ?
+				$group_args :
+				array();
+		}
+
+		return null;
 	}
 
 	protected static function get_pod_by_file( string $view_file ): ?object {
