@@ -54,38 +54,18 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		$append_related_block = function ( string $output, string $view_file ): string {
 			$setup_position = strpos( $view_file, 'pods/ui/admin/setup-edit.php' );
 
-			if ( ! is_int( $setup_position ) ) {
-				return $output;
+			if ( is_int( $setup_position ) ) {
+				$id  = Query_Arguments::get_string_for_non_action( 'id' );
+				$pod = self::load_pod( $id );
+
+				if ( is_object( $pod ) ) {
+					$related_block = $this->render_postbox( $pod );
+
+					return $output . $related_block;
+				}
 			}
 
-			$id  = Query_Arguments::get_string_for_non_action( 'id' );
-			$pod = $this->load_pod( $id );
-
-			if ( ! is_object( $pod ) ) {
-				return $output;
-			}
-
-			$pod_name = $this->get_pod_name( $pod );
-
-			$container_attributes = array(
-				'class' => array( 'advanced-views', 'postbox-container' ),
-				'style' => array(
-					'width'  => '70%',
-					'margin' => '100px 0 0',
-				),
-			);
-
-			$tags = array(
-				array(
-					'tag'   => 'div',
-					'attrs' => $container_attributes,
-				),
-				fn() => $this->print_related_postbox( $pod_name, $pod ),
-			);
-
-			$related_block = Tags_Renderer::render_tags( $tags );
-
-			return $output . $related_block;
+			return $output;
 		};
 
 		self::add_filter( 'pods_view_output', $append_related_block, 10, 2 );
@@ -199,29 +179,6 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		return $fields;
 	}
 
-	protected function load_pod( string $id ): ?object {
-		if ( false === function_exists( 'pods_api' ) ||
-			0 === strlen( $id ) ) {
-			return null;
-		}
-
-		$pods_api = pods_api();
-
-		if ( false === is_object( $pods_api ) ||
-			false === method_exists( $pods_api, 'load_pod' ) ) {
-			return null;
-		}
-
-		$pod_args = array(
-			'id' => $id,
-		);
-		$pod      = $pods_api->load_pod( $pod_args );
-
-		return is_object( $pod ) && method_exists( $pod, 'get_args' ) ?
-			$pod :
-			null;
-	}
-
 	protected function get_pod_name( object $pod ): string {
 		$args = method_exists( $pod, 'get_args' ) ?
 			$pod->get_args() :
@@ -255,6 +212,28 @@ class Pods_Integration extends Settings_Vendor_Integration {
 
 		$field_type = $this->get_string_arg( 'type', $field );
 		$field_id   = $this->pods_data_vendor->get_pods_field_id( $pod_type, $field_id );
+	}
+
+	protected function render_postbox( object $pod ): string {
+		$pod_name = $this->get_pod_name( $pod );
+
+		$container_attributes = array(
+			'class' => array( 'advanced-views', 'postbox-container' ),
+			'style' => array(
+				'width'  => '70%',
+				'margin' => '100px 0 0',
+			),
+		);
+
+		$tags = array(
+			array(
+				'tag'   => 'div',
+				'attrs' => $container_attributes,
+			),
+			fn() => $this->print_related_postbox( $pod_name, $pod ),
+		);
+
+		return Tags_Renderer::render_tags( $tags );
 	}
 
 	/**
@@ -367,5 +346,28 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		$unique_views = array_unique( $views, SORT_REGULAR );
 
 		return array_values( $unique_views );
+	}
+
+	protected static function load_pod( string $id ): ?object {
+		if ( false === function_exists( 'pods_api' ) ||
+			0 === strlen( $id ) ) {
+			return null;
+		}
+
+		$pods_api = pods_api();
+
+		if ( false === is_object( $pods_api ) ||
+			false === method_exists( $pods_api, 'load_pod' ) ) {
+			return null;
+		}
+
+		$pod_args = array(
+			'id' => $id,
+		);
+		$pod      = $pods_api->load_pod( $pod_args );
+
+		return is_object( $pod ) && method_exists( $pod, 'get_args' ) ?
+			$pod :
+			null;
 	}
 }
