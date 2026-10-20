@@ -205,15 +205,14 @@ class Map_Field extends Map_Field_Base {
 	}
 
 	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
-		$token_factory = $markup_field_data->get_token_factory();
-		$field_meta    = $markup_field_data->get_field_meta();
-		$field_data    = $markup_field_data->get_field_data();
+		$factory    = $markup_field_data->get_token_factory();
+		$field_meta = $markup_field_data->get_field_meta();
+		$field_data = $markup_field_data->get_field_data();
 
 		if ( 'open_street_map' === $field_meta->get_type() ) {
-			$var = $token_factory->variable( $field_id )
-								->add_item_path( self::MAP );
-
-			$var->raw_display();
+			$factory->variable( $field_id )
+					->add_item_path( self::MAP )
+					->raw_display();
 
 			return;
 		}
@@ -230,16 +229,16 @@ class Map_Field extends Map_Field_Base {
 				$this->get_field_class( 'map', $markup_field_data )
 			),
 		);
-		foreach ( $attributes_map as $attribute => $key ) {
-			$var = $token_factory->variable( $field_id )
+		foreach ( $attributes_map as $attribute_name => $key ) {
+			$attribute = $factory->variable( $field_id )
 								->add_item_path( $key );
 
-			$token_factory->formatter()
-			->attribute( $attribute, $var );
+			$factory->formatter()
+				->attribute( $attribute_name, $attribute );
 		}
 		echo '>';
 
-		$token_factory->formatter()
+		$factory->formatter()
 			->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
@@ -251,7 +250,7 @@ class Map_Field extends Map_Field_Base {
 			$this->print_inner_item( $field_id, $field_id, $markup_field_data );
 		}
 
-		$token_factory->formatter()
+		$factory->formatter()
 			->new_line();
 		$markup_field_data->decrement_and_print_tabs();
 

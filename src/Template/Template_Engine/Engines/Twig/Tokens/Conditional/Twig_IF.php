@@ -28,6 +28,14 @@ final class Twig_IF extends IF_Token {
 		$this->print_branch_close_tag();
 	}
 
+	public function display(): void {
+		$this->print_token();
+	}
+
+	public function raw_display(): void {
+		$this->print_token();
+	}
+
 	protected function print_branch( string $type, IF_Branch $branch ): void {
 		$this->print_branch_open_tag( $type );
 

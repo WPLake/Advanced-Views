@@ -34,4 +34,12 @@ final class Blade_Loop extends Loop_Token {
 
 		echo '@endforeach';
 	}
+
+	public function display(): void {
+		$this->print_token();
+	}
+
+	public function raw_display(): void {
+		$this->print_token();
+	}
 }

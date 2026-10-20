@@ -41,6 +41,14 @@ class Function_Token extends Template_Token_Base {
 		return $this;
 	}
 
+	public function display(): void {
+		$this->printer_class::display( $this );
+	}
+
+	public function raw_display(): void {
+		$this->printer_class::raw_display( $this );
+	}
+
 	protected function print_arguments(): void {
 		$is_first = true;
 

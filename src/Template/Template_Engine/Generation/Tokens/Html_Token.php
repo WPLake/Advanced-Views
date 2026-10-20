@@ -27,4 +27,12 @@ class Html_Token extends Template_Token_Base {
 	public function print_token(): void {
 		( $this->printer )();
 	}
+
+	public function display(): void {
+		$this->printer_class::display( $this );
+	}
+
+	public function raw_display(): void {
+		$this->printer_class::raw_display( $this );
+	}
 }

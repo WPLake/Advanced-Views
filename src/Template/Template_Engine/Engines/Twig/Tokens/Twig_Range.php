@@ -21,4 +21,12 @@ final class Twig_Range extends Range_Token {
 			$this->to->print_token();
 		}
 	}
+
+	public function display(): void {
+		$this->print_token();
+	}
+
+	public function raw_display(): void {
+		$this->print_token();
+	}
 }

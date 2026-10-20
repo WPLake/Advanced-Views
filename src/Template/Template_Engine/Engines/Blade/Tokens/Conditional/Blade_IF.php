@@ -27,6 +27,14 @@ final class Blade_IF extends IF_Token {
 		$this->print_branch_token( 'endif' );
 	}
 
+	public function display(): void {
+		$this->print_token();
+	}
+
+	public function raw_display(): void {
+		$this->print_token();
+	}
+
 	protected function print_branch( string $type, IF_Branch $branch ): void {
 		$this->print_branch_token( $type );
 

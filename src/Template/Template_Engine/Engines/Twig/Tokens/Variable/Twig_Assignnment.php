@@ -25,4 +25,12 @@ final class Twig_Assignnment extends Assignment_Token {
 
 		echo ' %}';
 	}
+
+	public function display(): void {
+		$this->print_token();
+	}
+
+	public function raw_display(): void {
+		$this->print_token();
+	}
 }

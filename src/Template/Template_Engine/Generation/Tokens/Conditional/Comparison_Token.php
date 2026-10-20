@@ -70,4 +70,12 @@ class Comparison_Token extends Template_Token_Base {
 			$this->right->print_token();
 		}
 	}
+
+	public function display(): void {
+		$this->printer_class::display( $this );
+	}
+
+	public function raw_display(): void {
+		$this->printer_class::raw_display( $this );
+	}
 }

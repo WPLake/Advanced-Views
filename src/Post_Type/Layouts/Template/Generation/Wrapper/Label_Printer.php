@@ -48,17 +48,17 @@ final class Label_Printer {
 		return join( ' ', $classes );
 	}
 
-	protected static function print_variable( Token_Factory $token_factory, int &$tabs_number, string $field_id ): void {
-		$token_factory->formatter()
-			->new_line()
-			->tab( ++$tabs_number );
+	protected static function print_variable( Token_Factory $factory, int &$tabs_number, string $field_id ): void {
+		$factory->formatter()
+				->new_line()
+				->tab( ++$tabs_number );
 
-		$token_factory->variable( $field_id )
-							->add_item_path( Markup_Field_Base::LABEL )
-							->display();
+		$factory->variable( $field_id )
+				->add_item_path( Markup_Field_Base::LABEL )
+				->display();
 
-		$token_factory->formatter()
-						->new_line()
-						->tab( --$tabs_number );
+		$factory->formatter()
+				->new_line()
+				->tab( --$tabs_number );
 	}
 }

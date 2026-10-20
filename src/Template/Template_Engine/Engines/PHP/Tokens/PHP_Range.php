@@ -25,4 +25,12 @@ final class PHP_Range extends Range_Token {
 
 		echo ')';
 	}
+
+	public function display(): void {
+		$this->print_token();
+	}
+
+	public function raw_display(): void {
+		$this->print_token();
+	}
 }

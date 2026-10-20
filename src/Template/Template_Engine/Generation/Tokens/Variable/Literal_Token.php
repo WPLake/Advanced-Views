@@ -34,6 +34,14 @@ abstract class Literal_Token extends Template_Token_Base {
 		$this->print_literally( $this->value );
 	}
 
+	public function display(): void {
+		$this->printer_class::display( $this );
+	}
+
+	public function raw_display(): void {
+		$this->printer_class::raw_display( $this );
+	}
+
 	/**
 	 * @param mixed $value
 	 */

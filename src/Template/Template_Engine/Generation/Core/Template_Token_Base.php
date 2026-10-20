@@ -18,12 +18,4 @@ abstract class Template_Token_Base implements Template_Token {
 	public function __construct( string $printer_class ) {
 		$this->printer_class = $printer_class;
 	}
-
-	public function display(): void {
-		$this->printer_class::display( $this );
-	}
-
-	public function raw_display(): void {
-		$this->printer_class::raw_display( $this );
-	}
 }

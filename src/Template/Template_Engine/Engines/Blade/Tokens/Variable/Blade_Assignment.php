@@ -25,4 +25,12 @@ final class Blade_Assignment extends Assignment_Token {
 
 		echo ' @endphp';
 	}
+
+	public function display(): void {
+		$this->print_token();
+	}
+
+	public function raw_display(): void {
+		$this->print_token();
+	}
 }

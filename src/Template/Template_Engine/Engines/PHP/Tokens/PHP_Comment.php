@@ -15,4 +15,12 @@ final class PHP_Comment extends Comment_Token {
 			esc_html( $this->content )
 		);
 	}
+
+	public function display(): void {
+		$this->print_token();
+	}
+
+	public function raw_display(): void {
+		$this->print_token();
+	}
 }

@@ -49,4 +49,12 @@ class Conditional_Value_Token extends Template_Token_Base {
 			$this->decline_value->print_token();
 		}
 	}
+
+	public function display(): void {
+		$this->printer_class::display( $this );
+	}
+
+	public function raw_display(): void {
+		$this->printer_class::raw_display( $this );
+	}
 }
