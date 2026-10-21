@@ -15,29 +15,23 @@ defined( 'ABSPATH' ) || exit;
  * @phpstan-import-type Tag_Chain from Tags_Renderer
  */
 final class Import_Printer {
-	private Html_Printer $html;
-
-	public function __construct( Html_Printer $html ) {
-		$this->html = $html;
-	}
-
-	public function print_dashboard_import(
+	public static function print_dashboard_import(
 		bool $is_has_demo_objects,
 		string $form_nonce,
 		bool $is_with_form_message,
 		Demo_Importer $demo_import
 	): void {
 		$result_block = $is_with_form_message ?
-			$this->import_result_block_tags( $is_has_demo_objects, $demo_import ) :
+			self::import_result_block_tags( $is_has_demo_objects, $demo_import ) :
 			array();
 		$introduction = $is_has_demo_objects ?
 			array() :
-			$this->import_introduction_tags();
+			self::import_introduction_tags();
 		$blocks       = array(
 			$result_block,
 			$introduction,
 		);
-		$form_tags    = $this->html->dashboard_form_tags( 'import', $form_nonce, $blocks );
+		$form_tags    = Html_Printer::dashboard_form_tags( 'import', $form_nonce, $blocks );
 
 		Tags_Renderer::print_tags( $form_tags );
 	}
@@ -45,27 +39,34 @@ final class Import_Printer {
 	/**
 	 * @return Tag_Chain
 	 */
-	protected function import_result_block_tags( bool $is_has_demo_objects, Demo_Importer $demo_import ): array {
+	protected static function import_result_block_tags( bool $is_has_demo_objects, Demo_Importer $demo_import ): array {
 		$button_attrs  = array(
 			'class' => 'button button-primary button-large av-dashboard__button av-dashboard__button--red',
 			'name'  => '_delete',
 			'value' => 'delete',
 		);
 		$button_label  = __( 'Delete imported objects', 'acf-views' );
+		$button_tag    = array(
+			'tag'   => 'button',
+			'attrs' => $button_attrs,
+		);
 		$delete_button = $is_has_demo_objects ?
 			array(
-				$this->html->tag( 'br' ),
-				$this->html->tag( 'br' ),
-				array( $this->html->tag( 'button', $button_attrs ), $button_label ),
+				array( 'tag' => 'br' ),
+				array( 'tag' => 'br' ),
+				array( $button_tag, $button_label ),
 			) :
 			array();
 
 		$block_attrs   = array( 'class' => 'av-introduction av-dashboard__block av-dashboard__block--medium' );
-		$result_tags   = $this->import_result_tags( $demo_import );
+		$result_tags   = self::import_result_tags( $demo_import );
 		$block_members = array_merge( $result_tags, $delete_button );
 
 		return array(
-			$this->html->tag( 'div', $block_attrs ),
+			array(
+				'tag'   => 'div',
+				'attrs' => $block_attrs,
+			),
 			$block_members,
 		);
 	}
@@ -73,13 +74,13 @@ final class Import_Printer {
 	/**
 	 * @return Tag_Group
 	 */
-	protected function import_result_tags( Demo_Importer $demo_import ): array {
+	protected static function import_result_tags( Demo_Importer $demo_import ): array {
 		$is_has_items = $demo_import->is_has_data() && ! $demo_import->is_has_error();
 		$status       = $demo_import->is_processed() ?
-			$this->import_status_tags( $demo_import ) :
+			self::import_status_tags( $demo_import ) :
 			array();
 		$items        = $is_has_items ?
-			$this->imported_items_tags( $demo_import ) :
+			self::imported_items_tags( $demo_import ) :
 			array();
 
 		return array_merge( $status, $items );
@@ -88,22 +89,22 @@ final class Import_Printer {
 	/**
 	 * @return Tag_Group
 	 */
-	protected function import_status_tags( Demo_Importer $demo_import ): array {
+	protected static function import_status_tags( Demo_Importer $demo_import ): array {
 		if ( ! $demo_import->is_has_error() ) {
 			$message = $demo_import->is_import_request() ?
 				__( 'Import was successful. You’re all set!', 'acf-views' ) :
 				__( 'All demo objects have been deleted.', 'acf-views' );
 
-			return array( $this->html->title_tags( $message ) );
+			return array( Html_Printer::title_tags( $message ) );
 		}
 
 		$failed_title = __( 'Request is failed.', 'acf-views' );
 		$error        = $demo_import->get_error();
 
 		return array(
-			$this->html->title_tags( $failed_title ),
-			$this->html->tag( 'br' ),
-			$this->html->tag( 'br' ),
+			Html_Printer::title_tags( $failed_title ),
+			array( 'tag' => 'br' ),
+			array( 'tag' => 'br' ),
 			$error,
 		);
 	}
@@ -111,7 +112,7 @@ final class Import_Printer {
 	/**
 	 * @return Tag_Group
 	 */
-	protected function imported_items_tags( Demo_Importer $demo_import ): array {
+	protected static function imported_items_tags( Demo_Importer $demo_import ): array {
 		$same_page_title = __( "Display page's ACF fields on the same page", 'acf-views' );
 		$single_title    = __( 'Display a specific post, page or CPT item with its fields', 'acf-views' );
 		$filters_title   = array(
@@ -139,22 +140,22 @@ final class Import_Printer {
 		$phones_article_link  = $demo_import->get_phones_article_link();
 
 		$heading = array(
-			$this->html->title_tags( $imported_title ),
-			$this->bold_paragraph_tags( array( $same_page_title ) ),
+			Html_Printer::title_tags( $imported_title ),
+			self::bold_paragraph_tags( array( $same_page_title ) ),
 		);
 
 		return array_merge(
 			$heading,
-			$this->spaced_link_tags( $samsung_link, $samsung_label ),
-			$this->spaced_link_tags( $nokia_link, $nokia_label ),
-			$this->spaced_link_tags( $xiaomi_link, $xiaomi_label ),
-			$this->spaced_link_tags( $group_link, $group_label ),
-			$this->spaced_link_tags( $view_link, $view_label ),
-			array( $this->bold_paragraph_tags( array( $single_title ) ) ),
-			$this->spaced_link_tags( $samsung_article_link, $samsung_article ),
-			array( $this->bold_paragraph_tags( $filters_title ) ),
-			$this->spaced_link_tags( $phones_card_link, $phones_card_label ),
-			$this->spaced_link_tags( $phones_article_link, $phones_article_name )
+			self::spaced_link_tags( $samsung_link, $samsung_label ),
+			self::spaced_link_tags( $nokia_link, $nokia_label ),
+			self::spaced_link_tags( $xiaomi_link, $xiaomi_label ),
+			self::spaced_link_tags( $group_link, $group_label ),
+			self::spaced_link_tags( $view_link, $view_label ),
+			array( self::bold_paragraph_tags( array( $single_title ) ) ),
+			self::spaced_link_tags( $samsung_article_link, $samsung_article ),
+			array( self::bold_paragraph_tags( $filters_title ) ),
+			self::spaced_link_tags( $phones_card_link, $phones_card_label ),
+			self::spaced_link_tags( $phones_article_link, $phones_article_name )
 		);
 	}
 
@@ -163,37 +164,37 @@ final class Import_Printer {
 	 *
 	 * @return Tag_Chain
 	 */
-	protected function bold_paragraph_tags( array $lines ): array {
+	protected static function bold_paragraph_tags( array $lines ): array {
 		$line_tags = array();
 
 		foreach ( $lines as $index => $line ) {
 			if ( $index > 0 ) {
-				$line_tags[] = $this->html->tag( 'br' );
+				$line_tags[] = array( 'tag' => 'br' );
 			}
 
 			$line_tags[] = $line;
 		}
 
-		return array( $this->html->tag( 'p' ), $this->html->tag( 'b' ), $line_tags );
+		return array( array( 'tag' => 'p' ), array( 'tag' => 'b' ), $line_tags );
 	}
 
 	/**
 	 * @return Tag_Group
 	 */
-	protected function spaced_link_tags( string $url, string $label ): array {
-		$link = $this->html->link_tags( $url, $label );
+	protected static function spaced_link_tags( string $url, string $label ): array {
+		$link = Html_Printer::link_tags( $url, $label );
 
 		return array(
 			$link,
-			$this->html->tag( 'br' ),
-			$this->html->tag( 'br' ),
+			array( 'tag' => 'br' ),
+			array( 'tag' => 'br' ),
 		);
 	}
 
 	/**
 	 * @return Tag_Chain
 	 */
-	protected function import_introduction_tags(): array {
+	protected static function import_introduction_tags(): array {
 		$description_attrs = array( 'class' => 'av-introduction__description' );
 		$block_attrs       = array( 'class' => 'av-introduction av-dashboard__block' );
 		$import_attrs      = array(
@@ -204,20 +205,26 @@ final class Import_Printer {
 
 		$intro_title   = __( 'Import Demo to Get Started in Seconds', 'acf-views' );
 		$import_label  = __( 'Import Demo Now', 'acf-views' );
-		$title_tags    = $this->html->title_tags( $intro_title );
+		$title_tags    = Html_Printer::title_tags( $intro_title );
 		$import_button = array(
-			$this->html->tag( 'button', $import_attrs ),
+			array(
+				'tag'   => 'button',
+				'attrs' => $import_attrs,
+			),
 			$import_label,
 		);
 
 		$description = array(
-			$this->html->tag( 'p', $description_attrs ),
+			array(
+				'tag'   => 'p',
+				'attrs' => $description_attrs,
+			),
 			array(
 				__(
 					"Whether you're new to Advanced Views or just want a quick way to set up the basics, this demo import will automatically create a working example for you.",
 					'acf-views'
 				),
-				$this->html->tag( 'br' ),
+				array( 'tag' => 'br' ),
 				__( "It's perfect for exploring how Layouts, Post Selections, and ACF fields work together.", 'acf-views' ),
 			),
 		);
@@ -228,11 +235,14 @@ final class Import_Printer {
 		);
 		$importing_text        = join( ' ', $importing_parts );
 		$importing_description = array(
-			$this->html->tag( 'p', $description_attrs ),
+			array(
+				'tag'   => 'p',
+				'attrs' => $description_attrs,
+			),
 			$importing_text,
 		);
 
-		$same_page_steps = $this->ordered_list_tags(
+		$same_page_steps = self::ordered_list_tags(
 			array(
 				__( "Creates 'draft' pages for 'Samsung Galaxy A53', 'Nokia X20' and 'Xiaomi 12T'.", 'acf-views' ),
 				__( 'Creates an ACF Field Group called "Phone" assigned to those pages.', 'acf-views' ),
@@ -240,13 +250,13 @@ final class Import_Printer {
 				__( 'Populates each page’s ACF fields with sample text and adds the Layout shortcode to the page content.', 'acf-views' ),
 			)
 		);
-		$single_steps    = $this->ordered_list_tags(
+		$single_steps    = self::ordered_list_tags(
 			array(
 				__( 'Creates a "draft" page called "Article about Samsung"', 'acf-views' ),
 				__( 'Adds a Layout shortcode to the page content with "object-id" parameter pointing to "Samsung Galaxy A53".', 'acf-views' ),
 			)
 		);
-		$selection_steps = $this->ordered_list_tags(
+		$selection_steps = self::ordered_list_tags(
 			array(
 				__( 'Creates a Post Selection called "List of Phones" using the "Phone" Layout and filtering for the phone pages.', 'acf-views' ),
 				__( "Create a 'draft' page called 'Most popular phones in 2022' and adds the Post Selection shortcode to the page content.", 'acf-views' ),
@@ -262,26 +272,29 @@ final class Import_Printer {
 		$delete_hint      = __( 'A Delete Demo button will appear if you’d like to remove the demo content later.', 'acf-views' );
 
 		return array(
-			$this->html->tag( 'div', $block_attrs ),
+			array(
+				'tag'   => 'div',
+				'attrs' => $block_attrs,
+			),
 			array(
 				$title_tags,
 				$description,
-				$this->html->tag( 'hr' ),
-				$this->bold_paragraph_tags( array( $does_title ) ),
-				$this->bold_paragraph_tags( array( $same_page_title ) ),
+				array( 'tag' => 'hr' ),
+				self::bold_paragraph_tags( array( $does_title ) ),
+				self::bold_paragraph_tags( array( $same_page_title ) ),
 				$same_page_steps,
-				$this->bold_paragraph_tags( array( $single_title ) ),
+				self::bold_paragraph_tags( array( $single_title ) ),
 				$single_steps,
-				$this->bold_paragraph_tags( array( $selection_title ) ),
+				self::bold_paragraph_tags( array( $selection_title ) ),
 				$selection_steps,
-				$this->html->tag( 'hr' ),
-				$this->bold_paragraph_tags( array( $importing_title ) ),
+				array( 'tag' => 'hr' ),
+				self::bold_paragraph_tags( array( $importing_title ) ),
 				$importing_description,
-				$this->bold_paragraph_tags( array( $after_title ) ),
-				array( $this->html->tag( 'p' ), $delete_hint ),
-				$this->html->tag( 'hr' ),
-				$this->html->tag( 'br' ),
-				$this->html->tag( 'br' ),
+				self::bold_paragraph_tags( array( $after_title ) ),
+				array( array( 'tag' => 'p' ), $delete_hint ),
+				array( 'tag' => 'hr' ),
+				array( 'tag' => 'br' ),
+				array( 'tag' => 'br' ),
 				$import_button,
 			),
 		);
@@ -292,15 +305,18 @@ final class Import_Printer {
 	 *
 	 * @return Tag_Chain
 	 */
-	protected function ordered_list_tags( array $items ): array {
+	protected static function ordered_list_tags( array $items ): array {
 		$list_attrs = array( 'class' => 'av-introduction__description av-introduction__ol' );
 		$item_tags  = array_map(
-			fn( string $item ) => array( $this->html->tag( 'li' ), $item ),
+			fn( string $item ) => array( array( 'tag' => 'li' ), $item ),
 			$items
 		);
 
 		return array(
-			$this->html->tag( 'ol', $list_attrs ),
+			array(
+				'tag'   => 'ol',
+				'attrs' => $list_attrs,
+			),
 			$item_tags,
 		);
 	}

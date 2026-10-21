@@ -35,8 +35,6 @@ class Admin_Pages extends Actor_Base implements Actor {
 
 	private Plugin $plugin;
 	private Plugin_Meta $plugin_meta;
-	private Toolbar_Printer $toolbar_printer;
-	private Import_Printer $import_printer;
 	private Demo_Importer $demo_import;
 	/**
 	 * @var Plugin_Cpt[]
@@ -49,15 +47,11 @@ class Admin_Pages extends Actor_Base implements Actor {
 	public function __construct(
 		Plugin $plugin,
 		Plugin_Meta $plugin_meta,
-		Toolbar_Printer $toolbar_printer,
-		Import_Printer $import_printer,
 		Demo_Importer $demo_import,
 		array $plugin_cpts
 	) {
 		$this->plugin      = $plugin;
 		$this->plugin_meta = $plugin_meta;
-		$this->toolbar_printer = $toolbar_printer;
-		$this->import_printer  = $import_printer;
 		$this->demo_import = $demo_import;
 		$this->plugin_cpts = $plugin_cpts;
 	}
@@ -167,7 +161,10 @@ class Admin_Pages extends Actor_Base implements Actor {
 			break;
 		}
 
-		$this->toolbar_printer->print_dashboard_header( $this->plugin::get_name(), $this->plugin_meta->get_version(), $tabs );
+		$name    = $this->plugin::get_name();
+		$version = $this->plugin_meta->get_version();
+
+		Toolbar_Printer::print_dashboard_header( $name, $version, $tabs );
 	}
 
 	public function get_import_page(): void {
@@ -189,7 +186,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 
 		$form_nonce = wp_create_nonce( 'av-demo-import' );
 
-		$this->import_printer->print_dashboard_import(
+		Import_Printer::print_dashboard_import(
 			$is_with_delete_button,
 			$form_nonce,
 			$is_with_form_message,

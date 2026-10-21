@@ -17,14 +17,19 @@ final class Html_Printer {
 	/**
 	 * @return Tag_Chain
 	 */
-	public function link_tags( string $url, string $label ): array {
+	public static function link_tags( string $url, string $label ): array {
 		$link_attrs = array(
 			'target' => '_blank',
 			'href'   => esc_url( $url ),
 		);
 
+		$link_tag = array(
+			'tag'   => 'a',
+			'attrs' => $link_attrs,
+		);
+
 		return array(
-			$this->tag( 'a', $link_attrs ),
+			$link_tag,
 			$label,
 		);
 	}
@@ -34,7 +39,7 @@ final class Html_Printer {
 	 *
 	 * @return Tag_Chain
 	 */
-	public function dashboard_form_tags( string $page, string $form_nonce, array $blocks ): array {
+	public static function dashboard_form_tags( string $page, string $form_nonce, array $blocks ): array {
 		$form_attrs = array(
 			'action' => '',
 			'method' => 'post',
@@ -42,15 +47,24 @@ final class Html_Printer {
 		);
 		$main_attrs = array( 'class' => 'av-dashboard__main' );
 
+		$form_tag = array(
+			'tag'   => 'form',
+			'attrs' => $form_attrs,
+		);
+		$main_tag = array(
+			'tag'   => 'div',
+			'attrs' => $main_attrs,
+		);
+
+		$page_input  = self::hidden_input_tags( '_av-page', $page );
+		$nonce_input = self::hidden_input_tags( '_wpnonce', $form_nonce );
+
 		return array(
-			$this->tag( 'form', $form_attrs ),
+			$form_tag,
 			array(
-				$this->hidden_input_tags( '_av-page', $page ),
-				$this->hidden_input_tags( '_wpnonce', $form_nonce ),
-				array(
-					$this->tag( 'div', $main_attrs ),
-					$blocks,
-				),
+				$page_input,
+				$nonce_input,
+				array( $main_tag, $blocks ),
 			),
 		);
 	}
@@ -58,7 +72,7 @@ final class Html_Printer {
 	/**
 	 * @return Tag_Chain
 	 */
-	public function hidden_input_tags( string $name, string $value ): array {
+	public static function hidden_input_tags( string $name, string $value ): array {
 		return array(
 			array(
 				'tag'   => 'input',
@@ -72,25 +86,18 @@ final class Html_Printer {
 	}
 
 	/**
-	 * @param array<string,mixed> $attrs
-	 *
-	 * @return Tag
-	 */
-	public function tag( string $tag, array $attrs = array() ): array {
-		return array(
-			'tag'   => $tag,
-			'attrs' => $attrs,
-		);
-	}
-
-	/**
 	 * @return Tag_Chain
 	 */
-	public function title_tags( string $title ): array {
+	public static function title_tags( string $title ): array {
 		$title_attrs = array( 'class' => 'av-introduction__title' );
 
+		$title_tag = array(
+			'tag'   => 'p',
+			'attrs' => $title_attrs,
+		);
+
 		return array(
-			$this->tag( 'p', $title_attrs ),
+			$title_tag,
 			$title,
 		);
 	}

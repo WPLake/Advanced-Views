@@ -16,17 +16,11 @@ defined( 'ABSPATH' ) || exit;
  * @phpstan-import-type Tag_Chain from Tags_Renderer
  */
 final class Toolbar_Printer {
-	private Html_Printer $html;
-
-	public function __construct( Html_Printer $html ) {
-		$this->html = $html;
-	}
-
 	/**
 	 * @param array<int,array<string,mixed>> $tabs
 	 */
-	public function print_dashboard_header( string $name, string $version, array $tabs ): void {
-		$toolbar_tags = $this->toolbar_tags( $name, $version, $tabs );
+	public static function print_dashboard_header( string $name, string $version, array $tabs ): void {
+		$toolbar_tags = self::toolbar_tags( $name, $version, $tabs );
 
 		Tags_Renderer::print_tags( $toolbar_tags );
 	}
@@ -36,27 +30,43 @@ final class Toolbar_Printer {
 	 *
 	 * @return Tag_Chain
 	 */
-	protected function toolbar_tags( string $name, string $version, array $tabs ): array {
+	protected static function toolbar_tags( string $name, string $version, array $tabs ): array {
 		$title_attrs   = array( 'class' => 'av-toolbar__title' );
 		$icon_attrs    = array( 'class' => 'av-toolbar__icon dashicons dashicons-layout' );
 		$version_attrs = array( 'class' => 'av-toolbar__title-version' );
 		$toolbar_attrs = array( 'class' => 'av-toolbar' );
 		$version_label = sprintf( 'v.%s', $version );
 
+		$title_tag   = array(
+			'tag'   => 'h2',
+			'attrs' => $title_attrs,
+		);
+		$icon_tag    = array(
+			'tag'   => 'i',
+			'attrs' => $icon_attrs,
+		);
+		$version_tag = array(
+			'tag'   => 'span',
+			'attrs' => $version_attrs,
+		);
+
 		$title = array(
-			$this->html->tag( 'h2', $title_attrs ),
+			$title_tag,
 			array(
-				array( $this->html->tag( 'i', $icon_attrs ) ),
-				array( $this->html->tag( 'span' ), $name ),
-				array( $this->html->tag( 'span', $version_attrs ), $version_label ),
+				array( $icon_tag ),
+				array( array( 'tag' => 'span' ), $name ),
+				array( $version_tag, $version_label ),
 			),
 		);
 
-		$left_block  = $this->toolbar_block_tags( 'left', 'isLeftBlock', $tabs );
-		$right_block = $this->toolbar_block_tags( 'right', 'isRightBlock', $tabs );
+		$left_block  = self::toolbar_block_tags( 'left', 'isLeftBlock', $tabs );
+		$right_block = self::toolbar_block_tags( 'right', 'isRightBlock', $tabs );
 
 		return array(
-			$this->html->tag( 'div', $toolbar_attrs ),
+			array(
+				'tag'   => 'div',
+				'attrs' => $toolbar_attrs,
+			),
 			array(
 				$title,
 				$left_block,
@@ -70,7 +80,7 @@ final class Toolbar_Printer {
 	 *
 	 * @return Tag_Chain
 	 */
-	protected function toolbar_block_tags( string $type, string $block_key, array $tabs ): array {
+	protected static function toolbar_block_tags( string $type, string $block_key, array $tabs ): array {
 		$block_tabs = array_filter(
 			$tabs,
 			fn( array $tab ) => isset( $tab[ $block_key ] )
@@ -80,12 +90,15 @@ final class Toolbar_Printer {
 		$block_attrs = array( 'class' => $block_class );
 		$tabs_list   = array_values( $block_tabs );
 		$tab_tags    = array_map(
-			fn( array $tab ) => $this->toolbar_tab_tags( $tab ),
+			fn( array $tab ) => self::toolbar_tab_tags( $tab ),
 			$tabs_list
 		);
 
 		return array(
-			$this->html->tag( 'div', $block_attrs ),
+			array(
+				'tag'   => 'div',
+				'attrs' => $block_attrs,
+			),
 			$tab_tags,
 		);
 	}
@@ -95,7 +108,7 @@ final class Toolbar_Printer {
 	 *
 	 * @return Tag_Chain
 	 */
-	protected function toolbar_tab_tags( array $tab ): array {
+	protected static function toolbar_tab_tags( array $tab ): array {
 		$classes = array_filter(
 			array(
 				'av-toolbar__tab',
@@ -124,16 +137,23 @@ final class Toolbar_Printer {
 
 		$icon_classes = string( $tab, 'iconClasses' );
 		$icon_attrs   = array( 'class' => $icon_classes );
+		$icon_tag     = array(
+			'tag'   => 'i',
+			'attrs' => $icon_attrs,
+		);
 		$icon         = key_exists( 'iconClasses', $tab ) ?
-			array( $this->html->tag( 'i', $icon_attrs ) ) :
+			array( $icon_tag ) :
 			array();
 		$label        = string( $tab, 'label' );
-		$link         = $this->html->tag( 'a', $attrs );
+		$link         = array(
+			'tag'   => 'a',
+			'attrs' => $attrs,
+		);
 
 		return array(
 			$link,
 			array(
-				array( $this->html->tag( 'span' ), $label ),
+				array( array( 'tag' => 'span' ), $label ),
 				$icon,
 			),
 		);

@@ -16,12 +16,6 @@ defined( 'ABSPATH' ) || exit;
  * @phpstan-import-type Tag_Chain from Tags_Renderer
  */
 class Postbox_Printer {
-	protected Html_Printer $html;
-
-	public function __construct( Html_Printer $html ) {
-		$this->html = $html;
-	}
-
 	public function print_postbox_shortcode(
 		string $unique_id,
 		bool $is_short,
@@ -38,7 +32,7 @@ class Postbox_Printer {
 
 		$shortcode_name = $public_cpt->shortcode();
 		$shortcode      = sprintf( '[%s name="%s" %s="%s"]', $shortcode_name, $entry_name, 'id', $unique_id );
-		$tags           = $this->shortcode_tags( $shortcode, $is_short, $is_single );
+		$tags           = self::shortcode_tags( $shortcode, $is_short, $is_single );
 
 		Tags_Renderer::print_tags( $tags );
 	}
@@ -50,7 +44,7 @@ class Postbox_Printer {
 		);
 
 		$button_label = __( 'Upgrade to Pro', 'acf-views' );
-		$tags         = $this->support_postbox_tags( $description, External_Links::PRO_VERSION_URL, $button_label );
+		$tags         = self::support_postbox_tags( $description, External_Links::PRO_VERSION_URL, $button_label );
 
 		Tags_Renderer::print_tags( $tags );
 	}
@@ -62,7 +56,7 @@ class Postbox_Printer {
 		);
 
 		$button_label = __( 'Get support', 'acf-views' );
-		$tags         = $this->support_postbox_tags(
+		$tags         = self::support_postbox_tags(
 			$description,
 			'https://wordpress.org/support/plugin/acf-views/',
 			$button_label
@@ -74,7 +68,7 @@ class Postbox_Printer {
 	/**
 	 * @return Tag_Chain
 	 */
-	protected function shortcode_tags( string $shortcode, bool $is_short, bool $is_single ): array {
+	protected static function shortcode_tags( string $shortcode, bool $is_short, bool $is_single ): array {
 		$type    = $is_short ?
 			'short' :
 			'full';
@@ -82,15 +76,21 @@ class Postbox_Printer {
 		$container_class = sprintf( 'av-shortcodes av-shortcodes--type--%s', $type );
 		$container_attrs = array( 'class' => $container_class );
 		$code            = array(
-			$this->html->tag( 'span', $code_attrs ),
+			array(
+				'tag'   => 'span',
+				'attrs' => $code_attrs,
+			),
 			$shortcode,
 		);
 		$details         = $is_short ?
 			array() :
-			$this->shortcode_details_tags( $is_single );
+			self::shortcode_details_tags( $is_single );
 
 		return array(
-			$this->html->tag( 'av-shortcodes', $container_attrs ),
+			array(
+				'tag'   => 'av-shortcodes',
+				'attrs' => $container_attrs,
+			),
 			array( $code, array( $details ) ),
 		);
 	}
@@ -98,13 +98,16 @@ class Postbox_Printer {
 	/**
 	 * @return Tag_Group
 	 */
-	protected function shortcode_details_tags( bool $is_single ): array {
+	protected static function shortcode_details_tags( bool $is_single ): array {
 		$copy_attrs  = array(
 			'class'       => 'av-shortcodes__copy-button button button-primary button-large',
 			'data-target' => '.av-shortcodes__code--type--short',
 		);
 		$copy_button = array(
-			$this->html->tag( 'button', $copy_attrs ),
+			array(
+				'tag'   => 'button',
+				'attrs' => $copy_attrs,
+			),
 			__( 'Copy Shortcode', 'acf-views' ),
 		);
 
@@ -120,13 +123,13 @@ class Postbox_Printer {
 
 		$here_label     = __( 'here', 'acf-views' );
 		$roles_hint_gap = sprintf( '%s ', $roles_hint );
-		$docs_link      = $this->html->link_tags(
+		$docs_link      = Html_Printer::link_tags(
 			'https://docs.advanced-views.com/layouts/embedding-shortcode',
 			$here_label
 		);
 
 		$roles_link = array(
-			$this->html->tag( 'span' ),
+			array( 'tag' => 'span' ),
 			array(
 				$roles_hint_gap,
 				$docs_link,
@@ -139,8 +142,8 @@ class Postbox_Printer {
 
 		return array(
 			$copy_button,
-			$this->embed_hint_tags( $gutenberg_question, $gutenberg_answer ),
-			$this->embed_hint_tags( $elementor_question, $elementor_answer ),
+			self::embed_hint_tags( $gutenberg_question, $gutenberg_answer ),
+			self::embed_hint_tags( $elementor_question, $elementor_answer ),
 			$roles_link,
 		);
 	}
@@ -148,23 +151,23 @@ class Postbox_Printer {
 	/**
 	 * @return Tag_Chain
 	 */
-	protected function embed_hint_tags( string $question, string $answer ): array {
+	protected static function embed_hint_tags( string $question, string $answer ): array {
 		return array(
-			$this->html->tag( 'p' ),
-			array( $question, $this->html->tag( 'br' ), $answer ),
+			array( 'tag' => 'p' ),
+			array( $question, array( 'tag' => 'br' ), $answer ),
 		);
 	}
 
 	/**
 	 * @return Tag_Chain
 	 */
-	protected function support_postbox_tags( string $description, string $url, string $button_label ): array {
-		$button = $this->button_link_tags( $url, $button_label );
+	protected static function support_postbox_tags( string $description, string $url, string $button_label ): array {
+		$button = self::button_link_tags( $url, $button_label );
 
 		return array(
-			$this->html->tag( 'div' ),
+			array( 'tag' => 'div' ),
 			array(
-				array( $this->html->tag( 'p' ), $description ),
+				array( array( 'tag' => 'p' ), $description ),
 				$button,
 			),
 		);
@@ -173,7 +176,7 @@ class Postbox_Printer {
 	/**
 	 * @return Tag_Chain
 	 */
-	protected function button_link_tags( string $url, string $label ): array {
+	protected static function button_link_tags( string $url, string $label ): array {
 		$link_attrs = array(
 			'class'  => 'button button-primary button-large',
 			'href'   => esc_url( $url ),
@@ -181,7 +184,10 @@ class Postbox_Printer {
 		);
 
 		return array(
-			$this->html->tag( 'a', $link_attrs ),
+			array(
+				'tag'   => 'a',
+				'attrs' => $link_attrs,
+			),
 			$label,
 		);
 	}
