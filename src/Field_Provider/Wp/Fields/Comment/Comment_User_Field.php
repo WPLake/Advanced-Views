@@ -22,10 +22,9 @@ class Comment_User_Field extends Markup_Field_Base {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		return array(
-			fn() => $token_factory
+			$token_factory
 				->variable( $field_id )
-				->add_item_path( self::VALUE )
-				->display(),
+				->add_item_path( self::VALUE ),
 		);
 	}
 

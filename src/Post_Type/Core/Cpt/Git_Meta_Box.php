@@ -264,7 +264,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 					),
 					__( 'Save the item', 'acf-views' ),
 				),
-				fn() => print( ' ' . esc_html( __( 'to your library', 'acf-views' ) ) . '.' ),
+				' ' . __( 'to your library', 'acf-views' ) . '.',
 			),
 		);
 	}

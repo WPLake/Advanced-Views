@@ -122,7 +122,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 							echo "\r\n\r\n";
 							$markup_field_data->print_tabs();
 						},
-						fn() => $children_if->display(),
+						$children_if,
 						function () use ( $markup_field_data ) {
 							echo "\r\n\r\n";
 							$markup_field_data->decrement_and_print_tabs();

@@ -20,7 +20,7 @@ class Woo_Featured_Field extends Markup_Field_Base {
 
 	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
 		return array(
-			fn() => esc_html_e( 'Featured product', 'acf-views' ),
+			__( 'Featured product', 'acf-views' ),
 		);
 	}
 

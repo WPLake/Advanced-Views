@@ -132,15 +132,9 @@ class Usage_Report extends Report_Base implements Actor {
 			),
 			array( 'tag' => 'p' ),
 			array(
-				fn() => esc_html_e(
-					'The Advanced Views plugin sends automatic error and usage reports to developers, enabling faster issue resolution and plugin improvement.',
-					'acf-views'
-				),
+				__( 'The Advanced Views plugin sends automatic error and usage reports to developers, enabling faster issue resolution and plugin improvement.', 'acf-views' ),
 				array( 'tag' => 'br' ),
-				fn() => esc_html_e(
-					'Automatic reports do not include any private or sensitive information and can be disabled in the plugin settings.',
-					'acf-views'
-				),
+				__( 'Automatic reports do not include any private or sensitive information and can be disabled in the plugin settings.', 'acf-views' ),
 				...$hide_members,
 			),
 		);

@@ -22,7 +22,7 @@ class Comment_Content_Field extends Markup_Field_Base {
 
 		// escaped by default, not raw - as commentId may point on a pending comment with unverified content.
 		return array(
-			fn() => $token_factory->variable( $field_id )->add_item_path( self::VALUE )->display(),
+			$token_factory->variable( $field_id )->add_item_path( self::VALUE ),
 		);
 	}
 

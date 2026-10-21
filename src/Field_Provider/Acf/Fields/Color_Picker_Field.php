@@ -27,7 +27,7 @@ class Color_Picker_Field extends Markup_Field_Base {
 			$var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
 			return array(
-				fn() => $var->display(),
+				$var,
 			);
 		}
 

@@ -124,8 +124,7 @@ class File_System extends Loggable_Actor implements Actor {
 					),
 					array( 'tag' => 'p' ),
 					array(
-						fn() => print( esc_html( __( 'The FS storage directory is not writable.', 'acf-views' ) ) .
-							' (path = ' . esc_html( $this->base_folder ) . ')' ),
+						__( 'The FS storage directory is not writable.', 'acf-views' ) . ' (path = ' . $this->base_folder . ')',
 						array( 'tag' => 'br' ),
 						__(
 									'Check and fix file permissions to work with Views and Cards.',

@@ -319,7 +319,7 @@ class Post_Selection_Markup {
 								->new_line( 2 )
 								->tab( $tabs_number );
 			},
-			fn() => $if->display(),
+			$if,
 			$new_line,
 			fn() => $this->print_extra_markup( $post_selection_settings ),
 		);
@@ -484,10 +484,9 @@ class Post_Selection_Markup {
 					'tag'   => 'div',
 					'attrs' => array( 'class' => $no_posts_message_class ),
 				),
-				fn() => $token_factory
+				$token_factory
 					->variable( Hard_Post_Selection_Cpt::variable_name() )
-					->add_item_path( 'no_posts_found_message' )
-					->display(),
+					->add_item_path( 'no_posts_found_message' ),
 			)
 		);
 

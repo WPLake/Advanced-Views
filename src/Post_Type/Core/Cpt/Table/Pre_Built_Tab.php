@@ -82,11 +82,11 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		$tab_data->set_description_callback(
 			fn() => Tags_Renderer::print_tag_group(
 				array(
-					fn() => esc_html_e( 'Import pre-built components.', 'acf-views' ),
+					__( 'Import pre-built components.', 'acf-views' ),
 					array( 'tag' => 'br' ),
 					fn() => $this->print_tab_description_middle(),
 					array( 'tag' => 'br' ),
-					fn() => esc_html_e( 'Hover on the title and click Import.', 'acf-views' ),
+					__( 'Hover on the title and click Import.', 'acf-views' ),
 					' ',
 					array(
 						array(
@@ -96,7 +96,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 								'href'   => esc_url( 'https://docs.advanced-views.com/layouts/features/pre-built-components' ),
 							),
 						),
-						fn() => esc_html_e( 'Read more', 'acf-views' ),
+						__( 'Read more', 'acf-views' ),
 					),
 					'.',
 				)

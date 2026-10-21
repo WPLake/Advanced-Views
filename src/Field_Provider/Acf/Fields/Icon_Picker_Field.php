@@ -37,12 +37,11 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$custom_image_branch  = $this->custom_image_branch( $field_id, $markup_field_data );
 
 		return array(
-			fn() => $token_factory
+			$token_factory
 				->if()
 				->set_if_branch( $dashicons_branch )
 				->set_elseif_branch( $media_library_branch )
-				->set_else_branch( $custom_image_branch )
-				->display(),
+				->set_else_branch( $custom_image_branch ),
 		);
 	}
 

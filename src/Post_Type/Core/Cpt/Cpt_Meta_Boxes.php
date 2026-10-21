@@ -114,7 +114,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 				array() !== $post_types ?
 					array( 'tag' => 'br' ) :
 					array(),
-				fn() => print( __( 'Pages:', 'acf-views' ) . ' ' ),
+				__( 'Pages:', 'acf-views' ) . ' ',
 				array( $post_links ),
 			) :
 			array();

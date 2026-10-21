@@ -206,7 +206,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		$paragraphs   = array();
 		$paragraphs[] = array(
 			array( 'tag' => 'p' ),
-			fn() => esc_html_e( 'Success!', 'acf-views' ),
+			__( 'Success!', 'acf-views' ),
 		);
 
 		if ( $views_count > 0 ) {
