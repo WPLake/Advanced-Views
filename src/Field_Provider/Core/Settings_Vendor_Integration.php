@@ -208,7 +208,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		$icon_style = $link_attrs['icon_style'];
 		unset( $link_attrs['icon_class'], $link_attrs['icon_style'] );
 
-		$link_attrs['href'] = esc_url( $url );
+		$link_attrs['href'] = $url;
 
 		$icon_tag = '' !== $icon_class ?
 			array(

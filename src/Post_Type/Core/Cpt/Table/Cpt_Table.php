@@ -205,7 +205,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 				array( 'class' => 'current' ) :
 				array();
 
-			$attrs['href'] = esc_url( $this->get_tab_url( $tab->get_name() ) );
+			$attrs['href'] = $this->get_tab_url( $tab->get_name() );
 
 			$count_span = '' !== $tab->get_label_in_brackets() ?
 				array(
