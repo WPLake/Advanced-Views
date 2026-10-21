@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
@@ -22,42 +23,41 @@ class Post_Attachment_Video extends Markup_Field_Base {
 	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		printf(
-			'<video class="%s" controls>',
-			esc_html(
-				$this->get_field_class(
-					'element',
-					$markup_field_data
-				)
-			),
-		);
-
-		$token_factory->formatter()
-						->new_line();
-		$markup_field_data->increment_and_print_tabs();
-
 		$src_var  = $token_factory->variable( $field_id )
 									->add_item_path( self::VALUE );
 		$type_var = $token_factory->variable( $field_id )
 									->add_item_path( self::MIME_TYPE );
 
-		echo '<source';
-
-		$token_factory->formatter()
-						->attributes(
-							array(
-								'src'  => $src_var,
-								'type' => $type_var,
-							)
-						);
-
-		echo '>';
-
-		$token_factory->formatter()
-						->new_line();
-		$markup_field_data->decrement_and_print_tabs();
-
-		echo '</video>';
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'video',
+					'attrs' => array(
+						'class'    => $this->get_field_class( 'element', $markup_field_data ),
+						'controls' => '',
+					),
+				),
+				array(
+					function () use ( $token_factory, $markup_field_data ) {
+						$token_factory->formatter()
+										->new_line();
+						$markup_field_data->increment_and_print_tabs();
+					},
+					array(
+						'tag'   => 'source',
+						'attrs' => array(
+							'src'  => $src_var,
+							'type' => $type_var,
+						),
+					),
+					function () use ( $token_factory, $markup_field_data ) {
+						$token_factory->formatter()
+										->new_line();
+						$markup_field_data->decrement_and_print_tabs();
+					},
+				),
+			)
+		);
 	}
 
 	/**

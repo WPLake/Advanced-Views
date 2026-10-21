@@ -5,12 +5,14 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox_Pattern;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 
 
 defined( 'ABSPATH' ) || exit;
@@ -29,26 +31,6 @@ class Image_Field extends Markup_Field_Base {
 	const SVG_CONTENT = 'svg_content';
 	const ID          = 'id';
 
-	protected function print_inner_attributes( string $field_id, Template_Field_Data $markup_field_data ): void {
-		$token_factory    = $markup_field_data->get_token_factory();
-		$inner_attributes = array();
-
-		foreach ( $markup_field_data->get_field_assets() as $field_asset ) {
-			$inner_attributes = array_merge(
-				$inner_attributes,
-				$field_asset->get_inner_variable_attributes( $markup_field_data->get_field_data(), $field_id )
-			);
-		}
-
-		foreach ( $inner_attributes as $name => $variable_info ) {
-			$var = $token_factory->variable( $variable_info['field_id'] )
-									->add_item_path( $variable_info['item_key'] );
-
-			$token_factory->formatter()
-				->attribute( $name, $var );
-		}
-	}
-
 	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory  = $markup_field_data->get_token_factory();
 		$attributes_map = array(
@@ -62,27 +44,23 @@ class Image_Field extends Markup_Field_Base {
 			'sizes'    => self::SIZES,
 		);
 
-		printf(
-			'<img class="%s"',
-			esc_html(
-				$this->get_field_class(
-					'image',
-					$markup_field_data
-				)
-			),
+		$attributes = array(
+			'class' => $this->get_field_class( 'image', $markup_field_data ),
 		);
 
 		foreach ( $attributes_map as $attribute_name => $item_key ) {
-			$var = $token_factory->variable( $field_id )
-									->add_item_path( $item_key );
-
-			$token_factory->formatter()
-							->attribute( $attribute_name, $var );
+			$attributes[ $attribute_name ] = $token_factory->variable( $field_id )
+															->add_item_path( $item_key );
 		}
 
-		$this->print_inner_attributes( $field_id, $markup_field_data );
-
-		echo '>';
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'img',
+					'attrs' => array_merge( $attributes, $this->inner_attributes( $field_id, $markup_field_data ) ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -253,5 +231,26 @@ class Image_Field extends Markup_Field_Base {
 		}
 
 		return array_merge( parent::get_front_assets( $field_settings ), $front_assets );
+	}
+
+	/**
+	 * @return array<string,Variable_Token>
+	 */
+	protected function inner_attributes( string $field_id, Template_Field_Data $markup_field_data ): array {
+		$token_factory    = $markup_field_data->get_token_factory();
+		$inner_attributes = array();
+
+		foreach ( $markup_field_data->get_field_assets() as $field_asset ) {
+			$inner_attributes = array_merge(
+				$inner_attributes,
+				$field_asset->get_inner_variable_attributes( $markup_field_data->get_field_data(), $field_id )
+			);
+		}
+
+		return array_map(
+			fn( array $variable_info ) => $token_factory->variable( $variable_info['field_id'] )
+														->add_item_path( $variable_info['item_key'] ),
+			$inner_attributes
+		);
 	}
 }

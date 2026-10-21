@@ -7,6 +7,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Acf\Fields;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -132,21 +133,32 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	protected function print_icon_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$token_factory->formatter()->new_line();
-		$markup_field_data->increment_and_print_tabs();
+		$icon_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-		$field_class = $this->get_field_class( 'icon', $markup_field_data );
-
-		printf(
-			'<i class="%s dashicons ',
-			esc_html( $field_class ),
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					function () use ( $token_factory, $markup_field_data ) {
+						$token_factory->formatter()->new_line();
+						$markup_field_data->increment_and_print_tabs();
+					},
+					array(
+						'tag'   => 'i',
+						'attrs' => array(
+							'class' => array(
+								$this->get_field_class( 'icon', $markup_field_data ),
+								'dashicons',
+								$icon_var,
+							),
+						),
+					),
+					function () use ( $token_factory, $markup_field_data ) {
+						$token_factory->formatter()->new_line();
+						$markup_field_data->decrement_and_print_tabs();
+					},
+				),
+			)
 		);
-		$token_factory->variable( $field_id )->add_item_path( self::VALUE )->display();
-
-		echo '"></i>';
-
-		$token_factory->formatter()->new_line();
-		$markup_field_data->decrement_and_print_tabs();
 	}
 
 	protected function print_icon_image_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
@@ -164,21 +176,31 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	protected function print_custom_image_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$token_factory->formatter()->new_line();
-		$markup_field_data->increment_and_print_tabs();
+		$src_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-		$field_class = $this->get_field_class( 'icon', $markup_field_data );
-
-		printf(
-			'<img class="%s" src="',
-			esc_html( $field_class ),
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					function () use ( $token_factory, $markup_field_data ) {
+						$token_factory->formatter()->new_line();
+						$markup_field_data->increment_and_print_tabs();
+					},
+					array(
+						'tag'   => 'img',
+						'attrs' => array(
+							'class'   => $this->get_field_class( 'icon', $markup_field_data ),
+							'src'     => $src_var,
+							'loading' => 'lazy',
+							'alt'     => 'icon',
+						),
+					),
+					function () use ( $token_factory, $markup_field_data ) {
+						$token_factory->formatter()->new_line();
+						$markup_field_data->decrement_and_print_tabs();
+					},
+				),
+			)
 		);
-		$token_factory->variable( $field_id )->add_item_path( self::VALUE )->display();
-
-		echo '" loading="lazy" alt="icon">';
-
-		$token_factory->formatter()->new_line();
-		$markup_field_data->decrement_and_print_tabs();
 	}
 
 	protected static function type_comparison( string $type, string $field_id, Template_Field_Data $markup_field_data ): Comparison_Token {

@@ -16,6 +16,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use WP_REST_Request;
@@ -132,11 +133,23 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		$joined_attrs    = implode( ' ', $attrs );
 		$shortcode_debug = sprintf( '(%s %s)', $shortcode, $joined_attrs );
 
-		return sprintf(
-			"<p style='color:red;'>%s %s %s</p>",
-			esc_html__( 'AVF shortcode render error:', 'acf-views' ),
-			esc_html( $error ),
-			esc_html( $shortcode_debug )
+		return Tags_Renderer::render_tags(
+			array(
+				array(
+					'tag'   => 'p',
+					'attrs' => array( 'style' => array( 'color' => 'red' ) ),
+				),
+				fn() => print(
+					esc_html(
+						sprintf(
+							'%s %s %s',
+							__( 'AVF shortcode render error:', 'acf-views' ),
+							$error,
+							$shortcode_debug
+						)
+					)
+				),
+			)
 		);
 	}
 
@@ -188,9 +201,12 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		if ( $cpt_data->is_css_internal() ) {
 			$css_code   = $cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
 			$shadow_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
-			$shadow_css = sprintf(
-				'<style>:host{all: initial!important;}%s</style>',
-				$shadow_css
+			$shadow_css = Tags_Renderer::render_tags(
+				array(
+					array( 'tag' => 'style' ),
+					// phpcs:ignore WordPress.Security.EscapeOutput
+					fn() => print( ':host{all: initial!important;}' . $shadow_css ),
+				)
 			);
 		}
 
