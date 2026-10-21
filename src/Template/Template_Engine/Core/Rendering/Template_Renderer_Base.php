@@ -37,6 +37,7 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 			'style' => 'color:red;',
 			'class' => 'acf-views__error',
 		);
+		$span_attributes      = array( 'class' => 'acf-views__error-message' );
 
 		Tags_Renderer::print_tags(
 			array(
@@ -44,25 +45,16 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 					'tag'   => 'p',
 					'attrs' => $paragraph_attributes,
 				),
-				fn() => static::print_error_paragraph( $unique_view_id, $error_message ),
-			)
-		);
-	}
-
-	protected static function print_error_paragraph( string $unique_view_id, string $error_message ): void {
-		$span_attributes = array( 'class' => 'acf-views__error-message' );
-
-		printf( 'Advanced Views (%s) template: ', esc_html( $unique_view_id ) );
-
-		Tags_Renderer::print_tags(
-			array(
 				array(
-					'tag'   => 'span',
-					'attrs' => $span_attributes,
+					fn() => printf( 'Advanced Views (%s) template: ', esc_html( $unique_view_id ) ),
+					array(
+						array(
+							'tag'   => 'span',
+							'attrs' => $span_attributes,
+						),
+						fn() => print( esc_html( $error_message ) ),
+					),
 				),
-				function () use ( $error_message ) {
-					echo esc_html( $error_message );
-				},
 			)
 		);
 	}

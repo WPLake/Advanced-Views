@@ -18,6 +18,9 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
+/**
+ * @phpstan-import-type Tag_Group from Tags_Renderer
+ */
 final class Upgrade_Notice extends Actor_Base implements Actor {
 	private Plugin_Meta $plugin_meta;
 	private string $dismiss_key;
@@ -77,48 +80,26 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 	public function print_notice(): void {
 		$upgrade_notice = $this->get_upgrade_notice();
 
+		$dismiss_members = Avf_User::can_manage() ?
+			$this->get_dismiss_members() :
+			array();
+
 		$tags = array(
 			array(
 				'tag'   => 'div',
 				'attrs' => array( 'class' => 'notice notice-info' ),
 			),
 			array( 'tag' => 'p' ),
-			fn() => $this->print_notice_content( $upgrade_notice ),
+			array(
+				fn() => print( esc_html__( 'Advanced Views plugin has been successfully upgraded!', 'acf-views' ) ),
+				array( 'tag' => 'br' ),
+				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				fn() => print( str_replace( "\n", '<br>', esc_html( $upgrade_notice ) ) ),
+				...$dismiss_members,
+			),
 		);
 
 		Tags_Renderer::print_tags( $tags );
-	}
-
-	protected function print_notice_content( string $upgrade_notice ): void {
-		echo esc_html__( 'Advanced Views plugin has been successfully upgraded!', 'acf-views' );
-
-		Tags_Renderer::print_tags( array( array( 'tag' => 'br' ) ) );
-
-		// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo str_replace( "\n", '<br>', esc_html( $upgrade_notice ) );
-
-		if ( Avf_User::can_manage() ) {
-			$dismiss_url = add_query_arg(
-				array(
-					$this->dismiss_key => 1,
-					'_wpnonce'         => wp_create_nonce( $this->dismiss_nonce_action ),
-				),
-				Plugin::get_current_admin_url()
-			);
-
-			Tags_Renderer::print_tags(
-				array(
-					array(
-						'tag'   => 'a',
-						'attrs' => array(
-							'style' => array( 'float' => 'right' ),
-							'href'  => esc_url( $dismiss_url ),
-						),
-					),
-					fn() => print( esc_html( __( 'Thanks, hide', 'acf-views' ) ) ),
-				)
-			);
-		}
 	}
 
 	protected function hide_notice(): bool {
@@ -141,5 +122,31 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 		$upgrade_transient = Options_Storage::get_transient( Options_Storage::TRANSIENT_UPGRADE_NOTICE );
 
 		return string( $upgrade_transient );
+	}
+
+	/**
+	 * @return Tag_Group
+	 */
+	protected function get_dismiss_members(): array {
+		$dismiss_url = add_query_arg(
+			array(
+				$this->dismiss_key => 1,
+				'_wpnonce'         => wp_create_nonce( $this->dismiss_nonce_action ),
+			),
+			Plugin::get_current_admin_url()
+		);
+
+		return array(
+			array(
+				array(
+					'tag'   => 'a',
+					'attrs' => array(
+						'style' => array( 'float' => 'right' ),
+						'href'  => esc_url( $dismiss_url ),
+					),
+				),
+				fn() => print( esc_html( __( 'Thanks, hide', 'acf-views' ) ) ),
+			),
+		);
 	}
 }

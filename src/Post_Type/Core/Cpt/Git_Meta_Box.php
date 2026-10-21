@@ -287,19 +287,16 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	 * @return Tag_Chain
 	 */
 	protected function repositories_tags(): array {
-		$print_options = function (): void {
-			foreach ( $this->settings->get_git_repositories() as $git_repository ) {
-				Tags_Renderer::print_tags(
-					array(
-						array(
-							'tag'   => 'option',
-							'attrs' => array( 'value' => $git_repository['id'] ),
-						),
-						fn() => print( esc_html( $git_repository['name'] ) ),
-					)
-				);
-			}
-		};
+		$option_chains = array_map(
+			fn( array $git_repository ): array => array(
+				array(
+					'tag'   => 'option',
+					'attrs' => array( 'value' => $git_repository['id'] ),
+				),
+				fn() => print( esc_html( $git_repository['name'] ) ),
+			),
+			$this->settings->get_git_repositories()
+		);
 
 		return array(
 			array(
@@ -317,7 +314,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 					),
 					fn() => print( esc_html( __( 'Select repository', 'acf-views' ) ) ),
 				),
-				$print_options,
+				...$option_chains,
 			),
 		);
 	}

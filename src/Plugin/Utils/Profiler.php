@@ -45,18 +45,14 @@ abstract class Profiler {
 	public static function print_report(): void {
 		$classes_total_usage = self::get_classes_total_usage();
 
-		$print_pre = function ( $data, string $prefix = '' ): void {
-			Tags_Renderer::print_tags(
-				array(
-					array( 'tag' => 'pre' ),
-					function () use ( $data, $prefix ): void {
-						echo esc_html( $prefix );
-						// @phpcs:ignore
-						print_r( $data );
-					},
-				)
-			);
-		};
+		$pre_chain = fn( $data, string $prefix = '' ): array => array(
+			array( 'tag' => 'pre' ),
+			function () use ( $data, $prefix ): void {
+				echo esc_html( $prefix );
+				// @phpcs:ignore
+				print_r( $data );
+			},
+		);
 
 		$tags = array(
 			array(
@@ -71,11 +67,11 @@ abstract class Profiler {
 				),
 			),
 			array(
-				fn() => $print_pre( self::get_total_usage() ),
+				$pre_chain( self::get_total_usage() ),
 				array( 'tag' => 'hr' ),
-				fn() => $print_pre( $classes_total_usage, count( $classes_total_usage ) . "\n" ),
+				$pre_chain( $classes_total_usage, count( $classes_total_usage ) . "\n" ),
 				array( 'tag' => 'hr' ),
-				fn() => $print_pre( self::$class_hooks_usage ),
+				$pre_chain( self::$class_hooks_usage ),
 			),
 		);
 
