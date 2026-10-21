@@ -254,11 +254,6 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 	public function print_fallback_message(): void {
 		$settings_url = Plugin::get_admin_url( Settings_Page::SLUG );
 
-		$safe_opening_tag = sprintf(
-			'<a href="%s" target="_blank">',
-			esc_url( $settings_url )
-		);
-
 		Tags_Renderer::print_tags(
 			array(
 				array(
@@ -268,13 +263,18 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 				array(
 					__( 'Loading the Editor is taking longer than expected.', 'acf-views' ),
 					array( 'tag' => 'br' ),
-					fn() => printf(
-						// translators: 1 is the opening tag, 2 is the closing tag.
-						esc_html__( 'If you still see this message after an extended period, please visit the %1$s Settings %2$s and disable the screen performance optimization.', 'acf-views' ),
-						// @phpcs:ignore
-						$safe_opening_tag,
-						'</a>'
+					__( 'If you still see this message after an extended period, please visit the', 'acf-views' ) . ' ',
+					array(
+						array(
+							'tag'   => 'a',
+							'attrs' => array(
+								'href'   => $settings_url,
+								'target' => '_blank',
+							),
+						),
+						__( 'Settings', 'acf-views' ),
 					),
+					' ' . __( 'and disable the screen performance optimization.', 'acf-views' ),
 				),
 			)
 		);

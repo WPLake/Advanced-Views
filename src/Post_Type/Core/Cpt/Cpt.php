@@ -15,6 +15,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Stora
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Tag_Chain from Tags_Renderer
+ */
 abstract class Cpt extends Actor_Base implements Actor {
 	private Cpt_Settings_Storage $cpt_settings_storage;
 	protected Plugin_Cpt $plugin_cpt;
@@ -118,9 +121,6 @@ abstract class Cpt extends Actor_Base implements Actor {
 		$plural_name   = $labels->plural_name();
 		$singular_name = $labels->singular_name();
 
-		// translators: %1$s - plural name of the CPT, %2$s - link opening tag, %3$s - link closing tag.
-		$not_found_label = __( 'No %1$s yet. %2$s Add New %1$s %3$s', 'acf-views' );
-
 		return array(
 			'name'               => $plural_name,
 			'singular_name'      => $singular_name,
@@ -162,41 +162,86 @@ abstract class Cpt extends Actor_Base implements Actor {
 				__( 'Search %s', 'acf-views' ),
 				$plural_name
 			),
-			'not_found'          => $this->inject_add_new_item_link( $not_found_label ),
+			'not_found'          => $this->get_not_found_label(),
 			'not_found_in_trash' => __( 'Not Found In Trash', 'acf-views' ),
 		);
 	}
 
 	protected function get_storage_label(): string {
-		$description  = '<span style="display:inline-block; float:right;">';
-		$description .= __(
-			'<a target="_blank" href="https://docs.advanced-views.com/features/file-system-storage">File system storage</a> is',
-			'acf-views'
-		);
-		$description .= ' ';
-		$description .= $this->cpt_settings_storage->get_file_system()->is_active() ?
-			__( 'enabled', 'acf-views' )
-			: __( 'disabled', 'acf-views' );
-		$description .= '.';
-		$description .= '</span>';
+		$state = $this->cpt_settings_storage->get_file_system()->is_active() ?
+			__( 'enabled', 'acf-views' ) :
+			__( 'disabled', 'acf-views' );
 
-		return $description;
+		return Tags_Renderer::render_tags(
+			array(
+				array(
+					'tag'   => 'span',
+					'attrs' => array(
+						'style' => array(
+							'display' => 'inline-block',
+							'float'   => 'right',
+						),
+					),
+				),
+				array(
+					array(
+						array(
+							'tag'   => 'a',
+							'attrs' => array(
+								'target' => '_blank',
+								'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
+							),
+						),
+						__( 'File system storage', 'acf-views' ),
+					),
+					' ' . sprintf(
+					// translators: %s - the file system storage state, 'enabled' or 'disabled'.
+						__( 'is %s.', 'acf-views' ),
+						$state
+					),
+				),
+			)
+		);
 	}
 
-	protected function inject_add_new_item_link( string $label_template ): string {
-		$relative_url = sprintf( 'post-new.php?post_type=%s', $this->get_cpt_name() );
-		$absolute_url = admin_url( $relative_url );
+	protected function get_not_found_label(): string {
+		$singular_name = $this->plugin_cpt->labels()->singular_name();
+		$add_new_url   = admin_url( sprintf( 'post-new.php?post_type=%s', $this->get_cpt_name() ) );
 
-		$opening_tag = sprintf(
-			'<a href="%s" target="_self">',
-			esc_url( $absolute_url )
+		return Tags_Renderer::render_tag_group(
+			array(
+				sprintf(
+				// translators: %s - singular name of the CPT.
+					__( 'No %s yet.', 'acf-views' ),
+					$singular_name
+				) . ' ',
+				self::link_tags(
+					$add_new_url,
+					sprintf(
+					// translators: %s - singular name of the CPT.
+						__( 'Add New %s', 'acf-views' ),
+						$singular_name
+					),
+					'_self'
+				),
+			)
 		);
-		$closing_tag = '</a>';
+	}
 
-		$labels        = $this->plugin_cpt->labels();
-		$singular_name = $labels->singular_name();
-
-		return sprintf( $label_template, $singular_name, $opening_tag, $closing_tag );
+	/**
+	 * @return Tag_Chain
+	 */
+	protected static function link_tags( string $url, string $label, string $target = '_blank' ): array {
+		return array(
+			array(
+				'tag'   => 'a',
+				'attrs' => array(
+					'target' => $target,
+					'href'   => $url,
+				),
+			),
+			$label,
+		);
 	}
 
 	/**

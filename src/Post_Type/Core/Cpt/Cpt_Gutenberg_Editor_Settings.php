@@ -112,21 +112,21 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 					'tag'   => 'p',
 					'attrs' => $attributes,
 				),
-				function (): void {
-					esc_html_e(
-						'Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue.',
-						'acf-views'
-					);
-
-					echo ' ';
-
-					printf(
-					// translators: %1$s - link opening tag, %2$s - link closing tag.
-						esc_html__( 'Please %1$s reach out %2$s to our support team for further assistance.', 'acf-views' ),
-						'<a target="_blank" href="https://wplake.org/acf-views-support/">',
-						'</a>'
-					);
-				},
+				array(
+					__( 'Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue.', 'acf-views' ) . ' ',
+					__( 'Please', 'acf-views' ) . ' ',
+					array(
+						array(
+							'tag'   => 'a',
+							'attrs' => array(
+								'target' => '_blank',
+								'href'   => 'https://wplake.org/acf-views-support/',
+							),
+						),
+						__( 'reach out', 'acf-views' ),
+					),
+					' ' . __( 'to our support team for further assistance.', 'acf-views' ),
+				),
 			)
 		);
 	}
