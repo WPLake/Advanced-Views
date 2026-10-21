@@ -4,18 +4,23 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Utils\Html;
 
+use Stringable;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Tag_Chain: every next item goes inside the previous one.
- * Tag_Group: its members (a Tag, a Tag_Text_Printer or a Tag_Chain) are rendered at the same level, and it ends the chain.
- * Tag_Text_Printer returns 'void|mixed': the 'mixed' is allowed to accept print callbacks, e.g. `fn() => print( $text )`.
+ * Tag_Group: its members (a Tag, a Tag_Text or a Tag_Chain) are rendered at the same level, and it ends the chain.
+ * Tag_Text is a plain string, a Stringable object (e.g. a template token) or a print callback, e.g. `fn() => print( $text )`.
+ * Only a string is escaped, while an object and a callback are printed as is. A string is never called, even if it's a
+ * callable name.
+ * The callback returns 'void|mixed': the 'mixed' is allowed to accept such callbacks.
  * Tag_Group is 'mixed' as PHPStan doesn't support recursive aliases.
  *
  * @phpstan-type Tag array{tag:string, attrs?:array<string,mixed>}
- * @phpstan-type Tag_Text_Printer callable():(void|mixed)
+ * @phpstan-type Tag_Text string|Stringable|callable():(void|mixed)
  * @phpstan-type Tag_Group list<mixed>
- * @phpstan-type Tag_Chain_Item Tag|Tag_Text_Printer|Tag_Group
+ * @phpstan-type Tag_Chain_Item Tag|Tag_Text|Tag_Group
  * @phpstan-type Tag_Chain list<Tag_Chain_Item>
  */
 final class Tags_Renderer {
@@ -79,7 +84,26 @@ final class Tags_Renderer {
 			return;
 		}
 
-		$item();
+		self::print_text( $item );
+	}
+
+	/**
+	 * @param Tag_Text $text
+	 */
+	protected static function print_text( $text ): void {
+		if ( is_string( $text ) ) {
+			echo esc_html( $text );
+
+			return;
+		}
+
+		if ( $text instanceof Stringable ) {
+			echo $text; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+			return;
+		}
+
+		$text();
 	}
 
 	/**
