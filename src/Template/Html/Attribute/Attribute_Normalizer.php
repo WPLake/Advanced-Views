@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Html\Attribute;
 
+use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\stringExtended;
 
@@ -71,10 +72,10 @@ final class Attribute_Normalizer {
 	 * @param mixed $value
 	 */
 	protected static function escape_value( $value ): string {
-		$string_value = stringExtended( $value );
+		if ( $value instanceof Htmlable ) {
+			return $value->to_html();
+		}
 
-		return is_object( $value ) ?
-			$string_value :
-			esc_html( $string_value );
+		return esc_html( stringExtended( $value ) );
 	}
 }

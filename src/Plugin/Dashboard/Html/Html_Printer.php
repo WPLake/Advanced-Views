@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup;
+namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
 use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
@@ -13,19 +13,18 @@ defined( 'ABSPATH' ) || exit;
  * @phpstan-import-type Tag_Group from Tags_Renderer
  * @phpstan-import-type Tag_Chain from Tags_Renderer
  */
-class Html_Printer {
+final class Html_Printer {
 	/**
 	 * @return Tag_Chain
 	 */
 	public function link_tags( string $url, string $label ): array {
+		$link_attrs = array(
+			'target' => '_blank',
+			'href'   => esc_url( $url ),
+		);
+
 		return array(
-			$this->tag(
-				'a',
-				array(
-					'target' => '_blank',
-					'href'   => esc_url( $url ),
-				)
-			),
+			$this->tag( 'a', $link_attrs ),
 			$label,
 		);
 	}
@@ -36,20 +35,20 @@ class Html_Printer {
 	 * @return Tag_Chain
 	 */
 	public function dashboard_form_tags( string $page, string $form_nonce, array $blocks ): array {
+		$form_attrs = array(
+			'action' => '',
+			'method' => 'post',
+			'class'  => 'av-dashboard',
+		);
+		$main_attrs = array( 'class' => 'av-dashboard__main' );
+
 		return array(
-			array(
-				'tag'   => 'form',
-				'attrs' => array(
-					'action' => '',
-					'method' => 'post',
-					'class'  => 'av-dashboard',
-				),
-			),
+			$this->tag( 'form', $form_attrs ),
 			array(
 				$this->hidden_input_tags( '_av-page', $page ),
 				$this->hidden_input_tags( '_wpnonce', $form_nonce ),
 				array(
-					$this->tag( 'div', array( 'class' => 'av-dashboard__main' ) ),
+					$this->tag( 'div', $main_attrs ),
 					$blocks,
 				),
 			),
@@ -88,8 +87,10 @@ class Html_Printer {
 	 * @return Tag_Chain
 	 */
 	public function title_tags( string $title ): array {
+		$title_attrs = array( 'class' => 'av-introduction__title' );
+
 		return array(
-			$this->tag( 'p', array( 'class' => 'av-introduction__title' ) ),
+			$this->tag( 'p', $title_attrs ),
 			$title,
 		);
 	}
