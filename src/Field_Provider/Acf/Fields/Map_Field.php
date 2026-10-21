@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Map_Field_Base;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
@@ -20,36 +21,27 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 class Map_Field extends Map_Field_Base {
 	const MAP = 'map';
 
-	protected function print_map_marker_attributes(
+	/**
+	 * @return array<string,mixed>
+	 */
+	protected function map_marker_attributes(
 		string $field_id,
 		string $item_id,
 		Template_Field_Data $markup_field_data
-	): void {
+	): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		printf(
-			'class="%s"',
-			esc_html(
-				$this->get_item_class(
-					'map-marker',
-					$markup_field_data->get_view_data(),
-					$markup_field_data->get_field_data()
-				)
+		return array(
+			'class'    => $this->get_item_class(
+				'map-marker',
+				$markup_field_data->get_view_data(),
+				$markup_field_data->get_field_data()
 			),
+			'data-lat' => $token_factory->variable( $item_id )
+										->add_item_path( self::LAT ),
+			'data-lng' => $token_factory->variable( $item_id )
+										->add_item_path( self::LNG ),
 		);
-
-		$lat_var = $token_factory->variable( $item_id )
-									->add_item_path( self::LAT );
-		$lng_var = $token_factory->variable( $item_id )
-									->add_item_path( self::LNG );
-
-		$token_factory->formatter()
-						->attributes(
-							array(
-								'data-lat' => $lat_var,
-								'data-lng' => $lng_var,
-							)
-						);
 	}
 
 	/**
@@ -326,9 +318,14 @@ class Map_Field extends Map_Field_Base {
 	}
 
 	protected function print_inner_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
-		echo '<div ';
-		$this->print_map_marker_attributes( $field_id, $item_id, $markup_field_data );
-		echo '></div>';
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'div',
+					'attrs' => $this->map_marker_attributes( $field_id, $item_id, $markup_field_data ),
+				),
+			)
+		);
 	}
 
 	/**

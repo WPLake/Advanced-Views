@@ -94,16 +94,23 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 		// do not include in case of the validation, it doesn't have sense + breaks the error grep regex.
 		if ( $is_debug_mode &&
 			! $is_validation ) {
-			echo '<pre>' . esc_html(
-				// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
-				print_r(
-					array(
-						'template' => $template,
-						'args'     => $args,
+			Tags_Renderer::print_tags(
+				array(
+					array( 'tag' => 'pre' ),
+					fn() => print(
+						esc_html(
+							// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
+							print_r(
+								array(
+									'template' => $template,
+									'args'     => $args,
+								),
+								true
+							)
+						)
 					),
-					true
 				)
-			) . '</pre>';
+			);
 		}
 	}
 }

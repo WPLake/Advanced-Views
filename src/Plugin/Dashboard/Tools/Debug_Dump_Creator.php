@@ -15,6 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Sto
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use WP_Post;
 use WP_Query;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 
 final class Debug_Dump_Creator {
 	private Tools_Settings $tools_settings;
@@ -45,37 +46,42 @@ final class Debug_Dump_Creator {
 				'message' => 1,
 			)
 		);
-		?>
-		<script>
-			(function () {
-				function save() {
-					const data = <?php echo wp_json_encode( $dump_data ); ?>;
+		Tags_Renderer::print_tags(
+			array(
+				array( 'tag' => 'script' ),
+				function () use ( $dump_data, $redirect_url ) {
+					?>
+					(function () {
+						function save() {
+							const data = <?php echo wp_json_encode( $dump_data ); ?>;
 
-					let date = new Date().toISOString().slice(0, 10);
-					let timestamp = new Date().getTime();
-					let fileName = `advanced-views-debug-dump-${date}-${timestamp}.json`;
-					let content = JSON.stringify(data);
+							let date = new Date().toISOString().slice(0, 10);
+							let timestamp = new Date().getTime();
+							let fileName = `advanced-views-debug-dump-${date}-${timestamp}.json`;
+							let content = JSON.stringify(data);
 
-					const file = new File([content], fileName, {
-						type: 'application/json',
-					})
+							const file = new File([content], fileName, {
+								type: 'application/json',
+							})
 
-					let settingsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
+							let settingsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
 
-					const a = document.createElement('a');
+							const a = document.createElement('a');
 
-					a.href = URL.createObjectURL(file);
-					a.download = fileName;
-					a.click();
-					window.location.href = settingsUrl;
-				}
+							a.href = URL.createObjectURL(file);
+							a.download = fileName;
+							a.click();
+							window.location.href = settingsUrl;
+						}
 
-				'loading' === document.readyState ?
-					window.document.addEventListener('DOMContentLoaded', save) :
-					save();
-			}())
-		</script>
-		<?php
+						'loading' === document.readyState ?
+							window.document.addEventListener('DOMContentLoaded', save) :
+							save();
+					}())
+					<?php
+				},
+			)
+		);
 		exit;
 	}
 

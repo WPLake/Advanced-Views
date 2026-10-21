@@ -93,8 +93,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 			array(
 				fn() => print( esc_html__( 'Advanced Views plugin has been successfully upgraded!', 'acf-views' ) ),
 				array( 'tag' => 'br' ),
-				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				fn() => print( str_replace( "\n", '<br>', esc_html( $upgrade_notice ) ) ),
+				...$this->get_notice_lines_members( $upgrade_notice ),
 				...$dismiss_members,
 			),
 		);
@@ -122,6 +121,23 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 		$upgrade_transient = Options_Storage::get_transient( Options_Storage::TRANSIENT_UPGRADE_NOTICE );
 
 		return string( $upgrade_transient );
+	}
+
+	/**
+	 * @return Tag_Group
+	 */
+	protected function get_notice_lines_members( string $upgrade_notice ): array {
+		$members = array();
+
+		foreach ( explode( "\n", $upgrade_notice ) as $index => $line ) {
+			if ( $index > 0 ) {
+				$members[] = array( 'tag' => 'br' );
+			}
+
+			$members[] = fn() => print( esc_html( $line ) );
+		}
+
+		return $members;
 	}
 
 	/**

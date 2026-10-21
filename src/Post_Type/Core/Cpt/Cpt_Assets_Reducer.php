@@ -278,15 +278,20 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 				),
 			)
 		);
-		?>
-		<script type="module">
-		document.addEventListener('DOMContentLoaded', function () {
-			setTimeout(()=>{
-				document.querySelector('.acf-views__loading-fallback')
-					.classList.remove('acf-views__loading-fallback--hidden');
-			},15 * 1000)
-		});
-		</script>
-		<?php
+		Tags_Renderer::print_tags(
+			array(
+				array( 'tag' => 'script', 'attrs' => array( 'type' => 'module' ) ),
+				function () {
+					?>
+				document.addEventListener('DOMContentLoaded', function () {
+					setTimeout(()=>{
+						document.querySelector('.acf-views__loading-fallback')
+							.classList.remove('acf-views__loading-fallback--hidden');
+					},15 * 1000)
+				});
+					<?php
+				},
+			)
+		);
 	}
 }

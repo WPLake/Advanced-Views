@@ -295,21 +295,15 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 			'onMouseOut'  => "this.style.opacity='.5';this.style.textDecoration='none'",
 		);
 
-		$quick_link_html = '<a';
-
-		foreach ( $attrs as $attr_name => $attr_value ) {
-			$quick_link_html .= sprintf(
-				' %s="%s"',
-				esc_html( $attr_name ),
-				esc_attr( $attr_value )
-			);
-		}
-
-		$quick_link_html .= '>';
-		$quick_link_html .= esc_html( $label );
-		$quick_link_html .= '</a>';
-
-		return $quick_link_html;
+		return Tags_Renderer::render_tags(
+			array(
+				array(
+					'tag'   => 'a',
+					'attrs' => $attrs,
+				),
+				fn() => print( esc_html( $label ) ),
+			)
+		);
 	}
 
 	public function get_rendered_items_count(): int {

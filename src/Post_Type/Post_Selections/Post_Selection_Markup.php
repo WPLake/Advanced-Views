@@ -478,16 +478,18 @@ class Post_Selection_Markup {
 		$no_posts_message_class = Post_Selection_Settings::CLASS_GENERATION_NONE !== $post_selection_settings->classes_generation ?
 			sprintf( '%s__no-posts-message', $post_selection_settings->get_bem_name() ) :
 			'';
-		printf(
-			'<div class="%s">',
-			esc_html( $no_posts_message_class )
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'div',
+					'attrs' => array( 'class' => $no_posts_message_class ),
+				),
+				fn() => $token_factory
+					->variable( Hard_Post_Selection_Cpt::variable_name() )
+					->add_item_path( 'no_posts_found_message' )
+					->display(),
+			)
 		);
-		$token_factory
-			->variable( Hard_Post_Selection_Cpt::variable_name() )
-			->add_item_path( 'no_posts_found_message' )
-			->display();
-
-		echo '</div>';
 
 		$token_factory->formatter()
 						->new_line()

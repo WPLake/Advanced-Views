@@ -30,6 +30,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use WP_Filesystem_Base;
 use WP_Post;
 use WP_Query;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -155,40 +156,45 @@ final class Tools_Page extends Actor_Base implements Actor {
 
 		$redirect_url = Plugin::get_admin_url( self::SLUG ) .
 						sprintf( '&message=1&type=export&_views=%s&_cards=%s', $count_of_view_ids, $count_of_card_ids );
-		?>
-		<script>
-			(function () {
-				function save() {
-					const data = <?php echo wp_json_encode( $this->export_data ); ?>;
+		Tags_Renderer::print_tags(
+			array(
+				array( 'tag' => 'script' ),
+				function () use ( $redirect_url ) {
+					?>
+					(function () {
+						function save() {
+							const data = <?php echo wp_json_encode( $this->export_data ); ?>;
 
-					let date = new Date().toISOString().slice(0, 10);
-					let timestamp = new Date().getTime();
-					// .txt to pass WP Media library
-					let fileName = `advanced-views-export-${date}-${timestamp}.txt`;
-					// add some text prefix to avoid WP Media library to think it's a JSON
-					let content = "Advanced Views:" + JSON.stringify(data);
+							let date = new Date().toISOString().slice(0, 10);
+							let timestamp = new Date().getTime();
+							// .txt to pass WP Media library
+							let fileName = `advanced-views-export-${date}-${timestamp}.txt`;
+							// add some text prefix to avoid WP Media library to think it's a JSON
+							let content = "Advanced Views:" + JSON.stringify(data);
 
-					const file = new File([content], fileName, {
-						type: 'application/json',
-					})
+							const file = new File([content], fileName, {
+								type: 'application/json',
+							})
 
-					let toolsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
+							let toolsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
 
-					const a = document.createElement('a');
+							const a = document.createElement('a');
 
-					a.href = URL.createObjectURL(file);
-					a.download = fileName;
-					a.click();
+							a.href = URL.createObjectURL(file);
+							a.download = fileName;
+							a.click();
 
-					window.location.href = toolsUrl;
-				}
+							window.location.href = toolsUrl;
+						}
 
-				'loading' === document.readyState ?
-					window.document.addEventListener('DOMContentLoaded', save) :
-					save();
-			}())
-		</script>
-		<?php
+						'loading' === document.readyState ?
+							window.document.addEventListener('DOMContentLoaded', save) :
+							save();
+					}())
+					<?php
+				},
+			)
+		);
 		exit;
 	}
 

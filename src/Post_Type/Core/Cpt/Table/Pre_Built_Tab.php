@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
@@ -79,26 +80,27 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		$tab_data->set_name( self::NAME );
 		$tab_data->set_label( __( 'Pre-built components', 'acf-views' ) );
 		$tab_data->set_description_callback(
-			function (): void {
-				esc_html_e(
-					'Import pre-built components.',
-					'acf-views'
-				);
-				echo '<br>';
-				$this->print_tab_description_middle();
-				echo '<br>';
-				esc_html_e(
-					'Hover on the title and click Import.',
-					'acf-views'
-				);
-				echo ' ';
-				printf(
-					' <a target="_blank" href="%s">%s</a>',
-					esc_url( 'https://docs.advanced-views.com/layouts/features/pre-built-components' ),
-					esc_html__( 'Read more', 'acf-views' )
-				);
-				echo '.';
-			}
+			fn() => Tags_Renderer::print_tag_group(
+				array(
+					fn() => esc_html_e( 'Import pre-built components.', 'acf-views' ),
+					array( 'tag' => 'br' ),
+					fn() => $this->print_tab_description_middle(),
+					array( 'tag' => 'br' ),
+					fn() => esc_html_e( 'Hover on the title and click Import.', 'acf-views' ),
+					fn() => print( ' ' ),
+					array(
+						array(
+							'tag'   => 'a',
+							'attrs' => array(
+								'target' => '_blank',
+								'href'   => esc_url( 'https://docs.advanced-views.com/layouts/features/pre-built-components' ),
+							),
+						),
+						fn() => esc_html_e( 'Read more', 'acf-views' ),
+					),
+					fn() => print( '.' ),
+				)
+			)
 		);
 		$tab_data->set_label_in_brackets( (string) $items_count );
 		$tab_data->set_bulk_actions( $this->get_bulk_actions() );
