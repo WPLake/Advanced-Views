@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Html;
 
+use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Attribute\Attribute_Renderer;
 
 defined( 'ABSPATH' ) || exit;
@@ -33,22 +34,23 @@ final class Tag_Renderer {
 	 * 'class' and 'style' also accept arrays: a list of classes, a property => value map
 	 *
 	 * The content printer returns 'void|mixed': the 'mixed' is allowed to accept print callbacks, e.g.
-	 * `fn() => print( $text )`.
+	 * `fn() => print( $text )`. It's a Closure on purpose: strings and arrays are ambiguous with text and groups in
+	 * Tags_Renderer, so other callables aren't supported.
 	 *
 	 * @deprecated Use Tags_Renderer::print_tags() instead. The mark is a guard against direct usage: this method is
 	 * only a helper of Tags_Renderer.
 	 *
 	 * @param array<string,mixed> $attributes
-	 * @param callable():(void|mixed)|null $content_printer
+	 * @param Closure():(void|mixed)|null $content_printer
 	 */
 	public static function print_tag(
 		string $tag,
 		array $attributes = array(),
-		?callable $content_printer = null
+		?Closure $content_printer = null
 	): void {
 		self::print_opening_tag( $tag, $attributes );
 
-		if ( is_callable( $content_printer ) ) {
+		if ( null !== $content_printer ) {
 			$content_printer();
 		}
 

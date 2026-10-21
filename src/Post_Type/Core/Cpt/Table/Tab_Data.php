@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 
+use Closure;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 
 class Tab_Data {
@@ -11,10 +12,7 @@ class Tab_Data {
 
 	private string $name;
 	private string $label;
-	/**
-	 * @var callable|null
-	 */
-	private $description_callback;
+	private ?Closure $description_callback;
 	private string $label_in_brackets;
 	private int $total_items_count;
 	/**
@@ -61,11 +59,11 @@ class Tab_Data {
 		$this->label = $label;
 	}
 
-	public function get_description_callback(): ?callable {
+	public function get_description_callback(): ?Closure {
 		return $this->description_callback;
 	}
 
-	public function set_description_callback( ?callable $description_callback ): void {
+	public function set_description_callback( ?Closure $description_callback ): void {
 		$this->description_callback = $description_callback;
 	}
 

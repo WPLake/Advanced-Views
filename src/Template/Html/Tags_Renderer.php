@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Html;
 
+use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 
 defined( 'ABSPATH' ) || exit;
@@ -13,13 +14,15 @@ defined( 'ABSPATH' ) || exit;
  * Tag_Group: its members (a Tag, a Tag_Text, a Tag_HTML or a Tag_Chain) are rendered at the same level, and it ends the chain.
  * Tag_Text is a plain string, printed escaped. It is never called, even if it's a callable name.
  * Tag_HTML is an Htmlable (e.g. a template token) or a print callback, e.g. `fn() => print( $html )`, printed as
- * is, so a callback must escape its output itself. The callback returns 'void|mixed': the 'mixed' is allowed to accept
+ * is, so a callback must escape its output itself. The callback is a Closure on purpose: a string is always text and
+ * an array is always a group, so other callables (names, [object, method]) can't be told apart and aren't supported.
+ * The callback returns 'void|mixed': the 'mixed' is allowed to accept
  * such callbacks.
  * Tag_Group is 'mixed' as PHPStan doesn't support recursive aliases.
  *
  * @phpstan-type Tag array{tag:string, attrs?:array<string,mixed>}
  * @phpstan-type Tag_Text string
- * @phpstan-type Tag_HTML Htmlable|callable():(void|mixed)
+ * @phpstan-type Tag_HTML Htmlable|Closure():(void|mixed)
  * @phpstan-type Tag_Group list<mixed>
  * @phpstan-type Tag_Chain_Item Tag|Tag_Text|Tag_HTML|Tag_Group
  * @phpstan-type Tag_Chain list<Tag_Chain_Item>
@@ -112,7 +115,7 @@ final class Tags_Renderer {
 			return;
 		}
 
-		if ( is_callable( $text ) ) {
+		if ( $text instanceof Closure ) {
 			$text();
 		}
 	}
