@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
 class Select_Field extends List_Field {
 	const LOOP_ITEM_NAME = 'choice_item';

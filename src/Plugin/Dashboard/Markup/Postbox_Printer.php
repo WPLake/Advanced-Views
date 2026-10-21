@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup;
 
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 

@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Sto
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use WP_Post;
 use WP_Query;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
 final class Debug_Dump_Creator {
 	private Tools_Settings $tools_settings;

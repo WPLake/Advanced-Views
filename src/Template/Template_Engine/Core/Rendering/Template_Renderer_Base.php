@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Throwable;
 
 abstract class Template_Renderer_Base extends Loggable_Actor implements Template_Renderer {

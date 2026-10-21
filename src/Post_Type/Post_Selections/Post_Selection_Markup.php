@@ -9,14 +9,14 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Composed_Attribute;
+use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Composed_Htmlable;
 
 /**
  * @phpstan-import-type Tag from Tags_Renderer
@@ -497,7 +497,7 @@ class Post_Selection_Markup {
 		return $tabs_number;
 	}
 
-	protected function root_class( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): Composed_Attribute {
+	protected function root_class( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): Composed_Htmlable {
 		$bem_name = $post_selection_settings->get_bem_name();
 		$parts    = array(
 			$token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
@@ -511,6 +511,6 @@ class Post_Selection_Markup {
 									->add_item_path( 'id' );
 		}
 
-		return new Composed_Attribute( $parts );
+		return new Composed_Htmlable( $parts );
 	}
 }

@@ -10,14 +10,14 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Template;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Composed_Attribute;
+use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Composed_Htmlable;
 
 class Layout_Markup {
 	/**
@@ -207,9 +207,9 @@ class Layout_Markup {
 		$this->markups_safe[ $layout_id ] = $view_markup_safe;
 	}
 
-	protected function root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Composed_Attribute {
+	protected function root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Composed_Htmlable {
 		if ( Layout_Settings::CLASS_GENERATION_NONE === $layout_settings->classes_generation ) {
-			return new Composed_Attribute( array() );
+			return new Composed_Htmlable( array() );
 		}
 
 		$bem_name = $layout_settings->get_bem_name();
@@ -230,6 +230,6 @@ class Layout_Markup {
 		$parts[] = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
 								->add_item_path( 'object_id' );
 
-		return new Composed_Attribute( $parts );
+		return new Composed_Htmlable( $parts );
 	}
 }

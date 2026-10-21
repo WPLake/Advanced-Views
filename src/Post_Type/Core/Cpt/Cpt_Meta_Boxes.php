@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 

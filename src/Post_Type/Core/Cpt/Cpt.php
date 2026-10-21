@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 
 defined( 'ABSPATH' ) || exit;

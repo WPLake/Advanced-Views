@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
 /**
  * @phpstan-import-type Tag_Chain from Tags_Renderer

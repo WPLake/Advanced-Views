@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern_Base;

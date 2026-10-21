@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selectio
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;

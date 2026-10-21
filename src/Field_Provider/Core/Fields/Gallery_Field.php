@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pa
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Macy_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Masonry_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Splide_Pattern;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 

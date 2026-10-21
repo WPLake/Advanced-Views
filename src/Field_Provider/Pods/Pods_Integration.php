@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use WP_Post;
 
 class Pods_Integration extends Settings_Vendor_Integration {

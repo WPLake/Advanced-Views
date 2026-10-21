@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations;
 
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Acf_Integration_Base;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;

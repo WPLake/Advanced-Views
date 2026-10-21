@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selectio
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
