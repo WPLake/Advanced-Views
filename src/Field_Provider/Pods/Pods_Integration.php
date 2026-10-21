@@ -126,7 +126,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	}
 
 	/**
-	 * @param array<string,mixed> $item
+	 * @param array<int|string,mixed> $item
 	 */
 	protected function render_views_cell( array $item ): string {
 		// post, page, taxonomy.
@@ -152,7 +152,9 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	}
 
 	protected function get_group_pod_name( object $group ): ?string {
-		$pod = $group->get_parent_object();
+		$pod = method_exists( $group, 'get_parent_object' ) ?
+			$group->get_parent_object() :
+			null;
 
 		if ( is_object( $pod ) && method_exists( $pod, 'get_args' ) ) {
 			return $this->get_pod_name( $pod );
@@ -379,9 +381,11 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	}
 
 	protected static function load_group( int $id ): ?object {
-		$pods_api = self::get_pods_api( 'load_group' );
+		$pods_api = function_exists( 'pods_api' ) ?
+			pods_api() :
+			null;
 
-		if ( is_object( $pods_api ) ) {
+		if ( is_object( $pods_api ) && method_exists( $pods_api, 'load_group' ) ) {
 			$group_args = array(
 				'id' => $id,
 			);
@@ -402,7 +406,12 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	 */
 	protected static function get_fields_args( object $group, string $pod_name ): array {
 		$fields     = array();
-		$pod_fields = $group->get_fields();
+		$pod_fields = method_exists( $group, 'get_fields' ) ?
+			$group->get_fields() :
+			array();
+		$pod_fields = is_iterable( $pod_fields ) ?
+			$pod_fields :
+			array();
 
 		foreach ( $pod_fields as $field ) {
 			$field_args = self::get_field_args( $field, $pod_name );
@@ -437,9 +446,11 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	}
 
 	protected static function load_pod( string $id ): ?object {
-		$pods_api = self::get_pods_api( 'load_pod' );
+		$pods_api = function_exists( 'pods_api' ) ?
+			pods_api() :
+			null;
 
-		if ( is_object( $pods_api ) && strlen( $id ) > 0 ) {
+		if ( is_object( $pods_api ) && method_exists( $pods_api, 'load_pod' ) && strlen( $id ) > 0 ) {
 			$pod_args = array(
 				'id' => $id,
 			);
@@ -451,15 +462,5 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		}
 
 		return null;
-	}
-
-	protected static function get_pods_api( string $required_method ): ?object {
-		$pods_api = function_exists( 'pods_api' ) ?
-			pods_api() :
-			null;
-
-		return is_object( $pods_api ) && method_exists( $pods_api, $required_method ) ?
-			$pods_api :
-			null;
 	}
 }
