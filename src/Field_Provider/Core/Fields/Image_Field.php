@@ -5,7 +5,6 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
@@ -31,7 +30,7 @@ class Image_Field extends Markup_Field_Base {
 	const SVG_CONTENT = 'svg_content';
 	const ID          = 'id';
 
-	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
+	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory  = $markup_field_data->get_token_factory();
 		$attributes_map = array(
 			'src'      => self::VALUE,
@@ -53,13 +52,11 @@ class Image_Field extends Markup_Field_Base {
 															->add_item_path( $item_key );
 		}
 
-		Tags_Renderer::print_tags(
+		return array(
 			array(
-				array(
-					'tag'   => 'img',
-					'attrs' => array_merge( $attributes, $this->inner_attributes( $field_id, $markup_field_data ) ),
-				),
-			)
+				'tag'   => 'img',
+				'attrs' => array_merge( $attributes, $this->inner_attributes( $field_id, $markup_field_data ) ),
+			),
 		);
 	}
 

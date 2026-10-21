@@ -54,14 +54,16 @@ abstract class List_Field extends Markup_Field_Base {
 		return '';
 	}
 
-	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
+	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
 		if ( $markup_field_data->get_field_meta()->is_multiple() ) {
-			$this->print_item_loop( $field_id, $markup_field_data );
-
-			return;
+			return array(
+				fn() => $this->print_item_loop( $field_id, $markup_field_data ),
+			);
 		}
 
-		$this->print_inner_item( $field_id, $markup_field_data );
+		return array(
+			fn() => $this->print_inner_item( $field_id, $markup_field_data ),
+		);
 	}
 
 	protected function print_item_loop( string $field_id, Template_Field_Data $markup_field_data ): void {

@@ -13,13 +13,15 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Fiel
 defined( 'ABSPATH' ) || exit;
 
 class Plain_Field extends Markup_Field_Base {
-	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
+	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$token_factory
-			->variable( $field_id )
-			->add_item_path( self::VALUE )
-			->display();
+		return array(
+			fn() => $token_factory
+				->variable( $field_id )
+				->add_item_path( self::VALUE )
+				->display(),
+		);
 	}
 
 	/**

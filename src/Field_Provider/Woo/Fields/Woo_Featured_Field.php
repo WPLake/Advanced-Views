@@ -18,8 +18,10 @@ defined( 'ABSPATH' ) || exit;
 class Woo_Featured_Field extends Markup_Field_Base {
 	use Custom_Field;
 
-	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
-		esc_html_e( 'Featured product', 'acf-views' );
+	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
+		return array(
+			fn() => esc_html_e( 'Featured product', 'acf-views' ),
+		);
 	}
 
 	/**

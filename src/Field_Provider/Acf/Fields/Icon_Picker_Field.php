@@ -29,19 +29,21 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$this->image_field = $image_field;
 	}
 
-	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
+	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$dashicons_branch     = $this->dashicons_branch( $field_id, $markup_field_data );
 		$media_library_branch = $this->media_library_branch( $field_id, $markup_field_data );
 		$custom_image_branch  = $this->custom_image_branch( $field_id, $markup_field_data );
 
-		$token_factory
-			->if()
-			->set_if_branch( $dashicons_branch )
-			->set_elseif_branch( $media_library_branch )
-			->set_else_branch( $custom_image_branch )
-			->display();
+		return array(
+			fn() => $token_factory
+				->if()
+				->set_if_branch( $dashicons_branch )
+				->set_elseif_branch( $media_library_branch )
+				->set_else_branch( $custom_image_branch )
+				->display(),
+		);
 	}
 
 	/**
@@ -165,7 +167,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		$this->image_field->print_markup( $field_id, $markup_field_data );
+		Tags_Renderer::print_tags( $this->image_field->compose_tags( $field_id, $markup_field_data ) );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();

@@ -36,7 +36,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 	}
 
 	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
-		$this->link_field->print_markup( $item_id, $markup_field_data );
+		Tags_Renderer::print_tags( $this->link_field->compose_tags( $item_id, $markup_field_data ) );
 	}
 
 	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
@@ -60,7 +60,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		echo ']';
 	}
 
-	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
+	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$value_var = $token_factory->variable( $field_id )
@@ -70,18 +70,22 @@ class Menu_Items_Field extends Markup_Field_Base {
 			fn()=>$this->print_loop_body( $field_id, $item_var->get_name(), $markup_field_data )
 		);
 
-		$token_factory->formatter()
-						->new_line();
-		$markup_field_data->print_tabs();
+		return array(
+			function () use ( $token_factory, $markup_field_data, $value_var, $item_var, $loop_body ) {
+				$token_factory->formatter()
+								->new_line();
+				$markup_field_data->print_tabs();
 
-		$token_factory->loop()
-						->set_source_variable( $value_var )
-						->set_item_variable( $item_var )
-						->set_body( $loop_body )
-						->display();
+				$token_factory->loop()
+								->set_source_variable( $value_var )
+								->set_item_variable( $item_var )
+								->set_body( $loop_body )
+								->display();
 
-		$token_factory->formatter()
-						->new_line();
+				$token_factory->formatter()
+								->new_line();
+			},
+		);
 	}
 
 	protected function print_loop_body( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {

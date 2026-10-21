@@ -37,9 +37,9 @@ class Pods_Upload_Field extends Markup_Field_Base {
 			$this->image_field;
 	}
 
-	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
-		$this->get_field_instance( $markup_field_data->get_field_meta() )
-			->print_markup( $field_id, $markup_field_data );
+	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
+		return $this->get_field_instance( $markup_field_data->get_field_meta() )
+			->compose_tags( $field_id, $markup_field_data );
 	}
 
 	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {

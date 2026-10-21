@@ -13,6 +13,7 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pa
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Macy_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Masonry_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Splide_Pattern;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -26,10 +27,10 @@ class Gallery_Field extends Markup_Field_Base {
 	protected function print_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$markup_field_data->set_is_with_field_wrapper( true );
 
-		$this->image_field->print_markup( $item_id, $markup_field_data );
+		Tags_Renderer::print_tags( $this->image_field->compose_tags( $item_id, $markup_field_data ) );
 	}
 
-	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
+	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$source_var = $token_factory->variable( $field_id )
@@ -54,14 +55,18 @@ class Gallery_Field extends Markup_Field_Base {
 						->set_item_variable( $item_var )
 						->set_body( $loop_body );
 
-		$token_factory->formatter()
-						->new_line();
-		$markup_field_data->print_tabs();
+		return array(
+			function () use ( $token_factory, $markup_field_data, $loop ) {
+				$token_factory->formatter()
+								->new_line();
+				$markup_field_data->print_tabs();
 
-		$loop->display();
+				$loop->display();
 
-		$token_factory->formatter()
-						->new_line();
+				$token_factory->formatter()
+								->new_line();
+			},
+		);
 	}
 
 	/**

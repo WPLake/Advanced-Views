@@ -87,7 +87,7 @@ class Field_Template {
 
 		Format_Token::tabulation( $tabs_number );
 
-		$markup_field_instance->print_markup( $field_id, $markup_field_data );
+		Tags_Renderer::print_tags( $markup_field_instance->compose_tags( $field_id, $markup_field_data ) );
 
 		Format_Token::next_line();
 

@@ -210,7 +210,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		return $grouped;
 	}
 
-	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
+	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$value_var = $token_factory->variable( $field_id )
@@ -232,18 +232,22 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 			}
 		);
 
-		$token_factory->formatter()
-						->new_line();
-		$markup_field_data->print_tabs();
+		return array(
+			function () use ( $token_factory, $markup_field_data, $value_var, $item_var, $body ) {
+				$token_factory->formatter()
+								->new_line();
+				$markup_field_data->print_tabs();
 
-		$token_factory->loop()
-			->set_source_variable( $value_var )
-			->set_item_variable( $item_var )
-				->set_body( $body )
-			->display();
+				$token_factory->loop()
+					->set_source_variable( $value_var )
+					->set_item_variable( $item_var )
+					->set_body( $body )
+					->display();
 
-		$token_factory->formatter()
-						->new_line();
+				$token_factory->formatter()
+								->new_line();
+			},
+		);
 	}
 
 	/**

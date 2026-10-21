@@ -20,30 +20,35 @@ class Color_Picker_Field extends Markup_Field_Base {
 	const BLUE  = 'blue';
 	const ALPHA = 'alpha';
 
-	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
+	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		if ( 'string' === $markup_field_data->get_field_meta()->get_return_format() ) {
 			$var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
-			$var->display();
 
-			return;
+			return array(
+				fn() => $var->display(),
+			);
 		}
 
 		$parts       = array( 'red', 'green', 'blue', 'alpha' );
 		$items_count = count( $parts );
 
-		echo 'rgba(';
+		return array(
+			function () use ( $token_factory, $field_id, $parts, $items_count ) {
+				echo 'rgba(';
 
-		for ( $i = 0;$i < $items_count;$i++ ) {
-			if ( $i > 0 ) {
-				echo ';';
-			}
+				for ( $i = 0;$i < $items_count;$i++ ) {
+					if ( $i > 0 ) {
+						echo ';';
+					}
 
-			$token_factory->variable( $field_id )->add_item_path( $parts[ $i ] )->display();
-		}
+					$token_factory->variable( $field_id )->add_item_path( $parts[ $i ] )->display();
+				}
 
-		echo ')';
+				echo ')';
+			},
+		);
 	}
 
 	/**
