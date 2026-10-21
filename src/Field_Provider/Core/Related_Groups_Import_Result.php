@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core;
 
 defined( 'ABSPATH' ) || exit;
 
-class Related_Groups_Import_Result {
+final class Related_Groups_Import_Result {
 	/**
 	 * @var array<string, string[]> vendorName => groupIds (like group_x, not wp post ids)
 	 */
@@ -32,27 +32,18 @@ class Related_Groups_Import_Result {
 		$vendor_parts = array();
 
 		foreach ( $this->group_ids as $vendor_name => $group_ids ) {
-			$vendor_parts[] = sprintf( '%s:%s', $vendor_name, implode( ',', $group_ids ) );
+			$group_ids_value = implode( ',', $group_ids );
+
+			$vendor_parts[] = sprintf( '%s:%s', $vendor_name, $group_ids_value );
 		}
 
 		return implode( ';', $vendor_parts );
 	}
 
 	public function from_query_string( string $query_string ): void {
-		$items = explode( ';', $query_string );
+		$parsed_group_ids = self::parse_query_string( $query_string );
 
-		foreach ( $items as $item ) {
-			$parts = explode( ':', $item );
-
-			if ( 2 !== count( $parts ) ) {
-				continue;
-			}
-
-			$vendor_name = $parts[0];
-			$group_ids   = explode( ',', $parts[1] );
-
-			$this->group_ids[ $vendor_name ] = $group_ids;
-		}
+		$this->group_ids = array_replace( $this->group_ids, $parsed_group_ids );
 	}
 
 	/**
@@ -60,5 +51,25 @@ class Related_Groups_Import_Result {
 	 */
 	public function get_group_ids(): array {
 		return $this->group_ids;
+	}
+
+	/**
+	 * @return array<string, string[]>
+	 */
+	protected static function parse_query_string( string $query_string ): array {
+		$group_ids = array();
+		$items     = explode( ';', $query_string );
+
+		foreach ( $items as $item ) {
+			$parts = explode( ':', $item );
+
+			if ( 2 === count( $parts ) ) {
+				$vendor_name = $parts[0];
+
+				$group_ids[ $vendor_name ] = explode( ',', $parts[1] );
+			}
+		}
+
+		return $group_ids;
 	}
 }
