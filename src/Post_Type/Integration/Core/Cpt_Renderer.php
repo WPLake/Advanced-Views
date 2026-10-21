@@ -107,7 +107,7 @@ final class Cpt_Renderer {
 					'tag'   => 'p',
 					'attrs' => array( 'class' => 'avf-cpt-block__placeholder' ),
 				),
-				fn() => print( esc_html( sprintf( '[%s]', $message ) ) ),
+				sprintf( '[%s]', $message ),
 			)
 		);
 	}

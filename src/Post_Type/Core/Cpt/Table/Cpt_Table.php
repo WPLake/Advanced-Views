@@ -158,7 +158,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 					'attrs' => array( 'class' => 'notice notice-success' ),
 				),
 				array( 'tag' => 'p' ),
-				fn() => print( esc_html( __( 'Item successfully cloned.', 'acf-views' ) ) ),
+				__( 'Item successfully cloned.', 'acf-views' ),
 			)
 		);
 	}
@@ -209,13 +209,13 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 
 			$count_span = '' !== $tab->get_label_in_brackets() ?
 				array(
-					fn() => print( ' ' ),
+					' ',
 					array(
 						array(
 							'tag'   => 'span',
 							'attrs' => array( 'class' => 'count' ),
 						),
-						fn() => print( esc_html( sprintf( '(%s)', $tab->get_label_in_brackets() ) ) ),
+						sprintf( '(%s)', $tab->get_label_in_brackets() ),
 					),
 				) :
 				array();
@@ -227,7 +227,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 						'attrs' => $attrs,
 					),
 					array(
-						fn() => print( esc_html( $tab->get_label() ) ),
+						$tab->get_label(),
 						$count_span,
 					),
 				)
@@ -378,7 +378,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 					'tag'   => 'a',
 					'attrs' => array( 'href' => $clone_link ),
 				),
-				fn() => print( esc_html( __( 'Clone', 'acf-views' ) ) ),
+				__( 'Clone', 'acf-views' ),
 			)
 		);
 		$actions['trash'] = $trash;
@@ -657,7 +657,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 					),
 				),
 				// translators: %s: item title.
-				fn() => print( esc_html( sprintf( __( 'Select %s', 'acf-views' ), $title ) ) ),
+				sprintf( __( 'Select %s', 'acf-views' ), $title ),
 			),
 			array(
 				'tag'   => 'input',

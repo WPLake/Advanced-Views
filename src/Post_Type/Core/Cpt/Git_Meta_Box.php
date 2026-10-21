@@ -262,7 +262,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 							'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
 						),
 					),
-					fn() => print( esc_html( __( 'Save the item', 'acf-views' ) ) ),
+					__( 'Save the item', 'acf-views' ),
 				),
 				fn() => print( ' ' . esc_html( __( 'to your library', 'acf-views' ) ) . '.' ),
 			),
@@ -293,7 +293,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 					'tag'   => 'option',
 					'attrs' => array( 'value' => $git_repository['id'] ),
 				),
-				fn() => print( esc_html( $git_repository['name'] ) ),
+				$git_repository['name'],
 			),
 			$this->settings->get_git_repositories()
 		);
@@ -312,7 +312,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 						'tag'   => 'option',
 						'attrs' => array( 'value' => '' ),
 					),
-					fn() => print( esc_html( __( 'Select repository', 'acf-views' ) ) ),
+					__( 'Select repository', 'acf-views' ),
 				),
 				...$option_chains,
 			),
@@ -347,7 +347,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 						'tag'   => 'label',
 						'attrs' => array( 'for' => 'av_git-repo-with-fields' ),
 					),
-					fn() => print( esc_html( __( 'Include related Meta groups', 'acf-views' ) ) ),
+					__( 'Include related Meta groups', 'acf-views' ),
 				),
 			),
 		);
@@ -359,7 +359,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	protected function save_reminder_tags(): array {
 		return array(
 			array( 'tag' => 'p' ),
-			fn() => print( esc_html( __( 'Note: all changes must be already saved.', 'acf-views' ) ) ),
+			__( 'Note: all changes must be already saved.', 'acf-views' ),
 		);
 	}
 
@@ -372,7 +372,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 				'tag'   => 'button',
 				'attrs' => array( 'class' => 'button button-primary button-large' ),
 			),
-			fn() => print( esc_html( __( 'Push to the repository', 'acf-views' ) ) ),
+			__( 'Push to the repository', 'acf-views' ),
 		);
 	}
 }

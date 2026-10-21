@@ -283,7 +283,7 @@ class Plugin extends Actor_Base implements Actor {
 					'attrs' => array( 'class' => 'notice notice-warning' ),
 				),
 				array( 'tag' => 'p' ),
-				fn() => print( esc_html( $message ) ),
+				$message,
 			)
 		);
 	}
@@ -466,9 +466,9 @@ class Plugin extends Actor_Base implements Actor {
 				),
 				array( 'tag' => 'p' ),
 				array(
-					fn() => print( esc_html( $detected_message ) . ' ' ),
+					$detected_message . ' ',
 					array( 'tag' => 'br' ),
-					fn() => print( esc_html( $action_message ) . ' ' ),
+					$action_message . ' ',
 					array(
 						array(
 							'tag'   => 'a',
@@ -477,7 +477,7 @@ class Plugin extends Actor_Base implements Actor {
 								'href'   => esc_url( External_Links::CONFLICTS_URL ),
 							),
 						),
-						fn() => print( esc_html( __( 'Read more', 'acf-views' ) ) ),
+						__( 'Read more', 'acf-views' ),
 					),
 				),
 			)

@@ -80,7 +80,7 @@ class Postbox_Printer {
 			'full';
 		$code    = array(
 			$this->html->tag( 'span', array( 'class' => 'av-sortcodes__code av-shortcodes__code--type--short' ) ),
-			$this->html->escaped_text( $shortcode ),
+			$shortcode,
 		);
 		$details = $is_short ?
 			array() :
@@ -104,7 +104,7 @@ class Postbox_Printer {
 					'data-target' => '.av-shortcodes__code--type--short',
 				)
 			),
-			$this->html->escaped_text( __( 'Copy Shortcode', 'acf-views' ) ),
+			__( 'Copy Shortcode', 'acf-views' ),
 		);
 
 		$gutenberg_answer = $is_single ?
@@ -120,12 +120,12 @@ class Postbox_Printer {
 		$roles_link = array(
 			$this->html->tag( 'span' ),
 			array(
-				$this->html->escaped_text( $roles_hint . ' ' ),
+				$roles_hint . ' ',
 				$this->html->link_tags(
 					'https://docs.advanced-views.com/layouts/embedding-shortcode',
 					__( 'here', 'acf-views' )
 				),
-				$this->html->escaped_text( '.' ),
+				'.',
 			),
 		);
 
@@ -143,7 +143,7 @@ class Postbox_Printer {
 	protected function embed_hint_tags( string $question, string $answer ): array {
 		return array(
 			$this->html->tag( 'p' ),
-			array( $this->html->escaped_text( $question ), $this->html->tag( 'br' ), $this->html->escaped_text( $answer ) ),
+			array( $question, $this->html->tag( 'br' ), $answer ),
 		);
 	}
 
@@ -154,7 +154,7 @@ class Postbox_Printer {
 		return array(
 			$this->html->tag( 'div' ),
 			array(
-				array( $this->html->tag( 'p' ), $this->html->escaped_text( $description ) ),
+				array( $this->html->tag( 'p' ), $description ),
 				$this->button_link_tags( $url, $button_label ),
 			),
 		);
@@ -173,7 +173,7 @@ class Postbox_Printer {
 					'target' => '_blank',
 				)
 			),
-			$this->html->escaped_text( $label ),
+			$label,
 		);
 	}
 }

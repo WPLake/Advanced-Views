@@ -52,7 +52,7 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 							'tag'   => 'span',
 							'attrs' => $span_attributes,
 						),
-						fn() => print( esc_html( $error_message ) ),
+						$error_message,
 					),
 				),
 			)
@@ -97,18 +97,14 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 			Tags_Renderer::print_tags(
 				array(
 					array( 'tag' => 'pre' ),
-					fn() => print(
-						esc_html(
-							// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
+					// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
 							print_r(
 								array(
 									'template' => $template,
 									'args'     => $args,
 								),
 								true
-							)
-						)
-					),
+							),
 				)
 			);
 		}

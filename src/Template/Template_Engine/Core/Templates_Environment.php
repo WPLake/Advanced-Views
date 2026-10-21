@@ -133,19 +133,15 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 	protected function print_not_writable_message(): void {
 		Tags_Renderer::print_tag_group(
 			array(
-				fn() => print( esc_html( __( 'The templates directory is not writable.', 'acf-views' ) ) ),
-				fn() => print( esc_html( ' (path = ' . $this->uploads_folder . ')' ) ),
+				__( 'The templates directory is not writable.', 'acf-views' ),
+				' (path = ' . $this->uploads_folder . ')',
 				array( 'tag' => 'br' ),
-				fn() => print( esc_html( __( 'Most likely, the WordPress uploads directory is not writable.', 'acf-views' ) ) ),
+				__( 'Most likely, the WordPress uploads directory is not writable.', 'acf-views' ),
 				array( 'tag' => 'br' ),
-				fn() => print(
-					esc_html(
-						__(
+				__(
 							'Check and fix file permissions, then deactivate and activate back the Advanced Views plugin. If the issue persists, contact support.',
 							'acf-views'
-						)
-					)
-				),
+						),
 			)
 		);
 	}

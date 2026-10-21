@@ -91,7 +91,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 			),
 			array( 'tag' => 'p' ),
 			array(
-				fn() => print( esc_html__( 'Advanced Views plugin has been successfully upgraded!', 'acf-views' ) ),
+				__( 'Advanced Views plugin has been successfully upgraded!', 'acf-views' ),
 				array( 'tag' => 'br' ),
 				...$this->get_notice_lines_members( $upgrade_notice ),
 				...$dismiss_members,
@@ -134,7 +134,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 				$members[] = array( 'tag' => 'br' );
 			}
 
-			$members[] = fn() => print( esc_html( $line ) );
+			$members[] = $line;
 		}
 
 		return $members;
@@ -161,7 +161,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 						'href'  => esc_url( $dismiss_url ),
 					),
 				),
-				fn() => print( esc_html( __( 'Thanks, hide', 'acf-views' ) ) ),
+				__( 'Thanks, hide', 'acf-views' ),
 			),
 		);
 	}

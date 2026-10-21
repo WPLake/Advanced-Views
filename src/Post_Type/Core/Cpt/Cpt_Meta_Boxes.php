@@ -89,7 +89,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 
 			// the ', ' goes between the links.
 			if ( array() !== $post_links ) {
-				$post_links[] = fn() => print( ', ' );
+				$post_links[] = ', ';
 			}
 
 			$post_links[] = array(
@@ -100,13 +100,13 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 						'href'   => esc_url( $post_url ),
 					),
 				),
-				fn() => print( esc_html( get_the_title( $post ) ) ),
+				get_the_title( $post ),
 			);
 		}
 
 		$post_types_line = array() !== $post_types ?
 			array(
-				fn() => print( esc_html( __( 'Post Types:', 'acf-views' ) . ' ' . join( ', ', $post_types ) ) ),
+				__( 'Post Types:', 'acf-views' ) . ' ' . join( ', ', $post_types ),
 			) :
 			array();
 		$pages_line      = array() !== $post_links ?

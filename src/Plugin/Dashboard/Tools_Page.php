@@ -507,7 +507,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 
 		return Tags_Renderer::render_tag_group(
 			array_merge(
-				array( $this->text_printer( $summary ), array( 'tag' => 'br' ) ),
+				array( $summary, array( 'tag' => 'br' ) ),
 				$this->imported_items_tags( $views_label, $success_view_ids ),
 				$this->imported_items_tags( $cards_label, $success_card_ids ),
 				$this->failed_items_tags( $wrong_views_label, $fail_view_unique_ids ),
@@ -541,20 +541,20 @@ final class Tools_Page extends Actor_Base implements Actor {
 						'target' => '_blank',
 					),
 				),
-				$this->text_printer( get_the_title( (int) $post_id ) ),
+				get_the_title( (int) $post_id ),
 			);
 		}
 
 		return array_merge(
 			array(
 				array( 'tag' => 'br' ),
-				$this->text_printer( $label . ':' ),
+				$label . ':',
 				array( 'tag' => 'br' ),
 				array( 'tag' => 'br' ),
-				$this->text_printer( ' ' ),
+				' ',
 			),
 			$links,
-			array( $this->text_printer( '.' ), array( 'tag' => 'br' ) )
+			array( '.', array( 'tag' => 'br' ) )
 		);
 	}
 
@@ -575,18 +575,14 @@ final class Tools_Page extends Actor_Base implements Actor {
 				$ids[] = array( 'tag' => 'br' );
 			}
 
-			$ids[] = $this->text_printer( $unique_id );
+			$ids[] = $unique_id;
 		}
 
 		return array_merge(
-			array( $this->text_printer( $label . ': ' ) ),
+			array( $label . ': ' ),
 			$ids,
-			array( $this->text_printer( '.' ), array( 'tag' => 'br' ) )
+			array( '.', array( 'tag' => 'br' ) )
 		);
-	}
-
-	protected function text_printer( string $text ): callable {
-		return fn() => print( esc_html( $text ) );
 	}
 
 	/**

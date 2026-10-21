@@ -57,33 +57,21 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 			function (): void {
 				Tags_Renderer::print_tag_group(
 					array(
-						fn() => print(
-							esc_html(
-								__(
+						__(
 									'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
 									'acf-views'
-								)
-							)
-						),
+								),
 						array( 'tag' => 'br' ),
-						fn() => print(
-							esc_html(
-								__(
+						__(
 									'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
 									'acf-views'
-								)
-							)
-						),
+								),
 						array( 'tag' => 'br' ),
-						fn() => print(
-							esc_html(
-								__(
+						__(
 									'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
 									'acf-views'
-								)
-							)
-						),
-						fn() => print( ' ' ),
+								),
+						' ',
 						array(
 							array(
 								'tag'   => 'a',
@@ -92,7 +80,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 									'href'   => esc_url( 'https://docs.advanced-views.com/features/file-system-storage' ),
 								),
 							),
-							fn() => print( esc_html( __( 'Read more', 'acf-views' ) ) ),
+							__( 'Read more', 'acf-views' ),
 						),
 					)
 				);
@@ -176,7 +164,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 						'target' => '_blank',
 					),
 				),
-				fn() => print( esc_html( $cpt_data->title ) ),
+				$cpt_data->title,
 			);
 		}
 
@@ -189,9 +177,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 				array(
 					array(
 						array( 'tag' => 'p' ),
-						fn() => print(
-							esc_html( count( $ids ) . ' ' . __( 'items successfully synced', 'acf-views' ) )
-						),
+						count( $ids ) . ' ' . __( 'items successfully synced', 'acf-views' ),
 					),
 					array(
 						array( 'tag' => 'p' ),

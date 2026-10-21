@@ -73,11 +73,11 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 		$tab_data->set_label( __( 'Bulk validation', 'acf-views' ) );
 		$tab_data->set_description_callback(
 			fn() => print( esc_html(
-					__(
-						'Bulk validation - Used to validate the Custom Template field of all existing items and displays items that have failed validation.',
-						'acf-views'
-					)
-				) )
+				__(
+					'Bulk validation - Used to validate the Custom Template field of all existing items and displays items that have failed validation.',
+					'acf-views'
+				)
+			) )
 		);
 		// some items can be FS-only, so show the sync action too.
 		$tab_data->set_bulk_actions( $this->fs_only_tab->get_bulk_actions() );
@@ -121,7 +121,7 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 					'href'  => esc_url( $edit_post_link ),
 				),
 			),
-			fn() => print( esc_html( $cpt_settings->title ) ),
+			$cpt_settings->title,
 		);
 
 		Row_Title_Printer::print_title_and_action(

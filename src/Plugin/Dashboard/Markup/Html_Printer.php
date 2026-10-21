@@ -26,7 +26,7 @@ class Html_Printer {
 					'href'   => esc_url( $url ),
 				)
 			),
-			$this->escaped_text( $label ),
+			$label,
 		);
 	}
 
@@ -84,17 +84,13 @@ class Html_Printer {
 		);
 	}
 
-	public function escaped_text( string $text ): callable {
-		return fn() => print( esc_html( $text ) );
-	}
-
 	/**
 	 * @return Tag_Chain
 	 */
 	public function title_tags( string $title ): array {
 		return array(
 			$this->tag( 'p', array( 'class' => 'av-introduction__title' ) ),
-			$this->escaped_text( $title ),
+			$title,
 		);
 	}
 }

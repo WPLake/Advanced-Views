@@ -10,17 +10,18 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Tag_Chain: every next item goes inside the previous one.
- * Tag_Group: its members (a Tag, a Tag_Text or a Tag_Chain) are rendered at the same level, and it ends the chain.
- * Tag_Text is a plain string, a Stringable object (e.g. a template token) or a print callback, e.g. `fn() => print( $text )`.
- * Only a string is escaped, while an object and a callback are printed as is. A string is never called, even if it's a
- * callable name.
- * The callback returns 'void|mixed': the 'mixed' is allowed to accept such callbacks.
+ * Tag_Group: its members (a Tag, a Tag_Text, a Tag_HTML or a Tag_Chain) are rendered at the same level, and it ends the chain.
+ * Tag_Text is a plain string, printed escaped. It is never called, even if it's a callable name.
+ * Tag_HTML is a Stringable object (e.g. a template token) or a print callback, e.g. `fn() => print( $html )`, printed as
+ * is, so a callback must escape its output itself. The callback returns 'void|mixed': the 'mixed' is allowed to accept
+ * such callbacks.
  * Tag_Group is 'mixed' as PHPStan doesn't support recursive aliases.
  *
  * @phpstan-type Tag array{tag:string, attrs?:array<string,mixed>}
- * @phpstan-type Tag_Text string|Stringable|callable():(void|mixed)
+ * @phpstan-type Tag_Text string
+ * @phpstan-type Tag_HTML Stringable|callable():(void|mixed)
  * @phpstan-type Tag_Group list<mixed>
- * @phpstan-type Tag_Chain_Item Tag|Tag_Text|Tag_Group
+ * @phpstan-type Tag_Chain_Item Tag|Tag_Text|Tag_HTML|Tag_Group
  * @phpstan-type Tag_Chain list<Tag_Chain_Item>
  */
 final class Tags_Renderer {
@@ -88,7 +89,7 @@ final class Tags_Renderer {
 	}
 
 	/**
-	 * @param Tag_Text $text
+	 * @param Tag_Text|Tag_HTML $text
 	 */
 	protected static function print_text( $text ): void {
 		if ( is_string( $text ) ) {

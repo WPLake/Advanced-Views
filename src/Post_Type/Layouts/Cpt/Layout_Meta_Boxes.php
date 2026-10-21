@@ -61,7 +61,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 					'onMouseOut'  => "this.style.filter='brightness(100%)'",
 				),
 			),
-			fn() => print( esc_html( $title ) ),
+			$title,
 		);
 
 		Tags_Renderer::print_tags( $tags );
@@ -194,7 +194,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			Tags_Renderer::print_tags(
 				array(
 					array( 'tag' => 'p' ),
-					fn() => print( esc_html( $message ) ),
+					$message,
 				)
 			);
 		}
@@ -255,7 +255,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 						),
 					),
 				),
-				fn() => print( esc_html( $label ) ),
+				$label,
 			);
 
 			Tags_Renderer::print_tags( $tags );

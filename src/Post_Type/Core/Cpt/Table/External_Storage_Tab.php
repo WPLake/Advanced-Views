@@ -224,18 +224,14 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 
 			$paragraphs[] = array(
 				array( 'tag' => 'p' ),
-				fn() => print(
-					esc_html(
-						sprintf(
+				sprintf(
 							'%s %s %s %s',
 							$group_links_count,
 							ucfirst( $vendor_name ),
 							_n( 'group', 'groups', $group_links_count, 'acf-views' ),
 							// translators: x items successfully imported.
 							__( 'successfully imported:', 'acf-views' )
-						)
-					)
-				),
+						),
 			);
 			$paragraphs[] = $this->links_paragraph( $group_links );
 		}
@@ -269,17 +265,13 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	protected function imported_items_paragraph( int $items_count ): array {
 		return array(
 			array( 'tag' => 'p' ),
-			fn() => print(
-				esc_html(
-					sprintf(
+			sprintf(
 						'%s %s %s',
 						$items_count,
 						_n( 'Item', 'Items', $items_count, 'acf-views' ),
 						// translators: x items successfully imported.
 						__( 'successfully imported:', 'acf-views' )
-					)
-				)
-			),
+					),
 		);
 	}
 
@@ -305,7 +297,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 						'target' => '_blank',
 					),
 				),
-				fn() => print( esc_html( $link['title'] ) ),
+				$link['title'],
 			);
 		}
 

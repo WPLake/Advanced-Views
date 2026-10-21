@@ -263,7 +263,7 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 						'href'   => esc_url( $link ),
 					),
 				),
-				fn() => print( esc_html( $label ) ),
+				$label,
 			)
 		);
 	}

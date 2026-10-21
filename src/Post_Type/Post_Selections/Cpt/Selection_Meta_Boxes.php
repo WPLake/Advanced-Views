@@ -73,7 +73,7 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 					'target' => '_blank',
 				),
 			),
-			fn() => print( esc_html( $view_data->title ) ),
+			$view_data->title,
 		);
 
 		Tags_Renderer::print_tags( $tags );

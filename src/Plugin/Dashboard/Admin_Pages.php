@@ -350,7 +350,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 							'target' => '_self',
 						),
 					),
-					fn() => print( esc_html( $plugin_cpt->labels()->plural_name() ) ),
+					$plugin_cpt->labels()->plural_name(),
 				)
 			),
 			$this->plugin_cpts
@@ -378,7 +378,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 							'onmouseout'  => 'this.style.opacity=1',
 						),
 					),
-					fn() => print( esc_html__( 'Get Pro', 'acf-views' ) ),
+					__( 'Get Pro', 'acf-views' ),
 				)
 			),
 		);

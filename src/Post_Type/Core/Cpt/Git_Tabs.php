@@ -94,7 +94,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 						'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
 					),
 				),
-				fn() => print( esc_html__( 'Read more', 'acf-views' ) ),
+				__( 'Read more', 'acf-views' ),
 			)
 		);
 		Tags_Renderer::print_tags( array( array( 'tag' => 'br' ) ) );
@@ -435,7 +435,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 				'attrs' => array( 'class' => 'notice notice-success' ),
 			),
 			array( 'tag' => 'p' ),
-			fn() => print( esc_html( __( 'Cache successfully cleared.', 'acf-views' ) ) ),
+			__( 'Cache successfully cleared.', 'acf-views' ),
 		);
 
 		Tags_Renderer::print_tags( $tags );

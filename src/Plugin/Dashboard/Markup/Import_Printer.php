@@ -60,7 +60,7 @@ class Import_Printer {
 							'value' => 'delete',
 						)
 					),
-					$this->html->escaped_text( __( 'Delete imported objects', 'acf-views' ) ),
+					__( 'Delete imported objects', 'acf-views' ),
 				),
 			) :
 			array();
@@ -101,7 +101,7 @@ class Import_Printer {
 			$this->html->title_tags( __( 'Request is failed.', 'acf-views' ) ),
 			$this->html->tag( 'br' ),
 			$this->html->tag( 'br' ),
-			$this->html->escaped_text( $demo_import->get_error() ),
+			$demo_import->get_error(),
 		);
 	}
 
@@ -147,7 +147,7 @@ class Import_Printer {
 				$line_tags[] = $this->html->tag( 'br' );
 			}
 
-			$line_tags[] = $this->html->escaped_text( $line );
+			$line_tags[] = $line;
 		}
 
 		return array( $this->html->tag( 'p' ), $this->html->tag( 'b' ), $line_tags );
@@ -171,23 +171,19 @@ class Import_Printer {
 		$description = array(
 			$this->html->tag( 'p', array( 'class' => 'av-introduction__description' ) ),
 			array(
-				$this->html->escaped_text(
-					__(
+				__(
 						"Whether you're new to Advanced Views or just want a quick way to set up the basics, this demo import will automatically create a working example for you.",
 						'acf-views'
-					)
-				),
+					),
 				$this->html->tag( 'br' ),
-				$this->html->escaped_text( __( "It's perfect for exploring how Layouts, Post Selections, and ACF fields work together.", 'acf-views' ) ),
+				__( "It's perfect for exploring how Layouts, Post Selections, and ACF fields work together.", 'acf-views' ),
 			),
 		);
 
 		$importing_description = array(
 			$this->html->tag( 'p', array( 'class' => 'av-introduction__description' ) ),
-			$this->html->escaped_text(
-				__( 'Click Import Demo and wait a few seconds.', 'acf-views' ) . ' ' .
-				__( "When done, you'll see quick links to edit all imported items.", 'acf-views' )
-			),
+			__( 'Click Import Demo and wait a few seconds.', 'acf-views' ) . ' ' .
+				__( "When done, you'll see quick links to edit all imported items.", 'acf-views' ),
 		);
 
 		return array(
@@ -226,7 +222,7 @@ class Import_Printer {
 				$this->bold_paragraph_tags( array( __( 'After Import', 'acf-views' ) ) ),
 				array(
 					$this->html->tag( 'p' ),
-					$this->html->escaped_text( __( 'A Delete Demo button will appear if you’d like to remove the demo content later.', 'acf-views' ) ),
+					__( 'A Delete Demo button will appear if you’d like to remove the demo content later.', 'acf-views' ),
 				),
 				$this->html->tag( 'hr' ),
 				$this->html->tag( 'br' ),
@@ -240,7 +236,7 @@ class Import_Printer {
 							'value' => 'import',
 						)
 					),
-					$this->html->escaped_text( __( 'Import Demo Now', 'acf-views' ) ),
+					__( 'Import Demo Now', 'acf-views' ),
 				),
 			),
 		);
@@ -255,7 +251,7 @@ class Import_Printer {
 		return array(
 			$this->html->tag( 'ol', array( 'class' => 'av-introduction__description av-introduction__ol' ) ),
 			array_map(
-				fn( string $item ) => array( $this->html->tag( 'li' ), $this->html->escaped_text( $item ) ),
+				fn( string $item ) => array( $this->html->tag( 'li' ), $item ),
 				$items
 			),
 		);

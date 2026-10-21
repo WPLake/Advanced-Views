@@ -139,7 +139,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 					'onMouseOut'  => "this.style.filter='brightness(100%)'",
 				),
 			),
-			fn() => print( esc_html( $title ) ),
+			$title,
 		);
 
 		Tags_Renderer::print_tags( $tags );
@@ -228,7 +228,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 				),
 				array(
 					$icon_tag,
-					fn() => print( esc_html( $label ) ),
+					$label,
 				),
 			)
 		);
@@ -347,7 +347,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 							'href'   => $related_view_data->get_edit_post_link(),
 						),
 					),
-					fn() => print( esc_html( $related_view_data->title ) ),
+					$related_view_data->title,
 				)
 			);
 		}
@@ -518,15 +518,11 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 								'tag'   => 'span',
 								'attrs' => array( 'style' => array( 'color' => '#dc3232' ) ),
 							),
-							fn() => print(
-								esc_html(
-									sprintf(
+							sprintf(
 										'%s %s:',
 										count( $related_view_links_with_invalid_custom_markup ),
 										__( 'Views associated with this group contain invalid Custom Markup', 'acf-views' )
-									)
-								)
-							),
+									),
 						),
 						array( 'tag' => 'br' ),
 						array( 'tag' => 'br' ),

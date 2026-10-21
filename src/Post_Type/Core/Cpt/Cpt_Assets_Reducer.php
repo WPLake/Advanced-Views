@@ -266,7 +266,7 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 					'attrs' => array( 'class' => 'acf-views__loading-fallback acf-views__loading-fallback--hidden' ),
 				),
 				array(
-					fn() => print( esc_html__( 'Loading the Editor is taking longer than expected.', 'acf-views' ) ),
+					__( 'Loading the Editor is taking longer than expected.', 'acf-views' ),
 					array( 'tag' => 'br' ),
 					fn() => printf(
 						// translators: 1 is the opening tag, 2 is the closing tag.

@@ -87,7 +87,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 					fn() => $this->print_tab_description_middle(),
 					array( 'tag' => 'br' ),
 					fn() => esc_html_e( 'Hover on the title and click Import.', 'acf-views' ),
-					fn() => print( ' ' ),
+					' ',
 					array(
 						array(
 							'tag'   => 'a',
@@ -98,7 +98,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 						),
 						fn() => esc_html_e( 'Read more', 'acf-views' ),
 					),
-					fn() => print( '.' ),
+					'.',
 				)
 			)
 		);

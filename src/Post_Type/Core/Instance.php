@@ -105,7 +105,7 @@ abstract class Instance {
 					'tag'   => 'p',
 					'attrs' => array( 'style' => array( 'color' => 'red' ) ),
 				),
-				fn() => print( esc_html( $message ) ),
+				$message,
 			)
 		);
 	}

@@ -69,7 +69,6 @@ abstract class Cpt extends Actor_Base implements Actor {
 			return $html;
 		}
 
-		$text = static fn( string $text ) => fn() => print( esc_html( $text ) );
 		$link = static fn( string $url, string $label ) => array(
 			array(
 				'tag'   => 'a',
@@ -78,7 +77,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 					'href'   => $url,
 				),
 			),
-			$text( $label ),
+			$label,
 		);
 
 		return Tags_Renderer::render_tags(
@@ -88,17 +87,17 @@ abstract class Cpt extends Actor_Base implements Actor {
 					'attrs' => array( 'id' => 'footer-thankyou' ),
 				),
 				array(
-					$text( __( 'Thank you for creating with', 'acf-views' ) . ' ' ),
+					__( 'Thank you for creating with', 'acf-views' ) . ' ',
 					$link( 'https://wordpress.org/', __( 'WordPress', 'acf-views' ) ),
-					$text( ' ' . __( 'and', 'acf-views' ) . ' ' ),
+					' ' . __( 'and', 'acf-views' ) . ' ',
 					$link( External_Links::BASIC_VERSION_URL, __( 'Advanced Views', 'acf-views' ) ),
-					$text( '. ' ),
+					'. ',
 					array(
 						array( 'tag' => 'span' ),
 						array(
-							$text( __( 'Take', 'acf-views' ) . ' ' ),
+							__( 'Take', 'acf-views' ) . ' ',
 							$link( External_Links::SURVEY_URL, __( '2 minute survey', 'acf-views' ) ),
-							$text( ' ' . __( 'to improve Advanced Views.', 'acf-views' ) ),
+							' ' . __( 'to improve Advanced Views.', 'acf-views' ),
 						),
 					),
 				),

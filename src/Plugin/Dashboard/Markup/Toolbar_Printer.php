@@ -39,8 +39,8 @@ class Toolbar_Printer {
 			$this->html->tag( 'h2', array( 'class' => 'av-toolbar__title' ) ),
 			array(
 				array( $this->html->tag( 'i', array( 'class' => 'av-toolbar__icon dashicons dashicons-layout' ) ) ),
-				array( $this->html->tag( 'span' ), $this->html->escaped_text( $name ) ),
-				array( $this->html->tag( 'span', array( 'class' => 'av-toolbar__title-version' ) ), $this->html->escaped_text( 'v.' . $version ) ),
+				array( $this->html->tag( 'span' ), $name ),
+				array( $this->html->tag( 'span', array( 'class' => 'av-toolbar__title-version' ) ), 'v.' . $version ),
 			),
 		);
 
@@ -112,7 +112,7 @@ class Toolbar_Printer {
 		return array(
 			$this->html->tag( 'a', $attrs ),
 			array(
-				array( $this->html->tag( 'span' ), $this->html->escaped_text( string( $tab, 'label' ) ) ),
+				array( $this->html->tag( 'span' ), string( $tab, 'label' ) ),
 				$icon,
 			),
 		);

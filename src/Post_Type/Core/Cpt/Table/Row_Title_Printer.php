@@ -27,7 +27,7 @@ final class Row_Title_Printer {
 				'tag'   => 'span',
 				'attrs' => array( 'class' => 'row-title' ),
 			),
-			fn() => print( esc_html( $title ) ),
+			$title,
 		);
 
 		self::print_title_and_action( $title_tags, $action_class, $action_url, $action_label );
@@ -56,7 +56,7 @@ final class Row_Title_Printer {
 				'tag'   => 'a',
 				'attrs' => array( 'href' => esc_url( $action_url ) ),
 			),
-			fn() => print( esc_html( $action_label ) ),
+			$action_label,
 		);
 
 		Tags_Renderer::print_tag_group(
