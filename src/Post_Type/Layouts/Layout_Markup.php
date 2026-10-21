@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditi
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Template;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Composed_Value;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Composed_Attribute;
 
 class Layout_Markup {
 	/**
@@ -123,10 +123,7 @@ class Layout_Markup {
 	protected function generate_markup( Layout_Settings $layout_settings ): void {
 		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
 
-		$new_line       = function () use ( $token_factory ) {
-			$token_factory->formatter()
-							->new_line();
-		};
+		$new_line       = fn() => $token_factory->formatter()->new_line();
 		$rows           = function () use ( $layout_settings ) {
 			foreach ( $layout_settings->items as $item ) {
 				$this->generate_row_markup(
@@ -212,9 +209,9 @@ class Layout_Markup {
 		$this->markups_safe[ $layout_id ] = $view_markup_safe;
 	}
 
-	protected function root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Composed_Value {
+	protected function root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Composed_Attribute {
 		if ( Layout_Settings::CLASS_GENERATION_NONE === $layout_settings->classes_generation ) {
-			return new Composed_Value( array() );
+			return new Composed_Attribute( array() );
 		}
 
 		$bem_name = $layout_settings->get_bem_name();
@@ -235,6 +232,6 @@ class Layout_Markup {
 		$parts[] = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
 								->add_item_path( 'object_id' );
 
-		return new Composed_Value( $parts );
+		return new Composed_Attribute( $parts );
 	}
 }

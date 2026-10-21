@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selectio
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Composed_Value;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Composed_Attribute;
 
 /**
  * @phpstan-import-type Tag from Tags_Renderer
@@ -66,11 +66,9 @@ class Post_Selection_Markup {
 				Tags_Renderer::print_tags(
 					array(
 						array(
-							function () use ( $token_factory ) {
-								$token_factory->formatter()
+							fn() => $token_factory->formatter()
 												->new_line()
-												->tab( 2 );
-							},
+												->tab( 2 ),
 							array(
 								array( 'tag' => 'div' ),
 								array(
@@ -150,18 +148,14 @@ class Post_Selection_Markup {
 			array(
 				$tag,
 				array(
-					function () use ( $token_factory ) {
-						$token_factory->formatter()->new_line();
-					},
+					fn() => $token_factory->formatter()->new_line(),
 					array( $inner ),
 					function () use ( $token_factory, &$tabs_number ) {
 						$token_factory->formatter()->tab( --$tabs_number );
 					},
 				),
 			),
-			function () use ( $token_factory ) {
-				$token_factory->formatter()->new_line();
-			},
+			fn() => $token_factory->formatter()->new_line(),
 		);
 	}
 
@@ -320,10 +314,7 @@ class Post_Selection_Markup {
 			$if->set_else_branch( $not_found_branch );
 		}
 
-		$new_line       = function () use ( $token_factory ) {
-			$token_factory->formatter()
-							->new_line();
-		};
+		$new_line       = fn() => $token_factory->formatter()->new_line();
 		$content        = array(
 			function () use ( $token_factory, $tabs_number ) {
 				$token_factory->formatter()
@@ -419,10 +410,8 @@ class Post_Selection_Markup {
 		Tags_Renderer::print_tags(
 			array(
 				array(
-					function () use ( $token_factory ) {
-						$token_factory->formatter()
-										->new_line();
-					},
+					fn() => $token_factory->formatter()
+										->new_line(),
 					array( $items_wrapper ),
 					function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
 						if ( strlen( $post_selection_settings->no_posts_found_message ) > 0 ) {
@@ -513,7 +502,7 @@ class Post_Selection_Markup {
 		return $tabs_number;
 	}
 
-	protected function root_class( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): Composed_Value {
+	protected function root_class( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): Composed_Attribute {
 		$bem_name = $post_selection_settings->get_bem_name();
 		$parts    = array(
 			$token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
@@ -527,6 +516,6 @@ class Post_Selection_Markup {
 									->add_item_path( 'id' );
 		}
 
-		return new Composed_Value( $parts );
+		return new Composed_Attribute( $parts );
 	}
 }

@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Composed_Value;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Composed_Attribute;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -41,7 +41,7 @@ class True_False_Field extends Markup_Field_Base {
 			array(
 				array(
 					'tag'   => 'div',
-					'attrs' => array( 'class' => new Composed_Value( $parts ) ),
+					'attrs' => array( 'class' => new Composed_Attribute( $parts ) ),
 				),
 			)
 		);

@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Composed_Value;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Composed_Attribute;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
@@ -230,12 +230,12 @@ class Menu_Items_Field extends Markup_Field_Base {
 		string $conditional_suffix,
 		Template_Token $comparison,
 		Template_Field_Data $markup_field_data
-	): Composed_Value {
+	): Composed_Attribute {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$class_branch = $this->class_branch( $conditional_suffix, $comparison, $markup_field_data );
 
-		return new Composed_Value(
+		return new Composed_Attribute(
 			array(
 				$this->get_item_class( $base_suffix, $markup_field_data->get_view_data(), $markup_field_data->get_field_data() ),
 				$token_factory->if()->set_if_branch( $class_branch ),
