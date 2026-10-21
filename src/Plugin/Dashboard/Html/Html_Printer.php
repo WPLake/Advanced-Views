@@ -20,7 +20,7 @@ final class Html_Printer {
 	public static function link_tags( string $url, string $label ): array {
 		$link_attrs = array(
 			'target' => '_blank',
-			'href'   => esc_url( $url ),
+			'href'   => $url,
 		);
 
 		$link_tag = array(

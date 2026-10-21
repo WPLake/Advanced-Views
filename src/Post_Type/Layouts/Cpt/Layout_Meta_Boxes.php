@@ -54,7 +54,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			array(
 				'tag'   => 'a',
 				'attrs' => array(
-					'href'        => esc_url( $url ),
+					'href'        => $url,
 					'target'      => '_blank',
 					'style'       => array( 'transition' => 'all .3s ease' ),
 					'onMouseOver' => "this.style.filter='brightness(30%)'",
@@ -243,7 +243,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				array(
 					'tag'   => 'a',
 					'attrs' => array(
-						'href'   => esc_url( $url ),
+						'href'   => $url,
 						'target' => '_blank',
 						'class'  => 'button',
 						'style'  => array(

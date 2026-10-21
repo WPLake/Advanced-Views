@@ -179,7 +179,7 @@ class Postbox_Printer {
 	protected static function button_link_tags( string $url, string $label ): array {
 		$link_attrs = array(
 			'class'  => 'button button-primary button-large',
-			'href'   => esc_url( $url ),
+			'href'   => $url,
 			'target' => '_blank',
 		);
 

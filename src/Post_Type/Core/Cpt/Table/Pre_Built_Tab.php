@@ -93,7 +93,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 							'tag'   => 'a',
 							'attrs' => array(
 								'target' => '_blank',
-								'href'   => esc_url( 'https://docs.advanced-views.com/layouts/features/pre-built-components' ),
+								'href'   => 'https://docs.advanced-views.com/layouts/features/pre-built-components',
 							),
 						),
 						__( 'Read more', 'acf-views' ),

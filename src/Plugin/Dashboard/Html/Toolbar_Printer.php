@@ -125,7 +125,7 @@ final class Toolbar_Printer {
 		$url     = string( $tab, 'url' );
 		$attrs   = array(
 			'class'  => array_values( $classes ),
-			'href'   => esc_url( $url ),
+			'href'   => $url,
 			'target' => bool( $tab, 'isBlank' ) ?
 				'_blank' :
 				'_self',

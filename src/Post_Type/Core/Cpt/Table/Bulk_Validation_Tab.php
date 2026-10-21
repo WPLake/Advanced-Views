@@ -118,7 +118,7 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 				'tag'   => 'a',
 				'attrs' => array(
 					'class' => 'row-title',
-					'href'  => esc_url( $edit_post_link ),
+					'href'  => $edit_post_link,
 				),
 			),
 			$cpt_settings->title,

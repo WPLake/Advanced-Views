@@ -69,7 +69,7 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 			array(
 				'tag'   => 'a',
 				'attrs' => array(
-					'href'   => esc_url( $view_data->get_edit_post_link() ),
+					'href'   => $view_data->get_edit_post_link(),
 					'target' => '_blank',
 				),
 			),

@@ -54,7 +54,7 @@ final class Row_Title_Printer {
 			),
 			array(
 				'tag'   => 'a',
-				'attrs' => array( 'href' => esc_url( $action_url ) ),
+				'attrs' => array( 'href' => $action_url ),
 			),
 			$action_label,
 		);

@@ -97,7 +97,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 					'tag'   => 'a',
 					'attrs' => array(
 						'target' => '_blank',
-						'href'   => esc_url( $post_url ),
+						'href'   => $post_url,
 					),
 				),
 				get_the_title( $post ),

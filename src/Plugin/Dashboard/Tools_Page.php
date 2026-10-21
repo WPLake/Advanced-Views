@@ -537,7 +537,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 				array(
 					'tag'   => 'a',
 					'attrs' => array(
-						'href'   => esc_url( string( get_edit_post_link( (int) $post_id ) ) ),
+						'href'   => string( get_edit_post_link( (int) $post_id ) ),
 						'target' => '_blank',
 					),
 				),

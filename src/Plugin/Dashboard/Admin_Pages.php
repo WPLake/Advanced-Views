@@ -99,7 +99,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 						array(
 							'tag'   => 'iframe',
 							'attrs' => array(
-								'src'   => esc_url( External_Links::DOCS_URL ),
+								'src'   => External_Links::DOCS_URL,
 								'style' => array(
 									'border'      => '0',
 									'width'       => 'calc(100% + 20px)',
@@ -343,7 +343,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 					array(
 						'tag'   => 'a',
 						'attrs' => array(
-							'href'   => esc_url( Plugin::get_admin_url( '', $plugin_cpt->cpt_name() ) ),
+							'href'   => Plugin::get_admin_url( '', $plugin_cpt->cpt_name() ),
 							'target' => '_self',
 						),
 					),

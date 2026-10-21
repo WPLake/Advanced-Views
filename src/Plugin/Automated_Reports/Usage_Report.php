@@ -328,7 +328,7 @@ class Usage_Report extends Report_Base implements Actor {
 			array(
 				array(
 					'tag'   => 'a',
-					'attrs' => array( 'href' => esc_url( $hide_url ) ),
+					'attrs' => array( 'href' => $hide_url ),
 				),
 				__( 'Got it, hide', 'acf-views' ),
 			),

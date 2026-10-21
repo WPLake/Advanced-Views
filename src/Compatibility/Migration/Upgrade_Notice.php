@@ -158,7 +158,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 					'tag'   => 'a',
 					'attrs' => array(
 						'style' => array( 'float' => 'right' ),
-						'href'  => esc_url( $dismiss_url ),
+						'href'  => $dismiss_url,
 					),
 				),
 				__( 'Thanks, hide', 'acf-views' ),

@@ -441,7 +441,7 @@ class Plugin extends Actor_Base implements Actor {
 			$field['wrapper'] = array_merge(
 				$wrapper,
 				array(
-					'class' => esc_html( $class ),
+					'class' => $class,
 				)
 			);
 		}
@@ -474,7 +474,7 @@ class Plugin extends Actor_Base implements Actor {
 							'tag'   => 'a',
 							'attrs' => array(
 								'target' => '_blank',
-								'href'   => esc_url( External_Links::CONFLICTS_URL ),
+								'href'   => External_Links::CONFLICTS_URL,
 							),
 						),
 						__( 'Read more', 'acf-views' ),

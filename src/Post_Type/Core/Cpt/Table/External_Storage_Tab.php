@@ -293,7 +293,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 				array(
 					'tag'   => 'a',
 					'attrs' => array(
-						'href'   => esc_url( $link['url'] ),
+						'href'   => $link['url'],
 						'target' => '_blank',
 					),
 				),

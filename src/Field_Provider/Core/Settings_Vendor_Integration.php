@@ -132,7 +132,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			array(
 				'tag'   => 'a',
 				'attrs' => array(
-					'href'        => esc_url( $url ),
+					'href'        => $url,
 					'target'      => '_blank',
 					'style'       => array( 'transition' => 'all .3s ease' ),
 					'onMouseOver' => "this.style.filter='brightness(30%)'",

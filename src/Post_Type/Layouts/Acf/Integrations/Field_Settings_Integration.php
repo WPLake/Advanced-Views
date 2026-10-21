@@ -260,7 +260,7 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 					'attrs' => array(
 						'class'  => 'acf-views__add-new',
 						'target' => '_blank',
-						'href'   => esc_url( $link ),
+						'href'   => $link,
 					),
 				),
 				$label,

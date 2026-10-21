@@ -77,7 +77,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 								'tag'   => 'a',
 								'attrs' => array(
 									'target' => '_blank',
-									'href'   => esc_url( 'https://docs.advanced-views.com/features/file-system-storage' ),
+									'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
 								),
 							),
 							__( 'Read more', 'acf-views' ),
@@ -160,7 +160,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 				array(
 					'tag'   => 'a',
 					'attrs' => array(
-						'href'   => esc_url( $cpt_data->get_edit_post_link() ),
+						'href'   => $cpt_data->get_edit_post_link(),
 						'target' => '_blank',
 					),
 				),
