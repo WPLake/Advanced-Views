@@ -9,11 +9,15 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
+/**
+ * @phpstan-import-type Tag_Chain from Tags_Renderer
+ */
 abstract class External_Storage_Tab extends Cpt_Table_Tab {
 
 	const KEY_RESULT_ITEMS  = '';
@@ -180,123 +184,71 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			}
 		}
 
-		echo '<div class="notice notice-success">';
+		$layout_links = array();
+		$card_links   = array();
 
-		echo '<p>';
-		esc_html_e( 'Success!', 'acf-views' );
-		echo '</p>';
+		foreach ( $import_result->get_unique_ids() as $unique_id ) {
+			// views and cards have different storages,
+			// while in this class we have only the single one.
+			$cpt_data = $this->get_cpt_data( $unique_id );
+			$link     = array(
+				'url'   => $cpt_data->get_edit_post_link(),
+				'title' => $cpt_data->title,
+			);
+
+			if ( $this->is_layout_item( $cpt_data ) ) {
+				$layout_links[] = $link;
+			} else {
+				$card_links[] = $link;
+			}
+		}
+
+		$paragraphs   = array();
+		$paragraphs[] = array(
+			array( 'tag' => 'p' ),
+			fn() => esc_html_e( 'Success!', 'acf-views' ),
+		);
 
 		if ( $views_count > 0 ) {
-			echo '<p>';
-			echo esc_html( (string) $views_count ) . ' ' . esc_html(
-				_n( 'Item', 'Items', $views_count, 'acf-views' )
-			);
-			echo ' ';
-			// translators: x items successfully imported.
-			esc_html_e( 'successfully imported:', 'acf-views' );
-			echo '</p>';
-			echo '<p>';
-
-			$counter          = 0;
-			$views_last_index = $views_count - 1;
-
-			foreach ( $import_result->get_unique_ids() as $unique_id ) {
-				// views and cards have different storages,
-				// while in this class we have only the single one.
-				$cpt_data = $this->get_cpt_data( $unique_id );
-
-				if ( false === $this->is_layout_item( $cpt_data ) ) {
-					continue;
-				}
-
-				printf(
-					'<a href="%s" target="_blank">%s</a>',
-					esc_url( $cpt_data->get_edit_post_link() ),
-					esc_html( $cpt_data->title )
-				);
-
-				if ( $counter !== $views_last_index ) {
-					echo '<br>';
-				}
-
-				++$counter;
-			}
-
-			echo '</p>';
+			$paragraphs[] = $this->imported_items_paragraph( $views_count );
+			$paragraphs[] = $this->links_paragraph( $layout_links );
 		}
 
 		if ( $cards_count > 0 ) {
-			echo '<p>';
-			echo esc_html( (string) $cards_count ) . ' ' . esc_html( _n( 'Item', 'Items', $cards_count, 'acf-views' ) );
-			echo ' ';
-			// translators: x items successfully imported.
-			esc_html_e( 'successfully imported:', 'acf-views' );
-			echo '</p>';
-			echo '<p>';
-
-			$counter         = 0;
-			$card_last_index = $cards_count - 1;
-
-			foreach ( $import_result->get_unique_ids() as $unique_id ) {
-				// views and cards have different storages,
-				// while in this class we have only the single one.
-				$cpt_data = $this->get_cpt_data( $unique_id );
-
-				if ( $this->is_layout_item( $cpt_data ) ) {
-					continue;
-				}
-
-				printf(
-					'<a href="%s" target="_blank">%s</a>',
-					esc_url( $cpt_data->get_edit_post_link() ),
-					esc_html( $cpt_data->title )
-				);
-
-				if ( $counter !== $card_last_index ) {
-					echo '<br>';
-				}
-
-				++$counter;
-			}
-
-			echo '</p>';
+			$paragraphs[] = $this->imported_items_paragraph( $cards_count );
+			$paragraphs[] = $this->links_paragraph( $card_links );
 		}
 
 		foreach ( $grouped_meta_group_links as $vendor_name => $group_links ) {
 			$group_links_count = count( $group_links );
 
-			printf(
-				'<p>%s %s %s %s</p>',
-				esc_html( (string) $group_links_count ),
-				esc_html( ucfirst( $vendor_name ) ),
-				esc_html( _n( 'group', 'groups', $group_links_count, 'acf-views' ) ),
-				// translators: x items successfully imported.
-				esc_html__( 'successfully imported:', 'acf-views' )
+			$paragraphs[] = array(
+				array( 'tag' => 'p' ),
+				fn() => print(
+					esc_html(
+						sprintf(
+							'%s %s %s %s',
+							$group_links_count,
+							ucfirst( $vendor_name ),
+							_n( 'group', 'groups', $group_links_count, 'acf-views' ),
+							// translators: x items successfully imported.
+							__( 'successfully imported:', 'acf-views' )
+						)
+					)
+				),
 			);
-
-			echo '<p>';
-
-			$last_link_index = $group_links_count - 1;
-			$counter         = 0;
-
-			foreach ( $group_links as $group_link ) {
-				printf(
-					'<a href="%s" target="_blank">%s</a>',
-					esc_url( $group_link['url'] ),
-					esc_html( $group_link['title'] )
-				);
-
-				if ( $counter !== $last_link_index ) {
-					echo '<br>';
-				}
-
-				++$counter;
-			}
-
-			echo '</p>';
+			$paragraphs[] = $this->links_paragraph( $group_links );
 		}
 
-		echo '</div>';
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'div',
+					'attrs' => array( 'class' => 'notice notice-success' ),
+				),
+				$paragraphs,
+			)
+		);
 	}
 
 	protected function get_cpt_data_storage(): Cpt_Settings_Storage {
@@ -309,5 +261,54 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 
 	public function maybe_show_action_result_message(): void {
 		$this->maybe_show_import_result_message();
+	}
+
+	/**
+	 * @return Tag_Chain
+	 */
+	protected function imported_items_paragraph( int $items_count ): array {
+		return array(
+			array( 'tag' => 'p' ),
+			fn() => print(
+				esc_html(
+					sprintf(
+						'%s %s %s',
+						$items_count,
+						_n( 'Item', 'Items', $items_count, 'acf-views' ),
+						// translators: x items successfully imported.
+						__( 'successfully imported:', 'acf-views' )
+					)
+				)
+			),
+		);
+	}
+
+	/**
+	 * @param array<array{url:string,title:string}> $links
+	 *
+	 * @return Tag_Chain
+	 */
+	protected function links_paragraph( array $links ): array {
+		$members = array();
+
+		foreach ( $links as $link ) {
+			// the 'br' goes between the links.
+			if ( array() !== $members ) {
+				$members[] = array( 'tag' => 'br' );
+			}
+
+			$members[] = array(
+				array(
+					'tag'   => 'a',
+					'attrs' => array(
+						'href'   => esc_url( $link['url'] ),
+						'target' => '_blank',
+					),
+				),
+				fn() => print( esc_html( $link['title'] ) ),
+			);
+		}
+
+		return array( array( 'tag' => 'p' ), $members );
 	}
 }

@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -148,42 +149,6 @@ class Field_Template {
 			'div' :
 			$field_tag;
 
-		if ( strlen( $field_settings->label ) > 0 &&
-			$is_label_out_of_row ) {
-			Label_Printer::print( $token_factory, $layout_settings, $field_settings, $tabs_number, $field_id );
-		}
-
-		if ( $is_with_row_wrapper ) {
-			$row_class = self::get_row_wrapper_class( $field_assets, $row_type );
-
-			Wrapper_Printer::print_row_wrapper(
-				$field_name_class,
-				$layout_settings,
-				$row_type,
-				$row_class,
-				$tabs_number,
-				$row_tag
-			);
-		}
-
-		if ( '' !== $field_settings->label &&
-			! $is_label_out_of_row ) {
-			Label_Printer::print( $token_factory, $layout_settings, $field_settings, $tabs_number, $field_id );
-		}
-
-		if ( $is_with_field_wrapper ) {
-			Wrapper_Printer::print_field_wrapper(
-				$field_assets,
-				$field_id,
-				$tabs_number,
-				$is_with_row_wrapper,
-				$layout_settings,
-				$field_settings,
-				$field_name_class,
-				$field_tag
-			);
-		}
-
 		$print_content = function ( bool $is_with_outer_wrappers ) use (
 			$custom_field_markup,
 			$field_assets,
@@ -211,7 +176,19 @@ class Field_Template {
 			}
 		};
 
-		Outer_Printer::print_with_outers(
+		$print_label = function () use ( $token_factory, $layout_settings, $field_settings, &$tabs_number, $field_id ): void {
+			Label_Printer::print( $token_factory, $layout_settings, $field_settings, $tabs_number, $field_id );
+		};
+
+		$is_with_label = strlen( $field_settings->label ) > 0;
+		$label_outside = $is_with_label && $is_label_out_of_row ?
+			$print_label :
+			array();
+		$label_inside  = $is_with_label && ! $is_label_out_of_row ?
+			$print_label :
+			array();
+
+		$content = Outer_Printer::wrap_with_outers(
 			$field_assets,
 			$layout_settings,
 			$field_settings,
@@ -222,21 +199,43 @@ class Field_Template {
 			$print_content
 		);
 
-		if ( $is_with_field_wrapper ) {
-			Format_Token::tabulation( --$tabs_number );
+		$field_layer = $is_with_field_wrapper ?
+			Wrapper_Printer::wrap(
+				Wrapper_Printer::field_tag(
+					$field_assets,
+					$field_id,
+					$is_with_row_wrapper,
+					$layout_settings,
+					$field_settings,
+					$field_name_class,
+					$field_tag
+				),
+				$tabs_number,
+				false,
+				false,
+				$content
+			) :
+			$content;
 
-			printf( '</%s>', esc_html( $field_tag ) );
+		// a group member that is an array is a chain, so groups are put into it as its head.
+		$row_inner = array( $label_inside, array( $field_layer ) );
+		$row_layer = $is_with_row_wrapper ?
+			Wrapper_Printer::wrap(
+				Wrapper_Printer::row_tag(
+					$field_name_class,
+					$layout_settings,
+					$row_type,
+					self::get_row_wrapper_class( $field_assets, $row_type ),
+					$row_tag
+				),
+				$tabs_number,
+				false,
+				true,
+				$row_inner
+			) :
+			$row_inner;
 
-			Format_Token::next_line();
-		}
-
-		if ( $is_with_row_wrapper ) {
-			Format_Token::tabulation( --$tabs_number );
-
-			printf( '</%s>', esc_html( $row_tag ) );
-
-			Format_Token::next_line();
-		}
+		Tags_Renderer::print_tags( array( array( $label_outside, array( $row_layer ) ) ) );
 
 		return $tabs_number;
 	}

@@ -10,11 +10,14 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Template;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Composed_Value;
 
 class Layout_Markup {
 	/**
@@ -120,63 +123,48 @@ class Layout_Markup {
 	protected function generate_markup( Layout_Settings $layout_settings ): void {
 		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
 
-		$bem_name = $layout_settings->get_bem_name();
-		$tag_name = $layout_settings->get_tag_name();
-
-		printf( '<%s class="', esc_html( $tag_name ) );
-		if ( Layout_Settings::CLASS_GENERATION_NONE !== $layout_settings->classes_generation ) {
-			$var = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
-								->add_item_path( 'classes' );
-			$var->display();
-
-			echo esc_html( $bem_name );
-
-			// not necessary if the bemName is defined.
-			if ( ! $layout_settings->has_unique_bem_name() ) {
-				printf( ' %s--id--', esc_html( $bem_name ) );
-				$var = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
-											->add_item_path( 'id' );
-				$var->display();
-
+		$new_line       = function () use ( $token_factory ) {
+			$token_factory->formatter()
+							->new_line();
+		};
+		$rows           = function () use ( $layout_settings ) {
+			foreach ( $layout_settings->items as $item ) {
+				$this->generate_row_markup(
+					$layout_settings,
+					$item->field->get_field_meta(),
+					$item
+				);
 			}
+		};
+		$is_shadow_root = Layout_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $layout_settings->web_component;
+		$root_content   = $is_shadow_root ?
+			array(
+				$new_line,
+				array(
+					array(
+						'tag'   => 'template',
+						'attrs' => array( 'shadowrootmode' => 'open' ),
+					),
+					array( $new_line, $rows ),
+				),
+				$new_line,
+			) :
+			array( $new_line, $rows );
 
-			printf( ' %s--object-id--', esc_html( $bem_name ) );
-
-			$token_factory
-				->variable( Hard_Layout_Cpt::variable_name() )
-				->add_item_path( 'object_id' )
-				->display();
-
-		}
-		echo '">';
-
-		$token_factory->formatter()
-						->new_line();
-
-		if ( Layout_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $layout_settings->web_component ) {
-			echo '<template shadowrootmode="open">';
-			$token_factory->formatter()
-							->new_line();
-		}
-
-		foreach ( $layout_settings->items as $item ) {
-			$this->generate_row_markup(
-				$layout_settings,
-				$item->field->get_field_meta(),
-				$item
-			);
-		}
-
-		if ( Cpt_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $layout_settings->web_component ) {
-			echo '</template>';
-			$token_factory->formatter()
-							->new_line();
-		}
-
-		printf( '</%s>', esc_html( $tag_name ) );
-
-		$token_factory->formatter()
-						->new_line();
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					array(
+						array(
+							'tag'   => $layout_settings->get_tag_name(),
+							'attrs' => array( 'class' => $this->root_class( $token_factory, $layout_settings ) ),
+						),
+						$root_content,
+					),
+					$new_line,
+				),
+			)
+		);
 	}
 
 	protected function print_safe_markup( Layout_Settings $layout_settings, bool $is_cache_disabled ): void {
@@ -222,5 +210,31 @@ class Layout_Markup {
 
 		$layout_id                        = $layout_settings->get_unique_id( true );
 		$this->markups_safe[ $layout_id ] = $view_markup_safe;
+	}
+
+	protected function root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Composed_Value {
+		if ( Layout_Settings::CLASS_GENERATION_NONE === $layout_settings->classes_generation ) {
+			return new Composed_Value( array() );
+		}
+
+		$bem_name = $layout_settings->get_bem_name();
+		$parts    = array(
+			$token_factory->variable( Hard_Layout_Cpt::variable_name() )
+							->add_item_path( 'classes' ),
+			$bem_name,
+		);
+
+		// not necessary if the bemName is defined.
+		if ( ! $layout_settings->has_unique_bem_name() ) {
+			$parts[] = sprintf( ' %s--id--', $bem_name );
+			$parts[] = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
+									->add_item_path( 'id' );
+		}
+
+		$parts[] = sprintf( ' %s--object-id--', $bem_name );
+		$parts[] = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
+								->add_item_path( 'object_id' );
+
+		return new Composed_Value( $parts );
 	}
 }

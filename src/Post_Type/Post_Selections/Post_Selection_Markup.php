@@ -9,13 +9,19 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Composed_Value;
 
+/**
+ * @phpstan-import-type Tag from Tags_Renderer
+ * @phpstan-import-type Tag_Group from Tags_Renderer
+ */
 class Post_Selection_Markup {
 	private Front_Assets $front_assets;
 	protected Token_Factory_Storage $token_factory_storage;
@@ -57,18 +63,27 @@ class Post_Selection_Markup {
 				$pages_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 											->add_item_path( 'pages_amount' );
 
-				$token_factory->formatter()->new_line();
-				echo "\t\t<div>\r\n";
-				echo "\t\t\t";
-				$token_factory->functions()
-								->paginate_links(
-									array(
-										'total' => $pages_var,
-									)
-								);
-				echo "\n";
-				echo "\t\t" . '</div>' . "\r\n";
-				echo "\t";
+				Tags_Renderer::print_tags(
+					array(
+						array(
+							function () use ( $token_factory ) {
+								$token_factory->formatter()
+												->new_line()
+												->tab( 2 );
+							},
+							array(
+								array( 'tag' => 'div' ),
+								array(
+									fn() => print( "\r\n\t\t\t" ),
+									fn() => $token_factory->functions()
+															->paginate_links( array( 'total' => $pages_var ) ),
+									fn() => print( "\n\t\t" ),
+								),
+							),
+							fn() => print( "\r\n\t" ),
+						),
+					)
+				);
 			}
 		);
 
@@ -77,12 +92,10 @@ class Post_Selection_Markup {
 			->set_body( $body );
 	}
 
-	protected function print_items_opening_wrapper(
-		Token_Factory $token_factory,
-		Post_Selection_Settings $post_selection_settings,
-		int &$tabs_number,
-		string $class_name = ''
-	): void {
+	/**
+	 * @return Tag
+	 */
+	protected function items_wrapper_tag( Post_Selection_Settings $post_selection_settings, string $class_name = '' ): array {
 		$classes  = '';
 		$external = $this->front_assets->get_card_items_wrapper_class( $post_selection_settings );
 
@@ -100,59 +113,56 @@ class Post_Selection_Markup {
 				' ' . $external;
 		}
 
-		$token_factory->formatter()
-						->tab( ++$tabs_number );
-
-		printf( '<div class="%s">', esc_html( $classes ) );
-		$token_factory->formatter()->new_line();
+		return array(
+			'tag'   => 'div',
+			'attrs' => array( 'class' => $classes ),
+		);
 	}
 
 	/**
-	 * @param Html_Wrapper[] $item_outers
+	 * @return Tag
 	 */
-	protected function print_opening_item_outers(
-		array $item_outers,
-		int &$tabs_number,
-		Token_Factory $token_factory
-	): void {
-		foreach ( $item_outers as $outer ) {
-			$token_factory->formatter()->tab( ++$tabs_number );
-			printf( '<%s', esc_html( $outer->tag ) );
+	protected function item_outer_tag( Html_Wrapper $outer, Token_Factory $token_factory ): array {
+		$attrs = $outer->attrs;
 
-			foreach ( $outer->attrs as $attr => $value ) {
-				printf( ' %s="%s"', esc_html( $attr ), esc_html( $value ) );
-			}
-
-			foreach ( $outer->variable_attrs as $attr => $variable_info ) {
-				$var = $token_factory->variable( $variable_info['field_id'] )
-									->add_item_path( $variable_info['item_key'] );
-
-				$token_factory->formatter()
-								->attribute( $attr, $var );
-			}
-
-			echo '>';
-			$token_factory->formatter()
-							->new_line();
+		foreach ( $outer->variable_attrs as $attr => $variable_info ) {
+			$attrs[ $attr ] = $token_factory->variable( $variable_info['field_id'] )
+											->add_item_path( $variable_info['item_key'] );
 		}
-	}
 
-	protected function print_items_closing_wrapper( int $tabs_number ): int {
-		echo esc_html( str_repeat( "\t", --$tabs_number ) ) . '</div>' . "\r\n";
-
-		return $tabs_number;
+		return array(
+			'tag'   => $outer->tag,
+			'attrs' => $attrs,
+		);
 	}
 
 	/**
-	 * @param Html_Wrapper[] $item_outers
+	 * @param Tag $tag
+	 * @param mixed $inner
+	 *
+	 * @return Tag_Group
 	 */
-	protected function print_closing_item_outers( Token_Factory $token_factory, array $item_outers, int &$tabs_number ): void {
-		foreach ( $item_outers as $outer ) {
-			$token_factory->formatter()
-							->tab( --$tabs_number );
-			printf( '</%s>', esc_html( $outer->tag ) );
-			$token_factory->formatter()->new_line();
-		}
+	protected function wrap_with_tag( array $tag, int &$tabs_number, Token_Factory $token_factory, $inner ): array {
+		return array(
+			function () use ( $token_factory, &$tabs_number ) {
+				$token_factory->formatter()->tab( ++$tabs_number );
+			},
+			array(
+				$tag,
+				array(
+					function () use ( $token_factory ) {
+						$token_factory->formatter()->new_line();
+					},
+					array( $inner ),
+					function () use ( $token_factory, &$tabs_number ) {
+						$token_factory->formatter()->tab( --$tabs_number );
+					},
+				),
+			),
+			function () use ( $token_factory ) {
+				$token_factory->formatter()->new_line();
+			},
+		);
 	}
 
 	protected function print_shortcode( Post_Selection_Settings $post_selection_settings ): void {
@@ -310,9 +320,50 @@ class Post_Selection_Markup {
 			$if->set_else_branch( $not_found_branch );
 		}
 
-		$tabs_number = $this->print_opening_tag( $token_factory, $post_selection_settings, $tabs_number );
-		$if->display();
-		$this->print_closing_tag( $token_factory, $post_selection_settings );
+		$new_line       = function () use ( $token_factory ) {
+			$token_factory->formatter()
+							->new_line();
+		};
+		$content        = array(
+			function () use ( $token_factory, $tabs_number ) {
+				$token_factory->formatter()
+								->new_line( 2 )
+								->tab( $tabs_number );
+			},
+			fn() => $if->display(),
+			$new_line,
+			fn() => $this->print_extra_markup( $post_selection_settings ),
+		);
+		$is_shadow_root = Post_Selection_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $post_selection_settings->web_component;
+		$shadow_root    = array(
+			$new_line,
+			array(
+				array(
+					'tag'   => 'template',
+					'attrs' => array( 'shadowrootmode' => 'open' ),
+				),
+				array_merge( $content, array( $new_line ) ),
+			),
+			$new_line,
+		);
+		$root_content   = $is_shadow_root ?
+			$shadow_root :
+			array_merge( $content, array( $new_line ) );
+
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					array(
+						array(
+							'tag'   => $post_selection_settings->get_tag_name(),
+							'attrs' => array( 'class' => $this->root_class( $token_factory, $post_selection_settings ) ),
+						),
+						$root_content,
+					),
+					$new_line,
+				),
+			)
+		);
 	}
 
 	protected function items_branch( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings, int &$tabs_number ): IF_Branch {
@@ -347,25 +398,45 @@ class Post_Selection_Markup {
 	): int {
 		$item_outers = $this->front_assets->get_card_item_outers( $post_selection_settings );
 
-		$token_factory->formatter()
-						->new_line();
+		$content = array(
+			function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
+				$tabs_number = $this->print_loop( $token_factory, $post_selection_settings, $tabs_number );
+			},
+		);
 
-		$this->print_items_opening_wrapper( $token_factory, $post_selection_settings, $tabs_number );
-		$this->print_opening_item_outers( $item_outers, $tabs_number, $token_factory );
-
-		$tabs_number = $this->print_loop( $token_factory, $post_selection_settings, $tabs_number );
-
-		$this->print_closing_item_outers( $token_factory, $item_outers, $tabs_number );
-		$tabs_number = $this->print_items_closing_wrapper( $tabs_number );
-
-		if ( strlen( $post_selection_settings->no_posts_found_message ) > 0 ) {
-			$token_factory->formatter()
-							->tab( --$tabs_number );
+		// the innermost outer goes first.
+		foreach ( array_reverse( $item_outers ) as $outer ) {
+			$content = $this->wrap_with_tag( $this->item_outer_tag( $outer, $token_factory ), $tabs_number, $token_factory, $content );
 		}
 
-		// endif in any case.
-		$token_factory->formatter()
-						->tab( --$tabs_number );
+		$items_wrapper = $this->wrap_with_tag(
+			$this->items_wrapper_tag( $post_selection_settings ),
+			$tabs_number,
+			$token_factory,
+			$content
+		);
+
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					function () use ( $token_factory ) {
+						$token_factory->formatter()
+										->new_line();
+					},
+					array( $items_wrapper ),
+					function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
+						if ( strlen( $post_selection_settings->no_posts_found_message ) > 0 ) {
+							$token_factory->formatter()
+											->tab( --$tabs_number );
+						}
+
+						// endif in any case.
+						$token_factory->formatter()
+										->tab( --$tabs_number );
+					},
+				),
+			)
+		);
 
 		return $tabs_number;
 	}
@@ -410,65 +481,6 @@ class Post_Selection_Markup {
 		return $tabs_number;
 	}
 
-	protected function print_opening_tag(
-		Token_Factory $token_factory,
-		Post_Selection_Settings $post_selection_settings,
-		int $tabs_number
-	): int {
-		printf( '<%s class="', esc_html( $post_selection_settings->get_tag_name() ) );
-
-		$var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
-							->add_item_path( 'classes' );
-
-		$var->display();
-
-		echo esc_html( $post_selection_settings->get_bem_name() );
-
-		if ( ! $post_selection_settings->has_unique_bem_name() ) {
-			echo ' ' . sprintf( '%s--id--', esc_html( $post_selection_settings->get_bem_name() ) );
-
-			$token_factory
-				->variable( Hard_Post_Selection_Cpt::variable_name() )
-				->add_item_path( 'id' )
-				->display();
-
-		}
-		echo '">';
-
-		if ( Post_Selection_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $post_selection_settings->web_component ) {
-			$token_factory->formatter()
-							->new_line();
-			echo '<template shadowrootmode="open">';
-		}
-
-		$token_factory->formatter()
-					->new_line( 2 )
-						->tab( $tabs_number );
-
-		return $tabs_number;
-	}
-
-	protected function print_closing_tag( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): void {
-		$token_factory->formatter()
-						->new_line();
-
-		$this->print_extra_markup( $post_selection_settings );
-
-		if ( Post_Selection_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $post_selection_settings->web_component ) {
-			$token_factory->formatter()
-							->new_line();
-			echo '</template>';
-		}
-
-		$token_factory->formatter()
-			->new_line();
-
-		printf( '</%s>', esc_html( $post_selection_settings->get_tag_name() ) );
-
-		$token_factory->formatter()
-						->new_line();
-	}
-
 	protected function print_not_found_markup(
 		Token_Factory $token_factory,
 		Post_Selection_Settings $post_selection_settings,
@@ -499,5 +511,22 @@ class Post_Selection_Markup {
 			->tab( --$tabs_number );
 
 		return $tabs_number;
+	}
+
+	protected function root_class( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): Composed_Value {
+		$bem_name = $post_selection_settings->get_bem_name();
+		$parts    = array(
+			$token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
+							->add_item_path( 'classes' ),
+			$bem_name,
+		);
+
+		if ( ! $post_selection_settings->has_unique_bem_name() ) {
+			$parts[] = sprintf( ' %s--id--', $bem_name );
+			$parts[] = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
+									->add_item_path( 'id' );
+		}
+
+		return new Composed_Value( $parts );
 	}
 }

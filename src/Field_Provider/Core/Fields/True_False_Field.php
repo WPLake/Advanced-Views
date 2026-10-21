@@ -5,10 +5,12 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Composed_Value;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -17,31 +19,31 @@ class True_False_Field extends Markup_Field_Base {
 
 	public function print_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
-		$safe_classes  = esc_html(
-			$this->get_item_class(
-				'true-false--state--:',
-				$markup_field_data->get_view_data(),
-				$markup_field_data->get_field_data()
-			)
+		$state_var     = $token_factory->variable( $field_id )->add_item_path( self::STATE );
+		$item_class    = $this->get_item_class(
+			'true-false--state--:',
+			$markup_field_data->get_view_data(),
+			$markup_field_data->get_field_data()
 		);
 
-		ob_start();
-		$token_factory->variable( $field_id )->add_item_path( self::STATE )->display();
+		// the state token goes in place of the ':' placeholder.
+		$item_class_parts = explode( ':', $item_class );
+		$parts            = array(
+			$this->get_field_class( 'true-false', $markup_field_data ) . ' ' . array_shift( $item_class_parts ),
+		);
 
-		$code = (string) ob_get_clean();
+		foreach ( $item_class_parts as $item_class_part ) {
+			$parts[] = $state_var;
+			$parts[] = $item_class_part;
+		}
 
-		$safe_classes = str_replace( ':', $code, $safe_classes );
-
-		printf(
-			'<div class="%s %s"></div>',
-			esc_html(
-				$this->get_field_class(
-					'true-false',
-					$markup_field_data
-				)
-			),
-			// @phpcs:ignore WordPress.Security.EscapeOutput
-			$safe_classes
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'div',
+					'attrs' => array( 'class' => new Composed_Value( $parts ) ),
+				),
+			)
 		);
 	}
 

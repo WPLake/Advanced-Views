@@ -8,6 +8,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -54,30 +55,48 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 		$tab_data->set_label( __( 'FS only', 'acf-views' ) );
 		$tab_data->set_description_callback(
 			function (): void {
-				echo esc_html(
-					__(
-						'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
-						'acf-views'
+				Tags_Renderer::print_tags(
+					array(
+						array(
+							fn() => print(
+								esc_html(
+									__(
+										'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
+										'acf-views'
+									)
+								)
+							),
+							array( 'tag' => 'br' ),
+							fn() => print(
+								esc_html(
+									__(
+										'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
+										'acf-views'
+									)
+								)
+							),
+							array( 'tag' => 'br' ),
+							fn() => print(
+								esc_html(
+									__(
+										'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
+										'acf-views'
+									)
+								)
+							),
+							fn() => print( ' ' ),
+							array(
+								array(
+									'tag'   => 'a',
+									'attrs' => array(
+										'target' => '_blank',
+										'href'   => esc_url( 'https://docs.advanced-views.com/features/file-system-storage' ),
+									),
+								),
+								fn() => print( esc_html( __( 'Read more', 'acf-views' ) ) ),
+							),
+						),
 					)
-				);
-				echo '<br>';
-				echo esc_html(
-					__(
-						'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
-						'acf-views'
-					)
-				);
-				echo '<br>';
-				echo esc_html(
-					__(
-						'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
-						'acf-views'
-					)
-				);
-				printf(
-					' <a target="_blank" href="%s">%s</a>',
-					esc_url( 'https://docs.advanced-views.com/features/file-system-storage' ),
-					esc_html( __( 'Read more', 'acf-views' ) )
 				);
 			}
 		);
@@ -141,26 +160,48 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 
 		$ids = explode( ',', $ids );
 
-		$safe_item_links = array();
+		$item_links = array();
 
 		foreach ( $ids as $unique_id ) {
-			$cpt_data          = $this->cpt_settings_storage->get( $unique_id );
-			$safe_item_links[] = sprintf(
-				'<a href="%s" target="_blank">%s</a>',
-				esc_url( $cpt_data->get_edit_post_link() ),
-				esc_html( $cpt_data->title )
+			$cpt_data = $this->cpt_settings_storage->get( $unique_id );
+
+			// the 'br' goes between the links.
+			if ( array() !== $item_links ) {
+				$item_links[] = array( 'tag' => 'br' );
+			}
+
+			$item_links[] = array(
+				array(
+					'tag'   => 'a',
+					'attrs' => array(
+						'href'   => esc_url( $cpt_data->get_edit_post_link() ),
+						'target' => '_blank',
+					),
+				),
+				fn() => print( esc_html( $cpt_data->title ) ),
 			);
 		}
 
-		echo '<div class="notice notice-success">' .
-			'<p>' .
-			esc_html( (string) count( $ids ) ) .
-			' ' .
-			esc_html( __( 'items successfully synced', 'acf-views' ) ) .
-			'</p>' .
-		     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			'<p>' . implode( '<br>', $safe_item_links ) . '</p>' .
-			'</div>';
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'div',
+					'attrs' => array( 'class' => 'notice notice-success' ),
+				),
+				array(
+					array(
+						array( 'tag' => 'p' ),
+						fn() => print(
+							esc_html( count( $ids ) . ' ' . __( 'items successfully synced', 'acf-views' ) )
+						),
+					),
+					array(
+						array( 'tag' => 'p' ),
+						$item_links,
+					),
+				),
+			)
+		);
 	}
 
 	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {

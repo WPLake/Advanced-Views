@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -78,33 +79,46 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 		$post_types      = array_unique( $post_types );
 		$safe_post_links = array_unique( $safe_post_links );
 
-		foreach ( $safe_post_links as $index => $post ) {
-			$post_url  = get_the_permalink( $post );
-			$post_url  = false !== $post_url ?
+		$post_links = array();
+
+		foreach ( $safe_post_links as $post ) {
+			$post_url = get_the_permalink( $post );
+			$post_url = false !== $post_url ?
 				$post_url :
 				'';
-			$post_info = sprintf(
-				'<a target="_blank" href="%s">%s</a>',
-				esc_url( $post_url ),
-				esc_html( get_the_title( $post ) )
-			);
 
-			$safe_post_links[ $index ] = $post_info;
-		}
-
-		if ( array() !== $post_types ) {
-			echo esc_html(
-				__( 'Post Types:', 'acf-views' ) . ' ' . join( ', ', $post_types )
-			);
-		}
-
-		if ( array() !== $safe_post_links ) {
-			if ( array() !== $post_types ) {
-				echo '<br>';
+			// the ', ' goes between the links.
+			if ( array() !== $post_links ) {
+				$post_links[] = fn() => print( ', ' );
 			}
 
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo __( 'Pages:', 'acf-views' ) . ' ' . join( ', ', $safe_post_links );
+			$post_links[] = array(
+				array(
+					'tag'   => 'a',
+					'attrs' => array(
+						'target' => '_blank',
+						'href'   => esc_url( $post_url ),
+					),
+				),
+				fn() => print( esc_html( get_the_title( $post ) ) ),
+			);
 		}
+
+		$post_types_line = array() !== $post_types ?
+			array(
+				fn() => print( esc_html( __( 'Post Types:', 'acf-views' ) . ' ' . join( ', ', $post_types ) ) ),
+			) :
+			array();
+		$pages_line      = array() !== $post_links ?
+			array(
+				array() !== $post_types ?
+					array( 'tag' => 'br' ) :
+					array(),
+				fn() => print( __( 'Pages:', 'acf-views' ) . ' ' ),
+				array( $post_links ),
+			) :
+			array();
+
+		Tags_Renderer::print_tags( array( array( $post_types_line, array( $pages_line ) ) ) );
 	}
 }

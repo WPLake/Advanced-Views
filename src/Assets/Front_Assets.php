@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern_Base;
@@ -358,7 +359,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	public function print_assets(): void {
 		$all_js_code        = '';
 		$all_css_code       = strlen( $this->assets_css_code ) > 0 ?
-			sprintf( "<style data-advanced-views-assets=''>%s</style>\n", $this->assets_css_code ) :
+			$this->make_code_tag( 'style', array( 'data-advanced-views-assets' => '' ), $this->assets_css_code ) :
 		'';
 		$counter            = 0;
 		$is_tailwind_in_use = false;
@@ -381,7 +382,7 @@ class Front_Assets extends Actor_Base implements Actor {
 				"\n" :
 				'';
 
-			$all_css_code .= sprintf( "<style data-advanced-views-asset='%s'>%s</style>\n", $name, $css_code );
+			$all_css_code .= $this->make_code_tag( 'style', array( 'data-advanced-views-asset' => $name ), $css_code );
 
 			++$counter;
 		}
@@ -397,7 +398,7 @@ class Front_Assets extends Actor_Base implements Actor {
 					"\n" :
 					'';
 
-				$all_css_code .= sprintf( "<style data-advanced-views-tailwind-global=''>%s</style>\n", $global_tailwind_styles );
+				$all_css_code .= $this->make_code_tag( 'style', array( 'data-advanced-views-tailwind-global' => '' ), $global_tailwind_styles );
 			}
 		}
 
@@ -407,7 +408,14 @@ class Front_Assets extends Actor_Base implements Actor {
 				"\n" :
 				'';
 
-			$all_js_code .= sprintf( "<script type='module' data-advanced-views-asset='%s'>%s</script>\n", $name, $js_code );
+			$all_js_code .= $this->make_code_tag(
+				'script',
+				array(
+					'type'                      => 'module',
+					'data-advanced-views-asset' => $name,
+				),
+				$js_code
+			);
 
 			++$counter;
 		}
@@ -438,10 +446,25 @@ class Front_Assets extends Actor_Base implements Actor {
 			if ( is_int( $custom_location_position ) ) {
 				// introduce a styles variable, which allows to detect the styles root inside a webcomponent.
 				if ( $this->live_reloader_component->is_active() ) {
-					$all_css_code .= '<avf-styles-location></avf-styles-location>';
-					$all_css_code .= '<script>class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)</script>';
-					// it's necessary to make .parentElement work.
-					$all_css_code = sprintf( '<div hidden="">%s</div>', $all_css_code );
+					// the wrapper is necessary to make .parentElement work.
+					$all_css_code = Tags_Renderer::render_tags(
+						array(
+							array(
+								'tag'   => 'div',
+								'attrs' => array( 'hidden' => '' ),
+							),
+							array(
+								// @phpcs:ignore WordPress.Security.EscapeOutput
+								fn() => print( $all_css_code ),
+								array( array( 'tag' => 'avf-styles-location' ) ),
+								array(
+									array( 'tag' => 'script' ),
+									// @phpcs:ignore WordPress.Security.EscapeOutput
+									fn() => print( 'class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)' ),
+								),
+							),
+						)
+					);
 				}
 
 				$page_content = str_replace( '<!--advanced-views:styles/custom-location-->', $all_css_code, $page_content );
@@ -610,5 +633,21 @@ class Front_Assets extends Actor_Base implements Actor {
 		}
 
 		return $outers;
+	}
+
+	/**
+	 * @param array<string,string> $attrs
+	 */
+	protected function make_code_tag( string $tag, array $attrs, string $code ): string {
+		return Tags_Renderer::render_tags(
+			array(
+				array(
+					'tag'   => $tag,
+					'attrs' => $attrs,
+				),
+				// @phpcs:ignore WordPress.Security.EscapeOutput
+				fn() => print( $code ),
+			)
+		) . "\n";
 	}
 }

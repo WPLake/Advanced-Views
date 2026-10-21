@@ -6,20 +6,25 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappe
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
 
+/**
+ * @phpstan-import-type Tag_Group from Tags_Renderer
+ */
 final class Outer_Printer {
 	/**
 	 * @param Template_Pattern[] $field_assets
 	 * @param callable(bool $is_with_outers): void $print_content
+	 *
+	 * @return Tag_Group
 	 */
-	public static function print_with_outers(
+	public static function wrap_with_outers(
 		array $field_assets,
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
@@ -28,15 +33,25 @@ final class Outer_Printer {
 		int &$tabs_number,
 		Token_Factory $token_factory,
 		callable $print_content
-	): void {
+	): array {
 		$field_outers   = self::get_field_outers( $field_assets, $layout_settings, $field_settings, $field_id, $row_type );
 		$is_with_outers = array() !== $field_outers;
+		$content        = fn() => $print_content( $is_with_outers );
 
-		self::print_opening_field_outers( $field_outers, $tabs_number, $token_factory );
+		// the innermost outer goes first.
+		foreach ( array_reverse( $field_outers ) as $outer ) {
+			$content = Wrapper_Printer::wrap(
+				self::outer_tag( $outer, $token_factory ),
+				$tabs_number,
+				true,
+				true,
+				$content
+			);
+		}
 
-		$print_content( $is_with_outers );
-
-		self::print_closing_field_outers( $field_outers, $tabs_number );
+		return is_array( $content ) ?
+			$content :
+			array( $content );
 	}
 
 	/**
@@ -61,52 +76,19 @@ final class Outer_Printer {
 	}
 
 	/**
-	 * @param Html_Wrapper[] $field_outers
+	 * @return array{tag:string,attrs:array<string,mixed>}
 	 */
-	protected static function print_opening_field_outers(
-		array $field_outers,
-		int &$tabs_number,
-		Token_Factory $token_factory
-	): void {
-		foreach ( $field_outers as $outer ) {
-			$tabs = str_repeat( "\t", $tabs_number );
+	protected static function outer_tag( Html_Wrapper $outer, Token_Factory $token_factory ): array {
+		$attrs = $outer->attrs;
 
-			printf( "\r\n%s", esc_html( $tabs ) );
-			printf( '<%s', esc_html( $outer->tag ) );
-
-			Wrapper_Printer::print_attrs( $outer->attrs );
-			self::print_variable_attrs( $outer->variable_attrs, $token_factory );
-
-			echo '>';
-
-			$token_factory->formatter()
-							->new_line();
-
-			++$tabs_number;
+		foreach ( $outer->variable_attrs as $attr => $variable_info ) {
+			$attrs[ $attr ] = $token_factory->variable( $variable_info['field_id'] )
+											->add_item_path( $variable_info['item_key'] );
 		}
-	}
 
-	/**
-	 * @param Html_Wrapper[] $field_outers
-	 */
-	protected static function print_closing_field_outers( array $field_outers, int &$tabs_number ): void {
-		foreach ( $field_outers as $outer ) {
-			Format_Token::tabulation( --$tabs_number );
-			printf( '</%s>', esc_html( $outer->tag ) );
-			Format_Token::next_line();
-		}
-	}
-
-	/**
-	 * @param array<string,array{field_id:string,item_key:string}> $variable_attrs
-	 */
-	protected static function print_variable_attrs( array $variable_attrs, Token_Factory $token_factory ): void {
-		foreach ( $variable_attrs as $attr => $variable_info ) {
-			$var = $token_factory->variable( $variable_info['field_id'] )
-								->add_item_path( $variable_info['item_key'] );
-
-			$token_factory->formatter()
-							->attribute( $attr, $var );
-		}
+		return array(
+			'tag'   => $outer->tag,
+			'attrs' => $attrs,
+		);
 	}
 }

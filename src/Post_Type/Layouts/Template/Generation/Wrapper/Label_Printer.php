@@ -7,6 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappe
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
@@ -23,12 +24,23 @@ final class Label_Printer {
 		$token_factory->formatter()
 						->tab( $tabs_number );
 
-		$classes = self::resolve_classes( $layout_settings, $field_settings );
-		printf( '<p class="%s">', esc_html( $classes ) );
-
-		self::print_variable( $token_factory, $tabs_number, $field_id );
-
-		echo '</p>';
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'p',
+					'attrs' => array( 'class' => self::resolve_classes( $layout_settings, $field_settings ) ),
+				),
+				array(
+					function () use ( $token_factory, &$tabs_number ) {
+						self::print_variable_opening( $token_factory, $tabs_number );
+					},
+					fn() => self::print_variable( $token_factory, $field_id ),
+					function () use ( $token_factory, &$tabs_number ) {
+						self::print_variable_closing( $token_factory, $tabs_number );
+					},
+				),
+			)
+		);
 
 		Format_Token::next_line();
 	}
@@ -48,15 +60,19 @@ final class Label_Printer {
 		return join( ' ', $classes );
 	}
 
-	protected static function print_variable( Token_Factory $factory, int &$tabs_number, string $field_id ): void {
+	protected static function print_variable_opening( Token_Factory $factory, int &$tabs_number ): void {
 		$factory->formatter()
 				->new_line()
 				->tab( ++$tabs_number );
+	}
 
+	protected static function print_variable( Token_Factory $factory, string $field_id ): void {
 		$factory->variable( $field_id )
 				->add_item_path( Markup_Field_Base::LABEL )
 				->display();
+	}
 
+	protected static function print_variable_closing( Token_Factory $factory, int &$tabs_number ): void {
 		$factory->formatter()
 				->new_line()
 				->tab( --$tabs_number );

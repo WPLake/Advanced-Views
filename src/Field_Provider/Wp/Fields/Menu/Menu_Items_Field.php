@@ -18,6 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Composed_Value;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
@@ -86,21 +87,6 @@ class Menu_Items_Field extends Markup_Field_Base {
 	protected function print_loop_body( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$token_factory->formatter()
-						->new_line();
-		$markup_field_data->increment_and_print_tabs();
-
-		printf(
-			'<li class="%s',
-			esc_html(
-				$this->get_item_class(
-					'menu-item',
-					$markup_field_data->get_view_data(),
-					$markup_field_data->get_field_data()
-				)
-			)
-		);
-
 		$is_active_var        = $token_factory->variable( $item_id )
 												->add_item_path( self::IS_ACTIVE );
 		$is_child_active_var  = $token_factory->variable( $item_id )
@@ -109,32 +95,41 @@ class Menu_Items_Field extends Markup_Field_Base {
 												->set_left_operand( $is_active_var )
 												->set_comparison_or()
 												->set_right_operand( $is_child_active_var );
-		$this->print_conditional_class( 'menu-item--active', $is_active_comparison, $markup_field_data );
+		$children_branch      = $this->children_branch( $field_id, $item_id, $markup_field_data );
+		$children_if          = $token_factory->if()->set_if_branch( $children_branch );
 
-		echo '">';
-
-		echo "\r\n\r\n";
-		$markup_field_data->increment_and_print_tabs();
-
-		$this->print_item_markup( $field_id, $item_id, $markup_field_data );
-
-		echo "\r\n\r\n";
-		$markup_field_data->print_tabs();
-
-		$children_branch = $this->children_branch( $field_id, $item_id, $markup_field_data );
-
-		$if = $token_factory->if()->set_if_branch( $children_branch );
-
-		$if->display();
-
-		echo "\r\n\r\n";
-		$markup_field_data->decrement_and_print_tabs();
-
-		echo '</li>';
-
-		$token_factory->formatter()
-						->new_line();
-		$markup_field_data->decrement_and_print_tabs();
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					fn() => $this->print_new_line_and_increment_tabs( $markup_field_data ),
+					array(
+						array(
+							'tag'   => 'li',
+							'attrs' => array(
+								'class' => $this->compose_class( 'menu-item', 'menu-item--active', $is_active_comparison, $markup_field_data ),
+							),
+						),
+						array(
+							function () use ( $markup_field_data ) {
+								echo "\r\n\r\n";
+								$markup_field_data->increment_and_print_tabs();
+							},
+							fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data ),
+							function () use ( $markup_field_data ) {
+								echo "\r\n\r\n";
+								$markup_field_data->print_tabs();
+							},
+							fn() => $children_if->display(),
+							function () use ( $markup_field_data ) {
+								echo "\r\n\r\n";
+								$markup_field_data->decrement_and_print_tabs();
+							},
+						),
+					),
+					fn() => $this->print_new_line_and_decrement_tabs( $markup_field_data ),
+				),
+			)
+		);
 	}
 
 	protected function children_branch( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): IF_Branch {
@@ -204,55 +199,62 @@ class Menu_Items_Field extends Markup_Field_Base {
 	protected function print_sub_loop_body( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$token_factory->formatter()
-		->new_line();
-		$markup_field_data->increment_and_print_tabs();
-
-		printf(
-			'<li class="%s',
-			esc_html(
-				$this->get_item_class(
-					'sub-menu-item',
-					$markup_field_data->get_view_data(),
-					$markup_field_data->get_field_data()
-				)
-			),
-		);
-
 		$is_active_var = $token_factory->variable( $item_id )
 										->add_item_path( self::IS_ACTIVE );
-		$this->print_conditional_class( 'sub-menu-item--active', $is_active_var, $markup_field_data );
-		echo '">';
 
-		$token_factory->formatter()
-						->new_line();
-		$markup_field_data->increment_and_print_tabs();
-
-		$this->print_item_markup( $field_id, $item_id, $markup_field_data );
-
-		$token_factory->formatter()
-						->new_line();
-		$markup_field_data->decrement_and_print_tabs();
-
-		echo '</li>';
-
-		$token_factory->formatter()
-						->new_line();
-		$markup_field_data->decrement_and_print_tabs();
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					fn() => $this->print_new_line_and_increment_tabs( $markup_field_data ),
+					array(
+						array(
+							'tag'   => 'li',
+							'attrs' => array(
+								'class' => $this->compose_class( 'sub-menu-item', 'sub-menu-item--active', $is_active_var, $markup_field_data ),
+							),
+						),
+						array(
+							fn() => $this->print_new_line_and_increment_tabs( $markup_field_data ),
+							fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data ),
+							fn() => $this->print_new_line_and_decrement_tabs( $markup_field_data ),
+						),
+					),
+					fn() => $this->print_new_line_and_decrement_tabs( $markup_field_data ),
+				),
+			)
+		);
 	}
 
-	protected function print_conditional_class(
-		string $classes,
+	protected function compose_class(
+		string $base_suffix,
+		string $conditional_suffix,
 		Template_Token $comparison,
 		Template_Field_Data $markup_field_data
-	): void {
+	): Composed_Value {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$class_branch = $this->class_branch( $classes, $comparison, $markup_field_data );
+		$class_branch = $this->class_branch( $conditional_suffix, $comparison, $markup_field_data );
 
-		$if = $token_factory->if()->set_if_branch( $class_branch );
+		return new Composed_Value(
+			array(
+				$this->get_item_class( $base_suffix, $markup_field_data->get_view_data(), $markup_field_data->get_field_data() ),
+				$token_factory->if()->set_if_branch( $class_branch ),
+			)
+		);
+	}
 
-		$if->display();
+	protected function print_new_line_and_increment_tabs( Template_Field_Data $markup_field_data ): void {
+		$markup_field_data->get_token_factory()
+							->formatter()
+							->new_line();
+		$markup_field_data->increment_and_print_tabs();
+	}
+
+	protected function print_new_line_and_decrement_tabs( Template_Field_Data $markup_field_data ): void {
+		$markup_field_data->get_token_factory()
+							->formatter()
+							->new_line();
+		$markup_field_data->decrement_and_print_tabs();
 	}
 
 	protected function class_branch( string $classes, Template_Token $comparison, Template_Field_Data $markup_field_data ): IF_Branch {

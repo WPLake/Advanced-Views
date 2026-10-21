@@ -18,6 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selectio
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -275,11 +276,15 @@ class Plugin extends Actor_Base implements Actor {
 
 		$this->options::delete_transient( Options_Storage::TRANSIENT_DEACTIVATED_OTHER_INSTANCES );
 
-		printf(
-			'<div class="notice notice-warning">' .
-			'<p>%s</p>' .
-			'</div>',
-			esc_html( $message )
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'div',
+					'attrs' => array( 'class' => 'notice notice-warning' ),
+				),
+				array( 'tag' => 'p' ),
+				fn() => print( esc_html( $message ) ),
+			)
 		);
 	}
 
@@ -453,14 +458,29 @@ class Plugin extends Actor_Base implements Actor {
 			'Please change the "opcache.save_comments" option in your php.ini file to the default value of "1" on your hosting.',
 			'acf-views'
 		);
-		printf(
-			'<div class="notice notice-error"><p>%s 
-<br>%s <a target="_blank" href="%s">%s</a>
-</p></div>',
-			esc_html( $detected_message ),
-			esc_html( $action_message ),
-			esc_url( External_Links::CONFLICTS_URL ),
-			esc_html( __( 'Read more', 'acf-views' ) ),
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'div',
+					'attrs' => array( 'class' => 'notice notice-error' ),
+				),
+				array( 'tag' => 'p' ),
+				array(
+					fn() => print( esc_html( $detected_message ) . ' ' ),
+					array( 'tag' => 'br' ),
+					fn() => print( esc_html( $action_message ) . ' ' ),
+					array(
+						array(
+							'tag'   => 'a',
+							'attrs' => array(
+								'target' => '_blank',
+								'href'   => esc_url( External_Links::CONFLICTS_URL ),
+							),
+						),
+						fn() => print( esc_html( __( 'Read more', 'acf-views' ) ) ),
+					),
+				),
+			)
 		);
 	}
 }

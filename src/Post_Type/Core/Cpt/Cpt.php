@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 
 defined( 'ABSPATH' ) || exit;
@@ -68,26 +69,40 @@ abstract class Cpt extends Actor_Base implements Actor {
 			return $html;
 		}
 
-		$content  = sprintf(
-			'%s <a target="_blank" href="%s">%s</a> %s <a target="_blank" href="%s">%s</a>.',
-			__( 'Thank you for creating with', 'acf-views' ),
-			'https://wordpress.org/',
-			__( 'WordPress', 'acf-views' ),
-			__( 'and', 'acf-views' ),
-			External_Links::BASIC_VERSION_URL,
-			__( 'Advanced Views', 'acf-views' )
-		);
-		$content .= ' ' . sprintf(
-			"<span>%s <a target='_blank' href='%s'>%s</a> %s</span>",
-			__( 'Take', 'acf-views' ),
-			External_Links::SURVEY_URL,
-			__( '2 minute survey', 'acf-views' ),
-			__( 'to improve Advanced Views.', 'acf-views' )
+		$text = static fn( string $text ) => fn() => print( esc_html( $text ) );
+		$link = static fn( string $url, string $label ) => array(
+			array(
+				'tag'   => 'a',
+				'attrs' => array(
+					'target' => '_blank',
+					'href'   => $url,
+				),
+			),
+			$text( $label ),
 		);
 
-		return sprintf(
-			'<span id="footer-thankyou">%s</span>',
-			$content
+		return Tags_Renderer::render_tags(
+			array(
+				array(
+					'tag'   => 'span',
+					'attrs' => array( 'id' => 'footer-thankyou' ),
+				),
+				array(
+					$text( __( 'Thank you for creating with', 'acf-views' ) . ' ' ),
+					$link( 'https://wordpress.org/', __( 'WordPress', 'acf-views' ) ),
+					$text( ' ' . __( 'and', 'acf-views' ) . ' ' ),
+					$link( External_Links::BASIC_VERSION_URL, __( 'Advanced Views', 'acf-views' ) ),
+					$text( '. ' ),
+					array(
+						array( 'tag' => 'span' ),
+						array(
+							$text( __( 'Take', 'acf-views' ) . ' ' ),
+							$link( External_Links::SURVEY_URL, __( '2 minute survey', 'acf-views' ) ),
+							$text( ' ' . __( 'to improve Advanced Views.', 'acf-views' ) ),
+						),
+					),
+				),
+			)
 		);
 	}
 

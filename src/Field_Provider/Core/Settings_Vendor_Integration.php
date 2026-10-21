@@ -336,10 +336,17 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 				continue;
 			}
 
-			$views_with_invalid_custom_markup[] = sprintf(
-				"<a target='_blank' href='%s'>%s</a>",
-				$related_view_data->get_edit_post_link(),
-				$related_view_data->title
+			$views_with_invalid_custom_markup[] = Tags_Renderer::render_tags(
+				array(
+					array(
+						'tag'   => 'a',
+						'attrs' => array(
+							'target' => '_blank',
+							'href'   => $related_view_data->get_edit_post_link(),
+						),
+					),
+					fn() => print( esc_html( $related_view_data->title ) ),
+				)
 			);
 		}
 
@@ -488,12 +495,44 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 					return $messages;
 				}
 
-				$extra  = sprintf(
-					"<br><br><span style='color:#dc3232;'>%s %s:</span><br><br>",
-					count( $related_view_links_with_invalid_custom_markup ),
-					__( 'Views associated with this group contain invalid Custom Markup', 'acf-views' )
+				$links = array();
+
+				foreach ( $related_view_links_with_invalid_custom_markup as $link ) {
+					// the 'br' goes between the links.
+					if ( array() !== $links ) {
+						$links[] = array( 'tag' => 'br' );
+					}
+
+					// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					$links[] = fn() => print( $link );
+				}
+
+				$extra = Tags_Renderer::render_tags(
+					array(
+						array(
+							array( 'tag' => 'br' ),
+							array( 'tag' => 'br' ),
+							array(
+								array(
+									'tag'   => 'span',
+									'attrs' => array( 'style' => array( 'color' => '#dc3232' ) ),
+								),
+								fn() => print(
+									esc_html(
+										sprintf(
+											'%s %s:',
+											count( $related_view_links_with_invalid_custom_markup ),
+											__( 'Views associated with this group contain invalid Custom Markup', 'acf-views' )
+										)
+									)
+								),
+							),
+							array( 'tag' => 'br' ),
+							array( 'tag' => 'br' ),
+							array( $links ),
+						),
+					)
 				);
-				$extra .= implode( '<br>', $related_view_links_with_invalid_custom_markup );
 
 				$messages[ $this->get_vendor_post_type() ][1] .= $extra;
 

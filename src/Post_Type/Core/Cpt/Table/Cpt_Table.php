@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use WP_List_Table;
@@ -20,6 +21,10 @@ use WP_Query;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Tag_Chain from Tags_Renderer
+ * @phpstan-import-type Tag_Group from Tags_Renderer
+ */
 abstract class Cpt_Table extends Actor_Base implements Actor {
 	const COLUMN_PREFIX = Hard_Layout_Cpt::NAME . '_';
 
@@ -146,9 +151,16 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			return;
 		}
 
-		echo '<div class="notice notice-success"><p>' .
-			esc_html( __( 'Item successfully cloned.', 'acf-views' ) ) .
-			'</p></div>';
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'div',
+					'attrs' => array( 'class' => 'notice notice-success' ),
+				),
+				array( 'tag' => 'p' ),
+				fn() => print( esc_html( __( 'Item successfully cloned.', 'acf-views' ) ) ),
+			)
+		);
 	}
 
 	protected function print_post_type_description( WP_Post_Type $wp_post_type ): void {
@@ -156,17 +168,25 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 
 		if ( null !== $current_tab_data &&
 			is_callable( $current_tab_data->get_description_callback() ) ) {
-			echo '<p>';
-			call_user_func( $current_tab_data->get_description_callback() );
-			echo '</p>';
+			Tags_Renderer::print_tags(
+				array(
+					array( 'tag' => 'p' ),
+					$current_tab_data->get_description_callback(),
+				)
+			);
 
 			return;
 		}
 
 		if ( '' !== $wp_post_type->description ) {
-			// don't use esc_html as it contains links.
-			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			printf( '<p>%s</p>', $wp_post_type->description );
+			Tags_Renderer::print_tags(
+				array(
+					array( 'tag' => 'p' ),
+					// don't use esc_html as it contains links.
+					// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					fn() => print( $wp_post_type->description ),
+				)
+			);
 		}
 	}
 
@@ -181,20 +201,36 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		foreach ( $this->tabs as $tab ) {
 			$is_tab_active = $tab->get_name() === $this->get_current_tab();
 
-			$class_string = $is_tab_active ?
-				' class="current"' :
-				'';
+			$attrs = $is_tab_active ?
+				array( 'class' => 'current' ) :
+				array();
+
+			$attrs['href'] = esc_url( $this->get_tab_url( $tab->get_name() ) );
 
 			$count_span = '' !== $tab->get_label_in_brackets() ?
-				sprintf( ' <span class="count">(%s)</span>', esc_html( $tab->get_label_in_brackets() ) ) :
-				'';
+				array(
+					fn() => print( ' ' ),
+					array(
+						array(
+							'tag'   => 'span',
+							'attrs' => array( 'class' => 'count' ),
+						),
+						fn() => print( esc_html( sprintf( '(%s)', $tab->get_label_in_brackets() ) ) ),
+					),
+				) :
+				array();
 
-			$views[ $tab->get_name() ] = sprintf(
-				'<a%s href="%s">%s%s</a>',
-				$class_string,
-				esc_url( $this->get_tab_url( $tab->get_name() ) ),
-				esc_html( $tab->get_label() ),
-				$count_span
+			$views[ $tab->get_name() ] = Tags_Renderer::render_tags(
+				array(
+					array(
+						'tag'   => 'a',
+						'attrs' => $attrs,
+					),
+					array(
+						fn() => print( esc_html( $tab->get_label() ) ),
+						$count_span,
+					),
+				)
 			);
 
 			if ( false === $is_tab_active ) {
@@ -224,9 +260,11 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			__( 'Search for name.', 'acf-views' );
 
 		// only primary search is available for custom items.
-		printf(
-			'<style>#posts-filter .search-box::after{content:"%s";}</style>',
-			esc_html( $label )
+		Tags_Renderer::print_tags(
+			array(
+				array( 'tag' => 'style' ),
+				fn() => print( sprintf( '#posts-filter .search-box::after{content:"%s";}', esc_html( $label ) ) ),
+			)
 		);
 	}
 
@@ -334,7 +372,15 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			)
 		);
 
-		$actions['clone'] = sprintf( "<a href='%s'>%s</a>", $clone_link, __( 'Clone', 'acf-views' ) );
+		$actions['clone'] = Tags_Renderer::render_tags(
+			array(
+				array(
+					'tag'   => 'a',
+					'attrs' => array( 'href' => $clone_link ),
+				),
+				fn() => print( esc_html( __( 'Clone', 'acf-views' ) ) ),
+			)
+		);
 		$actions['trash'] = $trash;
 
 		return $actions;
@@ -390,80 +436,48 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		$columns = $wp_list_table->get_columns();
 		$hidden  = get_hidden_columns( $wp_list_table->screen );
 
-		// hide the origin items until the custom items are pasted via JS.
-		printf(
-			'<style>#the-list{opacity: 0; transition: opacity ease .1s;}</style>'
-		);
+		$rows = array();
 
-		printf( '<div style="display: none;"><table> <tbody id="acf-views-the-list">' );
 		foreach ( $custom_table_items as $cpt_data ) {
-			printf( '<tr>' );
+			$cells = array();
+
 			foreach ( $columns as $column_name => $column_label ) {
-				$el = 'td';
-
-				switch ( $column_name ) {
-					case 'cb':
-						$el           = 'th';
-						$classes      = 'check-column';
-						$column_label = '';
-						break;
-					case 'title':
-						$classes = sprintf( '%s column-%1$s column-primary', $column_name );
-						break;
-					default:
-						$classes = sprintf( '%s column-%1$s', $column_label );
-						break;
-				}
-
-				if ( in_array( $column_name, $hidden, true ) ) {
-					$classes .= ' hidden';
-				}
-
-				printf(
-					"<%s class='%s' data-colname='%s'>",
-					esc_html( $el ),
-					esc_html( $classes ),
-					esc_html( $column_label )
-				);
-
-				switch ( $column_name ) {
-					// Checkbox.
-					case 'cb':
-						$unique_id = $cpt_data->get_unique_id();
-
-						printf(
-							'<label for="cb-select-%s" class="screen-reader-text">%s</label>',
-							esc_attr( $unique_id ),
-							// translators: %s: item title.
-							esc_html( sprintf( __( 'Select %s', 'acf-views' ), $cpt_data->title ) )
-						);
-
-						printf(
-							'<input id="cb-select-%s" type="checkbox" value="%s" name="post[]">',
-							esc_attr( $unique_id ),
-							esc_attr( $unique_id )
-						);
-						break;
-
-					// Title.
-					case 'title':
-						$current_tab_data->print_row_title( $cpt_data );
-						break;
-
-					// All other columns.
-					default:
-						$this->print_column( $column_name, $cpt_data );
-						break;
-				}
-				printf( '</%s>', esc_html( $el ) );
+				$cells[] = $this->table_cell( $current_tab_data, $cpt_data, $column_name, $column_label, $hidden );
 			}
 
-			printf( '</tr>' );
+			$rows[] = array( array( 'tag' => 'tr' ), $cells );
 		}
 
-		printf( '</tbody></table></div>' );
-		printf(
-			'<script type="text/javascript">jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});</script>'
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					// hide the origin items until the custom items are pasted via JS.
+					array(
+						array( 'tag' => 'style' ),
+						fn() => print( '#the-list{opacity: 0; transition: opacity ease .1s;}' ),
+					),
+					array(
+						array(
+							'tag'   => 'div',
+							'attrs' => array( 'style' => array( 'display' => 'none' ) ),
+						),
+						array( 'tag' => 'table' ),
+						array(
+							'tag'   => 'tbody',
+							'attrs' => array( 'id' => 'acf-views-the-list' ),
+						),
+						$rows,
+					),
+					array(
+						array(
+							'tag'   => 'script',
+							'attrs' => array( 'type' => 'text/javascript' ),
+						),
+						// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						fn() => print( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' ),
+					),
+				),
+			)
 		);
 	}
 
@@ -585,5 +599,77 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 
 	public function add_new_tab_callback( callable $new_tab_callback ): void {
 		$this->add_tab_callbacks[] = $new_tab_callback;
+	}
+
+	/**
+	 * @param string[] $hidden_columns
+	 *
+	 * @return Tag_Chain
+	 */
+	protected function table_cell(
+		Tab_Data $tab_data,
+		Cpt_Settings $cpt_settings,
+		string $column_name,
+		string $column_label,
+		array $hidden_columns
+	): array {
+		$is_checkbox = 'cb' === $column_name;
+		$classes     = array(
+			'cb'    => 'check-column',
+			'title' => sprintf( '%s column-%1$s column-primary', $column_name ),
+		);
+		$classes     = array( $classes[ $column_name ] ?? sprintf( '%s column-%1$s', $column_label ) );
+
+		if ( in_array( $column_name, $hidden_columns, true ) ) {
+			$classes[] = 'hidden';
+		}
+
+		$contents = array(
+			'cb'    => $this->checkbox_cell_content( $cpt_settings->get_unique_id(), $cpt_settings->title ),
+			'title' => array( fn() => $tab_data->print_row_title( $cpt_settings ) ),
+		);
+
+		return array(
+			array(
+				'tag'   => $is_checkbox ?
+					'th' :
+					'td',
+				'attrs' => array(
+					'class'        => $classes,
+					'data-colname' => $is_checkbox ?
+						'' :
+						$column_label,
+				),
+			),
+			$contents[ $column_name ] ?? array( fn() => $this->print_column( $column_name, $cpt_settings ) ),
+		);
+	}
+
+	/**
+	 * @return Tag_Group
+	 */
+	protected function checkbox_cell_content( string $unique_id, string $title ): array {
+		return array(
+			array(
+				array(
+					'tag'   => 'label',
+					'attrs' => array(
+						'for'   => 'cb-select-' . $unique_id,
+						'class' => 'screen-reader-text',
+					),
+				),
+				// translators: %s: item title.
+				fn() => print( esc_html( sprintf( __( 'Select %s', 'acf-views' ), $title ) ) ),
+			),
+			array(
+				'tag'   => 'input',
+				'attrs' => array(
+					'id'    => 'cb-select-' . $unique_id,
+					'type'  => 'checkbox',
+					'value' => $unique_id,
+					'name'  => 'post[]',
+				),
+			),
+		);
 	}
 }

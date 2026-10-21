@@ -7,6 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -17,6 +18,9 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Tag_Group from Tags_Renderer
+ */
 final class Template_Field_Data extends Field_Data {
 	/**
 	 * @var Template_Pattern[]
@@ -99,75 +103,49 @@ final class Template_Field_Data extends Field_Data {
 
 	/**
 	 * @param Html_Wrapper[] $item_outers
+	 * @param callable():void $print_content
+	 *
+	 * @return Tag_Group
 	 */
-	public function print_opening_item_outers( array $item_outers, bool $is_without_last_item_tabs = false ): void {
-		$counter          = 0;
-		$last_item_number = count( $item_outers ) - 1;
-		$layout_settings  = $this->get_view_data();
-		$field_settings   = $this->get_field_data();
+	public function wrap_with_item_outers( array $item_outers, callable $print_content, bool $is_without_last_item_tabs = false ): array {
+		$last_index = count( $item_outers ) - 1;
+		$content    = array( $print_content );
 
-		foreach ( $item_outers as $outer ) {
-			$attr_class = $outer->attrs['class'] ?? '';
-			$class      = '' !== $attr_class ?
-				$attr_class :
-				$layout_settings->get_item_class( 'item', $field_settings );
-			// trick to add class as the first key.
-			$outer->attrs = array_merge( array( 'class' => $class ), $outer->attrs );
+		// the innermost outer goes first.
+		foreach ( array_reverse( $item_outers, true ) as $index => $outer ) {
+			$is_without_tabs = $index === $last_index && $is_without_last_item_tabs;
 
-			printf( '<%s', esc_html( $outer->tag ) );
+			$content = array(
+				array(
+					$this->item_outer_tag( $outer ),
+					array(
+						function () use ( $is_without_tabs ) {
+							$this->token_factory->formatter()
+								->new_line();
 
-			foreach ( $outer->attrs as $attr => $value ) {
-				printf( ' %s="%s"', esc_html( $attr ), esc_html( $value ) );
-			}
+							++$this->tabs_number;
 
-			foreach ( $outer->variable_attrs as $attr => $variable_info ) {
-				$var = $this->token_factory->variable( $variable_info['field_id'] )
-											->add_item_path( $variable_info['item_key'] );
+							if ( ! $is_without_tabs ) {
+								$this->token_factory->formatter()
+									->tab( $this->tabs_number );
+							}
+						},
+						array( $content ),
+						function () use ( $is_without_tabs ) {
+							if ( ! $is_without_tabs ) {
+								$this->token_factory->formatter()
+									->new_line();
+							}
 
-				$this->token_factory->formatter()
-									->attribute( $attr, $var );
-			}
-
-			echo '>';
-
-			$this->token_factory->formatter()
-				->new_line();
-
-			++$this->tabs_number;
-
-			if ( false === $is_without_last_item_tabs ||
-				$counter !== $last_item_number ) {
-				$this->token_factory->formatter()
-					->tab( $this->tabs_number );
-			}
-
-			++$counter;
+							$this->token_factory->formatter()
+								->tab( --$this->tabs_number );
+						},
+					),
+				),
+			);
 		}
-	}
 
-	/**
-	 * @param Html_Wrapper[] $item_outers
-	 */
-	public function print_closing_item_outers(
-		array $item_outers,
-		bool $is_without_first_item_new_line = false
-	): void {
-		$counter = 0;
-
-		foreach ( $item_outers as $outer ) {
-			if ( 0 !== $counter ||
-				false === $is_without_first_item_new_line ) {
-				$this->token_factory->formatter()
-					->new_line();
-			}
-
-			$this->token_factory->formatter()
-				->tab( --$this->tabs_number );
-
-			printf( '</%s>', esc_html( $outer->tag ) );
-
-			++$counter;
-		}
+		return $content;
 	}
 
 	/**
@@ -233,5 +211,27 @@ final class Template_Field_Data extends Field_Data {
 
 	public function get_token_factory(): Token_Factory {
 		return $this->token_factory;
+	}
+
+	/**
+	 * @return array{tag:string,attrs:array<string,mixed>}
+	 */
+	protected function item_outer_tag( Html_Wrapper $outer ): array {
+		$attr_class = $outer->attrs['class'] ?? '';
+		$class      = '' !== $attr_class ?
+			$attr_class :
+			$this->get_view_data()->get_item_class( 'item', $this->get_field_data() );
+
+		$attrs = array_merge( array( 'class' => $class ), $outer->attrs );
+
+		foreach ( $outer->variable_attrs as $attr => $variable_info ) {
+			$attrs[ $attr ] = $this->token_factory->variable( $variable_info['field_id'] )
+													->add_item_path( $variable_info['item_key'] );
+		}
+
+		return array(
+			'tag'   => $outer->tag,
+			'attrs' => $attrs,
+		);
 	}
 }
