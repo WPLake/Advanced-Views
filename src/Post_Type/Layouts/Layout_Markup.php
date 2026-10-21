@@ -148,18 +148,16 @@ class Layout_Markup {
 			) :
 			array( $new_line, $rows );
 
-		Tags_Renderer::print_tags(
+		Tags_Renderer::print_tag_group(
 			array(
 				array(
 					array(
-						array(
-							'tag'   => $layout_settings->get_tag_name(),
-							'attrs' => array( 'class' => $this->root_class( $token_factory, $layout_settings ) ),
-						),
-						$root_content,
+						'tag'   => $layout_settings->get_tag_name(),
+						'attrs' => array( 'class' => $this->root_class( $token_factory, $layout_settings ) ),
 					),
-					$new_line,
+					$root_content,
 				),
+				$new_line,
 			)
 		);
 	}

@@ -448,34 +448,32 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			$rows[] = array( array( 'tag' => 'tr' ), $cells );
 		}
 
-		Tags_Renderer::print_tags(
+		Tags_Renderer::print_tag_group(
 			array(
+				// hide the origin items until the custom items are pasted via JS.
 				array(
-					// hide the origin items until the custom items are pasted via JS.
+					array( 'tag' => 'style' ),
+					fn() => print( '#the-list{opacity: 0; transition: opacity ease .1s;}' ),
+				),
+				array(
 					array(
-						array( 'tag' => 'style' ),
-						fn() => print( '#the-list{opacity: 0; transition: opacity ease .1s;}' ),
+						'tag'   => 'div',
+						'attrs' => array( 'style' => array( 'display' => 'none' ) ),
 					),
+					array( 'tag' => 'table' ),
 					array(
-						array(
-							'tag'   => 'div',
-							'attrs' => array( 'style' => array( 'display' => 'none' ) ),
-						),
-						array( 'tag' => 'table' ),
-						array(
-							'tag'   => 'tbody',
-							'attrs' => array( 'id' => 'acf-views-the-list' ),
-						),
-						$rows,
+						'tag'   => 'tbody',
+						'attrs' => array( 'id' => 'acf-views-the-list' ),
 					),
+					$rows,
+				),
+				array(
 					array(
-						array(
-							'tag'   => 'script',
-							'attrs' => array( 'type' => 'text/javascript' ),
-						),
-						// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						fn() => print( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' ),
+						'tag'   => 'script',
+						'attrs' => array( 'type' => 'text/javascript' ),
 					),
+					// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					fn() => print( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' ),
 				),
 			)
 		);

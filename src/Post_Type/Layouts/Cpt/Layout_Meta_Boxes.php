@@ -217,12 +217,10 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 
 		if ( array() !== $related_cards ||
 			$is_list_look ) {
-			Tags_Renderer::print_tags(
+			Tags_Renderer::print_tag_group(
 				array(
-					array(
-						array( 'tag' => 'br' ),
-						array( 'tag' => 'br' ),
-					),
+					array( 'tag' => 'br' ),
+					array( 'tag' => 'br' ),
 				)
 			);
 		}

@@ -63,23 +63,21 @@ class Post_Selection_Markup {
 				$pages_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 											->add_item_path( 'pages_amount' );
 
-				Tags_Renderer::print_tags(
+				Tags_Renderer::print_tag_group(
 					array(
+						fn() => $token_factory->formatter()
+											->new_line()
+											->tab( 2 ),
 						array(
-							fn() => $token_factory->formatter()
-												->new_line()
-												->tab( 2 ),
+							array( 'tag' => 'div' ),
 							array(
-								array( 'tag' => 'div' ),
-								array(
-									fn() => print( "\r\n\t\t\t" ),
-									fn() => $token_factory->functions()
-															->paginate_links( array( 'total' => $pages_var ) ),
-									fn() => print( "\n\t\t" ),
-								),
+								fn() => print( "\r\n\t\t\t" ),
+								fn() => $token_factory->functions()
+														->paginate_links( array( 'total' => $pages_var ) ),
+								fn() => print( "\n\t\t" ),
 							),
-							fn() => print( "\r\n\t" ),
 						),
+						fn() => print( "\r\n\t" ),
 					)
 				);
 			}
@@ -341,18 +339,16 @@ class Post_Selection_Markup {
 			$shadow_root :
 			array_merge( $content, array( $new_line ) );
 
-		Tags_Renderer::print_tags(
+		Tags_Renderer::print_tag_group(
 			array(
 				array(
 					array(
-						array(
-							'tag'   => $post_selection_settings->get_tag_name(),
-							'attrs' => array( 'class' => $this->root_class( $token_factory, $post_selection_settings ) ),
-						),
-						$root_content,
+						'tag'   => $post_selection_settings->get_tag_name(),
+						'attrs' => array( 'class' => $this->root_class( $token_factory, $post_selection_settings ) ),
 					),
-					$new_line,
+					$root_content,
 				),
+				$new_line,
 			)
 		);
 	}
@@ -407,23 +403,21 @@ class Post_Selection_Markup {
 			$content
 		);
 
-		Tags_Renderer::print_tags(
+		Tags_Renderer::print_tag_group(
 			array(
-				array(
-					fn() => $token_factory->formatter()
-										->new_line(),
-					array( $items_wrapper ),
-					function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
-						if ( strlen( $post_selection_settings->no_posts_found_message ) > 0 ) {
-							$token_factory->formatter()
-											->tab( --$tabs_number );
-						}
-
-						// endif in any case.
+				fn() => $token_factory->formatter()
+									->new_line(),
+				array( $items_wrapper ),
+				function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
+					if ( strlen( $post_selection_settings->no_posts_found_message ) > 0 ) {
 						$token_factory->formatter()
 										->tab( --$tabs_number );
-					},
-				),
+					}
+
+					// endif in any case.
+					$token_factory->formatter()
+									->tab( --$tabs_number );
+				},
 			)
 		);
 

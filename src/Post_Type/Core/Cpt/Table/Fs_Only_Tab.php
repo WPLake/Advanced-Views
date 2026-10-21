@@ -55,46 +55,44 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 		$tab_data->set_label( __( 'FS only', 'acf-views' ) );
 		$tab_data->set_description_callback(
 			function (): void {
-				Tags_Renderer::print_tags(
+				Tags_Renderer::print_tag_group(
 					array(
+						fn() => print(
+							esc_html(
+								__(
+									'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
+									'acf-views'
+								)
+							)
+						),
+						array( 'tag' => 'br' ),
+						fn() => print(
+							esc_html(
+								__(
+									'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
+									'acf-views'
+								)
+							)
+						),
+						array( 'tag' => 'br' ),
+						fn() => print(
+							esc_html(
+								__(
+									'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
+									'acf-views'
+								)
+							)
+						),
+						fn() => print( ' ' ),
 						array(
-							fn() => print(
-								esc_html(
-									__(
-										'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
-										'acf-views'
-									)
-								)
-							),
-							array( 'tag' => 'br' ),
-							fn() => print(
-								esc_html(
-									__(
-										'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
-										'acf-views'
-									)
-								)
-							),
-							array( 'tag' => 'br' ),
-							fn() => print(
-								esc_html(
-									__(
-										'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
-										'acf-views'
-									)
-								)
-							),
-							fn() => print( ' ' ),
 							array(
-								array(
-									'tag'   => 'a',
-									'attrs' => array(
-										'target' => '_blank',
-										'href'   => esc_url( 'https://docs.advanced-views.com/features/file-system-storage' ),
-									),
+								'tag'   => 'a',
+								'attrs' => array(
+									'target' => '_blank',
+									'href'   => esc_url( 'https://docs.advanced-views.com/features/file-system-storage' ),
 								),
-								fn() => print( esc_html( __( 'Read more', 'acf-views' ) ) ),
 							),
+							fn() => print( esc_html( __( 'Read more', 'acf-views' ) ) ),
 						),
 					)
 				);

@@ -135,28 +135,26 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$icon_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-		Tags_Renderer::print_tags(
+		Tags_Renderer::print_tag_group(
 			array(
+				function () use ( $token_factory, $markup_field_data ) {
+					$token_factory->formatter()->new_line();
+					$markup_field_data->increment_and_print_tabs();
+				},
 				array(
-					function () use ( $token_factory, $markup_field_data ) {
-						$token_factory->formatter()->new_line();
-						$markup_field_data->increment_and_print_tabs();
-					},
-					array(
-						'tag'   => 'i',
-						'attrs' => array(
-							'class' => array(
-								$this->get_field_class( 'icon', $markup_field_data ),
-								'dashicons',
-								$icon_var,
-							),
+					'tag'   => 'i',
+					'attrs' => array(
+						'class' => array(
+							$this->get_field_class( 'icon', $markup_field_data ),
+							'dashicons',
+							$icon_var,
 						),
 					),
-					function () use ( $token_factory, $markup_field_data ) {
-						$token_factory->formatter()->new_line();
-						$markup_field_data->decrement_and_print_tabs();
-					},
 				),
+				function () use ( $token_factory, $markup_field_data ) {
+					$token_factory->formatter()->new_line();
+					$markup_field_data->decrement_and_print_tabs();
+				},
 			)
 		);
 	}
@@ -178,27 +176,25 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$src_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-		Tags_Renderer::print_tags(
+		Tags_Renderer::print_tag_group(
 			array(
+				function () use ( $token_factory, $markup_field_data ) {
+					$token_factory->formatter()->new_line();
+					$markup_field_data->increment_and_print_tabs();
+				},
 				array(
-					function () use ( $token_factory, $markup_field_data ) {
-						$token_factory->formatter()->new_line();
-						$markup_field_data->increment_and_print_tabs();
-					},
-					array(
-						'tag'   => 'img',
-						'attrs' => array(
-							'class'   => $this->get_field_class( 'icon', $markup_field_data ),
-							'src'     => $src_var,
-							'loading' => 'lazy',
-							'alt'     => 'icon',
-						),
+					'tag'   => 'img',
+					'attrs' => array(
+						'class'   => $this->get_field_class( 'icon', $markup_field_data ),
+						'src'     => $src_var,
+						'loading' => 'lazy',
+						'alt'     => 'icon',
 					),
-					function () use ( $token_factory, $markup_field_data ) {
-						$token_factory->formatter()->new_line();
-						$markup_field_data->decrement_and_print_tabs();
-					},
 				),
+				function () use ( $token_factory, $markup_field_data ) {
+					$token_factory->formatter()->new_line();
+					$markup_field_data->decrement_and_print_tabs();
+				},
 			)
 		);
 	}

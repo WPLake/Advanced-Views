@@ -289,7 +289,9 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			echo '';
 		}
 
-		Tags_Renderer::print_tags( array( array( array( 'tag' => 'br' ), array( 'tag' => 'br' ) ) ) );
+		Tags_Renderer::print_tag_group(
+			array( array( 'tag' => 'br' ), array( 'tag' => 'br' ) )
+		);
 
 		$this->print_add_new_link( $wp_post->ID, '', $add_new_link_args );
 	}
@@ -507,30 +509,28 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 					$links[] = fn() => print( $link );
 				}
 
-				$extra = Tags_Renderer::render_tags(
+				$extra = Tags_Renderer::render_tag_group(
 					array(
+						array( 'tag' => 'br' ),
+						array( 'tag' => 'br' ),
 						array(
-							array( 'tag' => 'br' ),
-							array( 'tag' => 'br' ),
 							array(
-								array(
-									'tag'   => 'span',
-									'attrs' => array( 'style' => array( 'color' => '#dc3232' ) ),
-								),
-								fn() => print(
-									esc_html(
-										sprintf(
-											'%s %s:',
-											count( $related_view_links_with_invalid_custom_markup ),
-											__( 'Views associated with this group contain invalid Custom Markup', 'acf-views' )
-										)
-									)
-								),
+								'tag'   => 'span',
+								'attrs' => array( 'style' => array( 'color' => '#dc3232' ) ),
 							),
-							array( 'tag' => 'br' ),
-							array( 'tag' => 'br' ),
-							array( $links ),
+							fn() => print(
+								esc_html(
+									sprintf(
+										'%s %s:',
+										count( $related_view_links_with_invalid_custom_markup ),
+										__( 'Views associated with this group contain invalid Custom Markup', 'acf-views' )
+									)
+								)
+							),
 						),
+						array( 'tag' => 'br' ),
+						array( 'tag' => 'br' ),
+						array( $links ),
 					)
 				);
 

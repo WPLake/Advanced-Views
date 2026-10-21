@@ -59,6 +59,8 @@ final class Row_Title_Printer {
 			fn() => print( esc_html( $action_label ) ),
 		);
 
-		Tags_Renderer::print_tags( array( array( $title_tags, $action_tags ) ) );
+		Tags_Renderer::print_tag_group(
+			array( $title_tags, $action_tags )
+		);
 	}
 }

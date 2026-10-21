@@ -119,6 +119,8 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 			) :
 			array();
 
-		Tags_Renderer::print_tags( array( array( $post_types_line, array( $pages_line ) ) ) );
+		Tags_Renderer::print_tag_group(
+			array( $post_types_line, array( $pages_line ) )
+		);
 	}
 }

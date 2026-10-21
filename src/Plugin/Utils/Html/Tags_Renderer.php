@@ -20,6 +20,20 @@ defined( 'ABSPATH' ) || exit;
  */
 final class Tags_Renderer {
 	/**
+	 * Use when the call starts with a tag: the rest of the items go inside it, e.g. `array( $ul, $li, $text )`.
+	 * For sibling items (a group) use print_tag_group() instead.
+	 *
+	 * @param Tag_Chain $tags
+	 */
+	public static function print_tags( array $tags ): void {
+		if ( count( $tags ) > 0 ) {
+			$head = array_shift( $tags );
+
+			self::print_item( $head, $tags );
+		}
+	}
+
+	/**
 	 * @param Tag_Chain $tags
 	 */
 	public static function render_tags( array $tags ): string {
@@ -30,14 +44,24 @@ final class Tags_Renderer {
 	}
 
 	/**
-	 * @param Tag_Chain $tags
+	 * Use when the items are siblings (a group), e.g. `array( $before_text, $tag_chain, $after_text )`: every member is
+	 * rendered at the same level. It replaces `print_tags( array( $group ) )`, where the extra array only marks the head
+	 * as a group.
+	 *
+	 * @param Tag_Group $group
 	 */
-	public static function print_tags( array $tags ): void {
-		if ( count( $tags ) > 0 ) {
-			$head = array_shift( $tags );
+	public static function print_tag_group( array $group ): void {
+		self::print_group( $group );
+	}
 
-			self::print_item( $head, $tags );
-		}
+	/**
+	 * @param Tag_Group $group
+	 */
+	public static function render_tag_group( array $group ): string {
+		ob_start();
+		self::print_tag_group( $group );
+
+		return (string) ob_get_clean();
 	}
 
 	/**

@@ -235,7 +235,9 @@ class Field_Template {
 			) :
 			$row_inner;
 
-		Tags_Renderer::print_tags( array( array( $label_outside, array( $row_layer ) ) ) );
+		Tags_Renderer::print_tag_group(
+			array( $label_outside, array( $row_layer ) )
+		);
 
 		return $tabs_number;
 	}

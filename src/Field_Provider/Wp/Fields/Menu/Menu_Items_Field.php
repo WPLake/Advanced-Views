@@ -98,36 +98,34 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$children_branch      = $this->children_branch( $field_id, $item_id, $markup_field_data );
 		$children_if          = $token_factory->if()->set_if_branch( $children_branch );
 
-		Tags_Renderer::print_tags(
+		Tags_Renderer::print_tag_group(
 			array(
+				fn() => $this->print_new_line_and_increment_tabs( $markup_field_data ),
 				array(
-					fn() => $this->print_new_line_and_increment_tabs( $markup_field_data ),
 					array(
-						array(
-							'tag'   => 'li',
-							'attrs' => array(
-								'class' => $this->compose_class( 'menu-item', 'menu-item--active', $is_active_comparison, $markup_field_data ),
-							),
-						),
-						array(
-							function () use ( $markup_field_data ) {
-								echo "\r\n\r\n";
-								$markup_field_data->increment_and_print_tabs();
-							},
-							fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data ),
-							function () use ( $markup_field_data ) {
-								echo "\r\n\r\n";
-								$markup_field_data->print_tabs();
-							},
-							fn() => $children_if->display(),
-							function () use ( $markup_field_data ) {
-								echo "\r\n\r\n";
-								$markup_field_data->decrement_and_print_tabs();
-							},
+						'tag'   => 'li',
+						'attrs' => array(
+							'class' => $this->compose_class( 'menu-item', 'menu-item--active', $is_active_comparison, $markup_field_data ),
 						),
 					),
-					fn() => $this->print_new_line_and_decrement_tabs( $markup_field_data ),
+					array(
+						function () use ( $markup_field_data ) {
+							echo "\r\n\r\n";
+							$markup_field_data->increment_and_print_tabs();
+						},
+						fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data ),
+						function () use ( $markup_field_data ) {
+							echo "\r\n\r\n";
+							$markup_field_data->print_tabs();
+						},
+						fn() => $children_if->display(),
+						function () use ( $markup_field_data ) {
+							echo "\r\n\r\n";
+							$markup_field_data->decrement_and_print_tabs();
+						},
+					),
 				),
+				fn() => $this->print_new_line_and_decrement_tabs( $markup_field_data ),
 			)
 		);
 	}
@@ -202,25 +200,23 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$is_active_var = $token_factory->variable( $item_id )
 										->add_item_path( self::IS_ACTIVE );
 
-		Tags_Renderer::print_tags(
+		Tags_Renderer::print_tag_group(
 			array(
+				fn() => $this->print_new_line_and_increment_tabs( $markup_field_data ),
 				array(
-					fn() => $this->print_new_line_and_increment_tabs( $markup_field_data ),
 					array(
-						array(
-							'tag'   => 'li',
-							'attrs' => array(
-								'class' => $this->compose_class( 'sub-menu-item', 'sub-menu-item--active', $is_active_var, $markup_field_data ),
-							),
-						),
-						array(
-							fn() => $this->print_new_line_and_increment_tabs( $markup_field_data ),
-							fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data ),
-							fn() => $this->print_new_line_and_decrement_tabs( $markup_field_data ),
+						'tag'   => 'li',
+						'attrs' => array(
+							'class' => $this->compose_class( 'sub-menu-item', 'sub-menu-item--active', $is_active_var, $markup_field_data ),
 						),
 					),
-					fn() => $this->print_new_line_and_decrement_tabs( $markup_field_data ),
+					array(
+						fn() => $this->print_new_line_and_increment_tabs( $markup_field_data ),
+						fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data ),
+						fn() => $this->print_new_line_and_decrement_tabs( $markup_field_data ),
+					),
 				),
+				fn() => $this->print_new_line_and_decrement_tabs( $markup_field_data ),
 			)
 		);
 	}
