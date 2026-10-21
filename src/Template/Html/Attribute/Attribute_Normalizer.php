@@ -11,6 +11,13 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\stringExtended;
 defined( 'ABSPATH' ) || exit;
 
 final class Attribute_Normalizer {
+	protected const URL_ATTRIBUTES = array(
+		'href'       => true,
+		'src'        => true,
+		'action'     => true,
+		'formaction' => true,
+	);
+
 	/**
 	 * Returns the escaped attribute value
 	 *
@@ -25,7 +32,7 @@ final class Attribute_Normalizer {
 				'';
 		}
 
-		return self::escape_value( $value );
+		return self::escape_value( $name, $value );
 	}
 
 	/**
@@ -43,7 +50,7 @@ final class Attribute_Normalizer {
 	 */
 	protected static function normalize_class( array $classes ): string {
 		$escaped_classes = array_map(
-			fn( $tag_class ) => self::escape_value( $tag_class ),
+			fn( $tag_class ) => self::escape_value( 'class', $tag_class ),
 			$classes
 		);
 
@@ -58,7 +65,7 @@ final class Attribute_Normalizer {
 
 		foreach ( $declarations as $property => $value ) {
 			$property_name = string( $property );
-			$style_value   = self::escape_value( $value );
+			$style_value   = self::escape_value( 'style', $value );
 
 			$lines[] = sprintf( '%s:%s;', esc_html( $property_name ), $style_value );
 		}
@@ -71,11 +78,17 @@ final class Attribute_Normalizer {
 	 *
 	 * @param mixed $value
 	 */
-	protected static function escape_value( $value ): string {
+	protected static function escape_value( string $attr_name, $value ): string {
 		if ( $value instanceof Htmlable ) {
 			return $value->to_html();
 		}
 
-		return esc_html( stringExtended( $value ) );
+		$string_value = stringExtended( $value );
+
+		if ( key_exists( $attr_name, self::URL_ATTRIBUTES ) ) {
+			return esc_url( $string_value );
+		}
+
+		return esc_html( $string_value );
 	}
 }
