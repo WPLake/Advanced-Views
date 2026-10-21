@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage;
 
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
@@ -116,22 +117,33 @@ class File_System extends Loggable_Actor implements Actor {
 
 				self::$is_fs_not_writable_notice_shown = true;
 
-				echo '<div class="notice notice-error"><p>';
-				echo esc_html( __( 'The FS storage directory is not writable.', 'acf-views' ) );
-				echo ' (path = ' . esc_html( $this->base_folder ) . ')<br>';
-				echo esc_html(
-					__(
-						'Check and fix file permissions to work with Views and Cards.',
-						'acf-views'
-					)
-				) . '<br>';
-				echo esc_html(
-					__(
-						'Note: Do not disable the FS storage feature before fixing it, otherwise your data will be lost.',
-						'acf-views'
-					)
+				$tags = array(
+					array(
+						'tag'   => 'div',
+						'attrs' => array( 'class' => 'notice notice-error' ),
+					),
+					array( 'tag' => 'p' ),
+					array(
+						fn() => print( esc_html( __( 'The FS storage directory is not writable.', 'acf-views' ) ) .
+							' (path = ' . esc_html( $this->base_folder ) . ')' ),
+						array( 'tag' => 'br' ),
+						fn() => print( esc_html(
+								__(
+									'Check and fix file permissions to work with Views and Cards.',
+									'acf-views'
+								)
+							) ),
+						array( 'tag' => 'br' ),
+						fn() => print( esc_html(
+								__(
+									'Note: Do not disable the FS storage feature before fixing it, otherwise your data will be lost.',
+									'acf-views'
+								)
+							) ),
+					),
 				);
-				echo '</p></div>';
+
+				Tags_Renderer::print_tags( $tags );
 			}
 		);
 	}

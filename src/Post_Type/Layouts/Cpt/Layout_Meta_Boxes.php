@@ -13,6 +13,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
@@ -49,21 +50,21 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	}
 
 	protected function print_link_with_js_hover( string $url, string $title ): void {
-		echo '<a';
-
-		$attrs = array(
-			'href'        => esc_url( $url ),
-			'target'      => '_blank',
-			'style'       => 'transition: all .3s ease;',
-			'onMouseOver' => "this.style.filter='brightness(30%)'",
-			'onMouseOut'  => "this.style.filter='brightness(100%)'",
+		$tags = array(
+			array(
+				'tag'   => 'a',
+				'attrs' => array(
+					'href'        => esc_url( $url ),
+					'target'      => '_blank',
+					'style'       => array( 'transition' => 'all .3s ease' ),
+					'onMouseOver' => "this.style.filter='brightness(30%)'",
+					'onMouseOut'  => "this.style.filter='brightness(100%)'",
+				),
+			),
+			fn() => print( esc_html( $title ) ),
 		);
 
-		foreach ( $attrs as $key => $value ) {
-			printf( ' %s="%s"', esc_html( $key ), esc_attr( $value ) );
-		}
-
-		printf( '>%s</a>', esc_html( $title ) );
+		Tags_Renderer::print_tags( $tags );
 	}
 
 	/**
@@ -184,14 +185,16 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 
 		if ( array() === $related_cards &&
 			false === $is_list_look ) {
-			printf(
-				'<p>%s</p>',
-				esc_html(
-					sprintf(
-					// translators: %s is the plural name of the CPT.
-						__( 'Not assigned to any %s.', 'acf-views' ),
-						$this->selections_cpt->labels()->plural_name()
-					)
+			$message = sprintf(
+			// translators: %s is the plural name of the CPT.
+				__( 'Not assigned to any %s.', 'acf-views' ),
+				$this->selections_cpt->labels()->plural_name()
+			);
+
+			Tags_Renderer::print_tags(
+				array(
+					array( 'tag' => 'p' ),
+					fn() => print( esc_html( $message ) ),
 				)
 			);
 		}
@@ -214,7 +217,14 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 
 		if ( array() !== $related_cards ||
 			$is_list_look ) {
-			echo '<br><br>';
+			Tags_Renderer::print_tags(
+				array(
+					array(
+						array( 'tag' => 'br' ),
+						array( 'tag' => 'br' ),
+					),
+				)
+			);
 		}
 
 		$post_id = $layout_settings->get_post_id();
@@ -231,13 +241,26 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			);
 
 			$label = __( 'Query posts to display using this Layout', 'acf-views' );
-			$style = 'min-height: 0;line-height: 1.2;padding: 3px 7px;font-size:11px;transition:all .3s ease;';
-			printf(
-				'<a href="%s" target="_blank" class="button" style="%s">%s</a>',
-				esc_url( $url ),
-				esc_attr( $style ),
-				esc_html( $label )
+			$tags  = array(
+				array(
+					'tag'   => 'a',
+					'attrs' => array(
+						'href'   => esc_url( $url ),
+						'target' => '_blank',
+						'class'  => 'button',
+						'style'  => array(
+							'min-height'  => '0',
+							'line-height' => '1.2',
+							'padding'     => '3px 7px',
+							'font-size'   => '11px',
+							'transition'  => 'all .3s ease',
+						),
+					),
+				),
+				fn() => print( esc_html( $label ) ),
 			);
+
+			Tags_Renderer::print_tags( $tags );
 		}
 	}
 

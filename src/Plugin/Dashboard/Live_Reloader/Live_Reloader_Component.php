@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader;
 
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
@@ -96,18 +97,23 @@ class Live_Reloader_Component extends Actor_Base implements Actor {
 
 		$this->is_present = true;
 
-		return sprintf(
-			'<avf-live-reloader hidden data-element="%s"></avf-live-reloader>',
-			esc_attr(
-				(string) wp_json_encode(
-					array(
-						'uniqueId'           => $unique_id,
-						'codeHashes'         => $cpt_settings->get_code_hashes(),
-						'parentCardId'       => $this->parent_card_id,
-						'shortcodeArguments' => $shortcode_arguments,
-						'isGutenbergBlock'   => $is_gutenberg_block,
-					)
-				)
+		$element_data = array(
+			'uniqueId'           => $unique_id,
+			'codeHashes'         => $cpt_settings->get_code_hashes(),
+			'parentCardId'       => $this->parent_card_id,
+			'shortcodeArguments' => $shortcode_arguments,
+			'isGutenbergBlock'   => $is_gutenberg_block,
+		);
+
+		return Tags_Renderer::render_tags(
+			array(
+				array(
+					'tag'   => 'avf-live-reloader',
+					'attrs' => array(
+						'hidden'       => '',
+						'data-element' => (string) wp_json_encode( $element_data ),
+					),
+				),
 			)
 		);
 	}

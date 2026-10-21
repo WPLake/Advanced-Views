@@ -20,6 +20,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
@@ -128,21 +129,21 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	}
 
 	protected function print_link_with_js_hover( string $url, string $title ): void {
-		echo '<a';
-
-		$attrs = array(
-			'href'        => esc_url( $url ),
-			'target'      => '_blank',
-			'style'       => 'transition: all .3s ease;',
-			'onMouseOver' => "this.style.filter='brightness(30%)'",
-			'onMouseOut'  => "this.style.filter='brightness(100%)'",
+		$tags = array(
+			array(
+				'tag'   => 'a',
+				'attrs' => array(
+					'href'        => esc_url( $url ),
+					'target'      => '_blank',
+					'style'       => array( 'transition' => 'all .3s ease' ),
+					'onMouseOver' => "this.style.filter='brightness(30%)'",
+					'onMouseOut'  => "this.style.filter='brightness(100%)'",
+				),
+			),
+			fn() => print( esc_html( $title ) ),
 		);
 
-		foreach ( $attrs as $key => $value ) {
-			printf( ' %s="%s"', esc_html( $key ), esc_attr( $value ) );
-		}
-
-		printf( '>%s</a>', esc_html( $title ) );
+		Tags_Renderer::print_tags( $tags );
 	}
 
 	/**
@@ -204,23 +205,27 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			admin_url( '/post-new.php' )
 		);
 
-		printf( '<a href="%s"', esc_url( $url ) );
+		$icon_class = $link_attrs['icon_class'];
+		$icon_style = $link_attrs['icon_style'];
+		unset( $link_attrs['icon_class'], $link_attrs['icon_style'] );
 
-		foreach ( $link_attrs as $attr => $value ) {
-			printf( ' %s="%s"', esc_html( $attr ), esc_attr( $value ) );
-		}
+		$link_attrs['href'] = esc_url( $url );
 
-		echo '>';
-		if ( '' !== $link_attrs['icon_class'] ) {
-			$icon_attributes = array(
-				'class' => $link_attrs['icon_class'],
-				'style' => $link_attrs['icon_style'],
-			);
+		$print_content = function () use ( $icon_class, $icon_style, $label ): void {
+			if ( '' !== $icon_class ) {
+				Tag_Renderer::print_tag(
+					'i',
+					array(
+						'class' => $icon_class,
+						'style' => $icon_style,
+					)
+				);
+			}
 
-			Tag_Renderer::print_tag( 'i', $icon_attributes );
-		}
-		echo esc_html( $label );
-		echo '</a>';
+			echo esc_html( $label );
+		};
+
+		Tag_Renderer::print_tag( 'a', $link_attrs, $print_content );
 	}
 
 	/**
@@ -278,7 +283,8 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			echo '';
 		}
 
-		echo '<br><br>';
+		Tag_Renderer::print_tag( 'br' );
+		Tag_Renderer::print_tag( 'br' );
 
 		$this->print_add_new_link( $wp_post->ID, '', $add_new_link_args );
 	}

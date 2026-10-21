@@ -6,6 +6,9 @@ namespace Org\Wplake\Advanced_Views\Plugin\Utils;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+
 abstract class Profiler {
 	const SOURCE_NETWORK = '_network';
 
@@ -43,29 +46,40 @@ abstract class Profiler {
 	public static function print_report(): void {
 		$classes_total_usage = self::get_classes_total_usage();
 
-		echo '<div style="max-width:1000px;margin:0 auto;padding:50px;border:2px solid gray;">';
+		$print_pre = function ( $data, string $prefix = '' ): void {
+			Tag_Renderer::print_tag(
+				'pre',
+				array(),
+				function () use ( $data, $prefix ): void {
+					echo esc_html( $prefix );
+					// @phpcs:ignore
+					print_r( $data );
+				}
+			);
+		};
 
-		echo '<pre>';
-		// @phpcs:ignore
-		print_r(self::get_total_usage() );
-		echo '</pre>';
+		$tags = array(
+			array(
+				'tag'   => 'div',
+				'attrs' => array(
+					'style' => array(
+						'max-width' => '1000px',
+						'margin'    => '0 auto',
+						'padding'   => '50px',
+						'border'    => '2px solid gray',
+					),
+				),
+			),
+			array(
+				fn() => $print_pre( self::get_total_usage() ),
+				array( 'tag' => 'hr' ),
+				fn() => $print_pre( $classes_total_usage, count( $classes_total_usage ) . "\n" ),
+				array( 'tag' => 'hr' ),
+				fn() => $print_pre( self::$class_hooks_usage ),
+			),
+		);
 
-		echo '<hr>';
-
-		echo '<pre>';
-		echo count( $classes_total_usage ) . '<br>';
-		// @phpcs:ignore
-		print_r( $classes_total_usage );
-		echo '</pre>';
-
-		echo '<hr>';
-
-		echo '<pre>';
-		// @phpcs:ignore
-		print_r(self::$class_hooks_usage );
-		echo '</pre>';
-
-		echo '</div>';
+		Tags_Renderer::print_tags( $tags );
 	}
 
 	/**

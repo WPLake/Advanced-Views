@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -258,20 +259,22 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 			esc_url( $settings_url )
 		);
 
-		echo '<p class="acf-views__loading-fallback acf-views__loading-fallback--hidden">';
+		Tag_Renderer::print_tag(
+			'p',
+			array( 'class' => 'acf-views__loading-fallback acf-views__loading-fallback--hidden' ),
+			function () use ( $safe_opening_tag ): void {
+				echo esc_html__( 'Loading the Editor is taking longer than expected.', 'acf-views' );
 
-		echo esc_html__( 'Loading the Editor is taking longer than expected.', 'acf-views' );
-
-		echo '<br>';
-		printf(
-				// translators: 1 is the opening tag, 2 is the closing tag.
-			esc_html__( 'If you still see this message after an extended period, please visit the %1$s Settings %2$s and disable the screen performance optimization.', 'acf-views' ),
-			// @phpcs:ignore
-            $safe_opening_tag,
-			'</a>'
+				Tag_Renderer::print_tag( 'br' );
+				printf(
+						// translators: 1 is the opening tag, 2 is the closing tag.
+					esc_html__( 'If you still see this message after an extended period, please visit the %1$s Settings %2$s and disable the screen performance optimization.', 'acf-views' ),
+					// @phpcs:ignore
+					$safe_opening_tag,
+					'</a>'
+				);
+			}
 		);
-
-		echo '</p>';
 		?>
 		<script type="module">
 		document.addEventListener('DOMContentLoaded', function () {

@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Pods;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Settings_Vendor_Integration;
@@ -268,21 +269,32 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		if ( method_exists( $pod, 'get_groups' ) ) {
 			$groups = $pod->get_groups();
 
-			echo '<div style="display: flex;gap:10px;flex-wrap:wrap;margin:20px 0 0;">';
+			$attributes = array(
+				'style' => array(
+					'display'   => 'flex',
+					'gap'       => '10px',
+					'flex-wrap' => 'wrap',
+					'margin'    => '20px 0 0',
+				),
+			);
 
-			foreach ( $groups as $group ) {
-				$group_info = self::get_group_args( $group );
+			Tag_Renderer::print_tag(
+				'div',
+				$attributes,
+				function () use ( $groups ): void {
+					foreach ( $groups as $group ) {
+						$group_info = self::get_group_args( $group );
 
-				if ( is_array( $group_info ) ) {
-					$group_title = $this->get_string_arg( 'label', $group_info );
-					$link_title  = sprintf( ' %s', $group_title );
-					$group_id    = $this->get_int_arg( 'id', $group_info );
+						if ( is_array( $group_info ) ) {
+							$group_title = $this->get_string_arg( 'label', $group_info );
+							$link_title  = sprintf( ' %s', $group_title );
+							$group_id    = $this->get_int_arg( 'id', $group_info );
 
-					$this->print_add_new_link( $group_id, $link_title );
+							$this->print_add_new_link( $group_id, $link_title );
+						}
+					}
 				}
-			}
-
-			echo '</div>';
+			);
 		}
 	}
 

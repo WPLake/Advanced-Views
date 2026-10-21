@@ -72,14 +72,12 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 		$tab_data->set_name( self::NAME );
 		$tab_data->set_label( __( 'Bulk validation', 'acf-views' ) );
 		$tab_data->set_description_callback(
-			function (): void {
-				echo esc_html(
+			fn() => print( esc_html(
 					__(
 						'Bulk validation - Used to validate the Custom Template field of all existing items and displays items that have failed validation.',
 						'acf-views'
 					)
-				);
-			}
+				) )
 		);
 		// some items can be FS-only, so show the sync action too.
 		$tab_data->set_bulk_actions( $this->fs_only_tab->get_bulk_actions() );
@@ -114,15 +112,23 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 		}
 
 		$edit_post_link = $cpt_settings->get_edit_post_link();
-		printf(
-			'<strong><a class="row-title" href="%s">%s</a></strong>',
-			esc_url( $edit_post_link ),
-			esc_html( $cpt_settings->title )
+		$title_tags = array(
+			array( 'tag' => 'strong' ),
+			array(
+				'tag'   => 'a',
+				'attrs' => array(
+					'class' => 'row-title',
+					'href'  => esc_url( $edit_post_link ),
+				),
+			),
+			fn() => print( esc_html( $cpt_settings->title ) ),
 		);
-		printf(
-			'<div class="row-actions"><span class="edit"><a href="%s">%s</a></span></div>',
-			esc_url( $edit_post_link ),
-			esc_html( __( 'Edit', 'acf-views' ) )
+
+		Row_Title_Printer::print_title_and_action(
+			$title_tags,
+			'edit',
+			$edit_post_link,
+			__( 'Edit', 'acf-views' )
 		);
 	}
 }

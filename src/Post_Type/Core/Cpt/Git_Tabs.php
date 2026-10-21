@@ -11,11 +11,14 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\External_Storage_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Import_Result;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Row_Title_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Tab_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
@@ -82,11 +85,16 @@ abstract class Git_Tabs extends External_Storage_Tab {
 				'acf-views'
 			)
 		);
-		printf(
-			' <a target="_blank" href="https://docs.advanced-views.com/features/workflow/cross-installation-components">%s</a>',
-			esc_html__( 'Read more', 'acf-views' )
+		echo ' ';
+		Tag_Renderer::print_tag(
+			'a',
+			array(
+				'target' => '_blank',
+				'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
+			),
+			fn() => print( esc_html__( 'Read more', 'acf-views' ) )
 		);
-		echo '<br>';
+		Tag_Renderer::print_tag( 'br' );
 		echo esc_html__(
 			'If you have made any external changes to this repository, please click',
 			'acf-views'
@@ -418,9 +426,16 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			return;
 		}
 
-		echo '<div class="notice notice-success">';
-		printf( '<p>%s</p>', esc_html( __( 'Cache successfully cleared.', 'acf-views' ) ) );
-		echo '</div>';
+		$tags = array(
+			array(
+				'tag'   => 'div',
+				'attrs' => array( 'class' => 'notice notice-success' ),
+			),
+			array( 'tag' => 'p' ),
+			fn() => print( esc_html( __( 'Cache successfully cleared.', 'acf-views' ) ) ),
+		);
+
+		Tags_Renderer::print_tags( $tags );
 	}
 
 	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {
@@ -433,11 +448,11 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			)
 		);
 
-		printf( '<strong><span class="row-title">%s</span></strong>', esc_html( $cpt_settings->title ) );
-		printf(
-			'<div class="row-actions"><span class="import"><a href="%s">%s</a></span></div>',
-			esc_url( $import_link ),
-			esc_html( __( 'Import', 'acf-views' ) )
+		Row_Title_Printer::print_row_title(
+			$cpt_settings->title,
+			'import',
+			$import_link,
+			__( 'Import', 'acf-views' )
 		);
 	}
 

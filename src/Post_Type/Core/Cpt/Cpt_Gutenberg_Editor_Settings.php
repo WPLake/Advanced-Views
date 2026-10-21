@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -93,23 +94,37 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 			return;
 		}
 
-		echo '<p style="position: fixed;right: 20px;bottom: 20px;z-index: 9999; color: red;max-width:500px;font-size:13px;">';
-
-		esc_html_e(
-			'Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue.',
-			'acf-views'
+		$attributes = array(
+			'style' => array(
+				'position'  => 'fixed',
+				'right'     => '20px',
+				'bottom'    => '20px',
+				'z-index'   => '9999',
+				'color'     => 'red',
+				'max-width' => '500px',
+				'font-size' => '13px',
+			),
 		);
 
-		echo ' ';
+		Tag_Renderer::print_tag(
+			'p',
+			$attributes,
+			function (): void {
+				esc_html_e(
+					'Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue.',
+					'acf-views'
+				);
 
-		printf(
-		// translators: %1$s - link opening tag, %2$s - link closing tag.
-			esc_html__( 'Please %1$s reach out %2$s to our support team for further assistance.', 'acf-views' ),
-			'<a target="_blank" href="https://wplake.org/acf-views-support/">',
-			'</a>'
+				echo ' ';
+
+				printf(
+				// translators: %1$s - link opening tag, %2$s - link closing tag.
+					esc_html__( 'Please %1$s reach out %2$s to our support team for further assistance.', 'acf-views' ),
+					'<a target="_blank" href="https://wplake.org/acf-views-support/">',
+					'</a>'
+				);
+			}
 		);
-
-		echo '</p>';
 	}
 
 	// Jetpack's markdown module "very polite" and breaks json in our post_content.

@@ -214,11 +214,11 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 				'_wpnonce'              => wp_create_nonce( 'bulk-posts' ),
 			)
 		);
-		printf( '<strong><span class="row-title">%s</span></strong>', esc_html( $cpt_settings->title ) );
-		printf(
-			'<div class="row-actions"><span class="import"><a href="%s">%s</a></span></div>',
-			esc_url( $url ),
-			esc_html( __( 'Import', 'acf-views' ) )
+		Row_Title_Printer::print_row_title(
+			$cpt_settings->title,
+			'import',
+			$url,
+			__( 'Import', 'acf-views' )
 		);
 	}
 }

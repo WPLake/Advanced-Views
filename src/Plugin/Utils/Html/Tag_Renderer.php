@@ -26,8 +26,11 @@ final class Tag_Renderer {
 	/**
 	 * 'class' and 'style' also accept arrays: a list of classes, a property => value map
 	 *
+	 * The content printer returns 'void|mixed': the 'mixed' is allowed to accept print callbacks, e.g.
+	 * `fn() => print( $text )`.
+	 *
 	 * @param array<string,mixed> $attributes
-	 * @param callable():void|null $content_printer
+	 * @param callable():(void|mixed)|null $content_printer
 	 */
 	public static function print_tag(
 		string $tag,

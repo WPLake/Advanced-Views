@@ -9,10 +9,11 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Chain: every next item goes inside the previous one.
  * Group: its members (a Tag, a Text_Printer or a Chain) are rendered at the same level, and it ends the chain.
+ * Text_Printer returns 'void|mixed': the 'mixed' is allowed to accept print callbacks, e.g. `fn() => print( $text )`.
  * Group is 'mixed' as PHPStan doesn't support recursive aliases.
  *
  * @phpstan-type Tag array{tag:string, attrs?:array<string,mixed>}
- * @phpstan-type Text_Printer callable():void
+ * @phpstan-type Text_Printer callable():(void|mixed)
  * @phpstan-type Group list<mixed>
  * @phpstan-type Chain_Item Tag|Text_Printer|Group
  * @phpstan-type Chain list<Chain_Item>
@@ -48,15 +49,13 @@ final class Tags_Renderer {
 			if ( key_exists( 'tag', $item ) ) {
 				self::print_tag( $item, $nested_tags );
 			} else {
-				self::print_group( $item );
+				self::print_group( array_values( $item ) );
 			}
 
 			return;
 		}
 
-		if ( is_callable( $item ) ) {
-			$item();
-		}
+		$item();
 	}
 
 	/**
@@ -80,7 +79,7 @@ final class Tags_Renderer {
 	protected static function print_group( array $members ): void {
 		foreach ( $members as $member ) {
 			$chain = is_array( $member ) && ! key_exists( 'tag', $member ) ?
-				$member :
+				array_values( $member ) :
 				array( $member );
 
 			self::print_tags( $chain );

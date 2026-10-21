@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Acf_Integration_Base;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
@@ -246,16 +247,20 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 	public function print_add_new_view_link(): void {
 		$link = sprintf( '/wp-admin/post-new.php?post_type=%s', $this->plugin_cpt->cpt_name() );
 
-		printf(
-			'<a class="acf-views__add-new" target="_blank" href="%s">%s</a>',
-			esc_url( $link ),
-			esc_html(
-				sprintf(
-				// translators: %s is the singular name of the CPT.
-					__( 'Add new %s', 'acf-views' ),
-					$this->plugin_cpt->labels()->singular_name()
-				)
-			)
+		$label = sprintf(
+		// translators: %s is the singular name of the CPT.
+			__( 'Add new %s', 'acf-views' ),
+			$this->plugin_cpt->labels()->singular_name()
+		);
+
+		Tag_Renderer::print_tag(
+			'a',
+			array(
+				'class'  => 'acf-views__add-new',
+				'target' => '_blank',
+				'href'   => esc_url( $link ),
+			),
+			fn() => print( esc_html( $label ) )
 		);
 	}
 

@@ -6,6 +6,8 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
@@ -18,6 +20,10 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 
+/**
+ * @phpstan-import-type Tag from Tags_Renderer
+ * @phpstan-import-type Chain from Tags_Renderer
+ */
 abstract class Git_Meta_Box extends Actor_Base implements Actor {
 
 	const NONCE_PUSH = 'av-git-item-push';
@@ -68,74 +74,28 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	protected function print_git_lab_repositories_meta_box(): void {
-		echo '<av-git-meta-box class="av-git-meta-box" style="transition:all .3s ease;">';
-
-		// 1. intro
-		echo '<p>';
-		printf(
-			'<a target="_blank" href="%s">%s</a> %s.',
-			'https://docs.advanced-views.com/features/workflow/cross-installation-components',
-			esc_html(
-				__(
-					'Save the item',
-					'acf-views'
-				)
+		$tags = array(
+			array(
+				'tag'   => 'av-git-meta-box',
+				'attrs' => array(
+					'class' => 'av-git-meta-box',
+					'style' => array( 'transition' => 'all .3s ease' ),
+				),
 			),
-			esc_html( __( 'to your library', 'acf-views' ) )
-		);
-		echo '</p>';
-
-		// 2. hidden inputs
-
-		printf(
-			'<input type="hidden" name="_av-nonce" value="%s"/>',
-			esc_html( wp_create_nonce( self::NONCE_PUSH ) )
-		);
-
-		// 3. repository select
-		echo '<select name="_git-repo" required>';
-		printf( '<option value="">%s</option>', esc_html( __( 'Select repository', 'acf-views' ) ) );
-		foreach ( $this->settings->get_git_repositories() as $git_repository ) {
-			printf(
-				'<option value="%s">%s</option>',
-				esc_html( $git_repository['id'] ),
-				esc_html( $git_repository['name'] )
-			);
-		}
-
-		echo '</select>';
-
-		echo '<br><br>';
-
-		// 4. meta groups checkbox
-		echo '<div style="display: flex;align-items: center;">';
-		echo '<input type="checkbox" name="_git-repo-with-fields" id="av_git-repo-with-fields">';
-		printf(
-			'<label for="av_git-repo-with-fields">%s</label>',
-			esc_html( __( 'Include related Meta groups', 'acf-views' ) )
-		);
-		echo '</div>';
-
-		echo '<br>';
-
-		// 5. 'save' reminder
-		printf(
-			'<p>%s</p>',
-			esc_html(
-				__(
-					'Note: all changes must be already saved.',
-					'acf-views'
-				)
-			)
+			array(
+				$this->intro_tags(),
+				$this->nonce_tags(),
+				$this->repositories_tags(),
+				array( 'tag' => 'br' ),
+				array( 'tag' => 'br' ),
+				$this->with_fields_tags(),
+				array( 'tag' => 'br' ),
+				$this->save_reminder_tags(),
+				$this->button_tags(),
+			),
 		);
 
-		// 6. button
-		printf(
-			'<button class="button button-primary button-large">%s</button>',
-			esc_html( __( 'Push to the repository', 'acf-views' ) )
-		);
-
-		echo '</av-git-meta-box>';
+		Tags_Renderer::print_tags( $tags );
 	}
 
 	/**
@@ -286,5 +246,133 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 		}
 
 		exit;
+	}
+
+	/**
+	 * @return Chain
+	 */
+	protected function intro_tags(): array {
+		return array(
+			array( 'tag' => 'p' ),
+			array(
+				array(
+					array(
+						'tag'   => 'a',
+						'attrs' => array(
+							'target' => '_blank',
+							'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
+						),
+					),
+					fn() => print( esc_html( __( 'Save the item', 'acf-views' ) ) ),
+				),
+				fn() => print( ' ' . esc_html( __( 'to your library', 'acf-views' ) ) . '.' ),
+			),
+		);
+	}
+
+	/**
+	 * @return Tag
+	 */
+	protected function nonce_tags(): array {
+		return array(
+			'tag'   => 'input',
+			'attrs' => array(
+				'type'  => 'hidden',
+				'name'  => '_av-nonce',
+				'value' => wp_create_nonce( self::NONCE_PUSH ),
+			),
+		);
+	}
+
+	/**
+	 * @return Chain
+	 */
+	protected function repositories_tags(): array {
+		$print_options = function (): void {
+			foreach ( $this->settings->get_git_repositories() as $git_repository ) {
+				Tag_Renderer::print_tag(
+					'option',
+					array( 'value' => $git_repository['id'] ),
+					fn() => print( esc_html( $git_repository['name'] ) )
+				);
+			}
+		};
+
+		return array(
+			array(
+				'tag'   => 'select',
+				'attrs' => array(
+					'name'     => '_git-repo',
+					'required' => '',
+				),
+			),
+			array(
+				array(
+					array(
+						'tag'   => 'option',
+						'attrs' => array( 'value' => '' ),
+					),
+					fn() => print( esc_html( __( 'Select repository', 'acf-views' ) ) ),
+				),
+				$print_options,
+			),
+		);
+	}
+
+	/**
+	 * @return Chain
+	 */
+	protected function with_fields_tags(): array {
+		return array(
+			array(
+				'tag'   => 'div',
+				'attrs' => array(
+					'style' => array(
+						'display'     => 'flex',
+						'align-items' => 'center',
+					),
+				),
+			),
+			array(
+				array(
+					'tag'   => 'input',
+					'attrs' => array(
+						'type' => 'checkbox',
+						'name' => '_git-repo-with-fields',
+						'id'   => 'av_git-repo-with-fields',
+					),
+				),
+				array(
+					array(
+						'tag'   => 'label',
+						'attrs' => array( 'for' => 'av_git-repo-with-fields' ),
+					),
+					fn() => print( esc_html( __( 'Include related Meta groups', 'acf-views' ) ) ),
+				),
+			),
+		);
+	}
+
+	/**
+	 * @return Chain
+	 */
+	protected function save_reminder_tags(): array {
+		return array(
+			array( 'tag' => 'p' ),
+			fn() => print( esc_html( __( 'Note: all changes must be already saved.', 'acf-views' ) ) ),
+		);
+	}
+
+	/**
+	 * @return Chain
+	 */
+	protected function button_tags(): array {
+		return array(
+			array(
+				'tag'   => 'button',
+				'attrs' => array( 'class' => 'button button-primary button-large' ),
+			),
+			fn() => print( esc_html( __( 'Push to the repository', 'acf-views' ) ) ),
+		);
 	}
 }

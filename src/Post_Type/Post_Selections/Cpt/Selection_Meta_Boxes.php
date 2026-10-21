@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selectio
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
@@ -64,11 +65,18 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 		// here we must use viewsDataStorage, as it's a View.
 		$view_data = $this->layouts_settings_storage->get( $post_selection_settings->acf_view_id );
 
-		printf(
-			'<a href="%s" target="_blank">%s</a>',
-			esc_url( $view_data->get_edit_post_link() ),
-			esc_html( $view_data->title )
+		$tags = array(
+			array(
+				'tag'   => 'a',
+				'attrs' => array(
+					'href'   => esc_url( $view_data->get_edit_post_link() ),
+					'target' => '_blank',
+				),
+			),
+			fn() => print( esc_html( $view_data->title ) ),
 		);
+
+		Tags_Renderer::print_tags( $tags );
 	}
 
 	public function add_meta_boxes(): void {

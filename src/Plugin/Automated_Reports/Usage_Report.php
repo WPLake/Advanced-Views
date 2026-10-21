@@ -6,6 +6,8 @@ namespace Org\Wplake\Advanced_Views\Plugin\Automated_Reports;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
@@ -118,39 +120,16 @@ class Usage_Report extends Report_Base implements Actor {
 			return;
 		}
 
-		echo '<div class="notice notice-warning">';
-		echo '<p>';
-
-		esc_html_e(
-			'The Advanced Views plugin sends automatic error and usage reports to developers, enabling faster issue resolution and plugin improvement.',
-			'acf-views'
+		$tags = array(
+			array(
+				'tag'   => 'div',
+				'attrs' => array( 'class' => 'notice notice-warning' ),
+			),
+			array( 'tag' => 'p' ),
+			fn() => $this->print_notice_content( $dismiss_key, $nonce_name ),
 		);
 
-		echo '<br>';
-
-		esc_html_e(
-			'Automatic reports do not include any private or sensitive information and can be disabled in the plugin settings.',
-			'acf-views'
-		);
-
-		if ( Avf_User::can_manage() ) {
-			$hide_url = add_query_arg(
-				array(
-					$dismiss_key => 1,
-					'_wpnonce'   => wp_create_nonce( $nonce_name ),
-				)
-			);
-
-			echo '<br><br>';
-			printf(
-				'<a href="%s">%s</a>',
-				esc_url( $hide_url ),
-				esc_html( __( 'Got it, hide', 'acf-views' ) )
-			);
-		}
-
-		echo '</p>';
-		echo '</div>';
+		Tags_Renderer::print_tags( $tags );
 	}
 
 	public function send_and_schedule_next(): void {
@@ -319,6 +298,37 @@ class Usage_Report extends Report_Base implements Actor {
 		if ( $is_cpt_list_screen &&
 			! $this->settings->is_automatic_reports_confirmed() ) {
 			self::add_action( 'admin_notices', array( $this, 'show_automatic_reports_notice' ) );
+		}
+	}
+
+	protected function print_notice_content( string $dismiss_key, string $nonce_name ): void {
+		esc_html_e(
+			'The Advanced Views plugin sends automatic error and usage reports to developers, enabling faster issue resolution and plugin improvement.',
+			'acf-views'
+		);
+
+		Tag_Renderer::print_tag( 'br' );
+
+		esc_html_e(
+			'Automatic reports do not include any private or sensitive information and can be disabled in the plugin settings.',
+			'acf-views'
+		);
+
+		if ( Avf_User::can_manage() ) {
+			$hide_url = add_query_arg(
+				array(
+					$dismiss_key => 1,
+					'_wpnonce'   => wp_create_nonce( $nonce_name ),
+				)
+			);
+
+			Tag_Renderer::print_tag( 'br' );
+			Tag_Renderer::print_tag( 'br' );
+			Tag_Renderer::print_tag(
+				'a',
+				array( 'href' => esc_url( $hide_url ) ),
+				fn() => print( esc_html( __( 'Got it, hide', 'acf-views' ) ) )
+			);
 		}
 	}
 }

@@ -170,11 +170,11 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 				'_wpnonce'              => wp_create_nonce( 'bulk-posts' ),
 			)
 		);
-		printf( '<strong><span class="row-title">%s</span></strong>', esc_html( $cpt_settings->title ) );
-		printf(
-			'<div class="row-actions"><span class="sync"><a href="%s">%s</a></span></div>',
-			esc_url( $url ),
-			esc_html( __( 'Sync', 'acf-views' ) )
+		Row_Title_Printer::print_row_title(
+			$cpt_settings->title,
+			'sync',
+			$url,
+			__( 'Sync', 'acf-views' )
 		);
 	}
 }
