@@ -27,6 +27,8 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
  * IT DOESN'T SEND ANY PERSONAL OR SENSITIVE DATA.
  * Can be disabled in the plugin settings.
  * FYI: built-in WordPress growth counter was removed https://meta.trac.wordpress.org/ticket/6511
+ *
+ * @phpstan-import-type Tag_Group from Tags_Renderer
  */
 class Usage_Report extends Report_Base implements Actor {
 	const DELAY_MIN_HR       = 12;
@@ -119,13 +121,28 @@ class Usage_Report extends Report_Base implements Actor {
 			return;
 		}
 
+		$hide_members = Avf_User::can_manage() ?
+			$this->get_hide_members( $dismiss_key, $nonce_name ) :
+			array();
+
 		$tags = array(
 			array(
 				'tag'   => 'div',
 				'attrs' => array( 'class' => 'notice notice-warning' ),
 			),
 			array( 'tag' => 'p' ),
-			fn() => $this->print_notice_content( $dismiss_key, $nonce_name ),
+			array(
+				fn() => esc_html_e(
+					'The Advanced Views plugin sends automatic error and usage reports to developers, enabling faster issue resolution and plugin improvement.',
+					'acf-views'
+				),
+				array( 'tag' => 'br' ),
+				fn() => esc_html_e(
+					'Automatic reports do not include any private or sensitive information and can be disabled in the plugin settings.',
+					'acf-views'
+				),
+				...$hide_members,
+			),
 		);
 
 		Tags_Renderer::print_tags( $tags );
@@ -300,42 +317,27 @@ class Usage_Report extends Report_Base implements Actor {
 		}
 	}
 
-	protected function print_notice_content( string $dismiss_key, string $nonce_name ): void {
-		esc_html_e(
-			'The Advanced Views plugin sends automatic error and usage reports to developers, enabling faster issue resolution and plugin improvement.',
-			'acf-views'
+	/**
+	 * @return Tag_Group
+	 */
+	protected function get_hide_members( string $dismiss_key, string $nonce_name ): array {
+		$hide_url = add_query_arg(
+			array(
+				$dismiss_key => 1,
+				'_wpnonce'   => wp_create_nonce( $nonce_name ),
+			)
 		);
 
-		Tags_Renderer::print_tags( array( array( 'tag' => 'br' ) ) );
-
-		esc_html_e(
-			'Automatic reports do not include any private or sensitive information and can be disabled in the plugin settings.',
-			'acf-views'
+		return array(
+			array( 'tag' => 'br' ),
+			array( 'tag' => 'br' ),
+			array(
+				array(
+					'tag'   => 'a',
+					'attrs' => array( 'href' => esc_url( $hide_url ) ),
+				),
+				fn() => print( esc_html( __( 'Got it, hide', 'acf-views' ) ) ),
+			),
 		);
-
-		if ( Avf_User::can_manage() ) {
-			$hide_url = add_query_arg(
-				array(
-					$dismiss_key => 1,
-					'_wpnonce'   => wp_create_nonce( $nonce_name ),
-				)
-			);
-
-			Tags_Renderer::print_tags(
-				array(
-					array(
-						array( 'tag' => 'br' ),
-						array( 'tag' => 'br' ),
-						array(
-							array(
-								'tag'   => 'a',
-								'attrs' => array( 'href' => esc_url( $hide_url ) ),
-							),
-							fn() => print( esc_html( __( 'Got it, hide', 'acf-views' ) ) ),
-						),
-					),
-				)
-			);
-		}
 	}
 }

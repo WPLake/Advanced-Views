@@ -7,20 +7,20 @@ namespace Org\Wplake\Advanced_Views\Plugin\Utils\Html;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Chain: every next item goes inside the previous one.
- * Group: its members (a Tag, a Text_Printer or a Chain) are rendered at the same level, and it ends the chain.
- * Text_Printer returns 'void|mixed': the 'mixed' is allowed to accept print callbacks, e.g. `fn() => print( $text )`.
- * Group is 'mixed' as PHPStan doesn't support recursive aliases.
+ * Tag_Chain: every next item goes inside the previous one.
+ * Tag_Group: its members (a Tag, a Tag_Text_Printer or a Tag_Chain) are rendered at the same level, and it ends the chain.
+ * Tag_Text_Printer returns 'void|mixed': the 'mixed' is allowed to accept print callbacks, e.g. `fn() => print( $text )`.
+ * Tag_Group is 'mixed' as PHPStan doesn't support recursive aliases.
  *
  * @phpstan-type Tag array{tag:string, attrs?:array<string,mixed>}
- * @phpstan-type Text_Printer callable():(void|mixed)
- * @phpstan-type Group list<mixed>
- * @phpstan-type Chain_Item Tag|Text_Printer|Group
- * @phpstan-type Chain list<Chain_Item>
+ * @phpstan-type Tag_Text_Printer callable():(void|mixed)
+ * @phpstan-type Tag_Group list<mixed>
+ * @phpstan-type Tag_Chain_Item Tag|Tag_Text_Printer|Tag_Group
+ * @phpstan-type Tag_Chain list<Tag_Chain_Item>
  */
 final class Tags_Renderer {
 	/**
-	 * @param Chain $tags
+	 * @param Tag_Chain $tags
 	 */
 	public static function render_tags( array $tags ): string {
 		ob_start();
@@ -30,7 +30,7 @@ final class Tags_Renderer {
 	}
 
 	/**
-	 * @param Chain $tags
+	 * @param Tag_Chain $tags
 	 */
 	public static function print_tags( array $tags ): void {
 		if ( count( $tags ) > 0 ) {
@@ -41,8 +41,8 @@ final class Tags_Renderer {
 	}
 
 	/**
-	 * @param Chain_Item $item
-	 * @param Chain $nested_tags
+	 * @param Tag_Chain_Item $item
+	 * @param Tag_Chain $nested_tags
 	 */
 	protected static function print_item( $item, array $nested_tags ): void {
 		if ( is_array( $item ) ) {
@@ -60,7 +60,7 @@ final class Tags_Renderer {
 
 	/**
 	 * @param Tag $item
-	 * @param Chain $nested_tags
+	 * @param Tag_Chain $nested_tags
 	 */
 	protected static function print_tag( array $item, array $nested_tags ): void {
 		$tag        = $item['tag'];
@@ -74,7 +74,7 @@ final class Tags_Renderer {
 	}
 
 	/**
-	 * @param Group $members
+	 * @param Tag_Group $members
 	 */
 	protected static function print_group( array $members ): void {
 		foreach ( $members as $member ) {

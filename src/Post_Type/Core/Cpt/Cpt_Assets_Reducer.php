@@ -265,18 +265,17 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 					'tag'   => 'p',
 					'attrs' => array( 'class' => 'acf-views__loading-fallback acf-views__loading-fallback--hidden' ),
 				),
-				function () use ( $safe_opening_tag ): void {
-					echo esc_html__( 'Loading the Editor is taking longer than expected.', 'acf-views' );
-
-					Tags_Renderer::print_tags( array( array( 'tag' => 'br' ) ) );
-					printf(
-							// translators: 1 is the opening tag, 2 is the closing tag.
+				array(
+					fn() => print( esc_html__( 'Loading the Editor is taking longer than expected.', 'acf-views' ) ),
+					array( 'tag' => 'br' ),
+					fn() => printf(
+						// translators: 1 is the opening tag, 2 is the closing tag.
 						esc_html__( 'If you still see this message after an extended period, please visit the %1$s Settings %2$s and disable the screen performance optimization.', 'acf-views' ),
 						// @phpcs:ignore
 						$safe_opening_tag,
 						'</a>'
-					);
-				},
+					),
+				),
 			)
 		);
 		?>

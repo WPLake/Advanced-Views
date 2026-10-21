@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 
 /**
- * @phpstan-import-type Chain from Tags_Renderer
+ * @phpstan-import-type Tag_Chain from Tags_Renderer
  */
 final class Row_Title_Printer {
 	/**
@@ -34,7 +34,7 @@ final class Row_Title_Printer {
 	}
 
 	/**
-	 * @param Chain $title_tags
+	 * @param Tag_Chain $title_tags
 	 * @param string $action_class e.g. 'edit'
 	 */
 	public static function print_title_and_action(

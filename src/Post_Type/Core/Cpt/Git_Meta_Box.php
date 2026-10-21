@@ -21,7 +21,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 
 /**
  * @phpstan-import-type Tag from Tags_Renderer
- * @phpstan-import-type Chain from Tags_Renderer
+ * @phpstan-import-type Tag_Chain from Tags_Renderer
  */
 abstract class Git_Meta_Box extends Actor_Base implements Actor {
 
@@ -248,7 +248,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Chain
+	 * @return Tag_Chain
 	 */
 	protected function intro_tags(): array {
 		return array(
@@ -284,7 +284,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Chain
+	 * @return Tag_Chain
 	 */
 	protected function repositories_tags(): array {
 		$print_options = function (): void {
@@ -323,7 +323,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Chain
+	 * @return Tag_Chain
 	 */
 	protected function with_fields_tags(): array {
 		return array(
@@ -357,7 +357,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Chain
+	 * @return Tag_Chain
 	 */
 	protected function save_reminder_tags(): array {
 		return array(
@@ -367,7 +367,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Chain
+	 * @return Tag_Chain
 	 */
 	protected function button_tags(): array {
 		return array(
