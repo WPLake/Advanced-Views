@@ -8,18 +8,18 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
 abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
-	private Html_Printer $html;
+	private Postbox_Printer $postbox;
 	private Plugin $plugin;
 
-	public function __construct( Html_Printer $html, Plugin $plugin ) {
-		$this->html   = $html;
+	public function __construct( Postbox_Printer $postbox, Plugin $plugin ) {
+		$this->postbox   = $postbox;
 		$this->plugin = $plugin;
 	}
 
@@ -33,8 +33,8 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 
 	abstract protected function get_cpt_name(): string;
 
-	protected function get_html(): Html_Printer {
-		return $this->html;
+	protected function get_postbox(): Postbox_Printer {
+		return $this->postbox;
 	}
 
 	public function add_meta_boxes(): void {
@@ -42,7 +42,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 			'acf-views_support',
 			__( 'Help & Documentation', 'acf-views' ),
 			function (): void {
-				$this->html->print_postbox_support();
+				$this->postbox->print_postbox_support();
 			},
 			array(
 				$this->get_cpt_name(),
@@ -56,7 +56,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 				'acf-views_upgrade',
 				__( 'Unlock with Pro', 'acf-views' ),
 				function (): void {
-					$this->html->print_postbox_upgrade();
+					$this->postbox->print_postbox_upgrade();
 				},
 				array(
 					$this->get_cpt_name(),

@@ -11,6 +11,8 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup\Import_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup\Toolbar_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
@@ -33,7 +35,8 @@ class Admin_Pages extends Actor_Base implements Actor {
 
 	private Plugin $plugin;
 	private Plugin_Meta $plugin_meta;
-	private Html_Printer $html;
+	private Toolbar_Printer $toolbar_printer;
+	private Import_Printer $import_printer;
 	private Demo_Importer $demo_import;
 	/**
 	 * @var Plugin_Cpt[]
@@ -46,13 +49,15 @@ class Admin_Pages extends Actor_Base implements Actor {
 	public function __construct(
 		Plugin $plugin,
 		Plugin_Meta $plugin_meta,
-		Html_Printer $html,
+		Toolbar_Printer $toolbar_printer,
+		Import_Printer $import_printer,
 		Demo_Importer $demo_import,
 		array $plugin_cpts
 	) {
 		$this->plugin      = $plugin;
 		$this->plugin_meta = $plugin_meta;
-		$this->html        = $html;
+		$this->toolbar_printer = $toolbar_printer;
+		$this->import_printer  = $import_printer;
 		$this->demo_import = $demo_import;
 		$this->plugin_cpts = $plugin_cpts;
 	}
@@ -162,7 +167,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 			break;
 		}
 
-		$this->html->print_dashboard_header( $this->plugin::get_name(), $this->plugin_meta->get_version(), $tabs );
+		$this->toolbar_printer->print_dashboard_header( $this->plugin::get_name(), $this->plugin_meta->get_version(), $tabs );
 	}
 
 	public function get_import_page(): void {
@@ -184,7 +189,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 
 		$form_nonce = wp_create_nonce( 'av-demo-import' );
 
-		$this->html->print_dashboard_import(
+		$this->import_printer->print_dashboard_import(
 			$is_with_delete_button,
 			$form_nonce,
 			$is_with_form_message,

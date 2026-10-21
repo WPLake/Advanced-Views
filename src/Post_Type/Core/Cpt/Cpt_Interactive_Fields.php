@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
@@ -35,7 +35,7 @@ abstract class Cpt_Interactive_Fields extends Actor_Base implements Actor {
 	const REST_REFRESH_ROUTE = '';
 
 	protected Public_Cpt $public_cpt;
-	protected Html_Printer $html;
+	protected Postbox_Printer $postbox;
 	protected Instance_Factory $instance_factory;
 	protected Template_Integration_Storage $template_integration_storage;
 	protected Field_Provider_Cluster $provider_cluster;
@@ -44,7 +44,7 @@ abstract class Cpt_Interactive_Fields extends Actor_Base implements Actor {
 
 	public function __construct(
 		Public_Cpt $public_cpt,
-		Html_Printer $html,
+		Postbox_Printer $postbox,
 		Instance_Factory $instance_factory,
 		Template_Integration_Storage $template_integration_storage,
 		Field_Provider_Cluster $provider_cluster,
@@ -52,7 +52,7 @@ abstract class Cpt_Interactive_Fields extends Actor_Base implements Actor {
 		Cpt_Settings_Storage $cpt_settings_storage
 	) {
 		$this->public_cpt                   = $public_cpt;
-		$this->html                         = $html;
+		$this->postbox                         = $postbox;
 		$this->instance_factory             = $instance_factory;
 		$this->template_integration_storage = $template_integration_storage;
 		$this->provider_cluster             = $provider_cluster;

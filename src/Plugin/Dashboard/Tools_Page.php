@@ -31,9 +31,13 @@ use WP_Filesystem_Base;
 use WP_Post;
 use WP_Query;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Tag_Group from Tags_Renderer
+ */
 final class Tools_Page extends Actor_Base implements Actor {
 
 	const SLUG = 'avf-tools';
@@ -452,30 +456,6 @@ final class Tools_Page extends Actor_Base implements Actor {
 		array $fail_view_unique_ids,
 		array $fail_card_unique_ids
 	): string {
-		$views_info            = array();
-		$cards_info            = array();
-		$import_result_message = '';
-
-		foreach ( $success_view_ids as $success_view_id ) {
-			$success_view_id = (int) $success_view_id;
-
-			$views_info[] = sprintf(
-				'<a href="%s" target="_blank">%s</a>',
-				get_edit_post_link( $success_view_id ),
-				get_the_title( $success_view_id )
-			);
-		}
-
-		foreach ( $success_card_ids as $success_card_id ) {
-			$success_card_id = (int) $success_card_id;
-
-			$cards_info[] = sprintf(
-				'<a href="%s" target="_blank">%s</a>',
-				get_edit_post_link( $success_card_id ),
-				get_the_title( $success_card_id )
-			);
-		}
-
 		$layout_labels         = $this->layouts_cpt->labels();
 		$post_selection_labels = $this->post_selections_cpt->labels();
 
@@ -483,7 +463,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 			array() === $fail_card_unique_ids ) {
 			$this->is_import_successful = true;
 
-			$import_result_message .= sprintf(
+			$summary = sprintf(
 			// translators: Successfully imported x Layout(s) and y Post Selection(s).
 				__( 'Successfully imported %1$d %2$s and %3$d %4$s.', 'acf-views' ),
 				count( $success_view_ids ),
@@ -491,10 +471,8 @@ final class Tools_Page extends Actor_Base implements Actor {
 				count( $success_card_ids ),
 				$post_selection_labels->item_s_name( count( $success_card_ids ) )
 			);
-
-			$import_result_message .= '<br>';
 		} else {
-			$import_result_message .= sprintf(
+			$summary = sprintf(
 			// translators: Something went wrong. Imported x from y Layout(s) and x from y Post Selections.
 				__( 'Something went wrong. Imported %1$d from %2$d %3$s and %4$d from %5$d %6$s.', 'acf-views' ),
 				count( $success_view_ids ),
@@ -504,67 +482,111 @@ final class Tools_Page extends Actor_Base implements Actor {
 				count( $success_card_ids ) + count( $fail_card_unique_ids ),
 				$post_selection_labels->item_s_name( count( $success_card_ids ) )
 			);
-
-			$import_result_message .= '<br>';
 		}
 
-		if ( array() !== $views_info ) {
-			$views_label = sprintf(
-					// translators: %s - plural name of the CPT.
-				__( 'Imported %s', 'acf-views' ),
-				$layout_labels->plural_name()
-			);
-			$import_result_message .= sprintf(
-				'<br>%s:<br><br> %s.',
-				$views_label,
-				implode( '<br>', $views_info )
-			);
-			$import_result_message .= '<br>';
+		$views_label = sprintf(
+		// translators: %s - plural name of the CPT.
+			__( 'Imported %s', 'acf-views' ),
+			$layout_labels->plural_name()
+		);
+		$cards_label = sprintf(
+		// translators: %s - plural name of the CPT.
+			__( 'Imported %s', 'acf-views' ),
+			$post_selection_labels->plural_name()
+		);
+		$wrong_views_label = sprintf(
+		// translators: %s - plural name of the CPT.
+			__( 'Wrong %s', 'acf-views' ),
+			$layout_labels->plural_name()
+		);
+		$wrong_cards_label = sprintf(
+		// translators: %s - plural name of the CPT.
+			__( 'Wrong %s', 'acf-views' ),
+			$post_selection_labels->plural_name()
+		);
+
+		return Tags_Renderer::render_tag_group(
+			array_merge(
+				array( $this->text_printer( $summary ), array( 'tag' => 'br' ) ),
+				$this->imported_items_tags( $views_label, $success_view_ids ),
+				$this->imported_items_tags( $cards_label, $success_card_ids ),
+				$this->failed_items_tags( $wrong_views_label, $fail_view_unique_ids ),
+				$this->failed_items_tags( $wrong_cards_label, $fail_card_unique_ids )
+			)
+		);
+	}
+
+	/**
+	 * @param string[] $post_ids
+	 *
+	 * @return Tag_Group
+	 */
+	protected function imported_items_tags( string $label, array $post_ids ): array {
+		if ( array() === $post_ids ) {
+			return array();
 		}
 
-		if ( array() !== $cards_info ) {
-			$cards_label = sprintf(
-			// translators: %s - plural name of the CPT.
-				__( 'Imported %s', 'acf-views' ),
-				$post_selection_labels->plural_name()
+		$links = array();
+
+		foreach ( $post_ids as $index => $post_id ) {
+			if ( $index > 0 ) {
+				$links[] = array( 'tag' => 'br' );
+			}
+
+			$links[] = array(
+				array(
+					'tag'   => 'a',
+					'attrs' => array(
+						'href'   => esc_url( string( get_edit_post_link( (int) $post_id ) ) ),
+						'target' => '_blank',
+					),
+				),
+				$this->text_printer( get_the_title( (int) $post_id ) ),
 			);
-			$import_result_message .= sprintf(
-				'<br>%s:<br><br> %s.',
-				$cards_label,
-				implode( '<br>', $cards_info )
-			);
-			$import_result_message .= '<br>';
 		}
 
-		if ( array() !== $fail_view_unique_ids ) {
-			$views_label = sprintf(
-			// translators: %s - plural name of the CPT.
-				__( 'Wrong %s', 'acf-views' ),
-				$layout_labels->plural_name()
-			);
-			$import_result_message .= sprintf(
-				'%s: %s.',
-				$views_label,
-				implode( '<br>', $fail_view_unique_ids )
-			);
-			$import_result_message .= '<br>';
+		return array_merge(
+			array(
+				array( 'tag' => 'br' ),
+				$this->text_printer( $label . ':' ),
+				array( 'tag' => 'br' ),
+				array( 'tag' => 'br' ),
+				$this->text_printer( ' ' ),
+			),
+			$links,
+			array( $this->text_printer( '.' ), array( 'tag' => 'br' ) )
+		);
+	}
+
+	/**
+	 * @param string[] $unique_ids
+	 *
+	 * @return Tag_Group
+	 */
+	protected function failed_items_tags( string $label, array $unique_ids ): array {
+		if ( array() === $unique_ids ) {
+			return array();
 		}
 
-		if ( array() !== $fail_card_unique_ids ) {
-			$cards_label = sprintf(
-			// translators: %s - plural name of the CPT.
-				__( 'Wrong %s', 'acf-views' ),
-				$post_selection_labels->plural_name()
-			);
-			$import_result_message .= sprintf(
-				'%s: %s.',
-				$cards_label,
-				implode( '<br>', $fail_card_unique_ids )
-			);
-			$import_result_message .= '<br>';
+		$ids = array();
+
+		foreach ( $unique_ids as $index => $unique_id ) {
+			if ( $index > 0 ) {
+				$ids[] = array( 'tag' => 'br' );
+			}
+
+			$ids[] = $this->text_printer( $unique_id );
 		}
 
-		return $import_result_message;
+		return array_merge(
+			array( $this->text_printer( $label . ': ' ) ),
+			$ids,
+			array( $this->text_printer( '.' ), array( 'tag' => 'br' ) )
+		);
+	}
+
+	protected function text_printer( string $text ): callable {
+		return fn() => print( esc_html( $text ) );
 	}
 
 	/**

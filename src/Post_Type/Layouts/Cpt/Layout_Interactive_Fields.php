@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settin
 use Org\Wplake\Advanced_Views\Assets\ACE_Mods;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
@@ -35,7 +35,7 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 
 	public function __construct(
 		Layouts_Cpt $public_cpt,
-		Html_Printer $html,
+		Postbox_Printer $postbox,
 		Layout_Settings_Storage $layout_settings_storage,
 		Layout_Factory $layout_factory,
 		Template_Integration_Storage $template_integration_storage,
@@ -46,7 +46,7 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 	) {
 		parent::__construct(
 			$public_cpt,
-			$html,
+			$postbox,
 			$layout_factory,
 			$template_integration_storage,
 			$provider_cluster,
@@ -78,7 +78,7 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 			parent::get_interactive_response( $post ),
 			array(
 				'textareaItems'         => $this->get_editor_field_values( $layout_settings ),
-				'elements'              => $this->get_html_elements_response( $post, $layout_settings ),
+				'elements'              => $this->get_postbox_elements_response( $post, $layout_settings ),
 				'autocompleteVariables' => $this->layout_factory->get_autocomplete_variables( $layout_unique_id ),
 			)
 		);
@@ -121,9 +121,9 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 	/**
 	 * @return array<string,mixed>
 	 */
-	protected function get_html_elements_response( WP_Post $post, Layout_Settings $layout_settings ): array {
+	protected function get_postbox_elements_response( WP_Post $post, Layout_Settings $layout_settings ): array {
 		ob_start();
-		$this->html->print_postbox_shortcode(
+		$this->postbox->print_postbox_shortcode(
 			$layout_settings->get_unique_id( true ),
 			false,
 			$this->public_cpt,

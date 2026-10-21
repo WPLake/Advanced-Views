@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Table;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Meta_Boxes;
@@ -23,20 +23,20 @@ class Post_Selections_Table extends Cpt_Table {
 	const COLUMN_RELATED_VIEW  = self::COLUMN_PREFIX . 'relatedView';
 	const COLUMN_LAST_MODIFIED = self::COLUMN_PREFIX . 'lastModified';
 
-	private Html_Printer $html;
+	private Postbox_Printer $postbox;
 	private Selection_Meta_Boxes $post_selections_cpt_meta_boxes;
 	private Layouts_Cpt $layout_cpt;
 
 	public function __construct(
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Selections_Cpt $public_cpt,
-		Html_Printer $html,
+		Postbox_Printer $postbox,
 		Selection_Meta_Boxes $post_selections_cpt_meta_boxes,
 		Layouts_Cpt $layout_cpt
 	) {
 		parent::__construct( $post_selections_settings_storage, $public_cpt );
 
-		$this->html                           = $html;
+		$this->postbox                           = $postbox;
 		$this->post_selections_cpt_meta_boxes = $post_selections_cpt_meta_boxes;
 		$this->layout_cpt                     = $layout_cpt;
 	}
@@ -53,7 +53,7 @@ class Post_Selections_Table extends Cpt_Table {
 				echo esc_html( $card_data->description );
 				break;
 			case self::COLUMN_SHORTCODE:
-				$this->html->print_postbox_shortcode(
+				$this->postbox->print_postbox_shortcode(
 					$card_data->get_unique_id( true ),
 					true,
 					$this->public_plugin_cpt,

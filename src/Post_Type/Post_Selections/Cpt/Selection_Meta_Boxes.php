@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Meta_Boxes;
@@ -25,14 +25,14 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 	private Layouts_Cpt $layout_cpt;
 
 	public function __construct(
-		Html_Printer $html,
+		Postbox_Printer $postbox,
 		Plugin $plugin,
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Selections_Cpt $public_cpt,
 		Layouts_Cpt $layout_cpt
 	) {
-		parent::__construct( $html, $plugin );
+		parent::__construct( $postbox, $plugin );
 
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
 		$this->layouts_settings_storage         = $layouts_settings_storage;
@@ -99,7 +99,7 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 
 				$card_unique_id = $this->post_selections_settings_storage->get( $post->post_name )->get_unique_id( true );
 
-				$this->get_html()->print_postbox_shortcode(
+				$this->get_postbox()->print_postbox_shortcode(
 					$card_unique_id,
 					false,
 					$this->public_cpt,

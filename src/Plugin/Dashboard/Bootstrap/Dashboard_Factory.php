@@ -9,7 +9,8 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Pages;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup\Import_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup\Toolbar_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
@@ -21,7 +22,8 @@ class Dashboard_Factory extends Factory_Base {
 		return new Admin_Pages(
 			$this->resolve( Plugin::class ),
 			$this->resolve( Plugin_Meta::class ),
-			$this->resolve( Html_Printer::class ),
+			$this->resolve( Toolbar_Printer::class ),
+			$this->resolve( Import_Printer::class ),
 			$this->resolve( Demo_Importer::class ),
 			$this->plugin_cpts()
 		);

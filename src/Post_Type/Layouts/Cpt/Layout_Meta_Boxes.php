@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Meta_Boxes;
@@ -30,14 +30,14 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	private Plugin_Cpt $selections_cpt;
 
 	public function __construct(
-		Html_Printer $html,
+		Postbox_Printer $postbox,
 		Plugin $plugin,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Field_Provider_Cluster $provider_cluster,
 		Layouts_Cpt $public_cpt,
 		Selections_Cpt $plugin_cpt
 	) {
-		parent::__construct( $html, $plugin );
+		parent::__construct( $postbox, $plugin );
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
 		$this->provider_cluster         = $provider_cluster;
@@ -284,7 +284,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				$view_data            = $this->layouts_settings_storage->get( $post->post_name );
 				$short_view_unique_id = $view_data->get_unique_id( true );
 
-				$this->get_html()->print_postbox_shortcode(
+				$this->get_postbox()->print_postbox_shortcode(
 					$short_view_unique_id,
 					false,
 					$this->layouts_cpt,

@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Tax_Field_Set
 use Org\Wplake\Advanced_Views\Assets\ACE_Mods;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Markup\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
@@ -37,7 +37,7 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 
 	public function __construct(
 		Selections_Cpt $public_cpt,
-		Html_Printer $html,
+		Postbox_Printer $postbox,
 		Selection_Settings_Storage $selections_settings_storage,
 		Post_Selection_Markup $selection_markup,
 		Post_Selection_Factory $selection_factory,
@@ -49,7 +49,7 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 	) {
 		parent::__construct(
 			$public_cpt,
-			$html,
+			$postbox,
 			$selection_factory,
 			$template_integration_storage,
 			$provider_cluster,
@@ -81,7 +81,7 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 			parent::get_interactive_response( $post ),
 			array(
 				'textareaItems'         => $this->get_editor_field_values( $selection_settings ),
-				'elements'              => $this->get_html_elements_response( $selection_settings ),
+				'elements'              => $this->get_postbox_elements_response( $selection_settings ),
 				'autocompleteVariables' => $this->selection_factory->get_autocomplete_variables( $unique_id ),
 			)
 		);
@@ -123,9 +123,9 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 	/**
 	 * @return array<string,mixed>
 	 */
-	protected function get_html_elements_response( Post_Selection_Settings $selection_settings ): array {
+	protected function get_postbox_elements_response( Post_Selection_Settings $selection_settings ): array {
 		ob_start();
-		$this->html->print_postbox_shortcode(
+		$this->postbox->print_postbox_shortcode(
 			$selection_settings->get_unique_id( true ),
 			false,
 			$this->public_cpt,
