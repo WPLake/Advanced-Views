@@ -127,7 +127,7 @@ abstract class Profiler {
 	}
 
 	/**
-	 * @param array<string|int,mixed> $args
+	 * @param array<int,mixed> $args
 	 *
 	 * @return mixed
 	 */

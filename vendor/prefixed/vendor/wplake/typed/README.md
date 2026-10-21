@@ -239,7 +239,7 @@ Functions for the following types are present:
 Additionally:
 
 * `boolExtended` (`true`,`1`,`"1"`, `"on"` are treated as true, `false`,`0`,`"0"`, `"off"` as false)
-* `stringExtended` (supports objects with `__toString`)
+* `stringExtended` (supports objects with `to_html`)
 
 For optional cases, when you need to apply the logic only when the item is present, each function has an `OrNull`
 variation (e.g. `stringOrNull`, `intOrNull`, and so on), which returns `null` if the key doesn’t exist.
@@ -253,7 +253,7 @@ are not:
 
 > “These names cannot be used to name a **class, interface, or
 > trait
-**” - [PHP Manual: Reserved Other Reserved Words](https://www.php.net/manual/en/reserved.other-reserved-words.php)
+> **” - [PHP Manual: Reserved Other Reserved Words](https://www.php.net/manual/en/reserved.other-reserved-words.php)
 
 This means you we can have things like `string($array, 'key')`, which resembles `(string)$array['key']` while being
 safer
@@ -279,7 +279,7 @@ names. That's why in this case we used the `arr` name instead.
 Straight type casting in PHP can be unsafe and unpredictable in certain scenarios.
 
 For example, the following code will throw an error if the `$mixed` variable is an object of a class that doesn’t
-explicitly implement `__toString`:
+explicitly implement `to_html`:
 
 ```php
 class Example {

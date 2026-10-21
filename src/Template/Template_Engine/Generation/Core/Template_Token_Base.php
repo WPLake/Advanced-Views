@@ -19,7 +19,7 @@ abstract class Template_Token_Base implements Template_Token {
 		$this->printer_class = $printer_class;
 	}
 
-	public function __toString(): string {
+	public function to_html(): string {
 		ob_start();
 		$this->display();
 

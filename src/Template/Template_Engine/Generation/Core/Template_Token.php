@@ -4,9 +4,11 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core;
 
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Html_Printable;
+
 defined( 'ABSPATH' ) || exit;
 
-interface Template_Token {
+interface Template_Token extends Html_Printable {
 	/**
 	 * Prints the token as a complete template statement: output (escaped by the engine) for values,
 	 * or the statement itself for loops, conditions, assignments and comments.
