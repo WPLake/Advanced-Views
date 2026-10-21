@@ -235,7 +235,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 
 		$class_branch = $this->class_branch( $conditional_suffix, $comparison, $markup_field_data );
 
-		return new Composed_Htmlable(
+		return Composed_Htmlable::compose(
 			array(
 				$this->get_item_class( $base_suffix, $markup_field_data->get_view_data(), $markup_field_data->get_field_data() ),
 				$token_factory->if()->set_if_branch( $class_branch ),

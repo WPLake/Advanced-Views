@@ -511,6 +511,6 @@ class Post_Selection_Markup {
 									->add_item_path( 'id' );
 		}
 
-		return new Composed_Htmlable( $parts );
+		return Composed_Htmlable::compose( $parts );
 	}
 }

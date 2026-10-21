@@ -39,7 +39,7 @@ class True_False_Field extends Markup_Field_Base {
 		return array(
 			array(
 				'tag'   => 'div',
-				'attrs' => array( 'class' => new Composed_Htmlable( $parts ) ),
+				'attrs' => array( 'class' => Composed_Htmlable::compose( $parts ) ),
 			),
 		);
 	}

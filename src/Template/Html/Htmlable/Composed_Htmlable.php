@@ -19,8 +19,15 @@ final class Composed_Htmlable implements Htmlable {
 	/**
 	 * @param array<string|Htmlable> $parts
 	 */
-	public function __construct( array $parts ) {
+	protected function __construct( array $parts ) {
 		$this->parts = $parts;
+	}
+
+	/**
+	 * @param array<string|Htmlable> $parts
+	 */
+	public static function compose( array $parts ): Htmlable {
+		return new self( $parts );
 	}
 
 	public function to_html(): string {

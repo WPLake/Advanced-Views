@@ -209,7 +209,7 @@ class Layout_Markup {
 
 	protected function root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Composed_Htmlable {
 		if ( Layout_Settings::CLASS_GENERATION_NONE === $layout_settings->classes_generation ) {
-			return new Composed_Htmlable( array() );
+			return Composed_Htmlable::compose( array() );
 		}
 
 		$bem_name = $layout_settings->get_bem_name();
@@ -230,6 +230,6 @@ class Layout_Markup {
 		$parts[] = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
 								->add_item_path( 'object_id' );
 
-		return new Composed_Htmlable( $parts );
+		return Composed_Htmlable::compose( $parts );
 	}
 }
