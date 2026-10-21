@@ -52,7 +52,7 @@ abstract class Cpt_Interactive_Fields extends Actor_Base implements Actor {
 		Cpt_Settings_Storage $cpt_settings_storage
 	) {
 		$this->public_cpt                   = $public_cpt;
-		$this->postbox                         = $postbox;
+		$this->postbox                      = $postbox;
 		$this->instance_factory             = $instance_factory;
 		$this->template_integration_storage = $template_integration_storage;
 		$this->provider_cluster             = $provider_cluster;

@@ -26,7 +26,7 @@ class User_Author_Link_Field extends Link_Field {
 		}
 
 		$field_args = array(
-			self::URL => get_author_posts_url( $user->ID ),
+			self::URL   => get_author_posts_url( $user->ID ),
 			// decode to avoid double encoding in Twig.
 			self::TITLE => html_entity_decode( $user->display_name, ENT_QUOTES ),
 		);

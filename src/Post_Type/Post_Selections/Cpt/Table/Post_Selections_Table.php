@@ -36,7 +36,7 @@ class Post_Selections_Table extends Cpt_Table {
 	) {
 		parent::__construct( $post_selections_settings_storage, $public_cpt );
 
-		$this->postbox                           = $postbox;
+		$this->postbox                        = $postbox;
 		$this->post_selections_cpt_meta_boxes = $post_selections_cpt_meta_boxes;
 		$this->layout_cpt                     = $layout_cpt;
 	}

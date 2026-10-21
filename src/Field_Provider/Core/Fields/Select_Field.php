@@ -25,7 +25,7 @@ class Select_Field extends List_Field {
 			$markup_field_data->is_with_field_wrapper()
 		);
 
-		$token_factory = $markup_field_data->get_token_factory();
+		$token_factory  = $markup_field_data->get_token_factory();
 		$div_attributes = array( 'class' => $this->get_field_class( 'choice', $markup_field_data ) );
 
 		Tags_Renderer::print_tags(

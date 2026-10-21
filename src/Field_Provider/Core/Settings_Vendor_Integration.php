@@ -519,10 +519,10 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 								'attrs' => array( 'style' => array( 'color' => '#dc3232' ) ),
 							),
 							sprintf(
-										'%s %s:',
-										count( $related_view_links_with_invalid_custom_markup ),
-										__( 'Views associated with this group contain invalid Custom Markup', 'acf-views' )
-									),
+								'%s %s:',
+								count( $related_view_links_with_invalid_custom_markup ),
+								__( 'Views associated with this group contain invalid Custom Markup', 'acf-views' )
+							),
 						),
 						array( 'tag' => 'br' ),
 						array( 'tag' => 'br' ),

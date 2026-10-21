@@ -139,9 +139,9 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 				__( 'Most likely, the WordPress uploads directory is not writable.', 'acf-views' ),
 				array( 'tag' => 'br' ),
 				__(
-							'Check and fix file permissions, then deactivate and activate back the Advanced Views plugin. If the issue persists, contact support.',
-							'acf-views'
-						),
+					'Check and fix file permissions, then deactivate and activate back the Advanced Views plugin. If the issue persists, contact support.',
+					'acf-views'
+				),
 			)
 		);
 	}

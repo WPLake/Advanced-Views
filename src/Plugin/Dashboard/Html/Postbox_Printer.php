@@ -69,7 +69,7 @@ class Postbox_Printer {
 	 * @return Tag_Chain
 	 */
 	protected static function shortcode_tags( string $shortcode, bool $is_short, bool $is_single ): array {
-		$type    = $is_short ?
+		$type            = $is_short ?
 			'short' :
 			'full';
 		$code_attrs      = array( 'class' => 'av-sortcodes__code av-shortcodes__code--type--short' );

@@ -60,7 +60,7 @@ class Db_Management extends Loggable_Actor {
 				$short_unique_ids
 			);
 
-			// array_combine() returns false for empty arrays on PHP < 8.0
+			// array_combine() returns false for empty arrays on PHP < 8.0.
 			$post_ids       = array_combine( $unique_ids, array_fill( 0, count( $unique_ids ), 0 ) );
 			$this->post_ids = false !== $post_ids ? $post_ids : array();
 		}

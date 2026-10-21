@@ -263,13 +263,13 @@ final class Import_Printer {
 			)
 		);
 
-		$does_title       = __( 'What this demo does', 'acf-views' );
-		$same_page_title  = __( "Display page's ACF fields on the same page", 'acf-views' );
-		$single_title     = __( 'Display a specific post, page or CPT item with its fields', 'acf-views' );
-		$selection_title  = __( 'Display multiple items using Post Selections', 'acf-views' );
-		$importing_title  = __( 'Importing', 'acf-views' );
-		$after_title      = __( 'After Import', 'acf-views' );
-		$delete_hint      = __( 'A Delete Demo button will appear if you’d like to remove the demo content later.', 'acf-views' );
+		$does_title      = __( 'What this demo does', 'acf-views' );
+		$same_page_title = __( "Display page's ACF fields on the same page", 'acf-views' );
+		$single_title    = __( 'Display a specific post, page or CPT item with its fields', 'acf-views' );
+		$selection_title = __( 'Display multiple items using Post Selections', 'acf-views' );
+		$importing_title = __( 'Importing', 'acf-views' );
+		$after_title     = __( 'After Import', 'acf-views' );
+		$delete_hint     = __( 'A Delete Demo button will appear if you’d like to remove the demo content later.', 'acf-views' );
 
 		return array(
 			array(

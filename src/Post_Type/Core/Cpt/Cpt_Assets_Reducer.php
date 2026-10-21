@@ -280,7 +280,10 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 		);
 		Tags_Renderer::print_tags(
 			array(
-				array( 'tag' => 'script', 'attrs' => array( 'type' => 'module' ) ),
+				array(
+					'tag'   => 'script',
+					'attrs' => array( 'type' => 'module' ),
+				),
 				function () {
 					?>
 				document.addEventListener('DOMContentLoaded', function () {

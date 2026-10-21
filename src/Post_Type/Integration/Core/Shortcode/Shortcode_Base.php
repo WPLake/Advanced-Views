@@ -140,11 +140,11 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 					'attrs' => array( 'style' => array( 'color' => 'red' ) ),
 				),
 				sprintf(
-							'%s %s %s',
-							__( 'AVF shortcode render error:', 'acf-views' ),
-							$error,
-							$shortcode_debug
-						),
+					'%s %s %s',
+					__( 'AVF shortcode render error:', 'acf-views' ),
+					$error,
+					$shortcode_debug
+				),
 			)
 		);
 	}

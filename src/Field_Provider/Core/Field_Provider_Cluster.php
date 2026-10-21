@@ -60,10 +60,10 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	public function __construct( Logger $logger, Instance_Container $container, array $provider_classes ) {
 		parent::__construct( $logger );
 
-		$this->container        = $container;
-		$this->provider_classes = $provider_classes;
-		$this->provider_cluster = array();
-		$this->field_meta_cache = array();
+		$this->container          = $container;
+		$this->provider_classes   = $provider_classes;
+		$this->provider_cluster   = array();
+		$this->field_meta_cache   = array();
 		$this->markup_field_cache = array();
 	}
 

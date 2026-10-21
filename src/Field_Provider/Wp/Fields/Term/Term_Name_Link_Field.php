@@ -32,7 +32,7 @@ class Term_Name_Link_Field extends Link_Field {
 			'';
 
 		$field_args = array(
-			self::URL => $term_link,
+			self::URL   => $term_link,
 			// decode to avoid double encoding in Twig.
 			self::TITLE => html_entity_decode( $term->name, ENT_QUOTES ),
 		);

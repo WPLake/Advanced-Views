@@ -112,7 +112,7 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 		}
 
 		$edit_post_link = $cpt_settings->get_edit_post_link();
-		$title_tags = array(
+		$title_tags     = array(
 			array( 'tag' => 'strong' ),
 			array(
 				'tag'   => 'a',

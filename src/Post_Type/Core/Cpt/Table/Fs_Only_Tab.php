@@ -58,19 +58,19 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 				Tags_Renderer::print_tag_group(
 					array(
 						__(
-									'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
-									'acf-views'
-								),
+							'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
+							'acf-views'
+						),
 						array( 'tag' => 'br' ),
 						__(
-									'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
-									'acf-views'
-								),
+							'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
+							'acf-views'
+						),
 						array( 'tag' => 'br' ),
 						__(
-									'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
-									'acf-views'
-								),
+							'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
+							'acf-views'
+						),
 						' ',
 						array(
 							array(

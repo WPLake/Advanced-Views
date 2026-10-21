@@ -252,7 +252,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 					array(
 						'tag'   => 'h4',
 						'attrs' => $heading_attributes,
-				),
+					),
 					$print_heading_text,
 				),
 				fn() => $this->print_related_acf_views( null, false, $related_views ),

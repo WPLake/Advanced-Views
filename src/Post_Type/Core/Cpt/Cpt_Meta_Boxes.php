@@ -19,8 +19,8 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	private Plugin $plugin;
 
 	public function __construct( Postbox_Printer $postbox, Plugin $plugin ) {
-		$this->postbox   = $postbox;
-		$this->plugin = $plugin;
+		$this->postbox = $postbox;
+		$this->plugin  = $plugin;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

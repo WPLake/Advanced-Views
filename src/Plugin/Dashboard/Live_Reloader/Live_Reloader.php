@@ -245,8 +245,8 @@ class Live_Reloader extends Actor_Base implements Actor {
 
 			$parent_card_id = sanitize_text_field( $this->get_string_arg( 'parent_card_id', $item_data ) );
 
-			$item_id = sanitize_text_field( (string) $item_id );
-			$unique_id         = sanitize_text_field( $this->get_string_arg( 'unique_id', $item_data ) );
+			$item_id   = sanitize_text_field( (string) $item_id );
+			$unique_id = sanitize_text_field( $this->get_string_arg( 'unique_id', $item_data ) );
 			/**
 			 * @var array<string,string> $code_hashes
 			 */
@@ -364,8 +364,8 @@ class Live_Reloader extends Actor_Base implements Actor {
 				continue;
 			}
 
-			$item_id = sanitize_text_field( (string) $item_id );
-			$unique_id         = sanitize_text_field( $this->get_string_arg( 'unique_id', $item_data ) );
+			$item_id   = sanitize_text_field( (string) $item_id );
+			$unique_id = sanitize_text_field( $this->get_string_arg( 'unique_id', $item_data ) );
 
 			if ( ! in_array( $unique_id, $card_ids_on_top_level_to_refresh, true ) ) {
 				continue;

@@ -120,7 +120,7 @@ final class Toolbar_Printer {
 					'',
 				string( $tab, 'class' ),
 			),
-			fn( string $class ) => strlen( $class ) > 0
+			fn( string $tab_class ) => strlen( $tab_class ) > 0
 		);
 		$url     = string( $tab, 'url' );
 		$attrs   = array(

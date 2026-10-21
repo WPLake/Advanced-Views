@@ -155,7 +155,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		$item_class     = $this->get_item_class(
+		$item_class    = $this->get_item_class(
 			'sub-menu',
 			$markup_field_data->get_view_data(),
 			$markup_field_data->get_field_data()

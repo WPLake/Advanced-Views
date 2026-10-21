@@ -40,7 +40,7 @@ class Layouts_Cpt_Table extends Cpt_Table {
 	) {
 		parent::__construct( $cpt_settings_storage, $public_cpt );
 
-		$this->postbox                   = $postbox;
+		$this->postbox                = $postbox;
 		$this->layouts_cpt_meta_boxes = $layouts_cpt_meta_boxes;
 		$this->selections_cpt         = $plugin_cpt;
 	}
