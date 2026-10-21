@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
@@ -290,10 +289,14 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	protected function repositories_tags(): array {
 		$print_options = function (): void {
 			foreach ( $this->settings->get_git_repositories() as $git_repository ) {
-				Tag_Renderer::print_tag(
-					'option',
-					array( 'value' => $git_repository['id'] ),
-					fn() => print( esc_html( $git_repository['name'] ) )
+				Tags_Renderer::print_tags(
+					array(
+						array(
+							'tag'   => 'option',
+							'attrs' => array( 'value' => $git_repository['id'] ),
+						),
+						fn() => print( esc_html( $git_repository['name'] ) ),
+					)
 				);
 			}
 		};

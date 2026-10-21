@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Compatibility\Migration;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Version\Version_Migration;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
@@ -93,7 +92,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 	protected function print_notice_content( string $upgrade_notice ): void {
 		echo esc_html__( 'Advanced Views plugin has been successfully upgraded!', 'acf-views' );
 
-		Tag_Renderer::print_tag( 'br' );
+		Tags_Renderer::print_tags( array( array( 'tag' => 'br' ) ) );
 
 		// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo str_replace( "\n", '<br>', esc_html( $upgrade_notice ) );
@@ -107,13 +106,17 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 				Plugin::get_current_admin_url()
 			);
 
-			Tag_Renderer::print_tag(
-				'a',
+			Tags_Renderer::print_tags(
 				array(
-					'style' => array( 'float' => 'right' ),
-					'href'  => esc_url( $dismiss_url ),
-				),
-				fn() => print( esc_html( __( 'Thanks, hide', 'acf-views' ) ) )
+					array(
+						'tag'   => 'a',
+						'attrs' => array(
+							'style' => array( 'float' => 'right' ),
+							'href'  => esc_url( $dismiss_url ),
+						),
+					),
+					fn() => print( esc_html( __( 'Thanks, hide', 'acf-views' ) ) ),
+				)
 			);
 		}
 	}

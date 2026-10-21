@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Throwable;
 
 abstract class Template_Renderer_Base extends Loggable_Actor implements Template_Renderer {
@@ -38,10 +38,14 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 			'class' => 'acf-views__error',
 		);
 
-		Tag_Renderer::print_tag(
-			'p',
-			$paragraph_attributes,
-			fn() => static::print_error_paragraph( $unique_view_id, $error_message )
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'p',
+					'attrs' => $paragraph_attributes,
+				),
+				fn() => static::print_error_paragraph( $unique_view_id, $error_message ),
+			)
 		);
 	}
 
@@ -50,12 +54,16 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 
 		printf( 'Advanced Views (%s) template: ', esc_html( $unique_view_id ) );
 
-		Tag_Renderer::print_tag(
-			'span',
-			$span_attributes,
-			function () use ( $error_message ) {
-				echo esc_html( $error_message );
-			}
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'span',
+					'attrs' => $span_attributes,
+				),
+				function () use ( $error_message ) {
+					echo esc_html( $error_message );
+				},
+			)
 		);
 	}
 

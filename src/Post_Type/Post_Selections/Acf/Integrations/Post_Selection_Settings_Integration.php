@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Integrations;
 
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Acf_Integration_Base;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
@@ -93,14 +93,18 @@ class Post_Selection_Settings_Integration extends Acf_Integration_Base {
 			$this->plugin_cpt->labels()->singular_name()
 		);
 
-		Tag_Renderer::print_tag(
-			'a',
+		Tags_Renderer::print_tags(
 			array(
-				'class'  => 'acf-views__add-new',
-				'target' => '_blank',
-				'href'   => esc_url( $link ),
-			),
-			fn() => print( esc_html( $label ) )
+				array(
+					'tag'   => 'a',
+					'attrs' => array(
+						'class'  => 'acf-views__add-new',
+						'target' => '_blank',
+						'href'   => esc_url( $link ),
+					),
+				),
+				fn() => print( esc_html( $label ) ),
+			)
 		);
 	}
 

@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core;
 
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Base;
@@ -99,10 +99,14 @@ abstract class Instance {
 			ucfirst( $this->cpt_settings->template_engine )
 		);
 
-		Tag_Renderer::print_tag(
-			'p',
-			array( 'style' => array( 'color' => 'red' ) ),
-			fn() => print( esc_html( $message ) )
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'p',
+					'attrs' => array( 'style' => array( 'color' => 'red' ) ),
+				),
+				fn() => print( esc_html( $message ) ),
+			)
 		);
 	}
 

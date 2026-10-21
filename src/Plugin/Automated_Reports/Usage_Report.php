@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Plugin\Automated_Reports;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -307,7 +306,7 @@ class Usage_Report extends Report_Base implements Actor {
 			'acf-views'
 		);
 
-		Tag_Renderer::print_tag( 'br' );
+		Tags_Renderer::print_tags( array( array( 'tag' => 'br' ) ) );
 
 		esc_html_e(
 			'Automatic reports do not include any private or sensitive information and can be disabled in the plugin settings.',
@@ -322,12 +321,20 @@ class Usage_Report extends Report_Base implements Actor {
 				)
 			);
 
-			Tag_Renderer::print_tag( 'br' );
-			Tag_Renderer::print_tag( 'br' );
-			Tag_Renderer::print_tag(
-				'a',
-				array( 'href' => esc_url( $hide_url ) ),
-				fn() => print( esc_html( __( 'Got it, hide', 'acf-views' ) ) )
+			Tags_Renderer::print_tags(
+				array(
+					array(
+						array( 'tag' => 'br' ),
+						array( 'tag' => 'br' ),
+						array(
+							array(
+								'tag'   => 'a',
+								'attrs' => array( 'href' => esc_url( $hide_url ) ),
+							),
+							fn() => print( esc_html( __( 'Got it, hide', 'acf-views' ) ) ),
+						),
+					),
+				)
 			);
 		}
 	}

@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 
 
 defined( 'ABSPATH' ) || exit;
@@ -43,23 +43,27 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 			'href'   => $href_var,
 		);
 
-		Tag_Renderer::print_tag(
-			'a',
-			$link_attributes,
-			function () use ( $token_factory, $markup_field_data, $field_id ) {
-				$token_factory->formatter()
-								->new_line();
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'a',
+					'attrs' => $link_attributes,
+				),
+				function () use ( $token_factory, $markup_field_data, $field_id ) {
+					$token_factory->formatter()
+									->new_line();
 
-				$markup_field_data->increment_and_print_tabs();
+					$markup_field_data->increment_and_print_tabs();
 
-				$markup_field_data->set_is_with_field_wrapper( true );
-				$this->image_field->print_markup( $field_id, $markup_field_data );
+					$markup_field_data->set_is_with_field_wrapper( true );
+					$this->image_field->print_markup( $field_id, $markup_field_data );
 
-				$token_factory->formatter()
-								->new_line();
+					$token_factory->formatter()
+									->new_line();
 
-				$markup_field_data->decrement_and_print_tabs();
-			}
+					$markup_field_data->decrement_and_print_tabs();
+				},
+			)
 		);
 	}
 

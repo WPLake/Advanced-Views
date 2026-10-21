@@ -6,6 +6,10 @@ namespace Org\Wplake\Advanced_Views\Plugin\Utils\Html;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @deprecated Use Tags_Renderer instead. The mark is a guard against direct usage: this class is only a helper of
+ * Tags_Renderer.
+ */
 final class Tag_Renderer {
 	protected const SELF_CLOSING_TAGS = array(
 		'area',
@@ -28,6 +32,9 @@ final class Tag_Renderer {
 	 *
 	 * The content printer returns 'void|mixed': the 'mixed' is allowed to accept print callbacks, e.g.
 	 * `fn() => print( $text )`.
+	 *
+	 * @deprecated Use Tags_Renderer::print_tags() instead. The mark is a guard against direct usage: this method is
+	 * only a helper of Tags_Renderer.
 	 *
 	 * @param array<string,mixed> $attributes
 	 * @param callable():(void|mixed)|null $content_printer

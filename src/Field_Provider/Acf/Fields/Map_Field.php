@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Acf\Fields;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Map_Field_Base;
@@ -238,26 +238,30 @@ class Map_Field extends Map_Field_Base {
 														->add_item_path( $key );
 		}
 
-		Tag_Renderer::print_tag(
-			'div',
-			$div_attributes,
-			function () use ( $factory, $markup_field_data, $field_id, $field_meta, $field_data ) {
-				$factory->formatter()
-					->new_line();
-				$markup_field_data->increment_and_print_tabs();
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'div',
+					'attrs' => $div_attributes,
+				),
+				function () use ( $factory, $markup_field_data, $field_id, $field_meta, $field_data ) {
+					$factory->formatter()
+						->new_line();
+					$markup_field_data->increment_and_print_tabs();
 
-				if ( $field_meta->is_multiple() ) {
-					$this->print_item_loop( $field_id, $markup_field_data );
-				} elseif ( $field_data->is_visible_when_empty ) {
-					$this->print_conditional_item( $field_id, $field_id, $markup_field_data );
-				} else {
-					$this->print_inner_item( $field_id, $field_id, $markup_field_data );
-				}
+					if ( $field_meta->is_multiple() ) {
+						$this->print_item_loop( $field_id, $markup_field_data );
+					} elseif ( $field_data->is_visible_when_empty ) {
+						$this->print_conditional_item( $field_id, $field_id, $markup_field_data );
+					} else {
+						$this->print_inner_item( $field_id, $field_id, $markup_field_data );
+					}
 
-				$factory->formatter()
-					->new_line();
-				$markup_field_data->decrement_and_print_tabs();
-			}
+					$factory->formatter()
+						->new_line();
+					$markup_field_data->decrement_and_print_tabs();
+				},
+			)
 		);
 	}
 

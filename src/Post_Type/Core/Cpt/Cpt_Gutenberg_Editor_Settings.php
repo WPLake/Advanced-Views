@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -106,24 +106,28 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 			),
 		);
 
-		Tag_Renderer::print_tag(
-			'p',
-			$attributes,
-			function (): void {
-				esc_html_e(
-					'Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue.',
-					'acf-views'
-				);
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'p',
+					'attrs' => $attributes,
+				),
+				function (): void {
+					esc_html_e(
+						'Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue.',
+						'acf-views'
+					);
 
-				echo ' ';
+					echo ' ';
 
-				printf(
-				// translators: %1$s - link opening tag, %2$s - link closing tag.
-					esc_html__( 'Please %1$s reach out %2$s to our support team for further assistance.', 'acf-views' ),
-					'<a target="_blank" href="https://wplake.org/acf-views-support/">',
-					'</a>'
-				);
-			}
+					printf(
+					// translators: %1$s - link opening tag, %2$s - link closing tag.
+						esc_html__( 'Please %1$s reach out %2$s to our support team for further assistance.', 'acf-views' ),
+						'<a target="_blank" href="https://wplake.org/acf-views-support/">',
+						'</a>'
+					);
+				},
+			)
 		);
 	}
 

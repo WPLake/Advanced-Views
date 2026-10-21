@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use WP_Filesystem_Base;
 
 class Templates_Environment extends Loggable_Actor implements Actor {
@@ -66,10 +66,15 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 			'class' => array( 'notice', 'notice-error' ),
 		);
 
-		Tag_Renderer::print_tag(
-			'div',
-			$notice_attributes,
-			fn() => Tag_Renderer::print_tag( 'p', array(), fn() => $this->print_not_writable_message() )
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'div',
+					'attrs' => $notice_attributes,
+				),
+				array( 'tag' => 'p' ),
+				fn() => $this->print_not_writable_message(),
+			)
 		);
 	}
 

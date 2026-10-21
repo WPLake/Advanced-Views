@@ -19,7 +19,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
@@ -211,21 +210,28 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 
 		$link_attrs['href'] = esc_url( $url );
 
-		$print_content = function () use ( $icon_class, $icon_style, $label ): void {
-			if ( '' !== $icon_class ) {
-				Tag_Renderer::print_tag(
-					'i',
-					array(
-						'class' => $icon_class,
-						'style' => $icon_style,
-					)
-				);
-			}
+		$icon_tag = '' !== $icon_class ?
+			array(
+				'tag'   => 'i',
+				'attrs' => array(
+					'class' => $icon_class,
+					'style' => $icon_style,
+				),
+			) :
+			array();
 
-			echo esc_html( $label );
-		};
-
-		Tag_Renderer::print_tag( 'a', $link_attrs, $print_content );
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'a',
+					'attrs' => $link_attrs,
+				),
+				array(
+					$icon_tag,
+					fn() => print( esc_html( $label ) ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -283,8 +289,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			echo '';
 		}
 
-		Tag_Renderer::print_tag( 'br' );
-		Tag_Renderer::print_tag( 'br' );
+		Tags_Renderer::print_tags( array( array( array( 'tag' => 'br' ), array( 'tag' => 'br' ) ) ) );
 
 		$this->print_add_new_link( $wp_post->ID, '', $add_new_link_args );
 	}

@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Plugin\Utils;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 
 abstract class Profiler {
@@ -47,14 +46,15 @@ abstract class Profiler {
 		$classes_total_usage = self::get_classes_total_usage();
 
 		$print_pre = function ( $data, string $prefix = '' ): void {
-			Tag_Renderer::print_tag(
-				'pre',
-				array(),
-				function () use ( $data, $prefix ): void {
-					echo esc_html( $prefix );
-					// @phpcs:ignore
-					print_r( $data );
-				}
+			Tags_Renderer::print_tags(
+				array(
+					array( 'tag' => 'pre' ),
+					function () use ( $data, $prefix ): void {
+						echo esc_html( $prefix );
+						// @phpcs:ignore
+						print_r( $data );
+					},
+				)
 			);
 		};
 

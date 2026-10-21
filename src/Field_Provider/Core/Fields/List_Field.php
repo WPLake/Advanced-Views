@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 
@@ -152,20 +152,24 @@ abstract class List_Field extends Markup_Field_Base {
 		);
 		$span_attributes = array( 'class' => $item_class );
 
-		Tag_Renderer::print_tag(
-			'span',
-			$span_attributes,
-			function () use ( $token_factory, $markup_field_data, $field_id ) {
-				$token_factory->formatter()
-								->new_line();
-				$markup_field_data->increment_and_print_tabs();
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'span',
+					'attrs' => $span_attributes,
+				),
+				function () use ( $token_factory, $markup_field_data, $field_id ) {
+					$token_factory->formatter()
+									->new_line();
+					$markup_field_data->increment_and_print_tabs();
 
-				$token_factory->variable( $field_id )->add_item_path( self::OPTIONS_DELIMITER )->display();
+					$token_factory->variable( $field_id )->add_item_path( self::OPTIONS_DELIMITER )->display();
 
-				$token_factory->formatter()
-								->new_line();
-				$markup_field_data->decrement_and_print_tabs();
-			}
+					$token_factory->formatter()
+									->new_line();
+					$markup_field_data->decrement_and_print_tabs();
+				},
+			)
 		);
 
 		$token_factory->formatter()

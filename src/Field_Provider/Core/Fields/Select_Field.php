@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 
 class Select_Field extends List_Field {
 	const LOOP_ITEM_NAME = 'choice_item';
@@ -28,22 +28,26 @@ class Select_Field extends List_Field {
 		$token_factory = $markup_field_data->get_token_factory();
 		$div_attributes = array( 'class' => $this->get_field_class( 'choice', $markup_field_data ) );
 
-		Tag_Renderer::print_tag(
-			'div',
-			$div_attributes,
-			function () use ( $token_factory, $markup_field_data, $twig_name ) {
-				$token_factory->formatter()
-								->new_line();
-				$markup_field_data->increment_and_print_tabs();
+		Tags_Renderer::print_tags(
+			array(
+				array(
+					'tag'   => 'div',
+					'attrs' => $div_attributes,
+				),
+				function () use ( $token_factory, $markup_field_data, $twig_name ) {
+					$token_factory->formatter()
+									->new_line();
+					$markup_field_data->increment_and_print_tabs();
 
-				$token_factory->variable( $twig_name )
-								->add_item_path( self::TITLE )
-								->display();
+					$token_factory->variable( $twig_name )
+									->add_item_path( self::TITLE )
+									->display();
 
-				$token_factory->formatter()
-								->new_line();
-				$markup_field_data->decrement_and_print_tabs();
-			}
+					$token_factory->formatter()
+									->new_line();
+					$markup_field_data->decrement_and_print_tabs();
+				},
+			)
 		);
 	}
 

@@ -11,7 +11,6 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tag_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
@@ -86,15 +85,19 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			)
 		);
 		echo ' ';
-		Tag_Renderer::print_tag(
-			'a',
+		Tags_Renderer::print_tags(
 			array(
-				'target' => '_blank',
-				'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
-			),
-			fn() => print( esc_html__( 'Read more', 'acf-views' ) )
+				array(
+					'tag'   => 'a',
+					'attrs' => array(
+						'target' => '_blank',
+						'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
+					),
+				),
+				fn() => print( esc_html__( 'Read more', 'acf-views' ) ),
+			)
 		);
-		Tag_Renderer::print_tag( 'br' );
+		Tags_Renderer::print_tags( array( array( 'tag' => 'br' ) ) );
 		echo esc_html__(
 			'If you have made any external changes to this repository, please click',
 			'acf-views'
