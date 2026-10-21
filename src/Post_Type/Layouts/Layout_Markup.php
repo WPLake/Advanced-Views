@@ -18,6 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Templa
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Composed_Htmlable;
+use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 
 class Layout_Markup {
 	/**
@@ -207,7 +208,7 @@ class Layout_Markup {
 		$this->markups_safe[ $layout_id ] = $view_markup_safe;
 	}
 
-	protected function root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Composed_Htmlable {
+	protected function root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Htmlable {
 		if ( Layout_Settings::CLASS_GENERATION_NONE === $layout_settings->classes_generation ) {
 			return Composed_Htmlable::compose( array() );
 		}

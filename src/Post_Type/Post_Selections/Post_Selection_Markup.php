@@ -17,6 +17,7 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrappe
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Composed_Htmlable;
+use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 
 /**
  * @phpstan-import-type Tag from Tags_Renderer
@@ -497,7 +498,7 @@ class Post_Selection_Markup {
 		return $tabs_number;
 	}
 
-	protected function root_class( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): Composed_Htmlable {
+	protected function root_class( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): Htmlable {
 		$bem_name = $post_selection_settings->get_bem_name();
 		$parts    = array(
 			$token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )

@@ -19,6 +19,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Fie
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Composed_Htmlable;
+use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
@@ -230,7 +231,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		string $conditional_suffix,
 		Template_Token $comparison,
 		Template_Field_Data $markup_field_data
-	): Composed_Htmlable {
+	): Htmlable {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$class_branch = $this->class_branch( $conditional_suffix, $comparison, $markup_field_data );
