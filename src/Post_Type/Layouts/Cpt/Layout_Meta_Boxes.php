@@ -6,18 +6,18 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Meta_Boxes;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 
 class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
@@ -64,7 +64,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			$title,
 		);
 
-		Tags_Renderer::print_tags( $tags );
+		Html_Renderer::print_tags( $tags );
 	}
 
 	/**
@@ -191,7 +191,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				$this->selections_cpt->labels()->plural_name()
 			);
 
-			Tags_Renderer::print_tags(
+			Html_Renderer::print_tags(
 				array(
 					array( 'tag' => 'p' ),
 					$message,
@@ -217,7 +217,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 
 		if ( array() !== $related_cards ||
 			$is_list_look ) {
-			Tags_Renderer::print_tag_group(
+			Html_Renderer::print_tag_group(
 				array(
 					array( 'tag' => 'br' ),
 					array( 'tag' => 'br' ),
@@ -258,7 +258,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				$label,
 			);
 
-			Tags_Renderer::print_tags( $tags );
+			Html_Renderer::print_tags( $tags );
 		}
 	}
 

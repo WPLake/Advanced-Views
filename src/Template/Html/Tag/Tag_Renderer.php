@@ -2,10 +2,9 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html;
+namespace Org\Wplake\Advanced_Views\Template\Html\Tag;
 
 use Closure;
-use Org\Wplake\Advanced_Views\Template\Html\Attribute\Attribute_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 

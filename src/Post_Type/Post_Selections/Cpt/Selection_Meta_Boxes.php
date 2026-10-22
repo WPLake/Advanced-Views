@@ -6,16 +6,16 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 
 class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
@@ -76,7 +76,7 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 			$view_data->title,
 		);
 
-		Tags_Renderer::print_tags( $tags );
+		Html_Renderer::print_tags( $tags );
 	}
 
 	public function add_meta_boxes(): void {

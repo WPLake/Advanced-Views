@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Integrations;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Acf\Acf_Utils;
 use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Acf_Integration_Base;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
@@ -18,6 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 class Field_Settings_Integration extends Acf_Integration_Base {
@@ -253,7 +253,7 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 			$this->plugin_cpt->labels()->singular_name()
 		);
 
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'a',

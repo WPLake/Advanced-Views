@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Filesystem_Base;
 
 class Templates_Environment extends Loggable_Actor implements Actor {
@@ -66,7 +66,7 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 			'class' => array( 'notice', 'notice-error' ),
 		);
 
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'div',
@@ -131,7 +131,7 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 	}
 
 	protected function print_not_writable_message(): void {
-		Tags_Renderer::print_tag_group(
+		Html_Renderer::print_tag_group(
 			array(
 				__( 'The templates directory is not writable.', 'acf-views' ),
 				' (path = ' . $this->uploads_folder . ')',

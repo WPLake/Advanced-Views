@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
@@ -237,7 +237,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			$paragraphs[] = $this->links_paragraph( $group_links );
 		}
 
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'div',

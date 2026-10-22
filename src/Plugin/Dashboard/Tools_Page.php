@@ -28,7 +28,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selectio
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Filesystem_Base;
 use WP_Post;
 use WP_Query;
@@ -161,7 +161,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 
 		$redirect_url = Plugin::get_admin_url( self::SLUG ) .
 						sprintf( '&message=1&type=export&_views=%s&_cards=%s', $count_of_view_ids, $count_of_card_ids );
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array( 'tag' => 'script' ),
 				function () use ( $redirect_url ) {
@@ -506,7 +506,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 			$post_selection_labels->plural_name()
 		);
 
-		return Tags_Renderer::render_tag_group(
+		return Html_Renderer::render_tag_group(
 			array_merge(
 				array( $summary, array( 'tag' => 'br' ) ),
 				$this->imported_items_tags( $views_label, $success_view_ids ),

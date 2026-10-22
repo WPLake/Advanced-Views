@@ -12,9 +12,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Composed_Htmlable;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
@@ -65,7 +65,7 @@ class Post_Selection_Markup {
 				$pages_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 											->add_item_path( 'pages_amount' );
 
-				Tags_Renderer::print_tag_group(
+				Html_Renderer::print_tag_group(
 					array(
 						fn() => $token_factory->formatter()
 											->new_line()
@@ -341,7 +341,7 @@ class Post_Selection_Markup {
 			$shadow_root :
 			array_merge( $content, array( $new_line ) );
 
-		Tags_Renderer::print_tag_group(
+		Html_Renderer::print_tag_group(
 			array(
 				array(
 					array(
@@ -405,7 +405,7 @@ class Post_Selection_Markup {
 			$content
 		);
 
-		Tags_Renderer::print_tag_group(
+		Html_Renderer::print_tag_group(
 			array(
 				fn() => $token_factory->formatter()
 									->new_line(),
@@ -480,7 +480,7 @@ class Post_Selection_Markup {
 		$no_posts_message_class = Post_Selection_Settings::CLASS_GENERATION_NONE !== $post_selection_settings->classes_generation ?
 			sprintf( '%s__no-posts-message', $post_selection_settings->get_bem_name() ) :
 			'';
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'div',

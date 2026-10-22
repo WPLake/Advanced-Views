@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * Named constructors for the Tags_Renderer structures, so the nesting reads by its meaning, not by the array shape.
  *
  * The renderer reads an array by its position: after the head of a tree it's a group, inside a group it's a tree.
- * So use group() for a tree item and tree() for a group member; for a group inside a group, wrap it: tree( group() ).
+ * So use stack() for a wrap() item and wrap() for a stack() member; for a stack inside a stack, wrap it: wrap( stack() ).
  *
  * Tag_Tree: every next item goes inside the previous one.
  * Tag_Group: its members (a Tag, a Tag_Text, a Tag_HTML or a Tag_Tree) are rendered at the same level, and it ends the tree.
@@ -54,18 +54,18 @@ final class Html {
 	 *
 	 * @return list<mixed>
 	 */
-	public static function chain( ...$items ): array {
+	public static function wrap( ...$items ): array {
 		return $items;
 	}
 
 	/**
 	 * Sibling items rendered at the same level.
 	 *
-	 * @param mixed ...$members
+	 * @param Tag_Tree_Item ...$items
 	 *
-	 * @return list<mixed>
+	 * @return Tag_Group
 	 */
-	public static function group( ...$members ): array {
-		return $members;
+	public static function stack( ...$items ): array {
+		return $items;
 	}
 }

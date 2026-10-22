@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 /**
  * @phpstan-import-type Tag_Tree from Html
@@ -60,7 +60,7 @@ final class Row_Title_Printer {
 			$action_label,
 		);
 
-		Tags_Renderer::print_tag_group(
+		Html_Renderer::print_tag_group(
 			array( $title_tags, $action_tags )
 		);
 	}

@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 class State_Report extends Report_Base implements Actor {
@@ -115,7 +115,7 @@ class State_Report extends Report_Base implements Actor {
 			'delete_data_option'          => __( 'Delete all the plugin data (cannot be undone)', 'acf-views' ),
 			'is_with_survey'              => false === $this->settings->is_automatic_reports_disabled(),
 		);
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array( 'tag' => 'style' ),
 				function () {
@@ -152,7 +152,7 @@ class State_Report extends Report_Base implements Actor {
 			)
 		);
 
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array( 'tag' => 'script' ),
 				function () use ( $data ) {

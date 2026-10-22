@@ -8,17 +8,17 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
-use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
@@ -133,7 +133,7 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		$joined_attrs    = implode( ' ', $attrs );
 		$shortcode_debug = sprintf( '(%s %s)', $shortcode, $joined_attrs );
 
-		return Tags_Renderer::render_tags(
+		return Html_Renderer::render_tags(
 			array(
 				array(
 					'tag'   => 'p',
@@ -197,7 +197,7 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		if ( $cpt_data->is_css_internal() ) {
 			$css_code   = $cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
 			$shadow_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
-			$shadow_css = Tags_Renderer::render_tags(
+			$shadow_css = Html_Renderer::render_tags(
 				array(
 					array( 'tag' => 'style' ),
 					// phpcs:ignore WordPress.Security.EscapeOutput
@@ -291,7 +291,7 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 			'onMouseOut'  => "this.style.opacity='.5';this.style.textDecoration='none'",
 		);
 
-		return Tags_Renderer::render_tags(
+		return Html_Renderer::render_tags(
 			array(
 				array(
 					'tag'   => 'a',

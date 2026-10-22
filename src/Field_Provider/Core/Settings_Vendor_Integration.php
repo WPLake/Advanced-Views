@@ -19,7 +19,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
@@ -142,7 +142,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			$title,
 		);
 
-		Tags_Renderer::print_tags( $tags );
+		Html_Renderer::print_tags( $tags );
 	}
 
 	/**
@@ -220,7 +220,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			) :
 			array();
 
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'a',
@@ -289,7 +289,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			echo '';
 		}
 
-		Tags_Renderer::print_tag_group(
+		Html_Renderer::print_tag_group(
 			array( array( 'tag' => 'br' ), array( 'tag' => 'br' ) )
 		);
 
@@ -338,7 +338,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 				continue;
 			}
 
-			$views_with_invalid_custom_markup[] = Tags_Renderer::render_tags(
+			$views_with_invalid_custom_markup[] = Html_Renderer::render_tags(
 				array(
 					array(
 						'tag'   => 'a',
@@ -509,7 +509,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 					$links[] = fn() => print( $link );
 				}
 
-				$extra = Tags_Renderer::render_tag_group(
+				$extra = Html_Renderer::render_tag_group(
 					array(
 						array( 'tag' => 'br' ),
 						array( 'tag' => 'br' ),

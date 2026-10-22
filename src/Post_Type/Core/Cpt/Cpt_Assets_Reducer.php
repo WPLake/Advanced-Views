@@ -4,13 +4,13 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -254,7 +254,7 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 	public function print_fallback_message(): void {
 		$settings_url = Plugin::get_admin_url( Settings_Page::SLUG );
 
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'p',
@@ -278,7 +278,7 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 				),
 			)
 		);
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'script',

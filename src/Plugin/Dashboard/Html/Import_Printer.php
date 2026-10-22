@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -34,7 +34,7 @@ final class Import_Printer {
 		);
 		$form_tags    = Html_Printer::dashboard_form_tags( 'import', $form_nonce, $blocks );
 
-		Tags_Renderer::print_tags( $form_tags );
+		Html_Renderer::print_tags( $form_tags );
 	}
 
 	/**

@@ -19,7 +19,7 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Screen;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -94,7 +94,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 			Avf_User::get_manage_capability(),
 			self::PAGE_DOCS,
 			function (): void {
-				Tags_Renderer::print_tags(
+				Html_Renderer::print_tags(
 					array(
 						array(
 							'tag'   => 'iframe',
@@ -338,7 +338,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 	 */
 	protected function get_cpt_links(): array {
 		return array_map(
-			fn( Plugin_Cpt $plugin_cpt ) => Tags_Renderer::render_tags(
+			fn( Plugin_Cpt $plugin_cpt ) => Html_Renderer::render_tags(
 				array(
 					array(
 						'tag'   => 'a',
@@ -359,7 +359,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 	 */
 	protected function get_promo_links(): array {
 		return array(
-			Tags_Renderer::render_tags(
+			Html_Renderer::render_tags(
 				array(
 					array(
 						'tag'   => 'a',

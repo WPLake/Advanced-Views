@@ -20,7 +20,7 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
 /**
@@ -140,7 +140,7 @@ class Usage_Report extends Report_Base implements Actor {
 			),
 		);
 
-		Tags_Renderer::print_tags( $tags );
+		Html_Renderer::print_tags( $tags );
 	}
 
 	public function send_and_schedule_next(): void {

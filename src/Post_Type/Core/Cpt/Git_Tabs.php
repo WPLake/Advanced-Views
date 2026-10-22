@@ -11,7 +11,6 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
@@ -22,6 +21,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Tab_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Repository_Item;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 abstract class Git_Tabs extends External_Storage_Tab {
 	use Safe_Array_Arguments;
@@ -85,7 +85,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			)
 		);
 		echo ' ';
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'a',
@@ -97,7 +97,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 				__( 'Read more', 'acf-views' ),
 			)
 		);
-		Tags_Renderer::print_tags( array( array( 'tag' => 'br' ) ) );
+		Html_Renderer::print_tags( array( array( 'tag' => 'br' ) ) );
 		echo esc_html__(
 			'If you have made any external changes to this repository, please click',
 			'acf-views'
@@ -438,7 +438,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			__( 'Cache successfully cleared.', 'acf-views' ),
 		);
 
-		Tags_Renderer::print_tags( $tags );
+		Html_Renderer::print_tags( $tags );
 	}
 
 	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {

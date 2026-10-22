@@ -10,13 +10,13 @@ use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Label_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Outer_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Wrapper_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
@@ -87,7 +87,7 @@ class Field_Template {
 
 		Format_Token::tabulation( $tabs_number );
 
-		Tags_Renderer::print_tags( $markup_field_instance->compose_tags( $field_id, $markup_field_data ) );
+		Html_Renderer::print_tags( $markup_field_instance->compose_tags( $field_id, $markup_field_data ) );
 
 		Format_Token::next_line();
 
@@ -235,7 +235,7 @@ class Field_Template {
 			) :
 			$row_inner;
 
-		Tags_Renderer::print_tag_group(
+		Html_Renderer::print_tag_group(
 			array( $label_outside, array( $row_layer ) )
 		);
 

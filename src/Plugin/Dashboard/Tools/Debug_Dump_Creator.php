@@ -13,9 +13,9 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use WP_Query;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
 final class Debug_Dump_Creator {
 	private Tools_Settings $tools_settings;
@@ -46,7 +46,7 @@ final class Debug_Dump_Creator {
 				'message' => 1,
 			)
 		);
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array( 'tag' => 'script' ),
 				function () use ( $dump_data, $redirect_url ) {

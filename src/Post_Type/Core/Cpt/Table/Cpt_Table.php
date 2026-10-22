@@ -5,16 +5,16 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_List_Table;
 use WP_Post;
 use WP_Post_Type;
@@ -152,7 +152,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			return;
 		}
 
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'div',
@@ -172,7 +172,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			null;
 
 		if ( null !== $description_callback ) {
-			Tags_Renderer::print_tags(
+			Html_Renderer::print_tags(
 				array(
 					array( 'tag' => 'p' ),
 					$description_callback,
@@ -183,7 +183,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		}
 
 		if ( '' !== $wp_post_type->description ) {
-			Tags_Renderer::print_tags(
+			Html_Renderer::print_tags(
 				array(
 					array( 'tag' => 'p' ),
 					// don't use esc_html as it contains links.
@@ -224,7 +224,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 				) :
 				array();
 
-			$views[ $tab->get_name() ] = Tags_Renderer::render_tags(
+			$views[ $tab->get_name() ] = Html_Renderer::render_tags(
 				array(
 					array(
 						'tag'   => 'a',
@@ -264,7 +264,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			__( 'Search for name.', 'acf-views' );
 
 		// only primary search is available for custom items.
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array( 'tag' => 'style' ),
 				fn() => print( sprintf( '#posts-filter .search-box::after{content:"%s";}', esc_html( $label ) ) ),
@@ -376,7 +376,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			)
 		);
 
-		$actions['clone'] = Tags_Renderer::render_tags(
+		$actions['clone'] = Html_Renderer::render_tags(
 			array(
 				array(
 					'tag'   => 'a',
@@ -452,7 +452,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			$rows[] = array( array( 'tag' => 'tr' ), $cells );
 		}
 
-		Tags_Renderer::print_tag_group(
+		Html_Renderer::print_tag_group(
 			array(
 				// hide the origin items until the custom items are pasted via JS.
 				array(

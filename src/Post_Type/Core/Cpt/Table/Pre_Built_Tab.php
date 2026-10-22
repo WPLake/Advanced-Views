@@ -10,10 +10,10 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 abstract class Pre_Built_Tab extends External_Storage_Tab {
 	use Safe_Array_Arguments;
@@ -80,7 +80,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		$tab_data->set_name( self::NAME );
 		$tab_data->set_label( __( 'Pre-built components', 'acf-views' ) );
 		$tab_data->set_description_callback(
-			fn() => Tags_Renderer::print_tag_group(
+			fn() => Html_Renderer::print_tag_group(
 				array(
 					__( 'Import pre-built components.', 'acf-views' ),
 					array( 'tag' => 'br' ),

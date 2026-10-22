@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Throwable;
 
 abstract class Template_Renderer_Base extends Loggable_Actor implements Template_Renderer {
@@ -39,7 +39,7 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 		);
 		$span_attributes      = array( 'class' => 'acf-views__error-message' );
 
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'p',
@@ -94,7 +94,7 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 		// do not include in case of the validation, it doesn't have sense + breaks the error grep regex.
 		if ( $is_debug_mode &&
 			! $is_validation ) {
-			Tags_Renderer::print_tags(
+			Html_Renderer::print_tags(
 				array(
 					array( 'tag' => 'pre' ),
 					// @phpcs:ignore WordPress.PHP.DevelopmentFunctions

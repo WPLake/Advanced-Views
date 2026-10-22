@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Html;
 
 use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
+use Org\Wplake\Advanced_Views\Template\Html\Tag\Tag_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -14,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
  * @phpstan-import-type Tag_Tree from Html
  * @phpstan-import-type Tag_Group from Html
  */
-final class Tags_Renderer {
+final class Html_Renderer {
 	/**
 	 * Use when the call starts with a tag: the rest of the items go inside it, e.g. `array( $ul, $li, $text )`.
 	 * For sibling items (a group) use print_tag_group() instead.

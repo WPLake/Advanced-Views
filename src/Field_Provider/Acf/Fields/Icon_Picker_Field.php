@@ -7,14 +7,14 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Acf\Fields;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Comparison_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -136,7 +136,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$icon_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-		Tags_Renderer::print_tag_group(
+		Html_Renderer::print_tag_group(
 			array(
 				function () use ( $token_factory, $markup_field_data ) {
 					$token_factory->formatter()->new_line();
@@ -166,7 +166,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		Tags_Renderer::print_tags( $this->image_field->compose_tags( $field_id, $markup_field_data ) );
+		Html_Renderer::print_tags( $this->image_field->compose_tags( $field_id, $markup_field_data ) );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
@@ -177,7 +177,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$src_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-		Tags_Renderer::print_tag_group(
+		Html_Renderer::print_tag_group(
 			array(
 				function () use ( $token_factory, $markup_field_data ) {
 					$token_factory->formatter()->new_line();

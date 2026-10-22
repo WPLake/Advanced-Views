@@ -9,11 +9,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Macy_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Masonry_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Splide_Pattern;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -27,7 +27,7 @@ class Gallery_Field extends Markup_Field_Base {
 	protected function print_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$markup_field_data->set_is_with_field_wrapper( true );
 
-		Tags_Renderer::print_tags( $this->image_field->compose_tags( $item_id, $markup_field_data ) );
+		Html_Renderer::print_tags( $this->image_field->compose_tags( $item_id, $markup_field_data ) );
 	}
 
 	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {

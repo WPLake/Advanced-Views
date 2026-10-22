@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Utils;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 abstract class Profiler {
 	const SOURCE_NETWORK = '_network';
@@ -75,7 +75,7 @@ abstract class Profiler {
 			),
 		);
 
-		Tags_Renderer::print_tags( $tags );
+		Html_Renderer::print_tags( $tags );
 	}
 
 	/**

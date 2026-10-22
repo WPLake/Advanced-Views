@@ -8,11 +8,11 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Term;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
@@ -57,7 +57,7 @@ class Taxonomy_Field extends List_Field {
 			$markup_field_data->is_with_field_wrapper()
 		);
 
-		Tags_Renderer::print_tags( $this->link_field->compose_tags( $item_id, $markup_field_data ) );
+		Html_Renderer::print_tags( $this->link_field->compose_tags( $item_id, $markup_field_data ) );
 	}
 
 	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {

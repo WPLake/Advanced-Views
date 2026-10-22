@@ -4,7 +4,6 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader;
 
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
@@ -13,6 +12,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 
 defined( 'ABSPATH' ) || exit;
@@ -105,7 +105,7 @@ class Live_Reloader_Component extends Actor_Base implements Actor {
 			'isGutenbergBlock'   => $is_gutenberg_block,
 		);
 
-		return Tags_Renderer::render_tags(
+		return Html_Renderer::render_tags(
 			array(
 				array(
 					'tag'   => 'avf-live-reloader',

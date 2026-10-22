@@ -10,9 +10,9 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Shortcode\Shortcode_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 final class Cpt_Renderer {
@@ -85,7 +85,7 @@ final class Cpt_Renderer {
 			$minified_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
 			$unique_id    = $cpt_settings->get_unique_id();
 
-			return Tags_Renderer::render_tags(
+			return Html_Renderer::render_tags(
 				array(
 					array(
 						'tag'   => 'style',
@@ -101,7 +101,7 @@ final class Cpt_Renderer {
 	}
 
 	protected static function make_placeholder( string $message ): string {
-		return Tags_Renderer::render_tags(
+		return Html_Renderer::render_tags(
 			array(
 				array(
 					'tag'   => 'p',

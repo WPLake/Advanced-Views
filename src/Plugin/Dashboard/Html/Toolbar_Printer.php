@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
 use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -23,7 +23,7 @@ final class Toolbar_Printer {
 	public static function print_dashboard_header( string $name, string $version, array $tabs ): void {
 		$toolbar_tags = self::toolbar_tags( $name, $version, $tabs );
 
-		Tags_Renderer::print_tags( $toolbar_tags );
+		Html_Renderer::print_tags( $toolbar_tags );
 	}
 
 	/**

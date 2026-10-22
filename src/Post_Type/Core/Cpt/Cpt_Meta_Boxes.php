@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -119,7 +119,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 			) :
 			array();
 
-		Tags_Renderer::print_tag_group(
+		Html_Renderer::print_tag_group(
 			array( $post_types_line, array( $pages_line ) )
 		);
 	}

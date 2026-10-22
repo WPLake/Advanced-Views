@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -84,7 +84,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 			$label,
 		);
 
-		return Tags_Renderer::render_tags(
+		return Html_Renderer::render_tags(
 			array(
 				array(
 					'tag'   => 'span',
@@ -173,7 +173,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 			__( 'enabled', 'acf-views' ) :
 			__( 'disabled', 'acf-views' );
 
-		return Tags_Renderer::render_tags(
+		return Html_Renderer::render_tags(
 			array(
 				array(
 					'tag'   => 'span',
@@ -209,7 +209,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 		$singular_name = $this->plugin_cpt->labels()->singular_name();
 		$add_new_url   = admin_url( sprintf( 'post-new.php?post_type=%s', $this->get_cpt_name() ) );
 
-		return Tags_Renderer::render_tag_group(
+		return Html_Renderer::render_tag_group(
 			array(
 				sprintf(
 				// translators: %s - singular name of the CPT.

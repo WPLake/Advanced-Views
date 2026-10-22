@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Comment;
 
 class Comment_Items_List_Field extends Markup_Field_Base {
@@ -27,7 +27,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
 		$comment_attributes = array( 'class' => $this->get_field_class( 'comment', $markup_field_data ) );
 
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'div',
@@ -47,7 +47,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'div',
@@ -71,7 +71,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		$token_factory->formatter()->new_line();
 		$markup_field_data->print_tabs();
 
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'div',

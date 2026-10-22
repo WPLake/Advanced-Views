@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Settings_Vendor_Integration;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -17,7 +16,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 
 class Pods_Integration extends Settings_Vendor_Integration {
@@ -219,7 +219,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			fn() => $this->print_related_postbox( $pod_name, $pod ),
 		);
 
-		return Tags_Renderer::render_tags( $tags );
+		return Html_Renderer::render_tags( $tags );
 	}
 
 	/**
@@ -260,7 +260,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			),
 		);
 
-		Tags_Renderer::print_tags( $tags );
+		Html_Renderer::print_tags( $tags );
 	}
 
 	/**
@@ -279,7 +279,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 				),
 			);
 
-			Tags_Renderer::print_tags(
+			Html_Renderer::print_tags(
 				array(
 					array(
 						'tag'   => 'div',

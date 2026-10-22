@@ -8,7 +8,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -55,7 +55,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 		$tab_data->set_label( __( 'FS only', 'acf-views' ) );
 		$tab_data->set_description_callback(
 			function (): void {
-				Tags_Renderer::print_tag_group(
+				Html_Renderer::print_tag_group(
 					array(
 						__(
 							'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
@@ -168,7 +168,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 			);
 		}
 
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'div',

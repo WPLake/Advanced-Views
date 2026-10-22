@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 
 defined( 'ABSPATH' ) || exit;
@@ -55,7 +55,7 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 				$markup_field_data->increment_and_print_tabs();
 
 				$markup_field_data->set_is_with_field_wrapper( true );
-				Tags_Renderer::print_tags( $this->image_field->compose_tags( $field_id, $markup_field_data ) );
+				Html_Renderer::print_tags( $this->image_field->compose_tags( $field_id, $markup_field_data ) );
 
 				$token_factory->formatter()
 								->new_line();

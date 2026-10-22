@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Select_Field extends List_Field {
 	const LOOP_ITEM_NAME = 'choice_item';
@@ -28,7 +28,7 @@ class Select_Field extends List_Field {
 		$token_factory  = $markup_field_data->get_token_factory();
 		$div_attributes = array( 'class' => $this->get_field_class( 'choice', $markup_field_data ) );
 
-		Tags_Renderer::print_tags(
+		Html_Renderer::print_tags(
 			array(
 				array(
 					'tag'   => 'div',
