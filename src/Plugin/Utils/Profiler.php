@@ -9,6 +9,9 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
+/**
+ * @phpstan-import-type Tag_Wrap from Html
+ */
 abstract class Profiler {
 	const SOURCE_NETWORK = '_network';
 
@@ -46,15 +49,6 @@ abstract class Profiler {
 	public static function print_report(): void {
 		$classes_total_usage = self::get_classes_total_usage();
 
-		$pre_chain = fn( $data, string $prefix = '' ): array => Html::wrap(
-			Html::tag( 'pre' ),
-			function () use ( $data, $prefix ): void {
-				echo esc_html( $prefix );
-				// @phpcs:ignore
-				print_r( $data );
-			}
-		);
-
 		$tags = Html::wrap(
 			Html::tag(
 				'div',
@@ -68,11 +62,11 @@ abstract class Profiler {
 				)
 			),
 			Html::stack(
-				$pre_chain( self::get_total_usage() ),
+				self::pre_chain( self::get_total_usage() ),
 				Html::tag( 'hr' ),
-				$pre_chain( $classes_total_usage, count( $classes_total_usage ) . "\n" ),
+				self::pre_chain( $classes_total_usage, count( $classes_total_usage ) . "\n" ),
 				Html::tag( 'hr' ),
-				$pre_chain( self::$class_hooks_usage )
+				self::pre_chain( self::$class_hooks_usage )
 			)
 		);
 
@@ -165,5 +159,26 @@ abstract class Profiler {
 
 		self::$class_hooks_usage[ $source ][ $hook_name ]['calls']    += 1;
 		self::$class_hooks_usage[ $source ][ $hook_name ]['time_sec'] += $execution_time_sec;
+	}
+
+	/**
+	 * @param mixed $data
+	 *
+	 * @return Tag_Wrap
+	 */
+	protected static function pre_chain( $data, string $prefix = '' ): array {
+		return Html::wrap(
+			Html::tag( 'pre' ),
+			fn() => self::print_data( $data, $prefix )
+		);
+	}
+
+	/**
+	 * @param mixed $data
+	 */
+	protected static function print_data( $data, string $prefix ): void {
+		echo esc_html( $prefix );
+		// @phpcs:ignore
+		print_r( $data );
 	}
 }

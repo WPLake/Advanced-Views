@@ -40,24 +40,24 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 		);
 		$span_attributes      = array( 'class' => 'acf-views__error-message' );
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'p',
-					$paragraph_attributes
-				),
-				Html::stack(
-					fn() => printf( 'Advanced Views (%s) template: ', esc_html( $unique_view_id ) ),
-					Html::wrap(
-						Html::tag(
-							'span',
-							$span_attributes
-						),
-						$error_message
-					)
+		$tags = Html::wrap(
+			Html::tag(
+				'p',
+				$paragraph_attributes
+			),
+			Html::stack(
+				fn() => printf( 'Advanced Views (%s) template: ', esc_html( $unique_view_id ) ),
+				Html::wrap(
+					Html::tag(
+						'span',
+						$span_attributes
+					),
+					$error_message
 				)
 			)
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	/**
@@ -95,19 +95,19 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 		// do not include in case of the validation, it doesn't have sense + breaks the error grep regex.
 		if ( $is_debug_mode &&
 			! $is_validation ) {
-			Html_Renderer::print(
-				Html::wrap(
-					Html::tag( 'pre' ),
-					// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
-							print_r(
-								array(
-									'template' => $template,
-									'args'     => $args,
-								),
-								true
-							)
-				)
+			$tags = Html::wrap(
+				Html::tag( 'pre' ),
+				// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
+						print_r(
+							array(
+								'template' => $template,
+								'args'     => $args,
+							),
+							true
+						)
 			);
+
+			Html_Renderer::print( $tags );
 		}
 	}
 }

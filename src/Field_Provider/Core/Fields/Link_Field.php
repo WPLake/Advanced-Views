@@ -41,27 +41,29 @@ class Link_Field extends Markup_Field_Base {
 			'href'   => $href_var,
 		);
 
+		$print_link_content = function () use ( $token_factory, $markup_field_data, $link_label_var, $title_var ) {
+			$token_factory->formatter()
+							->new_line();
+			$markup_field_data->increment_and_print_tabs();
+
+			$token_factory
+				->comparison()
+				->set_left_operand( $link_label_var )
+				->set_comparison_empty()
+				->set_right_operand( $title_var )
+				->display();
+
+			$token_factory->formatter()
+							->new_line();
+			$markup_field_data->decrement_and_print_tabs();
+		};
+
 		return Html::wrap(
 			Html::tag(
 				'a',
 				$link_attributes
 			),
-			function () use ( $token_factory, $markup_field_data, $link_label_var, $title_var ) {
-				$token_factory->formatter()
-								->new_line();
-				$markup_field_data->increment_and_print_tabs();
-
-				$token_factory
-					->comparison()
-					->set_left_operand( $link_label_var )
-					->set_comparison_empty()
-					->set_right_operand( $title_var )
-					->display();
-
-				$token_factory->formatter()
-								->new_line();
-				$markup_field_data->decrement_and_print_tabs();
-			}
+			$print_link_content
 		);
 	}
 

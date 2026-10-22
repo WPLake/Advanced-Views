@@ -21,6 +21,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * @phpstan-import-type Tag_Stack from Html
+ * @phpstan-import-type Tag from Html
  * @phpstan-import-type Tag_Wrap from Html
  */
 final class Template_Field_Data extends Field_Data {
@@ -116,30 +117,34 @@ final class Template_Field_Data extends Field_Data {
 		foreach ( array_reverse( $item_outers, true ) as $index => $outer ) {
 			$is_without_tabs = $index === $last_index && $is_without_last_item_tabs;
 
+			$print_outer_open = function () use ( $is_without_tabs ) {
+				$this->token_factory->formatter()
+					->new_line();
+
+				++$this->tabs_number;
+
+				if ( ! $is_without_tabs ) {
+					$this->token_factory->formatter()
+						->tab( $this->tabs_number );
+				}
+			};
+
+			$print_outer_close = function () use ( $is_without_tabs ) {
+				if ( ! $is_without_tabs ) {
+					$this->token_factory->formatter()
+						->new_line();
+				}
+
+				$this->token_factory->formatter()
+					->tab( --$this->tabs_number );
+			};
+
 			$content = Html::wrap(
 				$this->item_outer_tag( $outer ),
 				Html::stack(
-					function () use ( $is_without_tabs ) {
-						$this->token_factory->formatter()
-							->new_line();
-
-						++$this->tabs_number;
-
-						if ( ! $is_without_tabs ) {
-							$this->token_factory->formatter()
-								->tab( $this->tabs_number );
-						}
-					},
+					$print_outer_open,
 					$content,
-					function () use ( $is_without_tabs ) {
-						if ( ! $is_without_tabs ) {
-							$this->token_factory->formatter()
-								->new_line();
-						}
-
-						$this->token_factory->formatter()
-							->tab( --$this->tabs_number );
-					}
+					$print_outer_close
 				)
 			);
 		}
@@ -208,12 +213,26 @@ final class Template_Field_Data extends Field_Data {
 							->tab( $this->decrement_and_get_tabs_number() );
 	}
 
+	public function print_new_line_and_increment_tabs(): void {
+		$this->token_factory->formatter()
+							->new_line();
+
+		$this->increment_and_print_tabs();
+	}
+
+	public function print_new_line_and_decrement_tabs(): void {
+		$this->token_factory->formatter()
+							->new_line();
+
+		$this->decrement_and_print_tabs();
+	}
+
 	public function get_token_factory(): Token_Factory {
 		return $this->token_factory;
 	}
 
 	/**
-	 * @return array{tag:string,attrs:array<string,mixed>}
+	 * @return Tag
 	 */
 	protected function item_outer_tag( Html_Wrapper $outer ): array {
 		$attr_class = $outer->attrs['class'] ?? '';
@@ -228,9 +247,6 @@ final class Template_Field_Data extends Field_Data {
 													->add_item_path( $variable_info['item_key'] );
 		}
 
-		return array(
-			'tag'   => $outer->tag,
-			'attrs' => $attrs,
-		);
+		return Html::tag( $outer->tag, $attrs );
 	}
 }

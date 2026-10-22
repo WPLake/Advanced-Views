@@ -235,9 +235,9 @@ class Field_Template {
 			) :
 			$row_inner;
 
-		Html_Renderer::print(
-			Html::stack( $label_outside, $row_layer )
-		);
+		$tags = Html::stack( $label_outside, $row_layer );
+
+		Html_Renderer::print( $tags );
 
 		return $tabs_number;
 	}

@@ -116,156 +116,162 @@ class State_Report extends Report_Base implements Actor {
 			'delete_data_option'          => __( 'Delete all the plugin data (cannot be undone)', 'acf-views' ),
 			'is_with_survey'              => false === $this->settings->is_automatic_reports_disabled(),
 		);
-		Html_Renderer::print(
+		$tags = Html::stack(
 			Html::wrap(
 				Html::tag( 'style' ),
-				function () {
-					?>
-					/*hide other action links while survey is open,
-					otherwise may be links after deactivate (like 'loco translate') and it'll look weird*/
-					tr.advanced-views-survey-row .row-actions > *:not(.deactivate) {
-						display: none;
-					}
-
-					.advanced-views-survey {
-						color: black;
-						min-width: 350px;
-					}
-
-					.advanced-views-survey label {
-						margin: 10px 0;
-						display: block;
-					}
-
-					.advanced-views-survey label.advanced-views-survey__delete-option {
-						margin: 20px 0;
-					}
-
-					.advanced-views-survey textarea {
-						width: 100%;
-					}
-
-					.advanced-views-survey__cancel {
-						margin: 0 0 0 10px !important;
-					}
-					<?php
-				}
-			)
-		);
-
-		Html_Renderer::print(
+				fn() => $this->print_survey_css()
+			),
 			Html::wrap(
 				Html::tag( 'script' ),
-				function () use ( $data ) {
-					?>
-					(function () {
-						class DeactivationSurveyPopup {
-							constructor() {
-								this.data = <?php echo wp_json_encode( $data ); ?>;
-								'loading' === document.readyState ?
-									document.addEventListener('DOMContentLoaded', this.init.bind(this)) :
-									this.init();
-							}
-
-							init() {
-								let deactivationLink = document.querySelector('.wp-list-table tr[data-plugin="' + this.data['plugin_slug'] + '"] .deactivate a');
-
-								if (null === deactivationLink) {
-									console.log('Advanced Views: deactivation link not found', slug);
-									return;
-								}
-
-								deactivationLink.addEventListener('click', this.showPopup.bind(this));
-							}
-
-							toggleActiveClass() {
-								document.querySelector('.wp-list-table tr[data-plugin="' + this.data['plugin_slug'] + '"]')
-									.classList.toggle('advanced-views-survey-row')
-							}
-
-							showPopup(event) {
-								event.preventDefault();
-
-								let link = event.target;
-
-								link.style.display = 'none'
-
-								let popup = document.createElement('div');
-
-								if (this.data['is_with_survey']) {
-									popup.innerHTML +=
-										'<p>' + this.data['message'] + '</p>';
-
-									for (let option in this.data['options']) {
-										popup.innerHTML += '<label><input type="radio" name="advanced-views-survey__reason" value="' + option + '"> ' + this.data['options'][option] + '</label>';
-									}
-
-									// notes textarea
-									popup.innerHTML += '<label><textarea name="advanced-views-survey__notes" rows="3" placeholder="' + this.data['notes_label'] + '" maxlength="1000"></textarea></label>';
-								}
-
-								popup.innerHTML += '<label class="advanced-views-survey__delete-option"><input type="checkbox" name="advanced-views-survey__delete-data"> ' + this.data['delete_data_option'] + '</label>';
-
-								popup.innerHTML += '<button class="advanced-views-survey__deactivate button button-primary">' + this.data['deactivate_label'] + '</button>';
-								popup.innerHTML += '<button class="advanced-views-survey__cancel button action">' + this.data['cancel_label'] + '</button>';
-
-								popup.classList.add('advanced-views-survey');
-
-								link.parentElement.append(popup);
-
-								popup.querySelectorAll('.advanced-views-survey__delete-option input').forEach(input => {
-									input.addEventListener('change', () => {
-										let isCheckboxChecked = input.checked;
-
-										popup.querySelector('.advanced-views-survey__deactivate').innerText = isCheckboxChecked ?
-											this.data['deactivate_and_delete_label'] :
-											this.data['deactivate_label'];
-									});
-								})
-
-								popup.querySelector('.advanced-views-survey__deactivate').addEventListener('click', (event) => {
-									// do not submit the bulk plugins form.
-									event.preventDefault();
-
-									let redirectLink = link.href;
-									let isWithDataDelete = popup.querySelector('.advanced-views-survey__delete-option input').checked;
-
-									if (this.data['is_with_survey']) {
-										let reason = popup.querySelector('input[name="advanced-views-survey__reason"]:checked');
-										reason = null !== reason ?
-											reason.value :
-											'';
-
-										redirectLink += '&advanced-views-reason=' + reason +
-											'&advanced-views-notes=' + popup.querySelector('textarea[name="advanced-views-survey__notes"]').value;
-									}
-
-									if (isWithDataDelete) {
-										redirectLink += '&advanced-views-delete-data=yes';
-									}
-
-									window.location.href = redirectLink;
-								});
-
-								popup.querySelector('.advanced-views-survey__cancel').addEventListener('click', () => {
-									// do not submit the bulk plugins form.
-									event.preventDefault();
-
-									popup.remove();
-									link.style.display = '';
-									this.toggleActiveClass()
-								});
-
-								this.toggleActiveClass()
-							}
-						}
-
-						new DeactivationSurveyPopup();
-					})();
-					<?php
-				}
+				fn() => $this->print_survey_script( $data )
 			)
 		);
+
+		Html_Renderer::print( $tags );
+	}
+
+	protected function print_survey_css(): void {
+		?>
+		/*hide other action links while survey is open,
+		otherwise may be links after deactivate (like 'loco translate') and it'll look weird*/
+		tr.advanced-views-survey-row .row-actions > *:not(.deactivate) {
+			display: none;
+		}
+
+		.advanced-views-survey {
+			color: black;
+			min-width: 350px;
+		}
+
+		.advanced-views-survey label {
+			margin: 10px 0;
+			display: block;
+		}
+
+		.advanced-views-survey label.advanced-views-survey__delete-option {
+			margin: 20px 0;
+		}
+
+		.advanced-views-survey textarea {
+			width: 100%;
+		}
+
+		.advanced-views-survey__cancel {
+			margin: 0 0 0 10px !important;
+		}
+		<?php
+	}
+
+	/**
+	 * @param array<string,mixed> $data
+	 */
+	protected function print_survey_script( array $data ): void {
+		?>
+		(function () {
+			class DeactivationSurveyPopup {
+				constructor() {
+					this.data = <?php echo wp_json_encode( $data ); ?>;
+					'loading' === document.readyState ?
+						document.addEventListener('DOMContentLoaded', this.init.bind(this)) :
+						this.init();
+				}
+
+				init() {
+					let deactivationLink = document.querySelector('.wp-list-table tr[data-plugin="' + this.data['plugin_slug'] + '"] .deactivate a');
+
+					if (null === deactivationLink) {
+						console.log('Advanced Views: deactivation link not found', slug);
+						return;
+					}
+
+					deactivationLink.addEventListener('click', this.showPopup.bind(this));
+				}
+
+				toggleActiveClass() {
+					document.querySelector('.wp-list-table tr[data-plugin="' + this.data['plugin_slug'] + '"]')
+						.classList.toggle('advanced-views-survey-row')
+				}
+
+				showPopup(event) {
+					event.preventDefault();
+
+					let link = event.target;
+
+					link.style.display = 'none'
+
+					let popup = document.createElement('div');
+
+					if (this.data['is_with_survey']) {
+						popup.innerHTML +=
+							'<p>' + this.data['message'] + '</p>';
+
+						for (let option in this.data['options']) {
+							popup.innerHTML += '<label><input type="radio" name="advanced-views-survey__reason" value="' + option + '"> ' + this.data['options'][option] + '</label>';
+						}
+
+						// notes textarea
+						popup.innerHTML += '<label><textarea name="advanced-views-survey__notes" rows="3" placeholder="' + this.data['notes_label'] + '" maxlength="1000"></textarea></label>';
+					}
+
+					popup.innerHTML += '<label class="advanced-views-survey__delete-option"><input type="checkbox" name="advanced-views-survey__delete-data"> ' + this.data['delete_data_option'] + '</label>';
+
+					popup.innerHTML += '<button class="advanced-views-survey__deactivate button button-primary">' + this.data['deactivate_label'] + '</button>';
+					popup.innerHTML += '<button class="advanced-views-survey__cancel button action">' + this.data['cancel_label'] + '</button>';
+
+					popup.classList.add('advanced-views-survey');
+
+					link.parentElement.append(popup);
+
+					popup.querySelectorAll('.advanced-views-survey__delete-option input').forEach(input => {
+						input.addEventListener('change', () => {
+							let isCheckboxChecked = input.checked;
+
+							popup.querySelector('.advanced-views-survey__deactivate').innerText = isCheckboxChecked ?
+								this.data['deactivate_and_delete_label'] :
+								this.data['deactivate_label'];
+						});
+					})
+
+					popup.querySelector('.advanced-views-survey__deactivate').addEventListener('click', (event) => {
+						// do not submit the bulk plugins form.
+						event.preventDefault();
+
+						let redirectLink = link.href;
+						let isWithDataDelete = popup.querySelector('.advanced-views-survey__delete-option input').checked;
+
+						if (this.data['is_with_survey']) {
+							let reason = popup.querySelector('input[name="advanced-views-survey__reason"]:checked');
+							reason = null !== reason ?
+								reason.value :
+								'';
+
+							redirectLink += '&advanced-views-reason=' + reason +
+								'&advanced-views-notes=' + popup.querySelector('textarea[name="advanced-views-survey__notes"]').value;
+						}
+
+						if (isWithDataDelete) {
+							redirectLink += '&advanced-views-delete-data=yes';
+						}
+
+						window.location.href = redirectLink;
+					});
+
+					popup.querySelector('.advanced-views-survey__cancel').addEventListener('click', () => {
+						// do not submit the bulk plugins form.
+						event.preventDefault();
+
+						popup.remove();
+						link.style.display = '';
+						this.toggleActiveClass()
+					});
+
+					this.toggleActiveClass()
+				}
+			}
+
+			new DeactivationSurveyPopup();
+		})();
+		<?php
 	}
 
 	protected function is_activated_after_another_deactivation(): bool {

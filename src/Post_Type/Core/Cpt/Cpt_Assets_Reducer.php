@@ -255,47 +255,50 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 	public function print_fallback_message(): void {
 		$settings_url = Plugin::get_admin_url( Settings_Page::SLUG );
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'p',
-					array( 'class' => 'acf-views__loading-fallback acf-views__loading-fallback--hidden' )
-				),
-				Html::stack(
-					__( 'Loading the Editor is taking longer than expected.', 'acf-views' ),
-					Html::tag( 'br' ),
-					__( 'If you still see this message after an extended period, please visit the', 'acf-views' ) . ' ',
-					Html::wrap(
-						Html::tag(
-							'a',
-							array(
-								'href'   => $settings_url,
-								'target' => '_blank',
-							)
-						),
-						__( 'Settings', 'acf-views' )
+		$tags = Html::wrap(
+			Html::tag(
+				'p',
+				array( 'class' => 'acf-views__loading-fallback acf-views__loading-fallback--hidden' )
+			),
+			Html::stack(
+				__( 'Loading the Editor is taking longer than expected.', 'acf-views' ),
+				Html::tag( 'br' ),
+				__( 'If you still see this message after an extended period, please visit the', 'acf-views' ) . ' ',
+				Html::wrap(
+					Html::tag(
+						'a',
+						array(
+							'href'   => $settings_url,
+							'target' => '_blank',
+						)
 					),
-					' ' . __( 'and disable the screen performance optimization.', 'acf-views' )
-				)
-			)
-		);
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'script',
-					array( 'type' => 'module' )
+					__( 'Settings', 'acf-views' )
 				),
-				function () {
-					?>
-				document.addEventListener('DOMContentLoaded', function () {
-					setTimeout(()=>{
-						document.querySelector('.acf-views__loading-fallback')
-							.classList.remove('acf-views__loading-fallback--hidden');
-					},15 * 1000)
-				});
-					<?php
-				}
+				' ' . __( 'and disable the screen performance optimization.', 'acf-views' )
 			)
 		);
+
+		Html_Renderer::print( $tags );
+
+		$print_fallback_script = function () {
+			?>
+		document.addEventListener('DOMContentLoaded', function () {
+			setTimeout(()=>{
+				document.querySelector('.acf-views__loading-fallback')
+					.classList.remove('acf-views__loading-fallback--hidden');
+			},15 * 1000)
+		});
+			<?php
+		};
+
+		$node = Html::wrap(
+			Html::tag(
+				'script',
+				array( 'type' => 'module' )
+			),
+			$print_fallback_script
+		);
+
+		Html_Renderer::print( $node );
 	}
 }

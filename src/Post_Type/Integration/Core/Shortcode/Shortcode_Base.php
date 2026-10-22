@@ -134,20 +134,20 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		$joined_attrs    = implode( ' ', $attrs );
 		$shortcode_debug = sprintf( '(%s %s)', $shortcode, $joined_attrs );
 
-		return Html_Renderer::render(
-			Html::wrap(
-				Html::tag(
-					'p',
-					array( 'style' => array( 'color' => 'red' ) )
-				),
-				sprintf(
-					'%s %s %s',
-					__( 'AVF shortcode render error:', 'acf-views' ),
-					$error,
-					$shortcode_debug
-				)
+		$tags = Html::wrap(
+			Html::tag(
+				'p',
+				array( 'style' => array( 'color' => 'red' ) )
+			),
+			sprintf(
+				'%s %s %s',
+				__( 'AVF shortcode render error:', 'acf-views' ),
+				$error,
+				$shortcode_debug
 			)
 		);
+
+		return Html_Renderer::render( $tags );
 	}
 
 	/**
@@ -198,13 +198,13 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		if ( $cpt_data->is_css_internal() ) {
 			$css_code   = $cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
 			$shadow_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
-			$shadow_css = Html_Renderer::render(
-				Html::wrap(
-					Html::tag( 'style' ),
-					// phpcs:ignore WordPress.Security.EscapeOutput
-					fn() => print( ':host{all: initial!important;}' . $shadow_css )
-				)
+			$tags = Html::wrap(
+				Html::tag( 'style' ),
+				// phpcs:ignore WordPress.Security.EscapeOutput
+				fn() => print( ':host{all: initial!important;}' . $shadow_css )
 			);
+
+			$shadow_css = Html_Renderer::render( $tags );
 		}
 
 		if ( Cpt_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $cpt_data->web_component ) {
@@ -292,15 +292,15 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 			'onMouseOut'  => "this.style.opacity='.5';this.style.textDecoration='none'",
 		);
 
-		return Html_Renderer::render(
-			Html::wrap(
-				Html::tag(
-					'a',
-					$attrs
-				),
-				$label
-			)
+		$tags = Html::wrap(
+			Html::tag(
+				'a',
+				$attrs
+			),
+			$label
 		);
+
+		return Html_Renderer::render( $tags );
 	}
 
 	public function get_rendered_items_count(): int {

@@ -94,19 +94,19 @@ class Post_Selection_Settings_Integration extends Acf_Integration_Base {
 			$this->plugin_cpt->labels()->singular_name()
 		);
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'a',
-					array(
-						'class'  => 'acf-views__add-new',
-						'target' => '_blank',
-						'href'   => $link,
-					)
-				),
-				$label
-			)
+		$tags = Html::wrap(
+			Html::tag(
+				'a',
+				array(
+					'class'  => 'acf-views__add-new',
+					'target' => '_blank',
+					'href'   => $link,
+				)
+			),
+			$label
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {

@@ -60,30 +60,31 @@ class Post_Selection_Markup {
 									->set_left_operand( $pages_var )
 									->set_comparison_greater()
 									->set_right_operand( $token_factory->literal( 1 ) );
-		$body       = $token_factory->html(
-			function () use ( $token_factory ) {
-				$pages_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
-											->add_item_path( 'pages_amount' );
 
-				Html_Renderer::print(
+		$print_pagination = function () use ( $token_factory ) {
+			$pages_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
+										->add_item_path( 'pages_amount' );
+
+			$tags = Html::stack(
+				fn() => $token_factory->formatter()
+									->new_line()
+									->tab( 2 ),
+				Html::wrap(
+					Html::tag( 'div' ),
 					Html::stack(
-						fn() => $token_factory->formatter()
-											->new_line()
-											->tab( 2 ),
-						Html::wrap(
-							Html::tag( 'div' ),
-							Html::stack(
-								fn() => print( "\r\n\t\t\t" ),
-								fn() => $token_factory->functions()
-														->paginate_links( array( 'total' => $pages_var ) ),
-								fn() => print( "\n\t\t" )
-							)
-						),
-						fn() => print( "\r\n\t" )
+						fn() => print( "\r\n\t\t\t" ),
+						fn() => $token_factory->functions()
+												->paginate_links( array( 'total' => $pages_var ) ),
+						fn() => print( "\n\t\t" )
 					)
-				);
-			}
-		);
+				),
+				fn() => print( "\r\n\t" )
+			);
+
+			Html_Renderer::print( $tags );
+		};
+
+		$body       = $token_factory->html( $print_pagination );
 
 		return $token_factory->if_branch()
 			->set_condition( $comparison )
@@ -111,10 +112,7 @@ class Post_Selection_Markup {
 				' ' . $external;
 		}
 
-		return array(
-			'tag'   => 'div',
-			'attrs' => array( 'class' => $classes ),
-		);
+		return Html::tag( 'div', array( 'class' => $classes ) );
 	}
 
 	/**
@@ -128,10 +126,7 @@ class Post_Selection_Markup {
 											->add_item_path( $variable_info['item_key'] );
 		}
 
-		return array(
-			'tag'   => $outer->tag,
-			'attrs' => $attrs,
-		);
+		return Html::tag( $outer->tag, $attrs );
 	}
 
 	/**
@@ -141,18 +136,22 @@ class Post_Selection_Markup {
 	 * @return Tag_Stack
 	 */
 	protected function wrap_with_tag( array $tag, int &$tabs_number, Token_Factory $token_factory, $inner ): array {
+		$print_opening_tab = function () use ( $token_factory, &$tabs_number ) {
+			$token_factory->formatter()->tab( ++$tabs_number );
+		};
+
+		$print_closing_tab = function () use ( $token_factory, &$tabs_number ) {
+			$token_factory->formatter()->tab( --$tabs_number );
+		};
+
 		return Html::stack(
-			function () use ( $token_factory, &$tabs_number ) {
-				$token_factory->formatter()->tab( ++$tabs_number );
-			},
+			$print_opening_tab,
 			Html::wrap(
 				$tag,
 				Html::stack(
 					fn() => $token_factory->formatter()->new_line(),
 					$inner,
-					function () use ( $token_factory, &$tabs_number ) {
-						$token_factory->formatter()->tab( --$tabs_number );
-					}
+					$print_closing_tab
 				)
 			),
 			fn() => $token_factory->formatter()->new_line()
@@ -315,12 +314,15 @@ class Post_Selection_Markup {
 		}
 
 		$new_line       = fn() => $token_factory->formatter()->new_line();
+
+		$print_start = function () use ( $token_factory, $tabs_number ) {
+			$token_factory->formatter()
+							->new_line( 2 )
+							->tab( $tabs_number );
+		};
+
 		$content        = Html::stack(
-			function () use ( $token_factory, $tabs_number ) {
-				$token_factory->formatter()
-								->new_line( 2 )
-								->tab( $tabs_number );
-			},
+			$print_start,
 			$if,
 			$new_line,
 			fn() => $this->print_extra_markup( $post_selection_settings ),
@@ -338,28 +340,29 @@ class Post_Selection_Markup {
 			) :
 			$content;
 
-		Html_Renderer::print(
-			Html::stack(
-				Html::wrap(
-					Html::tag(
-						$post_selection_settings->get_tag_name(),
-						array( 'class' => $this->root_class( $token_factory, $post_selection_settings ) )
-					),
-					$root_content
+		$tags = Html::stack(
+			Html::wrap(
+				Html::tag(
+					$post_selection_settings->get_tag_name(),
+					array( 'class' => $this->root_class( $token_factory, $post_selection_settings ) )
 				),
-				$new_line
-			)
+				$root_content
+			),
+			$new_line
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	protected function items_branch( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings, int &$tabs_number ): IF_Branch {
 		$post_ids_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 										->add_item_path( 'post_ids' );
-		$body         = $token_factory->html(
-			function () use ( $post_selection_settings, $token_factory, &$tabs_number ) {
-				$tabs_number = $this->print_items_markup( $token_factory, $post_selection_settings, $tabs_number );
-			}
-		);
+
+		$print_items = function () use ( $post_selection_settings, $token_factory, &$tabs_number ) {
+			$tabs_number = $this->print_items_markup( $token_factory, $post_selection_settings, $tabs_number );
+		};
+
+		$body         = $token_factory->html( $print_items );
 
 		return $token_factory->if_branch()
 			->set_condition( $post_ids_var )
@@ -367,11 +370,11 @@ class Post_Selection_Markup {
 	}
 
 	protected function not_found_branch( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings, int &$tabs_number ): IF_Branch {
-		$body = $token_factory->html(
-			function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
-				$tabs_number = $this->print_not_found_markup( $token_factory, $post_selection_settings, $tabs_number );
-			}
-		);
+		$print_not_found = function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
+			$tabs_number = $this->print_not_found_markup( $token_factory, $post_selection_settings, $tabs_number );
+		};
+
+		$body = $token_factory->html( $print_not_found );
 
 		return $token_factory->if_branch()
 			->set_body( $body );
@@ -384,11 +387,11 @@ class Post_Selection_Markup {
 	): int {
 		$item_outers = $this->front_assets->get_card_item_outers( $post_selection_settings );
 
-		$content = Html::stack(
-			function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
-				$tabs_number = $this->print_loop( $token_factory, $post_selection_settings, $tabs_number );
-			}
-		);
+		$print_loop = function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
+			$tabs_number = $this->print_loop( $token_factory, $post_selection_settings, $tabs_number );
+		};
+
+		$content = Html::stack( $print_loop );
 
 		// the innermost outer goes first.
 		foreach ( array_reverse( $item_outers ) as $outer ) {
@@ -402,23 +405,25 @@ class Post_Selection_Markup {
 			$content
 		);
 
-		Html_Renderer::print(
-			Html::stack(
-				fn() => $token_factory->formatter()
-									->new_line(),
-				$items_wrapper,
-				function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
-					if ( strlen( $post_selection_settings->no_posts_found_message ) > 0 ) {
-						$token_factory->formatter()
-										->tab( --$tabs_number );
-					}
+		$print_branches_end = function () use ( $token_factory, $post_selection_settings, &$tabs_number ) {
+			if ( strlen( $post_selection_settings->no_posts_found_message ) > 0 ) {
+				$token_factory->formatter()
+								->tab( --$tabs_number );
+			}
 
-					// endif in any case.
-					$token_factory->formatter()
-									->tab( --$tabs_number );
-				}
-			)
+			// endif in any case.
+			$token_factory->formatter()
+							->tab( --$tabs_number );
+		};
+
+		$tags = Html::stack(
+			fn() => $token_factory->formatter()
+								->new_line(),
+			$items_wrapper,
+			$print_branches_end
 		);
+
+		Html_Renderer::print( $tags );
 
 		return $tabs_number;
 	}
@@ -433,20 +438,20 @@ class Post_Selection_Markup {
 
 		$post_id_var = $token_factory->variable( 'post_id' );
 
-		$loop_body = $token_factory->html(
-			function () use ( $tabs_number, $post_selection_settings, $token_factory ) {
-				$tabs_number += 2;
+		$print_shortcode_block = function () use ( $tabs_number, $post_selection_settings, $token_factory ) {
+			$tabs_number += 2;
 
-				$token_factory->formatter()
-					->new_line()
-								->tab( $tabs_number );
+			$token_factory->formatter()
+				->new_line()
+							->tab( $tabs_number );
 
-				$this->print_shortcode( $post_selection_settings );
+			$this->print_shortcode( $post_selection_settings );
 
-				$token_factory->formatter()
-								->tab( --$tabs_number );
-			}
-		);
+			$token_factory->formatter()
+							->tab( --$tabs_number );
+		};
+
+		$loop_body = $token_factory->html( $print_shortcode_block );
 
 		$token_factory->formatter()
 						->tab( ++$tabs_number );
@@ -477,17 +482,17 @@ class Post_Selection_Markup {
 		$no_posts_message_class = Post_Selection_Settings::CLASS_GENERATION_NONE !== $post_selection_settings->classes_generation ?
 			sprintf( '%s__no-posts-message', $post_selection_settings->get_bem_name() ) :
 			'';
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'div',
-					array( 'class' => $no_posts_message_class )
-				),
-				$token_factory
-					->variable( Hard_Post_Selection_Cpt::variable_name() )
-					->add_item_path( 'no_posts_found_message' )
-			)
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				array( 'class' => $no_posts_message_class )
+			),
+			$token_factory
+				->variable( Hard_Post_Selection_Cpt::variable_name() )
+				->add_item_path( 'no_posts_found_message' )
 		);
+
+		Html_Renderer::print( $tags );
 
 		$token_factory->formatter()
 						->new_line()

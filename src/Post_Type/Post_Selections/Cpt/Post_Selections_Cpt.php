@@ -42,15 +42,15 @@ class Post_Selections_Cpt extends Cpt {
 		$singular_name = $labels->singular_name();
 		$plural_name   = $labels->plural_name();
 
-		$description  = Html_Renderer::render(
-			Html::stack(
-				__( 'Query posts, products or custom post types and display each result using a Layout with a', 'acf-views' ) . ' ',
-				self::link_tags( 'https://docs.advanced-views.com/getting-started/first-post-selection', $singular_name ),
-				'. ',
-				Html::tag( 'br' ),
-				__( 'Add filters, sorting and pagination as needed.', 'acf-views' )
-			)
+		$tags = Html::stack(
+			__( 'Query posts, products or custom post types and display each result using a Layout with a', 'acf-views' ) . ' ',
+			self::link_tags( 'https://docs.advanced-views.com/getting-started/first-post-selection', $singular_name ),
+			'. ',
+			Html::tag( 'br' ),
+			__( 'Add filters, sorting and pagination as needed.', 'acf-views' )
 		);
+
+		$description  = Html_Renderer::render( $tags );
 		$description .= $this->get_storage_label();
 
 		$cpt_args = array(

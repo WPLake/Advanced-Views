@@ -28,15 +28,15 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
 		$comment_attributes = array( 'class' => $this->get_field_class( 'comment', $markup_field_data ) );
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'div',
-					$comment_attributes
-				),
-				fn() => $this->print_comment_content( $item_id, $markup_field_data )
-			)
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				$comment_attributes
+			),
+			fn() => $this->print_comment_content( $item_id, $markup_field_data )
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	protected function print_comment_content( string $item_id, Template_Field_Data $markup_field_data ): void {
@@ -48,52 +48,56 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'div',
-					$author_attributes
-				),
-				function () use ( $token_factory, $markup_field_data, $item_id ) {
-					$token_factory->formatter()->new_line();
-					$markup_field_data->increment_and_print_tabs();
+		$print_author_name = function () use ( $token_factory, $markup_field_data, $item_id ) {
+			$token_factory->formatter()->new_line();
+			$markup_field_data->increment_and_print_tabs();
 
-					$var = $token_factory
-											->variable( $item_id )
-											->add_item_path( self::AUTHOR_NAME );
-					$var->display();
+			$var = $token_factory
+									->variable( $item_id )
+									->add_item_path( self::AUTHOR_NAME );
+			$var->display();
 
-					$token_factory->formatter()->new_line();
-					$markup_field_data->decrement_and_print_tabs();
-				}
-			)
+			$token_factory->formatter()->new_line();
+			$markup_field_data->decrement_and_print_tabs();
+		};
+
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				$author_attributes
+			),
+			$print_author_name
 		);
+
+		Html_Renderer::print( $tags );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->print_tabs();
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'div',
-					$content_attributes
-				),
-				function () use ( $token_factory, $markup_field_data ) {
-					$token_factory->formatter()->new_line();
-					$markup_field_data->increment_and_print_tabs();
+		$print_content = function () use ( $token_factory, $markup_field_data ) {
+			$token_factory->formatter()->new_line();
+			$markup_field_data->increment_and_print_tabs();
 
-					// escaped by default, even we query approved comments -
-					// reason is that HTML expectations in comments is rather an exception, than a rule.
-					$token_factory
-						->variable( 'comment_item' )
-						->add_item_path( self::CONTENT )
-						->display();
+			// escaped by default, even we query approved comments -
+			// reason is that HTML expectations in comments is rather an exception, than a rule.
+			$token_factory
+				->variable( 'comment_item' )
+				->add_item_path( self::CONTENT )
+				->display();
 
-					$token_factory->formatter()->new_line();
-					$markup_field_data->decrement_and_print_tabs();
-				}
-			)
+			$token_factory->formatter()->new_line();
+			$markup_field_data->decrement_and_print_tabs();
+		};
+
+		$node = Html::wrap(
+			Html::tag(
+				'div',
+				$content_attributes
+			),
+			$print_content
 		);
+
+		Html_Renderer::print( $node );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
@@ -219,36 +223,36 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 
 		$item_var = $token_factory->variable( 'comment_item' );
 
-		$body = $token_factory->html(
-			function () use ( $token_factory, $markup_field_data, $field_id, $item_var ) {
-				$token_factory->formatter()
+		$print_item_block = function () use ( $token_factory, $markup_field_data, $field_id, $item_var ) {
+			$token_factory->formatter()
+						->new_line();
+			$markup_field_data->increment_and_print_tabs();
+
+			$this->print_item( $field_id, $item_var->get_name(), $markup_field_data );
+
+			$token_factory->formatter()
+						->new_line();
+			$markup_field_data->decrement_and_print_tabs();
+		};
+
+		$body = $token_factory->html( $print_item_block );
+
+		$print_loop = function () use ( $token_factory, $markup_field_data, $value_var, $item_var, $body ) {
+			$token_factory->formatter()
 							->new_line();
-				$markup_field_data->increment_and_print_tabs();
+			$markup_field_data->print_tabs();
 
-				$this->print_item( $field_id, $item_var->get_name(), $markup_field_data );
+			$token_factory->loop()
+				->set_source_variable( $value_var )
+				->set_item_variable( $item_var )
+				->set_body( $body )
+				->display();
 
-				$token_factory->formatter()
+			$token_factory->formatter()
 							->new_line();
-				$markup_field_data->decrement_and_print_tabs();
-			}
-		);
+		};
 
-		return Html::stack(
-			function () use ( $token_factory, $markup_field_data, $value_var, $item_var, $body ) {
-				$token_factory->formatter()
-								->new_line();
-				$markup_field_data->print_tabs();
-
-				$token_factory->loop()
-					->set_source_variable( $value_var )
-					->set_item_variable( $item_var )
-					->set_body( $body )
-					->display();
-
-				$token_factory->formatter()
-								->new_line();
-			}
-		);
+		return Html::stack( $print_loop );
 	}
 
 	/**

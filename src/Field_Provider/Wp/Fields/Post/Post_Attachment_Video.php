@@ -37,11 +37,7 @@ class Post_Attachment_Video extends Markup_Field_Base {
 				)
 			),
 			Html::stack(
-				function () use ( $token_factory, $markup_field_data ) {
-					$token_factory->formatter()
-									->new_line();
-					$markup_field_data->increment_and_print_tabs();
-				},
+				fn() => $markup_field_data->print_new_line_and_increment_tabs(),
 				Html::tag(
 					'source',
 					array(
@@ -49,11 +45,7 @@ class Post_Attachment_Video extends Markup_Field_Base {
 						'type' => $type_var,
 					)
 				),
-				function () use ( $token_factory, $markup_field_data ) {
-					$token_factory->formatter()
-									->new_line();
-					$markup_field_data->decrement_and_print_tabs();
-				}
+				fn() => $markup_field_data->print_new_line_and_decrement_tabs()
 			)
 		);
 	}

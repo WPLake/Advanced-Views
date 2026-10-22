@@ -143,28 +143,22 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$icon_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-		Html_Renderer::print(
-			Html::stack(
-				function () use ( $token_factory, $markup_field_data ) {
-					$token_factory->formatter()->new_line();
-					$markup_field_data->increment_and_print_tabs();
-				},
-				Html::tag(
-					'i',
-					array(
-						'class' => array(
-							$this->get_field_class( 'icon', $markup_field_data ),
-							'dashicons',
-							$icon_var,
-						),
-					)
-				),
-				function () use ( $token_factory, $markup_field_data ) {
-					$token_factory->formatter()->new_line();
-					$markup_field_data->decrement_and_print_tabs();
-				}
-			)
+		$tags = Html::stack(
+			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
+			Html::tag(
+				'i',
+				array(
+					'class' => array(
+						$this->get_field_class( 'icon', $markup_field_data ),
+						'dashicons',
+						$icon_var,
+					),
+				)
+			),
+			fn() => $markup_field_data->print_new_line_and_decrement_tabs()
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	protected function print_icon_image_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
@@ -184,27 +178,21 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$src_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-		Html_Renderer::print(
-			Html::stack(
-				function () use ( $token_factory, $markup_field_data ) {
-					$token_factory->formatter()->new_line();
-					$markup_field_data->increment_and_print_tabs();
-				},
-				Html::tag(
-					'img',
-					array(
-						'class'   => $this->get_field_class( 'icon', $markup_field_data ),
-						'src'     => $src_var,
-						'loading' => 'lazy',
-						'alt'     => 'icon',
-					)
-				),
-				function () use ( $token_factory, $markup_field_data ) {
-					$token_factory->formatter()->new_line();
-					$markup_field_data->decrement_and_print_tabs();
-				}
-			)
+		$tags = Html::stack(
+			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
+			Html::tag(
+				'img',
+				array(
+					'class'   => $this->get_field_class( 'icon', $markup_field_data ),
+					'src'     => $src_var,
+					'loading' => 'lazy',
+					'alt'     => 'icon',
+				)
+			),
+			fn() => $markup_field_data->print_new_line_and_decrement_tabs()
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	protected static function type_comparison( string $type, string $field_id, Template_Field_Data $markup_field_data ): Comparison_Token {

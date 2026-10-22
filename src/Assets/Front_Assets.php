@@ -448,24 +448,24 @@ class Front_Assets extends Actor_Base implements Actor {
 				// introduce a styles variable, which allows to detect the styles root inside a webcomponent.
 				if ( $this->live_reloader_component->is_active() ) {
 					// the wrapper is necessary to make .parentElement work.
-					$all_css_code = Html_Renderer::render(
-						Html::wrap(
-							Html::tag(
-								'div',
-								array( 'hidden' => '' )
-							),
-							Html::stack(
+					$tags = Html::wrap(
+						Html::tag(
+							'div',
+							array( 'hidden' => '' )
+						),
+						Html::stack(
+							// @phpcs:ignore WordPress.Security.EscapeOutput
+							fn() => print( $all_css_code ),
+							Html::tag( 'avf-styles-location' ),
+							Html::wrap(
+								Html::tag( 'script' ),
 								// @phpcs:ignore WordPress.Security.EscapeOutput
-								fn() => print( $all_css_code ),
-								Html::tag( 'avf-styles-location' ),
-								Html::wrap(
-									Html::tag( 'script' ),
-									// @phpcs:ignore WordPress.Security.EscapeOutput
-									fn() => print( 'class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)' )
-								)
+								fn() => print( 'class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)' )
 							)
 						)
 					);
+
+					$all_css_code = Html_Renderer::render( $tags );
 				}
 
 				$page_content = str_replace( '<!--advanced-views:styles/custom-location-->', $all_css_code, $page_content );
@@ -640,15 +640,15 @@ class Front_Assets extends Actor_Base implements Actor {
 	 * @param array<string,string> $attrs
 	 */
 	protected function make_code_tag( string $tag, array $attrs, string $code ): string {
-		return Html_Renderer::render(
-			Html::wrap(
-				Html::tag(
-					$tag,
-					$attrs
-				),
-				// @phpcs:ignore WordPress.Security.EscapeOutput
-				fn() => print( $code )
-			)
-		) . "\n";
+		$tags = Html::wrap(
+			Html::tag(
+				$tag,
+				$attrs
+			),
+			// @phpcs:ignore WordPress.Security.EscapeOutput
+			fn() => print( $code )
+		);
+
+		return Html_Renderer::render( $tags ) . "\n";
 	}
 }

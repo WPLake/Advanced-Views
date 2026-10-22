@@ -37,37 +37,38 @@ class Gallery_Field extends Markup_Field_Base {
 		$source_var = $token_factory->variable( $field_id )
 									->add_item_path( self::VALUE );
 		$item_var   = $token_factory->variable( 'image_item' );
-		$loop_body  = $token_factory->html(
-			function () use ( $markup_field_data, $field_id, $item_var, $token_factory ) {
-				$token_factory->formatter()
+
+		$print_item_block = function () use ( $markup_field_data, $field_id, $item_var, $token_factory ) {
+			$token_factory->formatter()
+				->new_line();
+			$markup_field_data->increment_and_print_tabs();
+
+			$this->print_item( $field_id, $item_var->get_name(), $markup_field_data );
+
+			$token_factory->formatter()
 					->new_line();
-				$markup_field_data->increment_and_print_tabs();
+			$markup_field_data->decrement_and_print_tabs();
+		};
 
-				$this->print_item( $field_id, $item_var->get_name(), $markup_field_data );
-
-				$token_factory->formatter()
-						->new_line();
-				$markup_field_data->decrement_and_print_tabs();
-			}
-		);
+		$loop_body  = $token_factory->html( $print_item_block );
 
 		$loop = $token_factory->loop()
 						->set_source_variable( $source_var )
 						->set_item_variable( $item_var )
 						->set_body( $loop_body );
 
-		return Html::stack(
-			function () use ( $token_factory, $markup_field_data, $loop ) {
-				$token_factory->formatter()
-								->new_line();
-				$markup_field_data->print_tabs();
+		$print_loop = function () use ( $token_factory, $markup_field_data, $loop ) {
+			$token_factory->formatter()
+							->new_line();
+			$markup_field_data->print_tabs();
 
-				$loop->display();
+			$loop->display();
 
-				$token_factory->formatter()
-								->new_line();
-			}
-		);
+			$token_factory->formatter()
+							->new_line();
+		};
+
+		return Html::stack( $print_loop );
 	}
 
 	/**

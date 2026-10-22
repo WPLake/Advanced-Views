@@ -106,15 +106,15 @@ class Live_Reloader_Component extends Actor_Base implements Actor {
 			'isGutenbergBlock'   => $is_gutenberg_block,
 		);
 
-		return Html_Renderer::render(
-			Html::tag(
-				'avf-live-reloader',
-				array(
-					'hidden'       => '',
-					'data-element' => (string) wp_json_encode( $element_data ),
-				)
+		$tags = Html::tag(
+			'avf-live-reloader',
+			array(
+				'hidden'       => '',
+				'data-element' => (string) wp_json_encode( $element_data ),
 			)
 		);
+
+		return Html_Renderer::render( $tags );
 	}
 
 	public function maybe_enqueue_reloading_js(): void {

@@ -30,10 +30,7 @@ final class Wrapper_Printer {
 	): array {
 		$classes = Wrapper_Class_Resolver::resolve_row_classes( $layout_settings, $field_name_class, $type, $row_class );
 
-		return array(
-			'tag'   => $tag,
-			'attrs' => array( 'class' => $classes ),
-		);
+		return Html::tag( $tag, array( 'class' => $classes ) );
 	}
 
 	/**
@@ -62,10 +59,7 @@ final class Wrapper_Printer {
 			$attr_class
 		);
 
-		return array(
-			'tag'   => $tag,
-			'attrs' => array_merge( array( 'class' => $classes ), $attrs ),
-		);
+		return Html::tag( $tag, array_merge( array( 'class' => $classes ), $attrs ) );
 	}
 
 	/**
@@ -84,28 +78,34 @@ final class Wrapper_Printer {
 		bool $is_new_line_after_open,
 		$inner
 	): array {
-		return Html::stack(
-			static function () use ( &$tabs_number, $is_new_line_before ) {
-				if ( $is_new_line_before ) {
-					Format_Token::next_line();
-				}
+		$print_opening_tabs = static function () use ( &$tabs_number, $is_new_line_before ) {
+			if ( $is_new_line_before ) {
+				Format_Token::next_line();
+			}
 
-				Format_Token::tabulation( $tabs_number );
-			},
+			Format_Token::tabulation( $tabs_number );
+		};
+
+		$print_inner_start = static function () use ( &$tabs_number, $is_new_line_after_open ) {
+			if ( $is_new_line_after_open ) {
+				Format_Token::next_line();
+			}
+
+			++$tabs_number;
+		};
+
+		$print_closing_tabs = static function () use ( &$tabs_number ) {
+			Format_Token::tabulation( --$tabs_number );
+		};
+
+		return Html::stack(
+			$print_opening_tabs,
 			Html::wrap(
 				$tag,
 				Html::stack(
-					static function () use ( &$tabs_number, $is_new_line_after_open ) {
-						if ( $is_new_line_after_open ) {
-							Format_Token::next_line();
-						}
-
-						++$tabs_number;
-					},
+					$print_inner_start,
 					$inner,
-					static function () use ( &$tabs_number ) {
-						Format_Token::tabulation( --$tabs_number );
-					}
+					$print_closing_tabs
 				)
 			),
 			static fn() => Format_Token::next_line()

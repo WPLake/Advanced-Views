@@ -274,13 +274,13 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	 * @return Tag
 	 */
 	protected function nonce_tags(): array {
-		return array(
-			'tag'   => 'input',
-			'attrs' => array(
+		return Html::tag(
+			'input',
+			array(
 				'type'  => 'hidden',
 				'name'  => '_av-nonce',
 				'value' => wp_create_nonce( self::NONCE_PUSH ),
-			),
+			)
 		);
 	}
 

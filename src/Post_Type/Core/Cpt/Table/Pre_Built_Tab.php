@@ -52,6 +52,30 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 
 	abstract protected function print_tab_description_middle(): void;
 
+	protected function print_tab_description(): void {
+		$tags = Html::stack(
+			__( 'Import pre-built components.', 'acf-views' ),
+			Html::tag( 'br' ),
+			fn() => $this->print_tab_description_middle(),
+			Html::tag( 'br' ),
+			__( 'Hover on the title and click Import.', 'acf-views' ),
+			' ',
+			Html::wrap(
+				Html::tag(
+					'a',
+					array(
+						'target' => '_blank',
+						'href'   => 'https://docs.advanced-views.com/layouts/features/pre-built-components',
+					)
+				),
+				__( 'Read more', 'acf-views' )
+			),
+			'.'
+		);
+
+		Html_Renderer::print( $tags );
+	}
+
 	protected function get_tab(): ?Tab_Data {
 		$all_pre_built_items = $this->external_cpt_settings_storage->get_all();
 
@@ -80,29 +104,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		$tab_data = new Tab_Data( $this );
 		$tab_data->set_name( self::NAME );
 		$tab_data->set_label( __( 'Pre-built components', 'acf-views' ) );
-		$tab_data->set_description_callback(
-			fn() => Html_Renderer::print(
-				Html::stack(
-					__( 'Import pre-built components.', 'acf-views' ),
-					Html::tag( 'br' ),
-					fn() => $this->print_tab_description_middle(),
-					Html::tag( 'br' ),
-					__( 'Hover on the title and click Import.', 'acf-views' ),
-					' ',
-					Html::wrap(
-						Html::tag(
-							'a',
-							array(
-								'target' => '_blank',
-								'href'   => 'https://docs.advanced-views.com/layouts/features/pre-built-components',
-							)
-						),
-						__( 'Read more', 'acf-views' )
-					),
-					'.'
-				)
-			)
-		);
+		$tab_data->set_description_callback( fn() => $this->print_tab_description() );
 		$tab_data->set_label_in_brackets( (string) $items_count );
 		$tab_data->set_bulk_actions( $this->get_bulk_actions() );
 		$tab_data->set_total_items_count( $items_count );

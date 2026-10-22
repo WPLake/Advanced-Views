@@ -29,27 +29,29 @@ class Select_Field extends List_Field {
 		$token_factory  = $markup_field_data->get_token_factory();
 		$div_attributes = array( 'class' => $this->get_field_class( 'choice', $markup_field_data ) );
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'div',
-					$div_attributes
-				),
-				function () use ( $token_factory, $markup_field_data, $twig_name ) {
-					$token_factory->formatter()
-									->new_line();
-					$markup_field_data->increment_and_print_tabs();
+		$print_title = function () use ( $token_factory, $markup_field_data, $twig_name ) {
+			$token_factory->formatter()
+							->new_line();
+			$markup_field_data->increment_and_print_tabs();
 
-					$token_factory->variable( $twig_name )
-									->add_item_path( self::TITLE )
-									->display();
+			$token_factory->variable( $twig_name )
+							->add_item_path( self::TITLE )
+							->display();
 
-					$token_factory->formatter()
-									->new_line();
-					$markup_field_data->decrement_and_print_tabs();
-				}
-			)
+			$token_factory->formatter()
+							->new_line();
+			$markup_field_data->decrement_and_print_tabs();
+		};
+
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				$div_attributes
+			),
+			$print_title
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	/**

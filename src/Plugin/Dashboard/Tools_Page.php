@@ -161,45 +161,48 @@ final class Tools_Page extends Actor_Base implements Actor {
 
 		$redirect_url = Plugin::get_admin_url( self::SLUG ) .
 						sprintf( '&message=1&type=export&_views=%s&_cards=%s', $count_of_view_ids, $count_of_card_ids );
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag( 'script' ),
-				function () use ( $redirect_url ) {
-					?>
-					(function () {
-						function save() {
-							const data = <?php echo wp_json_encode( $this->export_data ); ?>;
 
-							let date = new Date().toISOString().slice(0, 10);
-							let timestamp = new Date().getTime();
-							// .txt to pass WP Media library
-							let fileName = `advanced-views-export-${date}-${timestamp}.txt`;
-							// add some text prefix to avoid WP Media library to think it's a JSON
-							let content = "Advanced Views:" + JSON.stringify(data);
+		$print_download_script = function () use ( $redirect_url ) {
+			?>
+			(function () {
+				function save() {
+					const data = <?php echo wp_json_encode( $this->export_data ); ?>;
 
-							const file = new File([content], fileName, {
-								type: 'application/json',
-							})
+					let date = new Date().toISOString().slice(0, 10);
+					let timestamp = new Date().getTime();
+					// .txt to pass WP Media library
+					let fileName = `advanced-views-export-${date}-${timestamp}.txt`;
+					// add some text prefix to avoid WP Media library to think it's a JSON
+					let content = "Advanced Views:" + JSON.stringify(data);
 
-							let toolsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
+					const file = new File([content], fileName, {
+						type: 'application/json',
+					})
 
-							const a = document.createElement('a');
+					let toolsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
 
-							a.href = URL.createObjectURL(file);
-							a.download = fileName;
-							a.click();
+					const a = document.createElement('a');
 
-							window.location.href = toolsUrl;
-						}
+					a.href = URL.createObjectURL(file);
+					a.download = fileName;
+					a.click();
 
-						'loading' === document.readyState ?
-							window.document.addEventListener('DOMContentLoaded', save) :
-							save();
-					}())
-					<?php
+					window.location.href = toolsUrl;
 				}
-			)
+
+				'loading' === document.readyState ?
+					window.document.addEventListener('DOMContentLoaded', save) :
+					save();
+			}())
+			<?php
+		};
+
+		$tags = Html::wrap(
+			Html::tag( 'script' ),
+			$print_download_script
 		);
+
+		Html_Renderer::print( $tags );
 		exit;
 	}
 
@@ -506,16 +509,16 @@ final class Tools_Page extends Actor_Base implements Actor {
 			$post_selection_labels->plural_name()
 		);
 
-		return Html_Renderer::render(
-			Html::stack(
-				$summary,
-				Html::tag( 'br' ),
-				$this->imported_items_tags( $views_label, $success_view_ids ),
-				$this->imported_items_tags( $cards_label, $success_card_ids ),
-				$this->failed_items_tags( $wrong_views_label, $fail_view_unique_ids ),
-				$this->failed_items_tags( $wrong_cards_label, $fail_card_unique_ids )
-			)
+		$tags = Html::stack(
+			$summary,
+			Html::tag( 'br' ),
+			$this->imported_items_tags( $views_label, $success_view_ids ),
+			$this->imported_items_tags( $cards_label, $success_card_ids ),
+			$this->failed_items_tags( $wrong_views_label, $fail_view_unique_ids ),
+			$this->failed_items_tags( $wrong_cards_label, $fail_card_unique_ids )
 		);
+
+		return Html_Renderer::render( $tags );
 	}
 
 	/**

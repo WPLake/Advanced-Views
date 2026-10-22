@@ -152,16 +152,16 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			return;
 		}
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'div',
-					array( 'class' => 'notice notice-success' )
-				),
-				Html::tag( 'p' ),
-				__( 'Item successfully cloned.', 'acf-views' )
-			)
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				array( 'class' => 'notice notice-success' )
+			),
+			Html::tag( 'p' ),
+			__( 'Item successfully cloned.', 'acf-views' )
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	protected function print_post_type_description( WP_Post_Type $wp_post_type ): void {
@@ -172,25 +172,25 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			null;
 
 		if ( null !== $description_callback ) {
-			Html_Renderer::print(
-				Html::wrap(
-					Html::tag( 'p' ),
-					$description_callback
-				)
+			$tags = Html::wrap(
+				Html::tag( 'p' ),
+				$description_callback
 			);
+
+			Html_Renderer::print( $tags );
 
 			return;
 		}
 
 		if ( '' !== $wp_post_type->description ) {
-			Html_Renderer::print(
-				Html::wrap(
-					Html::tag( 'p' ),
-					// don't use esc_html as it contains links.
-					// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					fn() => print( $wp_post_type->description )
-				)
+			$node = Html::wrap(
+				Html::tag( 'p' ),
+				// don't use esc_html as it contains links.
+				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				fn() => print( $wp_post_type->description )
 			);
+
+			Html_Renderer::print( $node );
 		}
 	}
 
@@ -221,18 +221,18 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 				) :
 				Html::stack();
 
-			$views[ $tab->get_name() ] = Html_Renderer::render(
-				Html::wrap(
-					Html::tag(
-						'a',
-						$attrs
-					),
-					Html::stack(
-						$tab->get_label(),
-						$count_span
-					)
+			$tab_link = Html::wrap(
+				Html::tag(
+					'a',
+					$attrs
+				),
+				Html::stack(
+					$tab->get_label(),
+					$count_span
 				)
 			);
+
+			$views[ $tab->get_name() ] = Html_Renderer::render( $tab_link );
 
 			if ( false === $is_tab_active ) {
 				continue;
@@ -261,12 +261,12 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			__( 'Search for name.', 'acf-views' );
 
 		// only primary search is available for custom items.
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag( 'style' ),
-				fn() => print( sprintf( '#posts-filter .search-box::after{content:"%s";}', esc_html( $label ) ) )
-			)
+		$tags = Html::wrap(
+			Html::tag( 'style' ),
+			fn() => print( sprintf( '#posts-filter .search-box::after{content:"%s";}', esc_html( $label ) ) )
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	/**
@@ -373,15 +373,15 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			)
 		);
 
-		$actions['clone'] = Html_Renderer::render(
-			Html::wrap(
-				Html::tag(
-					'a',
-					array( 'href' => $clone_link )
-				),
-				__( 'Clone', 'acf-views' )
-			)
+		$tags = Html::wrap(
+			Html::tag(
+				'a',
+				array( 'href' => $clone_link )
+			),
+			__( 'Clone', 'acf-views' )
 		);
+
+		$actions['clone'] = Html_Renderer::render( $tags );
 		$actions['trash'] = $trash;
 
 		return $actions;
@@ -449,35 +449,35 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			$rows[] = Html::wrap( Html::tag( 'tr' ), Html::stack( ...$cells ) );
 		}
 
-		Html_Renderer::print(
-			Html::stack(
-				// hide the origin items until the custom items are pasted via JS.
-				Html::wrap(
-					Html::tag( 'style' ),
-					fn() => print( '#the-list{opacity: 0; transition: opacity ease .1s;}' )
+		$tags = Html::stack(
+			// hide the origin items until the custom items are pasted via JS.
+			Html::wrap(
+				Html::tag( 'style' ),
+				fn() => print( '#the-list{opacity: 0; transition: opacity ease .1s;}' )
+			),
+			Html::wrap(
+				Html::tag(
+					'div',
+					array( 'style' => array( 'display' => 'none' ) )
 				),
-				Html::wrap(
-					Html::tag(
-						'div',
-						array( 'style' => array( 'display' => 'none' ) )
-					),
-					Html::tag( 'table' ),
-					Html::tag(
-						'tbody',
-						array( 'id' => 'acf-views-the-list' )
-					),
-					Html::stack( ...$rows )
+				Html::tag( 'table' ),
+				Html::tag(
+					'tbody',
+					array( 'id' => 'acf-views-the-list' )
 				),
-				Html::wrap(
-					Html::tag(
-						'script',
-						array( 'type' => 'text/javascript' )
-					),
-					// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					fn() => print( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' )
-				)
+				Html::stack( ...$rows )
+			),
+			Html::wrap(
+				Html::tag(
+					'script',
+					array( 'type' => 'text/javascript' )
+				),
+				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				fn() => print( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' )
 			)
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	public function printTableColumn( string $column_name, int $post_id ): void {

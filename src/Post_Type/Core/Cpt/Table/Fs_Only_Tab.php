@@ -56,35 +56,35 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 		$tab_data->set_label( __( 'FS only', 'acf-views' ) );
 		$tab_data->set_description_callback(
 			function (): void {
-				Html_Renderer::print(
-					Html::stack(
-						__(
-							'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
-							'acf-views'
+				$tags = Html::stack(
+					__(
+						'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
+						'acf-views'
+					),
+					Html::tag( 'br' ),
+					__(
+						'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
+						'acf-views'
+					),
+					Html::tag( 'br' ),
+					__(
+						'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
+						'acf-views'
+					),
+					' ',
+					Html::wrap(
+						Html::tag(
+							'a',
+							array(
+								'target' => '_blank',
+								'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
+							)
 						),
-						Html::tag( 'br' ),
-						__(
-							'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
-							'acf-views'
-						),
-						Html::tag( 'br' ),
-						__(
-							'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
-							'acf-views'
-						),
-						' ',
-						Html::wrap(
-							Html::tag(
-								'a',
-								array(
-									'target' => '_blank',
-									'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
-								)
-							),
-							__( 'Read more', 'acf-views' )
-						)
+						__( 'Read more', 'acf-views' )
 					)
 				);
+
+				Html_Renderer::print( $tags );
 			}
 		);
 		$tab_data->set_label_in_brackets( (string) $fs_only_items_count );
@@ -172,24 +172,24 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 			);
 		}
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'div',
-					array( 'class' => 'notice notice-success' )
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				array( 'class' => 'notice notice-success' )
+			),
+			Html::stack(
+				Html::wrap(
+					Html::tag( 'p' ),
+					count( $ids ) . ' ' . __( 'items successfully synced', 'acf-views' )
 				),
-				Html::stack(
-					Html::wrap(
-						Html::tag( 'p' ),
-						count( $ids ) . ' ' . __( 'items successfully synced', 'acf-views' )
-					),
-					Html::wrap(
-						Html::tag( 'p' ),
-						Html::stack( ...$item_links )
-					)
+				Html::wrap(
+					Html::tag( 'p' ),
+					Html::stack( ...$item_links )
 				)
 			)
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {

@@ -95,20 +95,20 @@ class Admin_Pages extends Actor_Base implements Actor {
 			Avf_User::get_manage_capability(),
 			self::PAGE_DOCS,
 			function (): void {
-				Html_Renderer::print(
-					Html::tag(
-						'iframe',
-						array(
-							'src'   => External_Links::DOCS_URL,
-							'style' => array(
-								'border'      => '0',
-								'width'       => 'calc(100% + 20px)',
-								'height'      => 'calc(100vh - 32px - 65px)',
-								'margin-left' => '-20px',
-							),
-						)
+				$tags = Html::tag(
+					'iframe',
+					array(
+						'src'   => External_Links::DOCS_URL,
+						'style' => array(
+							'border'      => '0',
+							'width'       => 'calc(100% + 20px)',
+							'height'      => 'calc(100vh - 32px - 65px)',
+							'margin-left' => '-20px',
+						),
 					)
 				);
+
+				Html_Renderer::print( $tags );
 			}
 		);
 
@@ -337,46 +337,48 @@ class Admin_Pages extends Actor_Base implements Actor {
 	 */
 	protected function get_cpt_links(): array {
 		return array_map(
-			fn( Plugin_Cpt $plugin_cpt ) => Html_Renderer::render(
-				Html::wrap(
-					Html::tag(
-						'a',
-						array(
-							'href'   => Plugin::get_admin_url( '', $plugin_cpt->cpt_name() ),
-							'target' => '_self',
-						)
-					),
-					$plugin_cpt->labels()->plural_name()
-				)
-			),
+			fn( Plugin_Cpt $plugin_cpt ) => $this->render_cpt_link( $plugin_cpt ),
 			$this->plugin_cpts
 		);
+	}
+
+	protected function render_cpt_link( Plugin_Cpt $plugin_cpt ): string {
+		$link = Html::wrap(
+			Html::tag(
+				'a',
+				array(
+					'href'   => Plugin::get_admin_url( '', $plugin_cpt->cpt_name() ),
+					'target' => '_self',
+				)
+			),
+			$plugin_cpt->labels()->plural_name()
+		);
+
+		return Html_Renderer::render( $link );
 	}
 
 	/**
 	 * @return string[]
 	 */
 	protected function get_promo_links(): array {
-		return array(
-			Html_Renderer::render(
-				Html::wrap(
-					Html::tag(
-						'a',
-						array(
-							'href'        => External_Links::PRO_VERSION_URL,
-							'target'      => '_blank',
-							'style'       => array(
-								'color'       => '#d46f4d',
-								'font-weight' => 'bold',
-								'transition'  => 'opacity 0.3s',
-							),
-							'onmouseover' => 'this.style.opacity=0.7',
-							'onmouseout'  => 'this.style.opacity=1',
-						)
+		$link = Html::wrap(
+			Html::tag(
+				'a',
+				array(
+					'href'        => External_Links::PRO_VERSION_URL,
+					'target'      => '_blank',
+					'style'       => array(
+						'color'       => '#d46f4d',
+						'font-weight' => 'bold',
+						'transition'  => 'opacity 0.3s',
 					),
-					__( 'Get Pro', 'acf-views' )
+					'onmouseover' => 'this.style.opacity=0.7',
+					'onmouseout'  => 'this.style.opacity=1',
 				)
 			),
+			__( 'Get Pro', 'acf-views' )
 		);
+
+		return array( Html_Renderer::render( $link ) );
 	}
 }

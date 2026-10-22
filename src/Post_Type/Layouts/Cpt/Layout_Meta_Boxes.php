@@ -192,12 +192,12 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				$this->selections_cpt->labels()->plural_name()
 			);
 
-			Html_Renderer::print(
-				Html::wrap(
-					Html::tag( 'p' ),
-					$message
-				)
+			$node = Html::wrap(
+				Html::tag( 'p' ),
+				$message
 			);
+
+			Html_Renderer::print( $node );
 		}
 
 		$last_item_index = count( $related_cards ) - 1;
@@ -218,12 +218,12 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 
 		if ( array() !== $related_cards ||
 			$is_list_look ) {
-			Html_Renderer::print(
-				Html::stack(
-					Html::tag( 'br' ),
-					Html::tag( 'br' )
-				)
+			$markup_tags = Html::stack(
+				Html::tag( 'br' ),
+				Html::tag( 'br' )
 			);
+
+			Html_Renderer::print( $markup_tags );
 		}
 
 		$post_id = $layout_settings->get_post_id();

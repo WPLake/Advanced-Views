@@ -221,18 +221,18 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			) :
 			Html::stack();
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'a',
-					$link_attrs
-				),
-				Html::stack(
-					$icon_tag,
-					$label
-				)
+		$tags = Html::wrap(
+			Html::tag(
+				'a',
+				$link_attrs
+			),
+			Html::stack(
+				$icon_tag,
+				$label
 			)
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	/**
@@ -290,9 +290,9 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			echo '';
 		}
 
-		Html_Renderer::print(
-			Html::stack( Html::tag( 'br' ), Html::tag( 'br' ) )
-		);
+		$tags = Html::stack( Html::tag( 'br' ), Html::tag( 'br' ) );
+
+		Html_Renderer::print( $tags );
 
 		$this->print_add_new_link( $wp_post->ID, '', $add_new_link_args );
 	}
@@ -339,18 +339,18 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 				continue;
 			}
 
-			$views_with_invalid_custom_markup[] = Html_Renderer::render(
-				Html::wrap(
-					Html::tag(
-						'a',
-						array(
-							'target' => '_blank',
-							'href'   => $related_view_data->get_edit_post_link(),
-						)
-					),
-					$related_view_data->title
-				)
+			$tags = Html::wrap(
+				Html::tag(
+					'a',
+					array(
+						'target' => '_blank',
+						'href'   => $related_view_data->get_edit_post_link(),
+					)
+				),
+				$related_view_data->title
 			);
+
+			$views_with_invalid_custom_markup[] = Html_Renderer::render( $tags );
 		}
 
 		return $views_with_invalid_custom_markup;
@@ -490,9 +490,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 
 				$this->update_markup_preview( $related_views );
 
-				$related_view_links_with_invalid_custom_markup = $this->get_related_view_links_with_invalid_custom_markup(
-					$related_views
-				);
+				$related_view_links_with_invalid_custom_markup = $this->get_related_view_links_with_invalid_custom_markup( $related_views );
 
 				if ( array() === $related_view_links_with_invalid_custom_markup ) {
 					return $messages;
@@ -510,26 +508,26 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 					$links[] = fn() => print( $link );
 				}
 
-				$extra = Html_Renderer::render(
-					Html::stack(
-						Html::tag( 'br' ),
-						Html::tag( 'br' ),
-						Html::wrap(
-							Html::tag(
-								'span',
-								array( 'style' => array( 'color' => '#dc3232' ) )
-							),
-							sprintf(
-								'%s %s:',
-								count( $related_view_links_with_invalid_custom_markup ),
-								__( 'Views associated with this group contain invalid Custom Markup', 'acf-views' )
-							)
+				$tags = Html::stack(
+					Html::tag( 'br' ),
+					Html::tag( 'br' ),
+					Html::wrap(
+						Html::tag(
+							'span',
+							array( 'style' => array( 'color' => '#dc3232' ) )
 						),
-						Html::tag( 'br' ),
-						Html::tag( 'br' ),
-						...$links
-					)
+						sprintf(
+							'%s %s:',
+							count( $related_view_links_with_invalid_custom_markup ),
+							__( 'Views associated with this group contain invalid Custom Markup', 'acf-views' )
+						)
+					),
+					Html::tag( 'br' ),
+					Html::tag( 'br' ),
+					...$links
 				);
+
+				$extra = Html_Renderer::render( $tags );
 
 				$messages[ $this->get_vendor_post_type() ][1] .= $extra;
 

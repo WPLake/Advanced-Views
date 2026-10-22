@@ -234,15 +234,15 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			$paragraphs[] = $this->links_paragraph( $group_links );
 		}
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'div',
-					array( 'class' => 'notice notice-success' )
-				),
-				Html::stack( ...$paragraphs )
-			)
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				array( 'class' => 'notice notice-success' )
+			),
+			Html::stack( ...$paragraphs )
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	protected function get_cpt_data_storage(): Cpt_Settings_Storage {

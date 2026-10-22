@@ -60,8 +60,8 @@ final class Row_Title_Printer {
 			$action_label
 		);
 
-		Html_Renderer::print(
-			Html::stack( $title_tags, $action_tags )
-		);
+		$tags = Html::stack( $title_tags, $action_tags );
+
+		Html_Renderer::print( $tags );
 	}
 }

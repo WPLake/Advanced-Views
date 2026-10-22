@@ -100,15 +100,15 @@ abstract class Instance {
 			ucfirst( $this->cpt_settings->template_engine )
 		);
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'p',
-					array( 'style' => array( 'color' => 'red' ) )
-				),
-				$message
-			)
+		$tags = Html::wrap(
+			Html::tag(
+				'p',
+				array( 'style' => array( 'color' => 'red' ) )
+			),
+			$message
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	/**

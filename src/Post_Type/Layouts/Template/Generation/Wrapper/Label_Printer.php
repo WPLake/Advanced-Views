@@ -25,23 +25,27 @@ final class Label_Printer {
 		$token_factory->formatter()
 						->tab( $tabs_number );
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'p',
-					array( 'class' => self::resolve_classes( $layout_settings, $field_settings ) )
-				),
-				Html::stack(
-					function () use ( $token_factory, &$tabs_number ) {
-						self::print_variable_opening( $token_factory, $tabs_number );
-					},
-					fn() => self::print_variable( $token_factory, $field_id ),
-					function () use ( $token_factory, &$tabs_number ) {
-						self::print_variable_closing( $token_factory, $tabs_number );
-					}
-				)
+		$print_opening = function () use ( $token_factory, &$tabs_number ) {
+			self::print_variable_opening( $token_factory, $tabs_number );
+		};
+
+		$print_closing = function () use ( $token_factory, &$tabs_number ) {
+			self::print_variable_closing( $token_factory, $tabs_number );
+		};
+
+		$tags = Html::wrap(
+			Html::tag(
+				'p',
+				array( 'class' => self::resolve_classes( $layout_settings, $field_settings ) )
+			),
+			Html::stack(
+				$print_opening,
+				fn() => self::print_variable( $token_factory, $field_id ),
+				$print_closing
 			)
 		);
+
+		Html_Renderer::print( $tags );
 
 		Format_Token::next_line();
 	}

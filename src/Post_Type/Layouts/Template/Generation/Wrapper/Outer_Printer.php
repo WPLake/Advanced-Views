@@ -16,6 +16,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 
 /**
  * @phpstan-import-type Tag_Stack from Html
+ * @phpstan-import-type Tag from Html
  */
 final class Outer_Printer {
 	/**
@@ -76,7 +77,7 @@ final class Outer_Printer {
 	}
 
 	/**
-	 * @return array{tag:string,attrs:array<string,mixed>}
+	 * @return Tag
 	 */
 	protected static function outer_tag( Html_Wrapper $outer, Token_Factory $token_factory ): array {
 		$attrs = $outer->attrs;
@@ -86,9 +87,6 @@ final class Outer_Printer {
 											->add_item_path( $variable_info['item_key'] );
 		}
 
-		return array(
-			'tag'   => $outer->tag,
-			'attrs' => $attrs,
-		);
+		return Html::tag( $outer->tag, $attrs );
 	}
 }

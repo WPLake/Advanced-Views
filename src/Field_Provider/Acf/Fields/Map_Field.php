@@ -230,28 +230,30 @@ class Map_Field extends Map_Field_Base {
 														->add_item_path( $key );
 		}
 
+		$print_content = function () use ( $factory, $markup_field_data, $field_id, $field_meta, $field_data ) {
+			$factory->formatter()
+				->new_line();
+			$markup_field_data->increment_and_print_tabs();
+
+			if ( $field_meta->is_multiple() ) {
+				$this->print_item_loop( $field_id, $markup_field_data );
+			} elseif ( $field_data->is_visible_when_empty ) {
+				$this->print_conditional_item( $field_id, $field_id, $markup_field_data );
+			} else {
+				$this->print_inner_item( $field_id, $field_id, $markup_field_data );
+			}
+
+			$factory->formatter()
+				->new_line();
+			$markup_field_data->decrement_and_print_tabs();
+		};
+
 		return Html::wrap(
 			Html::tag(
 				'div',
 				$div_attributes
 			),
-			function () use ( $factory, $markup_field_data, $field_id, $field_meta, $field_data ) {
-				$factory->formatter()
-					->new_line();
-				$markup_field_data->increment_and_print_tabs();
-
-				if ( $field_meta->is_multiple() ) {
-					$this->print_item_loop( $field_id, $markup_field_data );
-				} elseif ( $field_data->is_visible_when_empty ) {
-					$this->print_conditional_item( $field_id, $field_id, $markup_field_data );
-				} else {
-					$this->print_inner_item( $field_id, $field_id, $markup_field_data );
-				}
-
-				$factory->formatter()
-					->new_line();
-				$markup_field_data->decrement_and_print_tabs();
-			}
+			$print_content
 		);
 	}
 
@@ -262,20 +264,20 @@ class Map_Field extends Map_Field_Base {
 										->add_item_path( self::VALUE );
 		$item_var   = $token_factory->variable( 'marker' );
 
-		$loop_body = $token_factory->html(
-			function () use ( $field_id, $item_var, $markup_field_data, $token_factory ) {
-				$token_factory->formatter()
-								->new_line();
+		$print_loop_item = function () use ( $field_id, $item_var, $markup_field_data, $token_factory ) {
+			$token_factory->formatter()
+							->new_line();
 
-				$markup_field_data->increment_and_print_tabs();
+			$markup_field_data->increment_and_print_tabs();
 
-				$this->print_inner_item( $field_id, $item_var->get_name(), $markup_field_data );
+			$this->print_inner_item( $field_id, $item_var->get_name(), $markup_field_data );
 
-				$token_factory->formatter()
-								->new_line();
-				$markup_field_data->decrement_and_print_tabs();
-			}
-		);
+			$token_factory->formatter()
+							->new_line();
+			$markup_field_data->decrement_and_print_tabs();
+		};
+
+		$loop_body = $token_factory->html( $print_loop_item );
 
 		$token_factory->loop()
 						->set_source_variable( $source_var )
@@ -299,19 +301,19 @@ class Map_Field extends Map_Field_Base {
 		$value_var     = $token_factory->variable( $field_id )
 										->add_item_path( self::VALUE );
 
-		$body = $token_factory->html(
-			function () use ( $field_id, $item_id, $markup_field_data, $token_factory ) {
-				$token_factory->formatter()
-								->new_line();
-				$markup_field_data->increment_and_print_tabs();
+		$print_conditional_item = function () use ( $field_id, $item_id, $markup_field_data, $token_factory ) {
+			$token_factory->formatter()
+							->new_line();
+			$markup_field_data->increment_and_print_tabs();
 
-				$this->print_inner_item( $field_id, $item_id, $markup_field_data );
+			$this->print_inner_item( $field_id, $item_id, $markup_field_data );
 
-				$token_factory->formatter()
-								->new_line();
-				$markup_field_data->decrement_and_print_tabs();
-			}
-		);
+			$token_factory->formatter()
+							->new_line();
+			$markup_field_data->decrement_and_print_tabs();
+		};
+
+		$body = $token_factory->html( $print_conditional_item );
 
 		return $token_factory->if_branch()
 			->set_condition( $value_var )
@@ -319,12 +321,12 @@ class Map_Field extends Map_Field_Base {
 	}
 
 	protected function print_inner_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
-		Html_Renderer::print(
-			Html::tag(
-				'div',
-				$this->map_marker_attributes( $field_id, $item_id, $markup_field_data )
-			)
+		$tags = Html::tag(
+			'div',
+			$this->map_marker_attributes( $field_id, $item_id, $markup_field_data )
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	/**

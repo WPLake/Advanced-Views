@@ -86,18 +86,18 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			)
 		);
 		echo ' ';
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'a',
-					array(
-						'target' => '_blank',
-						'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
-					)
-				),
-				__( 'Read more', 'acf-views' )
-			)
+		$tags = Html::wrap(
+			Html::tag(
+				'a',
+				array(
+					'target' => '_blank',
+					'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
+				)
+			),
+			__( 'Read more', 'acf-views' )
 		);
+
+		Html_Renderer::print( $tags );
 		Html_Renderer::print( Html::tag( 'br' ) );
 		echo esc_html__(
 			'If you have made any external changes to this repository, please click',

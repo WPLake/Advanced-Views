@@ -26,15 +26,15 @@ class Layouts_Cpt extends Cpt {
 		$singular_name = $labels->singular_name();
 		$plural_name   = $labels->plural_name();
 
-		$description  = Html_Renderer::render(
-			Html::stack(
-				__( 'Create reusable displays for WordPress and custom-field data.', 'acf-views' ),
-				Html::tag( 'br' ),
-				__( 'Use a', 'acf-views' ) . ' ',
-				self::link_tags( 'https://docs.advanced-views.com/getting-started/first-layout', $singular_name ),
-				' ' . __( 'directly, or use it to display each result in a Post Selection.', 'acf-views' )
-			)
+		$tags = Html::stack(
+			__( 'Create reusable displays for WordPress and custom-field data.', 'acf-views' ),
+			Html::tag( 'br' ),
+			__( 'Use a', 'acf-views' ) . ' ',
+			self::link_tags( 'https://docs.advanced-views.com/getting-started/first-layout', $singular_name ),
+			' ' . __( 'directly, or use it to display each result in a Post Selection.', 'acf-views' )
 		);
+
+		$description  = Html_Renderer::render( $tags );
 		$description .= $this->get_storage_label();
 
 		$cpt_args = array(

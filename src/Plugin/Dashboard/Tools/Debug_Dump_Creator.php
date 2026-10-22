@@ -47,42 +47,45 @@ final class Debug_Dump_Creator {
 				'message' => 1,
 			)
 		);
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag( 'script' ),
-				function () use ( $dump_data, $redirect_url ) {
-					?>
-					(function () {
-						function save() {
-							const data = <?php echo wp_json_encode( $dump_data ); ?>;
 
-							let date = new Date().toISOString().slice(0, 10);
-							let timestamp = new Date().getTime();
-							let fileName = `advanced-views-debug-dump-${date}-${timestamp}.json`;
-							let content = JSON.stringify(data);
+		$print_download_script = function () use ( $dump_data, $redirect_url ) {
+			?>
+			(function () {
+				function save() {
+					const data = <?php echo wp_json_encode( $dump_data ); ?>;
 
-							const file = new File([content], fileName, {
-								type: 'application/json',
-							})
+					let date = new Date().toISOString().slice(0, 10);
+					let timestamp = new Date().getTime();
+					let fileName = `advanced-views-debug-dump-${date}-${timestamp}.json`;
+					let content = JSON.stringify(data);
 
-							let settingsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
+					const file = new File([content], fileName, {
+						type: 'application/json',
+					})
 
-							const a = document.createElement('a');
+					let settingsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
 
-							a.href = URL.createObjectURL(file);
-							a.download = fileName;
-							a.click();
-							window.location.href = settingsUrl;
-						}
+					const a = document.createElement('a');
 
-						'loading' === document.readyState ?
-							window.document.addEventListener('DOMContentLoaded', save) :
-							save();
-					}())
-					<?php
+					a.href = URL.createObjectURL(file);
+					a.download = fileName;
+					a.click();
+					window.location.href = settingsUrl;
 				}
-			)
+
+				'loading' === document.readyState ?
+					window.document.addEventListener('DOMContentLoaded', save) :
+					save();
+			}())
+			<?php
+		};
+
+		$tags = Html::wrap(
+			Html::tag( 'script' ),
+			$print_download_script
 		);
+
+		Html_Renderer::print( $tags );
 		exit;
 	}
 

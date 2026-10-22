@@ -34,20 +34,22 @@ class Color_Picker_Field extends Markup_Field_Base {
 		$parts       = array( 'red', 'green', 'blue', 'alpha' );
 		$items_count = count( $parts );
 
-		return Html::stack(
-			function () use ( $token_factory, $field_id, $parts, $items_count ) {
-				echo 'rgba(';
+		$print_rgba = function () use ( $token_factory, $field_id, $parts, $items_count ) {
+			echo 'rgba(';
 
-				for ( $i = 0;$i < $items_count;$i++ ) {
-					if ( $i > 0 ) {
-						echo ';';
-					}
-
-					$token_factory->variable( $field_id )->add_item_path( $parts[ $i ] )->display();
+			for ( $i = 0;$i < $items_count;$i++ ) {
+				if ( $i > 0 ) {
+					echo ';';
 				}
 
-				echo ')';
-			});
+				$token_factory->variable( $field_id )->add_item_path( $parts[ $i ] )->display();
+			}
+
+			echo ')';
+		};
+
+		return Html::stack(
+			$print_rgba);
 	}
 
 	/**

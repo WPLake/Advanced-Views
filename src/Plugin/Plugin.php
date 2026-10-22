@@ -277,16 +277,16 @@ class Plugin extends Actor_Base implements Actor {
 
 		$this->options::delete_transient( Options_Storage::TRANSIENT_DEACTIVATED_OTHER_INSTANCES );
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'div',
-					array( 'class' => 'notice notice-warning' )
-				),
-				Html::tag( 'p' ),
-				$message
-			)
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				array( 'class' => 'notice notice-warning' )
+			),
+			Html::tag( 'p' ),
+			$message
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	/**
@@ -459,29 +459,29 @@ class Plugin extends Actor_Base implements Actor {
 			'Please change the "opcache.save_comments" option in your php.ini file to the default value of "1" on your hosting.',
 			'acf-views'
 		);
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'div',
-					array( 'class' => 'notice notice-error' )
-				),
-				Html::tag( 'p' ),
-				Html::stack(
-					$detected_message . ' ',
-					Html::tag( 'br' ),
-					$action_message . ' ',
-					Html::wrap(
-						Html::tag(
-							'a',
-							array(
-								'target' => '_blank',
-								'href'   => External_Links::CONFLICTS_URL,
-							)
-						),
-						__( 'Read more', 'acf-views' )
-					)
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				array( 'class' => 'notice notice-error' )
+			),
+			Html::tag( 'p' ),
+			Html::stack(
+				$detected_message . ' ',
+				Html::tag( 'br' ),
+				$action_message . ' ',
+				Html::wrap(
+					Html::tag(
+						'a',
+						array(
+							'target' => '_blank',
+							'href'   => External_Links::CONFLICTS_URL,
+						)
+					),
+					__( 'Read more', 'acf-views' )
 				)
 			)
 		);
+
+		Html_Renderer::print( $tags );
 	}
 }

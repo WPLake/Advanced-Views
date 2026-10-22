@@ -39,12 +39,12 @@ abstract class Markup_Field_Base implements Markup_Field {
 	protected function print_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$item_outers = $markup_field_data->get_item_outers( $field_id, $item_id );
 
-		Html_Renderer::print(
-			$markup_field_data->wrap_with_item_outers(
-				$item_outers,
-				fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data )
-			)
+		$tags = $markup_field_data->wrap_with_item_outers(
+			$item_outers,
+			fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data )
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	protected function get_field_class( string $suffix, Template_Field_Data $markup_field_data ): string {

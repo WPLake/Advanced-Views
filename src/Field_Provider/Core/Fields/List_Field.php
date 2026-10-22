@@ -155,25 +155,27 @@ abstract class List_Field extends Markup_Field_Base {
 		);
 		$span_attributes = array( 'class' => $item_class );
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'span',
-					$span_attributes
-				),
-				function () use ( $token_factory, $markup_field_data, $field_id ) {
-					$token_factory->formatter()
-									->new_line();
-					$markup_field_data->increment_and_print_tabs();
+		$print_options = function () use ( $token_factory, $markup_field_data, $field_id ) {
+			$token_factory->formatter()
+							->new_line();
+			$markup_field_data->increment_and_print_tabs();
 
-					$token_factory->variable( $field_id )->add_item_path( self::OPTIONS_DELIMITER )->display();
+			$token_factory->variable( $field_id )->add_item_path( self::OPTIONS_DELIMITER )->display();
 
-					$token_factory->formatter()
-									->new_line();
-					$markup_field_data->decrement_and_print_tabs();
-				}
-			)
+			$token_factory->formatter()
+							->new_line();
+			$markup_field_data->decrement_and_print_tabs();
+		};
+
+		$tags = Html::wrap(
+			Html::tag(
+				'span',
+				$span_attributes
+			),
+			$print_options
 		);
+
+		Html_Renderer::print( $tags );
 
 		$token_factory->formatter()
 						->new_line();

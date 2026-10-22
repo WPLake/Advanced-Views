@@ -84,29 +84,29 @@ abstract class Cpt extends Actor_Base implements Actor {
 			$label
 		);
 
-		return Html_Renderer::render(
-			Html::wrap(
-				Html::tag(
-					'span',
-					array( 'id' => 'footer-thankyou' )
-				),
-				Html::stack(
-					__( 'Thank you for creating with', 'acf-views' ) . ' ',
-					$link( 'https://wordpress.org/', __( 'WordPress', 'acf-views' ) ),
-					' ' . __( 'and', 'acf-views' ) . ' ',
-					$link( External_Links::BASIC_VERSION_URL, __( 'Advanced Views', 'acf-views' ) ),
-					'. ',
-					Html::wrap(
-						Html::tag( 'span' ),
-						Html::stack(
-							__( 'Take', 'acf-views' ) . ' ',
-							$link( External_Links::SURVEY_URL, __( '2 minute survey', 'acf-views' ) ),
-							' ' . __( 'to improve Advanced Views.', 'acf-views' )
-						)
+		$tags = Html::wrap(
+			Html::tag(
+				'span',
+				array( 'id' => 'footer-thankyou' )
+			),
+			Html::stack(
+				__( 'Thank you for creating with', 'acf-views' ) . ' ',
+				$link( 'https://wordpress.org/', __( 'WordPress', 'acf-views' ) ),
+				' ' . __( 'and', 'acf-views' ) . ' ',
+				$link( External_Links::BASIC_VERSION_URL, __( 'Advanced Views', 'acf-views' ) ),
+				'. ',
+				Html::wrap(
+					Html::tag( 'span' ),
+					Html::stack(
+						__( 'Take', 'acf-views' ) . ' ',
+						$link( External_Links::SURVEY_URL, __( '2 minute survey', 'acf-views' ) ),
+						' ' . __( 'to improve Advanced Views.', 'acf-views' )
 					)
 				)
 			)
 		);
+
+		return Html_Renderer::render( $tags );
 	}
 
 	protected function get_cpt_name(): string {
@@ -173,60 +173,60 @@ abstract class Cpt extends Actor_Base implements Actor {
 			__( 'enabled', 'acf-views' ) :
 			__( 'disabled', 'acf-views' );
 
-		return Html_Renderer::render(
-			Html::wrap(
-				Html::tag(
-					'span',
-					array(
-						'style' => array(
-							'display' => 'inline-block',
-							'float'   => 'right',
-						),
-					)
-				),
-				Html::stack(
-					Html::wrap(
-						Html::tag(
-							'a',
-							array(
-								'target' => '_blank',
-								'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
-							)
-						),
-						__( 'File system storage', 'acf-views' )
+		$tags = Html::wrap(
+			Html::tag(
+				'span',
+				array(
+					'style' => array(
+						'display' => 'inline-block',
+						'float'   => 'right',
 					),
-					' ' . sprintf(
-					// translators: %s - the file system storage state, 'enabled' or 'disabled'.
-						__( 'is %s.', 'acf-views' ),
-						$state
-					)
+				)
+			),
+			Html::stack(
+				Html::wrap(
+					Html::tag(
+						'a',
+						array(
+							'target' => '_blank',
+							'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
+						)
+					),
+					__( 'File system storage', 'acf-views' )
+				),
+				' ' . sprintf(
+				// translators: %s - the file system storage state, 'enabled' or 'disabled'.
+					__( 'is %s.', 'acf-views' ),
+					$state
 				)
 			)
 		);
+
+		return Html_Renderer::render( $tags );
 	}
 
 	protected function get_not_found_label(): string {
 		$singular_name = $this->plugin_cpt->labels()->singular_name();
 		$add_new_url   = admin_url( sprintf( 'post-new.php?post_type=%s', $this->get_cpt_name() ) );
 
-		return Html_Renderer::render(
-			Html::stack(
+		$tags = Html::stack(
+			sprintf(
+			// translators: %s - singular name of the CPT.
+				__( 'No %s yet.', 'acf-views' ),
+				$singular_name
+			) . ' ',
+			self::link_tags(
+				$add_new_url,
 				sprintf(
 				// translators: %s - singular name of the CPT.
-					__( 'No %s yet.', 'acf-views' ),
+					__( 'Add New %s', 'acf-views' ),
 					$singular_name
-				) . ' ',
-				self::link_tags(
-					$add_new_url,
-					sprintf(
-					// translators: %s - singular name of the CPT.
-						__( 'Add New %s', 'acf-views' ),
-						$singular_name
-					),
-					'_self'
-				)
+				),
+				'_self'
 			)
 		);
+
+		return Html_Renderer::render( $tags );
 	}
 
 	/**

@@ -79,36 +79,36 @@ class Layout_Markup {
 								$field_type
 							);
 
-		$markup = $token_factory->html(
-			function () use ( $field_meta, $layout_settings, $item_settings, $field_id, $field_type, $token_factory ) {
-				$row_tabs_number = 2;
+		$print_row = function () use ( $field_meta, $layout_settings, $item_settings, $field_id, $field_type, $token_factory ) {
+			$row_tabs_number = 2;
 
-				$row_type = 'row';
+			$row_type = 'row';
 
-				if ( $this->provider_cluster->is_field_type_with_sub_fields(
-					$field_meta->get_vendor_name(),
-					$field_meta->get_type()
-				) ) {
-					$row_type = $field_type;
-				}
-
-				$token_factory->formatter()
-								->new_line();
-
-				$this->field_markup->print_row_markup(
-					$row_type,
-					'',
-					$layout_settings,
-					$item_settings,
-					$item_settings->field,
-					$field_meta,
-					$row_tabs_number,
-					$field_id
-				);
-
-				$token_factory->formatter()->tab();
+			if ( $this->provider_cluster->is_field_type_with_sub_fields(
+				$field_meta->get_vendor_name(),
+				$field_meta->get_type()
+			) ) {
+				$row_type = $field_type;
 			}
-		);
+
+			$token_factory->formatter()
+							->new_line();
+
+			$this->field_markup->print_row_markup(
+				$row_type,
+				'',
+				$layout_settings,
+				$item_settings,
+				$item_settings->field,
+				$field_meta,
+				$row_tabs_number,
+				$field_id
+			);
+
+			$token_factory->formatter()->tab();
+		};
+
+		$markup = $token_factory->html( $print_row );
 
 		$value_var = $token_factory->variable( $field_id )
 									->add_item_path( 'value' );
@@ -146,18 +146,18 @@ class Layout_Markup {
 			) :
 			Html::stack( $new_line, $rows );
 
-		Html_Renderer::print(
-			Html::stack(
-				Html::wrap(
-					Html::tag(
-						$layout_settings->get_tag_name(),
-						array( 'class' => $this->root_class( $token_factory, $layout_settings ) )
-					),
-					$root_content
+		$tags = Html::stack(
+			Html::wrap(
+				Html::tag(
+					$layout_settings->get_tag_name(),
+					array( 'class' => $this->root_class( $token_factory, $layout_settings ) )
 				),
-				$new_line
-			)
+				$root_content
+			),
+			$new_line
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	protected function print_safe_markup( Layout_Settings $layout_settings, bool $is_cache_disabled ): void {

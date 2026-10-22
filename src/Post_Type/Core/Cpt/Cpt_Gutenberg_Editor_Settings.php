@@ -107,29 +107,29 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 			),
 		);
 
-		Html_Renderer::print(
-			Html::wrap(
-				Html::tag(
-					'p',
-					$attributes
-				),
-				Html::stack(
-					__( 'Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue.', 'acf-views' ) . ' ',
-					__( 'Please', 'acf-views' ) . ' ',
-					Html::wrap(
-						Html::tag(
-							'a',
-							array(
-								'target' => '_blank',
-								'href'   => 'https://wplake.org/acf-views-support/',
-							)
-						),
-						__( 'reach out', 'acf-views' )
+		$tags = Html::wrap(
+			Html::tag(
+				'p',
+				$attributes
+			),
+			Html::stack(
+				__( 'Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue.', 'acf-views' ) . ' ',
+				__( 'Please', 'acf-views' ) . ' ',
+				Html::wrap(
+					Html::tag(
+						'a',
+						array(
+							'target' => '_blank',
+							'href'   => 'https://wplake.org/acf-views-support/',
+						)
 					),
-					' ' . __( 'to our support team for further assistance.', 'acf-views' )
-				)
+					__( 'reach out', 'acf-views' )
+				),
+				' ' . __( 'to our support team for further assistance.', 'acf-views' )
 			)
 		);
+
+		Html_Renderer::print( $tags );
 	}
 
 	// Jetpack's markdown module "very polite" and breaks json in our post_content.
