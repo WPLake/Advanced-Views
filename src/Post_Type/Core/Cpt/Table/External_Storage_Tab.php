@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
+use Org\Wplake\Advanced_Views\Template\Html\Tags;
 use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
@@ -16,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Stora
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
- * @phpstan-import-type Tag_Chain from Tags_Renderer
+ * @phpstan-import-type Tag_Tree from Tags
  */
 abstract class External_Storage_Tab extends Cpt_Table_Tab {
 
@@ -260,7 +261,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected function imported_items_paragraph( int $items_count ): array {
 		return array(
@@ -278,7 +279,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	/**
 	 * @param array<array{url:string,title:string}> $links
 	 *
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected function links_paragraph( array $links ): array {
 		$members = array();

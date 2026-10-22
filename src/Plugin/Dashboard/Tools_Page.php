@@ -30,13 +30,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use WP_Filesystem_Base;
 use WP_Post;
 use WP_Query;
+use Org\Wplake\Advanced_Views\Template\Html\Tags;
 use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag_Group from Tags_Renderer
+ * @phpstan-import-type Tag_Group from Tags
  */
 final class Tools_Page extends Actor_Base implements Actor {
 

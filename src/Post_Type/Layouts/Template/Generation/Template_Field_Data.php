@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -19,7 +19,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag_Group from Tags_Renderer
+ * @phpstan-import-type Tag_Group from Tags
  */
 final class Template_Field_Data extends Field_Data {
 	/**

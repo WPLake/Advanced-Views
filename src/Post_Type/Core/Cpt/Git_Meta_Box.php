@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Tags;
 use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
@@ -20,8 +21,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Stora
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 
 /**
- * @phpstan-import-type Tag from Tags_Renderer
- * @phpstan-import-type Tag_Chain from Tags_Renderer
+ * @phpstan-import-type Tag from Tags
+ * @phpstan-import-type Tag_Tree from Tags
  */
 abstract class Git_Meta_Box extends Actor_Base implements Actor {
 
@@ -248,7 +249,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected function intro_tags(): array {
 		return array(
@@ -284,7 +285,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected function repositories_tags(): array {
 		$option_chains = array_map(
@@ -320,7 +321,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected function with_fields_tags(): array {
 		return array(
@@ -354,7 +355,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected function save_reminder_tags(): array {
 		return array(
@@ -364,7 +365,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected function button_tags(): array {
 		return array(

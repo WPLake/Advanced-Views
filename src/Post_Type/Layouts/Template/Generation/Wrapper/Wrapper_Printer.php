@@ -6,15 +6,15 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappe
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
 
 /**
- * @phpstan-import-type Tag from Tags_Renderer
- * @phpstan-import-type Tag_Group from Tags_Renderer
+ * @phpstan-import-type Tag from Tags
+ * @phpstan-import-type Tag_Group from Tags
  */
 final class Wrapper_Printer {
 	/**
@@ -101,7 +101,7 @@ final class Wrapper_Printer {
 
 						++$tabs_number;
 					},
-					// a group member that is an array is a chain, so the inner group is put into it as its head.
+					// a group member that is an array is a tree, so the inner group is put into it as its head.
 					array( $inner ),
 					static function () use ( &$tabs_number ) {
 						Format_Token::tabulation( --$tabs_number );

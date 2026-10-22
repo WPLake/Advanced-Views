@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappe
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pa
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 
 /**
- * @phpstan-import-type Tag_Group from Tags_Renderer
+ * @phpstan-import-type Tag_Group from Tags
  */
 final class Outer_Printer {
 	/**

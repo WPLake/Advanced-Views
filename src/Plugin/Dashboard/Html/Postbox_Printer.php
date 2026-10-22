@@ -6,14 +6,15 @@ namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
+use Org\Wplake\Advanced_Views\Template\Html\Tags;
 use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag from Tags_Renderer
- * @phpstan-import-type Tag_Group from Tags_Renderer
- * @phpstan-import-type Tag_Chain from Tags_Renderer
+ * @phpstan-import-type Tag from Tags
+ * @phpstan-import-type Tag_Group from Tags
+ * @phpstan-import-type Tag_Tree from Tags
  */
 class Postbox_Printer {
 	public function print_postbox_shortcode(
@@ -66,7 +67,7 @@ class Postbox_Printer {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected static function shortcode_tags( string $shortcode, bool $is_short, bool $is_single ): array {
 		$type            = $is_short ?
@@ -149,7 +150,7 @@ class Postbox_Printer {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected static function embed_hint_tags( string $question, string $answer ): array {
 		return array(
@@ -159,7 +160,7 @@ class Postbox_Printer {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected static function support_postbox_tags( string $description, string $url, string $button_label ): array {
 		$button = self::button_link_tags( $url, $button_label );
@@ -174,7 +175,7 @@ class Postbox_Printer {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected static function button_link_tags( string $url, string $label ): array {
 		$link_attrs = array(

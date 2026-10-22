@@ -4,18 +4,18 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
-use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag from Tags_Renderer
- * @phpstan-import-type Tag_Group from Tags_Renderer
- * @phpstan-import-type Tag_Chain from Tags_Renderer
+ * @phpstan-import-type Tag from Tags
+ * @phpstan-import-type Tag_Group from Tags
+ * @phpstan-import-type Tag_Tree from Tags
  */
 final class Html_Printer {
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	public static function link_tags( string $url, string $label ): array {
 		$link_attrs = array(
@@ -37,7 +37,7 @@ final class Html_Printer {
 	/**
 	 * @param Tag_Group $blocks
 	 *
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	public static function dashboard_form_tags( string $page, string $form_nonce, array $blocks ): array {
 		$form_attrs = array(
@@ -70,7 +70,7 @@ final class Html_Printer {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	public static function hidden_input_tags( string $name, string $value ): array {
 		return array(
@@ -86,7 +86,7 @@ final class Html_Printer {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	public static function title_tags( string $title ): array {
 		$title_attrs = array( 'class' => 'av-introduction__title' );

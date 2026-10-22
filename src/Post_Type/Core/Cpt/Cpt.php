@@ -10,13 +10,14 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
+use Org\Wplake\Advanced_Views\Template\Html\Tags;
 use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag_Chain from Tags_Renderer
+ * @phpstan-import-type Tag_Tree from Tags
  */
 abstract class Cpt extends Actor_Base implements Actor {
 	private Cpt_Settings_Storage $cpt_settings_storage;
@@ -229,7 +230,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected static function link_tags( string $url, string $label, string $target = '_blank' ): array {
 		return array(

@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
+use Org\Wplake\Advanced_Views\Template\Html\Tags;
 use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -11,9 +12,9 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag from Tags_Renderer
- * @phpstan-import-type Tag_Group from Tags_Renderer
- * @phpstan-import-type Tag_Chain from Tags_Renderer
+ * @phpstan-import-type Tag from Tags
+ * @phpstan-import-type Tag_Group from Tags
+ * @phpstan-import-type Tag_Tree from Tags
  */
 final class Toolbar_Printer {
 	/**
@@ -28,7 +29,7 @@ final class Toolbar_Printer {
 	/**
 	 * @param array<int,array<string,mixed>> $tabs
 	 *
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected static function toolbar_tags( string $name, string $version, array $tabs ): array {
 		$title_attrs   = array( 'class' => 'av-toolbar__title' );
@@ -78,7 +79,7 @@ final class Toolbar_Printer {
 	/**
 	 * @param array<int,array<string,mixed>> $tabs
 	 *
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected static function toolbar_block_tags( string $type, string $block_key, array $tabs ): array {
 		$block_tabs = array_filter(
@@ -106,7 +107,7 @@ final class Toolbar_Printer {
 	/**
 	 * @param array<string,mixed> $tab
 	 *
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected static function toolbar_tab_tags( array $tab ): array {
 		$classes = array_filter(

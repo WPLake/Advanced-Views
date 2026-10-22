@@ -5,14 +5,15 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
+use Org\Wplake\Advanced_Views\Template\Html\Tags;
 use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag from Tags_Renderer
- * @phpstan-import-type Tag_Group from Tags_Renderer
- * @phpstan-import-type Tag_Chain from Tags_Renderer
+ * @phpstan-import-type Tag from Tags
+ * @phpstan-import-type Tag_Group from Tags
+ * @phpstan-import-type Tag_Tree from Tags
  */
 final class Import_Printer {
 	public static function print_dashboard_import(
@@ -37,7 +38,7 @@ final class Import_Printer {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected static function import_result_block_tags( bool $is_has_demo_objects, Demo_Importer $demo_import ): array {
 		$button_attrs  = array(
@@ -162,7 +163,7 @@ final class Import_Printer {
 	/**
 	 * @param string[] $lines
 	 *
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected static function bold_paragraph_tags( array $lines ): array {
 		$line_tags = array();
@@ -192,7 +193,7 @@ final class Import_Printer {
 	}
 
 	/**
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected static function import_introduction_tags(): array {
 		$description_attrs = array( 'class' => 'av-introduction__description' );
@@ -303,7 +304,7 @@ final class Import_Printer {
 	/**
 	 * @param string[] $items
 	 *
-	 * @return Tag_Chain
+	 * @return Tag_Tree
 	 */
 	protected static function ordered_list_tags( array $items ): array {
 		$list_attrs = array( 'class' => 'av-introduction__description av-introduction__ol' );

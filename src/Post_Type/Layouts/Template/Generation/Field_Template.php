@@ -217,7 +217,7 @@ class Field_Template {
 			) :
 			$content;
 
-		// a group member that is an array is a chain, so groups are put into it as its head.
+		// a group member that is an array is a tree, so groups are put into it as its head.
 		$row_inner = array( $label_inside, array( $field_layer ) );
 		$row_layer = $is_with_row_wrapper ?
 			Wrapper_Printer::wrap(

@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Compatibility\Migration;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Tags;
 use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Version\Version_Migration;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
@@ -19,7 +20,7 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
- * @phpstan-import-type Tag_Group from Tags_Renderer
+ * @phpstan-import-type Tag_Group from Tags
  */
 final class Upgrade_Notice extends Actor_Base implements Actor {
 	private Plugin_Meta $plugin_meta;
