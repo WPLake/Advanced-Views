@@ -13,7 +13,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
- * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Html_Wrap from Html
  */
 final class Row_Title_Printer {
 	/**
@@ -38,7 +38,7 @@ final class Row_Title_Printer {
 	}
 
 	/**
-	 * @param Tag_Wrap $title_tags
+	 * @param Html_Wrap $title_tags
 	 * @param string $action_class e.g. 'edit'
 	 */
 	public static function print_title_and_action(

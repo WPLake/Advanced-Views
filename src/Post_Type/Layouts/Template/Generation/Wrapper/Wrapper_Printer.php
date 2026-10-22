@@ -16,13 +16,13 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
- * @phpstan-import-type Tag from Html
+ * @phpstan-import-type Html_Tag from Html
  * @phpstan-import-type Html_Node from Html
- * @phpstan-import-type Tag_Stack from Html
+ * @phpstan-import-type Html_Stack from Html
  */
 final class Wrapper_Printer {
 	/**
-	 * @return Tag
+	 * @return Html_Tag
 	 */
 	public static function row_tag(
 		string $field_name_class,
@@ -39,7 +39,7 @@ final class Wrapper_Printer {
 	/**
 	 * @param Template_Pattern[] $field_assets
 	 *
-	 * @return Tag
+	 * @return Html_Tag
 	 */
 	public static function field_tag(
 		array $field_assets,
@@ -69,10 +69,10 @@ final class Wrapper_Printer {
 	 * Returns the group of the tag with the inner content inside it, and the formatting (tabs, new lines) around it,
 	 * which is kept in callbacks.
 	 *
-	 * @param Tag $tag
+	 * @param Html_Tag $tag
 	 * @param Html_Node $inner
 	 *
-	 * @return Tag_Stack
+	 * @return Html_Stack
 	 */
 	public static function wrap(
 		array $tag,

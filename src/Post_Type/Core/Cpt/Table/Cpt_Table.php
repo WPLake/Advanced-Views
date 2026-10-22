@@ -26,8 +26,8 @@ use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag_Wrap from Html
- * @phpstan-import-type Tag_Stack from Html
+ * @phpstan-import-type Html_Wrap from Html
+ * @phpstan-import-type Html_Stack from Html
  */
 abstract class Cpt_Table extends Actor_Base implements Actor {
 	const COLUMN_PREFIX = Hard_Layout_Cpt::NAME . '_';
@@ -609,7 +609,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 	/**
 	 * @param string[] $hidden_columns
 	 *
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected function table_cell(
 		Tab_Data $tab_data,
@@ -651,7 +651,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Stack
+	 * @return Html_Stack
 	 */
 	protected function checkbox_cell_content( string $unique_id, string $title ): array {
 		return stack(

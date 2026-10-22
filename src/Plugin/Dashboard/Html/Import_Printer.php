@@ -14,9 +14,9 @@ use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Stack from Html
- * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Html_Tag from Html
+ * @phpstan-import-type Html_Stack from Html
+ * @phpstan-import-type Html_Wrap from Html
  */
 final class Import_Printer {
 	public static function print_dashboard_import(
@@ -41,7 +41,7 @@ final class Import_Printer {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected static function import_result_block_tags( bool $is_has_demo_objects, Demo_Importer $demo_import ): array {
 		$button_attrs  = array(
@@ -72,7 +72,7 @@ final class Import_Printer {
 	}
 
 	/**
-	 * @return Tag_Stack
+	 * @return Html_Stack
 	 */
 	protected static function import_result_tags( Demo_Importer $demo_import ): array {
 		$is_has_items = $demo_import->is_has_data() && ! $demo_import->is_has_error();
@@ -87,7 +87,7 @@ final class Import_Printer {
 	}
 
 	/**
-	 * @return Tag_Stack
+	 * @return Html_Stack
 	 */
 	protected static function import_status_tags( Demo_Importer $demo_import ): array {
 		if ( ! $demo_import->is_has_error() ) {
@@ -112,7 +112,7 @@ final class Import_Printer {
 	}
 
 	/**
-	 * @return Tag_Stack
+	 * @return Html_Stack
 	 */
 	protected static function imported_items_tags( Demo_Importer $demo_import ): array {
 		$same_page_title = __( "Display page's ACF fields on the same page", 'acf-views' );
@@ -160,7 +160,7 @@ final class Import_Printer {
 	/**
 	 * @param string[] $lines
 	 *
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected static function bold_paragraph_tags( array $lines ): array {
 		$line_tags = array();
@@ -181,7 +181,7 @@ final class Import_Printer {
 	}
 
 	/**
-	 * @return Tag_Stack
+	 * @return Html_Stack
 	 */
 	protected static function spaced_link_tags( string $url, string $label ): array {
 		$link = Html_Printer::link_tags( $url, $label );
@@ -194,7 +194,7 @@ final class Import_Printer {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected static function import_introduction_tags(): array {
 		$description_attrs = array( 'class' => 'av-introduction__description' );
@@ -308,7 +308,7 @@ final class Import_Printer {
 	/**
 	 * @param string[] $items
 	 *
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected static function ordered_list_tags( array $items ): array {
 		$list_attrs = array( 'class' => 'av-introduction__description av-introduction__ol' );

@@ -15,9 +15,9 @@ use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Stack from Html
- * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Html_Tag from Html
+ * @phpstan-import-type Html_Stack from Html
+ * @phpstan-import-type Html_Wrap from Html
  */
 final class Toolbar_Printer {
 	/**
@@ -32,7 +32,7 @@ final class Toolbar_Printer {
 	/**
 	 * @param array<int,array<string,mixed>> $tabs
 	 *
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected static function toolbar_tags( string $name, string $version, array $tabs ): array {
 		$title_attrs   = array( 'class' => 'av-toolbar__title' );
@@ -85,7 +85,7 @@ final class Toolbar_Printer {
 	/**
 	 * @param array<int,array<string,mixed>> $tabs
 	 *
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected static function toolbar_block_tags( string $type, string $block_key, array $tabs ): array {
 		$block_tabs = array_filter(
@@ -113,7 +113,7 @@ final class Toolbar_Printer {
 	/**
 	 * @param array<string,mixed> $tab
 	 *
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected static function toolbar_tab_tags( array $tab ): array {
 		$classes = array_filter(

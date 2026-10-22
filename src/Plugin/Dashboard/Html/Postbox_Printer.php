@@ -15,9 +15,9 @@ use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Stack from Html
- * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Html_Tag from Html
+ * @phpstan-import-type Html_Stack from Html
+ * @phpstan-import-type Html_Wrap from Html
  */
 class Postbox_Printer {
 	public function print_postbox_shortcode(
@@ -70,7 +70,7 @@ class Postbox_Printer {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected static function shortcode_tags( string $shortcode, bool $is_short, bool $is_single ): array {
 		$type            = $is_short ?
@@ -100,7 +100,7 @@ class Postbox_Printer {
 	}
 
 	/**
-	 * @return Tag_Stack
+	 * @return Html_Stack
 	 */
 	protected static function shortcode_details_tags( bool $is_single ): array {
 		$copy_attrs  = array(
@@ -153,7 +153,7 @@ class Postbox_Printer {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected static function embed_hint_tags( string $question, string $answer ): array {
 		return wrap(
@@ -167,7 +167,7 @@ class Postbox_Printer {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected static function support_postbox_tags( string $description, string $url, string $button_label ): array {
 		$button = self::button_link_tags( $url, $button_label );
@@ -185,7 +185,7 @@ class Postbox_Printer {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected static function button_link_tags( string $url, string $label ): array {
 		$link_attrs = array(

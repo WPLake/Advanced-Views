@@ -9,21 +9,22 @@ defined( 'ABSPATH' ) || exit;
 use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use Org\Wplake\Advanced_Views\Template\Html\Tag\Tag_Renderer;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 /**
- * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Element from Html
+ * @phpstan-import-type Html_Tag from Html
+ * @phpstan-import-type Html_Element from Html
  */
 final class Html_Renderer {
 	/**
-	 * @param Tag_Element $element
+	 * @param Html_Element $element
 	 */
 	public static function print( array $element ): void {
 		self::print_item( $element );
 	}
 
 	/**
-	 * @param Tag_Element $element
+	 * @param Html_Element $element
 	 */
 	public static function render( array $element ): string {
 		ob_start();
@@ -79,18 +80,18 @@ final class Html_Renderer {
 	}
 
 	/**
-	 * @param Tag $item
+	 * @param Html_Tag $tag
 	 * @param list<mixed> $nested_items
 	 */
-	protected static function print_tag( array $item, array $nested_items ): void {
-		$tag        = $item[ Html::TAG_NAME ];
-		$attributes = $item[ Html::TAG_ATTRS ] ?? array();
+	protected static function print_tag( array $tag, array $nested_items ): void {
+		$tag_name   = $tag[ Html::TAG_NAME ];
+		$attributes = arr( $tag, Html::TAG_ATTRS );
 
 		$content_printer = count( $nested_items ) > 0 ?
 			fn() => self::print_wrap( $nested_items ) :
 			null;
 
-		Tag_Renderer::print_tag( $tag, $attributes, $content_printer );
+		Tag_Renderer::print_tag( $tag_name, $attributes, $content_printer );
 	}
 
 	/**

@@ -32,7 +32,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\wrap;
  * Can be disabled in the plugin settings.
  * FYI: built-in WordPress growth counter was removed https://meta.trac.wordpress.org/ticket/6511
  *
- * @phpstan-import-type Tag_Stack from Html
+ * @phpstan-import-type Html_Stack from Html
  */
 class Usage_Report extends Report_Base implements Actor {
 	const DELAY_MIN_HR       = 12;
@@ -316,7 +316,7 @@ class Usage_Report extends Report_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Stack
+	 * @return Html_Stack
 	 */
 	protected function get_hide_members( string $dismiss_key, string $nonce_name ): array {
 		$hide_url = add_query_arg(

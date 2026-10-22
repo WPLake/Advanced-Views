@@ -17,15 +17,15 @@ use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 /**
- * @phpstan-import-type Tag_Stack from Html
- * @phpstan-import-type Tag from Html
+ * @phpstan-import-type Html_Stack from Html
+ * @phpstan-import-type Html_Tag from Html
  */
 final class Outer_Printer {
 	/**
 	 * @param Template_Pattern[] $field_assets
 	 * @param callable(bool $is_with_outers): void $print_content
 	 *
-	 * @return Tag_Stack
+	 * @return Html_Stack
 	 */
 	public static function wrap_with_outers(
 		array $field_assets,
@@ -79,7 +79,7 @@ final class Outer_Printer {
 	}
 
 	/**
-	 * @return Tag
+	 * @return Html_Tag
 	 */
 	protected static function outer_tag( Html_Wrapper $outer, Token_Factory $token_factory ): array {
 		$attrs = $outer->attrs;

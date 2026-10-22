@@ -22,7 +22,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag_Stack from Html
+ * @phpstan-import-type Html_Stack from Html
  */
 final class Icon_Picker_Field extends Markup_Field_Base {
 	const TYPE = 'type';
@@ -36,7 +36,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	}
 
 	/**
-	 * @return Tag_Stack
+	 * @return Html_Stack
 	 */
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();

@@ -23,8 +23,8 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
- * @phpstan-import-type Tag_Stack from Html
- * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Html_Stack from Html
+ * @phpstan-import-type Html_Wrap from Html
  */
 final class Upgrade_Notice extends Actor_Base implements Actor {
 	private Plugin_Meta $plugin_meta;
@@ -129,7 +129,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Stack
+	 * @return Html_Stack
 	 */
 	protected function get_notice_lines_members( string $upgrade_notice ): array {
 		$members = array();
@@ -146,7 +146,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected function get_dismiss_members(): array {
 		$dismiss_url = add_query_arg(

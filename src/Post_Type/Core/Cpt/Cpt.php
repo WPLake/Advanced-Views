@@ -20,7 +20,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Html_Wrap from Html
  */
 abstract class Cpt extends Actor_Base implements Actor {
 	private Cpt_Settings_Storage $cpt_settings_storage;
@@ -233,7 +233,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected static function link_tags( string $url, string $label, string $target = '_blank' ): array {
 		return wrap(

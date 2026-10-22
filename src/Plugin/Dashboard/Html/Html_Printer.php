@@ -12,13 +12,13 @@ use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Stack from Html
- * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Html_Tag from Html
+ * @phpstan-import-type Html_Stack from Html
+ * @phpstan-import-type Html_Wrap from Html
  */
 final class Html_Printer {
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	public static function link_tags( string $url, string $label ): array {
 		$link_attrs = array(
@@ -38,9 +38,9 @@ final class Html_Printer {
 	}
 
 	/**
-	 * @param Tag_Stack $blocks
+	 * @param Html_Stack $blocks
 	 *
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	public static function dashboard_form_tags( string $page, string $form_nonce, array $blocks ): array {
 		$form_attrs = array(
@@ -73,7 +73,7 @@ final class Html_Printer {
 	}
 
 	/**
-	 * @return Tag
+	 * @return Html_Tag
 	 */
 	public static function hidden_input_tags( string $name, string $value ): array {
 		return tag(
@@ -87,7 +87,7 @@ final class Html_Printer {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	public static function title_tags( string $title ): array {
 		$title_attrs = array( 'class' => 'av-introduction__title' );

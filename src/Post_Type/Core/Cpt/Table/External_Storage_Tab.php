@@ -20,7 +20,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
- * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Html_Wrap from Html
  */
 abstract class External_Storage_Tab extends Cpt_Table_Tab {
 
@@ -264,7 +264,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected function imported_items_paragraph( int $items_count ): array {
 		return wrap(
@@ -282,7 +282,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	/**
 	 * @param array<array{url:string,title:string}> $links
 	 *
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected function links_paragraph( array $links ): array {
 		$members = array();

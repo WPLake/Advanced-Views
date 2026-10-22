@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * @phpstan-import-type Html_Node from Html
- * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Html_Wrap from Html
  */
 abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	private Postbox_Printer $postbox;
@@ -99,7 +99,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return list<string|Tag_Wrap> Links separated by ', ' items
+	 * @return list<string|Html_Wrap> Links separated by ', ' items
 	 */
 	protected static function get_mount_post_links( Cpt_Settings $cpt_settings ): array {
 		$posts = array();
@@ -144,7 +144,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @param list<string|Tag_Wrap> $post_links
+	 * @param list<string|Html_Wrap> $post_links
 	 *
 	 * @return Html_Node|null
 	 */
@@ -167,7 +167,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	/**
 	 * @param int|\WP_Post $post
 	 *
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected static function create_post_link( $post ) {
 		$post_url = get_the_permalink( $post );

@@ -13,7 +13,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
- * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Html_Wrap from Html
  */
 abstract class Profiler {
 	const SOURCE_NETWORK = '_network';
@@ -167,7 +167,7 @@ abstract class Profiler {
 	/**
 	 * @param mixed $data
 	 *
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected static function pre_chain( $data, string $prefix = '' ): array {
 		return wrap(

@@ -24,8 +24,8 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
- * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Stack from Html
+ * @phpstan-import-type Html_Tag from Html
+ * @phpstan-import-type Html_Stack from Html
  */
 class Post_Selection_Markup {
 	private Front_Assets $front_assets;
@@ -95,7 +95,7 @@ class Post_Selection_Markup {
 	}
 
 	/**
-	 * @return Tag
+	 * @return Html_Tag
 	 */
 	protected function items_wrapper_tag( Post_Selection_Settings $post_selection_settings, string $class_name = '' ): array {
 		$classes  = '';
@@ -119,7 +119,7 @@ class Post_Selection_Markup {
 	}
 
 	/**
-	 * @return Tag
+	 * @return Html_Tag
 	 */
 	protected function item_outer_tag( Html_Wrapper $outer, Token_Factory $token_factory ): array {
 		$attrs = $outer->attrs;
@@ -133,10 +133,10 @@ class Post_Selection_Markup {
 	}
 
 	/**
-	 * @param Tag $tag
-	 * @param Tag_Stack $inner
+	 * @param Html_Tag $tag
+	 * @param Html_Stack $inner
 	 *
-	 * @return Tag_Stack
+	 * @return Html_Stack
 	 */
 	protected function wrap_with_tag( array $tag, int &$tabs_number, Token_Factory $token_factory, $inner ): array {
 		$print_opening_tab = function () use ( $token_factory, &$tabs_number ) {

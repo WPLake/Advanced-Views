@@ -23,9 +23,9 @@ use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag_Stack from Html
- * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Html_Stack from Html
+ * @phpstan-import-type Html_Tag from Html
+ * @phpstan-import-type Html_Wrap from Html
  */
 final class Template_Field_Data extends Field_Data {
 	/**
@@ -110,7 +110,7 @@ final class Template_Field_Data extends Field_Data {
 	/**
 	 * @param Html_Wrapper[] $item_outers
 	 *
-	 * @return Tag_Stack|Tag_Wrap
+	 * @return Html_Stack|Html_Wrap
 	 */
 	public function wrap_with_item_outers( array $item_outers, Closure $print_content, bool $is_without_last_item_tabs = false ): array {
 		$last_index = count( $item_outers ) - 1;
@@ -235,7 +235,7 @@ final class Template_Field_Data extends Field_Data {
 	}
 
 	/**
-	 * @return Tag
+	 * @return Html_Tag
 	 */
 	protected function item_outer_tag( Html_Wrapper $outer ): array {
 		$attr_class = $outer->attrs['class'] ?? '';

@@ -24,8 +24,8 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
- * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Html_Tag from Html
+ * @phpstan-import-type Html_Wrap from Html
  */
 abstract class Git_Meta_Box extends Actor_Base implements Actor {
 
@@ -252,7 +252,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected function intro_tags(): array {
 		return wrap(
@@ -274,7 +274,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag
+	 * @return Html_Tag
 	 */
 	protected function nonce_tags(): array {
 		return tag(
@@ -288,7 +288,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected function repositories_tags(): array {
 		$option_chains = array_map(
@@ -321,7 +321,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected function with_fields_tags(): array {
 		return wrap(
@@ -355,7 +355,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected function save_reminder_tags(): array {
 		return wrap(
@@ -365,7 +365,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Wrap
+	 * @return Html_Wrap
 	 */
 	protected function button_tags(): array {
 		return wrap(

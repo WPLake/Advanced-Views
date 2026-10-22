@@ -40,7 +40,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag_Stack from Html
+ * @phpstan-import-type Html_Stack from Html
  */
 final class Tools_Page extends Actor_Base implements Actor {
 
@@ -527,7 +527,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 	/**
 	 * @param string[] $post_ids
 	 *
-	 * @return Tag_Stack
+	 * @return Html_Stack
 	 */
 	protected function imported_items_tags( string $label, array $post_ids ): array {
 		if ( array() === $post_ids ) {
@@ -568,7 +568,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 	/**
 	 * @param string[] $unique_ids
 	 *
-	 * @return Tag_Stack
+	 * @return Html_Stack
 	 */
 	protected function failed_items_tags( string $label, array $unique_ids ): array {
 		if ( array() === $unique_ids ) {
