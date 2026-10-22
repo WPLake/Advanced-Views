@@ -12,127 +12,107 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Tree from Html
- * @phpstan-import-type Tag_Group from Html
+ * @phpstan-import-type Tag_Item from Html
+ * @phpstan-import-type Tag_Content from Html
+ * @phpstan-import-type Tag_Stack from Html
+ * @phpstan-import-type Tag_Wrap from Html
  */
 final class Html_Renderer {
 	/**
-	 * Use when the call starts with a tag: the rest of the items go inside it, e.g. `array( $ul, $li, $text )`.
-	 * For sibling items (a group) use print_tag_group() instead.
-	 *
-	 * @param Tag_Tree $tags
+	 * @param Tag|Tag_Stack|Tag_Wrap $node
 	 */
-	public static function print_tags( array $tags ): void {
-		self::print_tree( $tags );
+	public static function print_tags( array $node ): void {
+		self::print_item( $node );
 	}
 
 	/**
-	 * @param Tag_Tree $tags
+	 * @param Tag|Tag_Stack|Tag_Wrap $node
 	 */
-	public static function render_tags( array $tags ): string {
+	public static function render_tags( array $node ): string {
 		ob_start();
-		self::print_tags( $tags );
+		self::print_tags( $node );
 
 		return (string) ob_get_clean();
 	}
 
 	/**
-	 * Use when the items are siblings (a group), e.g. `array( $before_text, $tag_tree, $after_text )`: every member is
-	 * rendered at the same level. It replaces `print_tags( array( $group ) )`, where the extra array only marks the head
-	 * as a group.
-	 *
-	 * @param Tag_Group $group
+	 * @param Tag_Item $item
 	 */
-	public static function print_tag_group( array $group ): void {
-		self::print_group( $group );
-	}
-
-	/**
-	 * @param Tag_Group $group
-	 */
-	public static function render_tag_group( array $group ): string {
-		ob_start();
-		self::print_tag_group( $group );
-
-		return (string) ob_get_clean();
-	}
-
-	/**
-	 * @param list<mixed> $tags
-	 */
-	protected static function print_tree( array $tags ): void {
-		if ( count( $tags ) > 0 ) {
-			$head = array_shift( $tags );
-
-			self::print_item( $head, $tags );
-		}
-	}
-
-	/**
-	 * @param mixed $item
-	 * @param list<mixed> $nested_tags
-	 */
-	protected static function print_item( $item, array $nested_tags ): void {
+	protected static function print_item( $item ): void {
 		if ( is_array( $item ) ) {
-			if ( key_exists( 'tag', $item ) ) {
-				self::print_tag( $item, $nested_tags );
-			} else {
-				self::print_group( array_values( $item ) );
+			if ( key_exists( Html::TAG_NAME, $item ) ) {
+				self::print_tag( $item, array() );
+			} elseif ( key_exists( Html::STACK, $item ) ) {
+				self::print_stack( $item[ Html::STACK ] );
+			} elseif ( key_exists( Html::WRAP, $item ) ) {
+				self::print_wrap( $item[ Html::WRAP ] );
+			}
+		}
+
+		self::print_content( $item );
+	}
+
+	/**
+	 * @param list<Tag_Item> $items
+	 */
+	protected static function print_wrap( array $items ): void {
+		if ( count( $items ) > 0 ) {
+			$head = array_shift( $items );
+
+			if ( is_array( $head ) && key_exists( Html::TAG_NAME, $head ) ) {
+				self::print_tag( $head, $items );
+
+				return;
 			}
 
-			return;
+			// only a tag can have nested items, so the rest is ignored.
+			self::print_item( $head );
 		}
-
-		self::print_text( $item );
 	}
 
 	/**
-	 * @param mixed $text
+	 * @param list<Tag_Item> $items
 	 */
-	protected static function print_text( $text ): void {
-		if ( is_string( $text ) ) {
-			echo esc_html( $text );
-
-			return;
-		}
-
-		if ( $text instanceof Htmlable ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $text->to_html();
-
-			return;
-		}
-
-		if ( $text instanceof Closure ) {
-			$text();
+	protected static function print_stack( array $items ): void {
+		foreach ( $items as $item ) {
+			self::print_item( $item );
 		}
 	}
 
 	/**
 	 * @param Tag $item
-	 * @param list<mixed> $nested_tags
+	 * @param list<Tag_Item> $nested_items
 	 */
-	protected static function print_tag( array $item, array $nested_tags ): void {
-		$tag        = $item['tag'];
-		$attributes = $item['attrs'] ?? array();
+	protected static function print_tag( array $item, array $nested_items ): void {
+		$tag        = $item[ Html::TAG_NAME ];
+		$attributes = $item[ Html::TAG_ATTRS ] ?? array();
 
-		$content_printer = count( $nested_tags ) > 0 ?
-			fn() => self::print_tree( $nested_tags ) :
+		$content_printer = count( $nested_items ) > 0 ?
+			fn() => self::print_wrap( $nested_items ) :
 			null;
 
 		Tag_Renderer::print_tag( $tag, $attributes, $content_printer );
 	}
 
 	/**
-	 * @param Tag_Group $members
+	 * @param Tag_Content $content
 	 */
-	protected static function print_group( array $members ): void {
-		foreach ( $members as $member ) {
-			$tree = is_array( $member ) && ! key_exists( 'tag', $member ) ?
-				array_values( $member ) :
-				array( $member );
+	protected static function print_content( $content ): void {
+		if ( is_string( $content ) ) {
+			echo esc_html( $content );
 
-			self::print_tree( $tree );
+			return;
+		}
+
+		if ( $content instanceof Htmlable ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $content->to_html();
+
+			return;
+		}
+
+		if ( $content instanceof Closure ) {
+			$content();
 		}
 	}
 }

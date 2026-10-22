@@ -10,29 +10,34 @@ use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Named constructors for the Tags_Renderer structures, so the nesting reads by its meaning, not by the array shape.
+ * Named constructors for the Html_Renderer structures, so the nesting reads by its meaning, not by the array shape.
  *
- * The renderer reads an array by its position: after the head of a tree it's a group, inside a group it's a tree.
- * So use stack() for a wrap() item and wrap() for a stack() member; for a stack inside a stack, wrap it: wrap( stack() ).
+ * Every node is recognized by its own key (`tag`, `stack`, `wrap`), never by its position, so nodes nest freely.
  *
- * Tag_Tree: every next item goes inside the previous one.
- * Tag_Group: its members (a Tag, a Tag_Text, a Tag_HTML or a Tag_Tree) are rendered at the same level, and it ends the tree.
- * Tag_Text is a plain string, printed escaped. It is never called, even if it's a callable name.
- * Tag_HTML is an Htmlable (e.g. a template token) or a print callback, e.g. `fn() => print( $html )`, printed as
- * is, so a callback must escape its output itself. The callback is a Closure on purpose: a string is always text and
- * an array is always a group, so other callables (names, [object, method]) can't be told apart and aren't supported.
+ * Tag: a single element.
+ * Tag_Stack (stack): its members are rendered at the same level.
+ * Tag_Wrap (wrap): every next item goes inside the previous one, so all items but the last are parents, and must be Tags.
+ * A non-Tag parent is printed as is, and the rest of the wrap is ignored.
+ * Tag_Content is either a plain string, printed escaped (never called, even if it's a callable name), or an Htmlable
+ * (e.g. a template token) or a print callback, e.g. `fn() => print( $html )`, printed as is, so a callback must escape
+ * its output itself. The callback is a Closure on purpose: a string is always text and an array is always a node, so
+ * other callables (names, [object, method]) can't be told apart and aren't supported.
  * The callback returns 'void|mixed': the 'mixed' is allowed to accept
  * such callbacks.
- * Tag_Group is 'mixed' as PHPStan doesn't support recursive aliases.
+ * Tag_Stack and Tag_Wrap items are 'mixed' as PHPStan doesn't support recursive aliases.
  *
  * @phpstan-type Tag array{tag:string, attrs?:array<string,mixed>}
- * @phpstan-type Tag_Text string
- * @phpstan-type Tag_HTML Htmlable|Closure():(void|mixed)
- * @phpstan-type Tag_Group list<mixed>
- * @phpstan-type Tag_Tree_Item Tag|Tag_Text|Tag_HTML|Tag_Group
- * @phpstan-type Tag_Tree list<Tag_Tree_Item>
+ * @phpstan-type Tag_Content string|Htmlable|Closure():(void|mixed)
+ * @phpstan-type Tag_Stack array{stack:list<mixed>}
+ * @phpstan-type Tag_Wrap array{wrap:list<mixed>}
+ * @phpstan-type Tag_Item Tag|Tag_Content|Tag_Stack|Tag_Wrap
  */
 final class Html {
+	const TAG_NAME  = 'tag';
+	const TAG_ATTRS = 'attrs';
+	const STACK     = 'stack';
+	const WRAP      = 'wrap';
+
 	/**
 	 * @param array<string,mixed> $attrs
 	 *
@@ -40,10 +45,10 @@ final class Html {
 	 */
 	public static function tag( string $name, array $attrs = array() ): array {
 		return 0 === count( $attrs ) ?
-			array( 'tag' => $name ) :
+			array( self::TAG_NAME => $name ) :
 			array(
-				'tag'   => $name,
-				'attrs' => $attrs,
+				self::TAG_NAME  => $name,
+				self::TAG_ATTRS => $attrs,
 			);
 	}
 
@@ -52,20 +57,20 @@ final class Html {
 	 *
 	 * @param mixed ...$items
 	 *
-	 * @return list<mixed>
+	 * @return Tag_Wrap
 	 */
 	public static function wrap( ...$items ): array {
-		return $items;
+		return array( self::WRAP => $items );
 	}
 
 	/**
 	 * Sibling items rendered at the same level.
 	 *
-	 * @param Tag_Tree_Item ...$items
+	 * @param mixed ...$items
 	 *
-	 * @return Tag_Group
+	 * @return Tag_Stack
 	 */
 	public static function stack( ...$items ): array {
-		return $items;
+		return array( self::STACK => $items );
 	}
 }
