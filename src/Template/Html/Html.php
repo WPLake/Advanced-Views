@@ -55,7 +55,7 @@ final class Html {
 	/**
 	 * The first item is the parent, every next one goes inside the previous one.
 	 *
-	 * @param mixed ...$items
+	 * @param Tag_Item ...$items
 	 *
 	 * @return Tag_Wrap
 	 */
@@ -66,7 +66,7 @@ final class Html {
 	/**
 	 * Sibling items rendered at the same level.
 	 *
-	 * @param mixed ...$items
+	 * @param Tag_Item ...$items
 	 *
 	 * @return Tag_Stack
 	 */
