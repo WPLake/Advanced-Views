@@ -17,6 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Sto
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 
@@ -211,15 +212,15 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			),
 		);
 
-		$tags = array(
-			array(
-				'tag'   => 'div',
-				'attrs' => $container_attributes,
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				$container_attributes
 			),
-			fn() => $this->print_related_postbox( $pod_name, $pod ),
+			fn() => $this->print_related_postbox( $pod_name, $pod )
 		);
 
-		return Html_Renderer::render_tags( $tags );
+		return Html_Renderer::render( $tags );
 	}
 
 	/**
@@ -242,25 +243,25 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			echo esc_html( $title );
 		};
 
-		$tags = array(
-			array(
-				'tag'   => 'div',
-				'attrs' => $postbox_attributes,
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				$postbox_attributes
 			),
-			array(
-				array(
-					array(
-						'tag'   => 'h4',
-						'attrs' => $heading_attributes,
+			Html::stack(
+				Html::wrap(
+					Html::tag(
+						'h4',
+						$heading_attributes
 					),
-					$print_heading_text,
+					$print_heading_text
 				),
 				fn() => $this->print_related_acf_views( null, false, $related_views ),
-				fn() => $this->print_add_new_links_for_groups( $pod ),
-			),
+				fn() => $this->print_add_new_links_for_groups( $pod )
+			)
 		);
 
-		Html_Renderer::print_tags( $tags );
+		Html_Renderer::print( $tags );
 	}
 
 	/**
@@ -279,11 +280,11 @@ class Pods_Integration extends Settings_Vendor_Integration {
 				),
 			);
 
-			Html_Renderer::print_tags(
-				array(
-					array(
-						'tag'   => 'div',
-						'attrs' => $attributes,
+			Html_Renderer::print(
+				Html::wrap(
+					Html::tag(
+						'div',
+						$attributes
 					),
 					function () use ( $groups ): void {
 						foreach ( $groups as $group ) {
@@ -297,7 +298,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 								$this->print_add_new_link( $group_id, $link_title );
 							}
 						}
-					},
+					}
 				)
 			);
 		}

@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 /**
- * @phpstan-import-type Tag_Tree from Html
+ * @phpstan-import-type Tag_Wrap from Html
  */
 final class Row_Title_Printer {
 	/**
@@ -22,20 +22,20 @@ final class Row_Title_Printer {
 		string $action_url,
 		string $action_label
 	): void {
-		$title_tags = array(
-			array( 'tag' => 'strong' ),
-			array(
-				'tag'   => 'span',
-				'attrs' => array( 'class' => 'row-title' ),
+		$title_tags = Html::wrap(
+			Html::tag( 'strong' ),
+			Html::tag(
+				'span',
+				array( 'class' => 'row-title' )
 			),
-			$title,
+			$title
 		);
 
 		self::print_title_and_action( $title_tags, $action_class, $action_url, $action_label );
 	}
 
 	/**
-	 * @param Tag_Tree $title_tags
+	 * @param Tag_Wrap $title_tags
 	 * @param string $action_class e.g. 'edit'
 	 */
 	public static function print_title_and_action(
@@ -44,24 +44,24 @@ final class Row_Title_Printer {
 		string $action_url,
 		string $action_label
 	): void {
-		$action_tags = array(
-			array(
-				'tag'   => 'div',
-				'attrs' => array( 'class' => 'row-actions' ),
+		$action_tags = Html::wrap(
+			Html::tag(
+				'div',
+				array( 'class' => 'row-actions' )
 			),
-			array(
-				'tag'   => 'span',
-				'attrs' => array( 'class' => $action_class ),
+			Html::tag(
+				'span',
+				array( 'class' => $action_class )
 			),
-			array(
-				'tag'   => 'a',
-				'attrs' => array( 'href' => $action_url ),
+			Html::tag(
+				'a',
+				array( 'href' => $action_url )
 			),
-			$action_label,
+			$action_label
 		);
 
-		Html_Renderer::print_tag_group(
-			array( $title_tags, $action_tags )
+		Html_Renderer::print(
+			Html::stack( $title_tags, $action_tags )
 		);
 	}
 }

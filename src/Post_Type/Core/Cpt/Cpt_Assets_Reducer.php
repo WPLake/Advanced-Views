@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
@@ -254,35 +255,35 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 	public function print_fallback_message(): void {
 		$settings_url = Plugin::get_admin_url( Settings_Page::SLUG );
 
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'p',
-					'attrs' => array( 'class' => 'acf-views__loading-fallback acf-views__loading-fallback--hidden' ),
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'p',
+					array( 'class' => 'acf-views__loading-fallback acf-views__loading-fallback--hidden' )
 				),
-				array(
+				Html::stack(
 					__( 'Loading the Editor is taking longer than expected.', 'acf-views' ),
-					array( 'tag' => 'br' ),
+					Html::tag( 'br' ),
 					__( 'If you still see this message after an extended period, please visit the', 'acf-views' ) . ' ',
-					array(
-						array(
-							'tag'   => 'a',
-							'attrs' => array(
+					Html::wrap(
+						Html::tag(
+							'a',
+							array(
 								'href'   => $settings_url,
 								'target' => '_blank',
-							),
+							)
 						),
-						__( 'Settings', 'acf-views' ),
+						__( 'Settings', 'acf-views' )
 					),
-					' ' . __( 'and disable the screen performance optimization.', 'acf-views' ),
-				),
+					' ' . __( 'and disable the screen performance optimization.', 'acf-views' )
+				)
 			)
 		);
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'script',
-					'attrs' => array( 'type' => 'module' ),
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'script',
+					array( 'type' => 'module' )
 				),
 				function () {
 					?>
@@ -293,7 +294,7 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 					},15 * 1000)
 				});
 					<?php
-				},
+				}
 			)
 		);
 	}

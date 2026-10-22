@@ -21,6 +21,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Tab_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Repository_Item;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 abstract class Git_Tabs extends External_Storage_Tab {
@@ -85,19 +86,19 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			)
 		);
 		echo ' ';
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'a',
-					'attrs' => array(
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'a',
+					array(
 						'target' => '_blank',
 						'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
-					),
+					)
 				),
-				__( 'Read more', 'acf-views' ),
+				__( 'Read more', 'acf-views' )
 			)
 		);
-		Html_Renderer::print_tags( array( array( 'tag' => 'br' ) ) );
+		Html_Renderer::print( Html::tag( 'br' ) );
 		echo esc_html__(
 			'If you have made any external changes to this repository, please click',
 			'acf-views'
@@ -429,16 +430,16 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			return;
 		}
 
-		$tags = array(
-			array(
-				'tag'   => 'div',
-				'attrs' => array( 'class' => 'notice notice-success' ),
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				array( 'class' => 'notice notice-success' )
 			),
-			array( 'tag' => 'p' ),
-			__( 'Cache successfully cleared.', 'acf-views' ),
+			Html::tag( 'p' ),
+			__( 'Cache successfully cleared.', 'acf-views' )
 		);
 
-		Html_Renderer::print_tags( $tags );
+		Html_Renderer::print( $tags );
 	}
 
 	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {

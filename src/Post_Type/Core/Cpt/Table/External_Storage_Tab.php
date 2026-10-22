@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
- * @phpstan-import-type Tag_Tree from Html
+ * @phpstan-import-type Tag_Wrap from Html
  */
 abstract class External_Storage_Tab extends Cpt_Table_Tab {
 
@@ -205,10 +205,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		}
 
 		$paragraphs   = array();
-		$paragraphs[] = array(
-			array( 'tag' => 'p' ),
-			__( 'Success!', 'acf-views' ),
-		);
+		$paragraphs[] = Html::wrap( Html::tag( 'p' ), __( 'Success!', 'acf-views' ) );
 
 		if ( $views_count > 0 ) {
 			$paragraphs[] = $this->imported_items_paragraph( $views_count );
@@ -223,8 +220,8 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		foreach ( $grouped_meta_group_links as $vendor_name => $group_links ) {
 			$group_links_count = count( $group_links );
 
-			$paragraphs[] = array(
-				array( 'tag' => 'p' ),
+			$paragraphs[] = Html::wrap(
+				Html::tag( 'p' ),
 				sprintf(
 					'%s %s %s %s',
 					$group_links_count,
@@ -232,18 +229,18 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 					_n( 'group', 'groups', $group_links_count, 'acf-views' ),
 					// translators: x items successfully imported.
 							__( 'successfully imported:', 'acf-views' )
-				),
+				)
 			);
 			$paragraphs[] = $this->links_paragraph( $group_links );
 		}
 
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'div',
-					'attrs' => array( 'class' => 'notice notice-success' ),
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'div',
+					array( 'class' => 'notice notice-success' )
 				),
-				$paragraphs,
+				Html::stack( ...$paragraphs )
 			)
 		);
 	}
@@ -261,47 +258,50 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	}
 
 	/**
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	protected function imported_items_paragraph( int $items_count ): array {
-		return array(
-			array( 'tag' => 'p' ),
+		return Html::wrap(
+			Html::tag( 'p' ),
 			sprintf(
 				'%s %s %s',
 				$items_count,
 				_n( 'Item', 'Items', $items_count, 'acf-views' ),
 				// translators: x items successfully imported.
 						__( 'successfully imported:', 'acf-views' )
-			),
+			)
 		);
 	}
 
 	/**
 	 * @param array<array{url:string,title:string}> $links
 	 *
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	protected function links_paragraph( array $links ): array {
 		$members = array();
 
 		foreach ( $links as $link ) {
 			// the 'br' goes between the links.
-			if ( array() !== $members ) {
-				$members[] = array( 'tag' => 'br' );
-			}
+			$separator = array() !== $members ?
+				Html::tag( 'br' ) :
+				Html::stack();
 
-			$members[] = array(
-				array(
-					'tag'   => 'a',
-					'attrs' => array(
-						'href'   => $link['url'],
-						'target' => '_blank',
+			$members[] = Html::stack(
+				$separator,
+				Html::wrap(
+					Html::tag(
+						'a',
+						array(
+							'href'   => $link['url'],
+							'target' => '_blank',
+						)
 					),
-				),
-				$link['title'],
+					$link['title']
+				)
 			);
 		}
 
-		return array( array( 'tag' => 'p' ), $members );
+		return Html::wrap( Html::tag( 'p' ), Html::stack( ...$members ) );
 	}
 }

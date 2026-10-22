@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag_Tree from Html
+ * @phpstan-import-type Tag_Wrap from Html
  */
 abstract class Cpt extends Actor_Base implements Actor {
 	private Cpt_Settings_Storage $cpt_settings_storage;
@@ -73,38 +73,38 @@ abstract class Cpt extends Actor_Base implements Actor {
 			return $html;
 		}
 
-		$link = static fn( string $url, string $label ) => array(
-			array(
-				'tag'   => 'a',
-				'attrs' => array(
+		$link = static fn( string $url, string $label ) => Html::wrap(
+			Html::tag(
+				'a',
+				array(
 					'target' => '_blank',
 					'href'   => $url,
-				),
+				)
 			),
-			$label,
+			$label
 		);
 
-		return Html_Renderer::render_tags(
-			array(
-				array(
-					'tag'   => 'span',
-					'attrs' => array( 'id' => 'footer-thankyou' ),
+		return Html_Renderer::render(
+			Html::wrap(
+				Html::tag(
+					'span',
+					array( 'id' => 'footer-thankyou' )
 				),
-				array(
+				Html::stack(
 					__( 'Thank you for creating with', 'acf-views' ) . ' ',
 					$link( 'https://wordpress.org/', __( 'WordPress', 'acf-views' ) ),
 					' ' . __( 'and', 'acf-views' ) . ' ',
 					$link( External_Links::BASIC_VERSION_URL, __( 'Advanced Views', 'acf-views' ) ),
 					'. ',
-					array(
-						array( 'tag' => 'span' ),
-						array(
+					Html::wrap(
+						Html::tag( 'span' ),
+						Html::stack(
 							__( 'Take', 'acf-views' ) . ' ',
 							$link( External_Links::SURVEY_URL, __( '2 minute survey', 'acf-views' ) ),
-							' ' . __( 'to improve Advanced Views.', 'acf-views' ),
-						),
-					),
-				),
+							' ' . __( 'to improve Advanced Views.', 'acf-views' )
+						)
+					)
+				)
 			)
 		);
 	}
@@ -173,34 +173,34 @@ abstract class Cpt extends Actor_Base implements Actor {
 			__( 'enabled', 'acf-views' ) :
 			__( 'disabled', 'acf-views' );
 
-		return Html_Renderer::render_tags(
-			array(
-				array(
-					'tag'   => 'span',
-					'attrs' => array(
+		return Html_Renderer::render(
+			Html::wrap(
+				Html::tag(
+					'span',
+					array(
 						'style' => array(
 							'display' => 'inline-block',
 							'float'   => 'right',
 						),
-					),
+					)
 				),
-				array(
-					array(
-						array(
-							'tag'   => 'a',
-							'attrs' => array(
+				Html::stack(
+					Html::wrap(
+						Html::tag(
+							'a',
+							array(
 								'target' => '_blank',
 								'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
-							),
+							)
 						),
-						__( 'File system storage', 'acf-views' ),
+						__( 'File system storage', 'acf-views' )
 					),
 					' ' . sprintf(
 					// translators: %s - the file system storage state, 'enabled' or 'disabled'.
 						__( 'is %s.', 'acf-views' ),
 						$state
-					),
-				),
+					)
+				)
 			)
 		);
 	}
@@ -209,8 +209,8 @@ abstract class Cpt extends Actor_Base implements Actor {
 		$singular_name = $this->plugin_cpt->labels()->singular_name();
 		$add_new_url   = admin_url( sprintf( 'post-new.php?post_type=%s', $this->get_cpt_name() ) );
 
-		return Html_Renderer::render_tag_group(
-			array(
+		return Html_Renderer::render(
+			Html::stack(
 				sprintf(
 				// translators: %s - singular name of the CPT.
 					__( 'No %s yet.', 'acf-views' ),
@@ -224,24 +224,24 @@ abstract class Cpt extends Actor_Base implements Actor {
 						$singular_name
 					),
 					'_self'
-				),
+				)
 			)
 		);
 	}
 
 	/**
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	protected static function link_tags( string $url, string $label, string $target = '_blank' ): array {
-		return array(
-			array(
-				'tag'   => 'a',
-				'attrs' => array(
+		return Html::wrap(
+			Html::tag(
+				'a',
+				array(
 					'target' => $target,
 					'href'   => $url,
-				),
+				)
 			),
-			$label,
+			$label
 		);
 	}
 

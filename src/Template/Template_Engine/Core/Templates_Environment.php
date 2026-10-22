@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Filesystem_Base;
 
@@ -66,14 +67,14 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 			'class' => array( 'notice', 'notice-error' ),
 		);
 
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'div',
-					'attrs' => $notice_attributes,
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'div',
+					$notice_attributes
 				),
-				array( 'tag' => 'p' ),
-				fn() => $this->print_not_writable_message(),
+				Html::tag( 'p' ),
+				fn() => $this->print_not_writable_message()
 			)
 		);
 	}
@@ -131,17 +132,17 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 	}
 
 	protected function print_not_writable_message(): void {
-		Html_Renderer::print_tag_group(
-			array(
+		Html_Renderer::print(
+			Html::stack(
 				__( 'The templates directory is not writable.', 'acf-views' ),
 				' (path = ' . $this->uploads_folder . ')',
-				array( 'tag' => 'br' ),
+				Html::tag( 'br' ),
 				__( 'Most likely, the WordPress uploads directory is not writable.', 'acf-views' ),
-				array( 'tag' => 'br' ),
+				Html::tag( 'br' ),
 				__(
 					'Check and fix file permissions, then deactivate and activate back the Advanced Views plugin. If the issue persists, contact support.',
 					'acf-views'
-				),
+				)
 			)
 		);
 	}

@@ -23,7 +23,7 @@ class File_Field extends List_Field {
 	}
 
 	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
-		Html_Renderer::print_tags( $this->link_field->compose_tags( $item_id, $markup_field_data ) );
+		Html_Renderer::print( $this->link_field->compose_tags( $item_id, $markup_field_data ) );
 	}
 
 	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {

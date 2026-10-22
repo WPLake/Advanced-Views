@@ -13,8 +13,8 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Group from Html
- * @phpstan-import-type Tag_Tree from Html
+ * @phpstan-import-type Tag_Stack from Html
+ * @phpstan-import-type Tag_Wrap from Html
  */
 final class Toolbar_Printer {
 	/**
@@ -23,13 +23,13 @@ final class Toolbar_Printer {
 	public static function print_dashboard_header( string $name, string $version, array $tabs ): void {
 		$toolbar_tags = self::toolbar_tags( $name, $version, $tabs );
 
-		Html_Renderer::print_tags( $toolbar_tags );
+		Html_Renderer::print( $toolbar_tags );
 	}
 
 	/**
 	 * @param array<int,array<string,mixed>> $tabs
 	 *
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	protected static function toolbar_tags( string $name, string $version, array $tabs ): array {
 		$title_attrs   = array( 'class' => 'av-toolbar__title' );
@@ -38,48 +38,48 @@ final class Toolbar_Printer {
 		$toolbar_attrs = array( 'class' => 'av-toolbar' );
 		$version_label = sprintf( 'v.%s', $version );
 
-		$title_tag   = array(
-			'tag'   => 'h2',
-			'attrs' => $title_attrs,
+		$title_tag   = Html::tag(
+			'h2',
+			$title_attrs
 		);
-		$icon_tag    = array(
-			'tag'   => 'i',
-			'attrs' => $icon_attrs,
+		$icon_tag    = Html::tag(
+			'i',
+			$icon_attrs
 		);
-		$version_tag = array(
-			'tag'   => 'span',
-			'attrs' => $version_attrs,
+		$version_tag = Html::tag(
+			'span',
+			$version_attrs
 		);
 
-		$title = array(
+		$title = Html::wrap(
 			$title_tag,
-			array(
-				array( $icon_tag ),
-				array( array( 'tag' => 'span' ), $name ),
-				array( $version_tag, $version_label ),
-			),
+			Html::stack(
+				$icon_tag,
+				Html::wrap( Html::tag( 'span' ), $name ),
+				Html::wrap( $version_tag, $version_label )
+			)
 		);
 
 		$left_block  = self::toolbar_block_tags( 'left', 'isLeftBlock', $tabs );
 		$right_block = self::toolbar_block_tags( 'right', 'isRightBlock', $tabs );
 
-		return array(
-			array(
-				'tag'   => 'div',
-				'attrs' => $toolbar_attrs,
+		return Html::wrap(
+			Html::tag(
+				'div',
+				$toolbar_attrs
 			),
-			array(
+			Html::stack(
 				$title,
 				$left_block,
-				$right_block,
-			),
+				$right_block
+			)
 		);
 	}
 
 	/**
 	 * @param array<int,array<string,mixed>> $tabs
 	 *
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	protected static function toolbar_block_tags( string $type, string $block_key, array $tabs ): array {
 		$block_tabs = array_filter(
@@ -95,19 +95,19 @@ final class Toolbar_Printer {
 			$tabs_list
 		);
 
-		return array(
-			array(
-				'tag'   => 'div',
-				'attrs' => $block_attrs,
+		return Html::wrap(
+			Html::tag(
+				'div',
+				$block_attrs
 			),
-			$tab_tags,
+			Html::stack( ...$tab_tags )
 		);
 	}
 
 	/**
 	 * @param array<string,mixed> $tab
 	 *
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	protected static function toolbar_tab_tags( array $tab ): array {
 		$classes = array_filter(
@@ -138,25 +138,25 @@ final class Toolbar_Printer {
 
 		$icon_classes = string( $tab, 'iconClasses' );
 		$icon_attrs   = array( 'class' => $icon_classes );
-		$icon_tag     = array(
-			'tag'   => 'i',
-			'attrs' => $icon_attrs,
+		$icon_tag     = Html::tag(
+			'i',
+			$icon_attrs
 		);
 		$icon         = key_exists( 'iconClasses', $tab ) ?
-			array( $icon_tag ) :
-			array();
+			$icon_tag :
+			Html::stack();
 		$label        = string( $tab, 'label' );
-		$link         = array(
-			'tag'   => 'a',
-			'attrs' => $attrs,
+		$link         = Html::tag(
+			'a',
+			$attrs
 		);
 
-		return array(
+		return Html::wrap(
 			$link,
-			array(
-				array( array( 'tag' => 'span' ), $label ),
-				$icon,
-			),
+			Html::stack(
+				Html::wrap( Html::tag( 'span' ), $label ),
+				$icon
+			)
 		);
 	}
 }

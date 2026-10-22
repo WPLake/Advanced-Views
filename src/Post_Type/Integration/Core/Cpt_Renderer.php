@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Shortcode\Shortcode_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -85,14 +86,14 @@ final class Cpt_Renderer {
 			$minified_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
 			$unique_id    = $cpt_settings->get_unique_id();
 
-			return Html_Renderer::render_tags(
-				array(
-					array(
-						'tag'   => 'style',
-						'attrs' => array( 'data-avf-id' => $unique_id ),
+			return Html_Renderer::render(
+				Html::wrap(
+					Html::tag(
+						'style',
+						array( 'data-avf-id' => $unique_id )
 					),
 					// phpcs:ignore WordPress.Security.EscapeOutput
-					fn() => print( $minified_css ),
+					fn() => print( $minified_css )
 				)
 			);
 		}
@@ -101,13 +102,13 @@ final class Cpt_Renderer {
 	}
 
 	protected static function make_placeholder( string $message ): string {
-		return Html_Renderer::render_tags(
-			array(
-				array(
-					'tag'   => 'p',
-					'attrs' => array( 'class' => 'avf-cpt-block__placeholder' ),
+		return Html_Renderer::render(
+			Html::wrap(
+				Html::tag(
+					'p',
+					array( 'class' => 'avf-cpt-block__placeholder' )
 				),
-				sprintf( '[%s]', $message ),
+				sprintf( '[%s]', $message )
 			)
 		);
 	}

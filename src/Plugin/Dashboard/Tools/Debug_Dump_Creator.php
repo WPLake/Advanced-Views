@@ -13,6 +13,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use WP_Query;
@@ -46,9 +47,9 @@ final class Debug_Dump_Creator {
 				'message' => 1,
 			)
 		);
-		Html_Renderer::print_tags(
-			array(
-				array( 'tag' => 'script' ),
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag( 'script' ),
 				function () use ( $dump_data, $redirect_url ) {
 					?>
 					(function () {
@@ -79,7 +80,7 @@ final class Debug_Dump_Creator {
 							save();
 					}())
 					<?php
-				},
+				}
 			)
 		);
 		exit;

@@ -16,6 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Label_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Outer_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Wrapper_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
@@ -87,7 +88,7 @@ class Field_Template {
 
 		Format_Token::tabulation( $tabs_number );
 
-		Html_Renderer::print_tags( $markup_field_instance->compose_tags( $field_id, $markup_field_data ) );
+		Html_Renderer::print( $markup_field_instance->compose_tags( $field_id, $markup_field_data ) );
 
 		Format_Token::next_line();
 
@@ -183,10 +184,10 @@ class Field_Template {
 		$is_with_label = strlen( $field_settings->label ) > 0;
 		$label_outside = $is_with_label && $is_label_out_of_row ?
 			$print_label :
-			array();
+			Html::stack();
 		$label_inside  = $is_with_label && ! $is_label_out_of_row ?
 			$print_label :
-			array();
+			Html::stack();
 
 		$content = Outer_Printer::wrap_with_outers(
 			$field_assets,
@@ -217,8 +218,7 @@ class Field_Template {
 			) :
 			$content;
 
-		// a group member that is an array is a tree, so groups are put into it as its head.
-		$row_inner = array( $label_inside, array( $field_layer ) );
+		$row_inner = Html::stack( $label_inside, $field_layer );
 		$row_layer = $is_with_row_wrapper ?
 			Wrapper_Printer::wrap(
 				Wrapper_Printer::row_tag(
@@ -235,8 +235,8 @@ class Field_Template {
 			) :
 			$row_inner;
 
-		Html_Renderer::print_tag_group(
-			array( $label_outside, array( $row_layer ) )
+		Html_Renderer::print(
+			Html::stack( $label_outside, $row_layer )
 		);
 
 		return $tabs_number;

@@ -17,6 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 
@@ -50,21 +51,21 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	}
 
 	protected function print_link_with_js_hover( string $url, string $title ): void {
-		$tags = array(
-			array(
-				'tag'   => 'a',
-				'attrs' => array(
+		$tags = Html::wrap(
+			Html::tag(
+				'a',
+				array(
 					'href'        => $url,
 					'target'      => '_blank',
 					'style'       => array( 'transition' => 'all .3s ease' ),
 					'onMouseOver' => "this.style.filter='brightness(30%)'",
 					'onMouseOut'  => "this.style.filter='brightness(100%)'",
-				),
+				)
 			),
-			$title,
+			$title
 		);
 
-		Html_Renderer::print_tags( $tags );
+		Html_Renderer::print( $tags );
 	}
 
 	/**
@@ -191,10 +192,10 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				$this->selections_cpt->labels()->plural_name()
 			);
 
-			Html_Renderer::print_tags(
-				array(
-					array( 'tag' => 'p' ),
-					$message,
+			Html_Renderer::print(
+				Html::wrap(
+					Html::tag( 'p' ),
+					$message
 				)
 			);
 		}
@@ -217,10 +218,10 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 
 		if ( array() !== $related_cards ||
 			$is_list_look ) {
-			Html_Renderer::print_tag_group(
-				array(
-					array( 'tag' => 'br' ),
-					array( 'tag' => 'br' ),
+			Html_Renderer::print(
+				Html::stack(
+					Html::tag( 'br' ),
+					Html::tag( 'br' )
 				)
 			);
 		}
@@ -239,10 +240,10 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			);
 
 			$label = __( 'Query posts to display using this Layout', 'acf-views' );
-			$tags  = array(
-				array(
-					'tag'   => 'a',
-					'attrs' => array(
+			$tags  = Html::wrap(
+				Html::tag(
+					'a',
+					array(
 						'href'   => $url,
 						'target' => '_blank',
 						'class'  => 'button',
@@ -253,12 +254,12 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 							'font-size'   => '11px',
 							'transition'  => 'all .3s ease',
 						),
-					),
+					)
 				),
-				$label,
+				$label
 			);
 
-			Html_Renderer::print_tags( $tags );
+			Html_Renderer::print( $tags );
 		}
 	}
 

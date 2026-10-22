@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern_Base;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Common_Template_Pattern;
@@ -447,22 +448,22 @@ class Front_Assets extends Actor_Base implements Actor {
 				// introduce a styles variable, which allows to detect the styles root inside a webcomponent.
 				if ( $this->live_reloader_component->is_active() ) {
 					// the wrapper is necessary to make .parentElement work.
-					$all_css_code = Html_Renderer::render_tags(
-						array(
-							array(
-								'tag'   => 'div',
-								'attrs' => array( 'hidden' => '' ),
+					$all_css_code = Html_Renderer::render(
+						Html::wrap(
+							Html::tag(
+								'div',
+								array( 'hidden' => '' )
 							),
-							array(
+							Html::stack(
 								// @phpcs:ignore WordPress.Security.EscapeOutput
 								fn() => print( $all_css_code ),
-								array( array( 'tag' => 'avf-styles-location' ) ),
-								array(
-									array( 'tag' => 'script' ),
+								Html::tag( 'avf-styles-location' ),
+								Html::wrap(
+									Html::tag( 'script' ),
 									// @phpcs:ignore WordPress.Security.EscapeOutput
-									fn() => print( 'class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)' ),
-								),
-							),
+									fn() => print( 'class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)' )
+								)
+							)
 						)
 					);
 				}
@@ -639,14 +640,14 @@ class Front_Assets extends Actor_Base implements Actor {
 	 * @param array<string,string> $attrs
 	 */
 	protected function make_code_tag( string $tag, array $attrs, string $code ): string {
-		return Html_Renderer::render_tags(
-			array(
-				array(
-					'tag'   => $tag,
-					'attrs' => $attrs,
+		return Html_Renderer::render(
+			Html::wrap(
+				Html::tag(
+					$tag,
+					$attrs
 				),
 				// @phpcs:ignore WordPress.Security.EscapeOutput
-				fn() => print( $code ),
+				fn() => print( $code )
 			)
 		) . "\n";
 	}

@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Utils;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 abstract class Profiler {
@@ -45,37 +46,37 @@ abstract class Profiler {
 	public static function print_report(): void {
 		$classes_total_usage = self::get_classes_total_usage();
 
-		$pre_chain = fn( $data, string $prefix = '' ): array => array(
-			array( 'tag' => 'pre' ),
+		$pre_chain = fn( $data, string $prefix = '' ): array => Html::wrap(
+			Html::tag( 'pre' ),
 			function () use ( $data, $prefix ): void {
 				echo esc_html( $prefix );
 				// @phpcs:ignore
 				print_r( $data );
-			},
+			}
 		);
 
-		$tags = array(
-			array(
-				'tag'   => 'div',
-				'attrs' => array(
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				array(
 					'style' => array(
 						'max-width' => '1000px',
 						'margin'    => '0 auto',
 						'padding'   => '50px',
 						'border'    => '2px solid gray',
 					),
-				),
+				)
 			),
-			array(
+			Html::stack(
 				$pre_chain( self::get_total_usage() ),
-				array( 'tag' => 'hr' ),
+				Html::tag( 'hr' ),
 				$pre_chain( $classes_total_usage, count( $classes_total_usage ) . "\n" ),
-				array( 'tag' => 'hr' ),
-				$pre_chain( self::$class_hooks_usage ),
-			),
+				Html::tag( 'hr' ),
+				$pre_chain( self::$class_hooks_usage )
+			)
 		);
 
-		Html_Renderer::print_tags( $tags );
+		Html_Renderer::print( $tags );
 	}
 
 	/**

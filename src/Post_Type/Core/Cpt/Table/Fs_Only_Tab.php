@@ -8,6 +8,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
@@ -55,33 +56,33 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 		$tab_data->set_label( __( 'FS only', 'acf-views' ) );
 		$tab_data->set_description_callback(
 			function (): void {
-				Html_Renderer::print_tag_group(
-					array(
+				Html_Renderer::print(
+					Html::stack(
 						__(
 							'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
 							'acf-views'
 						),
-						array( 'tag' => 'br' ),
+						Html::tag( 'br' ),
 						__(
 							'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
 							'acf-views'
 						),
-						array( 'tag' => 'br' ),
+						Html::tag( 'br' ),
 						__(
 							'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
 							'acf-views'
 						),
 						' ',
-						array(
-							array(
-								'tag'   => 'a',
-								'attrs' => array(
+						Html::wrap(
+							Html::tag(
+								'a',
+								array(
 									'target' => '_blank',
 									'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
-								),
+								)
 							),
-							__( 'Read more', 'acf-views' ),
-						),
+							__( 'Read more', 'acf-views' )
+						)
 					)
 				);
 			}
@@ -152,38 +153,41 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 			$cpt_data = $this->cpt_settings_storage->get( $unique_id );
 
 			// the 'br' goes between the links.
-			if ( array() !== $item_links ) {
-				$item_links[] = array( 'tag' => 'br' );
-			}
+			$separator = array() !== $item_links ?
+				Html::tag( 'br' ) :
+				Html::stack();
 
-			$item_links[] = array(
-				array(
-					'tag'   => 'a',
-					'attrs' => array(
-						'href'   => $cpt_data->get_edit_post_link(),
-						'target' => '_blank',
+			$item_links[] = Html::stack(
+				$separator,
+				Html::wrap(
+					Html::tag(
+						'a',
+						array(
+							'href'   => $cpt_data->get_edit_post_link(),
+							'target' => '_blank',
+						)
 					),
-				),
-				$cpt_data->title,
+					$cpt_data->title
+				)
 			);
 		}
 
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'div',
-					'attrs' => array( 'class' => 'notice notice-success' ),
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'div',
+					array( 'class' => 'notice notice-success' )
 				),
-				array(
-					array(
-						array( 'tag' => 'p' ),
-						count( $ids ) . ' ' . __( 'items successfully synced', 'acf-views' ),
+				Html::stack(
+					Html::wrap(
+						Html::tag( 'p' ),
+						count( $ids ) . ' ' . __( 'items successfully synced', 'acf-views' )
 					),
-					array(
-						array( 'tag' => 'p' ),
-						$item_links,
-					),
-				),
+					Html::wrap(
+						Html::tag( 'p' ),
+						Html::stack( ...$item_links )
+					)
+				)
 			)
 		);
 	}

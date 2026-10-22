@@ -23,8 +23,8 @@ use WP_Query;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag_Tree from Html
- * @phpstan-import-type Tag_Group from Html
+ * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Tag_Stack from Html
  */
 abstract class Cpt_Table extends Actor_Base implements Actor {
 	const COLUMN_PREFIX = Hard_Layout_Cpt::NAME . '_';
@@ -152,14 +152,14 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			return;
 		}
 
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'div',
-					'attrs' => array( 'class' => 'notice notice-success' ),
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'div',
+					array( 'class' => 'notice notice-success' )
 				),
-				array( 'tag' => 'p' ),
-				__( 'Item successfully cloned.', 'acf-views' ),
+				Html::tag( 'p' ),
+				__( 'Item successfully cloned.', 'acf-views' )
 			)
 		);
 	}
@@ -172,10 +172,10 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			null;
 
 		if ( null !== $description_callback ) {
-			Html_Renderer::print_tags(
-				array(
-					array( 'tag' => 'p' ),
-					$description_callback,
+			Html_Renderer::print(
+				Html::wrap(
+					Html::tag( 'p' ),
+					$description_callback
 				)
 			);
 
@@ -183,12 +183,12 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		}
 
 		if ( '' !== $wp_post_type->description ) {
-			Html_Renderer::print_tags(
-				array(
-					array( 'tag' => 'p' ),
+			Html_Renderer::print(
+				Html::wrap(
+					Html::tag( 'p' ),
 					// don't use esc_html as it contains links.
 					// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					fn() => print( $wp_post_type->description ),
+					fn() => print( $wp_post_type->description )
 				)
 			);
 		}
@@ -212,28 +212,25 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			$attrs['href'] = $this->get_tab_url( $tab->get_name() );
 
 			$count_span = '' !== $tab->get_label_in_brackets() ?
-				array(
+				Html::stack(
 					' ',
-					array(
-						array(
-							'tag'   => 'span',
-							'attrs' => array( 'class' => 'count' ),
-						),
-						sprintf( '(%s)', $tab->get_label_in_brackets() ),
-					),
+					Html::wrap(
+						Html::tag( 'span', array( 'class' => 'count' ) ),
+						sprintf( '(%s)', $tab->get_label_in_brackets() )
+					)
 				) :
-				array();
+				Html::stack();
 
-			$views[ $tab->get_name() ] = Html_Renderer::render_tags(
-				array(
-					array(
-						'tag'   => 'a',
-						'attrs' => $attrs,
+			$views[ $tab->get_name() ] = Html_Renderer::render(
+				Html::wrap(
+					Html::tag(
+						'a',
+						$attrs
 					),
-					array(
+					Html::stack(
 						$tab->get_label(),
-						$count_span,
-					),
+						$count_span
+					)
 				)
 			);
 
@@ -264,10 +261,10 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			__( 'Search for name.', 'acf-views' );
 
 		// only primary search is available for custom items.
-		Html_Renderer::print_tags(
-			array(
-				array( 'tag' => 'style' ),
-				fn() => print( sprintf( '#posts-filter .search-box::after{content:"%s";}', esc_html( $label ) ) ),
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag( 'style' ),
+				fn() => print( sprintf( '#posts-filter .search-box::after{content:"%s";}', esc_html( $label ) ) )
 			)
 		);
 	}
@@ -376,13 +373,13 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			)
 		);
 
-		$actions['clone'] = Html_Renderer::render_tags(
-			array(
-				array(
-					'tag'   => 'a',
-					'attrs' => array( 'href' => $clone_link ),
+		$actions['clone'] = Html_Renderer::render(
+			Html::wrap(
+				Html::tag(
+					'a',
+					array( 'href' => $clone_link )
 				),
-				__( 'Clone', 'acf-views' ),
+				__( 'Clone', 'acf-views' )
 			)
 		);
 		$actions['trash'] = $trash;
@@ -449,36 +446,36 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 				$cells[] = $this->table_cell( $current_tab_data, $cpt_data, $column_name, $column_label, $hidden );
 			}
 
-			$rows[] = array( array( 'tag' => 'tr' ), $cells );
+			$rows[] = Html::wrap( Html::tag( 'tr' ), Html::stack( ...$cells ) );
 		}
 
-		Html_Renderer::print_tag_group(
-			array(
+		Html_Renderer::print(
+			Html::stack(
 				// hide the origin items until the custom items are pasted via JS.
-				array(
-					array( 'tag' => 'style' ),
-					fn() => print( '#the-list{opacity: 0; transition: opacity ease .1s;}' ),
+				Html::wrap(
+					Html::tag( 'style' ),
+					fn() => print( '#the-list{opacity: 0; transition: opacity ease .1s;}' )
 				),
-				array(
-					array(
-						'tag'   => 'div',
-						'attrs' => array( 'style' => array( 'display' => 'none' ) ),
+				Html::wrap(
+					Html::tag(
+						'div',
+						array( 'style' => array( 'display' => 'none' ) )
 					),
-					array( 'tag' => 'table' ),
-					array(
-						'tag'   => 'tbody',
-						'attrs' => array( 'id' => 'acf-views-the-list' ),
+					Html::tag( 'table' ),
+					Html::tag(
+						'tbody',
+						array( 'id' => 'acf-views-the-list' )
 					),
-					$rows,
+					Html::stack( ...$rows )
 				),
-				array(
-					array(
-						'tag'   => 'script',
-						'attrs' => array( 'type' => 'text/javascript' ),
+				Html::wrap(
+					Html::tag(
+						'script',
+						array( 'type' => 'text/javascript' )
 					),
 					// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					fn() => print( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' ),
-				),
+					fn() => print( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' )
+				)
 			)
 		);
 	}
@@ -606,7 +603,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 	/**
 	 * @param string[] $hidden_columns
 	 *
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	protected function table_cell(
 		Tab_Data $tab_data,
@@ -628,50 +625,50 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 
 		$contents = array(
 			'cb'    => $this->checkbox_cell_content( $cpt_settings->get_unique_id(), $cpt_settings->title ),
-			'title' => array( fn() => $tab_data->print_row_title( $cpt_settings ) ),
+			'title' => fn() => $tab_data->print_row_title( $cpt_settings ),
 		);
 
-		return array(
-			array(
-				'tag'   => $is_checkbox ?
+		return Html::wrap(
+			Html::tag(
+				$is_checkbox ?
 					'th' :
 					'td',
-				'attrs' => array(
+				array(
 					'class'        => $classes,
 					'data-colname' => $is_checkbox ?
 						'' :
 						$column_label,
-				),
+				)
 			),
-			$contents[ $column_name ] ?? array( fn() => $this->print_column( $column_name, $cpt_settings ) ),
+			$contents[ $column_name ] ?? fn() => $this->print_column( $column_name, $cpt_settings )
 		);
 	}
 
 	/**
-	 * @return Tag_Group
+	 * @return Tag_Stack
 	 */
 	protected function checkbox_cell_content( string $unique_id, string $title ): array {
-		return array(
-			array(
-				array(
-					'tag'   => 'label',
-					'attrs' => array(
+		return Html::stack(
+			Html::wrap(
+				Html::tag(
+					'label',
+					array(
 						'for'   => 'cb-select-' . $unique_id,
 						'class' => 'screen-reader-text',
-					),
+					)
 				),
 				// translators: %s: item title.
-				sprintf( __( 'Select %s', 'acf-views' ), $title ),
+				sprintf( __( 'Select %s', 'acf-views' ), $title )
 			),
-			array(
-				'tag'   => 'input',
-				'attrs' => array(
+			Html::tag(
+				'input',
+				array(
 					'id'    => 'cb-select-' . $unique_id,
 					'type'  => 'checkbox',
 					'value' => $unique_id,
 					'name'  => 'post[]',
-				),
-			),
+				)
+			)
 		);
 	}
 }

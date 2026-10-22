@@ -37,7 +37,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag_Group from Html
+ * @phpstan-import-type Tag_Stack from Html
  */
 final class Tools_Page extends Actor_Base implements Actor {
 
@@ -161,9 +161,9 @@ final class Tools_Page extends Actor_Base implements Actor {
 
 		$redirect_url = Plugin::get_admin_url( self::SLUG ) .
 						sprintf( '&message=1&type=export&_views=%s&_cards=%s', $count_of_view_ids, $count_of_card_ids );
-		Html_Renderer::print_tags(
-			array(
-				array( 'tag' => 'script' ),
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag( 'script' ),
 				function () use ( $redirect_url ) {
 					?>
 					(function () {
@@ -197,7 +197,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 							save();
 					}())
 					<?php
-				},
+				}
 			)
 		);
 		exit;
@@ -506,9 +506,10 @@ final class Tools_Page extends Actor_Base implements Actor {
 			$post_selection_labels->plural_name()
 		);
 
-		return Html_Renderer::render_tag_group(
-			array_merge(
-				array( $summary, array( 'tag' => 'br' ) ),
+		return Html_Renderer::render(
+			Html::stack(
+				$summary,
+				Html::tag( 'br' ),
 				$this->imported_items_tags( $views_label, $success_view_ids ),
 				$this->imported_items_tags( $cards_label, $success_card_ids ),
 				$this->failed_items_tags( $wrong_views_label, $fail_view_unique_ids ),
@@ -520,69 +521,69 @@ final class Tools_Page extends Actor_Base implements Actor {
 	/**
 	 * @param string[] $post_ids
 	 *
-	 * @return Tag_Group
+	 * @return Tag_Stack
 	 */
 	protected function imported_items_tags( string $label, array $post_ids ): array {
 		if ( array() === $post_ids ) {
-			return array();
+			return Html::stack();
 		}
 
 		$links = array();
 
 		foreach ( $post_ids as $index => $post_id ) {
 			if ( $index > 0 ) {
-				$links[] = array( 'tag' => 'br' );
+				$links[] = Html::tag( 'br' );
 			}
 
-			$links[] = array(
-				array(
-					'tag'   => 'a',
-					'attrs' => array(
+			$links[] = Html::wrap(
+				Html::tag(
+					'a',
+					array(
 						'href'   => string( get_edit_post_link( (int) $post_id ) ),
 						'target' => '_blank',
-					),
+					)
 				),
-				get_the_title( (int) $post_id ),
+				get_the_title( (int) $post_id )
 			);
 		}
 
-		return array_merge(
-			array(
-				array( 'tag' => 'br' ),
-				$label . ':',
-				array( 'tag' => 'br' ),
-				array( 'tag' => 'br' ),
-				' ',
-			),
-			$links,
-			array( '.', array( 'tag' => 'br' ) )
+		return Html::stack(
+			Html::tag( 'br' ),
+			$label . ':',
+			Html::tag( 'br' ),
+			Html::tag( 'br' ),
+			' ',
+			Html::stack( ...$links ),
+			'.',
+			Html::tag( 'br' )
 		);
 	}
 
 	/**
 	 * @param string[] $unique_ids
 	 *
-	 * @return Tag_Group
+	 * @return Tag_Stack
 	 */
 	protected function failed_items_tags( string $label, array $unique_ids ): array {
 		if ( array() === $unique_ids ) {
-			return array();
+			return Html::stack();
 		}
 
 		$ids = array();
 
 		foreach ( $unique_ids as $index => $unique_id ) {
 			if ( $index > 0 ) {
-				$ids[] = array( 'tag' => 'br' );
+				$ids[] = Html::tag( 'br' );
 			}
 
 			$ids[] = $unique_id;
 		}
 
-		return array_merge(
-			array( $label . ': ' ),
-			$ids,
-			array( '.', array( 'tag' => 'br' ) )
+		return Html::stack(
+			$label . ': ',
+			Html::stack( ...$ids ),
+			'.',
+			Html::tag( 'br' )
 		);
 	}
 

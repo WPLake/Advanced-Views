@@ -19,6 +19,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
@@ -128,21 +129,21 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	}
 
 	protected function print_link_with_js_hover( string $url, string $title ): void {
-		$tags = array(
-			array(
-				'tag'   => 'a',
-				'attrs' => array(
+		$tags = Html::wrap(
+			Html::tag(
+				'a',
+				array(
 					'href'        => $url,
 					'target'      => '_blank',
 					'style'       => array( 'transition' => 'all .3s ease' ),
 					'onMouseOver' => "this.style.filter='brightness(30%)'",
 					'onMouseOut'  => "this.style.filter='brightness(100%)'",
-				),
+				)
 			),
-			$title,
+			$title
 		);
 
-		Html_Renderer::print_tags( $tags );
+		Html_Renderer::print( $tags );
 	}
 
 	/**
@@ -211,25 +212,25 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		$link_attrs['href'] = $url;
 
 		$icon_tag = '' !== $icon_class ?
-			array(
-				'tag'   => 'i',
-				'attrs' => array(
+			Html::tag(
+				'i',
+				array(
 					'class' => $icon_class,
 					'style' => $icon_style,
-				),
+				)
 			) :
-			array();
+			Html::stack();
 
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'a',
-					'attrs' => $link_attrs,
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'a',
+					$link_attrs
 				),
-				array(
+				Html::stack(
 					$icon_tag,
-					$label,
-				),
+					$label
+				)
 			)
 		);
 	}
@@ -289,8 +290,8 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			echo '';
 		}
 
-		Html_Renderer::print_tag_group(
-			array( array( 'tag' => 'br' ), array( 'tag' => 'br' ) )
+		Html_Renderer::print(
+			Html::stack( Html::tag( 'br' ), Html::tag( 'br' ) )
 		);
 
 		$this->print_add_new_link( $wp_post->ID, '', $add_new_link_args );
@@ -338,16 +339,16 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 				continue;
 			}
 
-			$views_with_invalid_custom_markup[] = Html_Renderer::render_tags(
-				array(
-					array(
-						'tag'   => 'a',
-						'attrs' => array(
+			$views_with_invalid_custom_markup[] = Html_Renderer::render(
+				Html::wrap(
+					Html::tag(
+						'a',
+						array(
 							'target' => '_blank',
 							'href'   => $related_view_data->get_edit_post_link(),
-						),
+						)
 					),
-					$related_view_data->title,
+					$related_view_data->title
 				)
 			);
 		}
@@ -502,31 +503,31 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 				foreach ( $related_view_links_with_invalid_custom_markup as $link ) {
 					// the 'br' goes between the links.
 					if ( array() !== $links ) {
-						$links[] = array( 'tag' => 'br' );
+						$links[] = Html::tag( 'br' );
 					}
 
 					// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					$links[] = fn() => print( $link );
 				}
 
-				$extra = Html_Renderer::render_tag_group(
-					array(
-						array( 'tag' => 'br' ),
-						array( 'tag' => 'br' ),
-						array(
-							array(
-								'tag'   => 'span',
-								'attrs' => array( 'style' => array( 'color' => '#dc3232' ) ),
+				$extra = Html_Renderer::render(
+					Html::stack(
+						Html::tag( 'br' ),
+						Html::tag( 'br' ),
+						Html::wrap(
+							Html::tag(
+								'span',
+								array( 'style' => array( 'color' => '#dc3232' ) )
 							),
 							sprintf(
 								'%s %s:',
 								count( $related_view_links_with_invalid_custom_markup ),
 								__( 'Views associated with this group contain invalid Custom Markup', 'acf-views' )
-							),
+							)
 						),
-						array( 'tag' => 'br' ),
-						array( 'tag' => 'br' ),
-						array( $links ),
+						Html::tag( 'br' ),
+						Html::tag( 'br' ),
+						...$links
 					)
 				);
 

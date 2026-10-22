@@ -20,7 +20,8 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
- * @phpstan-import-type Tag_Group from Html
+ * @phpstan-import-type Tag_Stack from Html
+ * @phpstan-import-type Tag_Wrap from Html
  */
 final class Upgrade_Notice extends Actor_Base implements Actor {
 	private Plugin_Meta $plugin_meta;
@@ -83,23 +84,23 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 
 		$dismiss_members = Avf_User::can_manage() ?
 			$this->get_dismiss_members() :
-			array();
+			Html::stack();
 
-		$tags = array(
-			array(
-				'tag'   => 'div',
-				'attrs' => array( 'class' => 'notice notice-info' ),
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				array( 'class' => 'notice notice-info' )
 			),
-			array( 'tag' => 'p' ),
-			array(
+			Html::tag( 'p' ),
+			Html::stack(
 				__( 'Advanced Views plugin has been successfully upgraded!', 'acf-views' ),
-				array( 'tag' => 'br' ),
-				...$this->get_notice_lines_members( $upgrade_notice ),
-				...$dismiss_members,
-			),
+				Html::tag( 'br' ),
+				$this->get_notice_lines_members( $upgrade_notice ),
+				$dismiss_members
+			)
 		);
 
-		Html_Renderer::print_tags( $tags );
+		Html_Renderer::print( $tags );
 	}
 
 	protected function hide_notice(): bool {
@@ -125,24 +126,24 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Group
+	 * @return Tag_Stack
 	 */
 	protected function get_notice_lines_members( string $upgrade_notice ): array {
 		$members = array();
 
 		foreach ( explode( "\n", $upgrade_notice ) as $index => $line ) {
 			if ( $index > 0 ) {
-				$members[] = array( 'tag' => 'br' );
+				$members[] = Html::tag( 'br' );
 			}
 
 			$members[] = $line;
 		}
 
-		return $members;
+		return Html::stack( ...$members );
 	}
 
 	/**
-	 * @return Tag_Group
+	 * @return Tag_Wrap
 	 */
 	protected function get_dismiss_members(): array {
 		$dismiss_url = add_query_arg(
@@ -153,17 +154,15 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 			Plugin::get_current_admin_url()
 		);
 
-		return array(
-			array(
+		return Html::wrap(
+			Html::tag(
+				'a',
 				array(
-					'tag'   => 'a',
-					'attrs' => array(
-						'style' => array( 'float' => 'right' ),
-						'href'  => $dismiss_url,
-					),
-				),
-				__( 'Thanks, hide', 'acf-views' ),
+					'style' => array( 'float' => 'right' ),
+					'href'  => $dismiss_url,
+				)
 			),
+			__( 'Thanks, hide', 'acf-views' )
 		);
 	}
 }

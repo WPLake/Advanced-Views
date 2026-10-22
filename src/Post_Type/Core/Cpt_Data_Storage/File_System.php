@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Filesystem_Base;
 
@@ -117,28 +118,28 @@ class File_System extends Loggable_Actor implements Actor {
 
 				self::$is_fs_not_writable_notice_shown = true;
 
-				$tags = array(
-					array(
-						'tag'   => 'div',
-						'attrs' => array( 'class' => 'notice notice-error' ),
+				$tags = Html::wrap(
+					Html::tag(
+						'div',
+						array( 'class' => 'notice notice-error' )
 					),
-					array( 'tag' => 'p' ),
-					array(
+					Html::tag( 'p' ),
+					Html::stack(
 						__( 'The FS storage directory is not writable.', 'acf-views' ) . ' (path = ' . $this->base_folder . ')',
-						array( 'tag' => 'br' ),
+						Html::tag( 'br' ),
 						__(
 							'Check and fix file permissions to work with Views and Cards.',
 							'acf-views'
 						),
-						array( 'tag' => 'br' ),
+						Html::tag( 'br' ),
 						__(
 							'Note: Do not disable the FS storage feature before fixing it, otherwise your data will be lost.',
 							'acf-views'
-						),
-					),
+						)
+					)
 				);
 
-				Html_Renderer::print_tags( $tags );
+				Html_Renderer::print( $tags );
 			}
 		);
 	}

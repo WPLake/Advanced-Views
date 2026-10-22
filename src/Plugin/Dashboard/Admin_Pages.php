@@ -19,6 +19,7 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Screen;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -94,20 +95,18 @@ class Admin_Pages extends Actor_Base implements Actor {
 			Avf_User::get_manage_capability(),
 			self::PAGE_DOCS,
 			function (): void {
-				Html_Renderer::print_tags(
-					array(
+				Html_Renderer::print(
+					Html::tag(
+						'iframe',
 						array(
-							'tag'   => 'iframe',
-							'attrs' => array(
-								'src'   => External_Links::DOCS_URL,
-								'style' => array(
-									'border'      => '0',
-									'width'       => 'calc(100% + 20px)',
-									'height'      => 'calc(100vh - 32px - 65px)',
-									'margin-left' => '-20px',
-								),
+							'src'   => External_Links::DOCS_URL,
+							'style' => array(
+								'border'      => '0',
+								'width'       => 'calc(100% + 20px)',
+								'height'      => 'calc(100vh - 32px - 65px)',
+								'margin-left' => '-20px',
 							),
-						),
+						)
 					)
 				);
 			}
@@ -338,16 +337,16 @@ class Admin_Pages extends Actor_Base implements Actor {
 	 */
 	protected function get_cpt_links(): array {
 		return array_map(
-			fn( Plugin_Cpt $plugin_cpt ) => Html_Renderer::render_tags(
-				array(
-					array(
-						'tag'   => 'a',
-						'attrs' => array(
+			fn( Plugin_Cpt $plugin_cpt ) => Html_Renderer::render(
+				Html::wrap(
+					Html::tag(
+						'a',
+						array(
 							'href'   => Plugin::get_admin_url( '', $plugin_cpt->cpt_name() ),
 							'target' => '_self',
-						),
+						)
 					),
-					$plugin_cpt->labels()->plural_name(),
+					$plugin_cpt->labels()->plural_name()
 				)
 			),
 			$this->plugin_cpts
@@ -359,11 +358,11 @@ class Admin_Pages extends Actor_Base implements Actor {
 	 */
 	protected function get_promo_links(): array {
 		return array(
-			Html_Renderer::render_tags(
-				array(
-					array(
-						'tag'   => 'a',
-						'attrs' => array(
+			Html_Renderer::render(
+				Html::wrap(
+					Html::tag(
+						'a',
+						array(
 							'href'        => External_Links::PRO_VERSION_URL,
 							'target'      => '_blank',
 							'style'       => array(
@@ -373,9 +372,9 @@ class Admin_Pages extends Actor_Base implements Actor {
 							),
 							'onmouseover' => 'this.style.opacity=0.7',
 							'onmouseout'  => 'this.style.opacity=1',
-						),
+						)
 					),
-					__( 'Get Pro', 'acf-views' ),
+					__( 'Get Pro', 'acf-views' )
 				)
 			),
 		);

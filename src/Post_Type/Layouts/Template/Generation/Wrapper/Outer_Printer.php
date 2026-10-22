@@ -15,14 +15,14 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pa
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 
 /**
- * @phpstan-import-type Tag_Group from Html
+ * @phpstan-import-type Tag_Stack from Html
  */
 final class Outer_Printer {
 	/**
 	 * @param Template_Pattern[] $field_assets
 	 * @param callable(bool $is_with_outers): void $print_content
 	 *
-	 * @return Tag_Group
+	 * @return Tag_Stack
 	 */
 	public static function wrap_with_outers(
 		array $field_assets,
@@ -51,7 +51,7 @@ final class Outer_Printer {
 
 		return is_array( $content ) ?
 			$content :
-			array( $content );
+			Html::stack( $content );
 	}
 
 	/**

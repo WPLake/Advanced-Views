@@ -13,6 +13,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 abstract class Pre_Built_Tab extends External_Storage_Tab {
@@ -80,25 +81,25 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		$tab_data->set_name( self::NAME );
 		$tab_data->set_label( __( 'Pre-built components', 'acf-views' ) );
 		$tab_data->set_description_callback(
-			fn() => Html_Renderer::print_tag_group(
-				array(
+			fn() => Html_Renderer::print(
+				Html::stack(
 					__( 'Import pre-built components.', 'acf-views' ),
-					array( 'tag' => 'br' ),
+					Html::tag( 'br' ),
 					fn() => $this->print_tab_description_middle(),
-					array( 'tag' => 'br' ),
+					Html::tag( 'br' ),
 					__( 'Hover on the title and click Import.', 'acf-views' ),
 					' ',
-					array(
-						array(
-							'tag'   => 'a',
-							'attrs' => array(
+					Html::wrap(
+						Html::tag(
+							'a',
+							array(
 								'target' => '_blank',
 								'href'   => 'https://docs.advanced-views.com/layouts/features/pre-built-components',
-							),
+							)
 						),
-						__( 'Read more', 'acf-views' ),
+						__( 'Read more', 'acf-views' )
 					),
-					'.',
+					'.'
 				)
 			)
 		);

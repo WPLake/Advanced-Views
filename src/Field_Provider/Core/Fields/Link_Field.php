@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -40,10 +41,10 @@ class Link_Field extends Markup_Field_Base {
 			'href'   => $href_var,
 		);
 
-		return array(
-			array(
-				'tag'   => 'a',
-				'attrs' => $link_attributes,
+		return Html::wrap(
+			Html::tag(
+				'a',
+				$link_attributes
 			),
 			function () use ( $token_factory, $markup_field_data, $link_label_var, $title_var ) {
 				$token_factory->formatter()
@@ -60,7 +61,7 @@ class Link_Field extends Markup_Field_Base {
 				$token_factory->formatter()
 								->new_line();
 				$markup_field_data->decrement_and_print_tabs();
-			},
+			}
 		);
 	}
 

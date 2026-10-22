@@ -10,12 +10,12 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Group from Html
- * @phpstan-import-type Tag_Tree from Html
+ * @phpstan-import-type Tag_Stack from Html
+ * @phpstan-import-type Tag_Wrap from Html
  */
 final class Html_Printer {
 	/**
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	public static function link_tags( string $url, string $label ): array {
 		$link_attrs = array(
@@ -23,21 +23,21 @@ final class Html_Printer {
 			'href'   => $url,
 		);
 
-		$link_tag = array(
-			'tag'   => 'a',
-			'attrs' => $link_attrs,
+		$link_tag = Html::tag(
+			'a',
+			$link_attrs
 		);
 
-		return array(
+		return Html::wrap(
 			$link_tag,
-			$label,
+			$label
 		);
 	}
 
 	/**
-	 * @param Tag_Group $blocks
+	 * @param Tag_Stack $blocks
 	 *
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	public static function dashboard_form_tags( string $page, string $form_nonce, array $blocks ): array {
 		$form_attrs = array(
@@ -47,58 +47,56 @@ final class Html_Printer {
 		);
 		$main_attrs = array( 'class' => 'av-dashboard__main' );
 
-		$form_tag = array(
-			'tag'   => 'form',
-			'attrs' => $form_attrs,
+		$form_tag = Html::tag(
+			'form',
+			$form_attrs
 		);
-		$main_tag = array(
-			'tag'   => 'div',
-			'attrs' => $main_attrs,
+		$main_tag = Html::tag(
+			'div',
+			$main_attrs
 		);
 
 		$page_input  = self::hidden_input_tags( '_av-page', $page );
 		$nonce_input = self::hidden_input_tags( '_wpnonce', $form_nonce );
 
-		return array(
+		return Html::wrap(
 			$form_tag,
-			array(
+			Html::stack(
 				$page_input,
 				$nonce_input,
-				array( $main_tag, $blocks ),
-			),
+				Html::wrap( $main_tag, $blocks )
+			)
 		);
 	}
 
 	/**
-	 * @return Tag_Tree
+	 * @return Tag
 	 */
 	public static function hidden_input_tags( string $name, string $value ): array {
-		return array(
+		return Html::tag(
+			'input',
 			array(
-				'tag'   => 'input',
-				'attrs' => array(
-					'type'  => 'hidden',
-					'name'  => $name,
-					'value' => $value,
-				),
-			),
+				'type'  => 'hidden',
+				'name'  => $name,
+				'value' => $value,
+			)
 		);
 	}
 
 	/**
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	public static function title_tags( string $title ): array {
 		$title_attrs = array( 'class' => 'av-introduction__title' );
 
-		$title_tag = array(
-			'tag'   => 'p',
-			'attrs' => $title_attrs,
+		$title_tag = Html::tag(
+			'p',
+			$title_attrs
 		);
 
-		return array(
+		return Html::wrap(
 			$title_tag,
-			$title,
+			$title
 		);
 	}
 }

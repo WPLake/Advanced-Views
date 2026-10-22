@@ -9,6 +9,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
@@ -52,11 +53,9 @@ class Image_Field extends Markup_Field_Base {
 															->add_item_path( $item_key );
 		}
 
-		return array(
-			array(
-				'tag'   => 'img',
-				'attrs' => array_merge( $attributes, $this->inner_attributes( $field_id, $markup_field_data ) ),
-			),
+		return Html::tag(
+			'img',
+			array_merge( $attributes, $this->inner_attributes( $field_id, $markup_field_data ) )
 		);
 	}
 

@@ -22,7 +22,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 /**
  * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Tree from Html
+ * @phpstan-import-type Tag_Wrap from Html
  */
 abstract class Git_Meta_Box extends Actor_Base implements Actor {
 
@@ -74,28 +74,28 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	protected function print_git_lab_repositories_meta_box(): void {
-		$tags = array(
-			array(
-				'tag'   => 'av-git-meta-box',
-				'attrs' => array(
+		$tags = Html::wrap(
+			Html::tag(
+				'av-git-meta-box',
+				array(
 					'class' => 'av-git-meta-box',
 					'style' => array( 'transition' => 'all .3s ease' ),
-				),
+				)
 			),
-			array(
+			Html::stack(
 				$this->intro_tags(),
 				$this->nonce_tags(),
 				$this->repositories_tags(),
-				array( 'tag' => 'br' ),
-				array( 'tag' => 'br' ),
+				Html::tag( 'br' ),
+				Html::tag( 'br' ),
 				$this->with_fields_tags(),
-				array( 'tag' => 'br' ),
+				Html::tag( 'br' ),
 				$this->save_reminder_tags(),
-				$this->button_tags(),
-			),
+				$this->button_tags()
+			)
 		);
 
-		Html_Renderer::print_tags( $tags );
+		Html_Renderer::print( $tags );
 	}
 
 	/**
@@ -249,24 +249,24 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	protected function intro_tags(): array {
-		return array(
-			array( 'tag' => 'p' ),
-			array(
-				array(
-					array(
-						'tag'   => 'a',
-						'attrs' => array(
+		return Html::wrap(
+			Html::tag( 'p' ),
+			Html::stack(
+				Html::wrap(
+					Html::tag(
+						'a',
+						array(
 							'target' => '_blank',
 							'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
-						),
+						)
 					),
-					__( 'Save the item', 'acf-views' ),
+					__( 'Save the item', 'acf-views' )
 				),
-				' ' . __( 'to your library', 'acf-views' ) . '.',
-			),
+				' ' . __( 'to your library', 'acf-views' ) . '.'
+			)
 		);
 	}
 
@@ -285,95 +285,92 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	protected function repositories_tags(): array {
 		$option_chains = array_map(
-			fn( array $git_repository ): array => array(
-				array(
-					'tag'   => 'option',
-					'attrs' => array( 'value' => $git_repository['id'] ),
-				),
-				$git_repository['name'],
+			fn( array $git_repository ): array => Html::wrap(
+				Html::tag( 'option', array( 'value' => $git_repository['id'] ) ),
+				$git_repository['name']
 			),
 			$this->settings->get_git_repositories()
 		);
 
-		return array(
-			array(
-				'tag'   => 'select',
-				'attrs' => array(
+		return Html::wrap(
+			Html::tag(
+				'select',
+				array(
 					'name'     => '_git-repo',
 					'required' => '',
-				),
+				)
 			),
-			array(
-				array(
-					array(
-						'tag'   => 'option',
-						'attrs' => array( 'value' => '' ),
+			Html::stack(
+				Html::wrap(
+					Html::tag(
+						'option',
+						array( 'value' => '' )
 					),
-					__( 'Select repository', 'acf-views' ),
+					__( 'Select repository', 'acf-views' )
 				),
-				...$option_chains,
-			),
+				...$option_chains
+			)
 		);
 	}
 
 	/**
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	protected function with_fields_tags(): array {
-		return array(
-			array(
-				'tag'   => 'div',
-				'attrs' => array(
+		return Html::wrap(
+			Html::tag(
+				'div',
+				array(
 					'style' => array(
 						'display'     => 'flex',
 						'align-items' => 'center',
 					),
-				),
+				)
 			),
-			array(
-				array(
-					'tag'   => 'input',
-					'attrs' => array(
+			Html::stack(
+				Html::tag(
+					'input',
+					array(
 						'type' => 'checkbox',
 						'name' => '_git-repo-with-fields',
 						'id'   => 'av_git-repo-with-fields',
-					),
+					)
 				),
-				array(
-					array(
-						'tag'   => 'label',
-						'attrs' => array( 'for' => 'av_git-repo-with-fields' ),
+				Html::wrap(
+					Html::tag(
+						'label',
+						array( 'for' => 'av_git-repo-with-fields' )
 					),
-					__( 'Include related Meta groups', 'acf-views' ),
-				),
-			),
+					__( 'Include related Meta groups', 'acf-views' )
+				)
+			)
 		);
 	}
 
 	/**
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	protected function save_reminder_tags(): array {
-		return array(
-			array( 'tag' => 'p' ),
-			__( 'Note: all changes must be already saved.', 'acf-views' ),
+		return Html::wrap(
+			Html::tag( 'p' ),
+			__( 'Note: all changes must be already saved.', 'acf-views' )
 		);
 	}
 
 	/**
-	 * @return Tag_Tree
+	 * @return Tag_Wrap
 	 */
 	protected function button_tags(): array {
-		return array(
-			array(
-				'tag'   => 'button',
-				'attrs' => array( 'class' => 'button button-primary button-large' ),
+		return Html::wrap(
+			Html::tag(
+				'button',
+				array( 'class' => 'button button-primary button-large' )
 			),
-			__( 'Push to the repository', 'acf-views' ),
+			__( 'Push to the repository', 'acf-views' )
 		);
 	}
 }

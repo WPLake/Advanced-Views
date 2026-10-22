@@ -9,6 +9,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use WPCom_Markdown;
@@ -106,27 +107,27 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 			),
 		);
 
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'p',
-					'attrs' => $attributes,
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'p',
+					$attributes
 				),
-				array(
+				Html::stack(
 					__( 'Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue.', 'acf-views' ) . ' ',
 					__( 'Please', 'acf-views' ) . ' ',
-					array(
-						array(
-							'tag'   => 'a',
-							'attrs' => array(
+					Html::wrap(
+						Html::tag(
+							'a',
+							array(
 								'target' => '_blank',
 								'href'   => 'https://wplake.org/acf-views-support/',
-							),
+							)
 						),
-						__( 'reach out', 'acf-views' ),
+						__( 'reach out', 'acf-views' )
 					),
-					' ' . __( 'to our support team for further assistance.', 'acf-views' ),
-				),
+					' ' . __( 'to our support team for further assistance.', 'acf-views' )
+				)
 			)
 		);
 	}

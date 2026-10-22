@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Select_Field extends List_Field {
@@ -28,11 +29,11 @@ class Select_Field extends List_Field {
 		$token_factory  = $markup_field_data->get_token_factory();
 		$div_attributes = array( 'class' => $this->get_field_class( 'choice', $markup_field_data ) );
 
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'div',
-					'attrs' => $div_attributes,
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'div',
+					$div_attributes
 				),
 				function () use ( $token_factory, $markup_field_data, $twig_name ) {
 					$token_factory->formatter()
@@ -46,7 +47,7 @@ class Select_Field extends List_Field {
 					$token_factory->formatter()
 									->new_line();
 					$markup_field_data->decrement_and_print_tabs();
-				},
+				}
 			)
 		);
 	}

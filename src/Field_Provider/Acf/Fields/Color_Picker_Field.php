@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
@@ -26,15 +27,14 @@ class Color_Picker_Field extends Markup_Field_Base {
 		if ( 'string' === $markup_field_data->get_field_meta()->get_return_format() ) {
 			$var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-			return array(
-				$var,
-			);
+			return Html::stack(
+				$var);
 		}
 
 		$parts       = array( 'red', 'green', 'blue', 'alpha' );
 		$items_count = count( $parts );
 
-		return array(
+		return Html::stack(
 			function () use ( $token_factory, $field_id, $parts, $items_count ) {
 				echo 'rgba(';
 
@@ -47,8 +47,7 @@ class Color_Picker_Field extends Markup_Field_Base {
 				}
 
 				echo ')';
-			},
-		);
+			});
 	}
 
 	/**

@@ -15,6 +15,7 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 
@@ -93,17 +94,17 @@ class Post_Selection_Settings_Integration extends Acf_Integration_Base {
 			$this->plugin_cpt->labels()->singular_name()
 		);
 
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'a',
-					'attrs' => array(
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'a',
+					array(
 						'class'  => 'acf-views__add-new',
 						'target' => '_blank',
 						'href'   => $link,
-					),
+					)
 				),
-				$label,
+				$label
 			)
 		);
 	}

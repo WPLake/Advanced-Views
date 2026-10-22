@@ -14,7 +14,8 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_
 
 /**
  * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Group from Html
+ * @phpstan-import-type Html_Node from Html
+ * @phpstan-import-type Tag_Stack from Html
  */
 final class Wrapper_Printer {
 	/**
@@ -72,9 +73,9 @@ final class Wrapper_Printer {
 	 * which is kept in callbacks.
 	 *
 	 * @param Tag $tag
-	 * @param mixed $inner
+	 * @param Html_Node $inner
 	 *
-	 * @return Tag_Group
+	 * @return Tag_Stack
 	 */
 	public static function wrap(
 		array $tag,
@@ -83,7 +84,7 @@ final class Wrapper_Printer {
 		bool $is_new_line_after_open,
 		$inner
 	): array {
-		return array(
+		return Html::stack(
 			static function () use ( &$tabs_number, $is_new_line_before ) {
 				if ( $is_new_line_before ) {
 					Format_Token::next_line();
@@ -91,9 +92,9 @@ final class Wrapper_Printer {
 
 				Format_Token::tabulation( $tabs_number );
 			},
-			array(
+			Html::wrap(
 				$tag,
-				array(
+				Html::stack(
 					static function () use ( &$tabs_number, $is_new_line_after_open ) {
 						if ( $is_new_line_after_open ) {
 							Format_Token::next_line();
@@ -101,14 +102,13 @@ final class Wrapper_Printer {
 
 						++$tabs_number;
 					},
-					// a group member that is an array is a tree, so the inner group is put into it as its head.
-					array( $inner ),
+					$inner,
 					static function () use ( &$tabs_number ) {
 						Format_Token::tabulation( --$tabs_number );
-					},
-				),
+					}
+				)
 			),
-			static fn() => Format_Token::next_line(),
+			static fn() => Format_Token::next_line()
 		);
 	}
 

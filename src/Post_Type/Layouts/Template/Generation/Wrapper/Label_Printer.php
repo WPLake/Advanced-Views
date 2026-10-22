@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
@@ -24,21 +25,21 @@ final class Label_Printer {
 		$token_factory->formatter()
 						->tab( $tabs_number );
 
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'p',
-					'attrs' => array( 'class' => self::resolve_classes( $layout_settings, $field_settings ) ),
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'p',
+					array( 'class' => self::resolve_classes( $layout_settings, $field_settings ) )
 				),
-				array(
+				Html::stack(
 					function () use ( $token_factory, &$tabs_number ) {
 						self::print_variable_opening( $token_factory, $tabs_number );
 					},
 					fn() => self::print_variable( $token_factory, $field_id ),
 					function () use ( $token_factory, &$tabs_number ) {
 						self::print_variable_closing( $token_factory, $tabs_number );
-					},
-				),
+					}
+				)
 			)
 		);
 

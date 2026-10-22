@@ -15,6 +15,7 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
@@ -276,14 +277,14 @@ class Plugin extends Actor_Base implements Actor {
 
 		$this->options::delete_transient( Options_Storage::TRANSIENT_DEACTIVATED_OTHER_INSTANCES );
 
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'div',
-					'attrs' => array( 'class' => 'notice notice-warning' ),
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'div',
+					array( 'class' => 'notice notice-warning' )
 				),
-				array( 'tag' => 'p' ),
-				$message,
+				Html::tag( 'p' ),
+				$message
 			)
 		);
 	}
@@ -458,28 +459,28 @@ class Plugin extends Actor_Base implements Actor {
 			'Please change the "opcache.save_comments" option in your php.ini file to the default value of "1" on your hosting.',
 			'acf-views'
 		);
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'div',
-					'attrs' => array( 'class' => 'notice notice-error' ),
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'div',
+					array( 'class' => 'notice notice-error' )
 				),
-				array( 'tag' => 'p' ),
-				array(
+				Html::tag( 'p' ),
+				Html::stack(
 					$detected_message . ' ',
-					array( 'tag' => 'br' ),
+					Html::tag( 'br' ),
 					$action_message . ' ',
-					array(
-						array(
-							'tag'   => 'a',
-							'attrs' => array(
+					Html::wrap(
+						Html::tag(
+							'a',
+							array(
 								'target' => '_blank',
 								'href'   => External_Links::CONFLICTS_URL,
-							),
+							)
 						),
-						__( 'Read more', 'acf-views' ),
-					),
-				),
+						__( 'Read more', 'acf-views' )
+					)
+				)
 			)
 		);
 	}

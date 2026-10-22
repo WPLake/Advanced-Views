@@ -12,12 +12,16 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Comparison_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Tag_Stack from Html
+ */
 final class Icon_Picker_Field extends Markup_Field_Base {
 	const TYPE = 'type';
 
@@ -29,6 +33,9 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$this->image_field = $image_field;
 	}
 
+	/**
+	 * @return Tag_Stack
+	 */
 	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
@@ -36,12 +43,12 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$media_library_branch = $this->media_library_branch( $field_id, $markup_field_data );
 		$custom_image_branch  = $this->custom_image_branch( $field_id, $markup_field_data );
 
-		return array(
+		return Html::stack(
 			$token_factory
 				->if()
 				->set_if_branch( $dashicons_branch )
 				->set_elseif_branch( $media_library_branch )
-				->set_else_branch( $custom_image_branch ),
+			->set_else_branch( $custom_image_branch )
 		);
 	}
 
@@ -136,26 +143,26 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$icon_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-		Html_Renderer::print_tag_group(
-			array(
+		Html_Renderer::print(
+			Html::stack(
 				function () use ( $token_factory, $markup_field_data ) {
 					$token_factory->formatter()->new_line();
 					$markup_field_data->increment_and_print_tabs();
 				},
-				array(
-					'tag'   => 'i',
-					'attrs' => array(
+				Html::tag(
+					'i',
+					array(
 						'class' => array(
 							$this->get_field_class( 'icon', $markup_field_data ),
 							'dashicons',
 							$icon_var,
 						),
-					),
+					)
 				),
 				function () use ( $token_factory, $markup_field_data ) {
 					$token_factory->formatter()->new_line();
 					$markup_field_data->decrement_and_print_tabs();
-				},
+				}
 			)
 		);
 	}
@@ -166,7 +173,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		Html_Renderer::print_tags( $this->image_field->compose_tags( $field_id, $markup_field_data ) );
+		Html_Renderer::print( $this->image_field->compose_tags( $field_id, $markup_field_data ) );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
@@ -177,25 +184,25 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$src_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-		Html_Renderer::print_tag_group(
-			array(
+		Html_Renderer::print(
+			Html::stack(
 				function () use ( $token_factory, $markup_field_data ) {
 					$token_factory->formatter()->new_line();
 					$markup_field_data->increment_and_print_tabs();
 				},
-				array(
-					'tag'   => 'img',
-					'attrs' => array(
+				Html::tag(
+					'img',
+					array(
 						'class'   => $this->get_field_class( 'icon', $markup_field_data ),
 						'src'     => $src_var,
 						'loading' => 'lazy',
 						'alt'     => 'icon',
-					),
+					)
 				),
 				function () use ( $token_factory, $markup_field_data ) {
 					$token_factory->formatter()->new_line();
 					$markup_field_data->decrement_and_print_tabs();
-				},
+				}
 			)
 		);
 	}

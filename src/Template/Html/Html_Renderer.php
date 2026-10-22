@@ -4,39 +4,36 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Html;
 
+defined( 'ABSPATH' ) || exit;
+
 use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use Org\Wplake\Advanced_Views\Template\Html\Tag\Tag_Renderer;
 
-defined( 'ABSPATH' ) || exit;
-
 /**
  * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Item from Html
- * @phpstan-import-type Tag_Content from Html
- * @phpstan-import-type Tag_Stack from Html
- * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Html_Node from Html
  */
 final class Html_Renderer {
 	/**
-	 * @param Tag|Tag_Stack|Tag_Wrap $node
+	 * @param Html_Node|null $node
 	 */
-	public static function print_tags( array $node ): void {
+	public static function print( $node ): void {
 		self::print_item( $node );
 	}
 
 	/**
-	 * @param Tag|Tag_Stack|Tag_Wrap $node
+	 * @param Html_Node|null $node
 	 */
-	public static function render_tags( array $node ): string {
+	public static function render( $node ): string {
 		ob_start();
-		self::print_tags( $node );
+		self::print( $node );
 
 		return (string) ob_get_clean();
 	}
 
 	/**
-	 * @param Tag_Item $item
+	 * @param mixed $item
 	 */
 	protected static function print_item( $item ): void {
 		if ( is_array( $item ) ) {
@@ -47,15 +44,19 @@ final class Html_Renderer {
 			} elseif ( key_exists( Html::WRAP, $item ) ) {
 				self::print_wrap( $item[ Html::WRAP ] );
 			}
+
+			return;
 		}
 
 		self::print_content( $item );
 	}
 
 	/**
-	 * @param list<Tag_Item> $items
+	 * @param list<mixed> $items
 	 */
 	protected static function print_wrap( array $items ): void {
+		$items = array_values( array_filter( $items, fn( $item ) => null !== $item ) );
+
 		if ( count( $items ) > 0 ) {
 			$head = array_shift( $items );
 
@@ -71,7 +72,7 @@ final class Html_Renderer {
 	}
 
 	/**
-	 * @param list<Tag_Item> $items
+	 * @param list<mixed> $items
 	 */
 	protected static function print_stack( array $items ): void {
 		foreach ( $items as $item ) {
@@ -81,7 +82,7 @@ final class Html_Renderer {
 
 	/**
 	 * @param Tag $item
-	 * @param list<Tag_Item> $nested_items
+	 * @param list<mixed> $nested_items
 	 */
 	protected static function print_tag( array $item, array $nested_items ): void {
 		$tag        = $item[ Html::TAG_NAME ];
@@ -95,7 +96,7 @@ final class Html_Renderer {
 	}
 
 	/**
-	 * @param Tag_Content $content
+	 * @param mixed $content
 	 */
 	protected static function print_content( $content ): void {
 		if ( is_string( $content ) ) {

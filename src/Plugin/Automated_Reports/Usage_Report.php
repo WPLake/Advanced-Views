@@ -29,7 +29,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
  * Can be disabled in the plugin settings.
  * FYI: built-in WordPress growth counter was removed https://meta.trac.wordpress.org/ticket/6511
  *
- * @phpstan-import-type Tag_Group from Html
+ * @phpstan-import-type Tag_Stack from Html
  */
 class Usage_Report extends Report_Base implements Actor {
 	const DELAY_MIN_HR       = 12;
@@ -124,23 +124,23 @@ class Usage_Report extends Report_Base implements Actor {
 
 		$hide_members = Avf_User::can_manage() ?
 			$this->get_hide_members( $dismiss_key, $nonce_name ) :
-			array();
+			Html::stack();
 
-		$tags = array(
-			array(
-				'tag'   => 'div',
-				'attrs' => array( 'class' => 'notice notice-warning' ),
+		$tags = Html::wrap(
+			Html::tag(
+				'div',
+				array( 'class' => 'notice notice-warning' )
 			),
-			array( 'tag' => 'p' ),
-			array(
+			Html::tag( 'p' ),
+			Html::stack(
 				__( 'The Advanced Views plugin sends automatic error and usage reports to developers, enabling faster issue resolution and plugin improvement.', 'acf-views' ),
-				array( 'tag' => 'br' ),
+				Html::tag( 'br' ),
 				__( 'Automatic reports do not include any private or sensitive information and can be disabled in the plugin settings.', 'acf-views' ),
-				...$hide_members,
-			),
+				$hide_members
+			)
 		);
 
-		Html_Renderer::print_tags( $tags );
+		Html_Renderer::print( $tags );
 	}
 
 	public function send_and_schedule_next(): void {
@@ -313,7 +313,7 @@ class Usage_Report extends Report_Base implements Actor {
 	}
 
 	/**
-	 * @return Tag_Group
+	 * @return Tag_Stack
 	 */
 	protected function get_hide_members( string $dismiss_key, string $nonce_name ): array {
 		$hide_url = add_query_arg(
@@ -323,16 +323,16 @@ class Usage_Report extends Report_Base implements Actor {
 			)
 		);
 
-		return array(
-			array( 'tag' => 'br' ),
-			array( 'tag' => 'br' ),
-			array(
-				array(
-					'tag'   => 'a',
-					'attrs' => array( 'href' => $hide_url ),
+		return Html::stack(
+			Html::tag( 'br' ),
+			Html::tag( 'br' ),
+			Html::wrap(
+				Html::tag(
+					'a',
+					array( 'href' => $hide_url )
 				),
-				__( 'Got it, hide', 'acf-views' ),
-			),
+				__( 'Got it, hide', 'acf-views' )
+			)
 		);
 	}
 }

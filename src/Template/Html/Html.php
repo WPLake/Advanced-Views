@@ -25,12 +25,14 @@ defined( 'ABSPATH' ) || exit;
  * The callback returns 'void|mixed': the 'mixed' is allowed to accept
  * such callbacks.
  * Tag_Stack and Tag_Wrap items are 'mixed' as PHPStan doesn't support recursive aliases.
+ * Html_Node is any of them. A `null` is accepted next to it (`Html_Node|null`) and means 'no element', it's ignored everywhere (also in a wrap, where it's
+ * dropped before the parent/child roles are assigned), so a conditional piece is simply `$condition ? $node : null`.
  *
  * @phpstan-type Tag array{tag:string, attrs?:array<string,mixed>}
  * @phpstan-type Tag_Content string|Htmlable|Closure():(void|mixed)
  * @phpstan-type Tag_Stack array{stack:list<mixed>}
  * @phpstan-type Tag_Wrap array{wrap:list<mixed>}
- * @phpstan-type Tag_Item Tag|Tag_Content|Tag_Stack|Tag_Wrap
+ * @phpstan-type Html_Node Tag|Tag_Content|Tag_Stack|Tag_Wrap
  */
 final class Html {
 	const TAG_NAME  = 'tag';
@@ -55,7 +57,7 @@ final class Html {
 	/**
 	 * The first item is the parent, every next one goes inside the previous one.
 	 *
-	 * @param Tag_Item ...$items
+	 * @param Html_Node|null ...$items
 	 *
 	 * @return Tag_Wrap
 	 */
@@ -66,7 +68,7 @@ final class Html {
 	/**
 	 * Sibling items rendered at the same level.
 	 *
-	 * @param Tag_Item ...$items
+	 * @param Html_Node|null ...$items
 	 *
 	 * @return Tag_Stack
 	 */

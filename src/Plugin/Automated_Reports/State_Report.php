@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -115,9 +116,9 @@ class State_Report extends Report_Base implements Actor {
 			'delete_data_option'          => __( 'Delete all the plugin data (cannot be undone)', 'acf-views' ),
 			'is_with_survey'              => false === $this->settings->is_automatic_reports_disabled(),
 		);
-		Html_Renderer::print_tags(
-			array(
-				array( 'tag' => 'style' ),
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag( 'style' ),
 				function () {
 					?>
 					/*hide other action links while survey is open,
@@ -148,13 +149,13 @@ class State_Report extends Report_Base implements Actor {
 						margin: 0 0 0 10px !important;
 					}
 					<?php
-				},
+				}
 			)
 		);
 
-		Html_Renderer::print_tags(
-			array(
-				array( 'tag' => 'script' ),
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag( 'script' ),
 				function () use ( $data ) {
 					?>
 					(function () {
@@ -262,7 +263,7 @@ class State_Report extends Report_Base implements Actor {
 						new DeactivationSurveyPopup();
 					})();
 					<?php
-				},
+				}
 			)
 		);
 	}

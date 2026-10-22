@@ -18,6 +18,7 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
@@ -133,18 +134,18 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		$joined_attrs    = implode( ' ', $attrs );
 		$shortcode_debug = sprintf( '(%s %s)', $shortcode, $joined_attrs );
 
-		return Html_Renderer::render_tags(
-			array(
-				array(
-					'tag'   => 'p',
-					'attrs' => array( 'style' => array( 'color' => 'red' ) ),
+		return Html_Renderer::render(
+			Html::wrap(
+				Html::tag(
+					'p',
+					array( 'style' => array( 'color' => 'red' ) )
 				),
 				sprintf(
 					'%s %s %s',
 					__( 'AVF shortcode render error:', 'acf-views' ),
 					$error,
 					$shortcode_debug
-				),
+				)
 			)
 		);
 	}
@@ -197,11 +198,11 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		if ( $cpt_data->is_css_internal() ) {
 			$css_code   = $cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
 			$shadow_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
-			$shadow_css = Html_Renderer::render_tags(
-				array(
-					array( 'tag' => 'style' ),
+			$shadow_css = Html_Renderer::render(
+				Html::wrap(
+					Html::tag( 'style' ),
 					// phpcs:ignore WordPress.Security.EscapeOutput
-					fn() => print( ':host{all: initial!important;}' . $shadow_css ),
+					fn() => print( ':host{all: initial!important;}' . $shadow_css )
 				)
 			);
 		}
@@ -291,13 +292,13 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 			'onMouseOut'  => "this.style.opacity='.5';this.style.textDecoration='none'",
 		);
 
-		return Html_Renderer::render_tags(
-			array(
-				array(
-					'tag'   => 'a',
-					'attrs' => $attrs,
+		return Html_Renderer::render(
+			Html::wrap(
+				Html::tag(
+					'a',
+					$attrs
 				),
-				$label,
+				$label
 			)
 		);
 	}

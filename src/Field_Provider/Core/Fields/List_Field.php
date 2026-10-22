@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
@@ -56,13 +57,13 @@ abstract class List_Field extends Markup_Field_Base {
 
 	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
 		if ( $markup_field_data->get_field_meta()->is_multiple() ) {
-			return array(
-				fn() => $this->print_item_loop( $field_id, $markup_field_data ),
+			return Html::stack(
+				fn() => $this->print_item_loop( $field_id, $markup_field_data )
 			);
 		}
 
-		return array(
-			fn() => $this->print_inner_item( $field_id, $markup_field_data ),
+		return Html::stack(
+			fn() => $this->print_inner_item( $field_id, $markup_field_data )
 		);
 	}
 
@@ -154,11 +155,11 @@ abstract class List_Field extends Markup_Field_Base {
 		);
 		$span_attributes = array( 'class' => $item_class );
 
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'span',
-					'attrs' => $span_attributes,
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'span',
+					$span_attributes
 				),
 				function () use ( $token_factory, $markup_field_data, $field_id ) {
 					$token_factory->formatter()
@@ -170,7 +171,7 @@ abstract class List_Field extends Markup_Field_Base {
 					$token_factory->formatter()
 									->new_line();
 					$markup_field_data->decrement_and_print_tabs();
-				},
+				}
 			)
 		);
 

@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 
@@ -105,15 +106,13 @@ class Live_Reloader_Component extends Actor_Base implements Actor {
 			'isGutenbergBlock'   => $is_gutenberg_block,
 		);
 
-		return Html_Renderer::render_tags(
-			array(
+		return Html_Renderer::render(
+			Html::tag(
+				'avf-live-reloader',
 				array(
-					'tag'   => 'avf-live-reloader',
-					'attrs' => array(
-						'hidden'       => '',
-						'data-element' => (string) wp_json_encode( $element_data ),
-					),
-				),
+					'hidden'       => '',
+					'data-element' => (string) wp_json_encode( $element_data ),
+				)
 			)
 		);
 	}

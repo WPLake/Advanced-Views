@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
@@ -203,10 +204,10 @@ class Map_Field extends Map_Field_Base {
 		$field_data = $markup_field_data->get_field_data();
 
 		if ( 'open_street_map' === $field_meta->get_type() ) {
-			return array(
+			return Html::stack(
 				fn() => $factory->variable( $field_id )
 					->add_item_path( self::MAP )
-					->raw_display(),
+				->raw_display()
 			);
 		}
 
@@ -229,10 +230,10 @@ class Map_Field extends Map_Field_Base {
 														->add_item_path( $key );
 		}
 
-		return array(
-			array(
-				'tag'   => 'div',
-				'attrs' => $div_attributes,
+		return Html::wrap(
+			Html::tag(
+				'div',
+				$div_attributes
 			),
 			function () use ( $factory, $markup_field_data, $field_id, $field_meta, $field_data ) {
 				$factory->formatter()
@@ -250,7 +251,7 @@ class Map_Field extends Map_Field_Base {
 				$factory->formatter()
 					->new_line();
 				$markup_field_data->decrement_and_print_tabs();
-			},
+			}
 		);
 	}
 
@@ -318,12 +319,10 @@ class Map_Field extends Map_Field_Base {
 	}
 
 	protected function print_inner_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'div',
-					'attrs' => $this->map_marker_attributes( $field_id, $item_id, $markup_field_data ),
-				),
+		Html_Renderer::print(
+			Html::tag(
+				'div',
+				$this->map_marker_attributes( $field_id, $item_id, $markup_field_data )
 			)
 		);
 	}

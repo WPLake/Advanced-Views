@@ -5,6 +5,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
+use Closure;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
@@ -19,7 +20,8 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag_Group from Html
+ * @phpstan-import-type Tag_Stack from Html
+ * @phpstan-import-type Tag_Wrap from Html
  */
 final class Template_Field_Data extends Field_Data {
 	/**
@@ -103,45 +105,42 @@ final class Template_Field_Data extends Field_Data {
 
 	/**
 	 * @param Html_Wrapper[] $item_outers
-	 * @param callable():void $print_content
 	 *
-	 * @return Tag_Group
+	 * @return Tag_Stack|Tag_Wrap
 	 */
-	public function wrap_with_item_outers( array $item_outers, callable $print_content, bool $is_without_last_item_tabs = false ): array {
+	public function wrap_with_item_outers( array $item_outers, Closure $print_content, bool $is_without_last_item_tabs = false ): array {
 		$last_index = count( $item_outers ) - 1;
-		$content    = array( $print_content );
+		$content    = Html::stack( $print_content );
 
 		// the innermost outer goes first.
 		foreach ( array_reverse( $item_outers, true ) as $index => $outer ) {
 			$is_without_tabs = $index === $last_index && $is_without_last_item_tabs;
 
-			$content = array(
-				array(
-					$this->item_outer_tag( $outer ),
-					array(
-						function () use ( $is_without_tabs ) {
+			$content = Html::wrap(
+				$this->item_outer_tag( $outer ),
+				Html::stack(
+					function () use ( $is_without_tabs ) {
+						$this->token_factory->formatter()
+							->new_line();
+
+						++$this->tabs_number;
+
+						if ( ! $is_without_tabs ) {
+							$this->token_factory->formatter()
+								->tab( $this->tabs_number );
+						}
+					},
+					$content,
+					function () use ( $is_without_tabs ) {
+						if ( ! $is_without_tabs ) {
 							$this->token_factory->formatter()
 								->new_line();
+						}
 
-							++$this->tabs_number;
-
-							if ( ! $is_without_tabs ) {
-								$this->token_factory->formatter()
-									->tab( $this->tabs_number );
-							}
-						},
-						array( $content ),
-						function () use ( $is_without_tabs ) {
-							if ( ! $is_without_tabs ) {
-								$this->token_factory->formatter()
-									->new_line();
-							}
-
-							$this->token_factory->formatter()
-								->tab( --$this->tabs_number );
-						},
-					),
-				),
+						$this->token_factory->formatter()
+							->tab( --$this->tabs_number );
+					}
+				)
 			);
 		}
 

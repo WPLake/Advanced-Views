@@ -9,6 +9,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Throwable;
 
@@ -39,22 +40,22 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 		);
 		$span_attributes      = array( 'class' => 'acf-views__error-message' );
 
-		Html_Renderer::print_tags(
-			array(
-				array(
-					'tag'   => 'p',
-					'attrs' => $paragraph_attributes,
+		Html_Renderer::print(
+			Html::wrap(
+				Html::tag(
+					'p',
+					$paragraph_attributes
 				),
-				array(
+				Html::stack(
 					fn() => printf( 'Advanced Views (%s) template: ', esc_html( $unique_view_id ) ),
-					array(
-						array(
-							'tag'   => 'span',
-							'attrs' => $span_attributes,
+					Html::wrap(
+						Html::tag(
+							'span',
+							$span_attributes
 						),
-						$error_message,
-					),
-				),
+						$error_message
+					)
+				)
 			)
 		);
 	}
@@ -94,9 +95,9 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 		// do not include in case of the validation, it doesn't have sense + breaks the error grep regex.
 		if ( $is_debug_mode &&
 			! $is_validation ) {
-			Html_Renderer::print_tags(
-				array(
-					array( 'tag' => 'pre' ),
+			Html_Renderer::print(
+				Html::wrap(
+					Html::tag( 'pre' ),
 					// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
 							print_r(
 								array(
@@ -104,7 +105,7 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 									'args'     => $args,
 								),
 								true
-							),
+							)
 				)
 			);
 		}
