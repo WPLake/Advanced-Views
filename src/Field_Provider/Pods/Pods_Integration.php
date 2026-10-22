@@ -245,19 +245,21 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			echo esc_html( $title );
 		};
 
+		$heading = nest(
+			tag(
+				'h4',
+				$heading_attributes
+			),
+			$print_heading_text
+		);
+
 		$tags = nest(
 			tag(
 				'div',
 				$postbox_attributes
 			),
 			stack(
-				nest(
-					tag(
-						'h4',
-						$heading_attributes
-					),
-					$print_heading_text
-				),
+				$heading,
 				fn() => $this->print_related_acf_views( null, false, $related_views ),
 				fn() => $this->print_add_new_links_for_groups( $pod )
 			)

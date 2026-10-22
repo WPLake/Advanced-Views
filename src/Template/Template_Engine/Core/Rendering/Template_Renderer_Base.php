@@ -42,6 +42,14 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 		);
 		$span_attributes      = array( 'class' => 'acf-views__error-message' );
 
+		$message = nest(
+			tag(
+				'span',
+				$span_attributes
+			),
+			$error_message
+		);
+
 		$tags = nest(
 			tag(
 				'p',
@@ -49,13 +57,7 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 			),
 			stack(
 				fn() => printf( 'Advanced Views (%s) template: ', esc_html( $unique_view_id ) ),
-				nest(
-					tag(
-						'span',
-						$span_attributes
-					),
-					$error_message
-				)
+				$message
 			)
 		);
 

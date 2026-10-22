@@ -170,15 +170,16 @@ class Postbox_Printer {
 	 * @return Html_Nest
 	 */
 	protected static function support_postbox_tags( string $description, string $url, string $button_label ): array {
-		$button = self::button_link_tags( $url, $button_label );
+		$button    = self::button_link_tags( $url, $button_label );
+		$paragraph = nest(
+			tag( 'p' ),
+			$description
+		);
 
 		return nest(
 			tag( 'div' ),
 			stack(
-				nest(
-					tag( 'p' ),
-					$description
-				),
+				$paragraph,
 				$button
 			)
 		);

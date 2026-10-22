@@ -51,11 +51,12 @@ final class Import_Printer {
 		);
 		$button_label  = __( 'Delete imported objects', 'acf-views' );
 		$button_tag    = tag( 'button', $button_attrs );
+		$button        = nest( $button_tag, $button_label );
 		$delete_button = $is_has_demo_objects ?
 			stack(
 				tag( 'br' ),
 				tag( 'br' ),
-				nest( $button_tag, $button_label )
+				$button
 			) :
 			null;
 
@@ -273,6 +274,11 @@ final class Import_Printer {
 		$after_title     = __( 'After Import', 'acf-views' );
 		$delete_hint     = __( 'A Delete Demo button will appear if you’d like to remove the demo content later.', 'acf-views' );
 
+		$delete_hint_paragraph = nest(
+			tag( 'p' ),
+			$delete_hint
+		);
+
 		return nest(
 			tag(
 				'div',
@@ -293,10 +299,7 @@ final class Import_Printer {
 				self::bold_paragraph_tags( array( $importing_title ) ),
 				$importing_description,
 				self::bold_paragraph_tags( array( $after_title ) ),
-				nest(
-					tag( 'p' ),
-					$delete_hint
-				),
+				$delete_hint_paragraph,
 				tag( 'hr' ),
 				tag( 'br' ),
 				tag( 'br' ),

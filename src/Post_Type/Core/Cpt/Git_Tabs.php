@@ -83,29 +83,32 @@ abstract class Git_Tabs extends External_Storage_Tab {
 	protected function print_description( array $git_repository ): void {
 		$reset_cache_link = $this->get_reset_cache_link( $git_repository['id'] );
 
+		$read_more_link = nest(
+			tag(
+				'a',
+				array(
+					'target' => '_blank',
+					'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
+				)
+			),
+			__( 'Read more', 'acf-views' )
+		);
+		$reset_link     = nest(
+			tag( 'a', array( 'href' => $reset_cache_link ) ),
+			__( 'here', 'acf-views' )
+		);
+
 		$tags = stack(
 			__(
 				'By saving items in your GitLab repository, you can create your own library and reuse them on other websites.',
 				'acf-views'
 			),
 			' ',
-			nest(
-				tag(
-					'a',
-					array(
-						'target' => '_blank',
-						'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
-					)
-				),
-				__( 'Read more', 'acf-views' )
-			),
+			$read_more_link,
 			tag( 'br' ),
 			__( 'If you have made any external changes to this repository, please click', 'acf-views' ),
 			' ',
-			nest(
-				tag( 'a', array( 'href' => $reset_cache_link ) ),
-				__( 'here', 'acf-views' )
-			),
+			$reset_link,
 			' ',
 			__( 'to clear the cache.', 'acf-views' )
 		);

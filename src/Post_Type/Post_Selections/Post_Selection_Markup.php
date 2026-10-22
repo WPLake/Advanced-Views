@@ -68,19 +68,21 @@ class Post_Selection_Markup {
 			$pages_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 										->add_item_path( 'pages_amount' );
 
+			$pagination = nest(
+				tag( 'div' ),
+				stack(
+					fn() => print( "\r\n\t\t\t" ),
+					fn() => $token_factory->functions()
+											->paginate_links( array( 'total' => $pages_var ) ),
+					fn() => print( "\n\t\t" )
+				)
+			);
+
 			$tags = stack(
 				fn() => $token_factory->formatter()
 									->new_line()
 									->tab( 2 ),
-				nest(
-					tag( 'div' ),
-					stack(
-						fn() => print( "\r\n\t\t\t" ),
-						fn() => $token_factory->functions()
-												->paginate_links( array( 'total' => $pages_var ) ),
-						fn() => print( "\n\t\t" )
-					)
-				),
+				$pagination,
 				fn() => print( "\r\n\t" )
 			);
 
@@ -147,16 +149,18 @@ class Post_Selection_Markup {
 			$token_factory->formatter()->tab( --$tabs_number );
 		};
 
+		$nested = nest(
+			$tag,
+			stack(
+				fn() => $token_factory->formatter()->new_line(),
+				$inner,
+				$print_closing_tab
+			)
+		);
+
 		return stack(
 			$print_opening_tab,
-			nest(
-				$tag,
-				stack(
-					fn() => $token_factory->formatter()->new_line(),
-					$inner,
-					$print_closing_tab
-				)
-			),
+			$nested,
 			fn() => $token_factory->formatter()->new_line()
 		);
 	}
@@ -332,27 +336,23 @@ class Post_Selection_Markup {
 			$new_line
 		);
 		$is_shadow_root = Post_Selection_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $post_selection_settings->web_component;
+		$template_tag   = nest(
+			tag( 'template', array( 'shadowrootmode' => 'open' ) ),
+			$content
+		);
 		$root_content   = $is_shadow_root ?
-			stack(
-				$new_line,
-				nest(
-					tag( 'template', array( 'shadowrootmode' => 'open' ) ),
-					$content
-				),
-				$new_line
-			) :
+			stack( $new_line, $template_tag, $new_line ) :
 			$content;
 
-		$tags = stack(
-			nest(
-				tag(
-					$post_selection_settings->get_tag_name(),
-					array( 'class' => $this->root_class( $token_factory, $post_selection_settings ) )
-				),
-				$root_content
+		$root = nest(
+			tag(
+				$post_selection_settings->get_tag_name(),
+				array( 'class' => $this->root_class( $token_factory, $post_selection_settings ) )
 			),
-			$new_line
+			$root_content
 		);
+
+		$tags = stack( $root, $new_line );
 
 		Html_Renderer::print( $tags );
 	}

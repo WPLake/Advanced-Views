@@ -87,6 +87,15 @@ abstract class Cpt extends Actor_Base implements Actor {
 			$label
 		);
 
+		$survey = nest(
+			tag( 'span' ),
+			stack(
+				__( 'Take', 'acf-views' ) . ' ',
+				$link( External_Links::SURVEY_URL, __( '2 minute survey', 'acf-views' ) ),
+				' ' . __( 'to improve Advanced Views.', 'acf-views' )
+			)
+		);
+
 		$tags = nest(
 			tag(
 				'span',
@@ -98,14 +107,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 				' ' . __( 'and', 'acf-views' ) . ' ',
 				$link( External_Links::BASIC_VERSION_URL, __( 'Advanced Views', 'acf-views' ) ),
 				'. ',
-				nest(
-					tag( 'span' ),
-					stack(
-						__( 'Take', 'acf-views' ) . ' ',
-						$link( External_Links::SURVEY_URL, __( '2 minute survey', 'acf-views' ) ),
-						' ' . __( 'to improve Advanced Views.', 'acf-views' )
-					)
-				)
+				$survey
 			)
 		);
 
@@ -176,6 +178,17 @@ abstract class Cpt extends Actor_Base implements Actor {
 			__( 'enabled', 'acf-views' ) :
 			__( 'disabled', 'acf-views' );
 
+		$storage_link = nest(
+			tag(
+				'a',
+				array(
+					'target' => '_blank',
+					'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
+				)
+			),
+			__( 'File system storage', 'acf-views' )
+		);
+
 		$tags = nest(
 			tag(
 				'span',
@@ -187,16 +200,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 				)
 			),
 			stack(
-				nest(
-					tag(
-						'a',
-						array(
-							'target' => '_blank',
-							'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
-						)
-					),
-					__( 'File system storage', 'acf-views' )
-				),
+				$storage_link,
 				' ' . sprintf(
 				// translators: %s - the file system storage state, 'enabled' or 'disabled'.
 					__( 'is %s.', 'acf-views' ),

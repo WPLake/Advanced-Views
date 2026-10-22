@@ -121,23 +121,25 @@ class Menu_Items_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		$tags = stack(
-			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
-			nest(
-				tag(
-					'li',
-					array(
-						'class' => $this->compose_class( 'menu-item', 'menu-item--active', $is_active_comparison, $markup_field_data ),
-					)
-				),
-				stack(
-					$print_indented_break,
-					fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data ),
-					$print_aligned_break,
-					$children_if,
-					$print_outdented_break
+		$item = nest(
+			tag(
+				'li',
+				array(
+					'class' => $this->compose_class( 'menu-item', 'menu-item--active', $is_active_comparison, $markup_field_data ),
 				)
 			),
+			stack(
+				$print_indented_break,
+				fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data ),
+				$print_aligned_break,
+				$children_if,
+				$print_outdented_break
+			)
+		);
+
+		$tags = stack(
+			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
+			$item,
 			fn() => $markup_field_data->print_new_line_and_decrement_tabs()
 		);
 
@@ -216,21 +218,23 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$is_active_var = $token_factory->variable( $item_id )
 										->add_item_path( self::IS_ACTIVE );
 
-		$tags = stack(
-			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
-			nest(
-				tag(
-					'li',
-					array(
-						'class' => $this->compose_class( 'sub-menu-item', 'sub-menu-item--active', $is_active_var, $markup_field_data ),
-					)
-				),
-				stack(
-					fn() => $markup_field_data->print_new_line_and_increment_tabs(),
-					fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data ),
-					fn() => $markup_field_data->print_new_line_and_decrement_tabs()
+		$item = nest(
+			tag(
+				'li',
+				array(
+					'class' => $this->compose_class( 'sub-menu-item', 'sub-menu-item--active', $is_active_var, $markup_field_data ),
 				)
 			),
+			stack(
+				fn() => $markup_field_data->print_new_line_and_increment_tabs(),
+				fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data ),
+				fn() => $markup_field_data->print_new_line_and_decrement_tabs()
+			)
+		);
+
+		$tags = stack(
+			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
+			$item,
 			fn() => $markup_field_data->print_new_line_and_decrement_tabs()
 		);
 

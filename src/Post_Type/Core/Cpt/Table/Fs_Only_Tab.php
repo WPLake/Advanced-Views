@@ -58,6 +58,17 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 		$tab_data->set_label( __( 'FS only', 'acf-views' ) );
 		$tab_data->set_description_callback(
 			function (): void {
+				$read_more_link = nest(
+					tag(
+						'a',
+						array(
+							'target' => '_blank',
+							'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
+						)
+					),
+					__( 'Read more', 'acf-views' )
+				);
+
 				$tags = stack(
 					__(
 						'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
@@ -74,16 +85,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 						'acf-views'
 					),
 					' ',
-					nest(
-						tag(
-							'a',
-							array(
-								'target' => '_blank',
-								'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
-							)
-						),
-						__( 'Read more', 'acf-views' )
-					)
+					$read_more_link
 				);
 
 				Html_Renderer::print( $tags );
@@ -159,36 +161,35 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 				tag( 'br' ) :
 				null;
 
-			$item_links[] = stack(
-				$separator,
-				nest(
-					tag(
-						'a',
-						array(
-							'href'   => $cpt_data->get_edit_post_link(),
-							'target' => '_blank',
-						)
-					),
-					$cpt_data->title
-				)
+			$link_tag = nest(
+				tag(
+					'a',
+					array(
+						'href'   => $cpt_data->get_edit_post_link(),
+						'target' => '_blank',
+					)
+				),
+				$cpt_data->title
 			);
+
+			$item_links[] = stack( $separator, $link_tag );
 		}
+
+		$synced_message = nest(
+			tag( 'p' ),
+			count( $ids ) . ' ' . __( 'items successfully synced', 'acf-views' )
+		);
+		$links_message  = nest(
+			tag( 'p' ),
+			stack( ...$item_links )
+		);
 
 		$tags = nest(
 			tag(
 				'div',
 				array( 'class' => 'notice notice-success' )
 			),
-			stack(
-				nest(
-					tag( 'p' ),
-					count( $ids ) . ' ' . __( 'items successfully synced', 'acf-views' )
-				),
-				nest(
-					tag( 'p' ),
-					stack( ...$item_links )
-				)
-			)
+			stack( $synced_message, $links_message )
 		);
 
 		Html_Renderer::print( $tags );

@@ -109,6 +109,17 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 			),
 		);
 
+		$support_link = nest(
+			tag(
+				'a',
+				array(
+					'target' => '_blank',
+					'href'   => 'https://wplake.org/acf-views-support/',
+				)
+			),
+			__( 'reach out', 'acf-views' )
+		);
+
 		$tags = nest(
 			tag(
 				'p',
@@ -117,16 +128,7 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 			stack(
 				__( 'Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue.', 'acf-views' ) . ' ',
 				__( 'Please', 'acf-views' ) . ' ',
-				nest(
-					tag(
-						'a',
-						array(
-							'target' => '_blank',
-							'href'   => 'https://wplake.org/acf-views-support/',
-						)
-					),
-					__( 'reach out', 'acf-views' )
-				),
+				$support_link,
 				' ' . __( 'to our support team for further assistance.', 'acf-views' )
 			)
 		);

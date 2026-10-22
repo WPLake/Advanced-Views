@@ -450,6 +450,12 @@ class Front_Assets extends Actor_Base implements Actor {
 				// introduce a styles variable, which allows to detect the styles root inside a webcomponent.
 				if ( $this->live_reloader_component->is_active() ) {
 					// the wrapper is necessary to make .parentElement work.
+					$location_script = nest(
+						tag( 'script' ),
+						// @phpcs:ignore WordPress.Security.EscapeOutput
+						fn() => print( 'class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)' )
+					);
+
 					$tags = nest(
 						tag(
 							'div',
@@ -459,11 +465,7 @@ class Front_Assets extends Actor_Base implements Actor {
 							// @phpcs:ignore WordPress.Security.EscapeOutput
 							fn() => print( $all_css_code ),
 							tag( 'avf-styles-location' ),
-							nest(
-								tag( 'script' ),
-								// @phpcs:ignore WordPress.Security.EscapeOutput
-								fn() => print( 'class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)' )
-							)
+							$location_script
 						)
 					);
 

@@ -326,16 +326,18 @@ class Usage_Report extends Report_Base implements Actor {
 			)
 		);
 
+		$hide_link = nest(
+			tag(
+				'a',
+				array( 'href' => $hide_url )
+			),
+			__( 'Got it, hide', 'acf-views' )
+		);
+
 		return stack(
 			tag( 'br' ),
 			tag( 'br' ),
-			nest(
-				tag(
-					'a',
-					array( 'href' => $hide_url )
-				),
-				__( 'Got it, hide', 'acf-views' )
-			)
+			$hide_link
 		);
 	}
 }

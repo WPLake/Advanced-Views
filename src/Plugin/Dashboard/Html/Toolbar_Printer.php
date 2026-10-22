@@ -54,15 +54,18 @@ final class Toolbar_Printer {
 			$version_attrs
 		);
 
+		$name_tag     = nest(
+			tag( 'span' ),
+			$name
+		);
+		$version_nest = nest( $version_tag, $version_label );
+
 		$title = nest(
 			$title_tag,
 			stack(
 				$icon_tag,
-				nest(
-					tag( 'span' ),
-					$name
-				),
-				nest( $version_tag, $version_label )
+				$name_tag,
+				$version_nest
 			)
 		);
 
@@ -157,13 +160,15 @@ final class Toolbar_Printer {
 			$attrs
 		);
 
+		$label_tag = nest(
+			tag( 'span' ),
+			$label
+		);
+
 		return nest(
 			$link,
 			stack(
-				nest(
-					tag( 'span' ),
-					$label
-				),
+				$label_tag,
 				$icon
 			)
 		);

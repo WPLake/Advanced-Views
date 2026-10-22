@@ -74,7 +74,7 @@ final class Wrapper_Printer {
 	 *
 	 * @return Html_Stack
 	 */
-	public static function nest(
+	public static function wrap(
 		array $tag,
 		int &$tabs_number,
 		bool $is_new_line_before,
@@ -101,16 +101,18 @@ final class Wrapper_Printer {
 			Format_Token::tabulation( --$tabs_number );
 		};
 
+		$nested = nest(
+			$tag,
+			stack(
+				$print_inner_start,
+				$inner,
+				$print_closing_tabs
+			)
+		);
+
 		return stack(
 			$print_opening_tabs,
-			nest(
-				$tag,
-				stack(
-					$print_inner_start,
-					$inner,
-					$print_closing_tabs
-				)
-			),
+			$nested,
 			static fn() => Format_Token::next_line()
 		);
 	}

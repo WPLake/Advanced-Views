@@ -257,6 +257,17 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 	public function print_fallback_message(): void {
 		$settings_url = Plugin::get_admin_url( Settings_Page::SLUG );
 
+		$settings_link = nest(
+			tag(
+				'a',
+				array(
+					'href'   => $settings_url,
+					'target' => '_blank',
+				)
+			),
+			__( 'Settings', 'acf-views' )
+		);
+
 		$tags = nest(
 			tag(
 				'p',
@@ -266,16 +277,7 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 				__( 'Loading the Editor is taking longer than expected.', 'acf-views' ),
 				tag( 'br' ),
 				__( 'If you still see this message after an extended period, please visit the', 'acf-views' ) . ' ',
-				nest(
-					tag(
-						'a',
-						array(
-							'href'   => $settings_url,
-							'target' => '_blank',
-						)
-					),
-					__( 'Settings', 'acf-views' )
-				),
+				$settings_link,
 				' ' . __( 'and disable the screen performance optimization.', 'acf-views' )
 			)
 		);

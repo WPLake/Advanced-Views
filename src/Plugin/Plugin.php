@@ -461,6 +461,17 @@ class Plugin extends Actor_Base implements Actor {
 			'Please change the "opcache.save_comments" option in your php.ini file to the default value of "1" on your hosting.',
 			'acf-views'
 		);
+		$read_more_link = nest(
+			tag(
+				'a',
+				array(
+					'target' => '_blank',
+					'href'   => External_Links::CONFLICTS_URL,
+				)
+			),
+			__( 'Read more', 'acf-views' )
+		);
+
 		$tags = nest(
 			tag(
 				'div',
@@ -471,16 +482,7 @@ class Plugin extends Actor_Base implements Actor {
 				$detected_message . ' ',
 				tag( 'br' ),
 				$action_message . ' ',
-				nest(
-					tag(
-						'a',
-						array(
-							'target' => '_blank',
-							'href'   => External_Links::CONFLICTS_URL,
-						)
-					),
-					__( 'Read more', 'acf-views' )
-				)
+				$read_more_link
 			)
 		);
 

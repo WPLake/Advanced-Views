@@ -43,7 +43,7 @@ final class Outer_Printer {
 
 		// the innermost outer goes first.
 		foreach ( array_reverse( $field_outers ) as $outer ) {
-			$content = Wrapper_Printer::nest(
+			$content = Wrapper_Printer::wrap(
 				self::outer_tag( $outer, $token_factory ),
 				$tabs_number,
 				true,

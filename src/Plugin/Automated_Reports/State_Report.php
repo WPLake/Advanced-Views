@@ -118,16 +118,15 @@ class State_Report extends Report_Base implements Actor {
 			'delete_data_option'          => __( 'Delete all the plugin data (cannot be undone)', 'acf-views' ),
 			'is_with_survey'              => false === $this->settings->is_automatic_reports_disabled(),
 		);
-		$tags = stack(
-			nest(
-				tag( 'style' ),
-				fn() => $this->print_survey_css()
-			),
-			nest(
-				tag( 'script' ),
-				fn() => $this->print_survey_script( $data )
-			)
+		$style  = nest(
+			tag( 'style' ),
+			fn() => $this->print_survey_css()
 		);
+		$script = nest(
+			tag( 'script' ),
+			fn() => $this->print_survey_script( $data )
+		);
+		$tags   = stack( $style, $script );
 
 		Html_Renderer::print( $tags );
 	}

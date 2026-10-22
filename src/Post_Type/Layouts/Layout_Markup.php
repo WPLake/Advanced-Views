@@ -137,27 +137,23 @@ class Layout_Markup {
 			}
 		};
 		$is_shadow_root = Layout_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $layout_settings->web_component;
+		$template_tag   = nest(
+			tag( 'template', array( 'shadowrootmode' => 'open' ) ),
+			stack( $new_line, $rows )
+		);
 		$root_content   = $is_shadow_root ?
-			stack(
-				$new_line,
-				nest(
-					tag( 'template', array( 'shadowrootmode' => 'open' ) ),
-					stack( $new_line, $rows )
-				),
-				$new_line
-			) :
+			stack( $new_line, $template_tag, $new_line ) :
 			stack( $new_line, $rows );
 
-		$tags = stack(
-			nest(
-				tag(
-					$layout_settings->get_tag_name(),
-					array( 'class' => $this->root_class( $token_factory, $layout_settings ) )
-				),
-				$root_content
+		$root = nest(
+			tag(
+				$layout_settings->get_tag_name(),
+				array( 'class' => $this->root_class( $token_factory, $layout_settings ) )
 			),
-			$new_line
+			$root_content
 		);
+
+		$tags = stack( $root, $new_line );
 
 		Html_Renderer::print( $tags );
 	}

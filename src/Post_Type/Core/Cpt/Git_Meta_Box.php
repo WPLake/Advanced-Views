@@ -255,19 +255,21 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	 * @return Html_Nest
 	 */
 	protected function intro_tags(): array {
+		$docs_link = nest(
+			tag(
+				'a',
+				array(
+					'target' => '_blank',
+					'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
+				)
+			),
+			__( 'Save the item', 'acf-views' )
+		);
+
 		return nest(
 			tag( 'p' ),
 			stack(
-				nest(
-					tag(
-						'a',
-						array(
-							'target' => '_blank',
-							'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
-						)
-					),
-					__( 'Save the item', 'acf-views' )
-				),
+				$docs_link,
 				' ' . __( 'to your library', 'acf-views' ) . '.'
 			)
 		);
@@ -299,6 +301,14 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 			$this->settings->get_git_repositories()
 		);
 
+		$placeholder_option = nest(
+			tag(
+				'option',
+				array( 'value' => '' )
+			),
+			__( 'Select repository', 'acf-views' )
+		);
+
 		return nest(
 			tag(
 				'select',
@@ -308,13 +318,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 				)
 			),
 			stack(
-				nest(
-					tag(
-						'option',
-						array( 'value' => '' )
-					),
-					__( 'Select repository', 'acf-views' )
-				),
+				$placeholder_option,
 				...$option_chains
 			)
 		);
@@ -324,6 +328,14 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	 * @return Html_Nest
 	 */
 	protected function with_fields_tags(): array {
+		$label = nest(
+			tag(
+				'label',
+				array( 'for' => 'av_git-repo-with-fields' )
+			),
+			__( 'Include related Meta groups', 'acf-views' )
+		);
+
 		return nest(
 			tag(
 				'div',
@@ -343,13 +355,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 						'id'   => 'av_git-repo-with-fields',
 					)
 				),
-				nest(
-					tag(
-						'label',
-						array( 'for' => 'av_git-repo-with-fields' )
-					),
-					__( 'Include related Meta groups', 'acf-views' )
-				)
+				$label
 			)
 		);
 	}

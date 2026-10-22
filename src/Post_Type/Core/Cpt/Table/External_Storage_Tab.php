@@ -293,19 +293,18 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 				tag( 'br' ) :
 				null;
 
-			$members[] = stack(
-				$separator,
-				nest(
-					tag(
-						'a',
-						array(
-							'href'   => $link['url'],
-							'target' => '_blank',
-						)
-					),
-					$link['title']
-				)
+			$link_tag = nest(
+				tag(
+					'a',
+					array(
+						'href'   => $link['url'],
+						'target' => '_blank',
+					)
+				),
+				$link['title']
 			);
+
+			$members[] = stack( $separator, $link_tag );
 		}
 
 		return nest(

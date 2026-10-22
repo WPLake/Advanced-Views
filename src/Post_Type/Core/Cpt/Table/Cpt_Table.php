@@ -214,14 +214,13 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 
 			$attrs['href'] = $this->get_tab_url( $tab->get_name() );
 
+			$count = nest(
+				tag( 'span', array( 'class' => 'count' ) ),
+				sprintf( '(%s)', $tab->get_label_in_brackets() )
+			);
+
 			$count_span = '' !== $tab->get_label_in_brackets() ?
-				stack(
-					' ',
-					nest(
-						tag( 'span', array( 'class' => 'count' ) ),
-						sprintf( '(%s)', $tab->get_label_in_brackets() )
-					)
-				) :
+				stack( ' ', $count ) :
 				null;
 
 			$tab_link = nest(
@@ -455,33 +454,33 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			);
 		}
 
-		$tags = stack(
-			// hide the origin items until the custom items are pasted via JS.
-			nest(
-				tag( 'style' ),
-				fn() => print( '#the-list{opacity: 0; transition: opacity ease .1s;}' )
-			),
-			nest(
-				tag(
-					'div',
-					array( 'style' => array( 'display' => 'none' ) )
-				),
-				tag( 'table' ),
-				tag(
-					'tbody',
-					array( 'id' => 'acf-views-the-list' )
-				),
-				stack( ...$rows )
-			),
-			nest(
-				tag(
-					'script',
-					array( 'type' => 'text/javascript' )
-				),
-				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				fn() => print( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' )
-			)
+		// hide the origin items until the custom items are pasted via JS.
+		$hide_style   = nest(
+			tag( 'style' ),
+			fn() => print( '#the-list{opacity: 0; transition: opacity ease .1s;}' )
 		);
+		$rows_table   = nest(
+			tag(
+				'div',
+				array( 'style' => array( 'display' => 'none' ) )
+			),
+			tag( 'table' ),
+			tag(
+				'tbody',
+				array( 'id' => 'acf-views-the-list' )
+			),
+			stack( ...$rows )
+		);
+		$paste_script = nest(
+			tag(
+				'script',
+				array( 'type' => 'text/javascript' )
+			),
+			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			fn() => print( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' )
+		);
+
+		$tags = stack( $hide_style, $rows_table, $paste_script );
 
 		Html_Renderer::print( $tags );
 	}
@@ -654,18 +653,20 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 	 * @return Html_Stack
 	 */
 	protected function checkbox_cell_content( string $unique_id, string $title ): array {
-		return stack(
-			nest(
-				tag(
-					'label',
-					array(
-						'for'   => 'cb-select-' . $unique_id,
-						'class' => 'screen-reader-text',
-					)
-				),
-				// translators: %s: item title.
-				sprintf( __( 'Select %s', 'acf-views' ), $title )
+		$label = nest(
+			tag(
+				'label',
+				array(
+					'for'   => 'cb-select-' . $unique_id,
+					'class' => 'screen-reader-text',
+				)
 			),
+			// translators: %s: item title.
+			sprintf( __( 'Select %s', 'acf-views' ), $title )
+		);
+
+		return stack(
+			$label,
 			tag(
 				'input',
 				array(

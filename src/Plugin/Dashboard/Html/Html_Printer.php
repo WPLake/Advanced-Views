@@ -62,12 +62,14 @@ final class Html_Printer {
 		$page_input  = self::hidden_input_tags( '_av-page', $page );
 		$nonce_input = self::hidden_input_tags( '_wpnonce', $form_nonce );
 
+		$main = nest( $main_tag, $blocks );
+
 		return nest(
 			$form_tag,
 			stack(
 				$page_input,
 				$nonce_input,
-				nest( $main_tag, $blocks )
+				$main
 			)
 		);
 	}
