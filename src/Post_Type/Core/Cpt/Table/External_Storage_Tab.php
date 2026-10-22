@@ -288,7 +288,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			// the 'br' goes between the links.
 			$separator = array() !== $members ?
 				Html::tag( 'br' ) :
-				Html::stack();
+				null;
 
 			$members[] = Html::stack(
 				$separator,

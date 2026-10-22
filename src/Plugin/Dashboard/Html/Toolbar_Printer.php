@@ -147,7 +147,7 @@ final class Toolbar_Printer {
 		);
 		$icon         = key_exists( 'iconClasses', $tab ) ?
 			$icon_tag :
-			Html::stack();
+			null;
 		$label        = string( $tab, 'label' );
 		$link         = Html::tag(
 			'a',

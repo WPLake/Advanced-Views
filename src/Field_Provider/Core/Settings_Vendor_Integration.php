@@ -219,7 +219,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 					'style' => $icon_style,
 				)
 			) :
-			Html::stack();
+			null;
 
 		$tags = Html::wrap(
 			Html::tag(

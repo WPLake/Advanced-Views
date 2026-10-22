@@ -219,7 +219,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 						sprintf( '(%s)', $tab->get_label_in_brackets() )
 					)
 				) :
-				Html::stack();
+				null;
 
 			$tab_link = Html::wrap(
 				Html::tag(

@@ -84,7 +84,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 
 		$dismiss_members = Avf_User::can_manage() ?
 			$this->get_dismiss_members() :
-			Html::stack();
+			null;
 
 		$tags = Html::wrap(
 			Html::tag(

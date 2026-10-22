@@ -184,10 +184,10 @@ class Field_Template {
 		$is_with_label = strlen( $field_settings->label ) > 0;
 		$label_outside = $is_with_label && $is_label_out_of_row ?
 			$print_label :
-			Html::stack();
+			null;
 		$label_inside  = $is_with_label && ! $is_label_out_of_row ?
 			$print_label :
-			Html::stack();
+			null;
 
 		$content = Outer_Printer::wrap_with_outers(
 			$field_assets,

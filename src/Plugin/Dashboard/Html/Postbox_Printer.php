@@ -84,7 +84,7 @@ class Postbox_Printer {
 			$shortcode
 		);
 		$details         = $is_short ?
-			Html::stack() :
+			null :
 			self::shortcode_details_tags( $is_single );
 
 		return Html::wrap(

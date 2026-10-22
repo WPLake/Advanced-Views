@@ -79,14 +79,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 	 * @param array{id:string, accessToken:string, name:string} $git_repository
 	 */
 	protected function print_description( array $git_repository ): void {
-		$reset_cache_link = $this->get_cpt_table()->get_tab_url(
-			$this->get_cpt_table()->get_current_tab(),
-			array(
-				self::KEY_CACHE_CLEAR_ACTION => 1,
-				'_wpnonce'                   => wp_create_nonce( 'bulk-posts' ),
-				self::KEY_REMOTE_SOURCE      => $git_repository['id'],
-			)
-		);
+		$reset_cache_link = $this->get_reset_cache_link( $git_repository['id'] );
 
 		$tags = Html::stack(
 			__(
@@ -116,6 +109,19 @@ abstract class Git_Tabs extends External_Storage_Tab {
 		);
 
 		Html_Renderer::print( $tags );
+	}
+
+	protected function get_reset_cache_link( string $repository_id ): string {
+		$current_tab = $this->get_cpt_table()->get_current_tab();
+		$nonce       = wp_create_nonce( 'bulk-posts' );
+
+		$url_args = array(
+			self::KEY_CACHE_CLEAR_ACTION => 1,
+			'_wpnonce'                   => $nonce,
+			self::KEY_REMOTE_SOURCE      => $repository_id,
+		);
+
+		return $this->get_cpt_table()->get_tab_url( $current_tab, $url_args );
 	}
 
 	/**

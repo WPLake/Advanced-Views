@@ -24,9 +24,9 @@ final class Import_Printer {
 	): void {
 		$result_block = $is_with_form_message ?
 			self::import_result_block_tags( $is_has_demo_objects, $demo_import ) :
-			Html::stack();
+			null;
 		$introduction = $is_has_demo_objects ?
-			Html::stack() :
+			null :
 			self::import_introduction_tags();
 		$blocks       = Html::stack(
 			$result_block,
@@ -54,7 +54,7 @@ final class Import_Printer {
 				Html::tag( 'br' ),
 				Html::wrap( $button_tag, $button_label )
 			) :
-			Html::stack();
+			null;
 
 		$block_attrs = array( 'class' => 'av-introduction av-dashboard__block av-dashboard__block--medium' );
 		$result_tags = self::import_result_tags( $demo_import );
@@ -75,10 +75,10 @@ final class Import_Printer {
 		$is_has_items = $demo_import->is_has_data() && ! $demo_import->is_has_error();
 		$status       = $demo_import->is_processed() ?
 			self::import_status_tags( $demo_import ) :
-			Html::stack();
+			null;
 		$items        = $is_has_items ?
 			self::imported_items_tags( $demo_import ) :
-			Html::stack();
+			null;
 
 		return Html::stack( $status, $items );
 	}

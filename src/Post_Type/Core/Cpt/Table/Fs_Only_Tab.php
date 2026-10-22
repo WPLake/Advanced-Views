@@ -155,7 +155,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 			// the 'br' goes between the links.
 			$separator = array() !== $item_links ?
 				Html::tag( 'br' ) :
-				Html::stack();
+				null;
 
 			$item_links[] = Html::stack(
 				$separator,

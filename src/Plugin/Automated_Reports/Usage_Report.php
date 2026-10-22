@@ -124,7 +124,7 @@ class Usage_Report extends Report_Base implements Actor {
 
 		$hide_members = Avf_User::can_manage() ?
 			$this->get_hide_members( $dismiss_key, $nonce_name ) :
-			Html::stack();
+			null;
 
 		$tags = Html::wrap(
 			Html::tag(
