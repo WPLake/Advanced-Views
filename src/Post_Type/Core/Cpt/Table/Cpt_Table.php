@@ -19,6 +19,9 @@ use WP_List_Table;
 use WP_Post;
 use WP_Post_Type;
 use WP_Query;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -152,12 +155,12 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			return;
 		}
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				array( 'class' => 'notice notice-success' )
 			),
-			Html::tag( 'p' ),
+			tag( 'p' ),
 			__( 'Item successfully cloned.', 'acf-views' )
 		);
 
@@ -172,8 +175,8 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			null;
 
 		if ( null !== $description_callback ) {
-			$tags = Html::wrap(
-				Html::tag( 'p' ),
+			$tags = wrap(
+				tag( 'p' ),
 				$description_callback
 			);
 
@@ -183,8 +186,8 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		}
 
 		if ( '' !== $wp_post_type->description ) {
-			$node = Html::wrap(
-				Html::tag( 'p' ),
+			$node = wrap(
+				tag( 'p' ),
 				// don't use esc_html as it contains links.
 				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				fn() => print( $wp_post_type->description )
@@ -212,21 +215,21 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			$attrs['href'] = $this->get_tab_url( $tab->get_name() );
 
 			$count_span = '' !== $tab->get_label_in_brackets() ?
-				Html::stack(
+				stack(
 					' ',
-					Html::wrap(
-						Html::tag( 'span', array( 'class' => 'count' ) ),
+					wrap(
+						tag( 'span', array( 'class' => 'count' ) ),
 						sprintf( '(%s)', $tab->get_label_in_brackets() )
 					)
 				) :
 				null;
 
-			$tab_link = Html::wrap(
-				Html::tag(
+			$tab_link = wrap(
+				tag(
 					'a',
 					$attrs
 				),
-				Html::stack(
+				stack(
 					$tab->get_label(),
 					$count_span
 				)
@@ -261,8 +264,8 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			__( 'Search for name.', 'acf-views' );
 
 		// only primary search is available for custom items.
-		$tags = Html::wrap(
-			Html::tag( 'style' ),
+		$tags = wrap(
+			tag( 'style' ),
 			fn() => print( sprintf( '#posts-filter .search-box::after{content:"%s";}', esc_html( $label ) ) )
 		);
 
@@ -373,8 +376,8 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			)
 		);
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'a',
 				array( 'href' => $clone_link )
 			),
@@ -446,32 +449,32 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 				$cells[] = $this->table_cell( $current_tab_data, $cpt_data, $column_name, $column_label, $hidden );
 			}
 
-			$rows[] = Html::wrap(
-				Html::tag( 'tr' ),
-				Html::stack( ...$cells )
+			$rows[] = wrap(
+				tag( 'tr' ),
+				stack( ...$cells )
 			);
 		}
 
-		$tags = Html::stack(
+		$tags = stack(
 			// hide the origin items until the custom items are pasted via JS.
-			Html::wrap(
-				Html::tag( 'style' ),
+			wrap(
+				tag( 'style' ),
 				fn() => print( '#the-list{opacity: 0; transition: opacity ease .1s;}' )
 			),
-			Html::wrap(
-				Html::tag(
+			wrap(
+				tag(
 					'div',
 					array( 'style' => array( 'display' => 'none' ) )
 				),
-				Html::tag( 'table' ),
-				Html::tag(
+				tag( 'table' ),
+				tag(
 					'tbody',
 					array( 'id' => 'acf-views-the-list' )
 				),
-				Html::stack( ...$rows )
+				stack( ...$rows )
 			),
-			Html::wrap(
-				Html::tag(
+			wrap(
+				tag(
 					'script',
 					array( 'type' => 'text/javascript' )
 				),
@@ -631,8 +634,8 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			'title' => fn() => $tab_data->print_row_title( $cpt_settings ),
 		);
 
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				$is_checkbox ?
 					'th' :
 					'td',
@@ -651,9 +654,9 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 	 * @return Tag_Stack
 	 */
 	protected function checkbox_cell_content( string $unique_id, string $title ): array {
-		return Html::stack(
-			Html::wrap(
-				Html::tag(
+		return stack(
+			wrap(
+				tag(
 					'label',
 					array(
 						'for'   => 'cb-select-' . $unique_id,
@@ -663,7 +666,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 				// translators: %s: item title.
 				sprintf( __( 'Select %s', 'acf-views' ), $title )
 			),
-			Html::tag(
+			tag(
 				'input',
 				array(
 					'id'    => 'cb-select-' . $unique_id,

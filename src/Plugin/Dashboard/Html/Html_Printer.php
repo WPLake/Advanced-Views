@@ -5,6 +5,9 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
 use Org\Wplake\Advanced_Views\Template\Html\Html;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -23,12 +26,12 @@ final class Html_Printer {
 			'href'   => $url,
 		);
 
-		$link_tag = Html::tag(
+		$link_tag = tag(
 			'a',
 			$link_attrs
 		);
 
-		return Html::wrap(
+		return wrap(
 			$link_tag,
 			$label
 		);
@@ -47,11 +50,11 @@ final class Html_Printer {
 		);
 		$main_attrs = array( 'class' => 'av-dashboard__main' );
 
-		$form_tag = Html::tag(
+		$form_tag = tag(
 			'form',
 			$form_attrs
 		);
-		$main_tag = Html::tag(
+		$main_tag = tag(
 			'div',
 			$main_attrs
 		);
@@ -59,12 +62,12 @@ final class Html_Printer {
 		$page_input  = self::hidden_input_tags( '_av-page', $page );
 		$nonce_input = self::hidden_input_tags( '_wpnonce', $form_nonce );
 
-		return Html::wrap(
+		return wrap(
 			$form_tag,
-			Html::stack(
+			stack(
 				$page_input,
 				$nonce_input,
-				Html::wrap( $main_tag, $blocks )
+				wrap( $main_tag, $blocks )
 			)
 		);
 	}
@@ -73,7 +76,7 @@ final class Html_Printer {
 	 * @return Tag
 	 */
 	public static function hidden_input_tags( string $name, string $value ): array {
-		return Html::tag(
+		return tag(
 			'input',
 			array(
 				'type'  => 'hidden',
@@ -89,12 +92,12 @@ final class Html_Printer {
 	public static function title_tags( string $title ): array {
 		$title_attrs = array( 'class' => 'av-introduction__title' );
 
-		$title_tag = Html::tag(
+		$title_tag = tag(
 			'p',
 			$title_attrs
 		);
 
-		return Html::wrap(
+		return wrap(
 			$title_tag,
 			$title
 		);

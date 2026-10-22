@@ -8,6 +8,9 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
  * @phpstan-import-type Tag_Wrap from Html
@@ -49,8 +52,8 @@ abstract class Profiler {
 	public static function print_report(): void {
 		$classes_total_usage = self::get_classes_total_usage();
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				array(
 					'style' => array(
@@ -61,11 +64,11 @@ abstract class Profiler {
 					),
 				)
 			),
-			Html::stack(
+			stack(
 				self::pre_chain( self::get_total_usage() ),
-				Html::tag( 'hr' ),
+				tag( 'hr' ),
 				self::pre_chain( $classes_total_usage, count( $classes_total_usage ) . "\n" ),
-				Html::tag( 'hr' ),
+				tag( 'hr' ),
 				self::pre_chain( self::$class_hooks_usage )
 			)
 		);
@@ -167,8 +170,8 @@ abstract class Profiler {
 	 * @return Tag_Wrap
 	 */
 	protected static function pre_chain( $data, string $prefix = '' ): array {
-		return Html::wrap(
-			Html::tag( 'pre' ),
+		return wrap(
+			tag( 'pre' ),
 			fn() => self::print_data( $data, $prefix )
 		);
 	}

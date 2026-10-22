@@ -21,8 +21,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Tab_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Repository_Item;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 abstract class Git_Tabs extends External_Storage_Tab {
 	use Safe_Array_Arguments;
@@ -81,14 +83,14 @@ abstract class Git_Tabs extends External_Storage_Tab {
 	protected function print_description( array $git_repository ): void {
 		$reset_cache_link = $this->get_reset_cache_link( $git_repository['id'] );
 
-		$tags = Html::stack(
+		$tags = stack(
 			__(
 				'By saving items in your GitLab repository, you can create your own library and reuse them on other websites.',
 				'acf-views'
 			),
 			' ',
-			Html::wrap(
-				Html::tag(
+			wrap(
+				tag(
 					'a',
 					array(
 						'target' => '_blank',
@@ -97,11 +99,11 @@ abstract class Git_Tabs extends External_Storage_Tab {
 				),
 				__( 'Read more', 'acf-views' )
 			),
-			Html::tag( 'br' ),
+			tag( 'br' ),
 			__( 'If you have made any external changes to this repository, please click', 'acf-views' ),
 			' ',
-			Html::wrap(
-				Html::tag( 'a', array( 'href' => $reset_cache_link ) ),
+			wrap(
+				tag( 'a', array( 'href' => $reset_cache_link ) ),
 				__( 'here', 'acf-views' )
 			),
 			' ',
@@ -433,12 +435,12 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			return;
 		}
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				array( 'class' => 'notice notice-success' )
 			),
-			Html::tag( 'p' ),
+			tag( 'p' ),
 			__( 'Cache successfully cleared.', 'acf-views' )
 		);
 

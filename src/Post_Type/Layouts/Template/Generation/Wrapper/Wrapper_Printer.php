@@ -11,6 +11,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
  * @phpstan-import-type Tag from Html
@@ -30,7 +33,7 @@ final class Wrapper_Printer {
 	): array {
 		$classes = Wrapper_Class_Resolver::resolve_row_classes( $layout_settings, $field_name_class, $type, $row_class );
 
-		return Html::tag( $tag, array( 'class' => $classes ) );
+		return tag( $tag, array( 'class' => $classes ) );
 	}
 
 	/**
@@ -59,7 +62,7 @@ final class Wrapper_Printer {
 			$attr_class
 		);
 
-		return Html::tag( $tag, array_merge( array( 'class' => $classes ), $attrs ) );
+		return tag( $tag, array_merge( array( 'class' => $classes ), $attrs ) );
 	}
 
 	/**
@@ -98,11 +101,11 @@ final class Wrapper_Printer {
 			Format_Token::tabulation( --$tabs_number );
 		};
 
-		return Html::stack(
+		return stack(
 			$print_opening_tabs,
-			Html::wrap(
+			wrap(
 				$tag,
-				Html::stack(
+				stack(
 					$print_inner_start,
 					$inner,
 					$print_closing_tabs

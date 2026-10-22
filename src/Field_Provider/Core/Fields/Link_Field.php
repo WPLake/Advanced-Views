@@ -11,10 +11,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 class Link_Field extends Markup_Field_Base {
 	const TARGET     = 'target';
@@ -58,8 +59,8 @@ class Link_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'a',
 				$link_attributes
 			),

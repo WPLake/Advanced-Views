@@ -13,8 +13,10 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 abstract class Pre_Built_Tab extends External_Storage_Tab {
 	use Safe_Array_Arguments;
@@ -53,15 +55,15 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 	abstract protected function print_tab_description_middle(): void;
 
 	protected function print_tab_description(): void {
-		$tags = Html::stack(
+		$tags = stack(
 			__( 'Import pre-built components.', 'acf-views' ),
-			Html::tag( 'br' ),
+			tag( 'br' ),
 			fn() => $this->print_tab_description_middle(),
-			Html::tag( 'br' ),
+			tag( 'br' ),
 			__( 'Hover on the title and click Import.', 'acf-views' ),
 			' ',
-			Html::wrap(
-				Html::tag(
+			wrap(
+				tag(
 					'a',
 					array(
 						'target' => '_blank',

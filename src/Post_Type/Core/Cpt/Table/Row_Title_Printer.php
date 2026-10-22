@@ -8,6 +8,9 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
  * @phpstan-import-type Tag_Wrap from Html
@@ -22,9 +25,9 @@ final class Row_Title_Printer {
 		string $action_url,
 		string $action_label
 	): void {
-		$title_tags = Html::wrap(
-			Html::tag( 'strong' ),
-			Html::tag(
+		$title_tags = wrap(
+			tag( 'strong' ),
+			tag(
 				'span',
 				array( 'class' => 'row-title' )
 			),
@@ -44,23 +47,23 @@ final class Row_Title_Printer {
 		string $action_url,
 		string $action_label
 	): void {
-		$action_tags = Html::wrap(
-			Html::tag(
+		$action_tags = wrap(
+			tag(
 				'div',
 				array( 'class' => 'row-actions' )
 			),
-			Html::tag(
+			tag(
 				'span',
 				array( 'class' => $action_class )
 			),
-			Html::tag(
+			tag(
 				'a',
 				array( 'href' => $action_url )
 			),
 			$action_label
 		);
 
-		$tags = Html::stack( $title_tags, $action_tags );
+		$tags = stack( $title_tags, $action_tags );
 
 		Html_Renderer::print( $tags );
 	}

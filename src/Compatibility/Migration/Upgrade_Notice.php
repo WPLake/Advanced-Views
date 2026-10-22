@@ -18,6 +18,9 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
  * @phpstan-import-type Tag_Stack from Html
@@ -86,15 +89,15 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 			$this->get_dismiss_members() :
 			null;
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				array( 'class' => 'notice notice-info' )
 			),
-			Html::tag( 'p' ),
-			Html::stack(
+			tag( 'p' ),
+			stack(
 				__( 'Advanced Views plugin has been successfully upgraded!', 'acf-views' ),
-				Html::tag( 'br' ),
+				tag( 'br' ),
 				$this->get_notice_lines_members( $upgrade_notice ),
 				$dismiss_members
 			)
@@ -133,13 +136,13 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 
 		foreach ( explode( "\n", $upgrade_notice ) as $index => $line ) {
 			if ( $index > 0 ) {
-				$members[] = Html::tag( 'br' );
+				$members[] = tag( 'br' );
 			}
 
 			$members[] = $line;
 		}
 
-		return Html::stack( ...$members );
+		return stack( ...$members );
 	}
 
 	/**
@@ -154,8 +157,8 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 			Plugin::get_current_admin_url()
 		);
 
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'a',
 				array(
 					'style' => array( 'float' => 'right' ),

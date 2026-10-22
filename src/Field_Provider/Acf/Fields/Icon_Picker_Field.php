@@ -16,6 +16,8 @@ use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Comparison_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -43,7 +45,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$media_library_branch = $this->media_library_branch( $field_id, $markup_field_data );
 		$custom_image_branch  = $this->custom_image_branch( $field_id, $markup_field_data );
 
-		return Html::stack(
+		return stack(
 			$token_factory
 				->if()
 				->set_if_branch( $dashicons_branch )
@@ -143,9 +145,9 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$icon_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-		$tags = Html::stack(
+		$tags = stack(
 			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
-			Html::tag(
+			tag(
 				'i',
 				array(
 					'class' => array(
@@ -178,9 +180,9 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$src_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-		$tags = Html::stack(
+		$tags = stack(
 			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
-			Html::tag(
+			tag(
 				'img',
 				array(
 					'class'   => $this->get_field_class( 'icon', $markup_field_data ),

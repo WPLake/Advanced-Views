@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
 // so without the field type support tab fields won't be added to the Block.
 class Tab_Field extends Markup_Field_Base {
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
-		return Html::wrap();
+		return wrap();
 	}
 
 	/**

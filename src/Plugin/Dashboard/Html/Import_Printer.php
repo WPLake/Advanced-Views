@@ -7,6 +7,9 @@ namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -28,7 +31,7 @@ final class Import_Printer {
 		$introduction = $is_has_demo_objects ?
 			null :
 			self::import_introduction_tags();
-		$blocks       = Html::stack(
+		$blocks       = stack(
 			$result_block,
 			$introduction
 		);
@@ -47,24 +50,24 @@ final class Import_Printer {
 			'value' => 'delete',
 		);
 		$button_label  = __( 'Delete imported objects', 'acf-views' );
-		$button_tag    = Html::tag( 'button', $button_attrs );
+		$button_tag    = tag( 'button', $button_attrs );
 		$delete_button = $is_has_demo_objects ?
-			Html::stack(
-				Html::tag( 'br' ),
-				Html::tag( 'br' ),
-				Html::wrap( $button_tag, $button_label )
+			stack(
+				tag( 'br' ),
+				tag( 'br' ),
+				wrap( $button_tag, $button_label )
 			) :
 			null;
 
 		$block_attrs = array( 'class' => 'av-introduction av-dashboard__block av-dashboard__block--medium' );
 		$result_tags = self::import_result_tags( $demo_import );
 
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'div',
 				$block_attrs
 			),
-			Html::stack( $result_tags, $delete_button )
+			stack( $result_tags, $delete_button )
 		);
 	}
 
@@ -80,7 +83,7 @@ final class Import_Printer {
 			self::imported_items_tags( $demo_import ) :
 			null;
 
-		return Html::stack( $status, $items );
+		return stack( $status, $items );
 	}
 
 	/**
@@ -92,7 +95,7 @@ final class Import_Printer {
 				__( 'Import was successful. You’re all set!', 'acf-views' ) :
 				__( 'All demo objects have been deleted.', 'acf-views' );
 
-			return Html::stack(
+			return stack(
 				Html_Printer::title_tags( $message )
 			);
 		}
@@ -100,10 +103,10 @@ final class Import_Printer {
 		$failed_title = __( 'Request is failed.', 'acf-views' );
 		$error        = $demo_import->get_error();
 
-		return Html::stack(
+		return stack(
 			Html_Printer::title_tags( $failed_title ),
-			Html::tag( 'br' ),
-			Html::tag( 'br' ),
+			tag( 'br' ),
+			tag( 'br' ),
 			$error
 		);
 	}
@@ -138,7 +141,7 @@ final class Import_Printer {
 		$phones_card_link     = $demo_import->get_phones_acf_card_link();
 		$phones_article_link  = $demo_import->get_phones_article_link();
 
-		return Html::stack(
+		return stack(
 			Html_Printer::title_tags( $imported_title ),
 			self::bold_paragraph_tags( array( $same_page_title ) ),
 			self::spaced_link_tags( $samsung_link, $samsung_label ),
@@ -164,16 +167,16 @@ final class Import_Printer {
 
 		foreach ( $lines as $index => $line ) {
 			if ( $index > 0 ) {
-				$line_tags[] = Html::tag( 'br' );
+				$line_tags[] = tag( 'br' );
 			}
 
 			$line_tags[] = $line;
 		}
 
-		return Html::wrap(
-			Html::tag( 'p' ),
-			Html::tag( 'b' ),
-			Html::stack( ...$line_tags )
+		return wrap(
+			tag( 'p' ),
+			tag( 'b' ),
+			stack( ...$line_tags )
 		);
 	}
 
@@ -183,10 +186,10 @@ final class Import_Printer {
 	protected static function spaced_link_tags( string $url, string $label ): array {
 		$link = Html_Printer::link_tags( $url, $label );
 
-		return Html::stack(
+		return stack(
 			$link,
-			Html::tag( 'br' ),
-			Html::tag( 'br' )
+			tag( 'br' ),
+			tag( 'br' )
 		);
 	}
 
@@ -205,25 +208,25 @@ final class Import_Printer {
 		$intro_title   = __( 'Import Demo to Get Started in Seconds', 'acf-views' );
 		$import_label  = __( 'Import Demo Now', 'acf-views' );
 		$title_tags    = Html_Printer::title_tags( $intro_title );
-		$import_button = Html::wrap(
-			Html::tag(
+		$import_button = wrap(
+			tag(
 				'button',
 				$import_attrs
 			),
 			$import_label
 		);
 
-		$description = Html::wrap(
-			Html::tag(
+		$description = wrap(
+			tag(
 				'p',
 				$description_attrs
 			),
-			Html::stack(
+			stack(
 				__(
 					"Whether you're new to Advanced Views or just want a quick way to set up the basics, this demo import will automatically create a working example for you.",
 					'acf-views'
 				),
-				Html::tag( 'br' ),
+				tag( 'br' ),
 				__( "It's perfect for exploring how Layouts, Post Selections, and ACF fields work together.", 'acf-views' )
 			)
 		);
@@ -233,8 +236,8 @@ final class Import_Printer {
 			__( "When done, you'll see quick links to edit all imported items.", 'acf-views' ),
 		);
 		$importing_text        = join( ' ', $importing_parts );
-		$importing_description = Html::wrap(
-			Html::tag(
+		$importing_description = wrap(
+			tag(
 				'p',
 				$description_attrs
 			),
@@ -270,15 +273,15 @@ final class Import_Printer {
 		$after_title     = __( 'After Import', 'acf-views' );
 		$delete_hint     = __( 'A Delete Demo button will appear if you’d like to remove the demo content later.', 'acf-views' );
 
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'div',
 				$block_attrs
 			),
-			Html::stack(
+			stack(
 				$title_tags,
 				$description,
-				Html::tag( 'hr' ),
+				tag( 'hr' ),
 				self::bold_paragraph_tags( array( $does_title ) ),
 				self::bold_paragraph_tags( array( $same_page_title ) ),
 				$same_page_steps,
@@ -286,17 +289,17 @@ final class Import_Printer {
 				$single_steps,
 				self::bold_paragraph_tags( array( $selection_title ) ),
 				$selection_steps,
-				Html::tag( 'hr' ),
+				tag( 'hr' ),
 				self::bold_paragraph_tags( array( $importing_title ) ),
 				$importing_description,
 				self::bold_paragraph_tags( array( $after_title ) ),
-				Html::wrap(
-					Html::tag( 'p' ),
+				wrap(
+					tag( 'p' ),
 					$delete_hint
 				),
-				Html::tag( 'hr' ),
-				Html::tag( 'br' ),
-				Html::tag( 'br' ),
+				tag( 'hr' ),
+				tag( 'br' ),
+				tag( 'br' ),
 				$import_button
 			)
 		);
@@ -310,19 +313,19 @@ final class Import_Printer {
 	protected static function ordered_list_tags( array $items ): array {
 		$list_attrs = array( 'class' => 'av-introduction__description av-introduction__ol' );
 		$item_tags  = array_map(
-			fn( string $item ) => Html::wrap(
-				Html::tag( 'li' ),
+			fn( string $item ) => wrap(
+				tag( 'li' ),
 				$item
 			),
 			$items
 		);
 
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'ol',
 				$list_attrs
 			),
-			Html::stack( ...$item_tags )
+			stack( ...$item_tags )
 		);
 	}
 }

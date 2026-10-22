@@ -33,6 +33,9 @@ use WP_Filesystem_Base;
 use WP_Post;
 use WP_Query;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -197,8 +200,8 @@ final class Tools_Page extends Actor_Base implements Actor {
 			<?php
 		};
 
-		$tags = Html::wrap(
-			Html::tag( 'script' ),
+		$tags = wrap(
+			tag( 'script' ),
 			$print_download_script
 		);
 
@@ -509,9 +512,9 @@ final class Tools_Page extends Actor_Base implements Actor {
 			$post_selection_labels->plural_name()
 		);
 
-		$tags = Html::stack(
+		$tags = stack(
 			$summary,
-			Html::tag( 'br' ),
+			tag( 'br' ),
 			$this->imported_items_tags( $views_label, $success_view_ids ),
 			$this->imported_items_tags( $cards_label, $success_card_ids ),
 			$this->failed_items_tags( $wrong_views_label, $fail_view_unique_ids ),
@@ -528,18 +531,18 @@ final class Tools_Page extends Actor_Base implements Actor {
 	 */
 	protected function imported_items_tags( string $label, array $post_ids ): array {
 		if ( array() === $post_ids ) {
-			return Html::stack();
+			return stack();
 		}
 
 		$links = array();
 
 		foreach ( $post_ids as $index => $post_id ) {
 			if ( $index > 0 ) {
-				$links[] = Html::tag( 'br' );
+				$links[] = tag( 'br' );
 			}
 
-			$links[] = Html::wrap(
-				Html::tag(
+			$links[] = wrap(
+				tag(
 					'a',
 					array(
 						'href'   => string( get_edit_post_link( (int) $post_id ) ),
@@ -550,15 +553,15 @@ final class Tools_Page extends Actor_Base implements Actor {
 			);
 		}
 
-		return Html::stack(
-			Html::tag( 'br' ),
+		return stack(
+			tag( 'br' ),
 			$label . ':',
-			Html::tag( 'br' ),
-			Html::tag( 'br' ),
+			tag( 'br' ),
+			tag( 'br' ),
 			' ',
-			Html::stack( ...$links ),
+			stack( ...$links ),
 			'.',
-			Html::tag( 'br' )
+			tag( 'br' )
 		);
 	}
 
@@ -569,24 +572,24 @@ final class Tools_Page extends Actor_Base implements Actor {
 	 */
 	protected function failed_items_tags( string $label, array $unique_ids ): array {
 		if ( array() === $unique_ids ) {
-			return Html::stack();
+			return stack();
 		}
 
 		$ids = array();
 
 		foreach ( $unique_ids as $index => $unique_id ) {
 			if ( $index > 0 ) {
-				$ids[] = Html::tag( 'br' );
+				$ids[] = tag( 'br' );
 			}
 
 			$ids[] = $unique_id;
 		}
 
-		return Html::stack(
+		return stack(
 			$label . ': ',
-			Html::stack( ...$ids ),
+			stack( ...$ids ),
 			'.',
-			Html::tag( 'br' )
+			tag( 'br' )
 		);
 	}
 

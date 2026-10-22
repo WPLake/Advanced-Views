@@ -17,9 +17,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	const ARGUMENT_FROM_LAYOUT = '_from';
@@ -51,8 +53,8 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	}
 
 	protected function print_link_with_js_hover( string $url, string $title ): void {
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'a',
 				array(
 					'href'        => $url,
@@ -192,8 +194,8 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				$this->selections_cpt->labels()->plural_name()
 			);
 
-			$node = Html::wrap(
-				Html::tag( 'p' ),
+			$node = wrap(
+				tag( 'p' ),
 				$message
 			);
 
@@ -218,9 +220,9 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 
 		if ( array() !== $related_cards ||
 			$is_list_look ) {
-			$markup_tags = Html::stack(
-				Html::tag( 'br' ),
-				Html::tag( 'br' )
+			$markup_tags = stack(
+				tag( 'br' ),
+				tag( 'br' )
 			);
 
 			Html_Renderer::print( $markup_tags );
@@ -240,8 +242,8 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			);
 
 			$label = __( 'Query posts to display using this Layout', 'acf-views' );
-			$tags  = Html::wrap(
-				Html::tag(
+			$tags  = wrap(
+				tag(
 					'a',
 					array(
 						'href'   => $url,

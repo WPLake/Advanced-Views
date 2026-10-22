@@ -8,6 +8,9 @@ use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -38,40 +41,40 @@ final class Toolbar_Printer {
 		$toolbar_attrs = array( 'class' => 'av-toolbar' );
 		$version_label = sprintf( 'v.%s', $version );
 
-		$title_tag   = Html::tag(
+		$title_tag   = tag(
 			'h2',
 			$title_attrs
 		);
-		$icon_tag    = Html::tag(
+		$icon_tag    = tag(
 			'i',
 			$icon_attrs
 		);
-		$version_tag = Html::tag(
+		$version_tag = tag(
 			'span',
 			$version_attrs
 		);
 
-		$title = Html::wrap(
+		$title = wrap(
 			$title_tag,
-			Html::stack(
+			stack(
 				$icon_tag,
-				Html::wrap(
-					Html::tag( 'span' ),
+				wrap(
+					tag( 'span' ),
 					$name
 				),
-				Html::wrap( $version_tag, $version_label )
+				wrap( $version_tag, $version_label )
 			)
 		);
 
 		$left_block  = self::toolbar_block_tags( 'left', 'isLeftBlock', $tabs );
 		$right_block = self::toolbar_block_tags( 'right', 'isRightBlock', $tabs );
 
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'div',
 				$toolbar_attrs
 			),
-			Html::stack(
+			stack(
 				$title,
 				$left_block,
 				$right_block
@@ -98,12 +101,12 @@ final class Toolbar_Printer {
 			$tabs_list
 		);
 
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'div',
 				$block_attrs
 			),
-			Html::stack( ...$tab_tags )
+			stack( ...$tab_tags )
 		);
 	}
 
@@ -141,7 +144,7 @@ final class Toolbar_Printer {
 
 		$icon_classes = string( $tab, 'iconClasses' );
 		$icon_attrs   = array( 'class' => $icon_classes );
-		$icon_tag     = Html::tag(
+		$icon_tag     = tag(
 			'i',
 			$icon_attrs
 		);
@@ -149,16 +152,16 @@ final class Toolbar_Printer {
 			$icon_tag :
 			null;
 		$label        = string( $tab, 'label' );
-		$link         = Html::tag(
+		$link         = tag(
 			'a',
 			$attrs
 		);
 
-		return Html::wrap(
+		return wrap(
 			$link,
-			Html::stack(
-				Html::wrap(
-					Html::tag( 'span' ),
+			stack(
+				wrap(
+					tag( 'span' ),
 					$label
 				),
 				$icon

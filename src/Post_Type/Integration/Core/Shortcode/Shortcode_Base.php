@@ -18,11 +18,12 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, Actor {
 	private Instance_Factory $instance_factory;
@@ -134,8 +135,8 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		$joined_attrs    = implode( ' ', $attrs );
 		$shortcode_debug = sprintf( '(%s %s)', $shortcode, $joined_attrs );
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'p',
 				array( 'style' => array( 'color' => 'red' ) )
 			),
@@ -198,8 +199,8 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		if ( $cpt_data->is_css_internal() ) {
 			$css_code   = $cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
 			$shadow_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
-			$tags = Html::wrap(
-				Html::tag( 'style' ),
+			$tags = wrap(
+				tag( 'style' ),
 				// phpcs:ignore WordPress.Security.EscapeOutput
 				fn() => print( ':host{all: initial!important;}' . $shadow_css )
 			);
@@ -292,8 +293,8 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 			'onMouseOut'  => "this.style.opacity='.5';this.style.textDecoration='none'",
 		);
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'a',
 				$attrs
 			),

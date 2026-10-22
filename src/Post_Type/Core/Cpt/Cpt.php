@@ -13,6 +13,9 @@ use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -73,8 +76,8 @@ abstract class Cpt extends Actor_Base implements Actor {
 			return $html;
 		}
 
-		$link = static fn( string $url, string $label ) => Html::wrap(
-			Html::tag(
+		$link = static fn( string $url, string $label ) => wrap(
+			tag(
 				'a',
 				array(
 					'target' => '_blank',
@@ -84,20 +87,20 @@ abstract class Cpt extends Actor_Base implements Actor {
 			$label
 		);
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'span',
 				array( 'id' => 'footer-thankyou' )
 			),
-			Html::stack(
+			stack(
 				__( 'Thank you for creating with', 'acf-views' ) . ' ',
 				$link( 'https://wordpress.org/', __( 'WordPress', 'acf-views' ) ),
 				' ' . __( 'and', 'acf-views' ) . ' ',
 				$link( External_Links::BASIC_VERSION_URL, __( 'Advanced Views', 'acf-views' ) ),
 				'. ',
-				Html::wrap(
-					Html::tag( 'span' ),
-					Html::stack(
+				wrap(
+					tag( 'span' ),
+					stack(
 						__( 'Take', 'acf-views' ) . ' ',
 						$link( External_Links::SURVEY_URL, __( '2 minute survey', 'acf-views' ) ),
 						' ' . __( 'to improve Advanced Views.', 'acf-views' )
@@ -173,8 +176,8 @@ abstract class Cpt extends Actor_Base implements Actor {
 			__( 'enabled', 'acf-views' ) :
 			__( 'disabled', 'acf-views' );
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'span',
 				array(
 					'style' => array(
@@ -183,9 +186,9 @@ abstract class Cpt extends Actor_Base implements Actor {
 					),
 				)
 			),
-			Html::stack(
-				Html::wrap(
-					Html::tag(
+			stack(
+				wrap(
+					tag(
 						'a',
 						array(
 							'target' => '_blank',
@@ -209,7 +212,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 		$singular_name = $this->plugin_cpt->labels()->singular_name();
 		$add_new_url   = admin_url( sprintf( 'post-new.php?post_type=%s', $this->get_cpt_name() ) );
 
-		$tags = Html::stack(
+		$tags = stack(
 			sprintf(
 			// translators: %s - singular name of the CPT.
 				__( 'No %s yet.', 'acf-views' ),
@@ -233,8 +236,8 @@ abstract class Cpt extends Actor_Base implements Actor {
 	 * @return Tag_Wrap
 	 */
 	protected static function link_tags( string $url, string $label, string $target = '_blank' ): array {
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'a',
 				array(
 					'target' => $target,

@@ -11,5 +11,6 @@ if ( version_compare( PHP_VERSION, '8.2.0', '>=' ) ) {
 }
 
 require_once __DIR__ . '/Plugin/Utils/utils.php';
+require_once __DIR__ . '/Template/Html/tag_element.php';
 
 require_once __DIR__ . '/Bridge/Back_Compatibility/back_compatibility.php';

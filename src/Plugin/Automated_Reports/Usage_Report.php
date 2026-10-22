@@ -22,6 +22,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
  * Automated reports send data about plugin errors and usage. It allows to fix issues faster and improve the plugin.
@@ -126,15 +129,15 @@ class Usage_Report extends Report_Base implements Actor {
 			$this->get_hide_members( $dismiss_key, $nonce_name ) :
 			null;
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				array( 'class' => 'notice notice-warning' )
 			),
-			Html::tag( 'p' ),
-			Html::stack(
+			tag( 'p' ),
+			stack(
 				__( 'The Advanced Views plugin sends automatic error and usage reports to developers, enabling faster issue resolution and plugin improvement.', 'acf-views' ),
-				Html::tag( 'br' ),
+				tag( 'br' ),
 				__( 'Automatic reports do not include any private or sensitive information and can be disabled in the plugin settings.', 'acf-views' ),
 				$hide_members
 			)
@@ -323,11 +326,11 @@ class Usage_Report extends Report_Base implements Actor {
 			)
 		);
 
-		return Html::stack(
-			Html::tag( 'br' ),
-			Html::tag( 'br' ),
-			Html::wrap(
-				Html::tag(
+		return stack(
+			tag( 'br' ),
+			tag( 'br' ),
+			wrap(
+				tag(
 					'a',
 					array( 'href' => $hide_url )
 				),

@@ -16,6 +16,9 @@ use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -111,7 +114,7 @@ final class Template_Field_Data extends Field_Data {
 	 */
 	public function wrap_with_item_outers( array $item_outers, Closure $print_content, bool $is_without_last_item_tabs = false ): array {
 		$last_index = count( $item_outers ) - 1;
-		$content    = Html::stack( $print_content );
+		$content    = stack( $print_content );
 
 		// the innermost outer goes first.
 		foreach ( array_reverse( $item_outers, true ) as $index => $outer ) {
@@ -139,9 +142,9 @@ final class Template_Field_Data extends Field_Data {
 					->tab( --$this->tabs_number );
 			};
 
-			$content = Html::wrap(
+			$content = wrap(
 				$this->item_outer_tag( $outer ),
-				Html::stack(
+				stack(
 					$print_outer_open,
 					$content,
 					$print_outer_close
@@ -247,6 +250,6 @@ final class Template_Field_Data extends Field_Data {
 													->add_item_path( $variable_info['item_key'] );
 		}
 
-		return Html::tag( $outer->tag, $attrs );
+		return tag( $outer->tag, $attrs );
 	}
 }

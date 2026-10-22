@@ -19,6 +19,9 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrappe
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
  * @phpstan-import-type Tag from Html
@@ -65,13 +68,13 @@ class Post_Selection_Markup {
 			$pages_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 										->add_item_path( 'pages_amount' );
 
-			$tags = Html::stack(
+			$tags = stack(
 				fn() => $token_factory->formatter()
 									->new_line()
 									->tab( 2 ),
-				Html::wrap(
-					Html::tag( 'div' ),
-					Html::stack(
+				wrap(
+					tag( 'div' ),
+					stack(
 						fn() => print( "\r\n\t\t\t" ),
 						fn() => $token_factory->functions()
 												->paginate_links( array( 'total' => $pages_var ) ),
@@ -112,7 +115,7 @@ class Post_Selection_Markup {
 				' ' . $external;
 		}
 
-		return Html::tag( 'div', array( 'class' => $classes ) );
+		return tag( 'div', array( 'class' => $classes ) );
 	}
 
 	/**
@@ -126,7 +129,7 @@ class Post_Selection_Markup {
 											->add_item_path( $variable_info['item_key'] );
 		}
 
-		return Html::tag( $outer->tag, $attrs );
+		return tag( $outer->tag, $attrs );
 	}
 
 	/**
@@ -144,11 +147,11 @@ class Post_Selection_Markup {
 			$token_factory->formatter()->tab( --$tabs_number );
 		};
 
-		return Html::stack(
+		return stack(
 			$print_opening_tab,
-			Html::wrap(
+			wrap(
 				$tag,
-				Html::stack(
+				stack(
 					fn() => $token_factory->formatter()->new_line(),
 					$inner,
 					$print_closing_tab
@@ -321,7 +324,7 @@ class Post_Selection_Markup {
 							->tab( $tabs_number );
 		};
 
-		$content        = Html::stack(
+		$content        = stack(
 			$print_start,
 			$if,
 			$new_line,
@@ -330,19 +333,19 @@ class Post_Selection_Markup {
 		);
 		$is_shadow_root = Post_Selection_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $post_selection_settings->web_component;
 		$root_content   = $is_shadow_root ?
-			Html::stack(
+			stack(
 				$new_line,
-				Html::wrap(
-					Html::tag( 'template', array( 'shadowrootmode' => 'open' ) ),
+				wrap(
+					tag( 'template', array( 'shadowrootmode' => 'open' ) ),
 					$content
 				),
 				$new_line
 			) :
 			$content;
 
-		$tags = Html::stack(
-			Html::wrap(
-				Html::tag(
+		$tags = stack(
+			wrap(
+				tag(
 					$post_selection_settings->get_tag_name(),
 					array( 'class' => $this->root_class( $token_factory, $post_selection_settings ) )
 				),
@@ -391,7 +394,7 @@ class Post_Selection_Markup {
 			$tabs_number = $this->print_loop( $token_factory, $post_selection_settings, $tabs_number );
 		};
 
-		$content = Html::stack( $print_loop );
+		$content = stack( $print_loop );
 
 		// the innermost outer goes first.
 		foreach ( array_reverse( $item_outers ) as $outer ) {
@@ -416,7 +419,7 @@ class Post_Selection_Markup {
 							->tab( --$tabs_number );
 		};
 
-		$tags = Html::stack(
+		$tags = stack(
 			fn() => $token_factory->formatter()
 								->new_line(),
 			$items_wrapper,
@@ -482,8 +485,8 @@ class Post_Selection_Markup {
 		$no_posts_message_class = Post_Selection_Settings::CLASS_GENERATION_NONE !== $post_selection_settings->classes_generation ?
 			sprintf( '%s__no-posts-message', $post_selection_settings->get_bem_name() ) :
 			'';
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				array( 'class' => $no_posts_message_class )
 			),

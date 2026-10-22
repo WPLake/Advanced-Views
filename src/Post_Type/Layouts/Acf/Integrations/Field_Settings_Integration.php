@@ -17,9 +17,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 class Field_Settings_Integration extends Acf_Integration_Base {
 	use Safe_Array_Arguments;
@@ -254,8 +255,8 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 			$this->plugin_cpt->labels()->singular_name()
 		);
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'a',
 				array(
 					'class'  => 'acf-views__add-new',

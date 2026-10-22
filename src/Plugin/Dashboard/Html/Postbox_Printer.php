@@ -8,6 +8,9 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -76,8 +79,8 @@ class Postbox_Printer {
 		$code_attrs      = array( 'class' => 'av-sortcodes__code av-shortcodes__code--type--short' );
 		$container_class = sprintf( 'av-shortcodes av-shortcodes--type--%s', $type );
 		$container_attrs = array( 'class' => $container_class );
-		$code            = Html::wrap(
-			Html::tag(
+		$code            = wrap(
+			tag(
 				'span',
 				$code_attrs
 			),
@@ -87,12 +90,12 @@ class Postbox_Printer {
 			null :
 			self::shortcode_details_tags( $is_single );
 
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'av-shortcodes',
 				$container_attrs
 			),
-			Html::stack( $code, $details )
+			stack( $code, $details )
 		);
 	}
 
@@ -104,8 +107,8 @@ class Postbox_Printer {
 			'class'       => 'av-shortcodes__copy-button button button-primary button-large',
 			'data-target' => '.av-shortcodes__code--type--short',
 		);
-		$copy_button = Html::wrap(
-			Html::tag(
+		$copy_button = wrap(
+			tag(
 				'button',
 				$copy_attrs
 			),
@@ -129,9 +132,9 @@ class Postbox_Printer {
 			$here_label
 		);
 
-		$roles_link = Html::wrap(
-			Html::tag( 'span' ),
-			Html::stack(
+		$roles_link = wrap(
+			tag( 'span' ),
+			stack(
 				$roles_hint_gap,
 				$docs_link,
 				'.'
@@ -141,7 +144,7 @@ class Postbox_Printer {
 		$gutenberg_question = __( 'Using Gutenberg?', 'acf-views' );
 		$elementor_question = __( 'Using Elementor?', 'acf-views' );
 
-		return Html::stack(
+		return stack(
 			$copy_button,
 			self::embed_hint_tags( $gutenberg_question, $gutenberg_answer ),
 			self::embed_hint_tags( $elementor_question, $elementor_answer ),
@@ -153,11 +156,11 @@ class Postbox_Printer {
 	 * @return Tag_Wrap
 	 */
 	protected static function embed_hint_tags( string $question, string $answer ): array {
-		return Html::wrap(
-			Html::tag( 'p' ),
-			Html::stack(
+		return wrap(
+			tag( 'p' ),
+			stack(
 				$question,
-				Html::tag( 'br' ),
+				tag( 'br' ),
 				$answer
 			)
 		);
@@ -169,11 +172,11 @@ class Postbox_Printer {
 	protected static function support_postbox_tags( string $description, string $url, string $button_label ): array {
 		$button = self::button_link_tags( $url, $button_label );
 
-		return Html::wrap(
-			Html::tag( 'div' ),
-			Html::stack(
-				Html::wrap(
-					Html::tag( 'p' ),
+		return wrap(
+			tag( 'div' ),
+			stack(
+				wrap(
+					tag( 'p' ),
 					$description
 				),
 				$button
@@ -191,8 +194,8 @@ class Postbox_Printer {
 			'target' => '_blank',
 		);
 
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'a',
 				$link_attrs
 			),

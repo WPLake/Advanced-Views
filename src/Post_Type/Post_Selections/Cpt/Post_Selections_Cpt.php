@@ -12,8 +12,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Selection_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -42,11 +43,11 @@ class Post_Selections_Cpt extends Cpt {
 		$singular_name = $labels->singular_name();
 		$plural_name   = $labels->plural_name();
 
-		$tags = Html::stack(
+		$tags = stack(
 			__( 'Query posts, products or custom post types and display each result using a Layout with a', 'acf-views' ) . ' ',
 			self::link_tags( 'https://docs.advanced-views.com/getting-started/first-post-selection', $singular_name ),
 			'. ',
-			Html::tag( 'br' ),
+			tag( 'br' ),
 			__( 'Add filters, sorting and pagination as needed.', 'acf-views' )
 		);
 

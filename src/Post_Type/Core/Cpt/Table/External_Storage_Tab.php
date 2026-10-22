@@ -15,6 +15,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Stora
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
  * @phpstan-import-type Tag_Wrap from Html
@@ -205,8 +208,8 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		}
 
 		$paragraphs   = array();
-		$paragraphs[] = Html::wrap(
-			Html::tag( 'p' ),
+		$paragraphs[] = wrap(
+			tag( 'p' ),
 			__( 'Success!', 'acf-views' )
 		);
 
@@ -223,8 +226,8 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		foreach ( $grouped_meta_group_links as $vendor_name => $group_links ) {
 			$group_links_count = count( $group_links );
 
-			$paragraphs[] = Html::wrap(
-				Html::tag( 'p' ),
+			$paragraphs[] = wrap(
+				tag( 'p' ),
 				sprintf(
 					'%s %s %s %s',
 					$group_links_count,
@@ -237,12 +240,12 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			$paragraphs[] = $this->links_paragraph( $group_links );
 		}
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				array( 'class' => 'notice notice-success' )
 			),
-			Html::stack( ...$paragraphs )
+			stack( ...$paragraphs )
 		);
 
 		Html_Renderer::print( $tags );
@@ -264,8 +267,8 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	 * @return Tag_Wrap
 	 */
 	protected function imported_items_paragraph( int $items_count ): array {
-		return Html::wrap(
-			Html::tag( 'p' ),
+		return wrap(
+			tag( 'p' ),
 			sprintf(
 				'%s %s %s',
 				$items_count,
@@ -287,13 +290,13 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		foreach ( $links as $link ) {
 			// the 'br' goes between the links.
 			$separator = array() !== $members ?
-				Html::tag( 'br' ) :
+				tag( 'br' ) :
 				null;
 
-			$members[] = Html::stack(
+			$members[] = stack(
 				$separator,
-				Html::wrap(
-					Html::tag(
+				wrap(
+					tag(
 						'a',
 						array(
 							'href'   => $link['url'],
@@ -305,9 +308,9 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			);
 		}
 
-		return Html::wrap(
-			Html::tag( 'p' ),
-			Html::stack( ...$members )
+		return wrap(
+			tag( 'p' ),
+			stack( ...$members )
 		);
 	}
 }

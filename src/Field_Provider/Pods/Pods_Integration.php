@@ -17,9 +17,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Sto
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 class Pods_Integration extends Settings_Vendor_Integration {
 
@@ -212,8 +214,8 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			),
 		);
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				$container_attributes
 			),
@@ -243,14 +245,14 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			echo esc_html( $title );
 		};
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				$postbox_attributes
 			),
-			Html::stack(
-				Html::wrap(
-					Html::tag(
+			stack(
+				wrap(
+					tag(
 						'h4',
 						$heading_attributes
 					),
@@ -294,8 +296,8 @@ class Pods_Integration extends Settings_Vendor_Integration {
 				}
 			};
 
-			$tags = Html::wrap(
-				Html::tag(
+			$tags = wrap(
+				tag(
 					'div',
 					$attributes
 				),

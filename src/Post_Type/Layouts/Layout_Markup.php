@@ -12,13 +12,15 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Template;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Composed_Htmlable;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 class Layout_Markup {
 	/**
@@ -136,19 +138,19 @@ class Layout_Markup {
 		};
 		$is_shadow_root = Layout_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $layout_settings->web_component;
 		$root_content   = $is_shadow_root ?
-			Html::stack(
+			stack(
 				$new_line,
-				Html::wrap(
-					Html::tag( 'template', array( 'shadowrootmode' => 'open' ) ),
-					Html::stack( $new_line, $rows )
+				wrap(
+					tag( 'template', array( 'shadowrootmode' => 'open' ) ),
+					stack( $new_line, $rows )
 				),
 				$new_line
 			) :
-			Html::stack( $new_line, $rows );
+			stack( $new_line, $rows );
 
-		$tags = Html::stack(
-			Html::wrap(
-				Html::tag(
+		$tags = stack(
+			wrap(
+				tag(
 					$layout_settings->get_tag_name(),
 					array( 'class' => $this->root_class( $token_factory, $layout_settings ) )
 				),

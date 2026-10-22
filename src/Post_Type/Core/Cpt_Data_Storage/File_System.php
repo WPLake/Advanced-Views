@@ -12,9 +12,11 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Filesystem_Base;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -118,20 +120,20 @@ class File_System extends Loggable_Actor implements Actor {
 
 				self::$is_fs_not_writable_notice_shown = true;
 
-				$tags = Html::wrap(
-					Html::tag(
+				$tags = wrap(
+					tag(
 						'div',
 						array( 'class' => 'notice notice-error' )
 					),
-					Html::tag( 'p' ),
-					Html::stack(
+					tag( 'p' ),
+					stack(
 						__( 'The FS storage directory is not writable.', 'acf-views' ) . ' (path = ' . $this->base_folder . ')',
-						Html::tag( 'br' ),
+						tag( 'br' ),
 						__(
 							'Check and fix file permissions to work with Views and Cards.',
 							'acf-views'
 						),
-						Html::tag( 'br' ),
+						tag( 'br' ),
 						__(
 							'Note: Do not disable the FS storage feature before fixing it, otherwise your data will be lost.',
 							'acf-views'

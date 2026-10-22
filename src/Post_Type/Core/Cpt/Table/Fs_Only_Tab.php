@@ -8,8 +8,10 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -56,24 +58,24 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 		$tab_data->set_label( __( 'FS only', 'acf-views' ) );
 		$tab_data->set_description_callback(
 			function (): void {
-				$tags = Html::stack(
+				$tags = stack(
 					__(
 						'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
 						'acf-views'
 					),
-					Html::tag( 'br' ),
+					tag( 'br' ),
 					__(
 						'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
 						'acf-views'
 					),
-					Html::tag( 'br' ),
+					tag( 'br' ),
 					__(
 						'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
 						'acf-views'
 					),
 					' ',
-					Html::wrap(
-						Html::tag(
+					wrap(
+						tag(
 							'a',
 							array(
 								'target' => '_blank',
@@ -154,13 +156,13 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 
 			// the 'br' goes between the links.
 			$separator = array() !== $item_links ?
-				Html::tag( 'br' ) :
+				tag( 'br' ) :
 				null;
 
-			$item_links[] = Html::stack(
+			$item_links[] = stack(
 				$separator,
-				Html::wrap(
-					Html::tag(
+				wrap(
+					tag(
 						'a',
 						array(
 							'href'   => $cpt_data->get_edit_post_link(),
@@ -172,19 +174,19 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 			);
 		}
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				array( 'class' => 'notice notice-success' )
 			),
-			Html::stack(
-				Html::wrap(
-					Html::tag( 'p' ),
+			stack(
+				wrap(
+					tag( 'p' ),
 					count( $ids ) . ' ' . __( 'items successfully synced', 'acf-views' )
 				),
-				Html::wrap(
-					Html::tag( 'p' ),
-					Html::stack( ...$item_links )
+				wrap(
+					tag( 'p' ),
+					stack( ...$item_links )
 				)
 			)
 		);

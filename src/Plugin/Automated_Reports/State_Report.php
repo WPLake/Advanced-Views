@@ -10,9 +10,11 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 class State_Report extends Report_Base implements Actor {
 	const STATE_ENDPOINT_URL = 'https://wplake.org/wp-json/wplake/v1/plugin_state';
@@ -116,13 +118,13 @@ class State_Report extends Report_Base implements Actor {
 			'delete_data_option'          => __( 'Delete all the plugin data (cannot be undone)', 'acf-views' ),
 			'is_with_survey'              => false === $this->settings->is_automatic_reports_disabled(),
 		);
-		$tags = Html::stack(
-			Html::wrap(
-				Html::tag( 'style' ),
+		$tags = stack(
+			wrap(
+				tag( 'style' ),
 				fn() => $this->print_survey_css()
 			),
-			Html::wrap(
-				Html::tag( 'script' ),
+			wrap(
+				tag( 'script' ),
 				fn() => $this->print_survey_script( $data )
 			)
 		);

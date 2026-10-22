@@ -14,9 +14,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Comment;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 class Comment_Items_List_Field extends Markup_Field_Base {
 	const AUTHOR_NAME = 'author_name';
@@ -28,8 +30,8 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
 		$comment_attributes = array( 'class' => $this->get_field_class( 'comment', $markup_field_data ) );
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				$comment_attributes
 			),
@@ -61,8 +63,8 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				$author_attributes
 			),
@@ -89,8 +91,8 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		$node = Html::wrap(
-			Html::tag(
+		$node = wrap(
+			tag(
 				'div',
 				$content_attributes
 			),
@@ -252,7 +254,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 							->new_line();
 		};
 
-		return Html::stack( $print_loop );
+		return stack( $print_loop );
 	}
 
 	/**

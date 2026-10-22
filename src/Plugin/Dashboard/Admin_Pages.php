@@ -19,10 +19,11 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Screen;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -95,7 +96,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 			Avf_User::get_manage_capability(),
 			self::PAGE_DOCS,
 			function (): void {
-				$tags = Html::tag(
+				$tags = tag(
 					'iframe',
 					array(
 						'src'   => External_Links::DOCS_URL,
@@ -343,8 +344,8 @@ class Admin_Pages extends Actor_Base implements Actor {
 	}
 
 	protected function render_cpt_link( Plugin_Cpt $plugin_cpt ): string {
-		$link = Html::wrap(
-			Html::tag(
+		$link = wrap(
+			tag(
 				'a',
 				array(
 					'href'   => Plugin::get_admin_url( '', $plugin_cpt->cpt_name() ),
@@ -361,8 +362,8 @@ class Admin_Pages extends Actor_Base implements Actor {
 	 * @return string[]
 	 */
 	protected function get_promo_links(): array {
-		$link = Html::wrap(
-			Html::tag(
+		$link = wrap(
+			tag(
 				'a',
 				array(
 					'href'        => External_Links::PRO_VERSION_URL,

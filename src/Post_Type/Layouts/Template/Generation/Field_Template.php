@@ -16,11 +16,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Label_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Outer_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Wrapper_Printer;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
 
 class Field_Template {
 	private Field_Provider_Cluster $provider_cluster;
@@ -218,7 +218,7 @@ class Field_Template {
 			) :
 			$content;
 
-		$row_inner = Html::stack( $label_inside, $field_layer );
+		$row_inner = stack( $label_inside, $field_layer );
 		$row_layer = $is_with_row_wrapper ?
 			Wrapper_Printer::wrap(
 				Wrapper_Printer::row_tag(
@@ -235,7 +235,7 @@ class Field_Template {
 			) :
 			$row_inner;
 
-		$tags = Html::stack( $label_outside, $row_layer );
+		$tags = stack( $label_outside, $row_layer );
 
 		Html_Renderer::print( $tags );
 

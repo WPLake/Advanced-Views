@@ -19,6 +19,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Stora
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 /**
  * @phpstan-import-type Tag from Html
@@ -74,22 +77,22 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	protected function print_git_lab_repositories_meta_box(): void {
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'av-git-meta-box',
 				array(
 					'class' => 'av-git-meta-box',
 					'style' => array( 'transition' => 'all .3s ease' ),
 				)
 			),
-			Html::stack(
+			stack(
 				$this->intro_tags(),
 				$this->nonce_tags(),
 				$this->repositories_tags(),
-				Html::tag( 'br' ),
-				Html::tag( 'br' ),
+				tag( 'br' ),
+				tag( 'br' ),
 				$this->with_fields_tags(),
-				Html::tag( 'br' ),
+				tag( 'br' ),
 				$this->save_reminder_tags(),
 				$this->button_tags()
 			)
@@ -252,11 +255,11 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	 * @return Tag_Wrap
 	 */
 	protected function intro_tags(): array {
-		return Html::wrap(
-			Html::tag( 'p' ),
-			Html::stack(
-				Html::wrap(
-					Html::tag(
+		return wrap(
+			tag( 'p' ),
+			stack(
+				wrap(
+					tag(
 						'a',
 						array(
 							'target' => '_blank',
@@ -274,7 +277,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	 * @return Tag
 	 */
 	protected function nonce_tags(): array {
-		return Html::tag(
+		return tag(
 			'input',
 			array(
 				'type'  => 'hidden',
@@ -289,24 +292,24 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	 */
 	protected function repositories_tags(): array {
 		$option_chains = array_map(
-			fn( array $git_repository ): array => Html::wrap(
-				Html::tag( 'option', array( 'value' => $git_repository['id'] ) ),
+			fn( array $git_repository ): array => wrap(
+				tag( 'option', array( 'value' => $git_repository['id'] ) ),
 				$git_repository['name']
 			),
 			$this->settings->get_git_repositories()
 		);
 
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'select',
 				array(
 					'name'     => '_git-repo',
 					'required' => '',
 				)
 			),
-			Html::stack(
-				Html::wrap(
-					Html::tag(
+			stack(
+				wrap(
+					tag(
 						'option',
 						array( 'value' => '' )
 					),
@@ -321,8 +324,8 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	 * @return Tag_Wrap
 	 */
 	protected function with_fields_tags(): array {
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'div',
 				array(
 					'style' => array(
@@ -331,8 +334,8 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 					),
 				)
 			),
-			Html::stack(
-				Html::tag(
+			stack(
+				tag(
 					'input',
 					array(
 						'type' => 'checkbox',
@@ -340,8 +343,8 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 						'id'   => 'av_git-repo-with-fields',
 					)
 				),
-				Html::wrap(
-					Html::tag(
+				wrap(
+					tag(
 						'label',
 						array( 'for' => 'av_git-repo-with-fields' )
 					),
@@ -355,8 +358,8 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	 * @return Tag_Wrap
 	 */
 	protected function save_reminder_tags(): array {
-		return Html::wrap(
-			Html::tag( 'p' ),
+		return wrap(
+			tag( 'p' ),
 			__( 'Note: all changes must be already saved.', 'acf-views' )
 		);
 	}
@@ -365,8 +368,8 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	 * @return Tag_Wrap
 	 */
 	protected function button_tags(): array {
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'button',
 				array( 'class' => 'button button-primary button-large' )
 			),

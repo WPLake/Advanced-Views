@@ -13,7 +13,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 class Post_Attachment_Video extends Markup_Field_Base {
 	const MIME_TYPE = 'mime_type';
@@ -28,17 +30,17 @@ class Post_Attachment_Video extends Markup_Field_Base {
 		$type_var = $token_factory->variable( $field_id )
 									->add_item_path( self::MIME_TYPE );
 
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'video',
 				array(
 					'class'    => $this->get_field_class( 'element', $markup_field_data ),
 					'controls' => '',
 				)
 			),
-			Html::stack(
+			stack(
 				fn() => $markup_field_data->print_new_line_and_increment_tabs(),
-				Html::tag(
+				tag(
 					'source',
 					array(
 						'src'  => $src_var,

@@ -12,6 +12,9 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -71,7 +74,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 		$post_types_line = self::create_post_types_line( $post_types );
 		$pages_line      = self::create_pages_line( $post_links, array() !== $post_types );
 
-		$tags = Html::stack( $post_types_line, $pages_line );
+		$tags = stack( $post_types_line, $pages_line );
 
 		Html_Renderer::print( $tags );
 	}
@@ -149,9 +152,9 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 		if ( array() !== $post_links ) {
 			$label = __( 'Pages:', 'acf-views' );
 
-			return Html::stack(
+			return stack(
 				$has_post_types ?
-					Html::tag( 'br' ) :
+					tag( 'br' ) :
 					null,
 				sprintf( '%s ', $label ),
 				...$post_links
@@ -172,8 +175,8 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 			$post_url :
 			'';
 
-		return Html::wrap(
-			Html::tag(
+		return wrap(
+			tag(
 				'a',
 				array(
 					'target' => '_blank',

@@ -10,8 +10,10 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -255,17 +257,17 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 	public function print_fallback_message(): void {
 		$settings_url = Plugin::get_admin_url( Settings_Page::SLUG );
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'p',
 				array( 'class' => 'acf-views__loading-fallback acf-views__loading-fallback--hidden' )
 			),
-			Html::stack(
+			stack(
 				__( 'Loading the Editor is taking longer than expected.', 'acf-views' ),
-				Html::tag( 'br' ),
+				tag( 'br' ),
 				__( 'If you still see this message after an extended period, please visit the', 'acf-views' ) . ' ',
-				Html::wrap(
-					Html::tag(
+				wrap(
+					tag(
 						'a',
 						array(
 							'href'   => $settings_url,
@@ -291,8 +293,8 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 			<?php
 		};
 
-		$node = Html::wrap(
-			Html::tag(
+		$node = wrap(
+			tag(
 				'script',
 				array( 'type' => 'module' )
 			),

@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -20,7 +20,7 @@ class Woo_Featured_Field extends Markup_Field_Base {
 	use Custom_Field;
 
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
-		return Html::stack(
+		return stack(
 			__( 'Featured product', 'acf-views' )
 		);
 	}

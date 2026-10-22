@@ -15,11 +15,13 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -277,12 +279,12 @@ class Plugin extends Actor_Base implements Actor {
 
 		$this->options::delete_transient( Options_Storage::TRANSIENT_DEACTIVATED_OTHER_INSTANCES );
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				array( 'class' => 'notice notice-warning' )
 			),
-			Html::tag( 'p' ),
+			tag( 'p' ),
 			$message
 		);
 
@@ -459,18 +461,18 @@ class Plugin extends Actor_Base implements Actor {
 			'Please change the "opcache.save_comments" option in your php.ini file to the default value of "1" on your hosting.',
 			'acf-views'
 		);
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				array( 'class' => 'notice notice-error' )
 			),
-			Html::tag( 'p' ),
-			Html::stack(
+			tag( 'p' ),
+			stack(
 				$detected_message . ' ',
-				Html::tag( 'br' ),
+				tag( 'br' ),
 				$action_message . ' ',
-				Html::wrap(
-					Html::tag(
+				wrap(
+					tag(
 						'a',
 						array(
 							'target' => '_blank',

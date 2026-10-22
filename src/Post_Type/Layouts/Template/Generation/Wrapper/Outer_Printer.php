@@ -13,6 +13,8 @@ use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 /**
  * @phpstan-import-type Tag_Stack from Html
@@ -52,7 +54,7 @@ final class Outer_Printer {
 
 		return is_array( $content ) ?
 			$content :
-			Html::stack( $content );
+			stack( $content );
 	}
 
 	/**
@@ -87,6 +89,6 @@ final class Outer_Printer {
 											->add_item_path( $variable_info['item_key'] );
 		}
 
-		return Html::tag( $outer->tag, $attrs );
+		return tag( $outer->tag, $attrs );
 	}
 }

@@ -12,9 +12,10 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Shortcode\Shortcode_Renderer;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 final class Cpt_Renderer {
 	private Shortcode_Renderer $shortcode;
@@ -86,8 +87,8 @@ final class Cpt_Renderer {
 			$minified_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
 			$unique_id    = $cpt_settings->get_unique_id();
 
-			$tags = Html::wrap(
-				Html::tag(
+			$tags = wrap(
+				tag(
 					'style',
 					array( 'data-avf-id' => $unique_id )
 				),
@@ -102,8 +103,8 @@ final class Cpt_Renderer {
 	}
 
 	protected static function make_placeholder( string $message ): string {
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'p',
 				array( 'class' => 'avf-cpt-block__placeholder' )
 			),

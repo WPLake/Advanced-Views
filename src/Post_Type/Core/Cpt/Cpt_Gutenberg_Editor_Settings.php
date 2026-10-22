@@ -9,10 +9,12 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use WPCom_Markdown;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -107,16 +109,16 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 			),
 		);
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'p',
 				$attributes
 			),
-			Html::stack(
+			stack(
 				__( 'Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue.', 'acf-views' ) . ' ',
 				__( 'Please', 'acf-views' ) . ' ',
-				Html::wrap(
-					Html::tag(
+				wrap(
+					tag(
 						'a',
 						array(
 							'target' => '_blank',

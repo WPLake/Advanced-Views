@@ -19,10 +19,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
+use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -129,8 +131,8 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	}
 
 	protected function print_link_with_js_hover( string $url, string $title ): void {
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'a',
 				array(
 					'href'        => $url,
@@ -212,7 +214,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		$link_attrs['href'] = $url;
 
 		$icon_tag = '' !== $icon_class ?
-			Html::tag(
+			tag(
 				'i',
 				array(
 					'class' => $icon_class,
@@ -221,12 +223,12 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			) :
 			null;
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'a',
 				$link_attrs
 			),
-			Html::stack(
+			stack(
 				$icon_tag,
 				$label
 			)
@@ -290,9 +292,9 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			echo '';
 		}
 
-		$tags = Html::stack(
-			Html::tag( 'br' ),
-			Html::tag( 'br' )
+		$tags = stack(
+			tag( 'br' ),
+			tag( 'br' )
 		);
 
 		Html_Renderer::print( $tags );
@@ -342,8 +344,8 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 				continue;
 			}
 
-			$tags = Html::wrap(
-				Html::tag(
+			$tags = wrap(
+				tag(
 					'a',
 					array(
 						'target' => '_blank',
@@ -504,18 +506,18 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 				foreach ( $related_view_links_with_invalid_custom_markup as $link ) {
 					// the 'br' goes between the links.
 					if ( array() !== $links ) {
-						$links[] = Html::tag( 'br' );
+						$links[] = tag( 'br' );
 					}
 
 					// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					$links[] = fn() => print( $link );
 				}
 
-				$tags = Html::stack(
-					Html::tag( 'br' ),
-					Html::tag( 'br' ),
-					Html::wrap(
-						Html::tag(
+				$tags = stack(
+					tag( 'br' ),
+					tag( 'br' ),
+					wrap(
+						tag(
 							'span',
 							array( 'style' => array( 'color' => '#dc3232' ) )
 						),
@@ -525,8 +527,8 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 							__( 'Views associated with this group contain invalid Custom Markup', 'acf-views' )
 						)
 					),
-					Html::tag( 'br' ),
-					Html::tag( 'br' ),
+					tag( 'br' ),
+					tag( 'br' ),
 					...$links
 				);
 

@@ -8,8 +8,9 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\wrap;
 
 class Select_Field extends List_Field {
 	const LOOP_ITEM_NAME = 'choice_item';
@@ -43,8 +44,8 @@ class Select_Field extends List_Field {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		$tags = Html::wrap(
-			Html::tag(
+		$tags = wrap(
+			tag(
 				'div',
 				$div_attributes
 			),
