@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditi
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 abstract class List_Field extends Markup_Field_Base {
 	const LOOP_ITEM_NAME    = 'item';
@@ -169,7 +169,7 @@ abstract class List_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'span',
 				$span_attributes

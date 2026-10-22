@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Fie
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 
 defined( 'ABSPATH' ) || exit;
@@ -60,7 +60,7 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		return wrap(
+		return nest(
 			tag(
 				'a',
 				$link_attributes

@@ -24,7 +24,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Repository_Item;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 abstract class Git_Tabs extends External_Storage_Tab {
 	use Safe_Array_Arguments;
@@ -89,7 +89,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 				'acf-views'
 			),
 			' ',
-			wrap(
+			nest(
 				tag(
 					'a',
 					array(
@@ -102,7 +102,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			tag( 'br' ),
 			__( 'If you have made any external changes to this repository, please click', 'acf-views' ),
 			' ',
-			wrap(
+			nest(
 				tag( 'a', array( 'href' => $reset_cache_link ) ),
 				__( 'here', 'acf-views' )
 			),
@@ -435,7 +435,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			return;
 		}
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				array( 'class' => 'notice notice-success' )

@@ -23,7 +23,7 @@ use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, Actor {
 	private Instance_Factory $instance_factory;
@@ -135,7 +135,7 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		$joined_attrs    = implode( ' ', $attrs );
 		$shortcode_debug = sprintf( '(%s %s)', $shortcode, $joined_attrs );
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'p',
 				array( 'style' => array( 'color' => 'red' ) )
@@ -199,7 +199,7 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		if ( $cpt_data->is_css_internal() ) {
 			$css_code   = $cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
 			$shadow_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
-			$tags = wrap(
+			$tags = nest(
 				tag( 'style' ),
 				// phpcs:ignore WordPress.Security.EscapeOutput
 				fn() => print( ':host{all: initial!important;}' . $shadow_css )
@@ -293,7 +293,7 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 			'onMouseOut'  => "this.style.opacity='.5';this.style.textDecoration='none'",
 		);
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'a',
 				$attrs

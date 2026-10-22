@@ -20,7 +20,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 class Layout_Markup {
 	/**
@@ -140,7 +140,7 @@ class Layout_Markup {
 		$root_content   = $is_shadow_root ?
 			stack(
 				$new_line,
-				wrap(
+				nest(
 					tag( 'template', array( 'shadowrootmode' => 'open' ) ),
 					stack( $new_line, $rows )
 				),
@@ -149,7 +149,7 @@ class Layout_Markup {
 			stack( $new_line, $rows );
 
 		$tags = stack(
-			wrap(
+			nest(
 				tag(
 					$layout_settings->get_tag_name(),
 					array( 'class' => $this->root_class( $token_factory, $layout_settings ) )

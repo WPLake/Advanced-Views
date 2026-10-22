@@ -14,7 +14,7 @@ use WP_Post;
 use WPCom_Markdown;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -109,7 +109,7 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 			),
 		);
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'p',
 				$attributes
@@ -117,7 +117,7 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 			stack(
 				__( 'Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue.', 'acf-views' ) . ' ',
 				__( 'Please', 'acf-views' ) . ' ',
-				wrap(
+				nest(
 					tag(
 						'a',
 						array(

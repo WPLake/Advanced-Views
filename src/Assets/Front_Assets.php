@@ -22,7 +22,7 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox_Pattern
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map_Pattern;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -450,7 +450,7 @@ class Front_Assets extends Actor_Base implements Actor {
 				// introduce a styles variable, which allows to detect the styles root inside a webcomponent.
 				if ( $this->live_reloader_component->is_active() ) {
 					// the wrapper is necessary to make .parentElement work.
-					$tags = wrap(
+					$tags = nest(
 						tag(
 							'div',
 							array( 'hidden' => '' )
@@ -459,7 +459,7 @@ class Front_Assets extends Actor_Base implements Actor {
 							// @phpcs:ignore WordPress.Security.EscapeOutput
 							fn() => print( $all_css_code ),
 							tag( 'avf-styles-location' ),
-							wrap(
+							nest(
 								tag( 'script' ),
 								// @phpcs:ignore WordPress.Security.EscapeOutput
 								fn() => print( 'class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)' )
@@ -642,7 +642,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	 * @param array<string,string> $attrs
 	 */
 	protected function make_code_tag( string $tag, array $attrs, string $code ): string {
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				$tag,
 				$attrs

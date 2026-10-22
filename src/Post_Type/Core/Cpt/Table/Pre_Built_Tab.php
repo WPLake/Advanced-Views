@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Stora
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 abstract class Pre_Built_Tab extends External_Storage_Tab {
 	use Safe_Array_Arguments;
@@ -62,7 +62,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 			tag( 'br' ),
 			__( 'Hover on the title and click Import.', 'acf-views' ),
 			' ',
-			wrap(
+			nest(
 				tag(
 					'a',
 					array(

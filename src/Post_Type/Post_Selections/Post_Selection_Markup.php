@@ -21,7 +21,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 /**
  * @phpstan-import-type Html_Tag from Html
@@ -72,7 +72,7 @@ class Post_Selection_Markup {
 				fn() => $token_factory->formatter()
 									->new_line()
 									->tab( 2 ),
-				wrap(
+				nest(
 					tag( 'div' ),
 					stack(
 						fn() => print( "\r\n\t\t\t" ),
@@ -149,7 +149,7 @@ class Post_Selection_Markup {
 
 		return stack(
 			$print_opening_tab,
-			wrap(
+			nest(
 				$tag,
 				stack(
 					fn() => $token_factory->formatter()->new_line(),
@@ -335,7 +335,7 @@ class Post_Selection_Markup {
 		$root_content   = $is_shadow_root ?
 			stack(
 				$new_line,
-				wrap(
+				nest(
 					tag( 'template', array( 'shadowrootmode' => 'open' ) ),
 					$content
 				),
@@ -344,7 +344,7 @@ class Post_Selection_Markup {
 			$content;
 
 		$tags = stack(
-			wrap(
+			nest(
 				tag(
 					$post_selection_settings->get_tag_name(),
 					array( 'class' => $this->root_class( $token_factory, $post_selection_settings ) )
@@ -485,7 +485,7 @@ class Post_Selection_Markup {
 		$no_posts_message_class = Post_Selection_Settings::CLASS_GENERATION_NONE !== $post_selection_settings->classes_generation ?
 			sprintf( '%s__no-posts-message', $post_selection_settings->get_bem_name() ) :
 			'';
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				array( 'class' => $no_posts_message_class )

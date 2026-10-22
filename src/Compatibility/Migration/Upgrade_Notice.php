@@ -20,11 +20,11 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 /**
  * @phpstan-import-type Html_Stack from Html
- * @phpstan-import-type Html_Wrap from Html
+ * @phpstan-import-type Html_Nest from Html
  */
 final class Upgrade_Notice extends Actor_Base implements Actor {
 	private Plugin_Meta $plugin_meta;
@@ -89,7 +89,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 			$this->get_dismiss_members() :
 			null;
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				array( 'class' => 'notice notice-info' )
@@ -146,7 +146,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected function get_dismiss_members(): array {
 		$dismiss_url = add_query_arg(
@@ -157,7 +157,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 			Plugin::get_current_admin_url()
 		);
 
-		return wrap(
+		return nest(
 			tag(
 				'a',
 				array(

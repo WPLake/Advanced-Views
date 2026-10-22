@@ -8,7 +8,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -114,7 +114,7 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 		}
 
 		$edit_post_link = $cpt_settings->get_edit_post_link();
-		$title_tags     = wrap(
+		$title_tags     = nest(
 			tag( 'strong' ),
 			tag(
 				'a',

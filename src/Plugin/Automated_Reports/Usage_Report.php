@@ -24,7 +24,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 /**
  * Automated reports send data about plugin errors and usage. It allows to fix issues faster and improve the plugin.
@@ -129,7 +129,7 @@ class Usage_Report extends Report_Base implements Actor {
 			$this->get_hide_members( $dismiss_key, $nonce_name ) :
 			null;
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				array( 'class' => 'notice notice-warning' )
@@ -329,7 +329,7 @@ class Usage_Report extends Report_Base implements Actor {
 		return stack(
 			tag( 'br' ),
 			tag( 'br' ),
-			wrap(
+			nest(
 				tag(
 					'a',
 					array( 'href' => $hide_url )

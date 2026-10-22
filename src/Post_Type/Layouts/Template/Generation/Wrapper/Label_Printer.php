@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 final class Label_Printer {
 	public static function print(
@@ -35,7 +35,7 @@ final class Label_Printer {
 			self::print_variable_closing( $token_factory, $tabs_number );
 		};
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'p',
 				array( 'class' => self::resolve_classes( $layout_settings, $field_settings ) )

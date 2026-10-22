@@ -35,7 +35,7 @@ use WP_Query;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -200,7 +200,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 			<?php
 		};
 
-		$tags = wrap(
+		$tags = nest(
 			tag( 'script' ),
 			$print_download_script
 		);
@@ -541,7 +541,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 				$links[] = tag( 'br' );
 			}
 
-			$links[] = wrap(
+			$links[] = nest(
 				tag(
 					'a',
 					array(

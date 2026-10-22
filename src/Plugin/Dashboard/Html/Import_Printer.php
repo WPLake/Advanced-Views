@@ -9,14 +9,14 @@ use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * @phpstan-import-type Html_Tag from Html
  * @phpstan-import-type Html_Stack from Html
- * @phpstan-import-type Html_Wrap from Html
+ * @phpstan-import-type Html_Nest from Html
  */
 final class Import_Printer {
 	public static function print_dashboard_import(
@@ -41,7 +41,7 @@ final class Import_Printer {
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected static function import_result_block_tags( bool $is_has_demo_objects, Demo_Importer $demo_import ): array {
 		$button_attrs  = array(
@@ -55,14 +55,14 @@ final class Import_Printer {
 			stack(
 				tag( 'br' ),
 				tag( 'br' ),
-				wrap( $button_tag, $button_label )
+				nest( $button_tag, $button_label )
 			) :
 			null;
 
 		$block_attrs = array( 'class' => 'av-introduction av-dashboard__block av-dashboard__block--medium' );
 		$result_tags = self::import_result_tags( $demo_import );
 
-		return wrap(
+		return nest(
 			tag(
 				'div',
 				$block_attrs
@@ -160,7 +160,7 @@ final class Import_Printer {
 	/**
 	 * @param string[] $lines
 	 *
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected static function bold_paragraph_tags( array $lines ): array {
 		$line_tags = array();
@@ -173,7 +173,7 @@ final class Import_Printer {
 			$line_tags[] = $line;
 		}
 
-		return wrap(
+		return nest(
 			tag( 'p' ),
 			tag( 'b' ),
 			stack( ...$line_tags )
@@ -194,7 +194,7 @@ final class Import_Printer {
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected static function import_introduction_tags(): array {
 		$description_attrs = array( 'class' => 'av-introduction__description' );
@@ -208,7 +208,7 @@ final class Import_Printer {
 		$intro_title   = __( 'Import Demo to Get Started in Seconds', 'acf-views' );
 		$import_label  = __( 'Import Demo Now', 'acf-views' );
 		$title_tags    = Html_Printer::title_tags( $intro_title );
-		$import_button = wrap(
+		$import_button = nest(
 			tag(
 				'button',
 				$import_attrs
@@ -216,7 +216,7 @@ final class Import_Printer {
 			$import_label
 		);
 
-		$description = wrap(
+		$description = nest(
 			tag(
 				'p',
 				$description_attrs
@@ -236,7 +236,7 @@ final class Import_Printer {
 			__( "When done, you'll see quick links to edit all imported items.", 'acf-views' ),
 		);
 		$importing_text        = join( ' ', $importing_parts );
-		$importing_description = wrap(
+		$importing_description = nest(
 			tag(
 				'p',
 				$description_attrs
@@ -273,7 +273,7 @@ final class Import_Printer {
 		$after_title     = __( 'After Import', 'acf-views' );
 		$delete_hint     = __( 'A Delete Demo button will appear if you’d like to remove the demo content later.', 'acf-views' );
 
-		return wrap(
+		return nest(
 			tag(
 				'div',
 				$block_attrs
@@ -293,7 +293,7 @@ final class Import_Printer {
 				self::bold_paragraph_tags( array( $importing_title ) ),
 				$importing_description,
 				self::bold_paragraph_tags( array( $after_title ) ),
-				wrap(
+				nest(
 					tag( 'p' ),
 					$delete_hint
 				),
@@ -308,19 +308,19 @@ final class Import_Printer {
 	/**
 	 * @param string[] $items
 	 *
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected static function ordered_list_tags( array $items ): array {
 		$list_attrs = array( 'class' => 'av-introduction__description av-introduction__ol' );
 		$item_tags  = array_map(
-			fn( string $item ) => wrap(
+			fn( string $item ) => nest(
 				tag( 'li' ),
 				$item
 			),
 			$items
 		);
 
-		return wrap(
+		return nest(
 			tag(
 				'ol',
 				$list_attrs

@@ -24,7 +24,7 @@ use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -131,7 +131,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	}
 
 	protected function print_link_with_js_hover( string $url, string $title ): void {
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'a',
 				array(
@@ -223,7 +223,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			) :
 			null;
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'a',
 				$link_attrs
@@ -344,7 +344,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 				continue;
 			}
 
-			$tags = wrap(
+			$tags = nest(
 				tag(
 					'a',
 					array(
@@ -516,7 +516,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 				$tags = stack(
 					tag( 'br' ),
 					tag( 'br' ),
-					wrap(
+					nest(
 						tag(
 							'span',
 							array( 'style' => array( 'color' => '#dc3232' ) )

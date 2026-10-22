@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Comment;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 class Comment_Items_List_Field extends Markup_Field_Base {
 	const AUTHOR_NAME = 'author_name';
@@ -30,7 +30,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
 		$comment_attributes = array( 'class' => $this->get_field_class( 'comment', $markup_field_data ) );
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				$comment_attributes
@@ -63,7 +63,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				$author_attributes
@@ -91,7 +91,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		$node = wrap(
+		$node = nest(
 			tag(
 				'div',
 				$content_attributes

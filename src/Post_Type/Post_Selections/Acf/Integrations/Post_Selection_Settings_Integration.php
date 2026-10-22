@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -95,7 +95,7 @@ class Post_Selection_Settings_Integration extends Acf_Integration_Base {
 			$this->plugin_cpt->labels()->singular_name()
 		);
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'a',
 				array(

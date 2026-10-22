@@ -10,10 +10,10 @@ use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 /**
- * @phpstan-import-type Html_Wrap from Html
+ * @phpstan-import-type Html_Nest from Html
  */
 abstract class Profiler {
 	const SOURCE_NETWORK = '_network';
@@ -52,7 +52,7 @@ abstract class Profiler {
 	public static function print_report(): void {
 		$classes_total_usage = self::get_classes_total_usage();
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				array(
@@ -167,10 +167,10 @@ abstract class Profiler {
 	/**
 	 * @param mixed $data
 	 *
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected static function pre_chain( $data, string $prefix = '' ): array {
-		return wrap(
+		return nest(
 			tag( 'pre' ),
 			fn() => self::print_data( $data, $prefix )
 		);

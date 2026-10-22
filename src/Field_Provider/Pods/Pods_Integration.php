@@ -21,7 +21,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 class Pods_Integration extends Settings_Vendor_Integration {
 
@@ -214,7 +214,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			),
 		);
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				$container_attributes
@@ -245,13 +245,13 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			echo esc_html( $title );
 		};
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				$postbox_attributes
 			),
 			stack(
-				wrap(
+				nest(
 					tag(
 						'h4',
 						$heading_attributes
@@ -296,7 +296,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 				}
 			};
 
-			$tags = wrap(
+			$tags = nest(
 				tag(
 					'div',
 					$attributes

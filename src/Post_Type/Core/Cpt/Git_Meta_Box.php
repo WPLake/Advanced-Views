@@ -21,11 +21,11 @@ use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 /**
  * @phpstan-import-type Html_Tag from Html
- * @phpstan-import-type Html_Wrap from Html
+ * @phpstan-import-type Html_Nest from Html
  */
 abstract class Git_Meta_Box extends Actor_Base implements Actor {
 
@@ -77,7 +77,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	protected function print_git_lab_repositories_meta_box(): void {
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'av-git-meta-box',
 				array(
@@ -252,13 +252,13 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected function intro_tags(): array {
-		return wrap(
+		return nest(
 			tag( 'p' ),
 			stack(
-				wrap(
+				nest(
 					tag(
 						'a',
 						array(
@@ -288,18 +288,18 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected function repositories_tags(): array {
 		$option_chains = array_map(
-			fn( array $git_repository ): array => wrap(
+			fn( array $git_repository ): array => nest(
 				tag( 'option', array( 'value' => $git_repository['id'] ) ),
 				$git_repository['name']
 			),
 			$this->settings->get_git_repositories()
 		);
 
-		return wrap(
+		return nest(
 			tag(
 				'select',
 				array(
@@ -308,7 +308,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 				)
 			),
 			stack(
-				wrap(
+				nest(
 					tag(
 						'option',
 						array( 'value' => '' )
@@ -321,10 +321,10 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected function with_fields_tags(): array {
-		return wrap(
+		return nest(
 			tag(
 				'div',
 				array(
@@ -343,7 +343,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 						'id'   => 'av_git-repo-with-fields',
 					)
 				),
-				wrap(
+				nest(
 					tag(
 						'label',
 						array( 'for' => 'av_git-repo-with-fields' )
@@ -355,20 +355,20 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected function save_reminder_tags(): array {
-		return wrap(
+		return nest(
 			tag( 'p' ),
 			__( 'Note: all changes must be already saved.', 'acf-views' )
 		);
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected function button_tags(): array {
-		return wrap(
+		return nest(
 			tag(
 				'button',
 				array( 'class' => 'button button-primary button-large' )

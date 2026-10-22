@@ -10,14 +10,14 @@ use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * @phpstan-import-type Html_Tag from Html
  * @phpstan-import-type Html_Stack from Html
- * @phpstan-import-type Html_Wrap from Html
+ * @phpstan-import-type Html_Nest from Html
  */
 class Postbox_Printer {
 	public function print_postbox_shortcode(
@@ -70,7 +70,7 @@ class Postbox_Printer {
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected static function shortcode_tags( string $shortcode, bool $is_short, bool $is_single ): array {
 		$type            = $is_short ?
@@ -79,7 +79,7 @@ class Postbox_Printer {
 		$code_attrs      = array( 'class' => 'av-sortcodes__code av-shortcodes__code--type--short' );
 		$container_class = sprintf( 'av-shortcodes av-shortcodes--type--%s', $type );
 		$container_attrs = array( 'class' => $container_class );
-		$code            = wrap(
+		$code            = nest(
 			tag(
 				'span',
 				$code_attrs
@@ -90,7 +90,7 @@ class Postbox_Printer {
 			null :
 			self::shortcode_details_tags( $is_single );
 
-		return wrap(
+		return nest(
 			tag(
 				'av-shortcodes',
 				$container_attrs
@@ -107,7 +107,7 @@ class Postbox_Printer {
 			'class'       => 'av-shortcodes__copy-button button button-primary button-large',
 			'data-target' => '.av-shortcodes__code--type--short',
 		);
-		$copy_button = wrap(
+		$copy_button = nest(
 			tag(
 				'button',
 				$copy_attrs
@@ -132,7 +132,7 @@ class Postbox_Printer {
 			$here_label
 		);
 
-		$roles_link = wrap(
+		$roles_link = nest(
 			tag( 'span' ),
 			stack(
 				$roles_hint_gap,
@@ -153,10 +153,10 @@ class Postbox_Printer {
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected static function embed_hint_tags( string $question, string $answer ): array {
-		return wrap(
+		return nest(
 			tag( 'p' ),
 			stack(
 				$question,
@@ -167,15 +167,15 @@ class Postbox_Printer {
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected static function support_postbox_tags( string $description, string $url, string $button_label ): array {
 		$button = self::button_link_tags( $url, $button_label );
 
-		return wrap(
+		return nest(
 			tag( 'div' ),
 			stack(
-				wrap(
+				nest(
 					tag( 'p' ),
 					$description
 				),
@@ -185,7 +185,7 @@ class Postbox_Printer {
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected static function button_link_tags( string $url, string $label ): array {
 		$link_attrs = array(
@@ -194,7 +194,7 @@ class Postbox_Printer {
 			'target' => '_blank',
 		);
 
-		return wrap(
+		return nest(
 			tag(
 				'a',
 				$link_attrs

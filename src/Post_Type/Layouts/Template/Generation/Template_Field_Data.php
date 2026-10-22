@@ -18,14 +18,14 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pa
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * @phpstan-import-type Html_Stack from Html
  * @phpstan-import-type Html_Tag from Html
- * @phpstan-import-type Html_Wrap from Html
+ * @phpstan-import-type Html_Nest from Html
  */
 final class Template_Field_Data extends Field_Data {
 	/**
@@ -110,7 +110,7 @@ final class Template_Field_Data extends Field_Data {
 	/**
 	 * @param Html_Wrapper[] $item_outers
 	 *
-	 * @return Html_Stack|Html_Wrap
+	 * @return Html_Stack|Html_Nest
 	 */
 	public function wrap_with_item_outers( array $item_outers, Closure $print_content, bool $is_without_last_item_tabs = false ): array {
 		$last_index = count( $item_outers ) - 1;
@@ -142,7 +142,7 @@ final class Template_Field_Data extends Field_Data {
 					->tab( --$this->tabs_number );
 			};
 
-			$content = wrap(
+			$content = nest(
 				$this->item_outer_tag( $outer ),
 				stack(
 					$print_outer_open,

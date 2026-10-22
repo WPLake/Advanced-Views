@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 	private Layout_Settings_Storage $layouts_settings_storage;
@@ -67,7 +67,7 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 		// here we must use viewsDataStorage, as it's a View.
 		$view_data = $this->layouts_settings_storage->get( $post_selection_settings->acf_view_id );
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'a',
 				array(

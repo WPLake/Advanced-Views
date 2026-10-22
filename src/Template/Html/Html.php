@@ -14,24 +14,24 @@ defined( 'ABSPATH' ) || exit;
  *
  * Html_Tag: a single element.
  * Html_Stack: items rendered at the same level.
- * Html_Wrap: every next item goes inside the previous one, so all items but the last must be Tags.
+ * Html_Nest: every next item goes inside the previous one, so all items but the last must be Tags.
  * Html_Content: a string (printed escaped), an Htmlable, or a Closure printer (printed as is, so it must escape itself).
- * Html_Element: a Html_Tag, Html_Stack or Html_Wrap, i.e. what Html_Renderer accepts as a root.
- * Html_Node: any member of a stack/wrap. A `null` next to it means 'no element' and is dropped by the constructors.
- * Stack/wrap items are 'mixed' as PHPStan doesn't support recursive aliases.
+ * Html_Element: a Html_Tag, Html_Stack or Html_Nest, i.e. what Html_Renderer accepts as a root.
+ * Html_Node: any member of a stack/nest. A `null` next to it means 'no element' and is dropped by the constructors.
+ * Stack/nest items are 'mixed' as PHPStan doesn't support recursive aliases.
  *
  * @phpstan-type Html_Tag array{tag:string, attrs?:array<string,mixed>}
  * @phpstan-type Html_Content string|Htmlable|Closure():(void|mixed)
  * @phpstan-type Html_Stack array{stack:list<mixed>}
- * @phpstan-type Html_Wrap array{wrap:list<mixed>}
- * @phpstan-type Html_Element Html_Tag|Html_Stack|Html_Wrap
+ * @phpstan-type Html_Nest array{nest:list<mixed>}
+ * @phpstan-type Html_Element Html_Tag|Html_Stack|Html_Nest
  * @phpstan-type Html_Node Html_Element|Html_Content
  */
 final class Html {
 	const TAG_NAME  = 'tag';
 	const TAG_ATTRS = 'attrs';
 	const STACK     = 'stack';
-	const WRAP      = 'wrap';
+	const NEST      = 'nest';
 
 	/**
 	 * @param mixed[] $items

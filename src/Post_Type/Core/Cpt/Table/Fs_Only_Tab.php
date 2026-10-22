@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Stora
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -74,7 +74,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 						'acf-views'
 					),
 					' ',
-					wrap(
+					nest(
 						tag(
 							'a',
 							array(
@@ -161,7 +161,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 
 			$item_links[] = stack(
 				$separator,
-				wrap(
+				nest(
 					tag(
 						'a',
 						array(
@@ -174,17 +174,17 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 			);
 		}
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				array( 'class' => 'notice notice-success' )
 			),
 			stack(
-				wrap(
+				nest(
 					tag( 'p' ),
 					count( $ids ) . ' ' . __( 'items successfully synced', 'acf-views' )
 				),
-				wrap(
+				nest(
 					tag( 'p' ),
 					stack( ...$item_links )
 				)

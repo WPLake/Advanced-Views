@@ -10,10 +10,10 @@ use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 /**
- * @phpstan-import-type Html_Wrap from Html
+ * @phpstan-import-type Html_Nest from Html
  */
 final class Row_Title_Printer {
 	/**
@@ -25,7 +25,7 @@ final class Row_Title_Printer {
 		string $action_url,
 		string $action_label
 	): void {
-		$title_tags = wrap(
+		$title_tags = nest(
 			tag( 'strong' ),
 			tag(
 				'span',
@@ -38,7 +38,7 @@ final class Row_Title_Printer {
 	}
 
 	/**
-	 * @param Html_Wrap $title_tags
+	 * @param Html_Nest $title_tags
 	 * @param string $action_class e.g. 'edit'
 	 */
 	public static function print_title_and_action(
@@ -47,7 +47,7 @@ final class Row_Title_Printer {
 		string $action_url,
 		string $action_label
 	): void {
-		$action_tags = wrap(
+		$action_tags = nest(
 			tag(
 				'div',
 				array( 'class' => 'row-actions' )

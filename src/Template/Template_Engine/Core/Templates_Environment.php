@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Filesystem_Base;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 class Templates_Environment extends Loggable_Actor implements Actor {
 	private string $uploads_folder;
@@ -69,7 +69,7 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 			'class' => array( 'notice', 'notice-error' ),
 		);
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				$notice_attributes

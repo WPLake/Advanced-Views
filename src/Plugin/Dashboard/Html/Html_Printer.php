@@ -7,18 +7,18 @@ namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * @phpstan-import-type Html_Tag from Html
  * @phpstan-import-type Html_Stack from Html
- * @phpstan-import-type Html_Wrap from Html
+ * @phpstan-import-type Html_Nest from Html
  */
 final class Html_Printer {
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	public static function link_tags( string $url, string $label ): array {
 		$link_attrs = array(
@@ -31,7 +31,7 @@ final class Html_Printer {
 			$link_attrs
 		);
 
-		return wrap(
+		return nest(
 			$link_tag,
 			$label
 		);
@@ -40,7 +40,7 @@ final class Html_Printer {
 	/**
 	 * @param Html_Stack $blocks
 	 *
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	public static function dashboard_form_tags( string $page, string $form_nonce, array $blocks ): array {
 		$form_attrs = array(
@@ -62,12 +62,12 @@ final class Html_Printer {
 		$page_input  = self::hidden_input_tags( '_av-page', $page );
 		$nonce_input = self::hidden_input_tags( '_wpnonce', $form_nonce );
 
-		return wrap(
+		return nest(
 			$form_tag,
 			stack(
 				$page_input,
 				$nonce_input,
-				wrap( $main_tag, $blocks )
+				nest( $main_tag, $blocks )
 			)
 		);
 	}
@@ -87,7 +87,7 @@ final class Html_Printer {
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	public static function title_tags( string $title ): array {
 		$title_attrs = array( 'class' => 'av-introduction__title' );
@@ -97,7 +97,7 @@ final class Html_Printer {
 			$title_attrs
 		);
 
-		return wrap(
+		return nest(
 			$title_tag,
 			$title
 		);

@@ -10,14 +10,14 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * @phpstan-import-type Html_Tag from Html
  * @phpstan-import-type Html_Stack from Html
- * @phpstan-import-type Html_Wrap from Html
+ * @phpstan-import-type Html_Nest from Html
  */
 final class Toolbar_Printer {
 	/**
@@ -32,7 +32,7 @@ final class Toolbar_Printer {
 	/**
 	 * @param array<int,array<string,mixed>> $tabs
 	 *
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected static function toolbar_tags( string $name, string $version, array $tabs ): array {
 		$title_attrs   = array( 'class' => 'av-toolbar__title' );
@@ -54,22 +54,22 @@ final class Toolbar_Printer {
 			$version_attrs
 		);
 
-		$title = wrap(
+		$title = nest(
 			$title_tag,
 			stack(
 				$icon_tag,
-				wrap(
+				nest(
 					tag( 'span' ),
 					$name
 				),
-				wrap( $version_tag, $version_label )
+				nest( $version_tag, $version_label )
 			)
 		);
 
 		$left_block  = self::toolbar_block_tags( 'left', 'isLeftBlock', $tabs );
 		$right_block = self::toolbar_block_tags( 'right', 'isRightBlock', $tabs );
 
-		return wrap(
+		return nest(
 			tag(
 				'div',
 				$toolbar_attrs
@@ -85,7 +85,7 @@ final class Toolbar_Printer {
 	/**
 	 * @param array<int,array<string,mixed>> $tabs
 	 *
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected static function toolbar_block_tags( string $type, string $block_key, array $tabs ): array {
 		$block_tabs = array_filter(
@@ -101,7 +101,7 @@ final class Toolbar_Printer {
 			$tabs_list
 		);
 
-		return wrap(
+		return nest(
 			tag(
 				'div',
 				$block_attrs
@@ -113,7 +113,7 @@ final class Toolbar_Printer {
 	/**
 	 * @param array<string,mixed> $tab
 	 *
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected static function toolbar_tab_tags( array $tab ): array {
 		$classes = array_filter(
@@ -157,10 +157,10 @@ final class Toolbar_Printer {
 			$attrs
 		);
 
-		return wrap(
+		return nest(
 			$link,
 			stack(
-				wrap(
+				nest(
 					tag( 'span' ),
 					$label
 				),

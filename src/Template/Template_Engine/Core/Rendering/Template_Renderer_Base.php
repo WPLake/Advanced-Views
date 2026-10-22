@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Throwable;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 abstract class Template_Renderer_Base extends Loggable_Actor implements Template_Renderer {
 	protected Settings_Storage $settings;
@@ -42,14 +42,14 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 		);
 		$span_attributes      = array( 'class' => 'acf-views__error-message' );
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'p',
 				$paragraph_attributes
 			),
 			stack(
 				fn() => printf( 'Advanced Views (%s) template: ', esc_html( $unique_view_id ) ),
-				wrap(
+				nest(
 					tag(
 						'span',
 						$span_attributes
@@ -97,7 +97,7 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 		// do not include in case of the validation, it doesn't have sense + breaks the error grep regex.
 		if ( $is_debug_mode &&
 			! $is_validation ) {
-			$tags = wrap(
+			$tags = nest(
 				tag( 'pre' ),
 				// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
 						print_r(

@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Filesystem_Base;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -120,7 +120,7 @@ class File_System extends Loggable_Actor implements Actor {
 
 				self::$is_fs_not_writable_notice_shown = true;
 
-				$tags = wrap(
+				$tags = nest(
 					tag(
 						'div',
 						array( 'class' => 'notice notice-error' )

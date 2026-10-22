@@ -21,7 +21,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	const ARGUMENT_FROM_LAYOUT = '_from';
@@ -53,7 +53,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	}
 
 	protected function print_link_with_js_hover( string $url, string $title ): void {
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'a',
 				array(
@@ -194,7 +194,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				$this->selections_cpt->labels()->plural_name()
 			);
 
-			$node = wrap(
+			$node = nest(
 				tag( 'p' ),
 				$message
 			);
@@ -242,7 +242,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			);
 
 			$label = __( 'Query posts to display using this Layout', 'acf-views' );
-			$tags  = wrap(
+			$tags  = nest(
 				tag(
 					'a',
 					array(

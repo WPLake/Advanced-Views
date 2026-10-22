@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_R
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -101,7 +101,7 @@ abstract class Instance {
 			ucfirst( $this->cpt_settings->template_engine )
 		);
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'p',
 				array( 'style' => array( 'color' => 'red' ) )

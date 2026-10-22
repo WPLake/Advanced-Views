@@ -21,12 +21,12 @@ use WP_Post_Type;
 use WP_Query;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Html_Wrap from Html
+ * @phpstan-import-type Html_Nest from Html
  * @phpstan-import-type Html_Stack from Html
  */
 abstract class Cpt_Table extends Actor_Base implements Actor {
@@ -155,7 +155,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			return;
 		}
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				array( 'class' => 'notice notice-success' )
@@ -175,7 +175,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			null;
 
 		if ( null !== $description_callback ) {
-			$tags = wrap(
+			$tags = nest(
 				tag( 'p' ),
 				$description_callback
 			);
@@ -186,7 +186,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		}
 
 		if ( '' !== $wp_post_type->description ) {
-			$node = wrap(
+			$node = nest(
 				tag( 'p' ),
 				// don't use esc_html as it contains links.
 				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -217,14 +217,14 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			$count_span = '' !== $tab->get_label_in_brackets() ?
 				stack(
 					' ',
-					wrap(
+					nest(
 						tag( 'span', array( 'class' => 'count' ) ),
 						sprintf( '(%s)', $tab->get_label_in_brackets() )
 					)
 				) :
 				null;
 
-			$tab_link = wrap(
+			$tab_link = nest(
 				tag(
 					'a',
 					$attrs
@@ -264,7 +264,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			__( 'Search for name.', 'acf-views' );
 
 		// only primary search is available for custom items.
-		$tags = wrap(
+		$tags = nest(
 			tag( 'style' ),
 			fn() => print( sprintf( '#posts-filter .search-box::after{content:"%s";}', esc_html( $label ) ) )
 		);
@@ -376,7 +376,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			)
 		);
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'a',
 				array( 'href' => $clone_link )
@@ -449,7 +449,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 				$cells[] = $this->table_cell( $current_tab_data, $cpt_data, $column_name, $column_label, $hidden );
 			}
 
-			$rows[] = wrap(
+			$rows[] = nest(
 				tag( 'tr' ),
 				stack( ...$cells )
 			);
@@ -457,11 +457,11 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 
 		$tags = stack(
 			// hide the origin items until the custom items are pasted via JS.
-			wrap(
+			nest(
 				tag( 'style' ),
 				fn() => print( '#the-list{opacity: 0; transition: opacity ease .1s;}' )
 			),
-			wrap(
+			nest(
 				tag(
 					'div',
 					array( 'style' => array( 'display' => 'none' ) )
@@ -473,7 +473,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 				),
 				stack( ...$rows )
 			),
-			wrap(
+			nest(
 				tag(
 					'script',
 					array( 'type' => 'text/javascript' )
@@ -609,7 +609,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 	/**
 	 * @param string[] $hidden_columns
 	 *
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected function table_cell(
 		Tab_Data $tab_data,
@@ -634,7 +634,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			'title' => fn() => $tab_data->print_row_title( $cpt_settings ),
 		);
 
-		return wrap(
+		return nest(
 			tag(
 				$is_checkbox ?
 					'th' :
@@ -655,7 +655,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 	 */
 	protected function checkbox_cell_content( string $unique_id, string $title ): array {
 		return stack(
-			wrap(
+			nest(
 				tag(
 					'label',
 					array(

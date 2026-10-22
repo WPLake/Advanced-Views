@@ -23,7 +23,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Screen;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -344,7 +344,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 	}
 
 	protected function render_cpt_link( Plugin_Cpt $plugin_cpt ): string {
-		$link = wrap(
+		$link = nest(
 			tag(
 				'a',
 				array(
@@ -362,7 +362,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 	 * @return string[]
 	 */
 	protected function get_promo_links(): array {
-		$link = wrap(
+		$link = nest(
 			tag(
 				'a',
 				array(

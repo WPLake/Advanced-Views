@@ -14,13 +14,13 @@ use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * @phpstan-import-type Html_Node from Html
- * @phpstan-import-type Html_Wrap from Html
+ * @phpstan-import-type Html_Nest from Html
  */
 abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	private Postbox_Printer $postbox;
@@ -99,7 +99,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return list<string|Html_Wrap> Links separated by ', ' items
+	 * @return list<string|Html_Nest> Links separated by ', ' items
 	 */
 	protected static function get_mount_post_links( Cpt_Settings $cpt_settings ): array {
 		$posts = array();
@@ -144,7 +144,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @param list<string|Html_Wrap> $post_links
+	 * @param list<string|Html_Nest> $post_links
 	 *
 	 * @return Html_Node|null
 	 */
@@ -167,7 +167,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	/**
 	 * @param int|\WP_Post $post
 	 *
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected static function create_post_link( $post ) {
 		$post_url = get_the_permalink( $post );
@@ -175,7 +175,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 			$post_url :
 			'';
 
-		return wrap(
+		return nest(
 			tag(
 				'a',
 				array(

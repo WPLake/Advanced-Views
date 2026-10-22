@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 class State_Report extends Report_Base implements Actor {
 	const STATE_ENDPOINT_URL = 'https://wplake.org/wp-json/wplake/v1/plugin_state';
@@ -119,11 +119,11 @@ class State_Report extends Report_Base implements Actor {
 			'is_with_survey'              => false === $this->settings->is_automatic_reports_disabled(),
 		);
 		$tags = stack(
-			wrap(
+			nest(
 				tag( 'style' ),
 				fn() => $this->print_survey_css()
 			),
-			wrap(
+			nest(
 				tag( 'script' ),
 				fn() => $this->print_survey_script( $data )
 			)

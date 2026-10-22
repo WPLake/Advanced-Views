@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use WP_Query;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 final class Debug_Dump_Creator {
 	private Tools_Settings $tools_settings;
@@ -81,7 +81,7 @@ final class Debug_Dump_Creator {
 			<?php
 		};
 
-		$tags = wrap(
+		$tags = nest(
 			tag( 'script' ),
 			$print_download_script
 		);

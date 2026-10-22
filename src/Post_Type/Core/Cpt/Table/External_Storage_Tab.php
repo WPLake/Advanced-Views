@@ -17,10 +17,10 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 /**
- * @phpstan-import-type Html_Wrap from Html
+ * @phpstan-import-type Html_Nest from Html
  */
 abstract class External_Storage_Tab extends Cpt_Table_Tab {
 
@@ -208,7 +208,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		}
 
 		$paragraphs   = array();
-		$paragraphs[] = wrap(
+		$paragraphs[] = nest(
 			tag( 'p' ),
 			__( 'Success!', 'acf-views' )
 		);
@@ -226,7 +226,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		foreach ( $grouped_meta_group_links as $vendor_name => $group_links ) {
 			$group_links_count = count( $group_links );
 
-			$paragraphs[] = wrap(
+			$paragraphs[] = nest(
 				tag( 'p' ),
 				sprintf(
 					'%s %s %s %s',
@@ -240,7 +240,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			$paragraphs[] = $this->links_paragraph( $group_links );
 		}
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				array( 'class' => 'notice notice-success' )
@@ -264,10 +264,10 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected function imported_items_paragraph( int $items_count ): array {
-		return wrap(
+		return nest(
 			tag( 'p' ),
 			sprintf(
 				'%s %s %s',
@@ -282,7 +282,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	/**
 	 * @param array<array{url:string,title:string}> $links
 	 *
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected function links_paragraph( array $links ): array {
 		$members = array();
@@ -295,7 +295,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 
 			$members[] = stack(
 				$separator,
-				wrap(
+				nest(
 					tag(
 						'a',
 						array(
@@ -308,7 +308,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			);
 		}
 
-		return wrap(
+		return nest(
 			tag( 'p' ),
 			stack( ...$members )
 		);

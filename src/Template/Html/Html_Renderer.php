@@ -41,8 +41,8 @@ final class Html_Renderer {
 				self::print_tag( $item, array() );
 			} elseif ( key_exists( Html::STACK, $item ) ) {
 				self::print_stack( $item[ Html::STACK ] );
-			} elseif ( key_exists( Html::WRAP, $item ) ) {
-				self::print_wrap( $item[ Html::WRAP ] );
+			} elseif ( key_exists( Html::NEST, $item ) ) {
+				self::print_nest( $item[ Html::NEST ] );
 			}
 
 			return;
@@ -54,7 +54,7 @@ final class Html_Renderer {
 	/**
 	 * @param list<mixed> $items
 	 */
-	protected static function print_wrap( array $items ): void {
+	protected static function print_nest( array $items ): void {
 		if ( count( $items ) > 0 ) {
 			$head = array_shift( $items );
 
@@ -87,7 +87,7 @@ final class Html_Renderer {
 		$attributes = $tag[ Html::TAG_ATTRS ] ?? array();
 
 		$content_printer = count( $nested_items ) > 0 ?
-			fn() => self::print_wrap( $nested_items ) :
+			fn() => self::print_nest( $nested_items ) :
 			null;
 
 		Tag_Renderer::print_tag( $tag_name, $attributes, $content_printer );

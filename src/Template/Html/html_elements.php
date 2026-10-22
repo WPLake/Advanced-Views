@@ -25,10 +25,10 @@ function tag( string $name, array $attrs = array() ): array {
  *
  * @param mixed|null ...$items Html_Node|null
  *
- * @return array{wrap:list<mixed>}
+ * @return array{nest:list<mixed>}
  */
-function wrap( ...$items ): array {
-	return array( Html::WRAP => Html::exclude_null_nodes( $items ) );
+function nest( ...$items ): array {
+	return array( Html::NEST => Html::exclude_null_nodes( $items ) );
 }
 
 /**

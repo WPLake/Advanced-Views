@@ -19,7 +19,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 class Map_Field extends Map_Field_Base {
 	const MAP = 'map';
@@ -250,7 +250,7 @@ class Map_Field extends Map_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		return wrap(
+		return nest(
 			tag(
 				'div',
 				$div_attributes

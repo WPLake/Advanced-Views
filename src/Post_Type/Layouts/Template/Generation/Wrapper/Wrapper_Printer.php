@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pa
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 /**
  * @phpstan-import-type Html_Tag from Html
@@ -74,7 +74,7 @@ final class Wrapper_Printer {
 	 *
 	 * @return Html_Stack
 	 */
-	public static function wrap(
+	public static function nest(
 		array $tag,
 		int &$tabs_number,
 		bool $is_new_line_before,
@@ -103,7 +103,7 @@ final class Wrapper_Printer {
 
 		return stack(
 			$print_opening_tabs,
-			wrap(
+			nest(
 				$tag,
 				stack(
 					$print_inner_start,

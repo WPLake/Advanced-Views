@@ -15,12 +15,12 @@ use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Html_Wrap from Html
+ * @phpstan-import-type Html_Nest from Html
  */
 abstract class Cpt extends Actor_Base implements Actor {
 	private Cpt_Settings_Storage $cpt_settings_storage;
@@ -76,7 +76,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 			return $html;
 		}
 
-		$link = static fn( string $url, string $label ) => wrap(
+		$link = static fn( string $url, string $label ) => nest(
 			tag(
 				'a',
 				array(
@@ -87,7 +87,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 			$label
 		);
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'span',
 				array( 'id' => 'footer-thankyou' )
@@ -98,7 +98,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 				' ' . __( 'and', 'acf-views' ) . ' ',
 				$link( External_Links::BASIC_VERSION_URL, __( 'Advanced Views', 'acf-views' ) ),
 				'. ',
-				wrap(
+				nest(
 					tag( 'span' ),
 					stack(
 						__( 'Take', 'acf-views' ) . ' ',
@@ -176,7 +176,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 			__( 'enabled', 'acf-views' ) :
 			__( 'disabled', 'acf-views' );
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'span',
 				array(
@@ -187,7 +187,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 				)
 			),
 			stack(
-				wrap(
+				nest(
 					tag(
 						'a',
 						array(
@@ -233,10 +233,10 @@ abstract class Cpt extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Html_Wrap
+	 * @return Html_Nest
 	 */
 	protected static function link_tags( string $url, string $label, string $target = '_blank' ): array {
-		return wrap(
+		return nest(
 			tag(
 				'a',
 				array(

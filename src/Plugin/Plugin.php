@@ -21,7 +21,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\wrap;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -279,7 +279,7 @@ class Plugin extends Actor_Base implements Actor {
 
 		$this->options::delete_transient( Options_Storage::TRANSIENT_DEACTIVATED_OTHER_INSTANCES );
 
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				array( 'class' => 'notice notice-warning' )
@@ -461,7 +461,7 @@ class Plugin extends Actor_Base implements Actor {
 			'Please change the "opcache.save_comments" option in your php.ini file to the default value of "1" on your hosting.',
 			'acf-views'
 		);
-		$tags = wrap(
+		$tags = nest(
 			tag(
 				'div',
 				array( 'class' => 'notice notice-error' )
@@ -471,7 +471,7 @@ class Plugin extends Actor_Base implements Actor {
 				$detected_message . ' ',
 				tag( 'br' ),
 				$action_message . ' ',
-				wrap(
+				nest(
 					tag(
 						'a',
 						array(
