@@ -12,22 +12,22 @@ use Org\Wplake\Advanced_Views\Template\Html\Tag\Tag_Renderer;
 
 /**
  * @phpstan-import-type Tag from Html
- * @phpstan-import-type Html_Node from Html
+ * @phpstan-import-type Tag_Element from Html
  */
 final class Html_Renderer {
 	/**
-	 * @param Html_Node|null $node
+	 * @param Tag_Element $element
 	 */
-	public static function print( $node ): void {
-		self::print_item( $node );
+	public static function print( array $element ): void {
+		self::print_item( $element );
 	}
 
 	/**
-	 * @param Html_Node|null $node
+	 * @param Tag_Element $element
 	 */
-	public static function render( $node ): string {
+	public static function render( array $element ): string {
 		ob_start();
-		self::print( $node );
+		self::print( $element );
 
 		return (string) ob_get_clean();
 	}
@@ -55,8 +55,6 @@ final class Html_Renderer {
 	 * @param list<mixed> $items
 	 */
 	protected static function print_wrap( array $items ): void {
-		$items = array_values( array_filter( $items, fn( $item ) => null !== $item ) );
-
 		if ( count( $items ) > 0 ) {
 			$head = array_shift( $items );
 
