@@ -119,9 +119,11 @@ class Engines_Storage implements
 		if ( key_exists( $name, $this->engines ) ) {
 			$renderer = $this->engines[ $name ]->create_renderer( $this->render_folder );
 
-			// not every renderer is guaranteed to be available (e.g. Blade requires PHP >= 8.2.0).
-			if ( $renderer instanceof File_Template_Renderer_Base &&
-				$renderer->is_available() ) {
+			// not every file renderer is guaranteed to be available (e.g. Blade requires PHP >= 8.2.0).
+			$is_available = ! ( $renderer instanceof File_Template_Renderer_Base ) ||
+							$renderer->is_available();
+
+			if ( $is_available ) {
 				return $renderer;
 			}
 		}
