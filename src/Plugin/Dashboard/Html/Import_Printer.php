@@ -7,9 +7,9 @@ namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\nest;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -44,14 +44,18 @@ final class Import_Printer {
 	 * @return Html_Nest
 	 */
 	protected static function import_result_block_tags( bool $is_has_demo_objects, Demo_Importer $demo_import ): array {
-		$button_attrs  = array(
-			'class' => 'button button-primary button-large av-dashboard__button av-dashboard__button--red',
-			'name'  => '_delete',
-			'value' => 'delete',
+		$button = nest(
+			tag(
+				'button',
+				array(
+					'class' => 'button button-primary button-large av-dashboard__button av-dashboard__button--red',
+					'name'  => '_delete',
+					'value' => 'delete',
+				)
+			),
+			__( 'Delete imported objects', 'acf-views' )
 		);
-		$button_label  = __( 'Delete imported objects', 'acf-views' );
-		$button_tag    = tag( 'button', $button_attrs );
-		$button        = nest( $button_tag, $button_label );
+
 		$delete_button = $is_has_demo_objects ?
 			stack(
 				tag( 'br' ),
