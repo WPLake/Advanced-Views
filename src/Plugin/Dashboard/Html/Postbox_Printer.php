@@ -155,7 +155,11 @@ class Postbox_Printer {
 	protected static function embed_hint_tags( string $question, string $answer ): array {
 		return Html::wrap(
 			Html::tag( 'p' ),
-			Html::stack( $question, Html::tag( 'br' ), $answer )
+			Html::stack(
+				$question,
+				Html::tag( 'br' ),
+				$answer
+			)
 		);
 	}
 
@@ -168,7 +172,10 @@ class Postbox_Printer {
 		return Html::wrap(
 			Html::tag( 'div' ),
 			Html::stack(
-				Html::wrap( Html::tag( 'p' ), $description ),
+				Html::wrap(
+					Html::tag( 'p' ),
+					$description
+				),
 				$button
 			)
 		);

@@ -446,7 +446,10 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 				$cells[] = $this->table_cell( $current_tab_data, $cpt_data, $column_name, $column_label, $hidden );
 			}
 
-			$rows[] = Html::wrap( Html::tag( 'tr' ), Html::stack( ...$cells ) );
+			$rows[] = Html::wrap(
+				Html::tag( 'tr' ),
+				Html::stack( ...$cells )
+			);
 		}
 
 		$tags = Html::stack(

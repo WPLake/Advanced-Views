@@ -55,7 +55,10 @@ final class Toolbar_Printer {
 			$title_tag,
 			Html::stack(
 				$icon_tag,
-				Html::wrap( Html::tag( 'span' ), $name ),
+				Html::wrap(
+					Html::tag( 'span' ),
+					$name
+				),
 				Html::wrap( $version_tag, $version_label )
 			)
 		);
@@ -154,7 +157,10 @@ final class Toolbar_Printer {
 		return Html::wrap(
 			$link,
 			Html::stack(
-				Html::wrap( Html::tag( 'span' ), $label ),
+				Html::wrap(
+					Html::tag( 'span' ),
+					$label
+				),
 				$icon
 			)
 		);

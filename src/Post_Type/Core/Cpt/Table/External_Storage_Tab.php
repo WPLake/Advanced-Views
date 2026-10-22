@@ -205,7 +205,10 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		}
 
 		$paragraphs   = array();
-		$paragraphs[] = Html::wrap( Html::tag( 'p' ), __( 'Success!', 'acf-views' ) );
+		$paragraphs[] = Html::wrap(
+			Html::tag( 'p' ),
+			__( 'Success!', 'acf-views' )
+		);
 
 		if ( $views_count > 0 ) {
 			$paragraphs[] = $this->imported_items_paragraph( $views_count );
@@ -302,6 +305,9 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			);
 		}
 
-		return Html::wrap( Html::tag( 'p' ), Html::stack( ...$members ) );
+		return Html::wrap(
+			Html::tag( 'p' ),
+			Html::stack( ...$members )
+		);
 	}
 }

@@ -38,37 +38,20 @@ class Gallery_Field extends Markup_Field_Base {
 									->add_item_path( self::VALUE );
 		$item_var   = $token_factory->variable( 'image_item' );
 
-		$print_item_block = function () use ( $markup_field_data, $field_id, $item_var, $token_factory ) {
-			$token_factory->formatter()
-				->new_line();
-			$markup_field_data->increment_and_print_tabs();
-
-			$this->print_item( $field_id, $item_var->get_name(), $markup_field_data );
-
-			$token_factory->formatter()
-					->new_line();
-			$markup_field_data->decrement_and_print_tabs();
-		};
-
-		$loop_body = $token_factory->html( $print_item_block );
+		$item_id   = $item_var->get_name();
+		$loop_body = $token_factory->html(
+			fn() => $this->print_item_block( $field_id, $item_id, $markup_field_data )
+		);
 
 		$loop = $token_factory->loop()
 						->set_source_variable( $source_var )
 						->set_item_variable( $item_var )
 						->set_body( $loop_body );
 
-		$print_loop = function () use ( $token_factory, $markup_field_data, $loop ) {
-			$token_factory->formatter()
-							->new_line();
-			$markup_field_data->print_tabs();
+		$print_new_line = fn() => $token_factory->formatter()->new_line();
+		$print_tabs     = fn() => $markup_field_data->print_tabs();
 
-			$loop->display();
-
-			$token_factory->formatter()
-							->new_line();
-		};
-
-		return Html::stack( $print_loop );
+		return Html::stack( $print_new_line, $print_tabs, $loop, $print_new_line );
 	}
 
 	/**
@@ -158,5 +141,19 @@ class Gallery_Field extends Markup_Field_Base {
 		}
 
 		return array_merge( parent::get_front_assets( $field_settings ), $front_assets );
+	}
+
+	protected function print_item_block( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$token_factory->formatter()
+					->new_line();
+		$markup_field_data->increment_and_print_tabs();
+
+		$this->print_item( $field_id, $item_id, $markup_field_data );
+
+		$token_factory->formatter()
+					->new_line();
+		$markup_field_data->decrement_and_print_tabs();
 	}
 }

@@ -92,7 +92,9 @@ final class Import_Printer {
 				__( 'Import was successful. You’re all set!', 'acf-views' ) :
 				__( 'All demo objects have been deleted.', 'acf-views' );
 
-			return Html::stack( Html_Printer::title_tags( $message ) );
+			return Html::stack(
+				Html_Printer::title_tags( $message )
+			);
 		}
 
 		$failed_title = __( 'Request is failed.', 'acf-views' );
@@ -168,7 +170,11 @@ final class Import_Printer {
 			$line_tags[] = $line;
 		}
 
-		return Html::wrap( Html::tag( 'p' ), Html::tag( 'b' ), Html::stack( ...$line_tags ) );
+		return Html::wrap(
+			Html::tag( 'p' ),
+			Html::tag( 'b' ),
+			Html::stack( ...$line_tags )
+		);
 	}
 
 	/**
@@ -284,7 +290,10 @@ final class Import_Printer {
 				self::bold_paragraph_tags( array( $importing_title ) ),
 				$importing_description,
 				self::bold_paragraph_tags( array( $after_title ) ),
-				Html::wrap( Html::tag( 'p' ), $delete_hint ),
+				Html::wrap(
+					Html::tag( 'p' ),
+					$delete_hint
+				),
 				Html::tag( 'hr' ),
 				Html::tag( 'br' ),
 				Html::tag( 'br' ),
@@ -301,7 +310,10 @@ final class Import_Printer {
 	protected static function ordered_list_tags( array $items ): array {
 		$list_attrs = array( 'class' => 'av-introduction__description av-introduction__ol' );
 		$item_tags  = array_map(
-			fn( string $item ) => Html::wrap( Html::tag( 'li' ), $item ),
+			fn( string $item ) => Html::wrap(
+				Html::tag( 'li' ),
+				$item
+			),
 			$items
 		);
 

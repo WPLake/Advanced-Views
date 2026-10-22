@@ -290,7 +290,10 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			echo '';
 		}
 
-		$tags = Html::stack( Html::tag( 'br' ), Html::tag( 'br' ) );
+		$tags = Html::stack(
+			Html::tag( 'br' ),
+			Html::tag( 'br' )
+		);
 
 		Html_Renderer::print( $tags );
 

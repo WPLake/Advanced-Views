@@ -79,31 +79,6 @@ abstract class Git_Tabs extends External_Storage_Tab {
 	 * @param array{id:string, accessToken:string, name:string} $git_repository
 	 */
 	protected function print_description( array $git_repository ): void {
-		echo esc_html(
-			__(
-				'By saving items in your GitLab repository, you can create your own library and reuse them on other websites.',
-				'acf-views'
-			)
-		);
-		echo ' ';
-		$tags = Html::wrap(
-			Html::tag(
-				'a',
-				array(
-					'target' => '_blank',
-					'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
-				)
-			),
-			__( 'Read more', 'acf-views' )
-		);
-
-		Html_Renderer::print( $tags );
-		Html_Renderer::print( Html::tag( 'br' ) );
-		echo esc_html__(
-			'If you have made any external changes to this repository, please click',
-			'acf-views'
-		);
-
 		$reset_cache_link = $this->get_cpt_table()->get_tab_url(
 			$this->get_cpt_table()->get_current_tab(),
 			array(
@@ -113,12 +88,34 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			)
 		);
 
-		printf(
-			' <a href="%s">%s</a> ',
-			esc_url( $reset_cache_link ),
-			esc_html__( 'here', 'acf-views' )
+		$tags = Html::stack(
+			__(
+				'By saving items in your GitLab repository, you can create your own library and reuse them on other websites.',
+				'acf-views'
+			),
+			' ',
+			Html::wrap(
+				Html::tag(
+					'a',
+					array(
+						'target' => '_blank',
+						'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
+					)
+				),
+				__( 'Read more', 'acf-views' )
+			),
+			Html::tag( 'br' ),
+			__( 'If you have made any external changes to this repository, please click', 'acf-views' ),
+			' ',
+			Html::wrap(
+				Html::tag( 'a', array( 'href' => $reset_cache_link ) ),
+				__( 'here', 'acf-views' )
+			),
+			' ',
+			__( 'to clear the cache.', 'acf-views' )
 		);
-		echo esc_html__( 'to clear the cache.', 'acf-views' );
+
+		Html_Renderer::print( $tags );
 	}
 
 	/**
