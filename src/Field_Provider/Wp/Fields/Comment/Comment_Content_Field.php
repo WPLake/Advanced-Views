@@ -18,12 +18,13 @@ defined( 'ABSPATH' ) || exit;
 class Comment_Content_Field extends Markup_Field_Base {
 	use Custom_Field;
 
-	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		// escaped by default, not raw - as commentId may point on a pending comment with unverified content.
 		return Html::stack(
-			$token_factory->variable( $field_id )->add_item_path( self::VALUE ));
+			$token_factory->variable( $field_id )->add_item_path( self::VALUE )
+		);
 	}
 
 	/**

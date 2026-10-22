@@ -18,13 +18,14 @@ defined( 'ABSPATH' ) || exit;
 class Term_Slug_Field extends Markup_Field_Base {
 	use Custom_Field;
 
-	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		return Html::stack(
 			$token_factory
 				->variable( $field_id )
-				->add_item_path( self::VALUE ));
+			->add_item_path( self::VALUE )
+		);
 	}
 
 	/**

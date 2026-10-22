@@ -31,7 +31,7 @@ class Image_Field extends Markup_Field_Base {
 	const SVG_CONTENT = 'svg_content';
 	const ID          = 'id';
 
-	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory  = $markup_field_data->get_token_factory();
 		$attributes_map = array(
 			'src'      => self::VALUE,

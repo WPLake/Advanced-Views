@@ -38,7 +38,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 	}
 
 	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
-		Html_Renderer::print( $this->link_field->compose_tags( $item_id, $markup_field_data ) );
+		Html_Renderer::print( $this->link_field->compose_html( $item_id, $markup_field_data ) );
 	}
 
 	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
@@ -62,7 +62,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		echo ']';
 	}
 
-	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$value_var = $token_factory->variable( $field_id )

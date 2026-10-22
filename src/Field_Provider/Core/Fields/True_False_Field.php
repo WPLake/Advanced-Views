@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
 class True_False_Field extends Markup_Field_Base {
 	const STATE = 'state';
 
-	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 		$state_var     = $token_factory->variable( $field_id )->add_item_path( self::STATE );
 		$item_class    = $this->get_item_class(

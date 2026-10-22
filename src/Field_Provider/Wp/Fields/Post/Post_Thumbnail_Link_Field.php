@@ -30,7 +30,7 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 		$this->image_field = $image_field;
 	}
 
-	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$target_var = $token_factory->variable( $field_id )
@@ -51,7 +51,7 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 			$markup_field_data->increment_and_print_tabs();
 
 			$markup_field_data->set_is_with_field_wrapper( true );
-			Html_Renderer::print( $this->image_field->compose_tags( $field_id, $markup_field_data ) );
+			Html_Renderer::print( $this->image_field->compose_html( $field_id, $markup_field_data ) );
 
 			$token_factory->formatter()
 							->new_line();

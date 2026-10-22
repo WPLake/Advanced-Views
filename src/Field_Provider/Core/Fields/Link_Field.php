@@ -23,7 +23,7 @@ class Link_Field extends Markup_Field_Base {
 	// keys of the source link value.
 	const URL = 'url';
 
-	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$target_var     = $token_factory->variable( $field_id )

@@ -14,15 +14,13 @@ use Org\Wplake\Advanced_Views\Template\Html\Html;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag from Html
- * @phpstan-import-type Tag_Stack from Html
- * @phpstan-import-type Tag_Wrap from Html
+ * @phpstan-import-type Tag_Element from Html
  */
 interface Markup_Field {
 	/**
-	 * @return Tag|Tag_Stack|Tag_Wrap
+	 * @return Tag_Element
 	 */
-	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array;
+	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array;
 
 	/**
 	 * @return array<string, mixed>

@@ -15,14 +15,15 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Fiel
 use Org\Wplake\Advanced_Views\Template\Html\Html;
 
 class Mb_Map_Field extends Markup_Field_Base {
-	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		return Html::stack(
 			fn() => $token_factory
 				->variable( $field_id )
 				->add_item_path( self::VALUE )
-				->raw_display());
+			->raw_display()
+		);
 	}
 
 	/**

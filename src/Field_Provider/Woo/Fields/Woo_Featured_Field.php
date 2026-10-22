@@ -19,9 +19,10 @@ defined( 'ABSPATH' ) || exit;
 class Woo_Featured_Field extends Markup_Field_Base {
 	use Custom_Field;
 
-	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		return Html::stack(
-			__( 'Featured product', 'acf-views' ));
+			__( 'Featured product', 'acf-views' )
+		);
 	}
 
 	/**

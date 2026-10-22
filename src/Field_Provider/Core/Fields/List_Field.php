@@ -55,7 +55,7 @@ abstract class List_Field extends Markup_Field_Base {
 		return '';
 	}
 
-	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		if ( $markup_field_data->get_field_meta()->is_multiple() ) {
 			return Html::stack(
 				fn() => $this->print_item_loop( $field_id, $markup_field_data )

@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
 // when the Gutenberg block option in View is active, it creates Gutenberg with the selected fields only,
 // so without the field type support tab fields won't be added to the Block.
 class Tab_Field extends Markup_Field_Base {
-	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		return Html::wrap();
 	}
 

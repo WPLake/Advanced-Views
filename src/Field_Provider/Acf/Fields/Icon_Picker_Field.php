@@ -36,7 +36,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	/**
 	 * @return Tag_Stack
 	 */
-	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$dashicons_branch     = $this->dashicons_branch( $field_id, $markup_field_data );
@@ -167,7 +167,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		Html_Renderer::print( $this->image_field->compose_tags( $field_id, $markup_field_data ) );
+		Html_Renderer::print( $this->image_field->compose_html( $field_id, $markup_field_data ) );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();

@@ -24,8 +24,8 @@ class Comment_Author_Name_Link_Field extends Markup_Field_Base {
 		$this->link_field = $link_field;
 	}
 
-	public function compose_tags( string $field_id, Template_Field_Data $markup_field_data ): array {
-		return $this->link_field->compose_tags( $field_id, $markup_field_data );
+	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
+		return $this->link_field->compose_html( $field_id, $markup_field_data );
 	}
 
 	/**
