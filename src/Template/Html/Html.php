@@ -34,9 +34,9 @@ final class Html {
 	const WRAP      = 'wrap';
 
 	/**
-	 * @param array<Html_Node|null> $items
+	 * @param mixed[] $items
 	 *
-	 * @return list<Html_Node>
+	 * @return list<mixed>
 	 */
 	public static function exclude_null_nodes( array $items ): array {
 		$nodes = array();

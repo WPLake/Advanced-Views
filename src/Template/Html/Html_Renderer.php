@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) || exit;
 use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use Org\Wplake\Advanced_Views\Template\Html\Tag\Tag_Renderer;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 /**
  * @phpstan-import-type Html_Tag from Html
@@ -85,7 +84,7 @@ final class Html_Renderer {
 	 */
 	protected static function print_tag( array $tag, array $nested_items ): void {
 		$tag_name   = $tag[ Html::TAG_NAME ];
-		$attributes = arr( $tag, Html::TAG_ATTRS );
+		$attributes = $tag[ Html::TAG_ATTRS ] ?? array();
 
 		$content_printer = count( $nested_items ) > 0 ?
 			fn() => self::print_wrap( $nested_items ) :
