@@ -10,9 +10,9 @@ use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag from Tags
- * @phpstan-import-type Tag_Tree from Tags
- * @phpstan-import-type Tag_Group from Tags
+ * @phpstan-import-type Tag from Html
+ * @phpstan-import-type Tag_Tree from Html
+ * @phpstan-import-type Tag_Group from Html
  */
 final class Tags_Renderer {
 	/**

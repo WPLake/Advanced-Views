@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
-use Org\Wplake\Advanced_Views\Template\Html\Tags;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -12,9 +12,9 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag from Tags
- * @phpstan-import-type Tag_Group from Tags
- * @phpstan-import-type Tag_Tree from Tags
+ * @phpstan-import-type Tag from Html
+ * @phpstan-import-type Tag_Group from Html
+ * @phpstan-import-type Tag_Tree from Html
  */
 final class Toolbar_Printer {
 	/**

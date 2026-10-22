@@ -6,15 +6,15 @@ namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
-use Org\Wplake\Advanced_Views\Template\Html\Tags;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag from Tags
- * @phpstan-import-type Tag_Group from Tags
- * @phpstan-import-type Tag_Tree from Tags
+ * @phpstan-import-type Tag from Html
+ * @phpstan-import-type Tag_Group from Html
+ * @phpstan-import-type Tag_Tree from Html
  */
 class Postbox_Printer {
 	public function print_postbox_shortcode(

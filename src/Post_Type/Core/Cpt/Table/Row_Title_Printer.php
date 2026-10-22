@@ -6,11 +6,11 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Tags;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
 /**
- * @phpstan-import-type Tag_Tree from Tags
+ * @phpstan-import-type Tag_Tree from Html
  */
 final class Row_Title_Printer {
 	/**

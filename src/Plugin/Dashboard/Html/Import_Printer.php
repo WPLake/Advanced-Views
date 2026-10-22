@@ -5,15 +5,15 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
-use Org\Wplake\Advanced_Views\Template\Html\Tags;
+use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Html\Tags_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Tag from Tags
- * @phpstan-import-type Tag_Group from Tags
- * @phpstan-import-type Tag_Tree from Tags
+ * @phpstan-import-type Tag from Html
+ * @phpstan-import-type Tag_Group from Html
+ * @phpstan-import-type Tag_Tree from Html
  */
 final class Import_Printer {
 	public static function print_dashboard_import(

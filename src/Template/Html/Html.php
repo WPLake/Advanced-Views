@@ -32,7 +32,7 @@ defined( 'ABSPATH' ) || exit;
  * @phpstan-type Tag_Tree_Item Tag|Tag_Text|Tag_HTML|Tag_Group
  * @phpstan-type Tag_Tree list<Tag_Tree_Item>
  */
-final class Tags {
+final class Html {
 	/**
 	 * @param array<string,mixed> $attrs
 	 *
@@ -54,7 +54,7 @@ final class Tags {
 	 *
 	 * @return list<mixed>
 	 */
-	public static function tree( ...$items ): array {
+	public static function chain( ...$items ): array {
 		return $items;
 	}
 
