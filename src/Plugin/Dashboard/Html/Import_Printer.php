@@ -318,8 +318,7 @@ final class Import_Printer {
 	 * @return Html_Nest
 	 */
 	protected static function ordered_list_tags( array $items ): array {
-		$list_attrs = array( 'class' => 'av-introduction__description av-introduction__ol' );
-		$item_tags  = array_map(
+		$item_tags = array_map(
 			fn( string $item ) => nest(
 				tag( 'li' ),
 				$item
@@ -328,10 +327,7 @@ final class Import_Printer {
 		);
 
 		return nest(
-			tag(
-				'ol',
-				$list_attrs
-			),
+			tag( 'ol', array( 'class' => 'av-introduction__description av-introduction__ol' ) ),
 			stack( ...$item_tags )
 		);
 	}

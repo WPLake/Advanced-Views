@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Tag;
+namespace Org\Wplake\Advanced_Views\Template\Html\Attribute;
 
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -19,20 +19,30 @@ final class Attribute_Normalizer {
 	);
 
 	/**
-	 * Returns the escaped attribute value
+	 * Returns the escaped attribute values
 	 *
-	 * @param mixed $value
+	 * @param array<string,mixed> $attributes
+	 *
+	 * @return array<string,string>
 	 */
-	public static function safe_normalize( string $name, $value ): string {
+	public static function safe_normalize( array $attributes ): array {
 		$normalizers = self::attribute_normalizers();
+		$normalized  = array();
 
-		if ( is_array( $value ) ) {
-			return key_exists( $name, $normalizers ) ?
-				$normalizers[ $name ]( $value ) :
-				'';
+		foreach ( $attributes as $name => $value ) {
+			if ( is_array( $value ) ) {
+				if ( key_exists( $name, $normalizers ) ) {
+					$normalizer          = $normalizers[ $name ];
+					$normalized[ $name ] = $normalizer( $value );
+				}
+
+				continue;
+			}
+
+			$normalized[ $name ] = self::escape_value( $name, $value );
 		}
 
-		return self::escape_value( $name, $value );
+		return $normalized;
 	}
 
 	/**

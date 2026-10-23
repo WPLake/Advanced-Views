@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Template\Html\Tag;
 
 use Closure;
+use Org\Wplake\Advanced_Views\Template\Html\Attribute\Attribute_Normalizer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -67,7 +68,27 @@ final class Tag_Renderer {
 	 */
 	protected static function print_opening_tag( string $tag, array $attributes ): void {
 		printf( '<%s', esc_html( $tag ) );
-		Attribute_Renderer::print_attributes( $attributes );
+		self::print_attributes( $attributes );
 		echo '>';
+	}
+
+	/**
+	 * 'class' and 'style' also accept arrays: a list of classes, a property => value map
+	 *
+	 * @param array<string,mixed> $attributes
+	 */
+	protected static function print_attributes( array $attributes ): void {
+		$escaped_attributes = Attribute_Normalizer::safe_normalize( $attributes );
+
+		foreach ( $escaped_attributes as $name => $escaped_value ) {
+			echo ' ';
+
+			printf(
+				'%s="%s"',
+				esc_html( $name ),
+				// phpcs:ignore WordPress.Security.EscapeOutput
+				$escaped_value
+			);
+		}
 	}
 }
