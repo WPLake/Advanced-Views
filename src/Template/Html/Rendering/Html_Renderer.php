@@ -15,6 +15,9 @@ use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
  */
 final class Html_Renderer {
 	/**
+	 * @deprecated Use the render_html() function directly (Template/Html/utils.php). The mark is a guard against
+	 * direct usage: this method is only a helper of the function.
+	 *
 	 * @param Html_Node[] $nodes
 	 */
 	public static function render( array $nodes ): string {
@@ -25,6 +28,9 @@ final class Html_Renderer {
 	}
 
 	/**
+	 * @deprecated Use the print_html() function directly (Template/Html/utils.php). The mark is a guard against
+	 * direct usage: this method is only a helper of the function.
+	 *
 	 * @param Html_Node[] $nodes
 	 */
 	public static function print( array $nodes ): void {

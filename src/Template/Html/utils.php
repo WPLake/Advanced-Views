@@ -14,8 +14,15 @@ function tag( string $name ): Html_Tag {
 }
 
 /**
- * @param Html_Tag|string|Htmlable|Closure[] $nodes
+ * @param array<Html_Tag|string|Htmlable|Closure> $nodes
  */
 function print_html( array $nodes ): void {
 	Html_Renderer::print( $nodes );
+}
+
+/**
+ * @param array<int,Html_Tag|string|Htmlable|Closure> $nodes
+ */
+function render_html( array $nodes ): string {
+	return Html_Renderer::render( $nodes );
 }
