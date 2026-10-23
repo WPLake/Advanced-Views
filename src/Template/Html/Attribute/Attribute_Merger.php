@@ -66,7 +66,10 @@ final class Attribute_Merger {
 
 		$text         = is_string( $value ) ? $value : '';
 		$names        = explode( ' ', $text );
-		$filled_names = array_filter( $names, static fn( string $name ): bool => '' !== $name );
+		$filled_names = array_filter(
+			$names,
+			static fn( string $name ): bool => strlen( $name ) > 0
+		);
 
 		return array_values( $filled_names );
 	}
