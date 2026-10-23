@@ -8,38 +8,30 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 /**
- * @phpstan-import-type Html_Tag from Html
- * @phpstan-import-type Html_Node from Html
- * @phpstan-import-type Html_Stack from Html
+ * @phpstan-import-type Html_Node from Html_Tag
  */
 final class Wrapper_Printer {
-	/**
-	 * @return Html_Tag
-	 */
 	public static function row_tag(
 		string $field_name_class,
 		Layout_Settings $layout_settings,
 		string $type,
 		string $row_class,
 		string $tag
-	): array {
+	): Html_Tag {
 		$classes = Wrapper_Class_Resolver::resolve_row_classes( $layout_settings, $field_name_class, $type, $row_class );
 
-		return tag( $tag, array( 'class' => $classes ) );
+		return tag( $tag )
+			->attributes( array( 'class' => $classes ) );
 	}
 
 	/**
 	 * @param Template_Pattern[] $field_assets
-	 *
-	 * @return Html_Tag
 	 */
 	public static function field_tag(
 		array $field_assets,
@@ -49,7 +41,7 @@ final class Wrapper_Printer {
 		Field_Settings $field_settings,
 		string $field_name_class,
 		string $tag
-	): array {
+	): Html_Tag {
 		$attrs      = self::merge_field_wrapper_attrs( $field_assets, $field_settings, $field_id );
 		$attr_class = $attrs['class'] ?? '';
 		unset( $attrs['class'] );
@@ -62,24 +54,27 @@ final class Wrapper_Printer {
 			$attr_class
 		);
 
-		return tag( $tag, array_merge( array( 'class' => $classes ), $attrs ) );
+		$class_attrs = array( 'class' => $classes );
+		$field_attrs = array_merge( $class_attrs, $attrs );
+
+		return tag( $tag )
+			->attributes( $field_attrs );
 	}
 
 	/**
 	 * Returns the group of the tag with the inner content inside it, and the formatting (tabs, new lines) around it,
 	 * which is kept in callbacks.
 	 *
-	 * @param Html_Tag $tag
-	 * @param Html_Node $inner
+	 * @param Html_Node[] $inner
 	 *
-	 * @return Html_Stack
+	 * @return Html_Node[]
 	 */
 	public static function wrap(
-		array $tag,
+		Html_Tag $tag,
 		int &$tabs_number,
 		bool $is_new_line_before,
 		bool $is_new_line_after_open,
-		$inner
+		array $inner
 	): array {
 		$print_opening_tabs = static function () use ( &$tabs_number, $is_new_line_before ) {
 			if ( $is_new_line_before ) {
@@ -101,19 +96,15 @@ final class Wrapper_Printer {
 			Format_Token::tabulation( --$tabs_number );
 		};
 
-		$nested = nest(
-			$tag,
-			stack(
-				$print_inner_start,
-				$inner,
-				$print_closing_tabs
-			)
-		);
+		$nested    = $tag
+			->content( $print_inner_start )
+			->content( ...$inner )
+			->content( $print_closing_tabs );
 
-		return stack(
+		return array(
 			$print_opening_tabs,
 			$nested,
-			static fn() => Format_Token::next_line()
+			static fn() => Format_Token::next_line(),
 		);
 	}
 

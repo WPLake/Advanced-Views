@@ -9,7 +9,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -17,10 +16,10 @@ class Plain_Field extends Markup_Field_Base {
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		return stack(
+		return array(
 			$token_factory
 				->variable( $field_id )
-			->add_item_path( self::VALUE )
+			->add_item_path( self::VALUE ),
 		);
 	}
 

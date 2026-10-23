@@ -14,7 +14,6 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox_Pattern
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
-
 defined( 'ABSPATH' ) || exit;
 
 class Image_Field extends Markup_Field_Base {
@@ -53,9 +52,12 @@ class Image_Field extends Markup_Field_Base {
 															->add_item_path( $item_key );
 		}
 
-		return tag(
-			'img',
-			array_merge( $attributes, $this->inner_attributes( $field_id, $markup_field_data ) )
+		$inner_attributes = $this->inner_attributes( $field_id, $markup_field_data );
+		$image_attrs      = array_merge( $attributes, $inner_attributes );
+
+		return array(
+			tag( 'img' )
+				->attributes( $image_attrs ),
 		);
 	}
 
@@ -184,7 +186,6 @@ class Image_Field extends Markup_Field_Base {
 			)
 		);
 	}
-
 
 	public function is_with_field_wrapper(
 		Layout_Settings $layout_settings,

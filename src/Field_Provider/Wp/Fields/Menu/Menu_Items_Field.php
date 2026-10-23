@@ -15,16 +15,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Composed_Htmlable;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Menu_Items_Field extends Markup_Field_Base {
 	const IS_ACTIVE       = 'isActive';
@@ -40,7 +38,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 	}
 
 	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
-		Html_Renderer::print( $this->link_field->compose_html( $item_id, $markup_field_data ) );
+		print_html( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
 	}
 
 	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
@@ -89,7 +87,9 @@ class Menu_Items_Field extends Markup_Field_Base {
 							->new_line();
 		};
 
-		return stack( $print_loop );
+		return array(
+			$print_loop,
+		);
 	}
 
 	protected function print_loop_body( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
@@ -121,29 +121,25 @@ class Menu_Items_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		$item = nest(
-			tag(
-				'li',
-				array(
-					'class' => $this->compose_class( 'menu-item', 'menu-item--active', $is_active_comparison, $markup_field_data ),
-				)
-			),
-			stack(
+		$item_class = $this->compose_class( 'menu-item', 'menu-item--active', $is_active_comparison, $markup_field_data );
+
+		$item     = tag( 'li' )
+			->attributes( array( 'class' => $item_class ) )
+			->content(
 				$print_indented_break,
 				fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data ),
 				$print_aligned_break,
 				$children_if,
 				$print_outdented_break
-			)
-		);
+			);
 
-		$tags = stack(
+		$tags = array(
 			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
 			$item,
-			fn() => $markup_field_data->print_new_line_and_decrement_tabs()
+			fn() => $markup_field_data->print_new_line_and_decrement_tabs(),
 		);
 
-		Html_Renderer::print( $tags );
+		print_html( ...$tags );
 	}
 
 	protected function children_branch( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): IF_Branch {
@@ -167,12 +163,11 @@ class Menu_Items_Field extends Markup_Field_Base {
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		$item_class    = $this->get_item_class(
+		$item_class = $this->get_item_class(
 			'sub-menu',
 			$markup_field_data->get_view_data(),
 			$markup_field_data->get_field_data()
 		);
-		$ul_attributes = array( 'class' => $item_class );
 
 		$print_children = function () use ( $token_factory, $markup_field_data, $field_id, $item_id ) {
 			$token_factory->formatter()
@@ -197,15 +192,13 @@ class Menu_Items_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		$tags = nest(
-			tag(
-				'ul',
-				$ul_attributes
-			),
-			$print_children
-		);
+		$tags     = tag( 'ul' )
+			->attributes( array( 'class' => $item_class ) )
+			->content(
+				$print_children
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 
 		$token_factory->formatter()
 						->new_line();
@@ -218,27 +211,23 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$is_active_var = $token_factory->variable( $item_id )
 										->add_item_path( self::IS_ACTIVE );
 
-		$item = nest(
-			tag(
-				'li',
-				array(
-					'class' => $this->compose_class( 'sub-menu-item', 'sub-menu-item--active', $is_active_var, $markup_field_data ),
-				)
-			),
-			stack(
+		$item_class = $this->compose_class( 'sub-menu-item', 'sub-menu-item--active', $is_active_var, $markup_field_data );
+
+		$item     = tag( 'li' )
+			->attributes( array( 'class' => $item_class ) )
+			->content(
 				fn() => $markup_field_data->print_new_line_and_increment_tabs(),
 				fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data ),
 				fn() => $markup_field_data->print_new_line_and_decrement_tabs()
-			)
-		);
+			);
 
-		$tags = stack(
+		$tags = array(
 			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
 			$item,
-			fn() => $markup_field_data->print_new_line_and_decrement_tabs()
+			fn() => $markup_field_data->print_new_line_and_decrement_tabs(),
 		);
 
-		Html_Renderer::print( $tags );
+		print_html( ...$tags );
 	}
 
 	protected function compose_class(

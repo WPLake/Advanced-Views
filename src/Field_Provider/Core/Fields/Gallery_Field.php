@@ -9,12 +9,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Macy_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Masonry_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Splide_Pattern;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -28,7 +27,7 @@ class Gallery_Field extends Markup_Field_Base {
 	protected function print_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$markup_field_data->set_is_with_field_wrapper( true );
 
-		Html_Renderer::print( $this->image_field->compose_html( $item_id, $markup_field_data ) );
+		print_html( ...$this->image_field->compose_html( $item_id, $markup_field_data ) );
 	}
 
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
@@ -51,7 +50,12 @@ class Gallery_Field extends Markup_Field_Base {
 		$print_new_line = fn() => $token_factory->formatter()->new_line();
 		$print_tabs     = fn() => $markup_field_data->print_tabs();
 
-		return stack( $print_new_line, $print_tabs, $loop, $print_new_line );
+		return array(
+			$print_new_line,
+			$print_tabs,
+			$loop,
+			$print_new_line,
+		);
 	}
 
 	/**

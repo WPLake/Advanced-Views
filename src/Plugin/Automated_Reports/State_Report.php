@@ -10,11 +10,9 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class State_Report extends Report_Base implements Actor {
 	const STATE_ENDPOINT_URL = 'https://wplake.org/wp-json/wplake/v1/plugin_state';
@@ -96,7 +94,7 @@ class State_Report extends Report_Base implements Actor {
 	public function bind_deactivation_survey_popup(): void {
 		$plugin_slug = $this->plugin_meta->get_slug();
 
-		$data = array(
+		$data         = array(
 			'plugin_slug'                 => $plugin_slug,
 			'message'                     => __(
 				"We'd love to know why you're deactivating Advanced Views. Your feedback helps us improve (Optional)",
@@ -118,17 +116,16 @@ class State_Report extends Report_Base implements Actor {
 			'delete_data_option'          => __( 'Delete all the plugin data (cannot be undone)', 'acf-views' ),
 			'is_with_survey'              => false === $this->settings->is_automatic_reports_disabled(),
 		);
-		$style  = nest(
-			tag( 'style' ),
-			fn() => $this->print_survey_css()
-		);
-		$script = nest(
-			tag( 'script' ),
-			fn() => $this->print_survey_script( $data )
-		);
-		$tags   = stack( $style, $script );
+		$style  = tag( 'style' )
+			->content(
+				fn() => $this->print_survey_css()
+			);
+		$script = tag( 'script' )
+			->content(
+				fn() => $this->print_survey_script( $data )
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $style, $script );
 	}
 
 	protected function print_survey_css(): void {

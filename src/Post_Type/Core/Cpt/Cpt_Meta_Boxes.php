@@ -10,17 +10,14 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Html_Node from Html
- * @phpstan-import-type Html_Nest from Html
+ * @phpstan-import-type Html_Node from Html_Tag
  */
 abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	private Postbox_Printer $postbox;
@@ -74,9 +71,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 		$post_types_line = self::create_post_types_line( $post_types );
 		$pages_line      = self::create_pages_line( $post_links, array() !== $post_types );
 
-		$tags = stack( $post_types_line, $pages_line );
-
-		Html_Renderer::print( $tags );
+		print_html( ...$post_types_line, ...$pages_line );
 	}
 
 	abstract protected function get_cpt_name(): string;
@@ -99,7 +94,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return list<string|Html_Nest> Links separated by ', ' items
+	 * @return list<string|Html_Tag> Links separated by ', ' items
 	 */
 	protected static function get_mount_post_links( Cpt_Settings $cpt_settings ): array {
 		$posts = array();
@@ -126,9 +121,9 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	/**
 	 * @param string[] $post_types
 	 *
-	 * @return Html_Node|null
+	 * @return Html_Node[]
 	 */
-	protected static function create_post_types_line( array $post_types ) {
+	protected static function create_post_types_line( array $post_types ): array {
 		if ( array() !== $post_types ) {
 			$label = __( 'Post Types:', 'acf-views' );
 			$types = join( ', ', $post_types );
@@ -137,53 +132,52 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 				$types,
 			);
 
-			return join( ' ', $parts );
+			return array( join( ' ', $parts ) );
 		}
 
-		return null;
+		return array();
 	}
 
 	/**
-	 * @param list<string|Html_Nest> $post_links
+	 * @param list<string|Html_Tag> $post_links
 	 *
-	 * @return Html_Node|null
+	 * @return Html_Node[]
 	 */
-	protected static function create_pages_line( array $post_links, bool $has_post_types ) {
+	protected static function create_pages_line( array $post_links, bool $has_post_types ): array {
 		if ( array() !== $post_links ) {
-			$label = __( 'Pages:', 'acf-views' );
+			$label     = __( 'Pages:', 'acf-views' );
+			$separator = $has_post_types ?
+				array( tag( 'br' ) ) :
+				array();
 
-			return stack(
-				$has_post_types ?
-					tag( 'br' ) :
-					null,
+			return array(
+				...$separator,
 				sprintf( '%s ', $label ),
-				...$post_links
+				...$post_links,
 			);
 		}
 
-		return null;
+		return array();
 	}
 
 	/**
 	 * @param int|\WP_Post $post
-	 *
-	 * @return Html_Nest
 	 */
-	protected static function create_post_link( $post ) {
+	protected static function create_post_link( $post ): Html_Tag {
 		$post_url = get_the_permalink( $post );
 		$post_url = is_string( $post_url ) ?
 			$post_url :
 			'';
 
-		return nest(
-			tag(
-				'a',
-				array(
-					'target' => '_blank',
-					'href'   => $post_url,
-				)
-			),
-			get_the_title( $post )
-		);
+		$post_title = get_the_title( $post );
+
+		return tag( 'a' )
+			->attributes( array(
+				'target' => '_blank',
+				'href'   => $post_url,
+			) )
+			->content(
+				$post_title
+			);
 	}
 }

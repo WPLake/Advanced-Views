@@ -4,21 +4,14 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
-use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
-use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * @phpstan-import-type Html_Tag from Html
- * @phpstan-import-type Html_Stack from Html
- * @phpstan-import-type Html_Nest from Html
- */
 final class Toolbar_Printer {
 	/**
 	 * @param array<int,array<string,mixed>> $tabs
@@ -26,99 +19,73 @@ final class Toolbar_Printer {
 	public static function print_dashboard_header( string $name, string $version, array $tabs ): void {
 		$toolbar_tags = self::toolbar_tags( $name, $version, $tabs );
 
-		Html_Renderer::print( $toolbar_tags );
+		print_html( $toolbar_tags );
 	}
 
 	/**
 	 * @param array<int,array<string,mixed>> $tabs
-	 *
-	 * @return Html_Nest
 	 */
-	protected static function toolbar_tags( string $name, string $version, array $tabs ): array {
-		$title_attrs   = array( 'class' => 'av-toolbar__title' );
-		$icon_attrs    = array( 'class' => 'av-toolbar__icon dashicons dashicons-layout' );
-		$version_attrs = array( 'class' => 'av-toolbar__title-version' );
-		$toolbar_attrs = array( 'class' => 'av-toolbar' );
+	protected static function toolbar_tags( string $name, string $version, array $tabs ): Html_Tag {
 		$version_label = sprintf( 'v.%s', $version );
 
-		$title_tag   = tag(
-			'h2',
-			$title_attrs
-		);
-		$icon_tag    = tag(
-			'i',
-			$icon_attrs
-		);
-		$version_tag = tag(
-			'span',
-			$version_attrs
-		);
+		$icon_tag = tag( 'i' )
+			->attributes( array( 'class' => 'av-toolbar__icon dashicons dashicons-layout' ) );
 
-		$name_tag     = nest(
-			tag( 'span' ),
-			$name
-		);
-		$version_nest = nest( $version_tag, $version_label );
+		$name_tag     = tag( 'span' )
+			->content(
+				$name
+			);
+		$version_nest = tag( 'span' )
+			->attributes( array( 'class' => 'av-toolbar__title-version' ) )
+			->content(
+				$version_label
+			);
 
-		$title = nest(
-			$title_tag,
-			stack(
+		$title = tag( 'h2' )
+			->attributes( array( 'class' => 'av-toolbar__title' ) )
+			->content(
 				$icon_tag,
 				$name_tag,
 				$version_nest
-			)
-		);
+			);
 
 		$left_block  = self::toolbar_block_tags( 'left', 'isLeftBlock', $tabs );
 		$right_block = self::toolbar_block_tags( 'right', 'isRightBlock', $tabs );
 
-		return nest(
-			tag(
-				'div',
-				$toolbar_attrs
-			),
-			stack(
+		return tag( 'div' )
+			->attributes( array( 'class' => 'av-toolbar' ) )
+			->content(
 				$title,
 				$left_block,
 				$right_block
-			)
-		);
+			);
 	}
 
 	/**
 	 * @param array<int,array<string,mixed>> $tabs
-	 *
-	 * @return Html_Nest
 	 */
-	protected static function toolbar_block_tags( string $type, string $block_key, array $tabs ): array {
+	protected static function toolbar_block_tags( string $type, string $block_key, array $tabs ): Html_Tag {
 		$block_tabs = array_filter(
 			$tabs,
 			fn( array $tab ) => isset( $tab[ $block_key ] )
 		);
 
 		$block_class = sprintf( 'av-toolbar__block av-toolbar__block--type--%s', $type );
-		$block_attrs = array( 'class' => $block_class );
 		$tabs_list   = array_values( $block_tabs );
 		$tab_tags    = array_map(
 			fn( array $tab ) => self::toolbar_tab_tags( $tab ),
 			$tabs_list
 		);
 
-		return nest(
-			tag(
-				'div',
-				$block_attrs
-			),
-			stack( ...$tab_tags )
-		);
+		return tag( 'div' )
+			->attributes( array( 'class' => $block_class ) )
+			->content( ...$tab_tags );
 	}
 
 	/**
 	 * @param array<string,mixed> $tab
-	 *
-	 * @return Html_Nest
 	 */
-	protected static function toolbar_tab_tags( array $tab ): array {
+	protected static function toolbar_tab_tags( array $tab ): Html_Tag {
 		$classes = array_filter(
 			array(
 				'av-toolbar__tab',
@@ -146,31 +113,24 @@ final class Toolbar_Printer {
 		}
 
 		$icon_classes = string( $tab, 'iconClasses' );
-		$icon_attrs   = array( 'class' => $icon_classes );
-		$icon_tag     = tag(
-			'i',
-			$icon_attrs
-		);
+		$icon_tag     = tag( 'i' )
+			->attributes( array( 'class' => $icon_classes ) );
 		$icon         = key_exists( 'iconClasses', $tab ) ?
 			$icon_tag :
 			null;
 		$label        = string( $tab, 'label' );
-		$link         = tag(
-			'a',
-			$attrs
-		);
+		$link         = tag( 'a' )
+			->attributes( $attrs );
 
-		$label_tag = nest(
-			tag( 'span' ),
-			$label
-		);
+		$label_tag = tag( 'span' )
+			->content(
+				$label
+			);
 
-		return nest(
-			$link,
-			stack(
+		return $link
+			->content(
 				$label_tag,
 				$icon
-			)
-		);
+			);
 	}
 }

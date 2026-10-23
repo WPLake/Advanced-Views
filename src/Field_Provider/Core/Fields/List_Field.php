@@ -11,12 +11,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 abstract class List_Field extends Markup_Field_Base {
 	const LOOP_ITEM_NAME    = 'item';
@@ -59,13 +57,13 @@ abstract class List_Field extends Markup_Field_Base {
 
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		if ( $markup_field_data->get_field_meta()->is_multiple() ) {
-			return stack(
-				fn() => $this->print_item_loop( $field_id, $markup_field_data )
+			return array(
+				fn() => $this->print_item_loop( $field_id, $markup_field_data ),
 			);
 		}
 
-		return stack(
-			fn() => $this->print_inner_item( $field_id, $markup_field_data )
+		return array(
+			fn() => $this->print_inner_item( $field_id, $markup_field_data ),
 		);
 	}
 
@@ -150,12 +148,11 @@ abstract class List_Field extends Markup_Field_Base {
 						->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		$item_class      = $this->get_item_class(
+		$item_class = $this->get_item_class(
 			'delimiter',
 			$markup_field_data->get_view_data(),
 			$markup_field_data->get_field_data()
 		);
-		$span_attributes = array( 'class' => $item_class );
 
 		$print_options = function () use ( $token_factory, $markup_field_data, $field_id ) {
 			$token_factory->formatter()
@@ -169,15 +166,13 @@ abstract class List_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		$tags = nest(
-			tag(
-				'span',
-				$span_attributes
-			),
-			$print_options
-		);
+		$tags       = tag( 'span' )
+			->attributes( array( 'class' => $item_class ) )
+			->content(
+				$print_options
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 
 		$token_factory->formatter()
 						->new_line();

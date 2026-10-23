@@ -15,16 +15,13 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
- * @phpstan-import-type Html_Stack from Html
- * @phpstan-import-type Html_Nest from Html
+ * @phpstan-import-type Html_Node from Html_Tag
  */
 final class Upgrade_Notice extends Actor_Base implements Actor {
 	private Plugin_Meta $plugin_meta;
@@ -89,21 +86,22 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 			$this->get_dismiss_members() :
 			null;
 
-		$tags = nest(
-			tag(
-				'div',
-				array( 'class' => 'notice notice-info' )
-			),
-			tag( 'p' ),
-			stack(
+		$notice_lines = $this->get_notice_lines_members( $upgrade_notice );
+
+		$paragraph =
+			tag( 'p' )
+			->content(
 				__( 'Advanced Views plugin has been successfully upgraded!', 'acf-views' ),
 				tag( 'br' ),
-				$this->get_notice_lines_members( $upgrade_notice ),
-				$dismiss_members
-			)
-		);
+				...array_merge( $notice_lines, array( $dismiss_members ) )
+			);
+		$tags      = tag( 'div' )
+			->attributes( array( 'class' => 'notice notice-info' ) )
+			->content(
+				$paragraph
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 	}
 
 	protected function hide_notice(): bool {
@@ -129,7 +127,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Html_Stack
+	 * @return Html_Node[]
 	 */
 	protected function get_notice_lines_members( string $upgrade_notice ): array {
 		$members = array();
@@ -142,13 +140,10 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 			$members[] = $line;
 		}
 
-		return stack( ...$members );
+		return $members;
 	}
 
-	/**
-	 * @return Html_Nest
-	 */
-	protected function get_dismiss_members(): array {
+	protected function get_dismiss_members(): Html_Tag {
 		$dismiss_url = add_query_arg(
 			array(
 				$this->dismiss_key => 1,
@@ -157,15 +152,15 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 			Plugin::get_current_admin_url()
 		);
 
-		return nest(
-			tag(
-				'a',
+		return tag( 'a' )
+			->attributes(
 				array(
 					'style' => array( 'float' => 'right' ),
 					'href'  => $dismiss_url,
 				)
-			),
-			__( 'Thanks, hide', 'acf-views' )
-		);
+			)
+			->content(
+				__( 'Thanks, hide', 'acf-views' )
+			);
 	}
 }

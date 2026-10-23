@@ -12,16 +12,11 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
-/**
- * @phpstan-import-type Html_Nest from Html
- */
 abstract class External_Storage_Tab extends Cpt_Table_Tab {
 
 	const KEY_RESULT_ITEMS  = '';
@@ -207,11 +202,11 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			}
 		}
 
-		$paragraphs   = array();
-		$paragraphs[] = nest(
-			tag( 'p' ),
-			__( 'Success!', 'acf-views' )
-		);
+		$paragraphs = array();
+		$paragraphs[] = tag( 'p' )
+			->content(
+				__( 'Success!', 'acf-views' )
+			);
 
 		if ( $views_count > 0 ) {
 			$paragraphs[] = $this->imported_items_paragraph( $views_count );
@@ -226,29 +221,24 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		foreach ( $grouped_meta_group_links as $vendor_name => $group_links ) {
 			$group_links_count = count( $group_links );
 
-			$paragraphs[] = nest(
-				tag( 'p' ),
-				sprintf(
-					'%s %s %s %s',
-					$group_links_count,
-					ucfirst( $vendor_name ),
-					_n( 'group', 'groups', $group_links_count, 'acf-views' ),
-					// translators: x items successfully imported.
-							__( 'successfully imported:', 'acf-views' )
-				)
-			);
+			$vendor_label   = ucfirst( $vendor_name );
+			$groups_label   = _n( 'group', 'groups', $group_links_count, 'acf-views' );
+			// translators: x items successfully imported.
+			$imported_label = __( 'successfully imported:', 'acf-views' );
+			$groups_text    = sprintf( '%s %s %s %s', $group_links_count, $vendor_label, $groups_label, $imported_label );
+
+			$paragraphs[] = tag( 'p' )
+				->content(
+					$groups_text
+				);
 			$paragraphs[] = $this->links_paragraph( $group_links );
 		}
 
-		$tags = nest(
-			tag(
-				'div',
-				array( 'class' => 'notice notice-success' )
-			),
-			stack( ...$paragraphs )
-		);
+		$tags = tag( 'div' )
+			->attributes( array( 'class' => 'notice notice-success' ) )
+			->content( ...$paragraphs );
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 	}
 
 	protected function get_cpt_data_storage(): Cpt_Settings_Storage {
@@ -263,53 +253,43 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		$this->maybe_show_import_result_message();
 	}
 
-	/**
-	 * @return Html_Nest
-	 */
-	protected function imported_items_paragraph( int $items_count ): array {
-		return nest(
-			tag( 'p' ),
-			sprintf(
-				'%s %s %s',
-				$items_count,
-				_n( 'Item', 'Items', $items_count, 'acf-views' ),
-				// translators: x items successfully imported.
-						__( 'successfully imported:', 'acf-views' )
-			)
-		);
+	protected function imported_items_paragraph( int $items_count ): Html_Tag {
+		$items_label    = _n( 'Item', 'Items', $items_count, 'acf-views' );
+		// translators: x items successfully imported.
+		$imported_label = __( 'successfully imported:', 'acf-views' );
+		$items_text     = sprintf( '%s %s %s', $items_count, $items_label, $imported_label );
+
+		return tag( 'p' )
+			->content(
+				$items_text
+			);
 	}
 
 	/**
 	 * @param array<array{url:string,title:string}> $links
-	 *
-	 * @return Html_Nest
 	 */
-	protected function links_paragraph( array $links ): array {
+	protected function links_paragraph( array $links ): Html_Tag {
 		$members = array();
 
 		foreach ( $links as $link ) {
 			// the 'br' goes between the links.
-			$separator = array() !== $members ?
-				tag( 'br' ) :
-				null;
+			if ( array() !== $members ) {
+				$members[] = tag( 'br' );
+			}
 
-			$link_tag = nest(
-				tag(
-					'a',
-					array(
-						'href'   => $link['url'],
-						'target' => '_blank',
-					)
-				),
-				$link['title']
-			);
+			$link_tag = tag( 'a' )
+				->attributes( array(
+					'href'   => $link['url'],
+					'target' => '_blank',
+				) )
+				->content(
+					$link['title']
+				);
 
-			$members[] = stack( $separator, $link_tag );
+			$members[] = $link_tag;
 		}
 
-		return nest(
-			tag( 'p' ),
-			stack( ...$members )
-		);
+		return tag( 'p' )
+			->content( ...$members );
 	}
 }

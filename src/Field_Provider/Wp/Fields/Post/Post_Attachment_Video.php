@@ -13,9 +13,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 class Post_Attachment_Video extends Markup_Field_Base {
 	const MIME_TYPE = 'mime_type';
@@ -30,25 +28,24 @@ class Post_Attachment_Video extends Markup_Field_Base {
 		$type_var = $token_factory->variable( $field_id )
 									->add_item_path( self::MIME_TYPE );
 
-		return nest(
-			tag(
-				'video',
-				array(
-					'class'    => $this->get_field_class( 'element', $markup_field_data ),
+		$video_class = $this->get_field_class( 'element', $markup_field_data );
+
+
+		return array(
+			tag( 'video' )
+				->attributes( array(
+					'class'    => $video_class,
 					'controls' => '',
-				)
-			),
-			stack(
-				fn() => $markup_field_data->print_new_line_and_increment_tabs(),
-				tag(
-					'source',
-					array(
-						'src'  => $src_var,
-						'type' => $type_var,
-					)
+				) )
+				->content(
+					fn() => $markup_field_data->print_new_line_and_increment_tabs(),
+					tag( 'source' )
+						->attributes( array(
+							'src'  => $src_var,
+							'type' => $type_var,
+						) ),
+					fn() => $markup_field_data->print_new_line_and_decrement_tabs()
 				),
-				fn() => $markup_field_data->print_new_line_and_decrement_tabs()
-			)
 		);
 	}
 

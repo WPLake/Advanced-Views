@@ -4,17 +4,12 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Utils;
 
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
+
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
-use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
-
-/**
- * @phpstan-import-type Html_Nest from Html
- */
 abstract class Profiler {
 	const SOURCE_NETWORK = '_network';
 
@@ -51,29 +46,28 @@ abstract class Profiler {
 
 	public static function print_report(): void {
 		$classes_total_usage = self::get_classes_total_usage();
+		$total_usage         = self::get_total_usage();
+		$classes_amount      = count( $classes_total_usage );
+		$classes_prefix      = sprintf( "%d\n", $classes_amount );
 
-		$tags = nest(
-			tag(
-				'div',
-				array(
-					'style' => array(
-						'max-width' => '1000px',
-						'margin'    => '0 auto',
-						'padding'   => '50px',
-						'border'    => '2px solid gray',
-					),
-				)
-			),
-			stack(
-				self::pre_chain( self::get_total_usage() ),
+		$tags      = tag( 'div' )
+			->attributes( array(
+				'style' => array(
+					'max-width' => '1000px',
+					'margin'    => '0 auto',
+					'padding'   => '50px',
+					'border'    => '2px solid gray',
+				),
+			) )
+			->content(
+				self::pre_chain( $total_usage ),
 				tag( 'hr' ),
-				self::pre_chain( $classes_total_usage, count( $classes_total_usage ) . "\n" ),
+				self::pre_chain( $classes_total_usage, $classes_prefix ),
 				tag( 'hr' ),
 				self::pre_chain( self::$class_hooks_usage )
-			)
-		);
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 	}
 
 	/**
@@ -166,14 +160,13 @@ abstract class Profiler {
 
 	/**
 	 * @param mixed $data
-	 *
-	 * @return Html_Nest
 	 */
-	protected static function pre_chain( $data, string $prefix = '' ): array {
-		return nest(
-			tag( 'pre' ),
-			fn() => self::print_data( $data, $prefix )
-		);
+	protected static function pre_chain( $data, string $prefix = '' ): Html_Tag {
+
+		return tag( 'pre' )
+			->content(
+				fn() => self::print_data( $data, $prefix )
+			);
 	}
 
 	/**

@@ -13,11 +13,10 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
 use WP_Query;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 final class Debug_Dump_Creator {
 	private Tools_Settings $tools_settings;
@@ -81,12 +80,12 @@ final class Debug_Dump_Creator {
 			<?php
 		};
 
-		$tags = nest(
-			tag( 'script' ),
-			$print_download_script
-		);
+		$tags         = tag( 'script' )
+			->content(
+				$print_download_script
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 		exit;
 	}
 

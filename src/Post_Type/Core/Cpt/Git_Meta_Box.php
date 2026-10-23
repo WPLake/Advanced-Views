@@ -17,16 +17,10 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
-/**
- * @phpstan-import-type Html_Tag from Html
- * @phpstan-import-type Html_Nest from Html
- */
 abstract class Git_Meta_Box extends Actor_Base implements Actor {
 
 	const NONCE_PUSH = 'av-git-item-push';
@@ -77,28 +71,31 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	}
 
 	protected function print_git_lab_repositories_meta_box(): void {
-		$tags = nest(
-			tag(
-				'av-git-meta-box',
-				array(
-					'class' => 'av-git-meta-box',
-					'style' => array( 'transition' => 'all .3s ease' ),
-				)
-			),
-			stack(
-				$this->intro_tags(),
-				$this->nonce_tags(),
-				$this->repositories_tags(),
-				tag( 'br' ),
-				tag( 'br' ),
-				$this->with_fields_tags(),
-				tag( 'br' ),
-				$this->save_reminder_tags(),
-				$this->button_tags()
-			)
-		);
+		$intro        = $this->intro_tags();
+		$nonce        = $this->nonce_tags();
+		$repositories = $this->repositories_tags();
+		$with_fields  = $this->with_fields_tags();
+		$reminder     = $this->save_reminder_tags();
+		$button       = $this->button_tags();
 
-		Html_Renderer::print( $tags );
+		$tags                  = tag( 'av-git-meta-box' )
+			->attributes( array(
+				'class' => 'av-git-meta-box',
+				'style' => array( 'transition' => 'all .3s ease' ),
+			) )
+			->content(
+				$intro,
+				$nonce,
+				$repositories,
+				tag( 'br' ),
+				tag( 'br' ),
+				$with_fields,
+				tag( 'br' ),
+				$reminder,
+				$button
+			);
+
+		print_html( $tags );
 	}
 
 	/**
@@ -251,135 +248,112 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 		exit;
 	}
 
-	/**
-	 * @return Html_Nest
-	 */
-	protected function intro_tags(): array {
-		$docs_link = nest(
-			tag(
-				'a',
-				array(
-					'target' => '_blank',
-					'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
-				)
-			),
-			__( 'Save the item', 'acf-views' )
-		);
+	protected function intro_tags(): Html_Tag {
+		$save_label    = __( 'Save the item', 'acf-views' );
+		$library_label = __( 'to your library', 'acf-views' );
+		$library_text  = sprintf( ' %s.', $library_label );
 
-		return nest(
-			tag( 'p' ),
-			stack(
+		$docs_link = tag( 'a' )
+			->attributes( array(
+				'target' => '_blank',
+				'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
+			) )
+			->content(
+				$save_label
+			);
+
+		return tag( 'p' )
+			->content(
 				$docs_link,
-				' ' . __( 'to your library', 'acf-views' ) . '.'
-			)
-		);
+				$library_text
+			);
 	}
 
-	/**
-	 * @return Html_Tag
-	 */
-	protected function nonce_tags(): array {
-		return tag(
-			'input',
-			array(
+	protected function nonce_tags(): Html_Tag {
+		$nonce = wp_create_nonce( self::NONCE_PUSH );
+
+		return tag( 'input' )
+			->attributes( array(
 				'type'  => 'hidden',
 				'name'  => '_av-nonce',
-				'value' => wp_create_nonce( self::NONCE_PUSH ),
-			)
-		);
+				'value' => $nonce,
+			) );
 	}
 
-	/**
-	 * @return Html_Nest
-	 */
-	protected function repositories_tags(): array {
-		$option_chains = array_map(
-			fn( array $git_repository ): array => nest(
-				tag( 'option', array( 'value' => $git_repository['id'] ) ),
-				$git_repository['name']
-			),
-			$this->settings->get_git_repositories()
-		);
+	protected function repositories_tags(): Html_Tag {
+		$create_option = static function ( array $git_repository ): Html_Tag {
 
-		$placeholder_option = nest(
-			tag(
-				'option',
-				array( 'value' => '' )
-			),
-			__( 'Select repository', 'acf-views' )
-		);
+			return tag( 'option' )
+				->attributes( array( 'value' => $git_repository['id'] ) )
+				->content(
+					$git_repository['name']
+				);
+		};
 
-		return nest(
-			tag(
-				'select',
-				array(
-					'name'     => '_git-repo',
-					'required' => '',
-				)
-			),
-			stack(
+		$git_repositories = $this->settings->get_git_repositories();
+		$option_chains    = array_map( $create_option, $git_repositories );
+
+		$placeholder_label = __( 'Select repository', 'acf-views' );
+
+		$placeholder_option       = tag( 'option' )
+			->attributes( array( 'value' => '' ) )
+			->content(
+				$placeholder_label
+			);
+
+		return tag( 'select' )
+			->attributes( array(
+				'name'     => '_git-repo',
+				'required' => '',
+			) )
+			->content(
 				$placeholder_option,
 				...$option_chains
-			)
-		);
+			);
 	}
 
-	/**
-	 * @return Html_Nest
-	 */
-	protected function with_fields_tags(): array {
-		$label = nest(
-			tag(
-				'label',
-				array( 'for' => 'av_git-repo-with-fields' )
-			),
-			__( 'Include related Meta groups', 'acf-views' )
-		);
+	protected function with_fields_tags(): Html_Tag {
+		$label_text = __( 'Include related Meta groups', 'acf-views' );
 
-		return nest(
-			tag(
-				'div',
-				array(
-					'style' => array(
-						'display'     => 'flex',
-						'align-items' => 'center',
-					),
-				)
-			),
-			stack(
-				tag(
-					'input',
-					array(
+		$label       = tag( 'label' )
+			->attributes( array( 'for' => 'av_git-repo-with-fields' ) )
+			->content(
+				$label_text
+			);
+
+		return tag( 'div' )
+			->attributes( array(
+				'style' => array(
+					'display'     => 'flex',
+					'align-items' => 'center',
+				),
+			) )
+			->content(
+				tag( 'input' )
+					->attributes( array(
 						'type' => 'checkbox',
 						'name' => '_git-repo-with-fields',
 						'id'   => 'av_git-repo-with-fields',
-					)
-				),
+					) ),
 				$label
-			)
-		);
+			);
 	}
 
-	/**
-	 * @return Html_Nest
-	 */
-	protected function save_reminder_tags(): array {
-		return nest(
-			tag( 'p' ),
-			__( 'Note: all changes must be already saved.', 'acf-views' )
-		);
+	protected function save_reminder_tags(): Html_Tag {
+
+		return tag( 'p' )
+			->content(
+				__( 'Note: all changes must be already saved.', 'acf-views' )
+			);
 	}
 
-	/**
-	 * @return Html_Nest
-	 */
-	protected function button_tags(): array {
-		return nest(
-			tag(
-				'button',
-				array( 'class' => 'button button-primary button-large' )
-			),
-			__( 'Push to the repository', 'acf-views' )
-		);
+	protected function button_tags(): Html_Tag {
+		$button_label = __( 'Push to the repository', 'acf-views' );
+
+		return tag( 'button' )
+			->attributes( array( 'class' => 'button button-primary button-large' ) )
+			->content(
+				$button_label
+			);
 	}
 }

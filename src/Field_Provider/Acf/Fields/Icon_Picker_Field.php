@@ -12,17 +12,16 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Comparison_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Html_Stack from Html
+ * @phpstan-import-type Html_Node from Html_Tag
  */
 final class Icon_Picker_Field extends Markup_Field_Base {
 	const TYPE = 'type';
@@ -36,7 +35,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	}
 
 	/**
-	 * @return Html_Stack
+	 * @return Html_Node[]
 	 */
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
@@ -45,12 +44,12 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$media_library_branch = $this->media_library_branch( $field_id, $markup_field_data );
 		$custom_image_branch  = $this->custom_image_branch( $field_id, $markup_field_data );
 
-		return stack(
+		return array(
 			$token_factory
 				->if()
 				->set_if_branch( $dashicons_branch )
 				->set_elseif_branch( $media_library_branch )
-			->set_else_branch( $custom_image_branch )
+			->set_else_branch( $custom_image_branch ),
 		);
 	}
 
@@ -145,22 +144,22 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$icon_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-		$tags = stack(
+		$icon_class = $this->get_field_class( 'icon', $markup_field_data );
+
+		$tags = array(
 			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
-			tag(
-				'i',
-				array(
+			tag( 'i' )
+				->attributes( array(
 					'class' => array(
-						$this->get_field_class( 'icon', $markup_field_data ),
+						$icon_class,
 						'dashicons',
 						$icon_var,
 					),
-				)
-			),
-			fn() => $markup_field_data->print_new_line_and_decrement_tabs()
+				) ),
+			fn() => $markup_field_data->print_new_line_and_decrement_tabs(),
 		);
 
-		Html_Renderer::print( $tags );
+		print_html( ...$tags );
 	}
 
 	protected function print_icon_image_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
@@ -169,7 +168,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		Html_Renderer::print( $this->image_field->compose_html( $field_id, $markup_field_data ) );
+		print_html( ...$this->image_field->compose_html( $field_id, $markup_field_data ) );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
@@ -180,21 +179,21 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$src_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
-		$tags = stack(
+		$image_class = $this->get_field_class( 'icon', $markup_field_data );
+
+		$tags = array(
 			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
-			tag(
-				'img',
-				array(
-					'class'   => $this->get_field_class( 'icon', $markup_field_data ),
+			tag( 'img' )
+				->attributes( array(
+					'class'   => $image_class,
 					'src'     => $src_var,
 					'loading' => 'lazy',
 					'alt'     => 'icon',
-				)
-			),
-			fn() => $markup_field_data->print_new_line_and_decrement_tabs()
+				) ),
+			fn() => $markup_field_data->print_new_line_and_decrement_tabs(),
 		);
 
-		Html_Renderer::print( $tags );
+		print_html( ...$tags );
 	}
 
 	protected static function type_comparison( string $type, string $field_id, Template_Field_Data $markup_field_data ): Comparison_Token {

@@ -13,10 +13,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
-
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -52,7 +50,7 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 			$markup_field_data->increment_and_print_tabs();
 
 			$markup_field_data->set_is_with_field_wrapper( true );
-			Html_Renderer::print( $this->image_field->compose_html( $field_id, $markup_field_data ) );
+			print_html( ...$this->image_field->compose_html( $field_id, $markup_field_data ) );
 
 			$token_factory->formatter()
 							->new_line();
@@ -60,12 +58,12 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		return nest(
-			tag(
-				'a',
-				$link_attributes
-			),
-			$print_image
+		return array(
+			tag( 'a' )
+				->attributes( $link_attributes )
+				->content(
+					$print_image
+				),
 		);
 	}
 

@@ -12,9 +12,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Selection_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
+use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -43,15 +43,15 @@ class Post_Selections_Cpt extends Cpt {
 		$singular_name = $labels->singular_name();
 		$plural_name   = $labels->plural_name();
 
-		$tags = stack(
+		$tags = array(
 			__( 'Query posts, products or custom post types and display each result using a Layout with a', 'acf-views' ) . ' ',
 			self::link_tags( 'https://docs.advanced-views.com/getting-started/first-post-selection', $singular_name ),
 			'. ',
 			tag( 'br' ),
-			__( 'Add filters, sorting and pagination as needed.', 'acf-views' )
+			__( 'Add filters, sorting and pagination as needed.', 'acf-views' ),
 		);
 
-		$description  = Html_Renderer::render( $tags );
+		$description  = render_html( ...$tags );
 		$description .= $this->get_storage_label();
 
 		$cpt_args = array(

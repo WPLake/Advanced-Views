@@ -9,12 +9,10 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 final class Label_Printer {
 	public static function print(
@@ -35,19 +33,17 @@ final class Label_Printer {
 			self::print_variable_closing( $token_factory, $tabs_number );
 		};
 
-		$tags = nest(
-			tag(
-				'p',
-				array( 'class' => self::resolve_classes( $layout_settings, $field_settings ) )
-			),
-			stack(
+		$label_class = self::resolve_classes( $layout_settings, $field_settings );
+
+		$tags    = tag( 'p' )
+			->attributes( array( 'class' => $label_class ) )
+			->content(
 				$print_opening,
 				fn() => self::print_variable( $token_factory, $field_id ),
 				$print_closing
-			)
-		);
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 
 		Format_Token::next_line();
 	}

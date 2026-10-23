@@ -12,15 +12,13 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Template;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Composed_Htmlable;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Layout_Markup {
 	/**
@@ -137,25 +135,31 @@ class Layout_Markup {
 			}
 		};
 		$is_shadow_root = Layout_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $layout_settings->web_component;
-		$template_tag   = nest(
-			tag( 'template', array( 'shadowrootmode' => 'open' ) ),
-			stack( $new_line, $rows )
-		);
+		$template_tag   = tag( 'template' )
+			->attributes( array( 'shadowrootmode' => 'open' ) )
+			->content(
+				$new_line,
+				$rows
+			);
 		$root_content   = $is_shadow_root ?
-			stack( $new_line, $template_tag, $new_line ) :
-			stack( $new_line, $rows );
+			array(
+				$new_line,
+				$template_tag,
+				$new_line,
+			) :
+			array(
+				$new_line,
+				$rows,
+			);
 
-		$root = nest(
-			tag(
-				$layout_settings->get_tag_name(),
-				array( 'class' => $this->root_class( $token_factory, $layout_settings ) )
-			),
-			$root_content
-		);
+		$root_class = $this->root_class( $token_factory, $layout_settings );
+		$tag_name   = $layout_settings->get_tag_name();
 
-		$tags = stack( $root, $new_line );
+		$root = tag( $tag_name )
+			->attributes( array( 'class' => $root_class ) )
+			->content( ...$root_content );
 
-		Html_Renderer::print( $tags );
+		print_html( $root, $new_line );
 	}
 
 	protected function print_safe_markup( Layout_Settings $layout_settings, bool $is_cache_disabled ): void {

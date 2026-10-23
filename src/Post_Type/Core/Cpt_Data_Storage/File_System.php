@@ -12,11 +12,9 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Filesystem_Base;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -110,40 +108,39 @@ class File_System extends Loggable_Actor implements Actor {
 	}
 
 	protected function show_folder_is_not_writable_warning(): void {
-		self::add_action(
-			'admin_notices',
-			function (): void {
-				// it's going to be checked in both CPTs, but we need only one notice.
-				if ( self::$is_fs_not_writable_notice_shown ) {
-					return;
-				}
+		$print_notice = function (): void {
+			// it's going to be checked in both CPTs, but we need only one notice.
+			if ( self::$is_fs_not_writable_notice_shown ) {
+				return;
+			}
 
-				self::$is_fs_not_writable_notice_shown = true;
+			self::$is_fs_not_writable_notice_shown = true;
 
-				$tags = nest(
-					tag(
-						'div',
-						array( 'class' => 'notice notice-error' )
-					),
-					tag( 'p' ),
-					stack(
-						__( 'The FS storage directory is not writable.', 'acf-views' ) . ' (path = ' . $this->base_folder . ')',
-						tag( 'br' ),
-						__(
-							'Check and fix file permissions to work with Views and Cards.',
-							'acf-views'
-						),
-						tag( 'br' ),
-						__(
-							'Note: Do not disable the FS storage feature before fixing it, otherwise your data will be lost.',
-							'acf-views'
+			$not_writable_label = __( 'The FS storage directory is not writable.', 'acf-views' );
+			$not_writable_text  = sprintf( '%s (path = %s)', $not_writable_label, $this->base_folder );
+			$permissions_label  = __( 'Check and fix file permissions to work with Views and Cards.', 'acf-views' );
+			$warning_label      = __(
+				'Note: Do not disable the FS storage feature before fixing it, otherwise your data will be lost.',
+				'acf-views'
+			);
+
+			$tags      = tag( 'div' )
+				->attributes( array( 'class' => 'notice notice-error' ) )
+				->content(
+					tag( 'p' )
+						->content(
+							$not_writable_text,
+							tag( 'br' ),
+							$permissions_label,
+							tag( 'br' ),
+							$warning_label
 						)
-					)
 				);
 
-				Html_Renderer::print( $tags );
-			}
-		);
+			print_html( $tags );
+		};
+
+		self::add_action( 'admin_notices', $print_notice );
 	}
 
 	protected function is_base_folder_writable(): bool {

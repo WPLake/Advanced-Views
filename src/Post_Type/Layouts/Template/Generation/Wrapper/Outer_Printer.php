@@ -9,23 +9,21 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 /**
- * @phpstan-import-type Html_Stack from Html
- * @phpstan-import-type Html_Tag from Html
+ * @phpstan-import-type Html_Node from Html_Tag
  */
 final class Outer_Printer {
 	/**
 	 * @param Template_Pattern[] $field_assets
 	 * @param callable(bool $is_with_outers): void $print_content
 	 *
-	 * @return Html_Stack
+	 * @return Html_Node[]
 	 */
 	public static function wrap_with_outers(
 		array $field_assets,
@@ -39,7 +37,7 @@ final class Outer_Printer {
 	): array {
 		$field_outers   = self::get_field_outers( $field_assets, $layout_settings, $field_settings, $field_id, $row_type );
 		$is_with_outers = array() !== $field_outers;
-		$content        = fn() => $print_content( $is_with_outers );
+		$content        = array( fn() => $print_content( $is_with_outers ) );
 
 		// the innermost outer goes first.
 		foreach ( array_reverse( $field_outers ) as $outer ) {
@@ -52,9 +50,7 @@ final class Outer_Printer {
 			);
 		}
 
-		return is_array( $content ) ?
-			$content :
-			stack( $content );
+		return $content;
 	}
 
 	/**
@@ -78,10 +74,7 @@ final class Outer_Printer {
 		return Template_Field_Data::merge_outers( $assets_outers );
 	}
 
-	/**
-	 * @return Html_Tag
-	 */
-	protected static function outer_tag( Html_Wrapper $outer, Token_Factory $token_factory ): array {
+	protected static function outer_tag( Html_Wrapper $outer, Token_Factory $token_factory ): Html_Tag {
 		$attrs = $outer->attrs;
 
 		foreach ( $outer->variable_attrs as $attr => $variable_info ) {
@@ -89,6 +82,7 @@ final class Outer_Printer {
 											->add_item_path( $variable_info['item_key'] );
 		}
 
-		return tag( $outer->tag, $attrs );
+		return tag( $outer->tag )
+			->attributes( $attrs );
 	}
 }

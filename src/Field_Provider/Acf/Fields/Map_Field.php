@@ -12,14 +12,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Map_Field extends Map_Field_Base {
 	const MAP = 'map';
@@ -206,10 +204,10 @@ class Map_Field extends Map_Field_Base {
 		$field_data = $markup_field_data->get_field_data();
 
 		if ( 'open_street_map' === $field_meta->get_type() ) {
-			return stack(
+			return array(
 				fn() => $factory->variable( $field_id )
 					->add_item_path( self::MAP )
-				->raw_display()
+				->raw_display(),
 			);
 		}
 
@@ -250,12 +248,12 @@ class Map_Field extends Map_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		return nest(
-			tag(
-				'div',
-				$div_attributes
-			),
-			$print_content
+		return array(
+			tag( 'div' )
+				->attributes( $div_attributes )
+				->content(
+					$print_content
+				),
 		);
 	}
 
@@ -323,12 +321,12 @@ class Map_Field extends Map_Field_Base {
 	}
 
 	protected function print_inner_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
-		$tags = tag(
-			'div',
-			$this->map_marker_attributes( $field_id, $item_id, $markup_field_data )
-		);
+		$marker_attrs = $this->map_marker_attributes( $field_id, $item_id, $markup_field_data );
 
-		Html_Renderer::print( $tags );
+		$tags = tag( 'div' )
+			->attributes( $marker_attrs );
+
+		print_html( $tags );
 	}
 
 	/**

@@ -9,10 +9,9 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt as Plugin_Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -27,15 +26,21 @@ class Layouts_Cpt extends Cpt {
 		$singular_name = $labels->singular_name();
 		$plural_name   = $labels->plural_name();
 
-		$tags = stack(
+		$use_label      = __( 'Use a', 'acf-views' );
+		$directly_label = __( 'directly, or use it to display each result in a Post Selection.', 'acf-views' );
+		$use_text       = sprintf( '%s ', $use_label );
+		$directly_text  = sprintf( ' %s', $directly_label );
+		$layout_link    = self::link_tags( 'https://docs.advanced-views.com/getting-started/first-layout', $singular_name );
+
+		$tags = array(
 			__( 'Create reusable displays for WordPress and custom-field data.', 'acf-views' ),
 			tag( 'br' ),
-			__( 'Use a', 'acf-views' ) . ' ',
-			self::link_tags( 'https://docs.advanced-views.com/getting-started/first-layout', $singular_name ),
-			' ' . __( 'directly, or use it to display each result in a Post Selection.', 'acf-views' )
+			$use_text,
+			$layout_link,
+			$directly_text,
 		);
 
-		$description  = Html_Renderer::render( $tags );
+		$description  = render_html( ...$tags );
 		$description .= $this->get_storage_label();
 
 		$cpt_args = array(

@@ -8,10 +8,8 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -56,41 +54,42 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 		$tab_data = new Tab_Data( $this );
 		$tab_data->set_name( self::NAME );
 		$tab_data->set_label( __( 'FS only', 'acf-views' ) );
-		$tab_data->set_description_callback(
-			function (): void {
-				$read_more_link = nest(
-					tag(
-						'a',
-						array(
-							'target' => '_blank',
-							'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
-						)
-					),
-					__( 'Read more', 'acf-views' )
+
+		$print_description = function (): void {
+			$read_more_label = __( 'Read more', 'acf-views' );
+
+			$read_more_link = tag( 'a' )
+				->attributes( array(
+					'target' => '_blank',
+					'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
+				) )
+				->content(
+					$read_more_label
 				);
 
-				$tags = stack(
-					__(
-						'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
-						'acf-views'
-					),
-					tag( 'br' ),
-					__(
-						'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
-						'acf-views'
-					),
-					tag( 'br' ),
-					__(
-						'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
-						'acf-views'
-					),
-					' ',
-					$read_more_link
-				);
+			$tags = array(
+				__(
+					'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
+					'acf-views'
+				),
+				tag( 'br' ),
+				__(
+					'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
+					'acf-views'
+				),
+				tag( 'br' ),
+				__(
+					'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
+					'acf-views'
+				),
+				' ',
+				$read_more_link,
+			);
 
-				Html_Renderer::print( $tags );
-			}
-		);
+			print_html( ...$tags );
+		};
+
+		$tab_data->set_description_callback( $print_description );
 		$tab_data->set_label_in_brackets( (string) $fs_only_items_count );
 		$tab_data->set_bulk_actions( $this->get_bulk_actions() );
 		$tab_data->set_total_items_count( $fs_only_items_count );
@@ -157,42 +156,43 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 			$cpt_data = $this->cpt_settings_storage->get( $unique_id );
 
 			// the 'br' goes between the links.
-			$separator = array() !== $item_links ?
-				tag( 'br' ) :
-				null;
+			if ( array() !== $item_links ) {
+				$item_links[] = tag( 'br' );
+			}
 
-			$link_tag = nest(
-				tag(
-					'a',
-					array(
-						'href'   => $cpt_data->get_edit_post_link(),
-						'target' => '_blank',
-					)
-				),
-				$cpt_data->title
-			);
+			$edit_link = $cpt_data->get_edit_post_link();
 
-			$item_links[] = stack( $separator, $link_tag );
+			$link_tag = tag( 'a' )
+				->attributes( array(
+					'href'   => $edit_link,
+					'target' => '_blank',
+				) )
+				->content(
+					$cpt_data->title
+				);
+
+			$item_links[] = $link_tag;
 		}
 
-		$synced_message = nest(
-			tag( 'p' ),
-			count( $ids ) . ' ' . __( 'items successfully synced', 'acf-views' )
-		);
-		$links_message  = nest(
-			tag( 'p' ),
-			stack( ...$item_links )
-		);
+		$synced_amount = count( $ids );
+		$synced_label  = __( 'items successfully synced', 'acf-views' );
+		$synced_text   = sprintf( '%d %s', $synced_amount, $synced_label );
 
-		$tags = nest(
-			tag(
-				'div',
-				array( 'class' => 'notice notice-success' )
-			),
-			stack( $synced_message, $links_message )
-		);
+		$synced_message = tag( 'p' )
+			->content(
+				$synced_text
+			);
+		$links_message  = tag( 'p' )
+			->content( ...$item_links );
 
-		Html_Renderer::print( $tags );
+		$tags      = tag( 'div' )
+			->attributes( array( 'class' => 'notice notice-success' ) )
+			->content(
+				$synced_message,
+				$links_message
+			);
+
+		print_html( $tags );
 	}
 
 	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {

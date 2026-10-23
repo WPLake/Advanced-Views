@@ -6,12 +6,11 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Base;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -95,21 +94,18 @@ abstract class Instance {
 	}
 
 	protected function print_template_engine_is_not_loaded_message(): void {
-		$message = sprintf(
 		// translators: %s is the template engine name.
-			__( '%s template engine is not available (PHP >= 8.2.0 is required).', 'acf-views' ),
-			ucfirst( $this->cpt_settings->template_engine )
-		);
+		$message_template = __( '%s template engine is not available (PHP >= 8.2.0 is required).', 'acf-views' );
+		$engine_name      = ucfirst( $this->cpt_settings->template_engine );
+		$message          = sprintf( $message_template, $engine_name );
 
-		$tags = nest(
-			tag(
-				'p',
-				array( 'style' => array( 'color' => 'red' ) )
-			),
-			$message
-		);
+		$tags    = tag( 'p' )
+			->attributes( array( 'style' => array( 'color' => 'red' ) ) )
+			->content(
+				$message
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 	}
 
 	/**

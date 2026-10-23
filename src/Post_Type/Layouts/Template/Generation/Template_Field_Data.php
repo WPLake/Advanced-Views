@@ -1,6 +1,5 @@
 <?php
 
-
 declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
@@ -12,20 +11,16 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Html_Stack from Html
- * @phpstan-import-type Html_Tag from Html
- * @phpstan-import-type Html_Nest from Html
+ * @phpstan-import-type Html_Node from Html_Tag
  */
 final class Template_Field_Data extends Field_Data {
 	/**
@@ -110,11 +105,11 @@ final class Template_Field_Data extends Field_Data {
 	/**
 	 * @param Html_Wrapper[] $item_outers
 	 *
-	 * @return Html_Stack|Html_Nest
+	 * @return Html_Tag|Closure
 	 */
-	public function wrap_with_item_outers( array $item_outers, Closure $print_content, bool $is_without_last_item_tabs = false ): array {
+	public function wrap_with_item_outers( array $item_outers, Closure $print_content, bool $is_without_last_item_tabs = false ) {
 		$last_index = count( $item_outers ) - 1;
-		$content    = stack( $print_content );
+		$content    = $print_content;
 
 		// the innermost outer goes first.
 		foreach ( array_reverse( $item_outers, true ) as $index => $outer ) {
@@ -142,14 +137,12 @@ final class Template_Field_Data extends Field_Data {
 					->tab( --$this->tabs_number );
 			};
 
-			$content = nest(
-				$this->item_outer_tag( $outer ),
-				stack(
+			$content       = $this->item_outer_tag( $outer )
+				->content(
 					$print_outer_open,
 					$content,
 					$print_outer_close
-				)
-			);
+				);
 		}
 
 		return $content;
@@ -234,10 +227,7 @@ final class Template_Field_Data extends Field_Data {
 		return $this->token_factory;
 	}
 
-	/**
-	 * @return Html_Tag
-	 */
-	protected function item_outer_tag( Html_Wrapper $outer ): array {
+	protected function item_outer_tag( Html_Wrapper $outer ): Html_Tag {
 		$attr_class = $outer->attrs['class'] ?? '';
 		$class      = '' !== $attr_class ?
 			$attr_class :
@@ -250,6 +240,7 @@ final class Template_Field_Data extends Field_Data {
 													->add_item_path( $variable_info['item_key'] );
 		}
 
-		return tag( $outer->tag, $attrs );
+		return tag( $outer->tag )
+			->attributes( $attrs );
 	}
 }

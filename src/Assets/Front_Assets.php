@@ -12,7 +12,6 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern_Base;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Common_Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
@@ -20,9 +19,8 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pa
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map_Pattern;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -450,26 +448,22 @@ class Front_Assets extends Actor_Base implements Actor {
 				// introduce a styles variable, which allows to detect the styles root inside a webcomponent.
 				if ( $this->live_reloader_component->is_active() ) {
 					// the wrapper is necessary to make .parentElement work.
-					$location_script = nest(
-						tag( 'script' ),
-						// @phpcs:ignore WordPress.Security.EscapeOutput
-						fn() => print( 'class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)' )
-					);
+					$location_script = tag( 'script' )
+						->content(
+							// @phpcs:ignore WordPress.Security.EscapeOutput
+							fn() => print( 'class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)' )
+						);
 
-					$tags = nest(
-						tag(
-							'div',
-							array( 'hidden' => '' )
-						),
-						stack(
+					$tags      = tag( 'div' )
+						->attributes( array( 'hidden' => '' ) )
+						->content(
 							// @phpcs:ignore WordPress.Security.EscapeOutput
 							fn() => print( $all_css_code ),
 							tag( 'avf-styles-location' ),
 							$location_script
-						)
-					);
+						);
 
-					$all_css_code = Html_Renderer::render( $tags );
+					$all_css_code = render_html( $tags );
 				}
 
 				$page_content = str_replace( '<!--advanced-views:styles/custom-location-->', $all_css_code, $page_content );
@@ -644,15 +638,15 @@ class Front_Assets extends Actor_Base implements Actor {
 	 * @param array<string,string> $attrs
 	 */
 	protected function make_code_tag( string $tag, array $attrs, string $code ): string {
-		$tags = nest(
-			tag(
-				$tag,
-				$attrs
-			),
-			// @phpcs:ignore WordPress.Security.EscapeOutput
-			fn() => print( $code )
-		);
+		$tags      = tag( $tag )
+			->attributes( $attrs )
+			->content(
+				// @phpcs:ignore WordPress.Security.EscapeOutput
+				fn() => print( $code )
+			);
 
-		return Html_Renderer::render( $tags ) . "\n";
+		$code_html = render_html( $tags );
+
+		return sprintf( "%s\n", $code_html );
 	}
 }

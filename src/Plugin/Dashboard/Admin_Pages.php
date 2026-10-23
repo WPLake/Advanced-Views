@@ -19,11 +19,11 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Screen;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
+use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -89,28 +89,30 @@ class Admin_Pages extends Actor_Base implements Actor {
 			self::PAGE_DEMO_IMPORT => __( 'Demo import', 'acf-views' ),
 		);
 
+		$iframe_attrs = array(
+			'src'   => External_Links::DOCS_URL,
+			'style' => array(
+				'border'      => '0',
+				'width'       => 'calc(100% + 20px)',
+				'height'      => 'calc(100vh - 32px - 65px)',
+				'margin-left' => '-20px',
+			),
+		);
+
+		$print_docs_page = function () use ( $iframe_attrs ): void {
+			$tags = tag( 'iframe' )
+				->attributes( $iframe_attrs );
+
+			print_html( $tags );
+		};
+
 		add_submenu_page(
 			$parent_slug,
 			$page_titles[ self::PAGE_DOCS ],
 			$page_titles[ self::PAGE_DOCS ],
 			Avf_User::get_manage_capability(),
 			self::PAGE_DOCS,
-			function (): void {
-				$tags = tag(
-					'iframe',
-					array(
-						'src'   => External_Links::DOCS_URL,
-						'style' => array(
-							'border'      => '0',
-							'width'       => 'calc(100% + 20px)',
-							'height'      => 'calc(100vh - 32px - 65px)',
-							'margin-left' => '-20px',
-						),
-					)
-				);
-
-				Html_Renderer::print( $tags );
-			}
+			$print_docs_page
 		);
 
 		add_submenu_page(
@@ -344,42 +346,42 @@ class Admin_Pages extends Actor_Base implements Actor {
 	}
 
 	protected function render_cpt_link( Plugin_Cpt $plugin_cpt ): string {
-		$link = nest(
-			tag(
-				'a',
-				array(
-					'href'   => Plugin::get_admin_url( '', $plugin_cpt->cpt_name() ),
-					'target' => '_self',
-				)
-			),
-			$plugin_cpt->labels()->plural_name()
+		$cpt_name    = $plugin_cpt->cpt_name();
+		$plural_name = $plugin_cpt->labels()->plural_name();
+		$link_attrs  = array(
+			'href'   => Plugin::get_admin_url( '', $cpt_name ),
+			'target' => '_self',
 		);
 
-		return Html_Renderer::render( $link );
+		$link    = tag( 'a' )
+			->attributes( $link_attrs )
+			->content(
+				$plural_name
+			);
+
+		return render_html( $link );
 	}
 
 	/**
 	 * @return string[]
 	 */
 	protected function get_promo_links(): array {
-		$link = nest(
-			tag(
-				'a',
-				array(
-					'href'        => External_Links::PRO_VERSION_URL,
-					'target'      => '_blank',
-					'style'       => array(
-						'color'       => '#d46f4d',
-						'font-weight' => 'bold',
-						'transition'  => 'opacity 0.3s',
-					),
-					'onmouseover' => 'this.style.opacity=0.7',
-					'onmouseout'  => 'this.style.opacity=1',
-				)
-			),
-			__( 'Get Pro', 'acf-views' )
-		);
+		$link    = tag( 'a' )
+			->attributes( array(
+				'href'        => External_Links::PRO_VERSION_URL,
+				'target'      => '_blank',
+				'style'       => array(
+					'color'       => '#d46f4d',
+					'font-weight' => 'bold',
+					'transition'  => 'opacity 0.3s',
+				),
+				'onmouseover' => 'this.style.opacity=0.7',
+				'onmouseout'  => 'this.style.opacity=1',
+			) )
+			->content(
+				__( 'Get Pro', 'acf-views' )
+			);
 
-		return array( Html_Renderer::render( $link ) );
+		return array( render_html( $link ) );
 	}
 }

@@ -17,10 +17,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Field_Settings_Integration extends Acf_Integration_Base {
 	use Safe_Array_Arguments;
@@ -247,27 +246,25 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 	}
 
 	public function print_add_new_view_link(): void {
-		$link = sprintf( '/wp-admin/post-new.php?post_type=%s', $this->plugin_cpt->cpt_name() );
+		$cpt_name = $this->plugin_cpt->cpt_name();
+		$link     = sprintf( '/wp-admin/post-new.php?post_type=%s', $cpt_name );
 
-		$label = sprintf(
 		// translators: %s is the singular name of the CPT.
-			__( 'Add new %s', 'acf-views' ),
-			$this->plugin_cpt->labels()->singular_name()
-		);
+		$label_template = __( 'Add new %s', 'acf-views' );
+		$singular_name  = $this->plugin_cpt->labels()->singular_name();
+		$label          = sprintf( $label_template, $singular_name );
 
-		$tags = nest(
-			tag(
-				'a',
-				array(
-					'class'  => 'acf-views__add-new',
-					'target' => '_blank',
-					'href'   => $link,
-				)
-			),
-			$label
-		);
+		$tags    = tag( 'a' )
+			->attributes( array(
+				'class'  => 'acf-views__add-new',
+				'target' => '_blank',
+				'href'   => $link,
+			) )
+			->content(
+				$label
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {

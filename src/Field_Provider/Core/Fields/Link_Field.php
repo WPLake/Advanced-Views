@@ -15,7 +15,6 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
 
 class Link_Field extends Markup_Field_Base {
 	const TARGET     = 'target';
@@ -59,12 +58,12 @@ class Link_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		return nest(
-			tag(
-				'a',
-				$link_attributes
-			),
-			$print_link_content
+		return array(
+			tag( 'a' )
+				->attributes( $link_attributes )
+				->content(
+					$print_link_content
+				),
 		);
 	}
 

@@ -1,6 +1,5 @@
 <?php
 
-
 declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard;
@@ -27,20 +26,19 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Filesystem_Base;
 use WP_Post;
 use WP_Query;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
+use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Html_Stack from Html
+ * @phpstan-import-type Html_Node from Html_Tag
  */
 final class Tools_Page extends Actor_Base implements Actor {
 
@@ -200,12 +198,12 @@ final class Tools_Page extends Actor_Base implements Actor {
 			<?php
 		};
 
-		$tags = nest(
-			tag( 'script' ),
-			$print_download_script
-		);
+		$tags         = tag( 'script' )
+			->content(
+				$print_download_script
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 		exit;
 	}
 
@@ -512,26 +510,26 @@ final class Tools_Page extends Actor_Base implements Actor {
 			$post_selection_labels->plural_name()
 		);
 
-		$tags = stack(
+		$tags = array(
 			$summary,
 			tag( 'br' ),
-			$this->imported_items_tags( $views_label, $success_view_ids ),
-			$this->imported_items_tags( $cards_label, $success_card_ids ),
-			$this->failed_items_tags( $wrong_views_label, $fail_view_unique_ids ),
-			$this->failed_items_tags( $wrong_cards_label, $fail_card_unique_ids )
+			...$this->imported_items_tags( $views_label, $success_view_ids ),
+			...$this->imported_items_tags( $cards_label, $success_card_ids ),
+			...$this->failed_items_tags( $wrong_views_label, $fail_view_unique_ids ),
+			...$this->failed_items_tags( $wrong_cards_label, $fail_card_unique_ids ),
 		);
 
-		return Html_Renderer::render( $tags );
+		return render_html( ...$tags );
 	}
 
 	/**
 	 * @param string[] $post_ids
 	 *
-	 * @return Html_Stack
+	 * @return Html_Node[]
 	 */
 	protected function imported_items_tags( string $label, array $post_ids ): array {
 		if ( array() === $post_ids ) {
-			return stack();
+			return array();
 		}
 
 		$links = array();
@@ -541,38 +539,41 @@ final class Tools_Page extends Actor_Base implements Actor {
 				$links[] = tag( 'br' );
 			}
 
-			$links[] = nest(
-				tag(
-					'a',
-					array(
-						'href'   => string( get_edit_post_link( (int) $post_id ) ),
-						'target' => '_blank',
-					)
-				),
-				get_the_title( (int) $post_id )
-			);
+			$post_id    = (int) $post_id;
+			$raw_link   = get_edit_post_link( $post_id );
+			$edit_link  = string( $raw_link );
+			$post_title = get_the_title( $post_id );
+
+			$links[] = tag( 'a' )
+				->attributes( array(
+					'href'   => $edit_link,
+					'target' => '_blank',
+				) )
+				->content(
+					$post_title
+				);
 		}
 
-		return stack(
+		return array(
 			tag( 'br' ),
 			$label . ':',
 			tag( 'br' ),
 			tag( 'br' ),
 			' ',
-			stack( ...$links ),
+			...$links,
 			'.',
-			tag( 'br' )
+			tag( 'br' ),
 		);
 	}
 
 	/**
 	 * @param string[] $unique_ids
 	 *
-	 * @return Html_Stack
+	 * @return Html_Node[]
 	 */
 	protected function failed_items_tags( string $label, array $unique_ids ): array {
 		if ( array() === $unique_ids ) {
-			return stack();
+			return array();
 		}
 
 		$ids = array();
@@ -585,11 +586,11 @@ final class Tools_Page extends Actor_Base implements Actor {
 			$ids[] = $unique_id;
 		}
 
-		return stack(
+		return array(
 			$label . ': ',
-			stack( ...$ids ),
+			...$ids,
 			'.',
-			tag( 'br' )
+			tag( 'br' ),
 		);
 	}
 

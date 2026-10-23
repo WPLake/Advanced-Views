@@ -21,10 +21,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Tab_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Repository_Item;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 abstract class Git_Tabs extends External_Storage_Tab {
 	use Safe_Array_Arguments;
@@ -83,22 +81,24 @@ abstract class Git_Tabs extends External_Storage_Tab {
 	protected function print_description( array $git_repository ): void {
 		$reset_cache_link = $this->get_reset_cache_link( $git_repository['id'] );
 
-		$read_more_link = nest(
-			tag(
-				'a',
-				array(
-					'target' => '_blank',
-					'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
-				)
-			),
-			__( 'Read more', 'acf-views' )
-		);
-		$reset_link     = nest(
-			tag( 'a', array( 'href' => $reset_cache_link ) ),
-			__( 'here', 'acf-views' )
-		);
+		$read_more_label = __( 'Read more', 'acf-views' );
+		$here_label      = __( 'here', 'acf-views' );
 
-		$tags = stack(
+		$read_more_link   = tag( 'a' )
+			->attributes( array(
+				'target' => '_blank',
+				'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
+			) )
+			->content(
+				$read_more_label
+			);
+		$reset_link       = tag( 'a' )
+			->attributes( array( 'href' => $reset_cache_link ) )
+			->content(
+				$here_label
+			);
+
+		$tags = array(
 			__(
 				'By saving items in your GitLab repository, you can create your own library and reuse them on other websites.',
 				'acf-views'
@@ -110,10 +110,10 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			' ',
 			$reset_link,
 			' ',
-			__( 'to clear the cache.', 'acf-views' )
+			__( 'to clear the cache.', 'acf-views' ),
 		);
 
-		Html_Renderer::print( $tags );
+		print_html( ...$tags );
 	}
 
 	protected function get_reset_cache_link( string $repository_id ): string {
@@ -168,7 +168,6 @@ abstract class Git_Tabs extends External_Storage_Tab {
 
 		return $cpt_data_items;
 	}
-
 
 	/**
 	 * @return Cpt_Settings[]
@@ -438,16 +437,18 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			return;
 		}
 
-		$tags = nest(
-			tag(
-				'div',
-				array( 'class' => 'notice notice-success' )
-			),
-			tag( 'p' ),
-			__( 'Cache successfully cleared.', 'acf-views' )
-		);
+		$message = __( 'Cache successfully cleared.', 'acf-views' );
 
-		Html_Renderer::print( $tags );
+		$tags      = tag( 'div' )
+			->attributes( array( 'class' => 'notice notice-success' ) )
+			->content(
+				tag( 'p' )
+					->content(
+						$message
+					)
+			);
+
+		print_html( $tags );
 	}
 
 	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {

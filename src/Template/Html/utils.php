@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Html;
 
 defined( 'ABSPATH' ) || exit;
 
+use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 
@@ -14,15 +15,15 @@ function tag( string $name ): Html_Tag {
 }
 
 /**
- * @param array<Html_Tag|string|Htmlable|Closure> $nodes
+ * @param Html_Tag|string|Htmlable|Closure ...$nodes
  */
-function print_html( array $nodes ): void {
-	Html_Renderer::print( $nodes );
+function print_html( ...$nodes ): void {
+	Html_Renderer::print( ...$nodes );
 }
 
 /**
- * @param array<int,Html_Tag|string|Htmlable|Closure> $nodes
+ * @param Html_Tag|string|Htmlable|Closure ...$nodes
  */
-function render_html( array $nodes ): string {
-	return Html_Renderer::render( $nodes );
+function render_html( ...$nodes ): string {
+	return Html_Renderer::render( ...$nodes );
 }

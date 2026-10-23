@@ -37,10 +37,13 @@ final class Html_Tag {
 	}
 
 	/**
-	 * @param Html_Node[] $items
+	 * Null items are dropped, to simplify the conditional rendering: `$condition ? $node : null` can be passed as is.
+	 *
+	 * @param Html_Node|null ...$items
 	 */
-	public function content( array $items ): self {
-		$this->content = array_merge( $this->content, $items );
+	public function content( ...$items ): self {
+		$nodes         = array_filter( $items, static fn( $item ) => null !== $item );
+		$this->content = array_merge( $this->content, array_values( $nodes ) );
 
 		return $this;
 	}

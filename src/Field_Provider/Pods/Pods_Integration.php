@@ -17,11 +17,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Sto
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
+use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 class Pods_Integration extends Settings_Vendor_Integration {
 
@@ -203,41 +202,29 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	protected function render_postbox( object $pod ): string {
 		$pod_name = $this->get_pod_name( $pod );
 
-		$container_attributes = array(
-			'class' => array(
-				'advanced-views',
-				'postbox-container',
-			),
-			'style' => array(
-				'width'  => '70%',
-				'margin' => '100px 0 0',
-			),
-		);
+		$tags      = tag( 'div' )
+			->attributes( array(
+				'class' => array(
+					'advanced-views',
+					'postbox-container',
+				),
+				'style' => array(
+					'width'  => '70%',
+					'margin' => '100px 0 0',
+				),
+			) )
+			->content(
+				fn() => $this->print_related_postbox( $pod_name, $pod )
+			);
 
-		$tags = nest(
-			tag(
-				'div',
-				$container_attributes
-			),
-			fn() => $this->print_related_postbox( $pod_name, $pod )
-		);
-
-		return Html_Renderer::render( $tags );
+		return render_html( $tags );
 	}
 
 	/**
 	 * @param object $pod
 	 */
 	protected function print_related_postbox( string $pod_name, $pod ): void {
-		$postbox_attributes = array(
-			'class' => array(
-				'postbox',
-				'pods-no-toggle',
-			),
-			'style' => array( 'padding' => '0 20px 20px' ),
-		);
-		$heading_attributes = array( 'class' => 'advanced-views__heading' );
-		$related_views      = $this->get_related_acf_views( $pod_name, $pod );
+		$related_views = $this->get_related_acf_views( $pod_name, $pod );
 
 		$print_heading_text = function (): void {
 			$title = __( 'Advanced Views', 'acf-views' );
@@ -245,27 +232,27 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			echo esc_html( $title );
 		};
 
-		$heading = nest(
-			tag(
-				'h4',
-				$heading_attributes
-			),
-			$print_heading_text
-		);
+		$heading  = tag( 'h4' )
+			->attributes( array( 'class' => 'advanced-views__heading' ) )
+			->content(
+				$print_heading_text
+			);
 
-		$tags = nest(
-			tag(
-				'div',
-				$postbox_attributes
-			),
-			stack(
+		$tags      = tag( 'div' )
+			->attributes( array(
+				'class' => array(
+					'postbox',
+					'pods-no-toggle',
+				),
+				'style' => array( 'padding' => '0 20px 20px' ),
+			) )
+			->content(
 				$heading,
 				fn() => $this->print_related_acf_views( null, false, $related_views ),
 				fn() => $this->print_add_new_links_for_groups( $pod )
-			)
-		);
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 	}
 
 	/**
@@ -274,15 +261,6 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	protected function print_add_new_links_for_groups( $pod ): void {
 		if ( method_exists( $pod, 'get_groups' ) ) {
 			$groups = $pod->get_groups();
-
-			$attributes = array(
-				'style' => array(
-					'display'   => 'flex',
-					'gap'       => '10px',
-					'flex-wrap' => 'wrap',
-					'margin'    => '20px 0 0',
-				),
-			);
 
 			$print_add_new_links = function () use ( $groups ): void {
 				foreach ( $groups as $group ) {
@@ -298,15 +276,20 @@ class Pods_Integration extends Settings_Vendor_Integration {
 				}
 			};
 
-			$tags = nest(
-				tag(
-					'div',
-					$attributes
-				),
-				$print_add_new_links
-			);
+			$tags      = tag( 'div' )
+				->attributes( array(
+					'style' => array(
+						'display'   => 'flex',
+						'gap'       => '10px',
+						'flex-wrap' => 'wrap',
+						'margin'    => '20px 0 0',
+					),
+				) )
+				->content(
+					$print_add_new_links
+				);
 
-			Html_Renderer::print( $tags );
+			print_html( $tags );
 		}
 	}
 

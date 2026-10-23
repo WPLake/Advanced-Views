@@ -15,10 +15,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 	private Layout_Settings_Storage $layouts_settings_storage;
@@ -67,18 +66,18 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 		// here we must use viewsDataStorage, as it's a View.
 		$view_data = $this->layouts_settings_storage->get( $post_selection_settings->acf_view_id );
 
-		$tags = nest(
-			tag(
-				'a',
-				array(
-					'href'   => $view_data->get_edit_post_link(),
-					'target' => '_blank',
-				)
-			),
-			$view_data->title
-		);
+		$edit_link = $view_data->get_edit_post_link();
 
-		Html_Renderer::print( $tags );
+		$tags    = tag( 'a' )
+			->attributes( array(
+				'href'   => $edit_link,
+				'target' => '_blank',
+			) )
+			->content(
+				$view_data->title
+			);
+
+		print_html( $tags );
 	}
 
 	public function add_meta_boxes(): void {

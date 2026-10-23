@@ -10,10 +10,8 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -257,32 +255,33 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 	public function print_fallback_message(): void {
 		$settings_url = Plugin::get_admin_url( Settings_Page::SLUG );
 
-		$settings_link = nest(
-			tag(
-				'a',
-				array(
-					'href'   => $settings_url,
-					'target' => '_blank',
-				)
-			),
-			__( 'Settings', 'acf-views' )
-		);
+		$settings_label = __( 'Settings', 'acf-views' );
+		$loading_label  = __( 'Loading the Editor is taking longer than expected.', 'acf-views' );
+		$visit_label    = __( 'If you still see this message after an extended period, please visit the', 'acf-views' );
+		$disable_label  = __( 'and disable the screen performance optimization.', 'acf-views' );
+		$visit_text     = sprintf( '%s ', $visit_label );
+		$disable_text   = sprintf( ' %s', $disable_label );
 
-		$tags = nest(
-			tag(
-				'p',
-				array( 'class' => 'acf-views__loading-fallback acf-views__loading-fallback--hidden' )
-			),
-			stack(
-				__( 'Loading the Editor is taking longer than expected.', 'acf-views' ),
+		$settings_link = tag( 'a' )
+			->attributes( array(
+				'href'   => $settings_url,
+				'target' => '_blank',
+			) )
+			->content(
+				$settings_label
+			);
+
+		$tags    = tag( 'p' )
+			->attributes( array( 'class' => 'acf-views__loading-fallback acf-views__loading-fallback--hidden' ) )
+			->content(
+				$loading_label,
 				tag( 'br' ),
-				__( 'If you still see this message after an extended period, please visit the', 'acf-views' ) . ' ',
+				$visit_text,
 				$settings_link,
-				' ' . __( 'and disable the screen performance optimization.', 'acf-views' )
-			)
-		);
+				$disable_text
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 
 		$print_fallback_script = function () {
 			?>
@@ -295,14 +294,12 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 			<?php
 		};
 
-		$node = nest(
-			tag(
-				'script',
-				array( 'type' => 'module' )
-			),
-			$print_fallback_script
-		);
+		$node         = tag( 'script' )
+			->attributes( array( 'type' => 'module' ) )
+			->content(
+				$print_fallback_script
+			);
 
-		Html_Renderer::print( $node );
+		print_html( $node );
 	}
 }

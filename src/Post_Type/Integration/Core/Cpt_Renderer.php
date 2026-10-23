@@ -12,10 +12,9 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Shortcode\Shortcode_Renderer;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 final class Cpt_Renderer {
 	private Shortcode_Renderer $shortcode;
@@ -87,30 +86,26 @@ final class Cpt_Renderer {
 			$minified_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
 			$unique_id    = $cpt_settings->get_unique_id();
 
-			$tags = nest(
-				tag(
-					'style',
-					array( 'data-avf-id' => $unique_id )
-				),
-				// phpcs:ignore WordPress.Security.EscapeOutput
-				fn() => print( $minified_css )
-			);
+			$tags        = tag( 'style' )
+				->attributes( array( 'data-avf-id' => $unique_id ) )
+				->content(
+					// phpcs:ignore WordPress.Security.EscapeOutput
+					fn() => print( $minified_css )
+				);
 
-			return Html_Renderer::render( $tags );
+			return render_html( $tags );
 		}
 
 		return '';
 	}
 
 	protected static function make_placeholder( string $message ): string {
-		$tags = nest(
-			tag(
-				'p',
-				array( 'class' => 'avf-cpt-block__placeholder' )
-			),
-			sprintf( '[%s]', $message )
-		);
+		$tags    = tag( 'p' )
+			->attributes( array( 'class' => 'avf-cpt-block__placeholder' ) )
+			->content(
+				sprintf( '[%s]', $message )
+			);
 
-		return Html_Renderer::render( $tags );
+		return render_html( $tags );
 	}
 }

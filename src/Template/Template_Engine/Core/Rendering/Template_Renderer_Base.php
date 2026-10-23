@@ -9,15 +9,12 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Throwable;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 abstract class Template_Renderer_Base extends Loggable_Actor implements Template_Renderer {
 	protected Settings_Storage $settings;
-
 
 	public function __construct( Logger $logger, Settings_Storage $settings ) {
 		parent::__construct( $logger );
@@ -36,32 +33,23 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 	}
 
 	protected static function print_error_message( string $unique_view_id, string $error_message ): void {
-		$paragraph_attributes = array(
-			'style' => 'color:red;',
-			'class' => 'acf-views__error',
-		);
-		$span_attributes      = array( 'class' => 'acf-views__error-message' );
+		$message    = tag( 'span' )
+			->attributes( array( 'class' => 'acf-views__error-message' ) )
+			->content(
+				$error_message
+			);
 
-		$message = nest(
-			tag(
-				'span',
-				$span_attributes
-			),
-			$error_message
-		);
-
-		$tags = nest(
-			tag(
-				'p',
-				$paragraph_attributes
-			),
-			stack(
+		$tags    = tag( 'p' )
+			->attributes( array(
+				'style' => 'color:red;',
+				'class' => 'acf-views__error',
+			) )
+			->content(
 				fn() => printf( 'Advanced Views (%s) template: ', esc_html( $unique_view_id ) ),
 				$message
-			)
-		);
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 	}
 
 	/**
@@ -99,19 +87,19 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 		// do not include in case of the validation, it doesn't have sense + breaks the error grep regex.
 		if ( $is_debug_mode &&
 			! $is_validation ) {
-			$tags = nest(
-				tag( 'pre' ),
-				// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
-						print_r(
-							array(
-								'template' => $template,
-								'args'     => $args,
-							),
-							true
-						)
-			);
+			$tags      = tag( 'pre' )
+				->content(
+					// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
+					print_r(
+						array(
+							'template' => $template,
+							'args'     => $args,
+						),
+						true
+					)
+				);
 
-			Html_Renderer::print( $tags );
+			print_html( $tags );
 		}
 	}
 }

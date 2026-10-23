@@ -5,18 +5,14 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Html_Tag from Html
- * @phpstan-import-type Html_Stack from Html
- * @phpstan-import-type Html_Nest from Html
+ * @phpstan-import-type Html_Node from Html_Tag
  */
 final class Import_Printer {
 	public static function print_dashboard_import(
@@ -31,68 +27,66 @@ final class Import_Printer {
 		$introduction = $is_has_demo_objects ?
 			null :
 			self::import_introduction_tags();
-		$blocks       = stack(
+		$blocks       = array(
 			$result_block,
-			$introduction
+			$introduction,
 		);
 		$form_tags    = Html_Printer::dashboard_form_tags( 'import', $form_nonce, $blocks );
 
-		Html_Renderer::print( $form_tags );
+		print_html( $form_tags );
 	}
 
-	/**
-	 * @return Html_Nest
-	 */
-	protected static function import_result_block_tags( bool $is_has_demo_objects, Demo_Importer $demo_import ): array {
-		$button = nest(
-			tag(
-				'button',
+	protected static function import_result_block_tags( bool $is_has_demo_objects, Demo_Importer $demo_import ): Html_Tag {
+		$button       = tag( 'button' )
+			->attributes(
 				array(
 					'class' => 'button button-primary button-large av-dashboard__button av-dashboard__button--red',
 					'name'  => '_delete',
 					'value' => 'delete',
 				)
-			),
-			__( 'Delete imported objects', 'acf-views' )
-		);
+			)
+			->content(
+				__( 'Delete imported objects', 'acf-views' )
+			);
 
 		$delete_button = $is_has_demo_objects ?
-			stack(
+			array(
 				tag( 'br' ),
 				tag( 'br' ),
-				$button
+				$button,
 			) :
-			null;
+			array();
 
-		$block_attrs = array( 'class' => 'av-introduction av-dashboard__block av-dashboard__block--medium' );
 		$result_tags = self::import_result_tags( $demo_import );
 
-		return nest(
-			tag(
-				'div',
-				$block_attrs
-			),
-			stack( $result_tags, $delete_button )
-		);
+		return tag( 'div' )
+			->attributes( array( 'class' => 'av-introduction av-dashboard__block av-dashboard__block--medium' ) )
+			->content(
+				...$result_tags,
+				...$delete_button
+			);
 	}
 
 	/**
-	 * @return Html_Stack
+	 * @return Html_Node[]
 	 */
 	protected static function import_result_tags( Demo_Importer $demo_import ): array {
 		$is_has_items = $demo_import->is_has_data() && ! $demo_import->is_has_error();
 		$status       = $demo_import->is_processed() ?
 			self::import_status_tags( $demo_import ) :
-			null;
+			array();
 		$items        = $is_has_items ?
 			self::imported_items_tags( $demo_import ) :
-			null;
+			array();
 
-		return stack( $status, $items );
+		return array(
+			...$status,
+			...$items,
+		);
 	}
 
 	/**
-	 * @return Html_Stack
+	 * @return Html_Node[]
 	 */
 	protected static function import_status_tags( Demo_Importer $demo_import ): array {
 		if ( ! $demo_import->is_has_error() ) {
@@ -100,24 +94,22 @@ final class Import_Printer {
 				__( 'Import was successful. You’re all set!', 'acf-views' ) :
 				__( 'All demo objects have been deleted.', 'acf-views' );
 
-			return stack(
-				Html_Printer::title_tags( $message )
-			);
+			return array( Html_Printer::title_tags( $message ) );
 		}
 
 		$failed_title = __( 'Request is failed.', 'acf-views' );
 		$error        = $demo_import->get_error();
 
-		return stack(
+		return array(
 			Html_Printer::title_tags( $failed_title ),
 			tag( 'br' ),
 			tag( 'br' ),
-			$error
+			$error,
 		);
 	}
 
 	/**
-	 * @return Html_Stack
+	 * @return Html_Node[]
 	 */
 	protected static function imported_items_tags( Demo_Importer $demo_import ): array {
 		$same_page_title = __( "Display page's ACF fields on the same page", 'acf-views' );
@@ -146,28 +138,26 @@ final class Import_Printer {
 		$phones_card_link     = $demo_import->get_phones_acf_card_link();
 		$phones_article_link  = $demo_import->get_phones_article_link();
 
-		return stack(
+		return array(
 			Html_Printer::title_tags( $imported_title ),
 			self::bold_paragraph_tags( array( $same_page_title ) ),
-			self::spaced_link_tags( $samsung_link, $samsung_label ),
-			self::spaced_link_tags( $nokia_link, $nokia_label ),
-			self::spaced_link_tags( $xiaomi_link, $xiaomi_label ),
-			self::spaced_link_tags( $group_link, $group_label ),
-			self::spaced_link_tags( $view_link, $view_label ),
+			...self::spaced_link_tags( $samsung_link, $samsung_label ),
+			...self::spaced_link_tags( $nokia_link, $nokia_label ),
+			...self::spaced_link_tags( $xiaomi_link, $xiaomi_label ),
+			...self::spaced_link_tags( $group_link, $group_label ),
+			...self::spaced_link_tags( $view_link, $view_label ),
 			self::bold_paragraph_tags( array( $single_title ) ),
-			self::spaced_link_tags( $samsung_article_link, $samsung_article ),
+			...self::spaced_link_tags( $samsung_article_link, $samsung_article ),
 			self::bold_paragraph_tags( $filters_title ),
-			self::spaced_link_tags( $phones_card_link, $phones_card_label ),
-			self::spaced_link_tags( $phones_article_link, $phones_article_name )
+			...self::spaced_link_tags( $phones_card_link, $phones_card_label ),
+			...self::spaced_link_tags( $phones_article_link, $phones_article_name ),
 		);
 	}
 
 	/**
 	 * @param string[] $lines
-	 *
-	 * @return Html_Nest
 	 */
-	protected static function bold_paragraph_tags( array $lines ): array {
+	protected static function bold_paragraph_tags( array $lines ): Html_Tag {
 		$line_tags = array();
 
 		foreach ( $lines as $index => $line ) {
@@ -178,76 +168,65 @@ final class Import_Printer {
 			$line_tags[] = $line;
 		}
 
-		return nest(
-			tag( 'p' ),
-			tag( 'b' ),
-			stack( ...$line_tags )
-		);
+		return tag( 'p' )
+			->content(
+				tag( 'b' )
+					->content( ...$line_tags )
+			);
 	}
 
 	/**
-	 * @return Html_Stack
+	 * @return Html_Node[]
 	 */
 	protected static function spaced_link_tags( string $url, string $label ): array {
 		$link = Html_Printer::link_tags( $url, $label );
 
-		return stack(
+		return array(
 			$link,
 			tag( 'br' ),
-			tag( 'br' )
+			tag( 'br' ),
 		);
 	}
 
-	/**
-	 * @return Html_Nest
-	 */
-	protected static function import_introduction_tags(): array {
+	protected static function import_introduction_tags(): Html_Tag {
 		$description_attrs = array( 'class' => 'av-introduction__description' );
-		$block_attrs       = array( 'class' => 'av-introduction av-dashboard__block' );
-		$import_attrs      = array(
-			'class' => 'button button-primary button-large',
-			'name'  => '_import',
-			'value' => 'import',
-		);
 
 		$intro_title   = __( 'Import Demo to Get Started in Seconds', 'acf-views' );
 		$import_label  = __( 'Import Demo Now', 'acf-views' );
 		$title_tags    = Html_Printer::title_tags( $intro_title );
-		$import_button = nest(
-			tag(
-				'button',
-				$import_attrs
-			),
-			$import_label
-		);
+		$import_button = tag( 'button' )
+			->attributes(
+				array(
+					'class' => 'button button-primary button-large',
+					'name'  => '_import',
+					'value' => 'import',
+				)
+			)
+			->content(
+				$import_label
+			);
 
-		$description = nest(
-			tag(
-				'p',
-				$description_attrs
-			),
-			stack(
+		$description = tag( 'p' )
+			->attributes( $description_attrs )
+			->content(
 				__(
 					"Whether you're new to Advanced Views or just want a quick way to set up the basics, this demo import will automatically create a working example for you.",
 					'acf-views'
 				),
 				tag( 'br' ),
 				__( "It's perfect for exploring how Layouts, Post Selections, and ACF fields work together.", 'acf-views' )
-			)
-		);
+			);
 
-		$importing_parts       = array(
+		$importing_parts             = array(
 			__( 'Click Import Demo and wait a few seconds.', 'acf-views' ),
 			__( "When done, you'll see quick links to edit all imported items.", 'acf-views' ),
 		);
-		$importing_text        = join( ' ', $importing_parts );
-		$importing_description = nest(
-			tag(
-				'p',
-				$description_attrs
-			),
-			$importing_text
-		);
+		$importing_text              = join( ' ', $importing_parts );
+		$importing_description       = tag( 'p' )
+			->attributes( $description_attrs )
+			->content(
+				$importing_text
+			);
 
 		$same_page_steps = self::ordered_list_tags(
 			array(
@@ -278,17 +257,14 @@ final class Import_Printer {
 		$after_title     = __( 'After Import', 'acf-views' );
 		$delete_hint     = __( 'A Delete Demo button will appear if you’d like to remove the demo content later.', 'acf-views' );
 
-		$delete_hint_paragraph = nest(
-			tag( 'p' ),
-			$delete_hint
-		);
+		$delete_hint_paragraph       = tag( 'p' )
+			->content(
+				$delete_hint
+			);
 
-		return nest(
-			tag(
-				'div',
-				$block_attrs
-			),
-			stack(
+		return tag( 'div' )
+			->attributes( array( 'class' => 'av-introduction av-dashboard__block' ) )
+			->content(
 				$title_tags,
 				$description,
 				tag( 'hr' ),
@@ -308,27 +284,23 @@ final class Import_Printer {
 				tag( 'br' ),
 				tag( 'br' ),
 				$import_button
-			)
-		);
+			);
 	}
 
 	/**
 	 * @param string[] $items
-	 *
-	 * @return Html_Nest
 	 */
-	protected static function ordered_list_tags( array $items ): array {
+	protected static function ordered_list_tags( array $items ): Html_Tag {
 		$item_tags = array_map(
-			fn( string $item ) => nest(
-				tag( 'li' ),
-				$item
-			),
+			fn( string $item ) => tag( 'li' )
+				->content(
+					$item
+				),
 			$items
 		);
 
-		return nest(
-			tag( 'ol', array( 'class' => 'av-introduction__description av-introduction__ol' ) ),
-			stack( ...$item_tags )
-		);
+		return tag( 'ol' )
+			->attributes( array( 'class' => 'av-introduction__description av-introduction__ol' ) )
+			->content( ...$item_tags );
 	}
 }

@@ -15,13 +15,11 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -279,16 +277,16 @@ class Plugin extends Actor_Base implements Actor {
 
 		$this->options::delete_transient( Options_Storage::TRANSIENT_DEACTIVATED_OTHER_INSTANCES );
 
-		$tags = nest(
-			tag(
-				'div',
-				array( 'class' => 'notice notice-warning' )
-			),
-			tag( 'p' ),
-			$message
-		);
+		$tags      = tag( 'div' )
+			->attributes( array( 'class' => 'notice notice-warning' ) )
+			->content(
+				tag( 'p' )
+					->content(
+						$message
+					)
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 	}
 
 	/**
@@ -461,31 +459,32 @@ class Plugin extends Actor_Base implements Actor {
 			'Please change the "opcache.save_comments" option in your php.ini file to the default value of "1" on your hosting.',
 			'acf-views'
 		);
-		$read_more_link = nest(
-			tag(
-				'a',
-				array(
-					'target' => '_blank',
-					'href'   => External_Links::CONFLICTS_URL,
-				)
-			),
-			__( 'Read more', 'acf-views' )
-		);
+		$read_more_label  = __( 'Read more', 'acf-views' );
 
-		$tags = nest(
-			tag(
-				'div',
-				array( 'class' => 'notice notice-error' )
-			),
-			tag( 'p' ),
-			stack(
-				$detected_message . ' ',
-				tag( 'br' ),
-				$action_message . ' ',
-				$read_more_link
-			)
-		);
+		$read_more_link = tag( 'a' )
+			->attributes( array(
+				'target' => '_blank',
+				'href'   => External_Links::CONFLICTS_URL,
+			) )
+			->content(
+				$read_more_label
+			);
 
-		Html_Renderer::print( $tags );
+		$detected_text = sprintf( '%s ', $detected_message );
+		$action_text   = sprintf( '%s ', $action_message );
+
+		$tags      = tag( 'div' )
+			->attributes( array( 'class' => 'notice notice-error' ) )
+			->content(
+				tag( 'p' )
+					->content(
+						$detected_text,
+						tag( 'br' ),
+						$action_text,
+						$read_more_link
+					)
+			);
+
+		print_html( $tags );
 	}
 }

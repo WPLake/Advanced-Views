@@ -6,18 +6,14 @@ namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Html_Tag from Html
- * @phpstan-import-type Html_Stack from Html
- * @phpstan-import-type Html_Nest from Html
+ * @phpstan-import-type Html_Node from Html_Tag
  */
 class Postbox_Printer {
 	public function print_postbox_shortcode(
@@ -38,7 +34,7 @@ class Postbox_Printer {
 		$shortcode      = sprintf( '[%s name="%s" %s="%s"]', $shortcode_name, $entry_name, 'id', $unique_id );
 		$tags           = self::shortcode_tags( $shortcode, $is_short, $is_single );
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 	}
 
 	public function print_postbox_upgrade(): void {
@@ -50,7 +46,7 @@ class Postbox_Printer {
 		$button_label = __( 'Upgrade to Pro', 'acf-views' );
 		$tags         = self::support_postbox_tags( $description, External_Links::PRO_VERSION_URL, $button_label );
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 	}
 
 	public function print_postbox_support(): void {
@@ -66,54 +62,43 @@ class Postbox_Printer {
 			$button_label
 		);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 	}
 
-	/**
-	 * @return Html_Nest
-	 */
-	protected static function shortcode_tags( string $shortcode, bool $is_short, bool $is_single ): array {
+	protected static function shortcode_tags( string $shortcode, bool $is_short, bool $is_single ): Html_Tag {
 		$type            = $is_short ?
 			'short' :
 			'full';
-		$code_attrs      = array( 'class' => 'av-sortcodes__code av-shortcodes__code--type--short' );
 		$container_class = sprintf( 'av-shortcodes av-shortcodes--type--%s', $type );
-		$container_attrs = array( 'class' => $container_class );
-		$code            = nest(
-			tag(
-				'span',
-				$code_attrs
-			),
-			$shortcode
-		);
+		$code            = tag( 'span' )
+			->attributes( array( 'class' => 'av-sortcodes__code av-shortcodes__code--type--short' ) )
+			->content(
+				$shortcode
+			);
 		$details         = $is_short ?
-			null :
+			array() :
 			self::shortcode_details_tags( $is_single );
 
-		return nest(
-			tag(
-				'av-shortcodes',
-				$container_attrs
-			),
-			stack( $code, $details )
-		);
+		return tag( 'av-shortcodes' )
+			->attributes( array( 'class' => $container_class ) )
+			->content(
+				$code,
+				...$details
+			);
 	}
 
 	/**
-	 * @return Html_Stack
+	 * @return Html_Node[]
 	 */
 	protected static function shortcode_details_tags( bool $is_single ): array {
-		$copy_attrs  = array(
-			'class'       => 'av-shortcodes__copy-button button button-primary button-large',
-			'data-target' => '.av-shortcodes__code--type--short',
-		);
-		$copy_button = nest(
-			tag(
-				'button',
-				$copy_attrs
-			),
-			__( 'Copy Shortcode', 'acf-views' )
-		);
+		$copy_button  = tag( 'button' )
+			->attributes( array(
+				'class'       => 'av-shortcodes__copy-button button button-primary button-large',
+				'data-target' => '.av-shortcodes__code--type--short',
+			) )
+			->content(
+				__( 'Copy Shortcode', 'acf-views' )
+			);
 
 		$gutenberg_answer = $is_single ?
 			__( 'Embed with the AV Post Selection block.', 'acf-views' ) :
@@ -132,75 +117,58 @@ class Postbox_Printer {
 			$here_label
 		);
 
-		$roles_link = nest(
-			tag( 'span' ),
-			stack(
+		$roles_link = tag( 'span' )
+			->content(
 				$roles_hint_gap,
 				$docs_link,
 				'.'
-			)
-		);
+			);
 
 		$gutenberg_question = __( 'Using Gutenberg?', 'acf-views' );
 		$elementor_question = __( 'Using Elementor?', 'acf-views' );
 
-		return stack(
+		return array(
 			$copy_button,
 			self::embed_hint_tags( $gutenberg_question, $gutenberg_answer ),
 			self::embed_hint_tags( $elementor_question, $elementor_answer ),
-			$roles_link
+			$roles_link,
 		);
 	}
 
-	/**
-	 * @return Html_Nest
-	 */
-	protected static function embed_hint_tags( string $question, string $answer ): array {
-		return nest(
-			tag( 'p' ),
-			stack(
+	protected static function embed_hint_tags( string $question, string $answer ): Html_Tag {
+
+		return tag( 'p' )
+			->content(
 				$question,
 				tag( 'br' ),
 				$answer
-			)
-		);
+			);
 	}
 
-	/**
-	 * @return Html_Nest
-	 */
-	protected static function support_postbox_tags( string $description, string $url, string $button_label ): array {
+	protected static function support_postbox_tags( string $description, string $url, string $button_label ): Html_Tag {
 		$button    = self::button_link_tags( $url, $button_label );
-		$paragraph = nest(
-			tag( 'p' ),
-			$description
-		);
+		$paragraph = tag( 'p' )
+			->content(
+				$description
+			);
 
-		return nest(
-			tag( 'div' ),
-			stack(
+		return tag( 'div' )
+			->content(
 				$paragraph,
 				$button
-			)
-		);
+			);
 	}
 
-	/**
-	 * @return Html_Nest
-	 */
-	protected static function button_link_tags( string $url, string $label ): array {
-		$link_attrs = array(
-			'class'  => 'button button-primary button-large',
-			'href'   => $url,
-			'target' => '_blank',
-		);
+	protected static function button_link_tags( string $url, string $label ): Html_Tag {
 
-		return nest(
-			tag(
-				'a',
-				$link_attrs
-			),
-			$label
-		);
+		return tag( 'a' )
+			->attributes( array(
+				'class'  => 'button button-primary button-large',
+				'href'   => $url,
+				'target' => '_blank',
+			) )
+			->content(
+				$label
+			);
 	}
 }

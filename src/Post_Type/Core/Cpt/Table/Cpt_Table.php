@@ -13,21 +13,19 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_List_Table;
 use WP_Post;
 use WP_Post_Type;
 use WP_Query;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
+use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Html_Nest from Html
- * @phpstan-import-type Html_Stack from Html
+ * @phpstan-import-type Html_Node from Html_Tag
  */
 abstract class Cpt_Table extends Actor_Base implements Actor {
 	const COLUMN_PREFIX = Hard_Layout_Cpt::NAME . '_';
@@ -155,16 +153,18 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			return;
 		}
 
-		$tags = nest(
-			tag(
-				'div',
-				array( 'class' => 'notice notice-success' )
-			),
-			tag( 'p' ),
-			__( 'Item successfully cloned.', 'acf-views' )
-		);
+		$message = __( 'Item successfully cloned.', 'acf-views' );
 
-		Html_Renderer::print( $tags );
+		$tags      = tag( 'div' )
+			->attributes( array( 'class' => 'notice notice-success' ) )
+			->content(
+				tag( 'p' )
+					->content(
+						$message
+					)
+			);
+
+		print_html( $tags );
 	}
 
 	protected function print_post_type_description( WP_Post_Type $wp_post_type ): void {
@@ -175,25 +175,25 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			null;
 
 		if ( null !== $description_callback ) {
-			$tags = nest(
-				tag( 'p' ),
-				$description_callback
-			);
+			$tags    = tag( 'p' )
+				->content(
+					$description_callback
+				);
 
-			Html_Renderer::print( $tags );
+			print_html( $tags );
 
 			return;
 		}
 
 		if ( '' !== $wp_post_type->description ) {
-			$node = nest(
-				tag( 'p' ),
-				// don't use esc_html as it contains links.
-				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				fn() => print( $wp_post_type->description )
-			);
+			$node    = tag( 'p' )
+				->content(
+					// don't use esc_html as it contains links.
+					// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					fn() => print( $wp_post_type->description )
+				);
 
-			Html_Renderer::print( $node );
+			print_html( $node );
 		}
 	}
 
@@ -214,27 +214,27 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 
 			$attrs['href'] = $this->get_tab_url( $tab->get_name() );
 
-			$count = nest(
-				tag( 'span', array( 'class' => 'count' ) ),
-				sprintf( '(%s)', $tab->get_label_in_brackets() )
-			);
+			$count      = tag( 'span' )
+				->attributes( array( 'class' => 'count' ) )
+				->content(
+					sprintf( '(%s)', $tab->get_label_in_brackets() )
+				);
 
 			$count_span = '' !== $tab->get_label_in_brackets() ?
-				stack( ' ', $count ) :
-				null;
+				array(
+					' ',
+					$count,
+				) :
+				array();
 
-			$tab_link = nest(
-				tag(
-					'a',
-					$attrs
-				),
-				stack(
+			$tab_link = tag( 'a' )
+				->attributes( $attrs )
+				->content(
 					$tab->get_label(),
-					$count_span
-				)
-			);
+					...$count_span
+				);
 
-			$views[ $tab->get_name() ] = Html_Renderer::render( $tab_link );
+			$views[ $tab->get_name() ] = render_html( $tab_link );
 
 			if ( false === $is_tab_active ) {
 				continue;
@@ -263,12 +263,12 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			__( 'Search for name.', 'acf-views' );
 
 		// only primary search is available for custom items.
-		$tags = nest(
-			tag( 'style' ),
-			fn() => print( sprintf( '#posts-filter .search-box::after{content:"%s";}', esc_html( $label ) ) )
-		);
+		$tags        = tag( 'style' )
+			->content(
+				fn() => print( sprintf( '#posts-filter .search-box::after{content:"%s";}', esc_html( $label ) ) )
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 	}
 
 	/**
@@ -375,15 +375,15 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			)
 		);
 
-		$tags = nest(
-			tag(
-				'a',
-				array( 'href' => $clone_link )
-			),
-			__( 'Clone', 'acf-views' )
-		);
+		$clone_label = __( 'Clone', 'acf-views' );
 
-		$actions['clone'] = Html_Renderer::render( $tags );
+		$tags    = tag( 'a' )
+			->attributes( array( 'href' => $clone_link ) )
+			->content(
+				$clone_label
+			);
+
+		$actions['clone'] = render_html( $tags );
 		$actions['trash'] = $trash;
 
 		return $actions;
@@ -448,41 +448,37 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 				$cells[] = $this->table_cell( $current_tab_data, $cpt_data, $column_name, $column_label, $hidden );
 			}
 
-			$rows[] = nest(
-				tag( 'tr' ),
-				stack( ...$cells )
-			);
+			$rows[] = tag( 'tr' )
+				->content( ...$cells );
 		}
 
 		// hide the origin items until the custom items are pasted via JS.
-		$hide_style   = nest(
-			tag( 'style' ),
-			fn() => print( '#the-list{opacity: 0; transition: opacity ease .1s;}' )
-		);
-		$rows_table   = nest(
-			tag(
-				'div',
-				array( 'style' => array( 'display' => 'none' ) )
-			),
-			tag( 'table' ),
-			tag(
-				'tbody',
-				array( 'id' => 'acf-views-the-list' )
-			),
-			stack( ...$rows )
-		);
-		$paste_script = nest(
-			tag(
-				'script',
-				array( 'type' => 'text/javascript' )
-			),
-			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			fn() => print( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' )
-		);
+		$hide_style   = tag( 'style' )
+			->content(
+				fn() => print( '#the-list{opacity: 0; transition: opacity ease .1s;}' )
+			);
+		$rows_table   = tag( 'div' )
+			->attributes( array( 'style' => array( 'display' => 'none' ) ) )
+			->content(
+				tag( 'table' )
+					->content(
+						tag( 'tbody' )
+							->attributes( array( 'id' => 'acf-views-the-list' ) )
+							->content( ...$rows )
+					)
+			);
+		$paste_script = tag( 'script' )
+			->attributes( array( 'type' => 'text/javascript' ) )
+			->content(
+				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				fn() => print( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' )
+			);
 
-		$tags = stack( $hide_style, $rows_table, $paste_script );
-
-		Html_Renderer::print( $tags );
+		print_html(
+			$hide_style,
+			$rows_table,
+			$paste_script
+		);
 	}
 
 	public function printTableColumn( string $column_name, int $post_id ): void {
@@ -607,8 +603,6 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 
 	/**
 	 * @param string[] $hidden_columns
-	 *
-	 * @return Html_Nest
 	 */
 	protected function table_cell(
 		Tab_Data $tab_data,
@@ -616,7 +610,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		string $column_name,
 		string $column_label,
 		array $hidden_columns
-	): array {
+	): Html_Tag {
 		$is_checkbox = 'cb' === $column_name;
 		$classes     = array(
 			'cb'    => 'check-column',
@@ -630,52 +624,52 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 
 		$contents = array(
 			'cb'    => $this->checkbox_cell_content( $cpt_settings->get_unique_id(), $cpt_settings->title ),
-			'title' => fn() => $tab_data->print_row_title( $cpt_settings ),
+			'title' => array( fn() => $tab_data->print_row_title( $cpt_settings ) ),
 		);
+		$content  = $contents[ $column_name ] ?? array( fn() => $this->print_column( $column_name, $cpt_settings ) );
 
-		return nest(
-			tag(
-				$is_checkbox ?
-					'th' :
-					'td',
-				array(
-					'class'        => $classes,
-					'data-colname' => $is_checkbox ?
-						'' :
-						$column_label,
-				)
-			),
-			$contents[ $column_name ] ?? fn() => $this->print_column( $column_name, $cpt_settings )
-		);
+		$tag_name = $is_checkbox ?
+			'th' :
+			'td';
+		$colname  = $is_checkbox ?
+			'' :
+			$column_label;
+
+		return tag( $tag_name )
+			->attributes( array(
+				'class'        => $classes,
+				'data-colname' => $colname,
+			) )
+			->content( ...$content );
 	}
 
 	/**
-	 * @return Html_Stack
+	 * @return Html_Node[]
 	 */
 	protected function checkbox_cell_content( string $unique_id, string $title ): array {
-		$label = nest(
-			tag(
-				'label',
-				array(
-					'for'   => 'cb-select-' . $unique_id,
-					'class' => 'screen-reader-text',
-				)
-			),
-			// translators: %s: item title.
-			sprintf( __( 'Select %s', 'acf-views' ), $title )
-		);
+		$checkbox_id = sprintf( 'cb-select-%s', $unique_id );
+		// translators: %s: item title.
+		$select_label = __( 'Select %s', 'acf-views' );
+		$select_text  = sprintf( $select_label, $title );
 
-		return stack(
+		$label       = tag( 'label' )
+			->attributes( array(
+				'for'   => $checkbox_id,
+				'class' => 'screen-reader-text',
+			) )
+			->content(
+				$select_text
+			);
+
+		return array(
 			$label,
-			tag(
-				'input',
-				array(
-					'id'    => 'cb-select-' . $unique_id,
+			tag( 'input' )
+				->attributes( array(
+					'id'    => $checkbox_id,
 					'type'  => 'checkbox',
 					'value' => $unique_id,
 					'name'  => 'post[]',
-				)
-			)
+				) ),
 		);
 	}
 }

@@ -37,9 +37,11 @@ class True_False_Field extends Markup_Field_Base {
 			$parts[] = $item_class_part;
 		}
 
-		return tag(
-			'div',
-			array( 'class' => Composed_Htmlable::compose( $parts ) )
+		$composed_class = Composed_Htmlable::compose( $parts );
+
+		return array(
+			tag( 'div' )
+				->attributes( array( 'class' => $composed_class ) ),
 		);
 	}
 

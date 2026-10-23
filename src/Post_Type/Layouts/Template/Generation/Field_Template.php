@@ -16,11 +16,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Label_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Outer_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Wrapper_Printer;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Field_Template {
 	private Field_Provider_Cluster $provider_cluster;
@@ -88,7 +87,7 @@ class Field_Template {
 
 		Format_Token::tabulation( $tabs_number );
 
-		Html_Renderer::print( $markup_field_instance->compose_html( $field_id, $markup_field_data ) );
+		print_html( ...$markup_field_instance->compose_html( $field_id, $markup_field_data ) );
 
 		Format_Token::next_line();
 
@@ -183,11 +182,11 @@ class Field_Template {
 
 		$is_with_label = strlen( $field_settings->label ) > 0;
 		$label_outside = $is_with_label && $is_label_out_of_row ?
-			$print_label :
-			null;
+			array( $print_label ) :
+			array();
 		$label_inside  = $is_with_label && ! $is_label_out_of_row ?
-			$print_label :
-			null;
+			array( $print_label ) :
+			array();
 
 		$content = Outer_Printer::wrap_with_outers(
 			$field_assets,
@@ -218,7 +217,10 @@ class Field_Template {
 			) :
 			$content;
 
-		$row_inner = stack( $label_inside, $field_layer );
+		$row_inner = array(
+			...$label_inside,
+			...$field_layer,
+		);
 		$row_layer = $is_with_row_wrapper ?
 			Wrapper_Printer::wrap(
 				Wrapper_Printer::row_tag(
@@ -235,9 +237,7 @@ class Field_Template {
 			) :
 			$row_inner;
 
-		$tags = stack( $label_outside, $row_layer );
-
-		Html_Renderer::print( $tags );
+		print_html( ...$label_outside, ...$row_layer );
 
 		return $tabs_number;
 	}

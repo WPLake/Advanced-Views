@@ -9,16 +9,16 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Html;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-import-type Html_Element from Html
+ * @phpstan-import-type Html_Node from Html_Tag
  */
 interface Markup_Field {
 	/**
-	 * @return Html_Element
+	 * @return Html_Node[]
 	 */
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array;
 

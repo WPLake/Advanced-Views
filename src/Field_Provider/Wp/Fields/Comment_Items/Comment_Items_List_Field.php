@@ -14,11 +14,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Comment;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Comment_Items_List_Field extends Markup_Field_Base {
 	const AUTHOR_NAME = 'author_name';
@@ -30,15 +28,13 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
 		$comment_attributes = array( 'class' => $this->get_field_class( 'comment', $markup_field_data ) );
 
-		$tags = nest(
-			tag(
-				'div',
-				$comment_attributes
-			),
-			fn() => $this->print_comment_content( $item_id, $markup_field_data )
-		);
+		$tags      = tag( 'div' )
+			->attributes( $comment_attributes )
+			->content(
+				fn() => $this->print_comment_content( $item_id, $markup_field_data )
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 	}
 
 	protected function print_comment_content( string $item_id, Template_Field_Data $markup_field_data ): void {
@@ -63,15 +59,13 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		$tags = nest(
-			tag(
-				'div',
-				$author_attributes
-			),
-			$print_author_name
-		);
+		$tags      = tag( 'div' )
+			->attributes( $author_attributes )
+			->content(
+				$print_author_name
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->print_tabs();
@@ -91,15 +85,13 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		$node = nest(
-			tag(
-				'div',
-				$content_attributes
-			),
-			$print_content
-		);
+		$node       = tag( 'div' )
+			->attributes( $content_attributes )
+			->content(
+				$print_content
+			);
 
-		Html_Renderer::print( $node );
+		print_html( $node );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
@@ -254,7 +246,9 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 							->new_line();
 		};
 
-		return stack( $print_loop );
+		return array(
+			$print_loop,
+		);
 	}
 
 	/**

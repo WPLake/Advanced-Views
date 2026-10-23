@@ -17,11 +17,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
-use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\nest;
+use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	const ARGUMENT_FROM_LAYOUT = '_from';
@@ -53,21 +51,19 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	}
 
 	protected function print_link_with_js_hover( string $url, string $title ): void {
-		$tags = nest(
-			tag(
-				'a',
-				array(
-					'href'        => $url,
-					'target'      => '_blank',
-					'style'       => array( 'transition' => 'all .3s ease' ),
-					'onMouseOver' => "this.style.filter='brightness(30%)'",
-					'onMouseOut'  => "this.style.filter='brightness(100%)'",
-				)
-			),
-			$title
-		);
+		$tags    = tag( 'a' )
+			->attributes( array(
+				'href'        => $url,
+				'target'      => '_blank',
+				'style'       => array( 'transition' => 'all .3s ease' ),
+				'onMouseOver' => "this.style.filter='brightness(30%)'",
+				'onMouseOut'  => "this.style.filter='brightness(100%)'",
+			) )
+			->content(
+				$title
+			);
 
-		Html_Renderer::print( $tags );
+		print_html( $tags );
 	}
 
 	/**
@@ -194,12 +190,12 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				$this->selections_cpt->labels()->plural_name()
 			);
 
-			$node = nest(
-				tag( 'p' ),
-				$message
-			);
+			$node    = tag( 'p' )
+				->content(
+					$message
+				);
 
-			Html_Renderer::print( $node );
+			print_html( $node );
 		}
 
 		$last_item_index = count( $related_cards ) - 1;
@@ -220,12 +216,12 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 
 		if ( array() !== $related_cards ||
 			$is_list_look ) {
-			$markup_tags = stack(
+			$markup_tags = array(
 				tag( 'br' ),
-				tag( 'br' )
+				tag( 'br' ),
 			);
 
-			Html_Renderer::print( $markup_tags );
+			print_html( ...$markup_tags );
 		}
 
 		$post_id = $layout_settings->get_post_id();
@@ -242,26 +238,25 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			);
 
 			$label = __( 'Query posts to display using this Layout', 'acf-views' );
-			$tags  = nest(
-				tag(
-					'a',
-					array(
-						'href'   => $url,
-						'target' => '_blank',
-						'class'  => 'button',
-						'style'  => array(
-							'min-height'  => '0',
-							'line-height' => '1.2',
-							'padding'     => '3px 7px',
-							'font-size'   => '11px',
-							'transition'  => 'all .3s ease',
-						),
-					)
-				),
-				$label
-			);
 
-			Html_Renderer::print( $tags );
+			$tags    = tag( 'a' )
+				->attributes( array(
+					'href'   => $url,
+					'target' => '_blank',
+					'class'  => 'button',
+					'style'  => array(
+						'min-height'  => '0',
+						'line-height' => '1.2',
+						'padding'     => '3px 7px',
+						'font-size'   => '11px',
+						'transition'  => 'all .3s ease',
+					),
+				) )
+				->content(
+					$label
+				);
+
+			print_html( $tags );
 		}
 	}
 

@@ -18,11 +18,11 @@ final class Html_Renderer {
 	 * @deprecated Use the render_html() function directly (Template/Html/utils.php). The mark is a guard against
 	 * direct usage: this method is only a helper of the function.
 	 *
-	 * @param Html_Node[] $nodes
+	 * @param Html_Node ...$nodes
 	 */
-	public static function render( array $nodes ): string {
+	public static function render( ...$nodes ): string {
 		ob_start();
-		self::print( $nodes );
+		self::print( ...$nodes );
 
 		return (string) ob_get_clean();
 	}
@@ -31,9 +31,9 @@ final class Html_Renderer {
 	 * @deprecated Use the print_html() function directly (Template/Html/utils.php). The mark is a guard against
 	 * direct usage: this method is only a helper of the function.
 	 *
-	 * @param Html_Node[] $nodes
+	 * @param Html_Node ...$nodes
 	 */
-	public static function print( array $nodes ): void {
+	public static function print( ...$nodes ): void {
 		foreach ( $nodes as $node ) {
 			self::print_node( $node );
 		}
@@ -56,7 +56,7 @@ final class Html_Renderer {
 		$content = $tag->get_content();
 
 		Tag_Printer::print_opening( $tag );
-		self::print( $content );
+		self::print( ...$content );
 		Tag_Printer::print_closing( $tag );
 	}
 
