@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;

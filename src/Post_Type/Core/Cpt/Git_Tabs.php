@@ -21,7 +21,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Tab_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Repository_Item;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\stack;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Template\Html\nest;

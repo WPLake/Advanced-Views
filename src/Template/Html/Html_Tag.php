@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Tag;
+namespace Org\Wplake\Advanced_Views\Template\Html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -10,7 +10,7 @@ use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 
 /**
- * @phpstan-type Tag_Content Html_Tag|string|Htmlable|Closure
+ * @phpstan-type Html_Node Html_Tag|string|Htmlable|Closure
  */
 final class Html_Tag {
 	private string $tag;
@@ -19,7 +19,7 @@ final class Html_Tag {
 	 */
 	private array $attributes = array();
 	/**
-	 * @var array<int,Tag_Content>
+	 * @var array<int,Html_Node>
 	 */
 	private array $content = array();
 
@@ -37,7 +37,7 @@ final class Html_Tag {
 	}
 
 	/**
-	 * @param Tag_Content[] $items
+	 * @param Html_Node[] $items
 	 */
 	public function content( array $items ): self {
 		$this->content = array_merge( $this->content, $items );
@@ -57,7 +57,7 @@ final class Html_Tag {
 	}
 
 	/**
-	 * @return array<int,Tag_Content>
+	 * @return array<int,Html_Node>
 	 */
 	public function get_content(): array {
 		return $this->content;
