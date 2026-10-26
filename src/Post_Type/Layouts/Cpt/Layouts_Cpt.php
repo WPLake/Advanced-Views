@@ -8,17 +8,17 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt as Plugin_Layouts_Cpt;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 defined( 'ABSPATH' ) || exit;
 
 class Layouts_Cpt extends Cpt {
 	// phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod.Found -- narrows parameter types.
-	public function __construct( Plugin_Layouts_Cpt $plugin_cpt, Layout_Settings_Storage $settings_storage ) {
-		parent::__construct( $plugin_cpt, $settings_storage );
+	public function __construct( Plugin_Layouts_Cpt $plugin_cpt, Layout_Settings_Storage $settings_storage, Html_Renderer $html_renderer ) {
+		parent::__construct( $plugin_cpt, $settings_storage, $html_renderer );
 	}
 
 	public function add_cpt(): void {
@@ -40,7 +40,7 @@ class Layouts_Cpt extends Cpt {
 			$directly_text,
 		);
 
-		$description  = render_html( ...$tags );
+		$description  = $this->html_renderer->render( ...$tags );
 		$description .= $this->get_storage_label();
 
 		$cpt_args = array(

@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
@@ -19,7 +20,6 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditi
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\compose_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
@@ -28,8 +28,10 @@ class Post_Selection_Markup {
 	private Front_Assets $front_assets;
 	protected Token_Factory_Storage $token_factory_storage;
 	private Layouts_Cpt $layout_cpt;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Layouts_Cpt $layout_cpt ) {
+	public function __construct( Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Layouts_Cpt $layout_cpt, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->layout_cpt            = $layout_cpt;
@@ -81,7 +83,7 @@ class Post_Selection_Markup {
 				fn() => print( "\r\n\t" ),
 			);
 
-			print_html( ...$tags );
+			$this->html_renderer->print( ...$tags );
 		};
 
 		$body       = $token_factory->html( $print_pagination );
@@ -342,7 +344,7 @@ class Post_Selection_Markup {
 			->attributes( array( 'class' => $root_class ) )
 			->content( ...$root_content );
 
-		print_html( $root, $new_line );
+		$this->html_renderer->print( $root, $new_line );
 	}
 
 	protected function items_branch( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings, int &$tabs_number ): IF_Branch {
@@ -414,7 +416,7 @@ class Post_Selection_Markup {
 			$print_branches_end,
 		);
 
-		print_html( ...$tags );
+		$this->html_renderer->print( ...$tags );
 
 		return $tabs_number;
 	}
@@ -483,7 +485,7 @@ class Post_Selection_Markup {
 				$message_var
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 
 		$token_factory->formatter()
 						->new_line()

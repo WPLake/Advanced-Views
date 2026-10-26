@@ -23,13 +23,20 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Layouts_Bulk_Validation_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Layouts_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Row_Title_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Layout_Tabs_Factory extends Factory_Base {
 	public function fs_only_tab(): Fs_Only_Tab {
 		$cpt_table        = $this->resolve( Layouts_Cpt_Table::class );
 		$settings_storage = $this->resolve( Layout_Settings_Storage::class );
 
-		return new Fs_Only_Tab( $cpt_table, $settings_storage );
+		return new Fs_Only_Tab(
+			$cpt_table,
+			$settings_storage,
+			$this->resolve( Html_Renderer::class ),
+			$this->resolve( Row_Title_Printer::class )
+		);
 	}
 
 	public function bulk_validation_tab(): Layouts_Bulk_Validation_Tab {
@@ -38,11 +45,12 @@ class Layout_Tabs_Factory extends Factory_Base {
 		$fs_only_tab      = $this->fs_only_tab();
 		$layout_factory   = $this->resolve( Layout_Factory::class );
 
-		return new Layouts_Bulk_Validation_Tab( $cpt_table, $settings_storage, $fs_only_tab, $layout_factory );
+		return new Layouts_Bulk_Validation_Tab( $cpt_table, $settings_storage, $fs_only_tab, $layout_factory, $this->resolve( Row_Title_Printer::class ) );
 	}
 
 	public function pre_built_tab(): Layouts_Pre_Built_Tab {
 		$logger           = $this->resolve( Logger::class );
+		$html_renderer    = $this->resolve( Html_Renderer::class );
 		$layout_cpt       = $this->resolve( Layouts_Cpt::class );
 		$plugin_meta      = $this->resolve( Plugin_Meta::class );
 		$engines_storage  = $this->resolve( Engines_Storage::class );
@@ -51,7 +59,7 @@ class Layout_Tabs_Factory extends Factory_Base {
 
 		$folder_name    = $layout_cpt->folder_name();
 		$pre_built_path = $plugin_meta->get_root_path( 'pre_built' );
-		$file_system    = new File_System( $logger, $folder_name, $pre_built_path );
+		$file_system    = new File_System( $logger, $folder_name, $html_renderer, $pre_built_path );
 		$fs_fields      = new Layout_Fs_Fields( $engines_storage );
 		$db_management  = new Db_Management( $logger, $file_system, $layout_cpt, true );
 
@@ -73,7 +81,9 @@ class Layout_Tabs_Factory extends Factory_Base {
 			$pre_built_settings_storage,
 			$provider_cluster,
 			$migrator,
-			$logger
+			$logger,
+			$html_renderer,
+			$this->resolve( Row_Title_Printer::class )
 		);
 	}
 }

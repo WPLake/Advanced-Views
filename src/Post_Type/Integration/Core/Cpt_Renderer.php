@@ -12,20 +12,23 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Shortcode\Shortcode_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 final class Cpt_Renderer {
 	private Shortcode_Renderer $shortcode;
 	private Cpt_Settings_Storage $settings_storage;
 	private Plugin_Cpt $cpt;
+	protected Html_Renderer $html_renderer;
 
 	public function __construct(
 		Shortcode_Renderer $shortcode,
 		Cpt_Settings_Storage $settings_storage,
-		Public_Cpt $cpt
+		Public_Cpt $cpt,
+		Html_Renderer $html_renderer
 	) {
+		$this->html_renderer = $html_renderer;
 		$this->shortcode        = $shortcode;
 		$this->settings_storage = $settings_storage;
 		$this->cpt              = $cpt;
@@ -57,7 +60,7 @@ final class Cpt_Renderer {
 
 			$placeholder_message = __( 'No output to preview', 'acf-views' );
 
-			return self::make_placeholder( $placeholder_message );
+			return $this->make_placeholder( $placeholder_message );
 		}
 
 		return $this->get_empty_preview_placeholder();
@@ -70,7 +73,7 @@ final class Cpt_Renderer {
 
 		$label = sprintf( $message, $singular_name );
 
-		return self::make_placeholder( $label );
+		return $this->make_placeholder( $label );
 	}
 
 	/**
@@ -93,19 +96,19 @@ final class Cpt_Renderer {
 					fn() => print( $minified_css )
 				);
 
-			return render_html( $tags );
+			return $this->html_renderer->render( $tags );
 		}
 
 		return '';
 	}
 
-	protected static function make_placeholder( string $message ): string {
+	protected function make_placeholder( string $message ): string {
 		$tags    = tag( 'p' )
 			->attributes( array( 'class' => 'avf-cpt-block__placeholder' ) )
 			->content(
 				sprintf( '[%s]', $message )
 			);
 
-		return render_html( $tags );
+		return $this->html_renderer->render( $tags );
 	}
 }

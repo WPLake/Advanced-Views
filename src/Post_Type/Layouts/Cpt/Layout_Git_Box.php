@@ -15,6 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Git_Meta_Box;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Layout_Git_Box extends Git_Meta_Box {
 	private Field_Provider_Cluster $provider_cluster;
@@ -26,9 +27,10 @@ class Layout_Git_Box extends Git_Meta_Box {
 		Layout_Settings_Storage $layouts_settings_storage,
 		Git_Api_Interface $git_api,
 		Field_Provider_Cluster $provider_cluster,
-		Plugin_Meta $plugin_meta
+		Plugin_Meta $plugin_meta,
+		Html_Renderer $html_renderer
 	) {
-		parent::__construct( $layout_cpt, $settings, $layouts_settings_storage, $git_api, $plugin_meta );
+		parent::__construct( $layout_cpt, $settings, $layouts_settings_storage, $git_api, $plugin_meta, $html_renderer );
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
 		$this->provider_cluster         = $provider_cluster;

@@ -14,11 +14,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use WP_REST_Request;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Post_Selection_Factory extends Instance_Factory {
 	protected Post_Query $query_builder;
 	protected Post_Selection_Markup $post_selection_markup;
 	protected Template_Renderer_Storage $template_renderer_storage;
+	protected Html_Renderer $html_renderer;
 	private Selection_Settings_Storage $post_selections_settings_storage;
 
 	public function __construct(
@@ -26,10 +28,12 @@ class Post_Selection_Factory extends Instance_Factory {
 		Post_Query $query_builder,
 		Post_Selection_Markup $post_selection_markup,
 		Template_Renderer_Storage $template_renderer_storage,
-		Selection_Settings_Storage $post_selections_settings_storage
+		Selection_Settings_Storage $post_selections_settings_storage,
+		Html_Renderer $html_renderer
 	) {
 		parent::__construct( $front_assets );
 
+		$this->html_renderer = $html_renderer;
 		$this->query_builder                    = $query_builder;
 		$this->post_selection_markup            = $post_selection_markup;
 		$this->template_renderer_storage        = $template_renderer_storage;
@@ -45,7 +49,7 @@ class Post_Selection_Factory extends Instance_Factory {
 	}
 
 	public function make( Post_Selection_Settings $post_selection_settings, string $classes = '' ): Post_Selection {
-		return new Post_Selection( $this->template_renderer_storage, $post_selection_settings, $this->query_builder, $this->post_selection_markup, $classes );
+		return new Post_Selection( $this->template_renderer_storage, $post_selection_settings, $this->query_builder, $this->post_selection_markup, $this->html_renderer, $classes );
 	}
 
 	public function make_and_print_html(

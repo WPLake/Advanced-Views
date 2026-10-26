@@ -14,12 +14,15 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Template_Engine;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 final class Blade_Template_Engine implements Template_Engine {
 	private Logger $logger;
 	private Settings_Storage $settings;
+	private Html_Renderer $html_renderer;
 
-	public function __construct( Logger $logger, Settings_Storage $settings ) {
+	public function __construct( Logger $logger, Settings_Storage $settings, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->logger   = $logger;
 		$this->settings = $settings;
 	}
@@ -37,7 +40,8 @@ final class Blade_Template_Engine implements Template_Engine {
 			$render_folder,
 			$this->logger,
 			$this->settings,
-			WP_Filesystem_Factory::get_wp_filesystem()
+			WP_Filesystem_Factory::get_wp_filesystem(),
+			$this->html_renderer
 		);
 	}
 

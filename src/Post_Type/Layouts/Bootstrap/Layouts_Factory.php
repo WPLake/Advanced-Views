@@ -20,13 +20,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Layouts_Factory extends Factory_Base {
 	public function editor_settings(): Cpt_Gutenberg_Editor_Settings {
 		$layouts_cpt = $this->resolve( Layouts_Cpt::class );
 		$cpt_name    = $layouts_cpt->cpt_name();
 
-		return new Cpt_Gutenberg_Editor_Settings( $cpt_name );
+		return new Cpt_Gutenberg_Editor_Settings( $cpt_name, $this->resolve( Html_Renderer::class ) );
 	}
 
 	public function assets_reducer(): Cpt_Assets_Reducer {
@@ -34,7 +35,7 @@ class Layouts_Factory extends Factory_Base {
 		$layouts_cpt      = $this->resolve( Layouts_Cpt::class );
 		$cpt_name         = $layouts_cpt->cpt_name();
 
-		return new Cpt_Assets_Reducer( $settings_storage, $cpt_name );
+		return new Cpt_Assets_Reducer( $settings_storage, $cpt_name, $this->resolve( Html_Renderer::class ) );
 	}
 
 	public function layout_settings(): Layout_Settings {
@@ -55,7 +56,7 @@ class Layouts_Factory extends Factory_Base {
 	public function settings_storage(): Layout_Settings_Storage {
 		$logger      = $this->resolve( Logger::class );
 		$layouts_cpt = $this->resolve( Layouts_Cpt::class );
-		$file_system = new File_System( $logger, $layouts_cpt->folder_name() );
+		$file_system = new File_System( $logger, $layouts_cpt->folder_name(), $this->resolve( Html_Renderer::class ) );
 
 		return new Layout_Settings_Storage(
 			$logger,

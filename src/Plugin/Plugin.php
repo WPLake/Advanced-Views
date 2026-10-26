@@ -15,11 +15,11 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -33,8 +33,10 @@ class Plugin extends Actor_Base implements Actor {
 
 	private Options_Storage $options;
 	private Cpt_Theme_Settings $settings;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Options_Storage $options, Cpt_Theme_Settings $settings ) {
+	public function __construct( Options_Storage $options, Cpt_Theme_Settings $settings, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->options               = $options;
 		$this->settings              = $settings;
 		$this->is_switching_versions = false;
@@ -286,7 +288,7 @@ class Plugin extends Actor_Base implements Actor {
 					)
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	/**
@@ -485,6 +487,6 @@ class Plugin extends Actor_Base implements Actor {
 					)
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 }

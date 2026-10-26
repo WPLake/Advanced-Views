@@ -14,17 +14,19 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Filesystem_Base;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Templates_Environment extends Loggable_Actor implements Actor {
 	private string $uploads_folder;
 
 	private ?WP_Filesystem_Base $wp_filesystem_base;
 	private Plugin $plugin;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( string $uploads_folder, Logger $logger, Plugin $plugin ) {
+	public function __construct( string $uploads_folder, Logger $logger, Plugin $plugin, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		parent::__construct( $logger );
 
 		$this->uploads_folder     = $uploads_folder;
@@ -74,7 +76,7 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 					)
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	public function create_templates_dir(): void {
@@ -142,7 +144,7 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 			),
 		);
 
-		print_html( ...$tags );
+		$this->html_renderer->print( ...$tags );
 	}
 
 	protected function is_templates_dir_writable(): bool {

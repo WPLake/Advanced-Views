@@ -4,9 +4,9 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Utils;
 
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -37,14 +37,14 @@ abstract class Profiler {
 			$callback;
 	}
 
-	public static function plugin_loaded( float $start_timestamp ): void {
+	public static function plugin_loaded( float $start_timestamp, Html_Renderer $html_renderer ): void {
 		if ( self::is_active() ) {
 			self::$plugin_loaded_sec = microtime( true ) - $start_timestamp;
-			add_action( 'shutdown', array( self::class, 'print_report' ) );
+			add_action( 'shutdown', fn() => self::print_report( $html_renderer ) );
 		}
 	}
 
-	public static function print_report(): void {
+	public static function print_report( Html_Renderer $html_renderer ): void {
 		$classes_total_usage = self::get_classes_total_usage();
 		$total_usage         = self::get_total_usage();
 		$classes_amount      = count( $classes_total_usage );
@@ -67,7 +67,7 @@ abstract class Profiler {
 				self::pre_chain( self::$class_hooks_usage )
 			);
 
-		print_html( $tags );
+		$html_renderer->print( $tags );
 	}
 
 	/**

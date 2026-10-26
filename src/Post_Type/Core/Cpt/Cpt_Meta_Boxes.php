@@ -10,9 +10,9 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -22,8 +22,10 @@ defined( 'ABSPATH' ) || exit;
 abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	private Postbox_Printer $postbox;
 	private Plugin $plugin;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Postbox_Printer $postbox, Plugin $plugin ) {
+	public function __construct( Postbox_Printer $postbox, Plugin $plugin, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->postbox = $postbox;
 		$this->plugin  = $plugin;
 	}
@@ -71,7 +73,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 		$post_types_line = self::create_post_types_line( $post_types );
 		$pages_line      = self::create_pages_line( $post_links, array() !== $post_types );
 
-		print_html( ...$post_types_line, ...$pages_line );
+		$this->html_renderer->print( ...$post_types_line, ...$pages_line );
 	}
 
 	abstract protected function get_cpt_name(): string;

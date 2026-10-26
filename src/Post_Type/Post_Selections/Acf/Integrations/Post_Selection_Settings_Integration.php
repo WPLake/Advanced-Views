@@ -15,9 +15,9 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -27,13 +27,16 @@ class Post_Selection_Settings_Integration extends Acf_Integration_Base {
 	private Field_Provider_Cluster $provider_cluster;
 	private Plugin_Cpt $plugin_cpt;
 	private Engines_Storage $engines_storage;
+	protected Html_Renderer $html_renderer;
 
 	public function __construct(
 		Selections_Cpt $selection_cpt,
 		Field_Provider_Cluster $provider_cluster,
 		Layouts_Cpt $plugin_cpt,
-		Engines_Storage $engines_storage
+		Engines_Storage $engines_storage,
+		Html_Renderer $html_renderer
 	) {
+		$this->html_renderer = $html_renderer;
 		parent::__construct( $selection_cpt->cpt_name() );
 
 		$this->provider_cluster = $provider_cluster;
@@ -104,7 +107,7 @@ class Post_Selection_Settings_Integration extends Acf_Integration_Base {
 				$label
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {

@@ -15,6 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
@@ -22,7 +23,6 @@ use WP_Post;
 use function Org\Wplake\Advanced_Views\Template\Html\compose_html;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Menu_Items_Field extends Markup_Field_Base {
 	const IS_ACTIVE       = 'isActive';
@@ -33,12 +33,14 @@ class Menu_Items_Field extends Markup_Field_Base {
 
 	private Link_Field $link_field;
 
-	public function __construct( Link_Field $link_field ) {
+	public function __construct( Link_Field $link_field, Html_Renderer $html_renderer ) {
+		parent::__construct( $html_renderer );
+
 		$this->link_field = $link_field;
 	}
 
 	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
-		print_html( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
+		$this->html_renderer->print( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
 	}
 
 	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
@@ -139,7 +141,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 			fn() => $markup_field_data->print_new_line_and_decrement_tabs(),
 		);
 
-		print_html( ...$tags );
+		$this->html_renderer->print( ...$tags );
 	}
 
 	protected function children_branch( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): IF_Branch {
@@ -198,7 +200,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 				$print_children
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 
 		$token_factory->formatter()
 						->new_line();
@@ -227,7 +229,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 			fn() => $markup_field_data->print_new_line_and_decrement_tabs(),
 		);
 
-		print_html( ...$tags );
+		$this->html_renderer->print( ...$tags );
 	}
 
 	protected function compose_class(

@@ -16,6 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Interactive_Fields;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Assets_Factory extends Factory_Base {
 	public function front_assets(): Front_Assets {
@@ -23,7 +24,8 @@ class Assets_Factory extends Factory_Base {
 			$this->resolve( Asset_Resolver::class ),
 			$this->resolve( Layout_Settings_Storage::class )->get_file_system(),
 			$this->resolve( Field_Provider_Cluster::class ),
-			$this->resolve( Live_Reloader_Component::class )
+			$this->resolve( Live_Reloader_Component::class ),
+			$this->resolve( Html_Renderer::class )
 		);
 	}
 

@@ -13,14 +13,13 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_List_Table;
 use WP_Post;
 use WP_Post_Type;
 use WP_Query;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
-use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -45,8 +44,10 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 	private ?string $current_search_value;
 	private ?int $pagination_per_page;
 	protected Public_Cpt $public_plugin_cpt;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Cpt_Settings_Storage $cpt_settings_storage, Public_Cpt $public_cpt ) {
+	public function __construct( Cpt_Settings_Storage $cpt_settings_storage, Public_Cpt $public_cpt, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->cpt_settings_storage = $cpt_settings_storage;
 		$this->public_plugin_cpt    = $public_cpt;
 		$this->cpt_name             = $public_cpt->cpt_name();
@@ -164,7 +165,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 					)
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	protected function print_post_type_description( WP_Post_Type $wp_post_type ): void {
@@ -180,7 +181,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 					$description_callback
 				);
 
-			print_html( $tags );
+			$this->html_renderer->print( $tags );
 
 			return;
 		}
@@ -193,7 +194,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 					fn() => print( $wp_post_type->description )
 				);
 
-			print_html( $node );
+			$this->html_renderer->print( $node );
 		}
 	}
 
@@ -234,7 +235,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 					...$count_span
 				);
 
-			$views[ $tab->get_name() ] = render_html( $tab_link );
+			$views[ $tab->get_name() ] = $this->html_renderer->render( $tab_link );
 
 			if ( false === $is_tab_active ) {
 				continue;
@@ -268,7 +269,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 				fn() => print( sprintf( '#posts-filter .search-box::after{content:"%s";}', esc_html( $label ) ) )
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	/**
@@ -383,7 +384,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 				$clone_label
 			);
 
-		$actions['clone'] = render_html( $tags );
+		$actions['clone'] = $this->html_renderer->render( $tags );
 		$actions['trash'] = $trash;
 
 		return $actions;
@@ -474,7 +475,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 				fn() => print( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' )
 			);
 
-		print_html(
+		$this->html_renderer->print(
 			$hide_style,
 			$rows_table,
 			$paste_script

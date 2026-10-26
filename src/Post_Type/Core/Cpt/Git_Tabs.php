@@ -21,8 +21,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Tab_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Repository_Item;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 abstract class Git_Tabs extends External_Storage_Tab {
 	use Safe_Array_Arguments;
@@ -56,9 +56,11 @@ abstract class Git_Tabs extends External_Storage_Tab {
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Field_Provider_Cluster $provider_cluster,
-		Logger $logger
+		Logger $logger,
+		Html_Renderer $html_renderer,
+		Row_Title_Printer $row_title_printer
 	) {
-		parent::__construct( $cpt_table, $cpt_settings_storage, $provider_cluster, $cpt_settings_migrator, $logger );
+		parent::__construct( $cpt_table, $cpt_settings_storage, $provider_cluster, $cpt_settings_migrator, $logger, $html_renderer, $row_title_printer );
 
 		$this->settings           = $settings;
 		$this->git_api            = $git_api;
@@ -113,7 +115,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			__( 'to clear the cache.', 'acf-views' ),
 		);
 
-		print_html( ...$tags );
+		$this->html_renderer->print( ...$tags );
 	}
 
 	protected function get_reset_cache_link( string $repository_id ): string {
@@ -448,7 +450,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 					)
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {
@@ -461,7 +463,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			)
 		);
 
-		Row_Title_Printer::print_row_title(
+		$this->row_title_printer->print_row_title(
 			$cpt_settings->title,
 			'import',
 			$import_link,

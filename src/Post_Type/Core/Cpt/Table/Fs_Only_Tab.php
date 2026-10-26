@@ -8,8 +8,8 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -22,9 +22,11 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 	const KEY_RESULT_MESSAGE = self::KEY_PREFIX . 'result-ids';
 
 	private Cpt_Settings_Storage $cpt_settings_storage;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Cpt_Table $cpt_table, Cpt_Settings_Storage $cpt_settings_storage ) {
-		parent::__construct( $cpt_table );
+	public function __construct( Cpt_Table $cpt_table, Cpt_Settings_Storage $cpt_settings_storage, Html_Renderer $html_renderer, Row_Title_Printer $row_title_printer ) {
+		$this->html_renderer = $html_renderer;
+		parent::__construct( $cpt_table, $row_title_printer );
 
 		$this->cpt_settings_storage = $cpt_settings_storage;
 	}
@@ -86,7 +88,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 				$read_more_link,
 			);
 
-			print_html( ...$tags );
+			$this->html_renderer->print( ...$tags );
 		};
 
 		$tab_data->set_description_callback( $print_description );
@@ -192,7 +194,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 				$links_message
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {
@@ -202,7 +204,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 				'_wpnonce'              => wp_create_nonce( 'bulk-posts' ),
 			)
 		);
-		Row_Title_Printer::print_row_title(
+		$this->row_title_printer->print_row_title(
 			$cpt_settings->title,
 			'sync',
 			$url,

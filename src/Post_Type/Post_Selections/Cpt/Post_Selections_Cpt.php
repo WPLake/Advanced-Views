@@ -12,9 +12,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Selection_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
-use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -26,9 +25,10 @@ class Post_Selections_Cpt extends Cpt {
 	public function __construct(
 		Selections_Cpt $plugin_cpt,
 		Selection_Settings_Storage $post_selections_settings_storage,
-		Post_Selection_Factory $post_selection_factory
+		Post_Selection_Factory $post_selection_factory,
+		Html_Renderer $html_renderer
 	) {
-		parent::__construct( $plugin_cpt, $post_selections_settings_storage );
+		parent::__construct( $plugin_cpt, $post_selections_settings_storage, $html_renderer );
 
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
 		$this->post_selection_factory           = $post_selection_factory;
@@ -51,7 +51,7 @@ class Post_Selections_Cpt extends Cpt {
 			__( 'Add filters, sorting and pagination as needed.', 'acf-views' ),
 		);
 
-		$description  = render_html( ...$tags );
+		$description  = $this->html_renderer->render( ...$tags );
 		$description .= $this->get_storage_label();
 
 		$cpt_args = array(

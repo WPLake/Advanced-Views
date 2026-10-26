@@ -17,9 +17,9 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 abstract class Git_Meta_Box extends Actor_Base implements Actor {
 
@@ -36,14 +36,17 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	 */
 	private array $pushing_unique_ids;
 	private Plugin_Meta $plugin_meta;
+	protected Html_Renderer $html_renderer;
 
 	public function __construct(
 		Plugin_Cpt $cpt,
 		Settings_Storage $settings,
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Git_Api_Interface $git_api,
-		Plugin_Meta $plugin_meta
+		Plugin_Meta $plugin_meta,
+		Html_Renderer $html_renderer
 	) {
+		$this->html_renderer = $html_renderer;
 		$this->cpt_name             = $cpt->cpt_name();
 		$this->settings             = $settings;
 		$this->cpt_settings_storage = $cpt_settings_storage;
@@ -95,7 +98,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 				$button
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	/**

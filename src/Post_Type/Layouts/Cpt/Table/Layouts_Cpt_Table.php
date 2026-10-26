@@ -19,6 +19,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use WP_Query;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Layouts_Cpt_Table extends Cpt_Table {
 	const COLUMN_DESCRIPTION             = self::COLUMN_PREFIX . 'description';
@@ -36,9 +37,10 @@ class Layouts_Cpt_Table extends Cpt_Table {
 		Layouts_Cpt $public_cpt,
 		Postbox_Printer $postbox,
 		Layout_Meta_Boxes $layouts_cpt_meta_boxes,
-		Selections_Cpt $plugin_cpt
+		Selections_Cpt $plugin_cpt,
+		Html_Renderer $html_renderer
 	) {
-		parent::__construct( $cpt_settings_storage, $public_cpt );
+		parent::__construct( $cpt_settings_storage, $public_cpt, $html_renderer );
 
 		$this->postbox                = $postbox;
 		$this->layouts_cpt_meta_boxes = $layouts_cpt_meta_boxes;

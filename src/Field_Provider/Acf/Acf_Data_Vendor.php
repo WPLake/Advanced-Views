@@ -200,7 +200,8 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 			$this,
 			$container->resolve( Layout_Shortcode::class ),
 			$container->resolve( Settings_Storage::class ),
-			$container->resolve( Layouts_Cpt::class )
+			$container->resolve( Layouts_Cpt::class ),
+			$this->html_renderer
 		);
 	}
 
@@ -209,59 +210,59 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	 */
 	public function get_field_types(): array {
 		$basic = array(
-			'text'     => new Plain_Field(),
+			'text'     => new Plain_Field( $this->html_renderer ),
 			// we don't need ACF to wrap every line of the value with <p> tags.
-			'textarea' => new Html_Field( false, true ),
-			'number'   => new Plain_Field(),
-			'range'    => new Plain_Field(),
-			'email'    => new Plain_Field(),
-			'url'      => new Url_Field(),
-			'password' => new Plain_Field(),
+			'textarea' => new Html_Field( $this->html_renderer, false, true ),
+			'number'   => new Plain_Field( $this->html_renderer ),
+			'range'    => new Plain_Field( $this->html_renderer ),
+			'email'    => new Plain_Field( $this->html_renderer ),
+			'url'      => new Url_Field( $this->html_renderer ),
+			'password' => new Plain_Field( $this->html_renderer ),
 		);
 
 		$content = array(
-			'image'   => new Image_Field(),
-			'file'    => new File_Field( new Link_Field() ),
-			'wysiwyg' => new Html_Field(),
-			'oembed'  => new Html_Field(),
-			'gallery' => new Gallery_Field( new Image_Field() ),
+			'image'   => new Image_Field( $this->html_renderer ),
+			'file'    => new File_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			'wysiwyg' => new Html_Field( $this->html_renderer ),
+			'oembed'  => new Html_Field( $this->html_renderer ),
+			'gallery' => new Gallery_Field( new Image_Field( $this->html_renderer ), $this->html_renderer ),
 		);
 
 		$choice = array(
-			'select'       => new Select_Field(),
-			'checkbox'     => new Select_Field(),
-			'radio'        => new Select_Field(),
-			'button_group' => new Select_Field(),
-			'true_false'   => new True_False_Field(),
+			'select'       => new Select_Field( $this->html_renderer ),
+			'checkbox'     => new Select_Field( $this->html_renderer ),
+			'radio'        => new Select_Field( $this->html_renderer ),
+			'button_group' => new Select_Field( $this->html_renderer ),
+			'true_false'   => new True_False_Field( $this->html_renderer ),
 		);
 
 		$relational = array(
-			'link'         => new Link_Field(),
-			'post_object'  => new Post_Object_Field( new Link_Field() ),
-			'page_link'    => new Page_Link_Field( new Link_Field() ),
-			'relationship' => new Post_Object_Field( new Link_Field() ),
-			'taxonomy'     => new Taxonomy_Field( new Link_Field() ),
-			'user'         => new User_Field( new Link_Field() ),
+			'link'         => new Link_Field( $this->html_renderer ),
+			'post_object'  => new Post_Object_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			'page_link'    => new Page_Link_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			'relationship' => new Post_Object_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			'taxonomy'     => new Taxonomy_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			'user'         => new User_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
 		);
 
 		$advanced = array(
-			'google_map'       => new Map_Field(),
+			'google_map'       => new Map_Field( $this->html_renderer ),
 			// https://wordpress.org/plugins/acf-google-map-field-multiple-markers/.
-			'google_map_multi' => new Map_Field(),
+			'google_map_multi' => new Map_Field( $this->html_renderer ),
 			// https://wordpress.org/plugins/acf-openstreetmap-field/.
-			'open_street_map'  => new Map_Field(),
-			'date_picker'      => new Date_Picker_Field(),
-			'date_time_picker' => new Date_Picker_Field(),
-			'time_picker'      => new Date_Picker_Field(),
-			'color_picker'     => new Color_Picker_Field(),
-			'icon_picker'      => new Icon_Picker_Field( new Image_Field() ),
+			'open_street_map'  => new Map_Field( $this->html_renderer ),
+			'date_picker'      => new Date_Picker_Field( $this->html_renderer ),
+			'date_time_picker' => new Date_Picker_Field( $this->html_renderer ),
+			'time_picker'      => new Date_Picker_Field( $this->html_renderer ),
+			'color_picker'     => new Color_Picker_Field( $this->html_renderer ),
+			'icon_picker'      => new Icon_Picker_Field( new Image_Field( $this->html_renderer ), $this->html_renderer ),
 		);
 
 		$layout = array(
-			'group'            => new Pro_Stub_Field(),
-			'repeater'         => new Pro_Stub_Field(),
-			'flexible_content' => new Pro_Stub_Field(),
-			'tab'              => new Tab_Field(),
+			'group'            => new Pro_Stub_Field( $this->html_renderer ),
+			'repeater'         => new Pro_Stub_Field( $this->html_renderer ),
+			'flexible_content' => new Pro_Stub_Field( $this->html_renderer ),
+			'tab'              => new Tab_Field( $this->html_renderer ),
 		);
 
 		return array_merge( $basic, $content, $choice, $relational, $advanced, $layout );

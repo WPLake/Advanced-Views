@@ -9,13 +9,14 @@ use Exception;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use WP_Filesystem_Base;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 abstract class File_Template_Renderer_Base extends Template_Renderer_Base {
 	private string $templates_folder;
 	private WP_Filesystem_Base $wp_filesystem_base;
 
-	public function __construct( string $templates_folder, Logger $logger, Settings_Storage $settings, WP_Filesystem_Base $wp_filesystem_base ) {
-		parent::__construct( $logger, $settings );
+	public function __construct( string $templates_folder, Logger $logger, Settings_Storage $settings, WP_Filesystem_Base $wp_filesystem_base, Html_Renderer $html_renderer ) {
+		parent::__construct( $logger, $settings, $html_renderer );
 
 		$this->templates_folder   = $templates_folder;
 		$this->wp_filesystem_base = $wp_filesystem_base;
@@ -47,7 +48,7 @@ abstract class File_Template_Renderer_Base extends Template_Renderer_Base {
 				)
 			);
 
-			self::print_error_message( $unique_id, 'Templates folder is not writable' );
+			$this->print_error_message( $unique_id, 'Templates folder is not writable' );
 
 			return;
 		}
@@ -72,7 +73,7 @@ abstract class File_Template_Renderer_Base extends Template_Renderer_Base {
 				)
 			);
 
-			self::print_error_message( $unique_id, "Can't write template file" );
+			$this->print_error_message( $unique_id, "Can't write template file" );
 
 			return;
 		}

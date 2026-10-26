@@ -12,9 +12,9 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Filesystem_Base;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -33,8 +33,10 @@ class File_System extends Loggable_Actor implements Actor {
 	private string $base_folder;
 	private string $items_folder_name;
 	private ?WP_Filesystem_Base $wp_filesystem_base;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Logger $logger, string $items_folder_name, string $external_base_folder = '' ) {
+	public function __construct( Logger $logger, string $items_folder_name, Html_Renderer $html_renderer, string $external_base_folder = '' ) {
+		$this->html_renderer = $html_renderer;
 		parent::__construct( $logger );
 
 		$this->items_folder_name    = $items_folder_name;
@@ -137,7 +139,7 @@ class File_System extends Loggable_Actor implements Actor {
 						)
 				);
 
-			print_html( $tags );
+			$this->html_renderer->print( $tags );
 		};
 
 		self::add_action( 'admin_notices', $print_notice );

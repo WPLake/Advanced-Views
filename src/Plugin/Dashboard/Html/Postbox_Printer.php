@@ -6,9 +6,9 @@ namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -16,6 +16,11 @@ defined( 'ABSPATH' ) || exit;
  * @phpstan-import-type Html_Node from Html_Tag
  */
 class Postbox_Printer {
+	protected Html_Renderer $html_renderer;
+	public function __construct( Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
+	}
+
 	public function print_postbox_shortcode(
 		string $unique_id,
 		bool $is_short,
@@ -34,7 +39,7 @@ class Postbox_Printer {
 		$shortcode      = sprintf( '[%s name="%s" %s="%s"]', $shortcode_name, $entry_name, 'id', $unique_id );
 		$tags           = self::shortcode_tags( $shortcode, $is_short, $is_single );
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	public function print_postbox_upgrade(): void {
@@ -46,7 +51,7 @@ class Postbox_Printer {
 		$button_label = __( 'Upgrade to Pro', 'acf-views' );
 		$tags         = self::support_postbox_tags( $description, External_Links::PRO_VERSION_URL, $button_label );
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	public function print_postbox_support(): void {
@@ -62,7 +67,7 @@ class Postbox_Printer {
 			$button_label
 		);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	protected static function shortcode_tags( string $shortcode, bool $is_short, bool $is_single ): Html_Tag {

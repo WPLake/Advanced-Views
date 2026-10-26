@@ -361,73 +361,74 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			$this,
 			$container->resolve( Layout_Shortcode::class ),
 			$container->resolve( Settings_Storage::class ),
-			$container->resolve( Layouts_Cpt::class )
+			$container->resolve( Layouts_Cpt::class ),
+			$this->html_renderer
 		);
 	}
 
 	public function get_field_types(): array {
 		$basic = array(
-			'checkbox'      => new True_False_Field(),
-			'checkbox_list' => new Select_Field(),
-			'radio'         => new Select_Field(),
-			'select'        => new Select_Field(),
-			'text'          => new Plain_Field(),
-			'textarea'      => new Html_Field(),
+			'checkbox'      => new True_False_Field( $this->html_renderer ),
+			'checkbox_list' => new Select_Field( $this->html_renderer ),
+			'radio'         => new Select_Field( $this->html_renderer ),
+			'select'        => new Select_Field( $this->html_renderer ),
+			'text'          => new Plain_Field( $this->html_renderer ),
+			'textarea'      => new Html_Field( $this->html_renderer ),
 		);
 
 		$advanced = array(
-			'autocomplete'    => new Select_Field(),
+			'autocomplete'    => new Select_Field( $this->html_renderer ),
 			// we need to use 'the_value' function, so HTML field fits here.
-			'background'      => new Html_Field(),
-			'button_group'    => new Select_Field(),
-			'color'           => new Plain_Field(),
-			'date'            => new Date_Picker_Field(),
-			'datetime'        => new Date_Picker_Field(),
-			'map'             => new Mb_Map_Field(),
-			'hidden'          => new Plain_Field(),
+			'background'      => new Html_Field( $this->html_renderer ),
+			'button_group'    => new Select_Field( $this->html_renderer ),
+			'color'           => new Plain_Field( $this->html_renderer ),
+			'date'            => new Date_Picker_Field( $this->html_renderer ),
+			'datetime'        => new Date_Picker_Field( $this->html_renderer ),
+			'map'             => new Mb_Map_Field( $this->html_renderer ),
+			'hidden'          => new Plain_Field( $this->html_renderer ),
 			// FontAwesome or SVG icon.
-			'icon'            => new Html_Field(),
-			'image_select'    => new Select_Field(),
-			'oembed'          => new Html_Field(),
-			'osm'             => new Mb_Map_Field(),
-			'password'        => new Plain_Field(),
-			'select_advanced' => new Select_Field(),
+			'icon'            => new Html_Field( $this->html_renderer ),
+			'image_select'    => new Select_Field( $this->html_renderer ),
+			'oembed'          => new Html_Field( $this->html_renderer ),
+			'osm'             => new Mb_Map_Field( $this->html_renderer ),
+			'password'        => new Plain_Field( $this->html_renderer ),
+			'select_advanced' => new Select_Field( $this->html_renderer ),
 			// it's a range number.
-			'slider'          => new Plain_Field(),
-			'switch'          => new True_False_Field(),
-			'time'            => new Plain_Field(),
-			'wysiwyg'         => new Html_Field(),
+			'slider'          => new Plain_Field( $this->html_renderer ),
+			'switch'          => new True_False_Field( $this->html_renderer ),
+			'time'            => new Plain_Field( $this->html_renderer ),
+			'wysiwyg'         => new Html_Field( $this->html_renderer ),
 		);
 
 		$html5 = array(
-			'email'  => new Plain_Field(),
-			'number' => new Plain_Field(),
-			'range'  => new Plain_Field(),
-			'url'    => new Url_Field(),
+			'email'  => new Plain_Field( $this->html_renderer ),
+			'number' => new Plain_Field( $this->html_renderer ),
+			'range'  => new Plain_Field( $this->html_renderer ),
+			'url'    => new Url_Field( $this->html_renderer ),
 		);
 
 		$wordpress = array(
-			'post'              => new Post_Object_Field( new Link_Field() ),
-			'sidebar'           => new Html_Field(),
-			'taxonomy'          => new Mb_Taxonomy_Field( new Link_Field() ),
-			'taxonomy_advanced' => new Mb_Taxonomy_Field( new Link_Field() ),
-			'user'              => new User_Field( new Link_Field() ),
+			'post'              => new Post_Object_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			'sidebar'           => new Html_Field( $this->html_renderer ),
+			'taxonomy'          => new Mb_Taxonomy_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			'taxonomy_advanced' => new Mb_Taxonomy_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			'user'              => new User_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
 		);
 
 		$upload = array(
-			'file'           => new Mb_File_Field( new Link_Field() ),
-			'file_advanced'  => new Mb_File_Field( new Link_Field() ),
-			'file_input'     => new Mb_File_Field( new Link_Field() ),
-			'file_upload'    => new Mb_File_Field( new Link_Field() ),
-			'image'          => new Mb_Gallery_Field( new Mb_Image_Field() ),
-			'image_advanced' => new Mb_Gallery_Field( new Mb_Image_Field() ),
-			'image_upload'   => new Mb_Gallery_Field( new Mb_Image_Field() ),
-			'single_image'   => new Mb_Image_Field(),
-			'video'          => new Html_Field(),
+			'file'           => new Mb_File_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			'file_advanced'  => new Mb_File_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			'file_input'     => new Mb_File_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			'file_upload'    => new Mb_File_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			'image'          => new Mb_Gallery_Field( new Mb_Image_Field( $this->html_renderer ), $this->html_renderer ),
+			'image_advanced' => new Mb_Gallery_Field( new Mb_Image_Field( $this->html_renderer ), $this->html_renderer ),
+			'image_upload'   => new Mb_Gallery_Field( new Mb_Image_Field( $this->html_renderer ), $this->html_renderer ),
+			'single_image'   => new Mb_Image_Field( $this->html_renderer ),
+			'video'          => new Html_Field( $this->html_renderer ),
 		);
 
 		$layout = array(
-			'group' => new Pro_Stub_Field(),
+			'group' => new Pro_Stub_Field( $this->html_renderer ),
 		);
 
 		return array_merge( $basic, $advanced, $html5, $wordpress, $upload, $layout );

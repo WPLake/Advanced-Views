@@ -14,6 +14,9 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Toolbar_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Import_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Dashboard_Factory extends Factory_Base {
 	public function admin_pages(): Admin_Pages {
@@ -21,7 +24,10 @@ class Dashboard_Factory extends Factory_Base {
 			$this->resolve( Plugin::class ),
 			$this->resolve( Plugin_Meta::class ),
 			$this->resolve( Demo_Importer::class ),
-			$this->plugin_cpts()
+			$this->plugin_cpts(),
+			$this->resolve( Html_Renderer::class ),
+			$this->resolve( Toolbar_Printer::class ),
+			$this->resolve( Import_Printer::class )
 		);
 	}
 

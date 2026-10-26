@@ -19,10 +19,10 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 /**
  * Automated reports send data about plugin errors and usage. It allows to fix issues faster and improve the plugin.
@@ -52,9 +52,10 @@ class Usage_Report extends Report_Base implements Actor {
 		Plugin_Meta $plugin_meta,
 		Settings_Storage $settings,
 		State_Report $state_report,
-		array $cpt_settings_storages
+		array $cpt_settings_storages,
+		Html_Renderer $html_renderer
 	) {
-		parent::__construct( $logger, $plugin, $plugin_meta, $settings );
+		parent::__construct( $logger, $plugin, $plugin_meta, $settings, $html_renderer );
 
 		$this->plugin                = $plugin;
 		$this->settings              = $settings;
@@ -139,7 +140,7 @@ class Usage_Report extends Report_Base implements Actor {
 					)
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	public function send_and_schedule_next(): void {

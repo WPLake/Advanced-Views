@@ -19,6 +19,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use WP_Comment;
 use WP_Term;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -42,9 +43,10 @@ final class Layout_Shortcode extends Shortcode_Base {
 		Layout_Settings_Storage $layouts_settings_storage,
 		Live_Reloader_Component $live_reloader_component,
 		Layout_Factory $layout_factory,
-		Shortcode_Gutenberg_Block $shortcode_block
+		Shortcode_Gutenberg_Block $shortcode_block,
+		Html_Renderer $html_renderer
 	) {
-		parent::__construct( $public_cpt, $settings, $layouts_settings_storage, $layout_factory, $live_reloader_component );
+		parent::__construct( $public_cpt, $settings, $layouts_settings_storage, $layout_factory, $live_reloader_component, $html_renderer );
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
 		$this->layout_factory           = $layout_factory;

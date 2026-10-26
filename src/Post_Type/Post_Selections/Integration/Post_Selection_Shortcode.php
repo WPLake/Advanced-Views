@@ -15,6 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_S
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Selection_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -27,9 +28,10 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 		Settings_Storage $settings,
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Live_Reloader_Component $live_reloader_component,
-		Post_Selection_Factory $post_selection_factory
+		Post_Selection_Factory $post_selection_factory,
+		Html_Renderer $html_renderer
 	) {
-		parent::__construct( $public_cpt, $settings, $post_selections_settings_storage, $post_selection_factory, $live_reloader_component );
+		parent::__construct( $public_cpt, $settings, $post_selections_settings_storage, $post_selection_factory, $live_reloader_component, $html_renderer );
 
 		$this->cards_data_storage = $post_selections_settings_storage;
 		$this->selection_factory  = $post_selection_factory;

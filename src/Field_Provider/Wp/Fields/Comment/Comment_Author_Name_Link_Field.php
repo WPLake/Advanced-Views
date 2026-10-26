@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -20,7 +21,9 @@ class Comment_Author_Name_Link_Field extends Markup_Field_Base {
 
 	private Link_Field $link_field;
 
-	public function __construct( Link_Field $link_field ) {
+	public function __construct( Link_Field $link_field, Html_Renderer $html_renderer ) {
+		parent::__construct( $html_renderer );
+
 		$this->link_field = $link_field;
 	}
 

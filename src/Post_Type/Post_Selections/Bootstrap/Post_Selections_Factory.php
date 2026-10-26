@@ -18,13 +18,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Post_Select
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Post_Selections_Factory extends Factory_Base {
 	public function editor_settings(): Cpt_Gutenberg_Editor_Settings {
 		$selections_cpt = $this->resolve( Selections_Cpt::class );
 		$cpt_name       = $selections_cpt->cpt_name();
 
-		return new Cpt_Gutenberg_Editor_Settings( $cpt_name );
+		return new Cpt_Gutenberg_Editor_Settings( $cpt_name, $this->resolve( Html_Renderer::class ) );
 	}
 
 	public function assets_reducer(): Cpt_Assets_Reducer {
@@ -32,7 +33,7 @@ class Post_Selections_Factory extends Factory_Base {
 		$selections_cpt   = $this->resolve( Selections_Cpt::class );
 		$cpt_name         = $selections_cpt->cpt_name();
 
-		return new Cpt_Assets_Reducer( $settings_storage, $cpt_name );
+		return new Cpt_Assets_Reducer( $settings_storage, $cpt_name, $this->resolve( Html_Renderer::class ) );
 	}
 
 	public function selection_settings(): Post_Selection_Settings {
@@ -43,7 +44,7 @@ class Post_Selections_Factory extends Factory_Base {
 	public function settings_storage(): Selection_Settings_Storage {
 		$logger         = $this->resolve( Logger::class );
 		$selections_cpt = $this->resolve( Selections_Cpt::class );
-		$file_system    = new File_System( $logger, $selections_cpt->folder_name() );
+		$file_system    = new File_System( $logger, $selections_cpt->folder_name(), $this->resolve( Html_Renderer::class ) );
 
 		return new Selection_Settings_Storage(
 			$logger,

@@ -14,14 +14,17 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Template_Engine;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Twig_Template_Engine implements Template_Engine {
 	const NAME = 'twig';
 
 	protected Logger $logger;
 	protected Settings_Storage $settings;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Logger $logger, Settings_Storage $settings ) {
+	public function __construct( Logger $logger, Settings_Storage $settings, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->logger   = $logger;
 		$this->settings = $settings;
 	}
@@ -39,7 +42,8 @@ class Twig_Template_Engine implements Template_Engine {
 			$render_folder,
 			$this->logger,
 			$this->settings,
-			WP_Filesystem_Factory::get_wp_filesystem()
+			WP_Filesystem_Factory::get_wp_filesystem(),
+			$this->html_renderer
 		);
 	}
 

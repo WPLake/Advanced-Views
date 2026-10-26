@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Row_Title_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
@@ -15,6 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Import_Result;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Layouts_Pre_Built_Tab extends Pre_Built_Tab {
 	private Layout_Settings_Storage $layouts_settings_storage;
@@ -26,7 +28,9 @@ class Layouts_Pre_Built_Tab extends Pre_Built_Tab {
 		Layout_Settings_Storage $external_views_data_storage,
 		Field_Provider_Cluster $provider_cluster,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
-		Logger $logger
+		Logger $logger,
+		Html_Renderer $html_renderer,
+		Row_Title_Printer $row_title_printer
 	) {
 		parent::__construct(
 			$cpt_table,
@@ -34,7 +38,9 @@ class Layouts_Pre_Built_Tab extends Pre_Built_Tab {
 			$external_views_data_storage,
 			$provider_cluster,
 			$cpt_settings_migrator,
-			$logger
+			$logger,
+			$html_renderer,
+			$row_title_printer
 		);
 
 		$this->layouts_settings_storage = $views_data_storage;

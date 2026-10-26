@@ -5,9 +5,9 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -15,7 +15,12 @@ defined( 'ABSPATH' ) || exit;
  * @phpstan-import-type Html_Node from Html_Tag
  */
 final class Import_Printer {
-	public static function print_dashboard_import(
+	protected Html_Renderer $html_renderer;
+	public function __construct( Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
+	}
+
+	public function print_dashboard_import(
 		bool $is_has_demo_objects,
 		string $form_nonce,
 		bool $is_with_form_message,
@@ -33,7 +38,7 @@ final class Import_Printer {
 		);
 		$form_tags    = Html_Printer::dashboard_form_tags( 'import', $form_nonce, $blocks );
 
-		print_html( $form_tags );
+		$this->html_renderer->print( $form_tags );
 	}
 
 	protected static function import_result_block_tags( bool $is_has_demo_objects, Demo_Importer $demo_import ): Html_Tag {

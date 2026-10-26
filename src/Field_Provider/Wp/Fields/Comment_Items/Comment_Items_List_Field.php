@@ -16,7 +16,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Fie
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use WP_Comment;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Comment_Items_List_Field extends Markup_Field_Base {
 	const AUTHOR_NAME = 'author_name';
@@ -34,7 +33,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 				fn() => $this->print_comment_content( $item_id, $markup_field_data )
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	protected function print_comment_content( string $item_id, Template_Field_Data $markup_field_data ): void {
@@ -65,7 +64,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 				$print_author_name
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->print_tabs();
@@ -91,7 +90,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 				$print_content
 			);
 
-		print_html( $node );
+		$this->html_renderer->print( $node );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();

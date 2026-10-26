@@ -17,20 +17,23 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Field_Settings_Integration extends Acf_Integration_Base {
 	use Safe_Array_Arguments;
 
 	private Field_Provider_Cluster $provider_cluster;
 	private Plugin_Cpt $plugin_cpt;
+	protected Html_Renderer $html_renderer;
 
 	public function __construct(
 		Field_Provider_Cluster $provider_cluster,
-		Layouts_Cpt $plugin_cpt
+		Layouts_Cpt $plugin_cpt,
+		Html_Renderer $html_renderer
 	) {
+		$this->html_renderer = $html_renderer;
 		parent::__construct( $plugin_cpt->cpt_name() );
 
 		$this->provider_cluster = $provider_cluster;
@@ -264,7 +267,7 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 				$label
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {

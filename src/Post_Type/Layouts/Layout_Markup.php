@@ -12,13 +12,13 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Template;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use function Org\Wplake\Advanced_Views\Template\Html\compose_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Layout_Markup {
 	/**
@@ -30,8 +30,10 @@ class Layout_Markup {
 	private Field_Template $field_markup;
 	private Field_Provider_Cluster $provider_cluster;
 	private Token_Factory_Storage $token_factory_storage;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Field_Template $field_markup, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage ) {
+	public function __construct( Field_Template $field_markup, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->field_markup          = $field_markup;
 		$this->provider_cluster      = $provider_cluster;
 		$this->token_factory_storage = $token_factory_storage;
@@ -159,7 +161,7 @@ class Layout_Markup {
 			->attributes( array( 'class' => $root_class ) )
 			->content( ...$root_content );
 
-		print_html( $root, $new_line );
+		$this->html_renderer->print( $root, $new_line );
 	}
 
 	protected function print_safe_markup( Layout_Settings $layout_settings, bool $is_cache_disabled ): void {

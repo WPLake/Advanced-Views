@@ -12,9 +12,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Term;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Taxonomy_Field extends List_Field {
 	const LOOP_ITEM_NAME = 'term_item';
@@ -22,7 +22,9 @@ class Taxonomy_Field extends List_Field {
 
 	private Link_Field $link_field;
 
-	public function __construct( Link_Field $link_field ) {
+	public function __construct( Link_Field $link_field, Html_Renderer $html_renderer ) {
+		parent::__construct( $html_renderer );
+
 		$this->link_field = $link_field;
 	}
 
@@ -57,7 +59,7 @@ class Taxonomy_Field extends List_Field {
 			$markup_field_data->is_with_field_wrapper()
 		);
 
-		print_html( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
+		$this->html_renderer->print( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
 	}
 
 	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {

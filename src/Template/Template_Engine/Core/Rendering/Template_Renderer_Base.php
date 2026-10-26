@@ -9,14 +9,16 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Throwable;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 abstract class Template_Renderer_Base extends Loggable_Actor implements Template_Renderer {
 	protected Settings_Storage $settings;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Logger $logger, Settings_Storage $settings ) {
+	public function __construct( Logger $logger, Settings_Storage $settings, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		parent::__construct( $logger );
 
 		$this->settings = $settings;
@@ -32,7 +34,7 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 		return $error_message;
 	}
 
-	protected static function print_error_message( string $unique_view_id, string $error_message ): void {
+	protected function print_error_message( string $unique_view_id, string $error_message ): void {
 		$message    = tag( 'span' )
 			->attributes( array( 'class' => 'acf-views__error-message' ) )
 			->content(
@@ -49,7 +51,7 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 				$message
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	/**
@@ -82,7 +84,7 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 			);
 		}
 
-		self::print_error_message( $unique_id, $error_message );
+		$this->print_error_message( $unique_id, $error_message );
 
 		// do not include in case of the validation, it doesn't have sense + breaks the error grep regex.
 		if ( $is_debug_mode &&
@@ -99,7 +101,7 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 					)
 				);
 
-			print_html( $tags );
+			$this->html_renderer->print( $tags );
 		}
 	}
 }

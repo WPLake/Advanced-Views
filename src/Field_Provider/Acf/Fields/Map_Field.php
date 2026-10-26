@@ -17,7 +17,6 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditi
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Map_Field extends Map_Field_Base {
 	const MAP = 'map';
@@ -326,7 +325,7 @@ class Map_Field extends Map_Field_Base {
 		$tags = tag( 'div' )
 			->attributes( $marker_attrs );
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	/**

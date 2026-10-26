@@ -18,6 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Elementor\Layout_Ele
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Layout_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Layout_Integrations_Factory extends Factory_Base {
 	protected ?Cpt_Item_Picker $item_picker = null;
@@ -37,7 +38,7 @@ class Layout_Integrations_Factory extends Factory_Base {
 		$settings_storage = $this->resolve( Layout_Settings_Storage::class );
 		$layouts_cpt      = $this->resolve( Layouts_Cpt::class );
 
-		$this->renderer ??= new Cpt_Renderer( $layout_shortcode, $settings_storage, $layouts_cpt );
+		$this->renderer ??= new Cpt_Renderer( $layout_shortcode, $settings_storage, $layouts_cpt, $this->resolve( Html_Renderer::class ) );
 
 		return $this->renderer;
 	}

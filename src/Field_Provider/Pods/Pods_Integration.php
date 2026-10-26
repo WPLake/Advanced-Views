@@ -19,8 +19,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
-use function Org\Wplake\Advanced_Views\Template\Html\render_html;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Pods_Integration extends Settings_Vendor_Integration {
 
@@ -35,7 +34,8 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		Pods_Data_Vendor $pods_data_vendor,
 		Layout_Shortcode $layout_shortcode,
 		Cpt_Theme_Settings $settings,
-		Layouts_Cpt $layouts_cpt
+		Layouts_Cpt $layouts_cpt,
+		Html_Renderer $html_renderer
 	) {
 		parent::__construct(
 			$item_settings,
@@ -46,7 +46,8 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			$pods_data_vendor,
 			$layout_shortcode,
 			$settings,
-			$layouts_cpt
+			$layouts_cpt,
+			$html_renderer
 		);
 
 		$this->pods_data_vendor = $pods_data_vendor;
@@ -217,7 +218,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 				fn() => $this->print_related_postbox( $pod_name, $pod )
 			);
 
-		return render_html( $tags );
+		return $this->html_renderer->render( $tags );
 	}
 
 	/**
@@ -252,7 +253,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 				fn() => $this->print_add_new_links_for_groups( $pod )
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	/**
@@ -289,7 +290,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 					$print_add_new_links
 				);
 
-			print_html( $tags );
+			$this->html_renderer->print( $tags );
 		}
 	}
 

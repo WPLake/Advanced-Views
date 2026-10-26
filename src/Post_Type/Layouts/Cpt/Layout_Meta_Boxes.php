@@ -17,9 +17,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	const ARGUMENT_FROM_LAYOUT = '_from';
@@ -36,9 +36,10 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		Layout_Settings_Storage $layouts_settings_storage,
 		Field_Provider_Cluster $provider_cluster,
 		Layouts_Cpt $public_cpt,
-		Selections_Cpt $plugin_cpt
+		Selections_Cpt $plugin_cpt,
+		Html_Renderer $html_renderer
 	) {
-		parent::__construct( $postbox, $plugin );
+		parent::__construct( $postbox, $plugin, $html_renderer );
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
 		$this->provider_cluster         = $provider_cluster;
@@ -63,7 +64,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				$title
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	/**
@@ -195,7 +196,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 					$message
 				);
 
-			print_html( $node );
+			$this->html_renderer->print( $node );
 		}
 
 		$last_item_index = count( $related_cards ) - 1;
@@ -221,7 +222,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				tag( 'br' ),
 			);
 
-			print_html( ...$markup_tags );
+			$this->html_renderer->print( ...$markup_tags );
 		}
 
 		$post_id = $layout_settings->get_post_id();
@@ -256,7 +257,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 					$label
 				);
 
-			print_html( $tags );
+			$this->html_renderer->print( $tags );
 		}
 	}
 

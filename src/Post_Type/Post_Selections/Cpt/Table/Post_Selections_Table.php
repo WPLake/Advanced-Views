@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Meta_Boxes
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use WP_Query;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -32,9 +33,10 @@ class Post_Selections_Table extends Cpt_Table {
 		Selections_Cpt $public_cpt,
 		Postbox_Printer $postbox,
 		Selection_Meta_Boxes $post_selections_cpt_meta_boxes,
-		Layouts_Cpt $layout_cpt
+		Layouts_Cpt $layout_cpt,
+		Html_Renderer $html_renderer
 	) {
-		parent::__construct( $post_selections_settings_storage, $public_cpt );
+		parent::__construct( $post_selections_settings_storage, $public_cpt, $html_renderer );
 
 		$this->postbox                        = $postbox;
 		$this->post_selections_cpt_meta_boxes = $post_selections_cpt_meta_boxes;

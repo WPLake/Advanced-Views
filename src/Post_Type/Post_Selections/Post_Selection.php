@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
@@ -37,9 +38,10 @@ class Post_Selection extends Instance {
 		Post_Selection_Settings $post_selection_settings,
 		Post_Query $post_query,
 		Post_Selection_Markup $post_selection_markup,
+		Html_Renderer $html_renderer,
 		string $classes = ''
 	) {
-		parent::__construct( $post_selection_settings, '', $classes );
+		parent::__construct( $post_selection_settings, '', $html_renderer, $classes );
 
 		$this->settings                  = $post_selection_settings;
 		$this->post_query                = $post_query;

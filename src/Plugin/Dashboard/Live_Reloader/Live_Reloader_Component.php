@@ -12,9 +12,9 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -31,8 +31,10 @@ class Live_Reloader_Component extends Actor_Base implements Actor {
 	private int $cards_inner_counter;
 	private Asset_Resolver $asset_resolver;
 	private Settings_Storage $settings;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Asset_Resolver $asset_resolver, Settings_Storage $settings ) {
+	public function __construct( Asset_Resolver $asset_resolver, Settings_Storage $settings, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->asset_resolver       = $asset_resolver;
 		$this->settings             = $settings;
 		$this->is_active            = false;
@@ -114,7 +116,7 @@ class Live_Reloader_Component extends Actor_Base implements Actor {
 				'data-element' => $element_json,
 			) );
 
-		return render_html( $tags );
+		return $this->html_renderer->render( $tags );
 	}
 
 	public function maybe_enqueue_reloading_js(): void {

@@ -4,8 +4,8 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Html;
 
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -13,13 +13,18 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 defined( 'ABSPATH' ) || exit;
 
 final class Toolbar_Printer {
+	protected Html_Renderer $html_renderer;
+	public function __construct( Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
+	}
+
 	/**
 	 * @param array<int,array<string,mixed>> $tabs
 	 */
-	public static function print_dashboard_header( string $name, string $version, array $tabs ): void {
+	public function print_dashboard_header( string $name, string $version, array $tabs ): void {
 		$toolbar_tags = self::toolbar_tags( $name, $version, $tabs );
 
-		print_html( $toolbar_tags );
+		$this->html_renderer->print( $toolbar_tags );
 	}
 
 	/**

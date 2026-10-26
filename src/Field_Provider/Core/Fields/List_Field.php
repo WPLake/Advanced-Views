@@ -14,7 +14,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Fiel
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 abstract class List_Field extends Markup_Field_Base {
 	const LOOP_ITEM_NAME    = 'item';
@@ -172,7 +171,7 @@ abstract class List_Field extends Markup_Field_Base {
 				$print_options
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 
 		$token_factory->formatter()
 						->new_line();

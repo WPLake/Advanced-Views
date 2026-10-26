@@ -13,13 +13,16 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Template_Engine;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 final class PHP_Template_Engine implements Template_Engine {
 	const NAME = 'php';
 	private Logger $logger;
 	private Settings_Storage $settings;
+	private Html_Renderer $html_renderer;
 
-	public function __construct( Logger $logger, Settings_Storage $settings ) {
+	public function __construct( Logger $logger, Settings_Storage $settings, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->logger   = $logger;
 		$this->settings = $settings;
 	}
@@ -33,7 +36,7 @@ final class PHP_Template_Engine implements Template_Engine {
 	}
 
 	public function create_renderer( string $render_folder ): Template_Renderer {
-		return new PHP_Renderer( $this->logger, $this->settings );
+		return new PHP_Renderer( $this->logger, $this->settings, $this->html_renderer );
 	}
 
 	public function create_integration(): Template_Integration {

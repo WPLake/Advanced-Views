@@ -28,6 +28,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Bootstrap\Selection_
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Bootstrap\Post_Selections_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Bootstrap\Selection_Integrations_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Bootstrap\Selection_Tabs_Bootstrap;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Bootstrap\Template_Engine_Bootstrap;
 
 class Plugin_Loader {
@@ -36,10 +37,10 @@ class Plugin_Loader {
 
 		if ( ! Plugin_Tester::is_test_bootstrap() ) {
 			$plugin_meta = new Plugin_Meta( $plugin_file );
-			static::bootstrap_actors( $plugin_meta );
-		}
+			$repository  = static::bootstrap_actors( $plugin_meta );
 
-		Profiler::plugin_loaded( $start_timestamp );
+			Profiler::plugin_loaded( $start_timestamp, $repository->resolve( Html_Renderer::class ) );
+		}
 	}
 
 	public static function bootstrap_actors( Plugin_Meta $meta ): Instance_Repository {

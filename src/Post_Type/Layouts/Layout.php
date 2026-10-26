@@ -18,6 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Field_Variables;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
@@ -47,9 +48,10 @@ class Layout extends Instance {
 		Layout_Settings $layout_settings,
 		Source $source,
 		Field_Variables $field_variables,
+		Html_Renderer $html_renderer,
 		string $classes = ''
 	) {
-		parent::__construct( $layout_settings, $twig_template, $classes );
+		parent::__construct( $layout_settings, $twig_template, $html_renderer, $classes );
 
 		$this->layout_settings           = $layout_settings;
 		$this->provider_cluster          = $provider_cluster;

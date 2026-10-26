@@ -7,6 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Bulk_Validation_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Fs_Only_Tab;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Row_Title_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Post_Selection_Factory;
@@ -21,9 +22,10 @@ class Post_Selections_Bulk_Validation_Tab extends Bulk_Validation_Tab {
 		Cpt_Table $cpt_table,
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Fs_Only_Tab $fs_only_tab,
-		Post_Selection_Factory $post_selection_factory
+		Post_Selection_Factory $post_selection_factory,
+		Row_Title_Printer $row_title_printer
 	) {
-		parent::__construct( $cpt_table, $post_selections_settings_storage, $fs_only_tab );
+		parent::__construct( $cpt_table, $post_selections_settings_storage, $fs_only_tab, $row_title_printer );
 
 		$this->card_factory       = $post_selection_factory;
 		$this->cards_data_storage = $post_selections_settings_storage;

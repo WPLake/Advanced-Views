@@ -12,10 +12,10 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 abstract class External_Storage_Tab extends Cpt_Table_Tab {
 
@@ -26,15 +26,19 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	private Field_Provider_Cluster $provider_cluster;
 	private Cpt_Settings_Migrator $cpt_settings_migrator;
 	private Logger $logger;
+	protected Html_Renderer $html_renderer;
 
 	public function __construct(
 		Cpt_Table $cpt_table,
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Field_Provider_Cluster $provider_cluster,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
-		Logger $logger
+		Logger $logger,
+		Html_Renderer $html_renderer,
+		Row_Title_Printer $row_title_printer
 	) {
-		parent::__construct( $cpt_table );
+		$this->html_renderer = $html_renderer;
+		parent::__construct( $cpt_table, $row_title_printer );
 
 		$this->cpt_settings_storage  = $cpt_settings_storage;
 		$this->provider_cluster      = $provider_cluster;
@@ -238,7 +242,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			->attributes( array( 'class' => 'notice notice-success' ) )
 			->content( ...$paragraphs );
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	protected function get_cpt_data_storage(): Cpt_Settings_Storage {

@@ -15,8 +15,8 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -27,8 +27,10 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 	private Plugin_Meta $plugin_meta;
 	private string $dismiss_key;
 	private string $dismiss_nonce_action;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Plugin_Meta $plugin_meta ) {
+	public function __construct( Plugin_Meta $plugin_meta, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->plugin_meta = $plugin_meta;
 
 		$this->dismiss_key          = sprintf( '_%s-upgrade-notice-dismiss', $this->plugin_meta->get_short_slug() );
@@ -101,7 +103,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 				$paragraph
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	protected function hide_notice(): bool {

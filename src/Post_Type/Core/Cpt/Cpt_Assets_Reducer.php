@@ -10,16 +10,18 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
 class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 	private Settings_Storage $settings;
 	private string $cpt_name;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Settings_Storage $settings, string $cpt_name ) {
+	public function __construct( Settings_Storage $settings, string $cpt_name, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->settings = $settings;
 		$this->cpt_name = $cpt_name;
 	}
@@ -281,7 +283,7 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 				$disable_text
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 
 		$print_fallback_script = function () {
 			?>
@@ -300,6 +302,6 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 				$print_fallback_script
 			);
 
-		print_html( $node );
+		$this->html_renderer->print( $node );
 	}
 }

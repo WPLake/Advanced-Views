@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Row_Title_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
@@ -19,6 +20,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Layout_Git_Tabs;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Table\Post_Selections_Table;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 
 class Selection_Git_Tabs extends Git_Tabs {
@@ -34,7 +36,9 @@ class Selection_Git_Tabs extends Git_Tabs {
 		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Layout_Git_Tabs $layouts_git_cpt_table_tabs,
 		Field_Provider_Cluster $provider_cluster,
-		Logger $logger
+		Logger $logger,
+		Html_Renderer $html_renderer,
+		Row_Title_Printer $row_title_printer
 	) {
 		parent::__construct(
 			$cpt_table,
@@ -44,7 +48,9 @@ class Selection_Git_Tabs extends Git_Tabs {
 			$post_selections_settings_storage,
 			$cpt_settings_migrator,
 			$provider_cluster,
-			$logger
+			$logger,
+			$html_renderer,
+			$row_title_printer
 		);
 
 		$this->post_selections_settings_storage = $post_selections_settings_storage;

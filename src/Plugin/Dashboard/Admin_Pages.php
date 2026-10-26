@@ -19,11 +19,10 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Screen;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
-use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -42,6 +41,9 @@ class Admin_Pages extends Actor_Base implements Actor {
 	 * @var Plugin_Cpt[]
 	 */
 	private array $plugin_cpts;
+	protected Html_Renderer $html_renderer;
+	protected Toolbar_Printer $toolbar_printer;
+	protected Import_Printer $import_printer;
 
 	/**
 	 * @param Plugin_Cpt[] $plugin_cpts
@@ -50,8 +52,14 @@ class Admin_Pages extends Actor_Base implements Actor {
 		Plugin $plugin,
 		Plugin_Meta $plugin_meta,
 		Demo_Importer $demo_import,
-		array $plugin_cpts
+		array $plugin_cpts,
+		Html_Renderer $html_renderer,
+		Toolbar_Printer $toolbar_printer,
+		Import_Printer $import_printer
 	) {
+		$this->import_printer = $import_printer;
+		$this->toolbar_printer = $toolbar_printer;
+		$this->html_renderer = $html_renderer;
 		$this->plugin      = $plugin;
 		$this->plugin_meta = $plugin_meta;
 		$this->demo_import = $demo_import;
@@ -103,7 +111,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 			$tags = tag( 'iframe' )
 				->attributes( $iframe_attrs );
 
-			print_html( $tags );
+			$this->html_renderer->print( $tags );
 		};
 
 		add_submenu_page(
@@ -166,7 +174,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 		$name    = $this->plugin::get_name();
 		$version = $this->plugin_meta->get_version();
 
-		Toolbar_Printer::print_dashboard_header( $name, $version, $tabs );
+		$this->toolbar_printer->print_dashboard_header( $name, $version, $tabs );
 	}
 
 	public function get_import_page(): void {
@@ -188,7 +196,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 
 		$form_nonce = wp_create_nonce( 'av-demo-import' );
 
-		Import_Printer::print_dashboard_import(
+		$this->import_printer->print_dashboard_import(
 			$is_with_delete_button,
 			$form_nonce,
 			$is_with_form_message,
@@ -359,7 +367,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 				$plural_name
 			);
 
-		return render_html( $link );
+		return $this->html_renderer->render( $link );
 	}
 
 	/**
@@ -382,6 +390,6 @@ class Admin_Pages extends Actor_Base implements Actor {
 				__( 'Get Pro', 'acf-views' )
 			);
 
-		return array( render_html( $link ) );
+		return array( $this->html_renderer->render( $link ) );
 	}
 }

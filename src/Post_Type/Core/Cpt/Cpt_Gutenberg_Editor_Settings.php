@@ -9,17 +9,19 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use WPCom_Markdown;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
 class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 	private string $cpt_name;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( string $cpt_name ) {
+	public function __construct( string $cpt_name, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->cpt_name = $cpt_name;
 	}
 
@@ -131,7 +133,7 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 				$assistance_text
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	// Jetpack's markdown module "very polite" and breaks json in our post_content.

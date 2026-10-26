@@ -9,12 +9,14 @@ use Org\Wplake\Advanced_Views\Bridge\Interfaces\Shortcodes\View_Shortcode_Interf
 use Org\Wplake\Advanced_Views\Bridge\Shortcodes\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Bridge\Shortcodes\Selection_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Shortcode\Shortcode_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
 class Advanced_Views {
 	public static Shortcode_Renderer $layout_renderer;
 	public static Shortcode_Renderer $post_selection_renderer;
+	public static Html_Renderer $html_renderer;
 
 	/**
 	 * @param string $name unused argument, just to make the method call human-readable in your code

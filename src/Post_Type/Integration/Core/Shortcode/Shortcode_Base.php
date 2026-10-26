@@ -18,11 +18,11 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, Actor {
 	private Instance_Factory $instance_factory;
@@ -34,14 +34,17 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 	 */
 	private array $rendered_ids;
 	protected Public_Cpt $public_cpt;
+	protected Html_Renderer $html_renderer;
 
 	public function __construct(
 		Public_Cpt $public_cpt,
 		Settings_Storage $settings,
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Instance_Factory $instance_factory,
-		Live_Reloader_Component $live_reloader_component
+		Live_Reloader_Component $live_reloader_component,
+		Html_Renderer $html_renderer
 	) {
+		$this->html_renderer = $html_renderer;
 		$this->public_cpt              = $public_cpt;
 		$this->rendered_ids            = array();
 		$this->settings                = $settings;
@@ -143,7 +146,7 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 				$error_text
 			);
 
-		return render_html( $tags );
+		return $this->html_renderer->render( $tags );
 	}
 
 	/**
@@ -202,7 +205,7 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 					fn() => print( $host_css )
 				);
 
-			$shadow_css = render_html( $tags );
+			$shadow_css = $this->html_renderer->render( $tags );
 		}
 
 		if ( Cpt_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $cpt_data->web_component ) {
@@ -227,13 +230,13 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		}
 
 		if ( $is_with_quick_link || Cpt_Settings::WEB_COMPONENT_NONE !== $cpt_data->web_component ) {
-			return self::add_quick_link_and_last_tag_markup( $html, $shadow_css, $is_with_quick_link, $cpt_data );
+			return $this->add_quick_link_and_last_tag_markup( $html, $shadow_css, $is_with_quick_link, $cpt_data );
 		}
 
 		return $html;
 	}
 
-	protected static function add_quick_link_and_last_tag_markup(
+	protected function add_quick_link_and_last_tag_markup(
 		string $html,
 		string $shadow_css,
 		bool $is_with_quick_link,
@@ -257,7 +260,7 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		$last_match_index = count( $matches[0] ) - 1;
 		$last_tag_match   = $matches[0][ $last_match_index ];
 
-		$quick_link_html = $is_with_quick_link ? self::create_quick_link_html( $cpt_data ) : '';
+		$quick_link_html = $is_with_quick_link ? $this->create_quick_link_html( $cpt_data ) : '';
 
 		$closing_div          = $last_tag_match[0];
 		$closing_div_position = $last_tag_match[1];
@@ -271,7 +274,7 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		);
 	}
 
-	protected static function create_quick_link_html( Cpt_Settings $cpt_data ): string {
+	protected function create_quick_link_html( Cpt_Settings $cpt_data ): string {
 		$label  = __( 'Edit', 'acf-views' );
 		$label .= sprintf( ' "%s"', $cpt_data->title );
 
@@ -296,7 +299,7 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 				$label
 			);
 
-		return render_html( $tags );
+		return $this->html_renderer->render( $tags );
 	}
 
 	public function get_rendered_items_count(): int {

@@ -17,6 +17,7 @@ use Org\Wplake\Advanced_Views\Vendors\Twig\TwigFunction;
 use WP_Filesystem_Base;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -31,8 +32,8 @@ class Twig_Renderer extends File_Template_Renderer_Base {
 	private ?FilesystemLoader $filesystem_loader;
 	private ?Environment $environment;
 
-	public function __construct( string $templates_folder, Logger $logger, Settings_Storage $settings, WP_Filesystem_Base $wp_filesystem_base ) {
-		parent::__construct( $templates_folder, $logger, $settings, $wp_filesystem_base );
+	public function __construct( string $templates_folder, Logger $logger, Settings_Storage $settings, WP_Filesystem_Base $wp_filesystem_base, Html_Renderer $html_renderer ) {
+		parent::__construct( $templates_folder, $logger, $settings, $wp_filesystem_base, $html_renderer );
 
 		$this->filesystem_loader = null;
 		$this->environment       = null;

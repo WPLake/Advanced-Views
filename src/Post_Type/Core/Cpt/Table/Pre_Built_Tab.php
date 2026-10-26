@@ -13,8 +13,8 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 abstract class Pre_Built_Tab extends External_Storage_Tab {
 	use Safe_Array_Arguments;
@@ -40,9 +40,11 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		Cpt_Settings_Storage $external_cpt_data_storage,
 		Field_Provider_Cluster $provider_cluster,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
-		Logger $logger
+		Logger $logger,
+		Html_Renderer $html_renderer,
+		Row_Title_Printer $row_title_printer
 	) {
-		parent::__construct( $cpt_table, $cpt_data_storage, $provider_cluster, $cpt_settings_migrator, $logger );
+		parent::__construct( $cpt_table, $cpt_data_storage, $provider_cluster, $cpt_settings_migrator, $logger, $html_renderer, $row_title_printer );
 
 		$this->external_cpt_settings_storage = $external_cpt_data_storage;
 		$this->pulling_unique_ids            = array();
@@ -75,7 +77,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 			'.',
 		);
 
-		print_html( ...$tags );
+		$this->html_renderer->print( ...$tags );
 	}
 
 	protected function get_tab(): ?Tab_Data {
@@ -221,7 +223,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 				'_wpnonce'              => wp_create_nonce( 'bulk-posts' ),
 			)
 		);
-		Row_Title_Printer::print_row_title(
+		$this->row_title_printer->print_row_title(
 			$cpt_settings->title,
 			'import',
 			$url,

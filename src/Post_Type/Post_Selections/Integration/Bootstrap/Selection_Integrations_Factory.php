@@ -18,6 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Elementor\Se
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Gutenberg\Selection_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Selection_Integrations_Factory extends Factory_Base {
 	protected ?Cpt_Item_Picker $item_picker = null;
@@ -37,7 +38,7 @@ class Selection_Integrations_Factory extends Factory_Base {
 		$settings_storage = $this->resolve( Selection_Settings_Storage::class );
 		$selections_cpt   = $this->resolve( Selections_Cpt::class );
 
-		$this->renderer ??= new Cpt_Renderer( $shortcode, $settings_storage, $selections_cpt );
+		$this->renderer ??= new Cpt_Renderer( $shortcode, $settings_storage, $selections_cpt, $this->resolve( Html_Renderer::class ) );
 
 		return $this->renderer;
 	}

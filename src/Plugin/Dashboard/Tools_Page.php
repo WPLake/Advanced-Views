@@ -26,14 +26,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Filesystem_Base;
 use WP_Post;
 use WP_Query;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
-use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -64,6 +63,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 	private Selections_Cpt $post_selections_cpt;
 	private Settings_Storage $settings;
 	private Cache_Flusher $cache_flusher;
+	protected Html_Renderer $html_renderer;
 
 	public function __construct(
 		Tools_Settings $tools_settings,
@@ -75,8 +75,10 @@ final class Tools_Page extends Actor_Base implements Actor {
 		Layouts_Cpt $layouts_cpt,
 		Selections_Cpt $post_selections_cpt,
 		Settings_Storage $settings,
-		Cache_Flusher $cache_flusher
+		Cache_Flusher $cache_flusher,
+		Html_Renderer $html_renderer
 	) {
+		$this->html_renderer = $html_renderer;
 		$this->tools_settings                   = $tools_settings;
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
 		$this->layouts_settings_storage         = $layouts_settings_storage;
@@ -203,7 +205,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 				$print_download_script
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 		exit;
 	}
 
@@ -519,7 +521,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 			...$this->failed_items_tags( $wrong_cards_label, $fail_card_unique_ids ),
 		);
 
-		return render_html( ...$tags );
+		return $this->html_renderer->render( ...$tags );
 	}
 
 	/**

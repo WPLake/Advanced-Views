@@ -16,17 +16,19 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Label_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Outer_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Wrapper_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Field_Template {
 	private Field_Provider_Cluster $provider_cluster;
 	private Front_Assets $front_assets;
 	private Token_Factory_Storage $token_factory_storage;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
+	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->provider_cluster      = $provider_cluster;
 		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;
@@ -87,7 +89,7 @@ class Field_Template {
 
 		Format_Token::tabulation( $tabs_number );
 
-		print_html( ...$markup_field_instance->compose_html( $field_id, $markup_field_data ) );
+		$this->html_renderer->print( ...$markup_field_instance->compose_html( $field_id, $markup_field_data ) );
 
 		Format_Token::next_line();
 
@@ -181,7 +183,7 @@ class Field_Template {
 
 			$token_factory->formatter()
 							->tab( $tabs_number );
-			print_html( $label );
+			$this->html_renderer->print( $label );
 			$token_factory->formatter()
 							->new_line();
 		};
@@ -243,7 +245,7 @@ class Field_Template {
 			) :
 			$row_inner;
 
-		print_html( ...$label_outside, ...$row_layer );
+		$this->html_renderer->print( ...$label_outside, ...$row_layer );
 
 		return $tabs_number;
 	}

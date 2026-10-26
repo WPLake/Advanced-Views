@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs;
 
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Row_Title_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
@@ -15,6 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Import_Result;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Layouts_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -29,7 +31,9 @@ class Post_Selections_Pre_Built_Tab extends Pre_Built_Tab {
 		Field_Provider_Cluster $provider_cluster,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Logger $logger,
-		Layouts_Pre_Built_Tab $layouts_pre_built_tab
+		Layouts_Pre_Built_Tab $layouts_pre_built_tab,
+		Html_Renderer $html_renderer,
+		Row_Title_Printer $row_title_printer
 	) {
 		parent::__construct(
 			$cpt_table,
@@ -37,7 +41,9 @@ class Post_Selections_Pre_Built_Tab extends Pre_Built_Tab {
 			$external_settings_storage,
 			$provider_cluster,
 			$cpt_settings_migrator,
-			$logger
+			$logger,
+			$html_renderer,
+			$row_title_printer
 		);
 
 		$this->post_selections_settings_storage  = $settings_storage;

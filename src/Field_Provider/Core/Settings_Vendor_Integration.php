@@ -19,11 +19,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
-use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -41,6 +40,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	private Field_Provider $data_vendor;
 	private Layout_Shortcode $layout_shortcode;
 	private Layouts_Cpt $layouts_cpt;
+	protected Html_Renderer $html_renderer;
 
 	public function __construct(
 		Item_Settings $item_settings,
@@ -51,8 +51,10 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		Field_Provider $data_vendor,
 		Layout_Shortcode $layout_shortcode,
 		Cpt_Theme_Settings $settings,
-		Layouts_Cpt $layouts_cpt
+		Layouts_Cpt $layouts_cpt,
+		Html_Renderer $html_renderer
 	) {
+		$this->html_renderer = $html_renderer;
 		parent::__construct( $settings );
 
 		$this->item_settings            = $item_settings;
@@ -142,7 +144,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 				$title
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	/**
@@ -225,7 +227,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 				$label
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	/**
@@ -288,7 +290,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			tag( 'br' ),
 		);
 
-		print_html( ...$tags );
+		$this->html_renderer->print( ...$tags );
 
 		$this->print_add_new_link( $wp_post->ID, '', $add_new_link_args );
 	}
@@ -346,7 +348,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 					$related_view_data->title
 				);
 
-			$views_with_invalid_custom_markup[] = render_html( $tags );
+			$views_with_invalid_custom_markup[] = $this->html_renderer->render( $tags );
 		}
 
 		return $views_with_invalid_custom_markup;
@@ -523,7 +525,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 					...$links,
 				);
 
-				$extra = render_html( ...$tags );
+				$extra = $this->html_renderer->render( ...$tags );
 
 				$messages[ $this->get_vendor_post_type() ][1] .= $extra;
 

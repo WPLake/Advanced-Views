@@ -10,17 +10,22 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
 abstract class Markup_Field_Base implements Markup_Field {
+	protected Html_Renderer $html_renderer;
 	use Safe_Array_Arguments;
 
 	const VALUE     = 'value';
 	const VIEW_ID   = 'view_id';
 	const LAYOUT_ID = 'layout_id';
 	const LABEL     = 'label';
+
+	public function __construct( Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
+	}
 
 	protected function print_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		if ( $markup_field_data->get_field_data()->has_external_layout() ) {
@@ -44,7 +49,7 @@ abstract class Markup_Field_Base implements Markup_Field {
 			fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data )
 		);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	protected function get_field_class( string $suffix, Template_Field_Data $markup_field_data ): string {

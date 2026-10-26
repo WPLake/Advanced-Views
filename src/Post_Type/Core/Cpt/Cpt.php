@@ -11,8 +11,8 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
@@ -20,8 +20,10 @@ defined( 'ABSPATH' ) || exit;
 abstract class Cpt extends Actor_Base implements Actor {
 	private Cpt_Settings_Storage $cpt_settings_storage;
 	protected Plugin_Cpt $plugin_cpt;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Plugin_Cpt $plugin_cpt, Cpt_Settings_Storage $cpt_settings_storage ) {
+	public function __construct( Plugin_Cpt $plugin_cpt, Cpt_Settings_Storage $cpt_settings_storage, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->plugin_cpt           = $plugin_cpt;
 		$this->cpt_settings_storage = $cpt_settings_storage;
 	}
@@ -104,7 +106,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 				$survey
 			);
 
-		return render_html( $tags );
+		return $this->html_renderer->render( $tags );
 	}
 
 	protected function get_cpt_name(): string {
@@ -191,7 +193,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 				$state_text
 			);
 
-		return render_html( $tags );
+		return $this->html_renderer->render( $tags );
 	}
 
 	protected function get_not_found_label(): string {
@@ -215,7 +217,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 			),
 		);
 
-		return render_html( ...$tags );
+		return $this->html_renderer->render( ...$tags );
 	}
 
 	protected static function link_tags( string $url, string $label, string $target = '_blank' ): Html_Tag {

@@ -15,9 +15,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 	private Layout_Settings_Storage $layouts_settings_storage;
@@ -31,9 +31,10 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Selections_Cpt $public_cpt,
-		Layouts_Cpt $layout_cpt
+		Layouts_Cpt $layout_cpt,
+		Html_Renderer $html_renderer
 	) {
-		parent::__construct( $postbox, $plugin );
+		parent::__construct( $postbox, $plugin, $html_renderer );
 
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
 		$this->layouts_settings_storage         = $layouts_settings_storage;
@@ -77,7 +78,7 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 				$view_data->title
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	public function add_meta_boxes(): void {

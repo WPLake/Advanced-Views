@@ -7,6 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Bulk_Validation_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Fs_Only_Tab;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Row_Title_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
@@ -21,9 +22,10 @@ class Layouts_Bulk_Validation_Tab extends Bulk_Validation_Tab {
 		Cpt_Table $cpt_table,
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Fs_Only_Tab $fs_only_tab,
-		Layout_Factory $layout_factory
+		Layout_Factory $layout_factory,
+		Row_Title_Printer $row_title_printer
 	) {
-		parent::__construct( $cpt_table, $cpt_settings_storage, $fs_only_tab );
+		parent::__construct( $cpt_table, $cpt_settings_storage, $fs_only_tab, $row_title_printer );
 
 		$this->layout_factory = $layout_factory;
 	}

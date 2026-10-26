@@ -9,25 +9,27 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Macy_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Masonry_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Splide_Pattern;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
 class Gallery_Field extends Markup_Field_Base {
 	protected Image_Field $image_field;
 
-	public function __construct( Image_Field $image_field ) {
+	public function __construct( Image_Field $image_field, Html_Renderer $html_renderer ) {
+		parent::__construct( $html_renderer );
+
 		$this->image_field = $image_field;
 	}
 
 	protected function print_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$markup_field_data->set_is_with_field_wrapper( true );
 
-		print_html( ...$this->image_field->compose_html( $item_id, $markup_field_data ) );
+		$this->html_renderer->print( ...$this->image_field->compose_html( $item_id, $markup_field_data ) );
 	}
 
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {

@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Pro_Stub_Field;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -22,8 +23,12 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 	 */
 	private array $field_types;
 
-	public function __construct( Logger $logger ) {
+	protected Html_Renderer $html_renderer;
+
+	public function __construct( Logger $logger, Html_Renderer $html_renderer ) {
 		parent::__construct( $logger );
+
+		$this->html_renderer = $html_renderer;
 
 		$this->field_types = $this->get_field_types();
 	}

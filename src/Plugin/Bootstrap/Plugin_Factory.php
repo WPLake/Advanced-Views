@@ -32,7 +32,8 @@ class Plugin_Factory extends Factory_Base {
 	public function plugin(): Plugin {
 		return new Plugin(
 			$this->resolve( Options_Storage::class ),
-			$this->resolve( Settings_Storage::class )
+			$this->resolve( Settings_Storage::class ),
+			$this->resolve( Html_Renderer::class )
 		);
 	}
 
@@ -47,7 +48,8 @@ class Plugin_Factory extends Factory_Base {
 			$this->resolve( Plugin_Meta::class ),
 			$this->resolve( Settings_Storage::class ),
 			$this->resolve( State_Report::class ),
-			$this->settings_storages()
+			$this->settings_storages(),
+			$this->resolve( Html_Renderer::class )
 		);
 	}
 

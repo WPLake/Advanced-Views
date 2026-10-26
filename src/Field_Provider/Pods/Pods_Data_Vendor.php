@@ -39,6 +39,7 @@ use Pods_Migrate_Packages;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Pods_Data_Vendor extends Field_Provider_Base {
 	const NAME = 'pods';
@@ -48,8 +49,8 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	 */
 	private ?array $pick_related_objects;
 
-	public function __construct( Logger $logger ) {
-		parent::__construct( $logger );
+	public function __construct( Logger $logger, Html_Renderer $html_renderer ) {
+		parent::__construct( $logger, $html_renderer );
 
 		$this->pick_related_objects = null;
 	}
@@ -414,7 +415,8 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			$this,
 			$container->resolve( Layout_Shortcode::class ),
 			$container->resolve( Settings_Storage::class ),
-			$container->resolve( Layouts_Cpt::class )
+			$container->resolve( Layouts_Cpt::class ),
+			$this->html_renderer
 		);
 	}
 
@@ -430,49 +432,51 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 
 	public function get_field_types(): array {
 		$text = array(
-			'text'     => new Plain_Field(),
-			'website'  => new Url_Field(),
-			'phone'    => new Plain_Field(),
-			'email'    => new Plain_Field(),
-			'password' => new Plain_Field(),
+			'text'     => new Plain_Field( $this->html_renderer ),
+			'website'  => new Url_Field( $this->html_renderer ),
+			'phone'    => new Plain_Field( $this->html_renderer ),
+			'email'    => new Plain_Field( $this->html_renderer ),
+			'password' => new Plain_Field( $this->html_renderer ),
 		);
 
 		$paragraph = array(
-			'paragraph' => new Html_Field( true, true ),
-			'wysiwyg'   => new Html_Field( true, true ),
-			'code'      => new Html_Field(),
+			'paragraph' => new Html_Field( $this->html_renderer, true, true ),
+			'wysiwyg'   => new Html_Field( $this->html_renderer, true, true ),
+			'code'      => new Html_Field( $this->html_renderer ),
 		);
 
 		$date = array(
-			'datetime' => new Date_Picker_Field(),
-			'date'     => new Date_Picker_Field(),
-			'time'     => new Date_Picker_Field(),
+			'datetime' => new Date_Picker_Field( $this->html_renderer ),
+			'date'     => new Date_Picker_Field( $this->html_renderer ),
+			'time'     => new Date_Picker_Field( $this->html_renderer ),
 		);
 
 		$number = array(
-			'number'   => new Plain_Field(),
-			'currency' => new Html_Field(),
+			'number'   => new Plain_Field( $this->html_renderer ),
+			'currency' => new Html_Field( $this->html_renderer ),
 		);
 
 		$relationship = array(
 			'file'   => new Pods_Upload_Field(
-				new Image_Field(),
-				new File_Field( new Link_Field() ),
-				new Gallery_Field( new Image_Field() )
+				new Image_Field( $this->html_renderer ),
+				new File_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+				new Gallery_Field( new Image_Field( $this->html_renderer ), $this->html_renderer ),
+				$this->html_renderer
 			),
-			'oembed' => new Html_Field(),
+			'oembed' => new Html_Field( $this->html_renderer ),
 			'pick'   => new Pods_Pick_Field(
-				new Select_Field(),
-				new User_Field( new Link_Field() ),
-				new Post_Object_Field( new Link_Field() ),
-				new Taxonomy_Field( new Link_Field() ),
-				new File_Field( new Link_Field() )
+				new Select_Field( $this->html_renderer ),
+				new User_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+				new Post_Object_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+				new Taxonomy_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+				new File_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+				$this->html_renderer
 			),
 		);
 
 		$other = array(
-			'boolean' => new True_False_Field(),
-			'color'   => new Plain_Field(),
+			'boolean' => new True_False_Field( $this->html_renderer ),
+			'color'   => new Plain_Field( $this->html_renderer ),
 		);
 
 		return array_merge( $text, $paragraph, $date, $number, $relationship, $other );

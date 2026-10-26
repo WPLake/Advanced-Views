@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern_Base;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Common_Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
@@ -20,7 +21,6 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pa
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map_Pattern;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\render_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -51,8 +51,10 @@ class Front_Assets extends Actor_Base implements Actor {
 	 */
 	private array $tailwind_css_rules;
 	private File_System $file_system;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component ) {
+	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->asset_resolver                                  = $asset_resolver;
 		$this->provider_cluster                                = $provider_cluster;
 		$this->file_system                                     = $file_system;
@@ -463,7 +465,7 @@ class Front_Assets extends Actor_Base implements Actor {
 							$location_script
 						);
 
-					$all_css_code = render_html( $tags );
+					$all_css_code = $this->html_renderer->render( $tags );
 				}
 
 				$page_content = str_replace( '<!--advanced-views:styles/custom-location-->', $all_css_code, $page_content );
@@ -645,7 +647,7 @@ class Front_Assets extends Actor_Base implements Actor {
 				fn() => print( $code )
 			);
 
-		$code_html = render_html( $tags );
+		$code_html = $this->html_renderer->render( $tags );
 
 		return sprintf( "%s\n", $code_html );
 	}

@@ -13,18 +13,20 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use WP_Query;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 final class Debug_Dump_Creator {
 	private Tools_Settings $tools_settings;
 	private Logger $logger;
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Selection_Settings_Storage $post_selections_settings_storage;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Tools_Settings $tools_settings, Logger $logger, Layout_Settings_Storage $layouts_settings_storage, Selection_Settings_Storage $post_selections_settings_storage ) {
+	public function __construct( Tools_Settings $tools_settings, Logger $logger, Layout_Settings_Storage $layouts_settings_storage, Selection_Settings_Storage $post_selections_settings_storage, Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
 		$this->tools_settings                   = $tools_settings;
 		$this->logger                           = $logger;
 		$this->layouts_settings_storage         = $layouts_settings_storage;
@@ -85,7 +87,7 @@ final class Debug_Dump_Creator {
 				$print_download_script
 			);
 
-		print_html( $tags );
+		$this->html_renderer->print( $tags );
 		exit;
 	}
 

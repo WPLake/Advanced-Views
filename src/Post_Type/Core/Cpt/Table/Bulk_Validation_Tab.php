@@ -20,9 +20,10 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 	public function __construct(
 		Cpt_Table $cpt_table,
 		Cpt_Settings_Storage $cpt_settings_storage,
-		Fs_Only_Tab $fs_only_tab
+		Fs_Only_Tab $fs_only_tab,
+		Row_Title_Printer $row_title_printer
 	) {
-		parent::__construct( $cpt_table );
+		parent::__construct( $cpt_table, $row_title_printer );
 
 		$this->cpt_settings_storage = $cpt_settings_storage;
 		$this->fs_only_tab          = $fs_only_tab;
@@ -125,7 +126,7 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 					)
 			);
 
-		Row_Title_Printer::print_title_and_action(
+		$this->row_title_printer->print_title_and_action(
 			$title_tags,
 			'edit',
 			$edit_post_link,

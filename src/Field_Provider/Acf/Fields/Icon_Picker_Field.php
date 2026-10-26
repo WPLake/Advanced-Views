@@ -12,11 +12,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Comparison_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -30,7 +30,9 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 	private Image_Field $image_field;
 
-	public function __construct( Image_Field $image_field ) {
+	public function __construct( Image_Field $image_field, Html_Renderer $html_renderer ) {
+		parent::__construct( $html_renderer );
+
 		$this->image_field = $image_field;
 	}
 
@@ -159,7 +161,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 			fn() => $markup_field_data->print_new_line_and_decrement_tabs(),
 		);
 
-		print_html( ...$tags );
+		$this->html_renderer->print( ...$tags );
 	}
 
 	protected function print_icon_image_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
@@ -168,7 +170,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		print_html( ...$this->image_field->compose_html( $field_id, $markup_field_data ) );
+		$this->html_renderer->print( ...$this->image_field->compose_html( $field_id, $markup_field_data ) );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
@@ -193,7 +195,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 			fn() => $markup_field_data->print_new_line_and_decrement_tabs(),
 		);
 
-		print_html( ...$tags );
+		$this->html_renderer->print( ...$tags );
 	}
 
 	protected static function type_comparison( string $type, string $field_id, Template_Field_Data $markup_field_data ): Comparison_Token {
