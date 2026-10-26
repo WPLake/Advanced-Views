@@ -28,7 +28,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Bootstrap\Selection_
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Bootstrap\Post_Selections_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Bootstrap\Selection_Integrations_Bootstrap;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Bootstrap\Selection_Tabs_Bootstrap;
-use Org\Wplake\Advanced_Views\Template\Html\Bootstrap\Html_Bootstrap;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Bootstrap\Template_Engine_Bootstrap;
 
 class Plugin_Loader {
@@ -62,7 +61,6 @@ class Plugin_Loader {
 		return array(
 			Acf_Bootstrap::class,
 			Template_Engine_Bootstrap::class,
-			Html_Bootstrap::class,
 			Field_Provider_Bootstrap::class,
 			Plugin_Bootstrap::class,
 			Assets_Bootstrap::class,

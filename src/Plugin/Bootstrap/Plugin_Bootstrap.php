@@ -18,6 +18,7 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Plugin_Bootstrap extends Bootstrap_Base {
 	public static function get_type_definitions(): array {
@@ -34,6 +35,7 @@ class Plugin_Bootstrap extends Bootstrap_Base {
 			Plugin::class        => fn() => $factory->plugin(),
 			Cache_Flusher::class => fn() => $factory->cache_flusher(),
 			Usage_Report::class  => fn() => $factory->usage_report(),
+			Html_Renderer::class => fn() => $factory->html_renderer(),
 		);
 	}
 
