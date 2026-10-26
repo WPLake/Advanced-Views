@@ -9,6 +9,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Attributes\Attributes_Cleaner;
 use Org\Wplake\Advanced_Views\Template\Html\Attributes\Attributes_Normalizer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -36,6 +37,27 @@ final class Plain_Tag_Printer implements Tag_Printer {
 	public function print_single_tag( Html_Tag $tag ): void {
 		$this->open_tag( $tag );
 		echo '/>';
+	}
+
+	/**
+	 * @param string|Htmlable|Closure $node
+	 */
+	public function print_node( $node ): void {
+		if ( is_string( $node ) ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->escaper->esc_html( $node );
+
+			return;
+		}
+
+		if ( $node instanceof Htmlable ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $node->to_html( $this->escaper );
+
+			return;
+		}
+
+		$node();
 	}
 
 	protected function open_tag( Html_Tag $tag ): void {
