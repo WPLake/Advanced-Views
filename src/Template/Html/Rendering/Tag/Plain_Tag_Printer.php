@@ -2,43 +2,36 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Rendering;
+namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag;
 
 use Org\Wplake\Advanced_Views\Template\Html\Attribute\Attribute_Normalizer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 defined( 'ABSPATH' ) || exit;
 
-/**
- * Prints the opening and closing parts of a tag, the content is up to Html_Renderer.
- */
-final class Tag_Printer {
-	protected const SELF_CLOSING_TAGS = array(
-		'area',
-		'base',
-		'br',
-		'col',
-		'embed',
-		'hr',
-		'img',
-		'input',
-		'link',
-		'meta',
-		'source',
-		'track',
-		'wbr',
-	);
-
-	public static function print_opening( Html_Tag $tag ): void {
-		printf( '<%s', esc_html( $tag->get_tag() ) );
-		self::print_attributes( $tag->get_attributes() );
+final class Plain_Tag_Printer implements Tag_Printer {
+	public function print_opening( Html_Tag $tag ): void {
+		self::open_tag( $tag );
 		echo '>';
 	}
 
-	public static function print_closing( Html_Tag $tag ): void {
-		if ( ! in_array( $tag->get_tag(), self::SELF_CLOSING_TAGS, true ) ) {
-			printf( '</%s>', esc_html( $tag->get_tag() ) );
-		}
+	public function print_closing( Html_Tag $tag ): void {
+		$tag_name = $tag->get_tag();
+
+		printf( '</%s>', esc_html( $tag_name ) );
+	}
+
+	public function print_void( Html_Tag $tag ): void {
+		self::open_tag( $tag );
+		echo '/>';
+	}
+
+	protected static function open_tag( Html_Tag $tag ): void {
+		$tag_name       = $tag->get_tag();
+		$tag_attributes = $tag->get_attributes();
+
+		printf( '<%s', esc_html( $tag_name ) );
+		self::print_attributes( $tag_attributes );
 	}
 
 	/**
