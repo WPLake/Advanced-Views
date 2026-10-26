@@ -34,7 +34,6 @@ class Live_Reloader_Component extends Actor_Base implements Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Asset_Resolver $asset_resolver, Settings_Storage $settings, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		$this->asset_resolver       = $asset_resolver;
 		$this->settings             = $settings;
 		$this->is_active            = false;
@@ -42,6 +41,7 @@ class Live_Reloader_Component extends Actor_Base implements Actor {
 		$this->parent_card_id       = '';
 		$this->cards_inner_counter  = 0;
 		$this->view_ids_inside_card = array();
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

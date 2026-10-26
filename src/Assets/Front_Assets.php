@@ -54,7 +54,6 @@ class Front_Assets extends Actor_Base implements Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		$this->asset_resolver                                  = $asset_resolver;
 		$this->provider_cluster                                = $provider_cluster;
 		$this->file_system                                     = $file_system;
@@ -67,6 +66,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$this->live_reloader_component = $live_reloader_component;
 		$this->assets_css_code         = '';
 		$this->tailwind_css_rules      = array();
+		$this->html_renderer = $html_renderer;
 
 		$this->register_patterns();
 	}

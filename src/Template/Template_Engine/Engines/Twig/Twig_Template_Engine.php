@@ -24,9 +24,9 @@ class Twig_Template_Engine implements Template_Engine {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Logger $logger, Settings_Storage $settings, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		$this->logger   = $logger;
 		$this->settings = $settings;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public function get_name(): string {

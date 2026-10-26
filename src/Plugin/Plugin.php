@@ -36,10 +36,10 @@ class Plugin extends Actor_Base implements Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Options_Storage $options, Cpt_Theme_Settings $settings, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		$this->options               = $options;
 		$this->settings              = $settings;
 		$this->is_switching_versions = false;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

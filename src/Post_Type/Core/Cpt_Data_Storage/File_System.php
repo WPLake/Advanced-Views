@@ -36,7 +36,6 @@ class File_System extends Loggable_Actor implements Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Logger $logger, string $items_folder_name, Html_Renderer $html_renderer, string $external_base_folder = '' ) {
-		$this->html_renderer = $html_renderer;
 		parent::__construct( $logger );
 
 		$this->items_folder_name    = $items_folder_name;
@@ -44,6 +43,7 @@ class File_System extends Loggable_Actor implements Actor {
 		$this->base_folder          = $external_base_folder;
 		$this->is_read_item_folders = false;
 		$this->wp_filesystem_base   = null;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

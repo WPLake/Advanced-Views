@@ -33,11 +33,11 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 		Layouts_Cpt $plugin_cpt,
 		Html_Renderer $html_renderer
 	) {
-		$this->html_renderer = $html_renderer;
 		parent::__construct( $plugin_cpt->cpt_name() );
 
 		$this->provider_cluster = $provider_cluster;
 		$this->plugin_cpt       = $plugin_cpt;
+		$this->html_renderer = $html_renderer;
 	}
 
 	/**

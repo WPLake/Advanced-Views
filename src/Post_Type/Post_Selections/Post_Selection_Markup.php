@@ -31,10 +31,10 @@ class Post_Selection_Markup {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Layouts_Cpt $layout_cpt, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->layout_cpt            = $layout_cpt;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public function print_extra_markup( Post_Selection_Settings $post_selection_settings ): void {

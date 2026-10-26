@@ -25,10 +25,10 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Cpt_Table $cpt_table, Cpt_Settings_Storage $cpt_settings_storage, Html_Renderer $html_renderer, Row_Title_Printer $row_title_printer ) {
-		$this->html_renderer = $html_renderer;
 		parent::__construct( $cpt_table, $row_title_printer );
 
 		$this->cpt_settings_storage = $cpt_settings_storage;
+		$this->html_renderer = $html_renderer;
 	}
 
 	protected function get_tab(): ?Tab_Data {

@@ -33,11 +33,11 @@ class Post_Selection_Factory extends Instance_Factory {
 	) {
 		parent::__construct( $front_assets );
 
-		$this->html_renderer = $html_renderer;
 		$this->query_builder                    = $query_builder;
 		$this->post_selection_markup            = $post_selection_markup;
 		$this->template_renderer_storage        = $template_renderer_storage;
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public function get_template_fields( Cpt_Theme_Settings $theme_settings ): array {

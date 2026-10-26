@@ -54,7 +54,6 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		Layouts_Cpt $layouts_cpt,
 		Html_Renderer $html_renderer
 	) {
-		$this->html_renderer = $html_renderer;
 		parent::__construct( $settings );
 
 		$this->item_settings            = $item_settings;
@@ -65,6 +64,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		$this->data_vendor              = $data_vendor;
 		$this->layout_shortcode         = $layout_shortcode;
 		$this->layouts_cpt              = $layouts_cpt;
+		$this->html_renderer = $html_renderer;
 	}
 
 	abstract protected function get_vendor_post_type(): string;

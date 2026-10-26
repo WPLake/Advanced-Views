@@ -26,12 +26,12 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( string $uploads_folder, Logger $logger, Plugin $plugin, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		parent::__construct( $logger );
 
 		$this->uploads_folder     = $uploads_folder;
 		$this->plugin             = $plugin;
 		$this->wp_filesystem_base = null;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

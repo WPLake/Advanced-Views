@@ -21,8 +21,8 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( string $cpt_name, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		$this->cpt_name = $cpt_name;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

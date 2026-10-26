@@ -23,9 +23,9 @@ abstract class Cpt extends Actor_Base implements Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Plugin_Cpt $plugin_cpt, Cpt_Settings_Storage $cpt_settings_storage, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		$this->plugin_cpt           = $plugin_cpt;
 		$this->cpt_settings_storage = $cpt_settings_storage;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

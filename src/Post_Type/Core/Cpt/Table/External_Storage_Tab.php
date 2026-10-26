@@ -37,13 +37,13 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		Html_Renderer $html_renderer,
 		Row_Title_Printer $row_title_printer
 	) {
-		$this->html_renderer = $html_renderer;
 		parent::__construct( $cpt_table, $row_title_printer );
 
 		$this->cpt_settings_storage  = $cpt_settings_storage;
 		$this->provider_cluster      = $provider_cluster;
 		$this->cpt_settings_migrator = $cpt_settings_migrator;
 		$this->logger                = $logger;
+		$this->html_renderer = $html_renderer;
 	}
 
 	abstract protected function get_cpt_data( string $unique_id ): Cpt_Settings;

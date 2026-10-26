@@ -44,13 +44,13 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		Live_Reloader_Component $live_reloader_component,
 		Html_Renderer $html_renderer
 	) {
-		$this->html_renderer = $html_renderer;
 		$this->public_cpt              = $public_cpt;
 		$this->rendered_ids            = array();
 		$this->settings                = $settings;
 		$this->cpt_settings_storage    = $cpt_settings_storage;
 		$this->instance_factory        = $instance_factory;
 		$this->live_reloader_component = $live_reloader_component;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

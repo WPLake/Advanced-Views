@@ -78,7 +78,6 @@ final class Tools_Page extends Actor_Base implements Actor {
 		Cache_Flusher $cache_flusher,
 		Html_Renderer $html_renderer
 	) {
-		$this->html_renderer = $html_renderer;
 		$this->tools_settings                   = $tools_settings;
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
 		$this->layouts_settings_storage         = $layouts_settings_storage;
@@ -95,6 +94,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 		$this->is_import_successful  = false;
 		$this->import_result_message = '';
 		$this->wp_filesystem_base    = null;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

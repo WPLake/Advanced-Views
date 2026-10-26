@@ -30,11 +30,11 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Plugin_Meta $plugin_meta, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		$this->plugin_meta = $plugin_meta;
 
 		$this->dismiss_key          = sprintf( '_%s-upgrade-notice-dismiss', $this->plugin_meta->get_short_slug() );
 		$this->dismiss_nonce_action = 'avf-upgrade-notice';
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

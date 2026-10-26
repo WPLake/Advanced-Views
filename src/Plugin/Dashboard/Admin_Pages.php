@@ -59,11 +59,11 @@ class Admin_Pages extends Actor_Base implements Actor {
 	) {
 		$this->import_printer = $import_printer;
 		$this->toolbar_printer = $toolbar_printer;
-		$this->html_renderer = $html_renderer;
 		$this->plugin      = $plugin;
 		$this->plugin_meta = $plugin_meta;
 		$this->demo_import = $demo_import;
 		$this->plugin_cpts = $plugin_cpts;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

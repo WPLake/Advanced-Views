@@ -26,11 +26,11 @@ final class Debug_Dump_Creator {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Tools_Settings $tools_settings, Logger $logger, Layout_Settings_Storage $layouts_settings_storage, Selection_Settings_Storage $post_selections_settings_storage, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		$this->tools_settings                   = $tools_settings;
 		$this->logger                           = $logger;
 		$this->layouts_settings_storage         = $layouts_settings_storage;
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public function echo_dump_file(): void {

@@ -18,10 +18,10 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Logger $logger, Settings_Storage $settings, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		parent::__construct( $logger );
 
 		$this->settings = $settings;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function extract_error_message( string $markup ): string {

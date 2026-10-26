@@ -47,7 +47,6 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Cpt_Settings_Storage $cpt_settings_storage, Public_Cpt $public_cpt, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		$this->cpt_settings_storage = $cpt_settings_storage;
 		$this->public_plugin_cpt    = $public_cpt;
 		$this->cpt_name             = $public_cpt->cpt_name();
@@ -58,6 +57,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		$this->current_page_number  = null;
 		$this->current_search_value = null;
 		$this->pagination_per_page  = null;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

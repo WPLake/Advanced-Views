@@ -33,11 +33,11 @@ class Layout_Markup {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Field_Template $field_markup, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		$this->field_markup          = $field_markup;
 		$this->provider_cluster      = $provider_cluster;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->markups_safe          = array();
+		$this->html_renderer = $html_renderer;
 	}
 
 	protected function generate_row_markup(

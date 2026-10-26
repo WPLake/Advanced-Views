@@ -36,12 +36,12 @@ class Layout_Factory extends Instance_Factory {
 	) {
 		parent::__construct( $front_assets );
 
-		$this->html_renderer = $html_renderer;
 		$this->layouts_settings_storage  = $layouts_settings_storage;
 		$this->layout_markup             = $layout_markup;
 		$this->template_renderer_storage = $template_renderer_storage;
 		$this->field_variables           = $field_variables;
 		$this->provider_cluster          = $provider_cluster;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public function get_template_fields( Cpt_Theme_Settings $theme_settings ): array {

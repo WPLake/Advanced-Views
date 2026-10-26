@@ -21,9 +21,9 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Settings_Storage $settings, string $cpt_name, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		$this->settings = $settings;
 		$this->cpt_name = $cpt_name;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

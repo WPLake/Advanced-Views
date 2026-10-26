@@ -21,12 +21,12 @@ abstract class Report_Base extends Loggable_Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Logger $logger, Plugin $plugin, Plugin_Meta $plugin_meta, Settings_Storage $settings, Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
 		parent::__construct( $logger );
 
 		$this->plugin      = $plugin;
 		$this->plugin_meta = $plugin_meta;
 		$this->settings    = $settings;
+		$this->html_renderer = $html_renderer;
 	}
 
 	/**

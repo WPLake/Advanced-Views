@@ -21,10 +21,10 @@ abstract class Instance {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Cpt_Settings $cpt_settings, string $template, Html_Renderer $html_renderer, string $classes = '' ) {
-		$this->html_renderer = $html_renderer;
 		$this->cpt_settings = $cpt_settings;
 		$this->template     = $template;
 		$this->classes      = $classes;
+		$this->html_renderer = $html_renderer;
 	}
 
 	/**

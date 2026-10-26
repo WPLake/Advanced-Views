@@ -19,8 +19,8 @@ abstract class Cpt_Table_Tab extends Actor_Base implements Actor {
 	protected Row_Title_Printer $row_title_printer;
 
 	public function __construct( Cpt_Table $cpt_table, Row_Title_Printer $row_title_printer ) {
-		$this->row_title_printer = $row_title_printer;
 		$this->cpt_table = $cpt_table;
+		$this->row_title_printer = $row_title_printer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

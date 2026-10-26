@@ -28,10 +28,10 @@ final class Cpt_Renderer {
 		Public_Cpt $cpt,
 		Html_Renderer $html_renderer
 	) {
-		$this->html_renderer = $html_renderer;
 		$this->shortcode        = $shortcode;
 		$this->settings_storage = $settings_storage;
 		$this->cpt              = $cpt;
+		$this->html_renderer = $html_renderer;
 	}
 
 	/**
