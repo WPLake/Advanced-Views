@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Attribute;
+namespace Org\Wplake\Advanced_Views\Template\Html\Attribute_Utils;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -39,7 +39,7 @@ final class Attribute_Merger {
 	/**
 	 * Each side of a merge can be a string or an array
 	 *
-	 * @return array<string,Closure(mixed,mixed):mixed> attribute name => merger of the existing and the new value
+	 * @return Closure attribute name => merger of the existing and the new value
 	 */
 	protected static function get_mergers(): array {
 		return array(

@@ -2,10 +2,11 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag;
+namespace Org\Wplake\Advanced_Views\Template\Html\Tag_Printer;
 
 defined( 'ABSPATH' ) || exit;
 
+use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 /**
@@ -25,26 +26,17 @@ final class Formatted_Tag_Printer implements Tag_Printer {
 		$this->depth        = 0;
 	}
 
-	public function print_opening( Html_Tag $tag ): void {
-		$this->printer->print_opening( $tag );
-
-		++$this->depth;
-
-		$this->print_line_start();
-	}
-
-	public function print_closing( Html_Tag $tag ): void {
-		--$this->depth;
-
-		$this->print_line_start();
-
-		$this->printer->print_closing( $tag );
+	public function print_pair_tag( Html_Tag $tag, Closure $print_content ): void {
+		$this->printer->print_pair_tag(
+			$tag,
+			fn() => $this->print_indented( $print_content )
+		);
 
 		$this->print_line_start();
 	}
 
-	public function print_void( Html_Tag $tag ): void {
-		$this->printer->print_void( $tag );
+	public function print_single_tag( Html_Tag $tag ): void {
+		$this->printer->print_single_tag( $tag );
 
 		$this->print_line_start();
 	}
@@ -65,6 +57,16 @@ final class Formatted_Tag_Printer implements Tag_Printer {
 		$this->depth = $depth;
 
 		return $this;
+	}
+
+	protected function print_indented( Closure $print_content ): void {
+		++$this->depth;
+		$this->print_line_start();
+
+		$print_content();
+
+		--$this->depth;
+		$this->print_line_start();
 	}
 
 	protected function print_line_start(): void {

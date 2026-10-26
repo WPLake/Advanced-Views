@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Attribute;
+namespace Org\Wplake\Advanced_Views\Template\Html\Attribute_Utils;
 
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;

@@ -2,26 +2,27 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag;
+namespace Org\Wplake\Advanced_Views\Template\Html\Tag_Printer;
 
-use Org\Wplake\Advanced_Views\Template\Html\Attribute\Attribute_Normalizer;
+use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Attribute_Utils\Attribute_Normalizer;
 
 defined( 'ABSPATH' ) || exit;
 
 final class Plain_Tag_Printer implements Tag_Printer {
-	public function print_opening( Html_Tag $tag ): void {
+	public function print_pair_tag( Html_Tag $tag, Closure $print_content ): void {
+		$tag_name = $tag->get_tag();
+
 		self::open_tag( $tag );
 		echo '>';
-	}
 
-	public function print_closing( Html_Tag $tag ): void {
-		$tag_name = $tag->get_tag();
+		$print_content();
 
 		printf( '</%s>', esc_html( $tag_name ) );
 	}
 
-	public function print_void( Html_Tag $tag ): void {
+	public function print_single_tag( Html_Tag $tag ): void {
 		self::open_tag( $tag );
 		echo '/>';
 	}
