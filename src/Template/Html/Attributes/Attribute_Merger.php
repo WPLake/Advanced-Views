@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Attribute_Utils;
+namespace Org\Wplake\Advanced_Views\Template\Html\Attributes;
 
 defined( 'ABSPATH' ) || exit;
 

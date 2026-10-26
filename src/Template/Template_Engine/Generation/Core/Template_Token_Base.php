@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core;
 
+use Org\Wplake\Advanced_Views\Template\Html\Html_Escaper;
+
 defined( 'ABSPATH' ) || exit;
 
 abstract class Template_Token_Base implements Template_Token {
@@ -19,7 +21,7 @@ abstract class Template_Token_Base implements Template_Token {
 		$this->printer_class = $printer_class;
 	}
 
-	public function to_html(): string {
+	public function to_html( Html_Escaper $escaper ): string {
 		ob_start();
 		$this->display();
 

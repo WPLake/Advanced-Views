@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
+use Org\Wplake\Advanced_Views\Template\Html\Tag_Printer\Plain_Tag_Printer;
 use Org\Wplake\Advanced_Views\Template\Html\Tag_Printer\Tag_Printer;
 
 /**
@@ -15,13 +16,15 @@ use Org\Wplake\Advanced_Views\Template\Html\Tag_Printer\Tag_Printer;
  */
 final class Html_Renderer {
 	protected Tag_Printer $tag_printer;
+	protected Html_Escaper $escaper;
 	/**
 	 * @var string[]
 	 */
 	protected array $self_closing_tags;
 
-	public function __construct( Tag_Printer $tag_printer ) {
-		$this->tag_printer       = $tag_printer;
+	public function __construct( Html_Escaper $escaper, ?Tag_Printer $tag_printer = null ) {
+		$this->escaper           = $escaper;
+		$this->tag_printer       = $tag_printer ?? new Plain_Tag_Printer( $escaper );
 		$this->self_closing_tags = array(
 			'area',
 			'base',
@@ -95,14 +98,15 @@ final class Html_Renderer {
 	 */
 	protected function print_content( $content ): void {
 		if ( is_string( $content ) ) {
-			echo esc_html( $content );
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->escaper->esc_html( $content );
 
 			return;
 		}
 
 		if ( $content instanceof Htmlable ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $content->to_html();
+			echo $content->to_html( $this->escaper );
 
 			return;
 		}

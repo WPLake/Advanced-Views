@@ -12,11 +12,11 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Template;
-use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Composed_Htmlable;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
+use function Org\Wplake\Advanced_Views\Template\Html\compose_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
@@ -209,7 +209,7 @@ class Layout_Markup {
 
 	protected function root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Htmlable {
 		if ( Layout_Settings::CLASS_GENERATION_NONE === $layout_settings->classes_generation ) {
-			return Composed_Htmlable::compose( array() );
+			return compose_html( array() );
 		}
 
 		$bem_name = $layout_settings->get_bem_name();
@@ -230,6 +230,6 @@ class Layout_Markup {
 		$parts[] = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
 								->add_item_path( 'object_id' );
 
-		return Composed_Htmlable::compose( $parts );
+		return compose_html( $parts );
 	}
 }

@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Html\Htmlable;
 
+use Org\Wplake\Advanced_Views\Template\Html\Html_Escaper;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -19,22 +21,15 @@ final class Composed_Htmlable implements Htmlable {
 	/**
 	 * @param array<string|Htmlable> $parts
 	 */
-	protected function __construct( array $parts ) {
+	public function __construct( array $parts ) {
 		$this->parts = $parts;
 	}
 
-	/**
-	 * @param array<string|Htmlable> $parts
-	 */
-	public static function compose( array $parts ): Htmlable {
-		return new self( $parts );
-	}
-
-	public function to_html(): string {
+	public function to_html( Html_Escaper $escaper ): string {
 		$markups = array_map(
-			static fn( $part ): string => is_string( $part ) ?
-				esc_html( $part ) :
-				$part->to_html(),
+			fn( $part ): string => is_string( $part ) ?
+				$escaper->esc_html( $part ) :
+				$part->to_html( $escaper ),
 			$this->parts
 		);
 

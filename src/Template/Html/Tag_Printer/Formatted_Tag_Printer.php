@@ -7,6 +7,7 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Tag_Printer;
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 /**
@@ -15,12 +16,14 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
  */
 final class Formatted_Tag_Printer implements Tag_Printer {
 	protected Tag_Printer $printer;
+	protected Html_Escaper $escaper;
 	protected string $break_symbol;
 	protected string $tab_symbol;
 	protected int $depth;
 
-	public function __construct( Tag_Printer $printer ) {
+	public function __construct( Tag_Printer $printer, Html_Escaper $escaper ) {
 		$this->printer      = $printer;
+		$this->escaper      = $escaper;
 		$this->break_symbol = "\r\n";
 		$this->tab_symbol   = "\t";
 		$this->depth        = 0;
@@ -53,12 +56,6 @@ final class Formatted_Tag_Printer implements Tag_Printer {
 		return $this;
 	}
 
-	public function set_depth( int $depth ): self {
-		$this->depth = $depth;
-
-		return $this;
-	}
-
 	protected function print_indented( Closure $print_content ): void {
 		++$this->depth;
 		$this->print_line_start();
@@ -72,6 +69,7 @@ final class Formatted_Tag_Printer implements Tag_Printer {
 	protected function print_line_start(): void {
 		$tabulation = str_repeat( $this->tab_symbol, $this->depth );
 
-		echo esc_html( $this->break_symbol . $tabulation );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->escaper->esc_html( $this->break_symbol . $tabulation );
 	}
 }

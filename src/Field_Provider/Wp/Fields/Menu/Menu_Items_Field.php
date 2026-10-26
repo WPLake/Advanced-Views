@@ -15,11 +15,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Composed_Htmlable;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use WP_Post;
+use function Org\Wplake\Advanced_Views\Template\Html\compose_html;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Template\Html\print_html;
@@ -240,7 +240,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 
 		$class_branch = $this->class_branch( $conditional_suffix, $comparison, $markup_field_data );
 
-		return Composed_Htmlable::compose(
+		return compose_html(
 			array(
 				$this->get_item_class( $base_suffix, $markup_field_data->get_view_data(), $markup_field_data->get_field_data() ),
 				$token_factory->if()->set_if_branch( $class_branch ),

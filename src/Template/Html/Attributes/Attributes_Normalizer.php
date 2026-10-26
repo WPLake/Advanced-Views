@@ -2,15 +2,16 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Attribute_Utils;
+namespace Org\Wplake\Advanced_Views\Template\Html\Attributes;
 
+use Org\Wplake\Advanced_Views\Template\Html\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\stringExtended;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Attribute_Normalizer {
+final class Attributes_Normalizer implements Attributes_Cleaner {
 	protected const URL_ATTRIBUTES = array(
 		'href'       => true,
 		'src'        => true,
@@ -18,15 +19,14 @@ final class Attribute_Normalizer {
 		'formaction' => true,
 	);
 
-	/**
-	 * Returns the escaped attribute values
-	 *
-	 * @param array<string,mixed> $attributes
-	 *
-	 * @return array<string,string>
-	 */
-	public static function safe_normalize( array $attributes ): array {
-		$normalizers = self::attribute_normalizers();
+	protected Html_Escaper $escaper;
+
+	public function __construct( Html_Escaper $escaper ) {
+		$this->escaper = $escaper;
+	}
+
+	public function clean_attributes( array $attributes ): array {
+		$normalizers = $this->attribute_normalizers();
 		$normalized  = array();
 
 		foreach ( $attributes as $name => $value ) {
@@ -39,7 +39,7 @@ final class Attribute_Normalizer {
 				continue;
 			}
 
-			$normalized[ $name ] = self::escape_value( $name, $value );
+			$normalized[ $name ] = $this->escape_value( $name, $value );
 		}
 
 		return $normalized;
@@ -48,19 +48,19 @@ final class Attribute_Normalizer {
 	/**
 	 * @return array<string,callable(array<mixed>):string>
 	 */
-	protected static function attribute_normalizers(): array {
+	protected function attribute_normalizers(): array {
 		return array(
-			'class' => fn( array $classes ) => self::normalize_class( $classes ),
-			'style' => fn( array $declarations ) => self::normalize_style( $declarations ),
+			'class' => fn( array $classes ) => $this->normalize_class( $classes ),
+			'style' => fn( array $declarations ) => $this->normalize_style( $declarations ),
 		);
 	}
 
 	/**
 	 * @param array<mixed> $classes
 	 */
-	protected static function normalize_class( array $classes ): string {
+	protected function normalize_class( array $classes ): string {
 		$escaped_classes = array_map(
-			fn( $tag_class ) => self::escape_value( 'class', $tag_class ),
+			fn( $tag_class ) => $this->escape_value( 'class', $tag_class ),
 			$classes
 		);
 
@@ -70,14 +70,14 @@ final class Attribute_Normalizer {
 	/**
 	 * @param array<mixed> $declarations
 	 */
-	protected static function normalize_style( array $declarations ): string {
+	protected function normalize_style( array $declarations ): string {
 		$lines = array();
 
 		foreach ( $declarations as $property => $value ) {
 			$property_name = string( $property );
-			$style_value   = self::escape_value( 'style', $value );
+			$style_value   = $this->escape_value( 'style', $value );
 
-			$lines[] = sprintf( '%s:%s;', esc_html( $property_name ), $style_value );
+			$lines[] = sprintf( '%s:%s;', $this->escaper->esc_html( $property_name ), $style_value );
 		}
 
 		return join( '', $lines );
@@ -88,17 +88,17 @@ final class Attribute_Normalizer {
 	 *
 	 * @param mixed $value
 	 */
-	protected static function escape_value( string $attr_name, $value ): string {
+	protected function escape_value( string $attr_name, $value ): string {
 		if ( $value instanceof Htmlable ) {
-			return $value->to_html();
+			return $value->to_html( $this->escaper );
 		}
 
 		$string_value = stringExtended( $value );
 
 		if ( key_exists( $attr_name, self::URL_ATTRIBUTES ) ) {
-			return esc_url( $string_value );
+			return $this->escaper->esc_url( $string_value );
 		}
 
-		return esc_html( $string_value );
+		return $this->escaper->esc_html( $string_value );
 	}
 }
