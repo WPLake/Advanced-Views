@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Map_Field_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class Map_Pattern implements Frontend_Pattern, Template_Pattern, CSS_Pattern {
@@ -21,34 +22,48 @@ final class Map_Pattern implements Frontend_Pattern, Template_Pattern, CSS_Patte
 		return __( 'Map', 'acf-views' );
 	}
 
-	public static function get_outer_wrappers(): array {
+	public static function get_outer_wrappers( Variable_Token $field ): array {
+		$attributes = array(
+			'data-zoom'       => $field
+				->clone()
+				->add_item_path( Map_Field_Base::ZOOM ),
+			'data-center-lat' => $field
+				->clone()
+				->add_item_path( Map_Field_Base::CENTER_LAT ),
+			'data-center-lng' => $field
+				->clone()
+				->add_item_path( Map_Field_Base::CENTER_LNG ),
+		);
+
 		return array(
 			tag( 'div' )
-				->attributes(
-					array(
-						'#data-zoom'       => Map_Field_Base::ZOOM,
-						'#data-center-lat' => Map_Field_Base::CENTER_LAT,
-						'#data-center-lng' => Map_Field_Base::CENTER_LNG,
-					)
-				),
+				->attributes( $attributes ),
 		);
 	}
 
-	public static function get_inner_wrappers(): array {
+	public static function get_inner_wrappers( Variable_Token $item ): array {
+		$attributes = array(
+			'data-lat'   => $item
+				->clone()
+				->add_item_path( Map_Field_Base::LAT ),
+			'data-lng'   => $item
+				->clone()
+				->add_item_path( Map_Field_Base::LNG ),
+			'data-icon'  => $item
+				->clone()
+				->add_item_path( Map_Field_Base::ICON ),
+			'data-title' => $item
+				->clone()
+				->add_item_path( Map_Field_Base::TITLE ),
+		);
+
 		return array(
 			tag( 'div' )
-				->attributes(
-					array(
-						'#data-lat'   => Map_Field_Base::LAT,
-						'#data-lng'   => Map_Field_Base::LNG,
-						'#data-icon'  => Map_Field_Base::ICON,
-						'#data-title' => Map_Field_Base::TITLE,
-					)
-				),
+				->attributes( $attributes ),
 		);
 	}
 
-	public static function get_item_attributes(): array {
+	public static function get_item_attributes( Variable_Token $item ): array {
 		return array();
 	}
 

@@ -25,4 +25,11 @@ abstract class Template_Token_Base implements Template_Token {
 
 		return (string) ob_get_clean();
 	}
+
+	/**
+	 * @return static
+	 */
+	public function clone(): self {
+		return clone $this;
+	}
 }

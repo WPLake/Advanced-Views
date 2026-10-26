@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Patter
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 
 final class Lightbox_Multi implements Frontend_Pattern, Template_Pattern, JS_Pattern, CSS_Pattern {
 	public static function get_id(): string {
@@ -21,15 +22,15 @@ final class Lightbox_Multi implements Frontend_Pattern, Template_Pattern, JS_Pat
 		return Lightbox_Single::get_label();
 	}
 
-	public static function get_outer_wrappers(): array {
-		return Inline_Gallery::get_outer_wrappers();
+	public static function get_outer_wrappers( Variable_Token $field ): array {
+		return Inline_Gallery::get_outer_wrappers( $field );
 	}
 
-	public static function get_inner_wrappers(): array {
-		return Inline_Gallery::get_inner_wrappers();
+	public static function get_inner_wrappers( Variable_Token $item ): array {
+		return Inline_Gallery::get_inner_wrappers( $item );
 	}
 
-	public static function get_item_attributes(): array {
+	public static function get_item_attributes( Variable_Token $item ): array {
 		return array();
 	}
 

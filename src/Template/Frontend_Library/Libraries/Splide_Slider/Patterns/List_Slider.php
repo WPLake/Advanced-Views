@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Patter
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class List_Slider implements Frontend_Pattern, Template_Pattern, JS_Pattern, CSS_Pattern {
@@ -22,7 +23,7 @@ final class List_Slider implements Frontend_Pattern, Template_Pattern, JS_Patter
 		return __( 'Slider (list)', 'acf-views' );
 	}
 
-	public static function get_outer_wrappers(): array {
+	public static function get_outer_wrappers( Variable_Token $field ): array {
 		return array(
 			tag( 'div' )
 				->attributes( array( 'class' => 'splide' ) ),
@@ -33,14 +34,14 @@ final class List_Slider implements Frontend_Pattern, Template_Pattern, JS_Patter
 		);
 	}
 
-	public static function get_inner_wrappers(): array {
+	public static function get_inner_wrappers( Variable_Token $item ): array {
 		return array(
 			tag( 'li' )
 				->attributes( array( 'class' => 'splide__slide' ) ),
 		);
 	}
 
-	public static function get_item_attributes(): array {
+	public static function get_item_attributes( Variable_Token $item ): array {
 		return array();
 	}
 

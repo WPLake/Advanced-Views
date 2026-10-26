@@ -10,16 +10,12 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Patt
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
 final class Lightbox_Single implements Frontend_Pattern, Template_Pattern, JS_Pattern, CSS_Pattern {
-	const DATA_PROPERTIES = array(
-		'#data-src'      => Image_Field::FULL_SIZE,
-		'#data-sub-html' => Image_Field::CAPTION,
-	);
-
 	public static function get_id(): string {
 		return 'lightbox';
 	}
@@ -28,18 +24,34 @@ final class Lightbox_Single implements Frontend_Pattern, Template_Pattern, JS_Pa
 		return __( 'Lightbox', 'acf-views' );
 	}
 
-	public static function get_outer_wrappers(): array {
+	public static function get_outer_wrappers( Variable_Token $field ): array {
 		return array();
 	}
 
-	public static function get_inner_wrappers(): array {
+	public static function get_inner_wrappers( Variable_Token $item ): array {
+		$data_properties = self::data_properties( $item );
+
 		return array(
 			tag( 'div' )
-				->attributes( self::DATA_PROPERTIES ),
+				->attributes( $data_properties ),
 		);
 	}
 
-	public static function get_item_attributes(): array {
+	/**
+	 * @return array<string,Variable_Token>
+	 */
+	public static function data_properties( Variable_Token $item ): array {
+		return array(
+			'data-src'      => $item
+				->clone()
+				->add_item_path( Image_Field::FULL_SIZE ),
+			'data-sub-html' => $item
+				->clone()
+				->add_item_path( Image_Field::CAPTION ),
+		);
+	}
+
+	public static function get_item_attributes( Variable_Token $item ): array {
 		return array();
 	}
 
