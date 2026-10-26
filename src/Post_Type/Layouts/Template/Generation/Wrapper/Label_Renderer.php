@@ -9,43 +9,32 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Template\Html\print_html;
 
-final class Label_Printer {
-	public static function print(
+final class Label_Renderer {
+	public static function get_tag(
 		Token_Factory $token_factory,
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
 		int &$tabs_number,
 		string $field_id
-	): void {
-		$token_factory->formatter()
-						->tab( $tabs_number );
-
-		$print_opening = function () use ( $token_factory, &$tabs_number ) {
-			self::print_variable_opening( $token_factory, $tabs_number );
-		};
-
-		$print_closing = function () use ( $token_factory, &$tabs_number ) {
-			self::print_variable_closing( $token_factory, $tabs_number );
-		};
-
+	): Html_Tag {
 		$label_class = self::resolve_classes( $layout_settings, $field_settings );
 
-		$tags    = tag( 'p' )
+		return tag( 'p' )
 			->attributes( array( 'class' => $label_class ) )
 			->content(
-				$print_opening,
-				fn() => self::print_variable( $token_factory, $field_id ),
-				$print_closing
+				fn() => $token_factory->formatter()
+										->new_line()
+										->tab( $tabs_number + 1 ),
+				$token_factory->variable( $field_id )
+								->add_item_path( Markup_Field_Base::LABEL ),
+				fn() => $token_factory->formatter()
+										->new_line()
+										->tab( $tabs_number )
 			);
-
-		print_html( $tags );
-
-		Format_Token::next_line();
 	}
 
 	protected static function resolve_classes( Layout_Settings $layout_settings, Field_Settings $field_settings ): string {
@@ -61,23 +50,5 @@ final class Label_Printer {
 		}
 
 		return join( ' ', $classes );
-	}
-
-	protected static function print_variable_opening( Token_Factory $factory, int &$tabs_number ): void {
-		$factory->formatter()
-				->new_line()
-				->tab( ++$tabs_number );
-	}
-
-	protected static function print_variable( Token_Factory $factory, string $field_id ): void {
-		$factory->variable( $field_id )
-				->add_item_path( Markup_Field_Base::LABEL )
-				->display();
-	}
-
-	protected static function print_variable_closing( Token_Factory $factory, int &$tabs_number ): void {
-		$factory->formatter()
-				->new_line()
-				->tab( --$tabs_number );
 	}
 }

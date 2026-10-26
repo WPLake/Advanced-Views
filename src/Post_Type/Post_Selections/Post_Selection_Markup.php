@@ -139,10 +139,12 @@ class Post_Selection_Markup {
 			$token_factory->formatter()->tab( --$tabs_number );
 		};
 
-		$nested    = $tag
-			->content( fn() => $token_factory->formatter()->new_line() )
-			->content( ...$inner )
-			->content( $print_closing_tab );
+		$members = array_merge(
+			array( fn() => $token_factory->formatter()->new_line() ),
+			$inner,
+			array( $print_closing_tab )
+		);
+		$nested  = $tag->content( ...$members );
 
 		return array(
 			$print_opening_tab,

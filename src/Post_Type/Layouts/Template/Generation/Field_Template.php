@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Label_Printer;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Label_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Outer_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Wrapper_Printer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
@@ -177,7 +177,13 @@ class Field_Template {
 		};
 
 		$print_label = function () use ( $token_factory, $layout_settings, $field_settings, &$tabs_number, $field_id ): void {
-			Label_Printer::print( $token_factory, $layout_settings, $field_settings, $tabs_number, $field_id );
+			$label = Label_Renderer::get_tag( $token_factory, $layout_settings, $field_settings, $tabs_number, $field_id );
+
+			$token_factory->formatter()
+							->tab( $tabs_number );
+			print_html( $label );
+			$token_factory->formatter()
+							->new_line();
 		};
 
 		$is_with_label = strlen( $field_settings->label ) > 0;

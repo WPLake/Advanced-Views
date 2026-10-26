@@ -96,10 +96,8 @@ final class Wrapper_Printer {
 			Format_Token::tabulation( --$tabs_number );
 		};
 
-		$nested    = $tag
-			->content( $print_inner_start )
-			->content( ...$inner )
-			->content( $print_closing_tabs );
+		$members = array_merge( array( $print_inner_start ), $inner, array( $print_closing_tabs ) );
+		$nested  = $tag->content( ...$members );
 
 		return array(
 			$print_opening_tabs,
