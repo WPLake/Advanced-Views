@@ -42,8 +42,12 @@ final class Html_Tag {
 	 * @param Html_Node|null ...$items
 	 */
 	public function content( ...$items ): self {
-		$nodes         = array_filter( $items, static fn( $item ) => null !== $item );
-		$this->content = array_merge( $this->content, array_values( $nodes ) );
+		$nodes = array_filter(
+			$items,
+			static fn( $item ) => ! is_null( $item )
+		);
+
+		$this->content = array_values( $nodes );
 
 		return $this;
 	}
