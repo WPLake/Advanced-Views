@@ -10,7 +10,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Profiler {
+class Profiler {
 	const SOURCE_NETWORK = '_network';
 
 	/**
@@ -31,20 +31,26 @@ abstract class Profiler {
 	private static float $plugin_loaded_sec  = 0;
 	private static ?bool $is_profiler_active = null;
 
+	protected Html_Renderer $html_renderer;
+
+	public function __construct( Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
+	}
+
 	public static function get_callback( string $source, string $hook_name, callable $callback ): callable {
 		return self::is_active() ?
 			fn( ...$args ) => self::execute_callback( $source, $hook_name, $callback, $args ) :
 			$callback;
 	}
 
-	public static function plugin_loaded( float $start_timestamp, Html_Renderer $html_renderer ): void {
+	public function loaded( float $start_timestamp ): void {
 		if ( self::is_active() ) {
 			self::$plugin_loaded_sec = microtime( true ) - $start_timestamp;
-			add_action( 'shutdown', fn() => self::print_report( $html_renderer ) );
+			add_action( 'shutdown', array( $this, 'print_report' ) );
 		}
 	}
 
-	public static function print_report( Html_Renderer $html_renderer ): void {
+	public function print_report(): void {
 		$classes_total_usage = self::get_classes_total_usage();
 		$total_usage         = self::get_total_usage();
 		$classes_amount      = count( $classes_total_usage );
@@ -67,7 +73,7 @@ abstract class Profiler {
 				self::pre_chain( self::$class_hooks_usage )
 			);
 
-		$html_renderer->print( $tags );
+		$this->html_renderer->print( $tags );
 	}
 
 	/**

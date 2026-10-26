@@ -28,9 +28,8 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 	public function __construct( Logger $logger, Html_Renderer $html_renderer ) {
 		parent::__construct( $logger );
 
-
-		$this->field_types = $this->get_field_types();
 		$this->html_renderer = $html_renderer;
+		$this->field_types   = $this->get_field_types();
 	}
 
 	/**
