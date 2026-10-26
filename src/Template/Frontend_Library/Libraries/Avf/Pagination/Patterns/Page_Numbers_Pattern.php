@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Pagination_Field_Base;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class Page_Numbers_Pattern implements Frontend_Pattern, Template_Pattern {
 	public static function get_id(): string {
@@ -21,15 +22,15 @@ final class Page_Numbers_Pattern implements Frontend_Pattern, Template_Pattern {
 
 	public static function get_outer_wrappers(): array {
 		return array(
-			array(
-				'tag'   => 'div',
-				'attrs' => array(
-					'class'                 => 'avf-pagination',
-					'#data-pagination-type' => Pagination_Field_Base::TYPE,
-					'#data-pages-amount'    => Pagination_Field_Base::PAGES_AMOUNT,
-					'#data-card-id'         => Pagination_Field_Base::CARD_ID,
+			tag( 'div' )
+				->attributes(
+					array(
+						'class'                 => 'avf-pagination',
+						'#data-pagination-type' => Pagination_Field_Base::TYPE,
+						'#data-pages-amount'    => Pagination_Field_Base::PAGES_AMOUNT,
+						'#data-card-id'         => Pagination_Field_Base::CARD_ID,
+					)
 				),
-			),
 		);
 	}
 

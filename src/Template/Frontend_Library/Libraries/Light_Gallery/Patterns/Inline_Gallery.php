@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Patter
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class Inline_Gallery implements Frontend_Pattern, Template_Pattern, JS_Pattern, CSS_Pattern {
 	public static function get_id(): string {
@@ -23,16 +24,14 @@ final class Inline_Gallery implements Frontend_Pattern, Template_Pattern, JS_Pat
 
 	public static function get_outer_wrappers(): array {
 		return array(
-			array( 'tag' => 'ul' ),
+			tag( 'ul' ),
 		);
 	}
 
 	public static function get_inner_wrappers(): array {
 		return array(
-			array(
-				'tag'   => 'li',
-				'attrs' => Lightbox_Single::DATA_PROPERTIES,
-			),
+			tag( 'li' )
+				->attributes( Lightbox_Single::DATA_PROPERTIES ),
 		);
 	}
 

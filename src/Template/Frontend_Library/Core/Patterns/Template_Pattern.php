@@ -6,24 +6,22 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+
 interface Template_Pattern {
 	/**
-	 * [ [tag => string, attrs? => [attributeName => value]] ]
-	 *
 	 * Flat items present the nested structure, so the first one is the top parent.
 	 * Hash prefix in #attributeName means dynamic field property.
 	 *
-	 * @return array<int, array{tag:string,attrs?:array<string,string>}>
+	 * @return Html_Tag[]
 	 */
 	public static function get_outer_wrappers(): array;
 
 	/**
-	 * [ [tag => string, attrs? => [attributeName => value]] ]
-	 *
 	 * Flat items present the nested structure, so the first one is the top parent.
 	 * Hash prefix in #attributeName means dynamic field property.
 	 *
-	 * @return array<int, array{tag:string,attrs?:array<string,string>}>
+	 * @return Html_Tag[]
 	 */
 	public static function get_inner_wrappers(): array;
 

@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class Image_Lightbox implements Frontend_Pattern, Template_Pattern, CSS_Pattern {
 	public static function get_id(): string {
@@ -26,7 +27,7 @@ final class Image_Lightbox implements Frontend_Pattern, Template_Pattern, CSS_Pa
 
 	public static function get_inner_wrappers(): array {
 		return array(
-			array( 'tag' => 'div' ),
+			tag( 'div' ),
 		);
 	}
 

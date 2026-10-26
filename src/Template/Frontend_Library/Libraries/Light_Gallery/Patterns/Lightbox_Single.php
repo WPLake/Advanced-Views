@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Patt
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -33,10 +34,8 @@ final class Lightbox_Single implements Frontend_Pattern, Template_Pattern, JS_Pa
 
 	public static function get_inner_wrappers(): array {
 		return array(
-			array(
-				'tag'   => 'div',
-				'attrs' => self::DATA_PROPERTIES,
-			),
+			tag( 'div' )
+				->attributes( self::DATA_PROPERTIES ),
 		);
 	}
 

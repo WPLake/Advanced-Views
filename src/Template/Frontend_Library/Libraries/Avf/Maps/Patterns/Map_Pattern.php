@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Map_Field_Base;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class Map_Pattern implements Frontend_Pattern, Template_Pattern, CSS_Pattern {
 	public static function get_id(): string {
@@ -22,28 +23,28 @@ final class Map_Pattern implements Frontend_Pattern, Template_Pattern, CSS_Patte
 
 	public static function get_outer_wrappers(): array {
 		return array(
-			array(
-				'tag'   => 'div',
-				'attrs' => array(
-					'#data-zoom'       => Map_Field_Base::ZOOM,
-					'#data-center-lat' => Map_Field_Base::CENTER_LAT,
-					'#data-center-lng' => Map_Field_Base::CENTER_LNG,
+			tag( 'div' )
+				->attributes(
+					array(
+						'#data-zoom'       => Map_Field_Base::ZOOM,
+						'#data-center-lat' => Map_Field_Base::CENTER_LAT,
+						'#data-center-lng' => Map_Field_Base::CENTER_LNG,
+					)
 				),
-			),
 		);
 	}
 
 	public static function get_inner_wrappers(): array {
 		return array(
-			array(
-				'tag'   => 'div',
-				'attrs' => array(
-					'#data-lat'   => Map_Field_Base::LAT,
-					'#data-lng'   => Map_Field_Base::LNG,
-					'#data-icon'  => Map_Field_Base::ICON,
-					'#data-title' => Map_Field_Base::TITLE,
+			tag( 'div' )
+				->attributes(
+					array(
+						'#data-lat'   => Map_Field_Base::LAT,
+						'#data-lng'   => Map_Field_Base::LNG,
+						'#data-icon'  => Map_Field_Base::ICON,
+						'#data-title' => Map_Field_Base::TITLE,
+					)
 				),
-			),
 		);
 	}
 

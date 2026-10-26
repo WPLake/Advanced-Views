@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Patter
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class Div_Slider implements Frontend_Pattern, Template_Pattern, JS_Pattern, CSS_Pattern {
 	public static function get_id(): string {
@@ -23,18 +24,12 @@ final class Div_Slider implements Frontend_Pattern, Template_Pattern, JS_Pattern
 
 	public static function get_outer_wrappers(): array {
 		return array(
-			array(
-				'tag'   => 'div',
-				'attrs' => array( 'class' => 'splide' ),
-			),
-			array(
-				'tag'   => 'div',
-				'attrs' => array( 'class' => 'splide__track' ),
-			),
-			array(
-				'tag'   => 'div',
-				'attrs' => array( 'class' => 'splide__list' ),
-			),
+			tag( 'div' )
+				->attributes( array( 'class' => 'splide' ) ),
+			tag( 'div' )
+				->attributes( array( 'class' => 'splide__track' ) ),
+			tag( 'div' )
+				->attributes( array( 'class' => 'splide__list' ) ),
 		);
 	}
 
