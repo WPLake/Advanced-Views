@@ -20,7 +20,9 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre_Built_Tab;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Escaper\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Printer\Plain_Tag_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
 
 class Plugin_Factory extends Factory_Base {
@@ -49,6 +51,13 @@ class Plugin_Factory extends Factory_Base {
 			$this->resolve( State_Report::class ),
 			$this->settings_storages(),
 			$this->resolve( Html_Renderer::class )
+		);
+	}
+
+	public function html_renderer(): Html_Renderer {
+		return new Html_Renderer(
+			$this->resolve( Html_Escaper::class ),
+			$this->resolve( Plain_Tag_Printer::class )
 		);
 	}
 
