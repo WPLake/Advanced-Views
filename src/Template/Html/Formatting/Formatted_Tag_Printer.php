@@ -46,15 +46,6 @@ final class Formatted_Tag_Printer implements Tag_Printer {
 		$this->printer->print_single_tag( $tag );
 	}
 
-	/**
-	 * @param string|Htmlable|Closure $node
-	 */
-	public function print_node( $node ): void {
-		$this->print_break_before_node();
-
-		$this->printer->print_node( $node );
-	}
-
 	protected function print_indented( Closure $print_content ): void {
 		++$this->depth;
 		$this->formatter->line_start( $this->depth );

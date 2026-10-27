@@ -4,14 +4,14 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Html\Tag_Printer;
 
+defined( 'ABSPATH' ) || exit;
+
 use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Attributes\Attribute_Normalizer;
 use Org\Wplake\Advanced_Views\Template\Html\Attributes\Nested_Attribute_Normalizer;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
-
-defined( 'ABSPATH' ) || exit;
 
 final class Plain_Tag_Printer implements Tag_Printer {
 	protected Attribute_Normalizer $normalizer;
@@ -34,15 +34,10 @@ final class Plain_Tag_Printer implements Tag_Printer {
 	}
 
 	public function print_pair_tag( Html_Tag $tag, Closure $print_content ): void {
-		$tag_name = $tag->get_tag();
-
 		$this->open_tag( $tag );
 		echo '>';
-
 		$print_content();
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		printf( '</%s>', $this->escaper->esc_html( $tag_name ) );
+		$this->print_closing_tag( $tag );
 	}
 
 	public function print_single_tag( Html_Tag $tag ): void {
@@ -50,24 +45,29 @@ final class Plain_Tag_Printer implements Tag_Printer {
 		echo '/>';
 	}
 
-	/**
-	 * @param string|Htmlable|Closure $node
-	 */
-	public function print_node( $node ): void {
-		if ( $node instanceof Closure ) {
-			$node();
-		}
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $this->escaper->stringify( $node );
+	protected function open_tag( Html_Tag $tag ): void {
+		$this->print_opening_tag( $tag );
+		$this->print_attributes( $tag );
 	}
 
-	protected function open_tag( Html_Tag $tag ): void {
-		$tag_name       = $tag->get_tag();
-		$tag_attributes = $tag->get_attributes();
+	protected function print_opening_tag( Html_Tag $tag ): void {
+		$tag_name    = $tag->get_tag();
+		$escaped_tag = $this->escaper->esc_html( $tag_name );
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		printf( '<%s', $this->escaper->esc_html( $tag_name ) );
+		printf( '<%s', $escaped_tag );
+	}
+
+	protected function print_closing_tag( Html_Tag $tag ): void {
+		$tag_name    = $tag->get_tag();
+		$escaped_tag = $this->escaper->esc_html( $tag_name );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		printf( '</%s>', $escaped_tag );
+	}
+
+	protected function print_attributes( Html_Tag $tag ): void {
+		$tag_attributes = $tag->get_attributes();
 
 		foreach ( $tag_attributes as $name => $value ) {
 			$this->print_attribute( $name, $value );
