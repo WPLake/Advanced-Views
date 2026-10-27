@@ -64,7 +64,7 @@ final class Attribute_Merger {
 			return $value;
 		}
 
-		$text         = is_string( $value ) ? $value : '';
+		$text         = self::stringify( $value );
 		$names        = explode( ' ', $text );
 		$filled_names = array_filter(
 			$names,
@@ -86,7 +86,7 @@ final class Attribute_Merger {
 			return $value;
 		}
 
-		$text         = is_string( $value ) ? $value : '';
+		$text         = self::stringify( $value );
 		$declarations = array();
 		$lines        = explode( ';', $text );
 
@@ -101,5 +101,10 @@ final class Attribute_Merger {
 		}
 
 		return $declarations;
+	}
+
+	// fixme repeats with Plain_Tag_Printer & can be overidden.
+	protected static function stringify( $value ): string {
+		return is_string( $value ) ? $value : '';
 	}
 }

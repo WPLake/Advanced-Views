@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Template\Html;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Tag_Printer\Plain_Tag_Printer;
 use Org\Wplake\Advanced_Views\Template\Html\Tag_Printer\Tag_Printer;
 
 /**
@@ -19,8 +18,8 @@ final class Html_Renderer {
 	 */
 	protected array $self_closing_tags;
 
-	public function __construct( Html_Escaper $escaper, ?Tag_Printer $tag_printer = null ) {
-		$this->tag_printer       = $tag_printer ?? new Plain_Tag_Printer( $escaper );
+	public function __construct( Tag_Printer $tag_printer ) {
+		$this->tag_printer       = $tag_printer;
 		$this->self_closing_tags = array(
 			'area',
 			'base',

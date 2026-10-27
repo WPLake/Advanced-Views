@@ -7,6 +7,7 @@ namespace Org\Wplake\Advanced_Views\Template\Html;
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
+use Org\Wplake\Advanced_Views\Template\Html\Attributes\Attribute_Merger;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 
 /**
