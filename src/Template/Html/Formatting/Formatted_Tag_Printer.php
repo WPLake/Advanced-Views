@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Tag_Printer;
+namespace Org\Wplake\Advanced_Views\Template\Html\Formatting;
 
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
+use Org\Wplake\Advanced_Views\Template\Html\Tag_Printer\Tag_Printer;
 
 /**
  * Wraps a printer, adding line breaks and tabs: the content of a tag goes on its own lines, one level deeper.
@@ -20,19 +20,15 @@ use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
  */
 final class Formatted_Tag_Printer implements Tag_Printer {
 	protected Tag_Printer $printer;
-	protected Html_Escaper $escaper;
-	protected string $break_symbol;
-	protected string $tab_symbol;
+	protected Html_Formatter $formatter;
 	protected int $depth;
 	protected bool $is_first;
 
-	public function __construct( Tag_Printer $printer, Html_Escaper $escaper ) {
-		$this->printer      = $printer;
-		$this->escaper      = $escaper;
-		$this->break_symbol = "\r\n";
-		$this->tab_symbol   = "\t";
-		$this->depth        = 0;
-		$this->is_first     = true;
+	public function __construct( Tag_Printer $printer, Html_Formatter $formatter ) {
+		$this->printer   = $printer;
+		$this->formatter = $formatter;
+		$this->depth     = 0;
+		$this->is_first  = true;
 	}
 
 	public function print_pair_tag( Html_Tag $tag, Closure $print_content ): void {
@@ -59,42 +55,23 @@ final class Formatted_Tag_Printer implements Tag_Printer {
 		$this->printer->print_node( $node );
 	}
 
-	public function set_break_symbol( string $break_symbol ): self {
-		$this->break_symbol = $break_symbol;
-
-		return $this;
-	}
-
-	public function set_tab_symbol( string $tab_symbol ): self {
-		$this->tab_symbol = $tab_symbol;
-
-		return $this;
-	}
-
 	protected function print_indented( Closure $print_content ): void {
 		++$this->depth;
-		$this->print_line_start();
+		$this->formatter->line_start( $this->depth );
 		$this->is_first = true;
 
 		$print_content();
 
 		--$this->depth;
-		$this->print_line_start();
+		$this->formatter->line_start( $this->depth );
 		$this->is_first = false;
 	}
 
 	protected function print_break_before_node(): void {
 		if ( ! $this->is_first ) {
-			$this->print_line_start();
+			$this->formatter->line_start( $this->depth );
 		}
 
 		$this->is_first = false;
-	}
-
-	protected function print_line_start(): void {
-		$tabulation = str_repeat( $this->tab_symbol, $this->depth );
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $this->escaper->esc_html( $this->break_symbol . $tabulation );
 	}
 }
