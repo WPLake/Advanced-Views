@@ -9,14 +9,14 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Pages;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Import_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Toolbar_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Toolbar_Printer;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Import_Printer;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 
 class Dashboard_Factory extends Factory_Base {
 	public function admin_pages(): Admin_Pages {

@@ -9,12 +9,12 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Printer;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Template_Engine;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Printer;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 
 class Twig_Template_Engine implements Template_Engine {
 	const NAME = 'twig';
@@ -24,8 +24,8 @@ class Twig_Template_Engine implements Template_Engine {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Logger $logger, Settings_Storage $settings, Html_Renderer $html_renderer ) {
-		$this->logger   = $logger;
-		$this->settings = $settings;
+		$this->logger        = $logger;
+		$this->settings      = $settings;
 		$this->html_renderer = $html_renderer;
 	}
 

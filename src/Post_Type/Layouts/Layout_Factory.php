@@ -13,9 +13,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Field_Variables;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use WP_REST_Request;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Layout_Factory extends Instance_Factory {
 	private Layout_Settings_Storage $layouts_settings_storage;
@@ -41,7 +41,7 @@ class Layout_Factory extends Instance_Factory {
 		$this->template_renderer_storage = $template_renderer_storage;
 		$this->field_variables           = $field_variables;
 		$this->provider_cluster          = $provider_cluster;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer             = $html_renderer;
 	}
 
 	public function get_template_fields( Cpt_Theme_Settings $theme_settings ): array {

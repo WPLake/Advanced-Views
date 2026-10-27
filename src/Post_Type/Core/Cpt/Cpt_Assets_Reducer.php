@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
@@ -21,8 +21,8 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Settings_Storage $settings, string $cpt_name, Html_Renderer $html_renderer ) {
-		$this->settings = $settings;
-		$this->cpt_name = $cpt_name;
+		$this->settings      = $settings;
+		$this->cpt_name      = $cpt_name;
 		$this->html_renderer = $html_renderer;
 	}
 
@@ -265,15 +265,17 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 		$disable_text   = sprintf( ' %s', $disable_label );
 
 		$settings_link = tag( 'a' )
-			->attributes( array(
-				'href'   => $settings_url,
-				'target' => '_blank',
-			) )
+			->attributes(
+				array(
+					'href'   => $settings_url,
+					'target' => '_blank',
+				)
+			)
 			->content(
 				$settings_label
 			);
 
-		$tags    = tag( 'p' )
+		$tags = tag( 'p' )
 			->attributes( array( 'class' => 'acf-views__loading-fallback acf-views__loading-fallback--hidden' ) )
 			->content(
 				$loading_label,
@@ -296,7 +298,7 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 			<?php
 		};
 
-		$node         = tag( 'script' )
+		$node = tag( 'script' )
 			->attributes( array( 'type' => 'module' ) )
 			->content(
 				$print_fallback_script

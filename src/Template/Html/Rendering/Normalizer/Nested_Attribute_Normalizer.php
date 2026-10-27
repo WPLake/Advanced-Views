@@ -2,11 +2,11 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Attributes;
+namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Normalizer;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Escaper\Html_Escaper;
 
 /**
  * @phpstan-type Normalizer callable(mixed[]):string
@@ -65,10 +65,10 @@ final class Nested_Attribute_Normalizer implements Attribute_Normalizer {
 		$lines = array();
 
 		foreach ( $declarations as $property => $value ) {
-			$property_name = $this->escaper->esc_html( $property );
-			$style_value   = $this->escaper->stringify( $value );
+			$escaped_name  = $this->escaper->esc_html( $property );
+			$escaped_value = $this->escaper->stringify( $value );
 
-			$lines[] = sprintf( '%s:%s;', $property_name, $style_value );
+			$lines[] = sprintf( '%s:%s;', $escaped_name, $escaped_value );
 		}
 
 		return join( '', $lines );

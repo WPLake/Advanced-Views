@@ -15,8 +15,8 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -34,7 +34,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 
 		$this->dismiss_key          = sprintf( '_%s-upgrade-notice-dismiss', $this->plugin_meta->get_short_slug() );
 		$this->dismiss_nonce_action = 'avf-upgrade-notice';
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer        = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

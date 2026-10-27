@@ -2,22 +2,15 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Formatting;
+namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Printer\Formatted;
 
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
-use Org\Wplake\Advanced_Views\Template\Html\Tag_Printer\Tag_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Printer\Tag_Printer;
 
-/**
- * Wraps a printer, adding line breaks and tabs: the content of a tag goes on its own lines, one level deeper.
- * Breaks are leading only: every node (a tag, text, a callback) starts on its own line, except the first one of the
- * output or of a content, which already follows a break. Nothing is printed after the last tag, so the parent's closing tag starts its own line
- * without a blank one, and a break after the whole markup is up to the caller.
- * The printer is stateful, so use a new one per markup.
- */
+
 final class Formatted_Tag_Printer implements Tag_Printer {
 	protected Tag_Printer $printer;
 	protected Html_Formatter $formatter;

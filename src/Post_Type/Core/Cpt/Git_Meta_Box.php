@@ -17,8 +17,8 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 abstract class Git_Meta_Box extends Actor_Base implements Actor {
@@ -52,7 +52,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 		$this->git_api              = $git_api;
 		$this->pushing_unique_ids   = array();
 		$this->plugin_meta          = $plugin_meta;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer        = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -81,11 +81,13 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 		$reminder     = $this->save_reminder_tags();
 		$button       = $this->button_tags();
 
-		$tags                  = tag( 'av-git-meta-box' )
-			->attributes( array(
-				'class' => 'av-git-meta-box',
-				'style' => array( 'transition' => 'all .3s ease' ),
-			) )
+		$tags = tag( 'av-git-meta-box' )
+			->attributes(
+				array(
+					'class' => 'av-git-meta-box',
+					'style' => array( 'transition' => 'all .3s ease' ),
+				)
+			)
 			->content(
 				$intro,
 				$nonce,
@@ -257,10 +259,12 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 		$library_text  = sprintf( ' %s.', $library_label );
 
 		$docs_link = tag( 'a' )
-			->attributes( array(
-				'target' => '_blank',
-				'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
-			) )
+			->attributes(
+				array(
+					'target' => '_blank',
+					'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
+				)
+			)
 			->content(
 				$save_label
 			);
@@ -276,11 +280,13 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 		$nonce = wp_create_nonce( self::NONCE_PUSH );
 
 		return tag( 'input' )
-			->attributes( array(
-				'type'  => 'hidden',
-				'name'  => '_av-nonce',
-				'value' => $nonce,
-			) );
+			->attributes(
+				array(
+					'type'  => 'hidden',
+					'name'  => '_av-nonce',
+					'value' => $nonce,
+				)
+			);
 	}
 
 	protected function repositories_tags(): Html_Tag {
@@ -298,17 +304,19 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 
 		$placeholder_label = __( 'Select repository', 'acf-views' );
 
-		$placeholder_option       = tag( 'option' )
+		$placeholder_option = tag( 'option' )
 			->attributes( array( 'value' => '' ) )
 			->content(
 				$placeholder_label
 			);
 
 		return tag( 'select' )
-			->attributes( array(
-				'name'     => '_git-repo',
-				'required' => '',
-			) )
+			->attributes(
+				array(
+					'name'     => '_git-repo',
+					'required' => '',
+				)
+			)
 			->content(
 				$placeholder_option,
 				...$option_chains
@@ -318,26 +326,30 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 	protected function with_fields_tags(): Html_Tag {
 		$label_text = __( 'Include related Meta groups', 'acf-views' );
 
-		$label       = tag( 'label' )
+		$label = tag( 'label' )
 			->attributes( array( 'for' => 'av_git-repo-with-fields' ) )
 			->content(
 				$label_text
 			);
 
 		return tag( 'div' )
-			->attributes( array(
-				'style' => array(
-					'display'     => 'flex',
-					'align-items' => 'center',
-				),
-			) )
+			->attributes(
+				array(
+					'style' => array(
+						'display'     => 'flex',
+						'align-items' => 'center',
+					),
+				)
+			)
 			->content(
 				tag( 'input' )
-					->attributes( array(
-						'type' => 'checkbox',
-						'name' => '_git-repo-with-fields',
-						'id'   => 'av_git-repo-with-fields',
-					) ),
+					->attributes(
+						array(
+							'type' => 'checkbox',
+							'name' => '_git-repo-with-fields',
+							'id'   => 'av_git-repo-with-fields',
+						)
+					),
 				$label
 			);
 	}

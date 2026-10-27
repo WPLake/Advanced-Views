@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Base;
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;

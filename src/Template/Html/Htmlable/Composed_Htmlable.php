@@ -4,9 +4,9 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Html\Htmlable;
 
-use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
-
 defined( 'ABSPATH' ) || exit;
+
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Escaper\Html_Escaper;
 
 /**
  * Literals mixed with tokens (e.g. 'bem--id--{{ id }}'). Being an object, it's passed to the attribute as is,

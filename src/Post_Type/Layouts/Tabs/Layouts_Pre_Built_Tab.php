@@ -6,8 +6,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Row_Title_Printer;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
@@ -15,8 +13,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Import_Result;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Pre_Built_Tab;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Row_Title_Printer;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 
 class Layouts_Pre_Built_Tab extends Pre_Built_Tab {
 	private Layout_Settings_Storage $layouts_settings_storage;

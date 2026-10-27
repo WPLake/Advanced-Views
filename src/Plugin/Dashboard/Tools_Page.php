@@ -26,13 +26,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Filesystem_Base;
 use WP_Post;
 use WP_Query;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -94,7 +94,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 		$this->is_import_successful  = false;
 		$this->import_result_message = '';
 		$this->wp_filesystem_base    = null;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer         = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -200,7 +200,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 			<?php
 		};
 
-		$tags         = tag( 'script' )
+		$tags = tag( 'script' )
 			->content(
 				$print_download_script
 			);
@@ -547,10 +547,12 @@ final class Tools_Page extends Actor_Base implements Actor {
 			$post_title = get_the_title( $post_id );
 
 			$links[] = tag( 'a' )
-				->attributes( array(
-					'href'   => $edit_link,
-					'target' => '_blank',
-				) )
+				->attributes(
+					array(
+						'href'   => $edit_link,
+						'target' => '_blank',
+					)
+				)
 				->content(
 					$post_title
 				);

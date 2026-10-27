@@ -2,11 +2,11 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Formatting;
+namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Printer\Formatted;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Escaper\Html_Escaper;
 
 final class Html_Formatter {
 	protected Html_Escaper $escaper;

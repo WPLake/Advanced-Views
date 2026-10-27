@@ -7,14 +7,14 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use WP_REST_Request;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Post_Selection_Factory extends Instance_Factory {
 	protected Post_Query $query_builder;
@@ -37,7 +37,7 @@ class Post_Selection_Factory extends Instance_Factory {
 		$this->post_selection_markup            = $post_selection_markup;
 		$this->template_renderer_storage        = $template_renderer_storage;
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer                    = $html_renderer;
 	}
 
 	public function get_template_fields( Cpt_Theme_Settings $theme_settings ): array {

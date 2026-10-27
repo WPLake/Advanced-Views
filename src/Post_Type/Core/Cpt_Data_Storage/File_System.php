@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Filesystem_Base;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
@@ -43,7 +43,7 @@ class File_System extends Loggable_Actor implements Actor {
 		$this->base_folder          = $external_base_folder;
 		$this->is_read_item_folders = false;
 		$this->wp_filesystem_base   = null;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer        = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -126,7 +126,7 @@ class File_System extends Loggable_Actor implements Actor {
 				'acf-views'
 			);
 
-			$tags      = tag( 'div' )
+			$tags = tag( 'div' )
 				->attributes( array( 'class' => 'notice notice-error' ) )
 				->content(
 					tag( 'p' )

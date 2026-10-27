@@ -9,6 +9,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\File_Template_Renderer_Base;
 use Org\Wplake\Advanced_Views\Vendors\Twig\Environment;
 use Org\Wplake\Advanced_Views\Vendors\Twig\Loader\FilesystemLoader;
@@ -17,7 +18,6 @@ use Org\Wplake\Advanced_Views\Vendors\Twig\TwigFunction;
 use WP_Filesystem_Base;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 

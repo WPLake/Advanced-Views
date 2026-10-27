@@ -17,8 +17,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selectio
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Post_Selection_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Post_Selections_Factory extends Factory_Base {
 	public function editor_settings(): Cpt_Gutenberg_Editor_Settings {

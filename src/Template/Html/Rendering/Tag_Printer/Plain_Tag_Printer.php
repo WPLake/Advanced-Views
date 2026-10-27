@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Tag_Printer;
+namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Printer;
 
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
-use Org\Wplake\Advanced_Views\Template\Html\Attributes\Attribute_Normalizer;
-use Org\Wplake\Advanced_Views\Template\Html\Attributes\Nested_Attribute_Normalizer;
-use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Normalizer\Attribute_Normalizer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Normalizer\Nested_Attribute_Normalizer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Escaper\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 

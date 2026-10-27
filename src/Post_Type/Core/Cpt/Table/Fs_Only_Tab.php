@@ -8,7 +8,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
@@ -28,7 +28,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 		parent::__construct( $cpt_table, $row_title_printer );
 
 		$this->cpt_settings_storage = $cpt_settings_storage;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer        = $html_renderer;
 	}
 
 	protected function get_tab(): ?Tab_Data {
@@ -61,10 +61,12 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 			$read_more_label = __( 'Read more', 'acf-views' );
 
 			$read_more_link = tag( 'a' )
-				->attributes( array(
-					'target' => '_blank',
-					'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
-				) )
+				->attributes(
+					array(
+						'target' => '_blank',
+						'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
+					)
+				)
 				->content(
 					$read_more_label
 				);
@@ -165,10 +167,12 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 			$edit_link = $cpt_data->get_edit_post_link();
 
 			$link_tag = tag( 'a' )
-				->attributes( array(
-					'href'   => $edit_link,
-					'target' => '_blank',
-				) )
+				->attributes(
+					array(
+						'href'   => $edit_link,
+						'target' => '_blank',
+					)
+				)
 				->content(
 					$cpt_data->title
 				);
@@ -187,7 +191,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 		$links_message  = tag( 'p' )
 			->content( ...$item_links );
 
-		$tags      = tag( 'div' )
+		$tags = tag( 'div' )
 			->attributes( array( 'class' => 'notice notice-success' ) )
 			->content(
 				$synced_message,

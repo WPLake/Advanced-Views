@@ -15,11 +15,11 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
-use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -39,7 +39,7 @@ class Plugin extends Actor_Base implements Actor {
 		$this->options               = $options;
 		$this->settings              = $settings;
 		$this->is_switching_versions = false;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer         = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -279,7 +279,7 @@ class Plugin extends Actor_Base implements Actor {
 
 		$this->options::delete_transient( Options_Storage::TRANSIENT_DEACTIVATED_OTHER_INSTANCES );
 
-		$tags      = tag( 'div' )
+		$tags = tag( 'div' )
 			->attributes( array( 'class' => 'notice notice-warning' ) )
 			->content(
 				tag( 'p' )
@@ -464,10 +464,12 @@ class Plugin extends Actor_Base implements Actor {
 		$read_more_label  = __( 'Read more', 'acf-views' );
 
 		$read_more_link = tag( 'a' )
-			->attributes( array(
-				'target' => '_blank',
-				'href'   => External_Links::CONFLICTS_URL,
-			) )
+			->attributes(
+				array(
+					'target' => '_blank',
+					'href'   => External_Links::CONFLICTS_URL,
+				)
+			)
 			->content(
 				$read_more_label
 			);
@@ -475,7 +477,7 @@ class Plugin extends Actor_Base implements Actor {
 		$detected_text = sprintf( '%s ', $detected_message );
 		$action_text   = sprintf( '%s ', $action_message );
 
-		$tags      = tag( 'div' )
+		$tags = tag( 'div' )
 			->attributes( array( 'class' => 'notice notice-error' ) )
 			->content(
 				tag( 'p' )

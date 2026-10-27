@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Elementor\Layout_Ele
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Gutenberg\Layout_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 
 class Layout_Integrations_Factory extends Factory_Base {
 	protected ?Cpt_Item_Picker $item_picker = null;

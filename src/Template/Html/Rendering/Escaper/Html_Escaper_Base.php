@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Escaping;
+namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Escaper;
 
 use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;

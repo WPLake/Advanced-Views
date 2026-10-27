@@ -10,8 +10,8 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
@@ -25,8 +25,8 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Postbox_Printer $postbox, Plugin $plugin, Html_Renderer $html_renderer ) {
-		$this->postbox = $postbox;
-		$this->plugin  = $plugin;
+		$this->postbox       = $postbox;
+		$this->plugin        = $plugin;
 		$this->html_renderer = $html_renderer;
 	}
 
@@ -174,10 +174,12 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 		$post_title = get_the_title( $post );
 
 		return tag( 'a' )
-			->attributes( array(
-				'target' => '_blank',
-				'href'   => $post_url,
-			) )
+			->attributes(
+				array(
+					'target' => '_blank',
+					'href'   => $post_url,
+				)
+			)
 			->content(
 				$post_title
 			);

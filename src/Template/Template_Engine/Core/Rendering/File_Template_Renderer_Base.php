@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
 use Exception;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Filesystem_Base;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 abstract class File_Template_Renderer_Base extends Template_Renderer_Base {
 	private string $templates_folder;

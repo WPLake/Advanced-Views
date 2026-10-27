@@ -19,10 +19,10 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Screen;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -57,13 +57,13 @@ class Admin_Pages extends Actor_Base implements Actor {
 		Toolbar_Printer $toolbar_printer,
 		Import_Printer $import_printer
 	) {
-		$this->import_printer = $import_printer;
+		$this->import_printer  = $import_printer;
 		$this->toolbar_printer = $toolbar_printer;
-		$this->plugin      = $plugin;
-		$this->plugin_meta = $plugin_meta;
-		$this->demo_import = $demo_import;
-		$this->plugin_cpts = $plugin_cpts;
-		$this->html_renderer = $html_renderer;
+		$this->plugin          = $plugin;
+		$this->plugin_meta     = $plugin_meta;
+		$this->demo_import     = $demo_import;
+		$this->plugin_cpts     = $plugin_cpts;
+		$this->html_renderer   = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -361,7 +361,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 			'target' => '_self',
 		);
 
-		$link    = tag( 'a' )
+		$link = tag( 'a' )
 			->attributes( $link_attrs )
 			->content(
 				$plural_name
@@ -374,18 +374,20 @@ class Admin_Pages extends Actor_Base implements Actor {
 	 * @return string[]
 	 */
 	protected function get_promo_links(): array {
-		$link    = tag( 'a' )
-			->attributes( array(
-				'href'        => External_Links::PRO_VERSION_URL,
-				'target'      => '_blank',
-				'style'       => array(
-					'color'       => '#d46f4d',
-					'font-weight' => 'bold',
-					'transition'  => 'opacity 0.3s',
-				),
-				'onmouseover' => 'this.style.opacity=0.7',
-				'onmouseout'  => 'this.style.opacity=1',
-			) )
+		$link = tag( 'a' )
+			->attributes(
+				array(
+					'href'        => External_Links::PRO_VERSION_URL,
+					'target'      => '_blank',
+					'style'       => array(
+						'color'       => '#d46f4d',
+						'font-weight' => 'bold',
+						'transition'  => 'opacity 0.3s',
+					),
+					'onmouseover' => 'this.style.opacity=0.7',
+					'onmouseout'  => 'this.style.opacity=1',
+				)
+			)
 			->content(
 				__( 'Get Pro', 'acf-views' )
 			);

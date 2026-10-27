@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Attributes;
+namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Normalizer;
 
 defined( 'ABSPATH' ) || exit;
 
