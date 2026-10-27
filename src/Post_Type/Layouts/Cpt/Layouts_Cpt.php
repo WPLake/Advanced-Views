@@ -8,10 +8,10 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt as Plugin_Layouts_Cpt;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -40,7 +40,7 @@ class Layouts_Cpt extends Cpt {
 			$directly_text,
 		);
 
-		$description  = $this->html_renderer->render( ...$tags );
+		$description  = $this->html_renderer->render_html( ...$tags );
 		$description .= $this->get_storage_label();
 
 		$cpt_args = array(

@@ -88,7 +88,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 				$read_more_link,
 			);
 
-			$this->html_renderer->print( ...$tags );
+			$this->html_renderer->print_html( ...$tags );
 		};
 
 		$tab_data->set_description_callback( $print_description );
@@ -194,7 +194,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 				$links_message
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {

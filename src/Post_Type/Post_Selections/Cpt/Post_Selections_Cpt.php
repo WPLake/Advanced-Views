@@ -51,7 +51,7 @@ class Post_Selections_Cpt extends Cpt {
 			__( 'Add filters, sorting and pagination as needed.', 'acf-views' ),
 		);
 
-		$description  = $this->html_renderer->render( ...$tags );
+		$description  = $this->html_renderer->render_html( ...$tags );
 		$description .= $this->get_storage_label();
 
 		$cpt_args = array(

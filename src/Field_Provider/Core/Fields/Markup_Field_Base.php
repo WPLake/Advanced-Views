@@ -49,7 +49,7 @@ abstract class Markup_Field_Base implements Markup_Field {
 			fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data )
 		);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	protected function get_field_class( string $suffix, Template_Field_Data $markup_field_data ): string {

@@ -103,7 +103,7 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 				$paragraph
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	protected function hide_notice(): bool {

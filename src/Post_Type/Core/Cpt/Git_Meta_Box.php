@@ -98,7 +98,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 				$button
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**

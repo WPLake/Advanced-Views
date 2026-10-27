@@ -111,7 +111,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 			$tags = tag( 'iframe' )
 				->attributes( $iframe_attrs );
 
-			$this->html_renderer->print( $tags );
+			$this->html_renderer->print_html( $tags );
 		};
 
 		add_submenu_page(
@@ -367,7 +367,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 				$plural_name
 			);
 
-		return $this->html_renderer->render( $link );
+		return $this->html_renderer->render_html( $link );
 	}
 
 	/**
@@ -390,6 +390,6 @@ class Admin_Pages extends Actor_Base implements Actor {
 				__( 'Get Pro', 'acf-views' )
 			);
 
-		return array( $this->html_renderer->render( $link ) );
+		return array( $this->html_renderer->render_html( $link ) );
 	}
 }

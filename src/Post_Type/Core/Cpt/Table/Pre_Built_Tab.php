@@ -77,7 +77,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 			'.',
 		);
 
-		$this->html_renderer->print( ...$tags );
+		$this->html_renderer->print_html( ...$tags );
 	}
 
 	protected function get_tab(): ?Tab_Data {

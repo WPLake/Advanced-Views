@@ -20,9 +20,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Stora
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_REST_Request;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
-use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, Actor {
 	private Instance_Factory $instance_factory;
@@ -50,7 +50,7 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		$this->cpt_settings_storage    = $cpt_settings_storage;
 		$this->instance_factory        = $instance_factory;
 		$this->live_reloader_component = $live_reloader_component;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer           = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -140,13 +140,13 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		$error_label = __( 'AVF shortcode render error:', 'acf-views' );
 		$error_text  = sprintf( '%s %s %s', $error_label, $error, $shortcode_debug );
 
-		$tags    = tag( 'p' )
+		$tags = tag( 'p' )
 			->attributes( array( 'style' => array( 'color' => 'red' ) ) )
 			->content(
 				$error_text
 			);
 
-		return $this->html_renderer->render( $tags );
+		return $this->html_renderer->render_html( $tags );
 	}
 
 	/**
@@ -197,15 +197,15 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		if ( $cpt_data->is_css_internal() ) {
 			$css_code   = $cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
 			$shadow_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
-			$host_css = sprintf( ':host{all: initial!important;}%s', $shadow_css );
+			$host_css   = sprintf( ':host{all: initial!important;}%s', $shadow_css );
 
-			$tags        = tag( 'style' )
+			$tags = tag( 'style' )
 				->content(
 					// phpcs:ignore WordPress.Security.EscapeOutput
 					fn() => print( $host_css )
 				);
 
-			$shadow_css = $this->html_renderer->render( $tags );
+			$shadow_css = $this->html_renderer->render_html( $tags );
 		}
 
 		if ( Cpt_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $cpt_data->web_component ) {
@@ -293,13 +293,13 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 			'onMouseOut'  => "this.style.opacity='.5';this.style.textDecoration='none'",
 		);
 
-		$tags    = tag( 'a' )
+		$tags = tag( 'a' )
 			->attributes( $attrs )
 			->content(
 				$label
 			);
 
-		return $this->html_renderer->render( $tags );
+		return $this->html_renderer->render_html( $tags );
 	}
 
 	public function get_rendered_items_count(): int {

@@ -66,7 +66,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$this->live_reloader_component = $live_reloader_component;
 		$this->assets_css_code         = '';
 		$this->tailwind_css_rules      = array();
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer           = $html_renderer;
 
 		$this->register_patterns();
 	}
@@ -456,7 +456,7 @@ class Front_Assets extends Actor_Base implements Actor {
 							fn() => print( 'class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)' )
 						);
 
-					$tags      = tag( 'div' )
+					$tags = tag( 'div' )
 						->attributes( array( 'hidden' => '' ) )
 						->content(
 							// @phpcs:ignore WordPress.Security.EscapeOutput
@@ -465,7 +465,7 @@ class Front_Assets extends Actor_Base implements Actor {
 							$location_script
 						);
 
-					$all_css_code = $this->html_renderer->render( $tags );
+					$all_css_code = $this->html_renderer->render_html( $tags );
 				}
 
 				$page_content = str_replace( '<!--advanced-views:styles/custom-location-->', $all_css_code, $page_content );
@@ -640,14 +640,14 @@ class Front_Assets extends Actor_Base implements Actor {
 	 * @param array<string,string> $attrs
 	 */
 	protected function make_code_tag( string $tag, array $attrs, string $code ): string {
-		$tags      = tag( $tag )
+		$tags = tag( $tag )
 			->attributes( $attrs )
 			->content(
 				// @phpcs:ignore WordPress.Security.EscapeOutput
 				fn() => print( $code )
 			);
 
-		$code_html = $this->html_renderer->render( $tags );
+		$code_html = $this->html_renderer->render_html( $tags );
 
 		return sprintf( "%s\n", $code_html );
 	}

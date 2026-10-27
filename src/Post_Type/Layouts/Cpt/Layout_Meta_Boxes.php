@@ -52,19 +52,21 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	}
 
 	protected function print_link_with_js_hover( string $url, string $title ): void {
-		$tags    = tag( 'a' )
-			->attributes( array(
-				'href'        => $url,
-				'target'      => '_blank',
-				'style'       => array( 'transition' => 'all .3s ease' ),
-				'onMouseOver' => "this.style.filter='brightness(30%)'",
-				'onMouseOut'  => "this.style.filter='brightness(100%)'",
-			) )
+		$tags = tag( 'a' )
+			->attributes(
+				array(
+					'href'        => $url,
+					'target'      => '_blank',
+					'style'       => array( 'transition' => 'all .3s ease' ),
+					'onMouseOver' => "this.style.filter='brightness(30%)'",
+					'onMouseOut'  => "this.style.filter='brightness(100%)'",
+				)
+			)
 			->content(
 				$title
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**
@@ -191,12 +193,12 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				$this->selections_cpt->labels()->plural_name()
 			);
 
-			$node    = tag( 'p' )
+			$node = tag( 'p' )
 				->content(
 					$message
 				);
 
-			$this->html_renderer->print( $node );
+			$this->html_renderer->print_html( $node );
 		}
 
 		$last_item_index = count( $related_cards ) - 1;
@@ -222,7 +224,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				tag( 'br' ),
 			);
 
-			$this->html_renderer->print( ...$markup_tags );
+			$this->html_renderer->print_html( ...$markup_tags );
 		}
 
 		$post_id = $layout_settings->get_post_id();
@@ -240,24 +242,26 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 
 			$label = __( 'Query posts to display using this Layout', 'acf-views' );
 
-			$tags    = tag( 'a' )
-				->attributes( array(
-					'href'   => $url,
-					'target' => '_blank',
-					'class'  => 'button',
-					'style'  => array(
-						'min-height'  => '0',
-						'line-height' => '1.2',
-						'padding'     => '3px 7px',
-						'font-size'   => '11px',
-						'transition'  => 'all .3s ease',
-					),
-				) )
+			$tags = tag( 'a' )
+				->attributes(
+					array(
+						'href'   => $url,
+						'target' => '_blank',
+						'class'  => 'button',
+						'style'  => array(
+							'min-height'  => '0',
+							'line-height' => '1.2',
+							'padding'     => '3px 7px',
+							'font-size'   => '11px',
+							'transition'  => 'all .3s ease',
+						),
+					)
+				)
 				->content(
 					$label
 				);
 
-			$this->html_renderer->print( $tags );
+			$this->html_renderer->print_html( $tags );
 		}
 	}
 

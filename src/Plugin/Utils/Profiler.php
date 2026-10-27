@@ -73,7 +73,7 @@ class Profiler {
 				self::pre_chain( self::$class_hooks_usage )
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**

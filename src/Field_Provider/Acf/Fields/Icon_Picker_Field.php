@@ -13,9 +13,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Comparison_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
@@ -151,17 +151,19 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$tags = array(
 			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
 			tag( 'i' )
-				->attributes( array(
-					'class' => array(
-						$icon_class,
-						'dashicons',
-						$icon_var,
-					),
-				) ),
+				->attributes(
+					array(
+						'class' => array(
+							$icon_class,
+							'dashicons',
+							$icon_var,
+						),
+					)
+				),
 			fn() => $markup_field_data->print_new_line_and_decrement_tabs(),
 		);
 
-		$this->html_renderer->print( ...$tags );
+		$this->html_renderer->print_html( ...$tags );
 	}
 
 	protected function print_icon_image_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
@@ -170,7 +172,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$token_factory->formatter()->new_line();
 		$markup_field_data->increment_and_print_tabs();
 
-		$this->html_renderer->print( ...$this->image_field->compose_html( $field_id, $markup_field_data ) );
+		$this->html_renderer->print_html( ...$this->image_field->compose_html( $field_id, $markup_field_data ) );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();
@@ -186,16 +188,18 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$tags = array(
 			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
 			tag( 'img' )
-				->attributes( array(
-					'class'   => $image_class,
-					'src'     => $src_var,
-					'loading' => 'lazy',
-					'alt'     => 'icon',
-				) ),
+				->attributes(
+					array(
+						'class'   => $image_class,
+						'src'     => $src_var,
+						'loading' => 'lazy',
+						'alt'     => 'icon',
+					)
+				),
 			fn() => $markup_field_data->print_new_line_and_decrement_tabs(),
 		);
 
-		$this->html_renderer->print( ...$tags );
+		$this->html_renderer->print_html( ...$tags );
 	}
 
 	protected static function type_comparison( string $type, string $field_id, Template_Field_Data $markup_field_data ): Comparison_Token {

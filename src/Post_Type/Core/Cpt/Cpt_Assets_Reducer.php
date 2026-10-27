@@ -283,7 +283,7 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 				$disable_text
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 
 		$print_fallback_script = function () {
 			?>
@@ -302,6 +302,6 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 				$print_fallback_script
 			);
 
-		$this->html_renderer->print( $node );
+		$this->html_renderer->print_html( $node );
 	}
 }

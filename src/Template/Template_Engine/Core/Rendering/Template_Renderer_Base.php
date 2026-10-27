@@ -20,7 +20,7 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 	public function __construct( Logger $logger, Settings_Storage $settings, Html_Renderer $html_renderer ) {
 		parent::__construct( $logger );
 
-		$this->settings = $settings;
+		$this->settings      = $settings;
 		$this->html_renderer = $html_renderer;
 	}
 
@@ -35,23 +35,25 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 	}
 
 	protected function print_error_message( string $unique_view_id, string $error_message ): void {
-		$message    = tag( 'span' )
+		$message = tag( 'span' )
 			->attributes( array( 'class' => 'acf-views__error-message' ) )
 			->content(
 				$error_message
 			);
 
-		$tags    = tag( 'p' )
-			->attributes( array(
-				'style' => 'color:red;',
-				'class' => 'acf-views__error',
-			) )
+		$tags = tag( 'p' )
+			->attributes(
+				array(
+					'style' => 'color:red;',
+					'class' => 'acf-views__error',
+				)
+			)
 			->content(
 				fn() => printf( 'Advanced Views (%s) template: ', esc_html( $unique_view_id ) ),
 				$message
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**
@@ -89,7 +91,7 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 		// do not include in case of the validation, it doesn't have sense + breaks the error grep regex.
 		if ( $is_debug_mode &&
 			! $is_validation ) {
-			$tags      = tag( 'pre' )
+			$tags = tag( 'pre' )
 				->content(
 					// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
 					print_r(
@@ -101,7 +103,7 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 					)
 				);
 
-			$this->html_renderer->print( $tags );
+			$this->html_renderer->print_html( $tags );
 		}
 	}
 }

@@ -78,7 +78,7 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 				$view_data->title
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	public function add_meta_boxes(): void {

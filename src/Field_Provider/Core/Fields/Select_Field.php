@@ -48,7 +48,7 @@ class Select_Field extends List_Field {
 				$print_title
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**

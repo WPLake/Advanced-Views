@@ -139,7 +139,7 @@ class File_System extends Loggable_Actor implements Actor {
 						)
 				);
 
-			$this->html_renderer->print( $tags );
+			$this->html_renderer->print_html( $tags );
 		};
 
 		self::add_action( 'admin_notices', $print_notice );

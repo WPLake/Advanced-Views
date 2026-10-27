@@ -25,7 +25,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 	public function __construct( Plugin_Cpt $plugin_cpt, Cpt_Settings_Storage $cpt_settings_storage, Html_Renderer $html_renderer ) {
 		$this->plugin_cpt           = $plugin_cpt;
 		$this->cpt_settings_storage = $cpt_settings_storage;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer        = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -88,14 +88,14 @@ abstract class Cpt extends Actor_Base implements Actor {
 		$wordpress_link  = self::link_tags( 'https://wordpress.org/', $wordpress_label );
 		$plugin_link     = self::link_tags( External_Links::BASIC_VERSION_URL, $plugin_label );
 
-		$survey     = tag( 'span' )
+		$survey = tag( 'span' )
 			->content(
 				$take_text,
 				$survey_link,
 				$improve_text
 			);
 
-		$tags       = tag( 'span' )
+		$tags = tag( 'span' )
 			->attributes( array( 'id' => 'footer-thankyou' ) )
 			->content(
 				$thank_text,
@@ -106,7 +106,7 @@ abstract class Cpt extends Actor_Base implements Actor {
 				$survey
 			);
 
-		return $this->html_renderer->render( $tags );
+		return $this->html_renderer->render_html( $tags );
 	}
 
 	protected function get_cpt_name(): string {
@@ -181,19 +181,21 @@ abstract class Cpt extends Actor_Base implements Actor {
 		$state_value = sprintf( $state_label, $state );
 		$state_text  = sprintf( ' %s', $state_value );
 
-		$tags       = tag( 'span' )
-			->attributes( array(
-				'style' => array(
-					'display' => 'inline-block',
-					'float'   => 'right',
-				),
-			) )
+		$tags = tag( 'span' )
+			->attributes(
+				array(
+					'style' => array(
+						'display' => 'inline-block',
+						'float'   => 'right',
+					),
+				)
+			)
 			->content(
 				$storage_link,
 				$state_text
 			);
 
-		return $this->html_renderer->render( $tags );
+		return $this->html_renderer->render_html( $tags );
 	}
 
 	protected function get_not_found_label(): string {
@@ -217,16 +219,18 @@ abstract class Cpt extends Actor_Base implements Actor {
 			),
 		);
 
-		return $this->html_renderer->render( ...$tags );
+		return $this->html_renderer->render_html( ...$tags );
 	}
 
 	protected static function link_tags( string $url, string $label, string $target = '_blank' ): Html_Tag {
 
 		return tag( 'a' )
-			->attributes( array(
-				'target' => $target,
-				'href'   => $url,
-			) )
+			->attributes(
+				array(
+					'target' => $target,
+					'href'   => $url,
+				)
+			)
 			->content(
 				$label
 			);

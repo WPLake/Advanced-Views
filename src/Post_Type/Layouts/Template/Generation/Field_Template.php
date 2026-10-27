@@ -89,7 +89,7 @@ class Field_Template {
 
 		Format_Token::tabulation( $tabs_number );
 
-		$this->html_renderer->print( ...$markup_field_instance->compose_html( $field_id, $markup_field_data ) );
+		$this->html_renderer->print_html( ...$markup_field_instance->compose_html( $field_id, $markup_field_data ) );
 
 		Format_Token::next_line();
 
@@ -183,7 +183,7 @@ class Field_Template {
 
 			$token_factory->formatter()
 							->tab( $tabs_number );
-			$this->html_renderer->print( $label );
+			$this->html_renderer->print_html( $label );
 			$token_factory->formatter()
 							->new_line();
 		};
@@ -245,7 +245,7 @@ class Field_Template {
 			) :
 			$row_inner;
 
-		$this->html_renderer->print( ...$label_outside, ...$row_layer );
+		$this->html_renderer->print_html( ...$label_outside, ...$row_layer );
 
 		return $tabs_number;
 	}

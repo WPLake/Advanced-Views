@@ -48,7 +48,7 @@ class User_Field extends List_Field {
 	}
 
 	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
-		$this->html_renderer->print( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
+		$this->html_renderer->print_html( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
 	}
 
 	protected function print_external_item_layout(

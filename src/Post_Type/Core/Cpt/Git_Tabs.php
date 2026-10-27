@@ -86,15 +86,17 @@ abstract class Git_Tabs extends External_Storage_Tab {
 		$read_more_label = __( 'Read more', 'acf-views' );
 		$here_label      = __( 'here', 'acf-views' );
 
-		$read_more_link   = tag( 'a' )
-			->attributes( array(
-				'target' => '_blank',
-				'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
-			) )
+		$read_more_link = tag( 'a' )
+			->attributes(
+				array(
+					'target' => '_blank',
+					'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
+				)
+			)
 			->content(
 				$read_more_label
 			);
-		$reset_link       = tag( 'a' )
+		$reset_link     = tag( 'a' )
 			->attributes( array( 'href' => $reset_cache_link ) )
 			->content(
 				$here_label
@@ -115,7 +117,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			__( 'to clear the cache.', 'acf-views' ),
 		);
 
-		$this->html_renderer->print( ...$tags );
+		$this->html_renderer->print_html( ...$tags );
 	}
 
 	protected function get_reset_cache_link( string $repository_id ): string {
@@ -441,7 +443,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 
 		$message = __( 'Cache successfully cleared.', 'acf-views' );
 
-		$tags      = tag( 'div' )
+		$tags = tag( 'div' )
 			->attributes( array( 'class' => 'notice notice-success' ) )
 			->content(
 				tag( 'p' )
@@ -450,7 +452,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 					)
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {

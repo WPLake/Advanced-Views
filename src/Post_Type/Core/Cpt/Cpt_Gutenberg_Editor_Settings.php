@@ -133,7 +133,7 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 				$assistance_text
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	// Jetpack's markdown module "very polite" and breaks json in our post_content.

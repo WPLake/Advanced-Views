@@ -41,7 +41,7 @@ class Post_Selection_Settings_Integration extends Acf_Integration_Base {
 		$this->provider_cluster = $provider_cluster;
 		$this->plugin_cpt       = $plugin_cpt;
 		$this->engines_storage  = $engines_storage;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer    = $html_renderer;
 	}
 
 	/**
@@ -97,17 +97,19 @@ class Post_Selection_Settings_Integration extends Acf_Integration_Base {
 		$singular_name  = $this->plugin_cpt->labels()->singular_name();
 		$label          = sprintf( $label_template, $singular_name );
 
-		$tags    = tag( 'a' )
-			->attributes( array(
-				'class'  => 'acf-views__add-new',
-				'target' => '_blank',
-				'href'   => $link,
-			) )
+		$tags = tag( 'a' )
+			->attributes(
+				array(
+					'class'  => 'acf-views__add-new',
+					'target' => '_blank',
+					'href'   => $link,
+				)
+			)
 			->content(
 				$label
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {

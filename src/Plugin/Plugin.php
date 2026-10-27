@@ -288,7 +288,7 @@ class Plugin extends Actor_Base implements Actor {
 					)
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**
@@ -487,6 +487,6 @@ class Plugin extends Actor_Base implements Actor {
 					)
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 }

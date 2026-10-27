@@ -73,7 +73,7 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 		$post_types_line = self::create_post_types_line( $post_types );
 		$pages_line      = self::create_pages_line( $post_links, array() !== $post_types );
 
-		$this->html_renderer->print( ...$post_types_line, ...$pages_line );
+		$this->html_renderer->print_html( ...$post_types_line, ...$pages_line );
 	}
 
 	abstract protected function get_cpt_name(): string;

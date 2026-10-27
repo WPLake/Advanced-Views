@@ -21,8 +21,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -64,7 +64,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		$this->data_vendor              = $data_vendor;
 		$this->layout_shortcode         = $layout_shortcode;
 		$this->layouts_cpt              = $layouts_cpt;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer            = $html_renderer;
 	}
 
 	abstract protected function get_vendor_post_type(): string;
@@ -132,19 +132,21 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	}
 
 	protected function print_link_with_js_hover( string $url, string $title ): void {
-		$tags    = tag( 'a' )
-			->attributes( array(
-				'href'        => $url,
-				'target'      => '_blank',
-				'style'       => array( 'transition' => 'all .3s ease' ),
-				'onMouseOver' => "this.style.filter='brightness(30%)'",
-				'onMouseOut'  => "this.style.filter='brightness(100%)'",
-			) )
+		$tags = tag( 'a' )
+			->attributes(
+				array(
+					'href'        => $url,
+					'target'      => '_blank',
+					'style'       => array( 'transition' => 'all .3s ease' ),
+					'onMouseOver' => "this.style.filter='brightness(30%)'",
+					'onMouseOut'  => "this.style.filter='brightness(100%)'",
+				)
+			)
 			->content(
 				$title
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**
@@ -214,20 +216,22 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 
 		$icon_tag = '' !== $icon_class ?
 			tag( 'i' )
-				->attributes( array(
-					'class' => $icon_class,
-					'style' => $icon_style,
-				) ) :
+				->attributes(
+					array(
+						'class' => $icon_class,
+						'style' => $icon_style,
+					)
+				) :
 			null;
 
-		$tags    = tag( 'a' )
+		$tags = tag( 'a' )
 			->attributes( $link_attrs )
 			->content(
 				$icon_tag,
 				$label
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**
@@ -290,7 +294,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			tag( 'br' ),
 		);
 
-		$this->html_renderer->print( ...$tags );
+		$this->html_renderer->print_html( ...$tags );
 
 		$this->print_add_new_link( $wp_post->ID, '', $add_new_link_args );
 	}
@@ -339,16 +343,18 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 
 			$edit_link = $related_view_data->get_edit_post_link();
 
-			$tags    = tag( 'a' )
-				->attributes( array(
-					'target' => '_blank',
-					'href'   => $edit_link,
-				) )
+			$tags = tag( 'a' )
+				->attributes(
+					array(
+						'target' => '_blank',
+						'href'   => $edit_link,
+					)
+				)
 				->content(
 					$related_view_data->title
 				);
 
-			$views_with_invalid_custom_markup[] = $this->html_renderer->render( $tags );
+			$views_with_invalid_custom_markup[] = $this->html_renderer->render_html( $tags );
 		}
 
 		return $views_with_invalid_custom_markup;
@@ -510,7 +516,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 				$title_label  = __( 'Views associated with this group contain invalid Custom Markup', 'acf-views' );
 				$title_text   = sprintf( '%s %s:', $links_amount, $title_label );
 
-				$title      = tag( 'span' )
+				$title = tag( 'span' )
 					->attributes( array( 'style' => array( 'color' => '#dc3232' ) ) )
 					->content(
 						$title_text
@@ -525,7 +531,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 					...$links,
 				);
 
-				$extra = $this->html_renderer->render( ...$tags );
+				$extra = $this->html_renderer->render_html( ...$tags );
 
 				$messages[ $this->get_vendor_post_type() ][1] .= $extra;
 

@@ -37,7 +37,7 @@ class Layout_Markup {
 		$this->provider_cluster      = $provider_cluster;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->markups_safe          = array();
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer         = $html_renderer;
 	}
 
 	protected function generate_row_markup(
@@ -161,7 +161,7 @@ class Layout_Markup {
 			->attributes( array( 'class' => $root_class ) )
 			->content( ...$root_content );
 
-		$this->html_renderer->print( $root, $new_line );
+		$this->html_renderer->print_html( $root, $new_line );
 	}
 
 	protected function print_safe_markup( Layout_Settings $layout_settings, bool $is_cache_disabled ): void {

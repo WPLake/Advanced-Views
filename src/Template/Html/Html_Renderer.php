@@ -49,9 +49,9 @@ final class Html_Renderer {
 	/**
 	 * @param Html_Node ...$nodes
 	 */
-	public function render( ...$nodes ): string {
+	public function render_html( ...$nodes ): string {
 		ob_start();
-		$this->print( ...$nodes );
+		$this->print_html( ...$nodes );
 
 		return (string) ob_get_clean();
 	}
@@ -59,7 +59,7 @@ final class Html_Renderer {
 	/**
 	 * @param Html_Node ...$nodes
 	 */
-	public function print( ...$nodes ): void {
+	public function print_html( ...$nodes ): void {
 		foreach ( $nodes as $node ) {
 			if ( $node instanceof Html_Tag ) {
 				$this->print_tag( $node );
@@ -80,7 +80,7 @@ final class Html_Renderer {
 
 		$this->tag_printer->print_pair_tag(
 			$tag,
-			fn() => $this->print( ...$tag->get_content() )
+			fn() => $this->print_html( ...$tag->get_content() )
 		);
 	}
 

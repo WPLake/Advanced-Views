@@ -26,7 +26,7 @@ final class Row_Title_Printer {
 		string $action_url,
 		string $action_label
 	): void {
-		$title_tags   = tag( 'strong' )
+		$title_tags = tag( 'strong' )
 			->content(
 				tag( 'span' )
 					->attributes( array( 'class' => 'row-title' ) )
@@ -61,6 +61,6 @@ final class Row_Title_Printer {
 					)
 			);
 
-		$this->html_renderer->print( $title_tags, $action_tags );
+		$this->html_renderer->print_html( $title_tags, $action_tags );
 	}
 }

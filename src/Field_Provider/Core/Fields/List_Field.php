@@ -165,13 +165,13 @@ abstract class List_Field extends Markup_Field_Base {
 			$markup_field_data->decrement_and_print_tabs();
 		};
 
-		$tags       = tag( 'span' )
+		$tags = tag( 'span' )
 			->attributes( array( 'class' => $item_class ) )
 			->content(
 				$print_options
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 
 		$token_factory->formatter()
 						->new_line();

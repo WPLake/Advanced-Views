@@ -14,8 +14,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 abstract class External_Storage_Tab extends Cpt_Table_Tab {
 
@@ -43,7 +43,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		$this->provider_cluster      = $provider_cluster;
 		$this->cpt_settings_migrator = $cpt_settings_migrator;
 		$this->logger                = $logger;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer         = $html_renderer;
 	}
 
 	abstract protected function get_cpt_data( string $unique_id ): Cpt_Settings;
@@ -206,7 +206,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			}
 		}
 
-		$paragraphs = array();
+		$paragraphs   = array();
 		$paragraphs[] = tag( 'p' )
 			->content(
 				__( 'Success!', 'acf-views' )
@@ -225,8 +225,8 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		foreach ( $grouped_meta_group_links as $vendor_name => $group_links ) {
 			$group_links_count = count( $group_links );
 
-			$vendor_label   = ucfirst( $vendor_name );
-			$groups_label   = _n( 'group', 'groups', $group_links_count, 'acf-views' );
+			$vendor_label = ucfirst( $vendor_name );
+			$groups_label = _n( 'group', 'groups', $group_links_count, 'acf-views' );
 			// translators: x items successfully imported.
 			$imported_label = __( 'successfully imported:', 'acf-views' );
 			$groups_text    = sprintf( '%s %s %s %s', $group_links_count, $vendor_label, $groups_label, $imported_label );
@@ -242,7 +242,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			->attributes( array( 'class' => 'notice notice-success' ) )
 			->content( ...$paragraphs );
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	protected function get_cpt_data_storage(): Cpt_Settings_Storage {
@@ -258,7 +258,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	}
 
 	protected function imported_items_paragraph( int $items_count ): Html_Tag {
-		$items_label    = _n( 'Item', 'Items', $items_count, 'acf-views' );
+		$items_label = _n( 'Item', 'Items', $items_count, 'acf-views' );
 		// translators: x items successfully imported.
 		$imported_label = __( 'successfully imported:', 'acf-views' );
 		$items_text     = sprintf( '%s %s %s', $items_count, $items_label, $imported_label );
@@ -282,10 +282,12 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			}
 
 			$link_tag = tag( 'a' )
-				->attributes( array(
-					'href'   => $link['url'],
-					'target' => '_blank',
-				) )
+				->attributes(
+					array(
+						'href'   => $link['url'],
+						'target' => '_blank',
+					)
+				)
 				->content(
 					$link['title']
 				);

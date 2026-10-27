@@ -83,7 +83,7 @@ class Post_Selection_Markup {
 				fn() => print( "\r\n\t" ),
 			);
 
-			$this->html_renderer->print( ...$tags );
+			$this->html_renderer->print_html( ...$tags );
 		};
 
 		$body       = $token_factory->html( $print_pagination );
@@ -344,7 +344,7 @@ class Post_Selection_Markup {
 			->attributes( array( 'class' => $root_class ) )
 			->content( ...$root_content );
 
-		$this->html_renderer->print( $root, $new_line );
+		$this->html_renderer->print_html( $root, $new_line );
 	}
 
 	protected function items_branch( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings, int &$tabs_number ): IF_Branch {
@@ -416,7 +416,7 @@ class Post_Selection_Markup {
 			$print_branches_end,
 		);
 
-		$this->html_renderer->print( ...$tags );
+		$this->html_renderer->print_html( ...$tags );
 
 		return $tabs_number;
 	}
@@ -485,7 +485,7 @@ class Post_Selection_Markup {
 				$message_var
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 
 		$token_factory->formatter()
 						->new_line()

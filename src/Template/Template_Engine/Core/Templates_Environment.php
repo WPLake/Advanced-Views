@@ -31,7 +31,7 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 		$this->uploads_folder     = $uploads_folder;
 		$this->plugin             = $plugin;
 		$this->wp_filesystem_base = null;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer      = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -65,10 +65,12 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 			return;
 		}
 
-		$tags      = tag( 'div' )
-			->attributes( array(
-				'class' => array( 'notice', 'notice-error' ),
-			) )
+		$tags = tag( 'div' )
+			->attributes(
+				array(
+					'class' => array( 'notice', 'notice-error' ),
+				)
+			)
 			->content(
 				tag( 'p' )
 					->content(
@@ -76,7 +78,7 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 					)
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	public function create_templates_dir(): void {
@@ -144,7 +146,7 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 			),
 		);
 
-		$this->html_renderer->print( ...$tags );
+		$this->html_renderer->print_html( ...$tags );
 	}
 
 	protected function is_templates_dir_writable(): bool {

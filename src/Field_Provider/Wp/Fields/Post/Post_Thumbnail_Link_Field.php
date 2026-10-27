@@ -52,7 +52,7 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 			$markup_field_data->increment_and_print_tabs();
 
 			$markup_field_data->set_is_with_field_wrapper( true );
-			$this->html_renderer->print( ...$this->image_field->compose_html( $field_id, $markup_field_data ) );
+			$this->html_renderer->print_html( ...$this->image_field->compose_html( $field_id, $markup_field_data ) );
 
 			$token_factory->formatter()
 							->new_line();

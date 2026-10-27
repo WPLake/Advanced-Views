@@ -41,7 +41,7 @@ class Live_Reloader_Component extends Actor_Base implements Actor {
 		$this->parent_card_id       = '';
 		$this->cards_inner_counter  = 0;
 		$this->view_ids_inside_card = array();
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer        = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -111,12 +111,14 @@ class Live_Reloader_Component extends Actor_Base implements Actor {
 		$element_json = (string) wp_json_encode( $element_data );
 
 		$tags = tag( 'avf-live-reloader' )
-			->attributes( array(
-				'hidden'       => '',
-				'data-element' => $element_json,
-			) );
+			->attributes(
+				array(
+					'hidden'       => '',
+					'data-element' => $element_json,
+				)
+			);
 
-		return $this->html_renderer->render( $tags );
+		return $this->html_renderer->render_html( $tags );
 	}
 
 	public function maybe_enqueue_reloading_js(): void {

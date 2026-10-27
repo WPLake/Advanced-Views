@@ -30,7 +30,7 @@ final class Debug_Dump_Creator {
 		$this->logger                           = $logger;
 		$this->layouts_settings_storage         = $layouts_settings_storage;
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer                    = $html_renderer;
 	}
 
 	public function echo_dump_file(): void {
@@ -82,12 +82,12 @@ final class Debug_Dump_Creator {
 			<?php
 		};
 
-		$tags         = tag( 'script' )
+		$tags = tag( 'script' )
 			->content(
 				$print_download_script
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 		exit;
 	}
 

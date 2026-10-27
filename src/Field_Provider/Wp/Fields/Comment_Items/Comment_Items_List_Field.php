@@ -33,7 +33,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 				fn() => $this->print_comment_content( $item_id, $markup_field_data )
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	protected function print_comment_content( string $item_id, Template_Field_Data $markup_field_data ): void {
@@ -64,7 +64,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 				$print_author_name
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->print_tabs();
@@ -90,7 +90,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 				$print_content
 			);
 
-		$this->html_renderer->print( $node );
+		$this->html_renderer->print_html( $node );
 
 		$token_factory->formatter()->new_line();
 		$markup_field_data->decrement_and_print_tabs();

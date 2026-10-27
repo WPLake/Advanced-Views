@@ -14,9 +14,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Fie
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
-use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 class Map_Field extends Map_Field_Base {
 	const MAP = 'map';
@@ -325,7 +325,7 @@ class Map_Field extends Map_Field_Base {
 		$tags = tag( 'div' )
 			->attributes( $marker_attrs );
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**

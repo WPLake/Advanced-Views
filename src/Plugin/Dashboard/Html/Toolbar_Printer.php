@@ -24,7 +24,7 @@ final class Toolbar_Printer {
 	public function print_dashboard_header( string $name, string $version, array $tabs ): void {
 		$toolbar_tags = self::toolbar_tags( $name, $version, $tabs );
 
-		$this->html_renderer->print( $toolbar_tags );
+		$this->html_renderer->print_html( $toolbar_tags );
 	}
 
 	/**

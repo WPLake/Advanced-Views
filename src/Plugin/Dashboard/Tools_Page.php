@@ -205,7 +205,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 				$print_download_script
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 		exit;
 	}
 
@@ -521,7 +521,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 			...$this->failed_items_tags( $wrong_cards_label, $fail_card_unique_ids ),
 		);
 
-		return $this->html_renderer->render( ...$tags );
+		return $this->html_renderer->render_html( ...$tags );
 	}
 
 	/**

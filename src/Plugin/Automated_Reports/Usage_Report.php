@@ -21,6 +21,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Stora
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
@@ -128,7 +131,7 @@ class Usage_Report extends Report_Base implements Actor {
 			$this->get_hide_members( $dismiss_key, $nonce_name ) :
 			array();
 
-		$tags      = tag( 'div' )
+		$tags = tag( 'div' )
 			->attributes( array( 'class' => 'notice notice-warning' ) )
 			->content(
 				tag( 'p' )
@@ -140,7 +143,7 @@ class Usage_Report extends Report_Base implements Actor {
 					)
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	public function send_and_schedule_next(): void {

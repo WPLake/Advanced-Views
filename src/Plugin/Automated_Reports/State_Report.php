@@ -10,8 +10,8 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 class State_Report extends Report_Base implements Actor {
 	const STATE_ENDPOINT_URL = 'https://wplake.org/wp-json/wplake/v1/plugin_state';
@@ -93,7 +93,7 @@ class State_Report extends Report_Base implements Actor {
 	public function bind_deactivation_survey_popup(): void {
 		$plugin_slug = $this->plugin_meta->get_slug();
 
-		$data         = array(
+		$data   = array(
 			'plugin_slug'                 => $plugin_slug,
 			'message'                     => __(
 				"We'd love to know why you're deactivating Advanced Views. Your feedback helps us improve (Optional)",
@@ -124,7 +124,7 @@ class State_Report extends Report_Base implements Actor {
 				fn() => $this->print_survey_script( $data )
 			);
 
-		$this->html_renderer->print( $style, $script );
+		$this->html_renderer->print_html( $style, $script );
 	}
 
 	protected function print_survey_css(): void {

@@ -18,8 +18,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 class Field_Settings_Integration extends Acf_Integration_Base {
 	use Safe_Array_Arguments;
@@ -37,7 +37,7 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 
 		$this->provider_cluster = $provider_cluster;
 		$this->plugin_cpt       = $plugin_cpt;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer    = $html_renderer;
 	}
 
 	/**
@@ -257,17 +257,19 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 		$singular_name  = $this->plugin_cpt->labels()->singular_name();
 		$label          = sprintf( $label_template, $singular_name );
 
-		$tags    = tag( 'a' )
-			->attributes( array(
-				'class'  => 'acf-views__add-new',
-				'target' => '_blank',
-				'href'   => $link,
-			) )
+		$tags = tag( 'a' )
+			->attributes(
+				array(
+					'class'  => 'acf-views__add-new',
+					'target' => '_blank',
+					'href'   => $link,
+				)
+			)
 			->content(
 				$label
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {

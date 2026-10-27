@@ -38,11 +38,11 @@ final class Import_Printer {
 		);
 		$form_tags    = Html_Printer::dashboard_form_tags( 'import', $form_nonce, $blocks );
 
-		$this->html_renderer->print( $form_tags );
+		$this->html_renderer->print_html( $form_tags );
 	}
 
 	protected static function import_result_block_tags( bool $is_has_demo_objects, Demo_Importer $demo_import ): Html_Tag {
-		$button       = tag( 'button' )
+		$button = tag( 'button' )
 			->attributes(
 				array(
 					'class' => 'button button-primary button-large av-dashboard__button av-dashboard__button--red',
@@ -222,12 +222,12 @@ final class Import_Printer {
 				__( "It's perfect for exploring how Layouts, Post Selections, and ACF fields work together.", 'acf-views' )
 			);
 
-		$importing_parts             = array(
+		$importing_parts       = array(
 			__( 'Click Import Demo and wait a few seconds.', 'acf-views' ),
 			__( "When done, you'll see quick links to edit all imported items.", 'acf-views' ),
 		);
-		$importing_text              = join( ' ', $importing_parts );
-		$importing_description       = tag( 'p' )
+		$importing_text        = join( ' ', $importing_parts );
+		$importing_description = tag( 'p' )
 			->attributes( $description_attrs )
 			->content(
 				$importing_text
@@ -262,7 +262,7 @@ final class Import_Printer {
 		$after_title     = __( 'After Import', 'acf-views' );
 		$delete_hint     = __( 'A Delete Demo button will appear if you’d like to remove the demo content later.', 'acf-views' );
 
-		$delete_hint_paragraph       = tag( 'p' )
+		$delete_hint_paragraph = tag( 'p' )
 			->content(
 				$delete_hint
 			);

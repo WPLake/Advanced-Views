@@ -88,7 +88,7 @@ class Page_Link_Field extends List_Field {
 			$markup_field_data->is_with_field_wrapper()
 		);
 
-		$this->html_renderer->print( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
+		$this->html_renderer->print_html( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
 	}
 
 	/**

@@ -17,9 +17,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Sto
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 
 class Pods_Integration extends Settings_Vendor_Integration {
 
@@ -203,22 +203,24 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	protected function render_postbox( object $pod ): string {
 		$pod_name = $this->get_pod_name( $pod );
 
-		$tags      = tag( 'div' )
-			->attributes( array(
-				'class' => array(
-					'advanced-views',
-					'postbox-container',
-				),
-				'style' => array(
-					'width'  => '70%',
-					'margin' => '100px 0 0',
-				),
-			) )
+		$tags = tag( 'div' )
+			->attributes(
+				array(
+					'class' => array(
+						'advanced-views',
+						'postbox-container',
+					),
+					'style' => array(
+						'width'  => '70%',
+						'margin' => '100px 0 0',
+					),
+				)
+			)
 			->content(
 				fn() => $this->print_related_postbox( $pod_name, $pod )
 			);
 
-		return $this->html_renderer->render( $tags );
+		return $this->html_renderer->render_html( $tags );
 	}
 
 	/**
@@ -233,27 +235,29 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			echo esc_html( $title );
 		};
 
-		$heading  = tag( 'h4' )
+		$heading = tag( 'h4' )
 			->attributes( array( 'class' => 'advanced-views__heading' ) )
 			->content(
 				$print_heading_text
 			);
 
-		$tags      = tag( 'div' )
-			->attributes( array(
-				'class' => array(
-					'postbox',
-					'pods-no-toggle',
-				),
-				'style' => array( 'padding' => '0 20px 20px' ),
-			) )
+		$tags = tag( 'div' )
+			->attributes(
+				array(
+					'class' => array(
+						'postbox',
+						'pods-no-toggle',
+					),
+					'style' => array( 'padding' => '0 20px 20px' ),
+				)
+			)
 			->content(
 				$heading,
 				fn() => $this->print_related_acf_views( null, false, $related_views ),
 				fn() => $this->print_add_new_links_for_groups( $pod )
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**
@@ -277,20 +281,22 @@ class Pods_Integration extends Settings_Vendor_Integration {
 				}
 			};
 
-			$tags      = tag( 'div' )
-				->attributes( array(
-					'style' => array(
-						'display'   => 'flex',
-						'gap'       => '10px',
-						'flex-wrap' => 'wrap',
-						'margin'    => '20px 0 0',
-					),
-				) )
+			$tags = tag( 'div' )
+				->attributes(
+					array(
+						'style' => array(
+							'display'   => 'flex',
+							'gap'       => '10px',
+							'flex-wrap' => 'wrap',
+							'margin'    => '20px 0 0',
+						),
+					)
+				)
 				->content(
 					$print_add_new_links
 				);
 
-			$this->html_renderer->print( $tags );
+			$this->html_renderer->print_html( $tags );
 		}
 	}
 

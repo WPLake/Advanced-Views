@@ -29,7 +29,7 @@ class Gallery_Field extends Markup_Field_Base {
 	protected function print_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$markup_field_data->set_is_with_field_wrapper( true );
 
-		$this->html_renderer->print( ...$this->image_field->compose_html( $item_id, $markup_field_data ) );
+		$this->html_renderer->print_html( ...$this->image_field->compose_html( $item_id, $markup_field_data ) );
 	}
 
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {

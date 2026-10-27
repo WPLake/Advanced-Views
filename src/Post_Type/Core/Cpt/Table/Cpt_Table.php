@@ -14,11 +14,11 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use WP_List_Table;
 use WP_Post;
 use WP_Post_Type;
 use WP_Query;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
@@ -57,7 +57,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		$this->current_page_number  = null;
 		$this->current_search_value = null;
 		$this->pagination_per_page  = null;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer        = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -156,7 +156,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 
 		$message = __( 'Item successfully cloned.', 'acf-views' );
 
-		$tags      = tag( 'div' )
+		$tags = tag( 'div' )
 			->attributes( array( 'class' => 'notice notice-success' ) )
 			->content(
 				tag( 'p' )
@@ -165,7 +165,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 					)
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	protected function print_post_type_description( WP_Post_Type $wp_post_type ): void {
@@ -176,25 +176,25 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			null;
 
 		if ( null !== $description_callback ) {
-			$tags    = tag( 'p' )
+			$tags = tag( 'p' )
 				->content(
 					$description_callback
 				);
 
-			$this->html_renderer->print( $tags );
+			$this->html_renderer->print_html( $tags );
 
 			return;
 		}
 
 		if ( '' !== $wp_post_type->description ) {
-			$node    = tag( 'p' )
+			$node = tag( 'p' )
 				->content(
 					// don't use esc_html as it contains links.
 					// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					fn() => print( $wp_post_type->description )
 				);
 
-			$this->html_renderer->print( $node );
+			$this->html_renderer->print_html( $node );
 		}
 	}
 
@@ -215,7 +215,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 
 			$attrs['href'] = $this->get_tab_url( $tab->get_name() );
 
-			$count      = tag( 'span' )
+			$count = tag( 'span' )
 				->attributes( array( 'class' => 'count' ) )
 				->content(
 					sprintf( '(%s)', $tab->get_label_in_brackets() )
@@ -235,7 +235,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 					...$count_span
 				);
 
-			$views[ $tab->get_name() ] = $this->html_renderer->render( $tab_link );
+			$views[ $tab->get_name() ] = $this->html_renderer->render_html( $tab_link );
 
 			if ( false === $is_tab_active ) {
 				continue;
@@ -264,12 +264,12 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			__( 'Search for name.', 'acf-views' );
 
 		// only primary search is available for custom items.
-		$tags        = tag( 'style' )
+		$tags = tag( 'style' )
 			->content(
 				fn() => print( sprintf( '#posts-filter .search-box::after{content:"%s";}', esc_html( $label ) ) )
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**
@@ -378,13 +378,13 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 
 		$clone_label = __( 'Clone', 'acf-views' );
 
-		$tags    = tag( 'a' )
+		$tags = tag( 'a' )
 			->attributes( array( 'href' => $clone_link ) )
 			->content(
 				$clone_label
 			);
 
-		$actions['clone'] = $this->html_renderer->render( $tags );
+		$actions['clone'] = $this->html_renderer->render_html( $tags );
 		$actions['trash'] = $trash;
 
 		return $actions;
@@ -475,7 +475,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 				fn() => print( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' )
 			);
 
-		$this->html_renderer->print(
+		$this->html_renderer->print_html(
 			$hide_style,
 			$rows_table,
 			$paste_script
@@ -637,10 +637,12 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			$column_label;
 
 		return tag( $tag_name )
-			->attributes( array(
-				'class'        => $classes,
-				'data-colname' => $colname,
-			) )
+			->attributes(
+				array(
+					'class'        => $classes,
+					'data-colname' => $colname,
+				)
+			)
 			->content( ...$content );
 	}
 
@@ -653,11 +655,13 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		$select_label = __( 'Select %s', 'acf-views' );
 		$select_text  = sprintf( $select_label, $title );
 
-		$label       = tag( 'label' )
-			->attributes( array(
-				'for'   => $checkbox_id,
-				'class' => 'screen-reader-text',
-			) )
+		$label = tag( 'label' )
+			->attributes(
+				array(
+					'for'   => $checkbox_id,
+					'class' => 'screen-reader-text',
+				)
+			)
 			->content(
 				$select_text
 			);
@@ -665,12 +669,14 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		return array(
 			$label,
 			tag( 'input' )
-				->attributes( array(
-					'id'    => $checkbox_id,
-					'type'  => 'checkbox',
-					'value' => $unique_id,
-					'name'  => 'post[]',
-				) ),
+				->attributes(
+					array(
+						'id'    => $checkbox_id,
+						'type'  => 'checkbox',
+						'value' => $unique_id,
+						'name'  => 'post[]',
+					)
+				),
 		);
 	}
 }

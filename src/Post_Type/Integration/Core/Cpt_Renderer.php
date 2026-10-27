@@ -31,7 +31,7 @@ final class Cpt_Renderer {
 		$this->shortcode        = $shortcode;
 		$this->settings_storage = $settings_storage;
 		$this->cpt              = $cpt;
-		$this->html_renderer = $html_renderer;
+		$this->html_renderer    = $html_renderer;
 	}
 
 	/**
@@ -89,26 +89,26 @@ final class Cpt_Renderer {
 			$minified_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
 			$unique_id    = $cpt_settings->get_unique_id();
 
-			$tags        = tag( 'style' )
+			$tags = tag( 'style' )
 				->attributes( array( 'data-avf-id' => $unique_id ) )
 				->content(
 					// phpcs:ignore WordPress.Security.EscapeOutput
 					fn() => print( $minified_css )
 				);
 
-			return $this->html_renderer->render( $tags );
+			return $this->html_renderer->render_html( $tags );
 		}
 
 		return '';
 	}
 
 	protected function make_placeholder( string $message ): string {
-		$tags    = tag( 'p' )
+		$tags = tag( 'p' )
 			->attributes( array( 'class' => 'avf-cpt-block__placeholder' ) )
 			->content(
 				sprintf( '[%s]', $message )
 			);
 
-		return $this->html_renderer->render( $tags );
+		return $this->html_renderer->render_html( $tags );
 	}
 }

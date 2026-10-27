@@ -9,8 +9,8 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Base;
 use WP_REST_Request;
-use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -21,9 +21,9 @@ abstract class Instance {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Cpt_Settings $cpt_settings, string $template, Html_Renderer $html_renderer, string $classes = '' ) {
-		$this->cpt_settings = $cpt_settings;
-		$this->template     = $template;
-		$this->classes      = $classes;
+		$this->cpt_settings  = $cpt_settings;
+		$this->template      = $template;
+		$this->classes       = $classes;
 		$this->html_renderer = $html_renderer;
 	}
 
@@ -101,13 +101,13 @@ abstract class Instance {
 		$engine_name      = ucfirst( $this->cpt_settings->template_engine );
 		$message          = sprintf( $message_template, $engine_name );
 
-		$tags    = tag( 'p' )
+		$tags = tag( 'p' )
 			->attributes( array( 'style' => array( 'color' => 'red' ) ) )
 			->content(
 				$message
 			);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**

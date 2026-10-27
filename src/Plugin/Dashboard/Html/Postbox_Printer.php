@@ -39,7 +39,7 @@ class Postbox_Printer {
 		$shortcode      = sprintf( '[%s name="%s" %s="%s"]', $shortcode_name, $entry_name, 'id', $unique_id );
 		$tags           = self::shortcode_tags( $shortcode, $is_short, $is_single );
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	public function print_postbox_upgrade(): void {
@@ -51,7 +51,7 @@ class Postbox_Printer {
 		$button_label = __( 'Upgrade to Pro', 'acf-views' );
 		$tags         = self::support_postbox_tags( $description, External_Links::PRO_VERSION_URL, $button_label );
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	public function print_postbox_support(): void {
@@ -67,7 +67,7 @@ class Postbox_Printer {
 			$button_label
 		);
 
-		$this->html_renderer->print( $tags );
+		$this->html_renderer->print_html( $tags );
 	}
 
 	protected static function shortcode_tags( string $shortcode, bool $is_short, bool $is_single ): Html_Tag {
@@ -96,11 +96,13 @@ class Postbox_Printer {
 	 * @return Html_Node[]
 	 */
 	protected static function shortcode_details_tags( bool $is_single ): array {
-		$copy_button  = tag( 'button' )
-			->attributes( array(
-				'class'       => 'av-shortcodes__copy-button button button-primary button-large',
-				'data-target' => '.av-shortcodes__code--type--short',
-			) )
+		$copy_button = tag( 'button' )
+			->attributes(
+				array(
+					'class'       => 'av-shortcodes__copy-button button button-primary button-large',
+					'data-target' => '.av-shortcodes__code--type--short',
+				)
+			)
 			->content(
 				__( 'Copy Shortcode', 'acf-views' )
 			);
@@ -167,11 +169,13 @@ class Postbox_Printer {
 	protected static function button_link_tags( string $url, string $label ): Html_Tag {
 
 		return tag( 'a' )
-			->attributes( array(
-				'class'  => 'button button-primary button-large',
-				'href'   => $url,
-				'target' => '_blank',
-			) )
+			->attributes(
+				array(
+					'class'  => 'button button-primary button-large',
+					'href'   => $url,
+					'target' => '_blank',
+				)
+			)
 			->content(
 				$label
 			);
