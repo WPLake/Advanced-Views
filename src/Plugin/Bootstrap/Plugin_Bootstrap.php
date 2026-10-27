@@ -19,7 +19,7 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Html_Escaper;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Tag_Printer\Plain_Tag_Printer;
 use Org\Wplake\Advanced_Views\Template\Html\Tag_Printer\Tag_Printer;
 

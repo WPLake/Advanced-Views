@@ -5,21 +5,32 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Template\Html\Tag_Printer;
 
 use Closure;
-use Org\Wplake\Advanced_Views\Template\Html\Attributes\Attributes_Cleaner;
-use Org\Wplake\Advanced_Views\Template\Html\Attributes\Attributes_Normalizer;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Attributes\Attribute_Normalizer;
+use Org\Wplake\Advanced_Views\Template\Html\Attributes\Nested_Attribute_Normalizer;
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 
 defined( 'ABSPATH' ) || exit;
 
 final class Plain_Tag_Printer implements Tag_Printer {
-	protected Attributes_Cleaner $cleaner;
+	protected Attribute_Normalizer $normalizer;
 	protected Html_Escaper $escaper;
+	protected bool $display_empty_attributes;
 
-	public function __construct( Html_Escaper $escaper, ?Attributes_Cleaner $cleaner = null ) {
-		$this->escaper = $escaper;
-		$this->cleaner = $cleaner ?? new Attributes_Normalizer( $escaper );
+	public function __construct(
+		Html_Escaper $escaper,
+		?Attribute_Normalizer $normalizer = null
+	) {
+		$this->escaper                  = $escaper;
+		$this->normalizer               = $normalizer ?? new Nested_Attribute_Normalizer( $escaper );
+		$this->display_empty_attributes = false;
+	}
+
+	public function should_display_empty_attributes( bool $display_empty_attributes ): self {
+		$this->display_empty_attributes = $display_empty_attributes;
+
+		return $this;
 	}
 
 	public function print_pair_tag( Html_Tag $tag, Closure $print_content ): void {
@@ -43,21 +54,12 @@ final class Plain_Tag_Printer implements Tag_Printer {
 	 * @param string|Htmlable|Closure $node
 	 */
 	public function print_node( $node ): void {
-		if ( is_string( $node ) ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $this->escaper->esc_html( $node );
-
-			return;
+		if ( $node instanceof Closure ) {
+			$node();
 		}
 
-		if ( $node instanceof Htmlable ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $node->to_html( $this->escaper );
-
-			return;
-		}
-
-		$node();
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->escaper->stringify( $node );
 	}
 
 	protected function open_tag( Html_Tag $tag ): void {
@@ -66,26 +68,29 @@ final class Plain_Tag_Printer implements Tag_Printer {
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		printf( '<%s', $this->escaper->esc_html( $tag_name ) );
-		$this->print_attributes( $tag_attributes );
+
+		foreach ( $tag_attributes as $name => $value ) {
+			$this->print_attribute( $name, $value );
+		}
 	}
 
 	/**
-	 * 'class' and 'style' also accept arrays: a list of classes, a property => value map
-	 *
-	 * @param array<string,mixed> $attributes
+	 * @param mixed $value
 	 */
-	protected function print_attributes( array $attributes ): void {
-		$escaped_attributes = $this->cleaner->clean_attributes( $attributes );
+	protected function print_attribute( string $name, $value ): void {
+		$normalized_value = $this->normalizer->normalize_attribute( $name, $value );
+		$should_display   = $this->display_empty_attributes ||
+							strlen( $normalized_value ) > 0;
 
-		foreach ( $escaped_attributes as $name => $escaped_value ) {
-			echo ' ';
+		if ( $should_display ) {
+			$escaped_key = $this->escaper->esc_html( $name );
 
 			printf(
-				'%s="%s"',
+				' %s="%s"',
 				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				$this->escaper->esc_html( $name ),
-				// phpcs:ignore WordPress.Security.EscapeOutput
-				$escaped_value
+				$escaped_key,
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$normalized_value
 			);
 		}
 	}
