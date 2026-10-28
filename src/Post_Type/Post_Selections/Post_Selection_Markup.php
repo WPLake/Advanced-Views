@@ -153,23 +153,19 @@ class Post_Selection_Markup {
 											->add_item_path( 'layout_id' );
 		$post_id_var = $token_factory->variable( 'post_id' );
 
-		printf( '[%s', esc_html( $this->layout_cpt->shortcode() ) );
-
-		$token_factory->formatter()
-						->attributes(
-							array(
-								'id'        => $id_var,
-								'object-id' => $post_id_var,
-							)
-						);
-
 		$asset_attrs = $this->front_assets->get_card_shortcode_attrs( $post_selection_settings );
 
-		foreach ( $asset_attrs as $attr => $value ) {
-			printf( ' %s="%s"', esc_html( $attr ), esc_html( $value ) );
-		}
-
-		echo ']';
+		$token_factory->shortcode( $this->layout_cpt->shortcode() )
+			->set_attributes(
+				array_merge(
+					array(
+						'id'        => $id_var,
+						'object-id' => $post_id_var,
+					),
+					$asset_attrs
+				)
+			)
+			->display();
 	}
 
 	public function print_markup(

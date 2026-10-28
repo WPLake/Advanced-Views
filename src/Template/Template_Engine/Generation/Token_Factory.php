@@ -11,12 +11,12 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditi
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Conditional_Value_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Function_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Functions_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Html_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Loop_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Range_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Shortcode_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Assignment_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Literal_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
@@ -54,5 +54,5 @@ interface Token_Factory {
 
 	public function range(): Range_Token;
 
-	public function formatter(): Format_Token;
+	public function shortcode( string $name ): Shortcode_Token;
 }

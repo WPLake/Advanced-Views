@@ -51,17 +51,14 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$object_id_var = $token_factory->variable( $item_id )
 										->add_item_path( self::VALUE );
 
-		printf( '[%s', esc_html( Hard_Layout_Cpt::cpt_name() ) );
-
-		$token_factory->formatter()
-			->attributes(
+		$token_factory->shortcode( Hard_Layout_Cpt::cpt_name() )
+			->set_attributes(
 				array(
 					'id'        => $id_var,
 					'object-id' => $object_id_var,
 				)
-			);
-
-		echo ']';
+			)
+			->display();
 	}
 
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {

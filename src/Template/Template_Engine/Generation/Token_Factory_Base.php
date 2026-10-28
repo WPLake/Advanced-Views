@@ -10,16 +10,15 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Pri
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Comparison_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Conditional_Value_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Function_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Html_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Shortcode_Token;
 
 abstract class Token_Factory_Base implements Token_Factory {
 	/**
 	 * @var class-string<Token_Printer>
 	 */
 	protected string $printer_class;
-	protected ?Format_Token $format_token = null;
 
 	/**
 	 * @param class-string<Token_Printer> $printer_class
@@ -48,9 +47,7 @@ abstract class Token_Factory_Base implements Token_Factory {
 		return new Conditional_Value_Token( $this->printer_class );
 	}
 
-	public function formatter(): Format_Token {
-		$this->format_token ??= new Format_Token();
-
-		return $this->format_token;
+	public function shortcode( string $name ): Shortcode_Token {
+		return new Shortcode_Token( $this->printer_class, $name );
 	}
 }
