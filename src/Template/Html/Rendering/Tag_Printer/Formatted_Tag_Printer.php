@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Printer\Formatted;
+namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Printer;
 
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Printer\Tag_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Formatter;
 
 
 final class Formatted_Tag_Printer implements Tag_Printer {
