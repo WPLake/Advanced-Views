@@ -362,7 +362,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	public function print_assets(): void {
 		$all_js_code        = '';
 		$all_css_code       = strlen( $this->assets_css_code ) > 0 ?
-			$this->make_code_tag( 'style', array( 'data-advanced-views-assets' => '' ), $this->assets_css_code ) :
+			$this->make_code_tag( 'style', array( 'data-advanced-views-assets' => true ), $this->assets_css_code ) :
 		'';
 		$counter            = 0;
 		$is_tailwind_in_use = false;
@@ -401,7 +401,7 @@ class Front_Assets extends Actor_Base implements Actor {
 					"\n" :
 					'';
 
-				$all_css_code .= $this->make_code_tag( 'style', array( 'data-advanced-views-tailwind-global' => '' ), $global_tailwind_styles );
+				$all_css_code .= $this->make_code_tag( 'style', array( 'data-advanced-views-tailwind-global' => true ), $global_tailwind_styles );
 			}
 		}
 
@@ -457,7 +457,7 @@ class Front_Assets extends Actor_Base implements Actor {
 						);
 
 					$tags = tag( 'div' )
-						->attributes( array( 'hidden' => '' ) )
+						->attributes( array( 'hidden' => true ) )
 						->content(
 							// @phpcs:ignore WordPress.Security.EscapeOutput
 							fn() => print( $all_css_code ),
@@ -637,7 +637,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @param array<string,string> $attrs
+	 * @param array<string,string|bool> $attrs
 	 */
 	protected function make_code_tag( string $tag, array $attrs, string $code ): string {
 		$tags = tag( $tag )

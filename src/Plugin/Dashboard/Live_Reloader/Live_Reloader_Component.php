@@ -113,7 +113,7 @@ class Live_Reloader_Component extends Actor_Base implements Actor {
 		$tags = tag( 'avf-live-reloader' )
 			->attributes(
 				array(
-					'hidden'       => '',
+					'hidden'       => true,
 					'data-element' => $element_json,
 				)
 			);

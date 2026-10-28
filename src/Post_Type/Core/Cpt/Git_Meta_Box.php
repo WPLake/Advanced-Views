@@ -314,7 +314,7 @@ abstract class Git_Meta_Box extends Actor_Base implements Actor {
 			->attributes(
 				array(
 					'name'     => '_git-repo',
-					'required' => '',
+					'required' => true,
 				)
 			)
 			->content(

@@ -35,7 +35,7 @@ class Post_Attachment_Video extends Markup_Field_Base {
 			tag( 'video' )
 				->attributes( array(
 					'class'    => $video_class,
-					'controls' => '',
+					'controls' => true,
 				) )
 				->content(
 					fn() => $markup_field_data->print_new_line_and_increment_tabs(),
