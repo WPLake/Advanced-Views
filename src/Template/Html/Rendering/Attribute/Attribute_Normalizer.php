@@ -16,12 +16,16 @@ final class Attribute_Normalizer {
 	/**
 	 * @var array<string,Attribute_Normalizer>
 	 */
-	protected array $normalizers;
+	public array $normalizers;
+	/**
+	 * @var string[]
+	 */
+	public array $url_attributes;
 
 	public function __construct( Html_Escaper $escaper ) {
 		$this->escaper = $escaper;
 
-		$this->url_attributes = $url_attributes ?? array(
+		$this->url_attributes = array(
 			'href',
 			'src',
 			'action',
@@ -38,34 +42,43 @@ final class Attribute_Normalizer {
 	}
 
 	/**
-	 * @param array<string,Attribute_Normalizer> $normalizers
+	 * @param mixed $value
 	 */
-	public function set_normalizers( array $normalizers ): self {
-		$this->normalizers = $normalizers;
+	public function normalize_attribute( string $name, $value ): string {
+		$normalizer = $this->resolve_normalizer( $name );
 
-		return $this;
+		if ( is_callable( $normalizer ) ) {
+			return $normalizer( $value );
+		}
+
+		return $this->stringify( $name, $value );
 	}
 
 	/**
-	 * @param Attribute_Normalizer $normalizer
+	 * @return Attribute_Normalizer|null
 	 */
-	public function set_normalizer( string $attribute, callable $normalizer ): self {
-		$this->normalizers[ $attribute ] = $normalizer;
+	protected function resolve_normalizer( string $name ): ?callable {
+		if ( key_exists( $name, $this->normalizers ) ) {
+			return $this->normalizers[ $name ];
+		}
 
-		return $this;
+		return null;
 	}
 
 	/**
 	 * @param mixed $value
 	 */
-	public function normalize_attribute( string $name, $value ): string {
-		if ( key_exists( $name, $this->normalizers ) ) {
-			$normalizer = $this->normalizers[ $name ];
-
-			return $normalizer( $value );
+	protected function stringify( string $name, $value ): string {
+		if ( is_string( $value ) &&
+			$this->is_url( $name ) ) {
+			return $this->escaper->esc_url( $value );
 		}
 
 		return $this->escaper->stringify( $value );
+	}
+
+	protected function is_url( string $name ): bool {
+		return in_array( $name, $this->url_attributes, true );
 	}
 
 	/**

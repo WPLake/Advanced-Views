@@ -11,21 +11,22 @@ use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 final class Attribute_Printer {
 	protected Attribute_Normalizer $normalizer;
 	protected Html_Escaper $escaper;
-	protected bool $display_empty_attributes;
+	protected bool $display_empty;
 
-	public function __construct(
-		Html_Escaper $escaper,
-		?Attribute_Normalizer $normalizer = null
-	) {
-		$this->escaper                  = $escaper;
-		$this->normalizer               = $normalizer ?? new Attribute_Normalizer( $escaper );
-		$this->display_empty_attributes = false;
+	public function __construct( Html_Escaper $escaper ) {
+		$this->escaper       = $escaper;
+		$this->normalizer    = new Attribute_Normalizer( $escaper );
+		$this->display_empty = false;
 	}
 
-	public function should_display_empty_attributes( bool $display_empty_attributes ): self {
-		$this->display_empty_attributes = $display_empty_attributes;
+	public function should_display_empty( bool $display_empty ): self {
+		$this->display_empty = $display_empty;
 
 		return $this;
+	}
+
+	public function get_normalizer(): Attribute_Normalizer {
+		return $this->normalizer;
 	}
 
 	/**
@@ -56,7 +57,7 @@ final class Attribute_Printer {
 
 	protected function print_mixed_attribute( string $name, $value ): void {
 		$normalized_value = $this->normalizer->normalize_attribute( $name, $value );
-		$should_display   = $this->display_empty_attributes ||
+		$should_display   = $this->display_empty ||
 							strlen( $normalized_value ) > 0;
 
 		if ( $should_display ) {

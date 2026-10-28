@@ -6,10 +6,10 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Rendering;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag\Tag_Printer;
 use Closure;
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag\Tag_Printer;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
@@ -20,7 +20,7 @@ final class Html_Renderer {
 	/**
 	 * @var string[]
 	 */
-	protected array $self_closing_tags;
+	public array $self_closing_tags;
 
 	public function __construct( Html_Escaper $escaper, Tag_Printer $tag_printer ) {
 		$this->escaper           = $escaper;
@@ -40,15 +40,6 @@ final class Html_Renderer {
 			'track',
 			'wbr',
 		);
-	}
-
-	/**
-	 * @param string[] $self_closing_tags
-	 */
-	public function set_self_closing_tags( array $self_closing_tags ): self {
-		$this->self_closing_tags = $self_closing_tags;
-
-		return $this;
 	}
 
 	/**
