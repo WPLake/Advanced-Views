@@ -15,6 +15,8 @@ interface Html_Escaper {
 
 	/**
 	 * Returns safe to use HTML string.
+	 *
+	 * @param mixed $value
 	 */
 	public function stringify( $value ): string;
 }

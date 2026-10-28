@@ -35,6 +35,9 @@ final class Nested_Attribute_Normalizer implements Attribute_Normalizer {
 		return $this;
 	}
 
+	/**
+	 * @param mixed $value
+	 */
 	public function normalize_attribute( string $name, $value ): string {
 		if ( is_array( $value ) &&
 			key_exists( $name, $this->normalizers ) ) {

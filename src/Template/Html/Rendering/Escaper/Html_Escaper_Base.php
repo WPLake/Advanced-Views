@@ -16,6 +16,9 @@ abstract class Html_Escaper_Base implements Html_Escaper {
 	 */
 	protected array $url_attributes;
 
+	/**
+	 * @param string[]|null $url_attributes
+	 */
 	public function __construct( ?array $url_attributes = null ) {
 		$this->url_attributes = $url_attributes ?? array(
 			'href',
@@ -31,6 +34,9 @@ abstract class Html_Escaper_Base implements Html_Escaper {
 			$this->esc_html( $value );
 	}
 
+	/**
+	 * @param mixed $value
+	 */
 	public function stringify( $value ): string {
 		if ( $value instanceof Htmlable ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

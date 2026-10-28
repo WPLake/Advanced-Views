@@ -104,6 +104,9 @@ final class Attribute_Merger {
 	}
 
 	// fixme repeats with Plain_Tag_Printer & can be overidden.
+	/**
+	 * @param mixed $value
+	 */
 	protected static function stringify( $value ): string {
 		return is_string( $value ) ? $value : '';
 	}
