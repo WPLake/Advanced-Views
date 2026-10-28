@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Comparison_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
@@ -30,8 +30,8 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 	private Image_Field $image_field;
 
-	public function __construct( Image_Field $image_field, Html_Renderer $html_renderer ) {
-		parent::__construct( $html_renderer );
+	public function __construct( Image_Field $image_field, Web_Component_Printer $printer ) {
+		parent::__construct( $printer );
 
 		$this->image_field = $image_field;
 	}
@@ -109,9 +109,8 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$condition = self::type_comparison( 'dashicons', $field_id, $markup_field_data );
-		$body      = $token_factory->html(
-			fn() => $this->print_icon_markup( $field_id, $markup_field_data )
-		);
+		$print     = fn() => $this->print_icon_markup( $field_id, $markup_field_data );
+		$body      = $token_factory->html( fn() => $this->printer->print_indented( $print ) );
 
 		return $token_factory->if_branch()
 			->set_condition( $condition )
@@ -123,7 +122,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$condition    = self::type_comparison( 'media_library', $field_id, $markup_field_data );
 		$body_printer = fn() => $this->print_icon_image_markup( $field_id, $markup_field_data );
-		$body         = $token_factory->html( $body_printer );
+		$body        = $token_factory->html( fn() => $this->printer->print_indented( $body_printer ) );
 
 		return $token_factory->if_branch()
 			->set_condition( $condition )
@@ -133,9 +132,8 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	protected function custom_image_branch( string $field_id, Template_Field_Data $markup_field_data ): IF_Branch {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$body = $token_factory->html(
-			fn() => $this->print_custom_image_markup( $field_id, $markup_field_data )
-		);
+		$print = fn() => $this->print_custom_image_markup( $field_id, $markup_field_data );
+		$body  = $token_factory->html( fn() => $this->printer->print_indented( $print ) );
 
 		return $token_factory->if_branch()
 			->set_body( $body );
@@ -148,34 +146,22 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$icon_class = $this->get_field_class( 'icon', $markup_field_data );
 
-		$tags = array(
-			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
-			tag( 'i' )
-				->attributes(
-					array(
-						'class' => array(
-							$icon_class,
-							'dashicons',
-							$icon_var,
-						),
-					)
-				),
-			fn() => $markup_field_data->print_new_line_and_decrement_tabs(),
-		);
+		$tag = tag( 'i' )
+			->attributes(
+				array(
+					'class' => array(
+						$icon_class,
+						'dashicons',
+						$icon_var,
+					),
+				)
+			);
 
-		$this->html_renderer->print_html( ...$tags );
+		$this->printer->print_html( $tag );
 	}
 
 	protected function print_icon_image_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
-		$token_factory = $markup_field_data->get_token_factory();
-
-		$token_factory->formatter()->new_line();
-		$markup_field_data->increment_and_print_tabs();
-
-		$this->html_renderer->print_html( ...$this->image_field->compose_html( $field_id, $markup_field_data ) );
-
-		$token_factory->formatter()->new_line();
-		$markup_field_data->decrement_and_print_tabs();
+		$this->printer->print_html( ...$this->image_field->compose_html( $field_id, $markup_field_data ) );
 	}
 
 	protected function print_custom_image_markup( string $field_id, Template_Field_Data $markup_field_data ): void {
@@ -185,21 +171,17 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 		$image_class = $this->get_field_class( 'icon', $markup_field_data );
 
-		$tags = array(
-			fn() => $markup_field_data->print_new_line_and_increment_tabs(),
-			tag( 'img' )
-				->attributes(
-					array(
-						'class'   => $image_class,
-						'src'     => $src_var,
-						'loading' => 'lazy',
-						'alt'     => 'icon',
-					)
-				),
-			fn() => $markup_field_data->print_new_line_and_decrement_tabs(),
-		);
+		$tag = tag( 'img' )
+			->attributes(
+				array(
+					'class'   => $image_class,
+					'src'     => $src_var,
+					'loading' => 'lazy',
+					'alt'     => 'icon',
+				)
+			);
 
-		$this->html_renderer->print_html( ...$tags );
+		$this->printer->print_html( $tag );
 	}
 
 	protected static function type_comparison( string $type, string $field_id, Template_Field_Data $markup_field_data ): Comparison_Token {

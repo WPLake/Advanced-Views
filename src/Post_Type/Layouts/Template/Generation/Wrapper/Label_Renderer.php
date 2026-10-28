@@ -18,7 +18,6 @@ final class Label_Renderer {
 		Token_Factory $token_factory,
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
-		int &$tabs_number,
 		string $field_id
 	): Html_Tag {
 		$label_class = self::resolve_classes( $layout_settings, $field_settings );
@@ -26,14 +25,8 @@ final class Label_Renderer {
 		return tag( 'p' )
 			->attributes( array( 'class' => $label_class ) )
 			->content(
-				fn() => $token_factory->formatter()
-										->new_line()
-										->tab( $tabs_number + 1 ),
 				$token_factory->variable( $field_id )
-								->add_item_path( Markup_Field_Base::LABEL ),
-				fn() => $token_factory->formatter()
-										->new_line()
-										->tab( $tabs_number )
+								->add_item_path( Markup_Field_Base::LABEL )
 			);
 	}
 

@@ -6,32 +6,32 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
 defined( 'ABSPATH' ) || exit;
 
+use Closure;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Label_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Outer_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Wrapper_Printer;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
 
 class Field_Template {
 	private Field_Provider_Cluster $provider_cluster;
 	private Front_Assets $front_assets;
 	private Token_Factory_Storage $token_factory_storage;
-	protected Html_Renderer $html_renderer;
+	protected Web_Component_Printer $printer;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Html_Renderer $html_renderer ) {
+	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Web_Component_Printer $printer ) {
 		$this->provider_cluster      = $provider_cluster;
 		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;
-		$this->html_renderer         = $html_renderer;
+		$this->printer               = $printer;
 	}
 
 	// public, as used in Upgrades.
@@ -45,9 +45,7 @@ class Field_Template {
 		?Item_Settings $item_settings,
 		Field_Settings $field_settings,
 		Field_Meta $field_meta,
-		int &$tabs_number,
-		string $field_id,
-		bool $is_with_outer_wrappers
+		string $field_id
 	): void {
 		$field_type = $field_meta->get_type();
 
@@ -64,11 +62,6 @@ class Field_Template {
 
 		$is_with_wrapper = $this->is_with_field_wrapper( $field_assets, $layout_settings, $field_settings, $field_meta, 'field' );
 
-		if ( $is_with_wrapper &&
-			false === $is_with_outer_wrappers ) {
-			Format_Token::next_line();
-		}
-
 		$token_factory     = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
 		$markup_field_data = new Template_Field_Data(
 			$layout_settings,
@@ -83,24 +76,14 @@ class Field_Template {
 		$is_with_row_wrapper = $this->is_with_row_wrapper( $layout_settings, $field_settings, $field_meta );
 
 		$markup_field_data->set_field_assets( $field_assets );
-		$markup_field_data->set_tabs_number( $tabs_number );
 		$markup_field_data->set_is_with_field_wrapper( $is_with_wrapper );
 		$markup_field_data->set_is_with_row_wrapper( $is_with_row_wrapper );
 
-		Format_Token::tabulation( $tabs_number );
-
-		$this->html_renderer->print_html( ...$markup_field_instance->compose_html( $field_id, $markup_field_data ) );
-
-		Format_Token::next_line();
-
-		// read back, as it may be changed in getMarkup().
-		$tabs_number = $markup_field_data->get_tabs_number();
+		$this->printer->print_html( ...$markup_field_instance->compose_html( $field_id, $markup_field_data ) );
 	}
 
 	/**
-	 * $customFieldMarkup is used in RepeaterField
-	 *
-	 * @return int current tabs number
+	 * $print_custom_content is used in RepeaterField
 	 */
 	public function print_row_markup(
 		string $row_type,
@@ -109,10 +92,9 @@ class Field_Template {
 		?Item_Settings $item_settings,
 		Field_Settings $field_settings,
 		Field_Meta $field_meta,
-		int $tabs_number,
 		string $field_id,
-		string $custom_field_markup = ''
-	): int {
+		?Closure $print_custom_content = null
+	): void {
 		$vendor_name         = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
 		$front_assets        = $this->provider_cluster->get_field_front_assets( $vendor_name, $field_settings );
 		$field_assets        = $this->front_assets->resolve_template_patterns( $front_assets );
@@ -151,19 +133,17 @@ class Field_Template {
 			'div' :
 			$field_tag;
 
-		$print_content = function ( bool $is_with_outer_wrappers ) use (
-			$custom_field_markup,
+		$print_content = function () use (
+			$print_custom_content,
 			$field_assets,
 			$layout_settings,
 			$item_settings,
 			$field_settings,
 			$field_meta,
-			&$tabs_number,
 			$field_id
 		): void {
-			if ( strlen( $custom_field_markup ) > 0 ) {
-				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo $custom_field_markup;
+			if ( null !== $print_custom_content ) {
+				$print_custom_content();
 			} else {
 				$this->print_field_markup(
 					$field_assets,
@@ -171,29 +151,19 @@ class Field_Template {
 					$item_settings,
 					$field_settings,
 					$field_meta,
-					$tabs_number,
-					$field_id,
-					$is_with_outer_wrappers
+					$field_id
 				);
 			}
 		};
 
-		$print_label = function () use ( $token_factory, $layout_settings, $field_settings, &$tabs_number, $field_id ): void {
-			$label = Label_Renderer::get_tag( $token_factory, $layout_settings, $field_settings, $tabs_number, $field_id );
-
-			$token_factory->formatter()
-							->tab( $tabs_number );
-			$this->html_renderer->print_html( $label );
-			$token_factory->formatter()
-							->new_line();
-		};
+		$label = Label_Renderer::get_tag( $token_factory, $layout_settings, $field_settings, $field_id );
 
 		$is_with_label = strlen( $field_settings->label ) > 0;
 		$label_outside = $is_with_label && $is_label_out_of_row ?
-			array( $print_label ) :
+			array( $label ) :
 			array();
 		$label_inside  = $is_with_label && ! $is_label_out_of_row ?
-			array( $print_label ) :
+			array( $label ) :
 			array();
 
 		$content = Outer_Printer::wrap_with_outers(
@@ -202,13 +172,12 @@ class Field_Template {
 			$field_settings,
 			$field_id,
 			$row_type,
-			$tabs_number,
 			$token_factory,
 			$print_content
 		);
 
 		$field_layer = $is_with_field_wrapper ?
-			Wrapper_Printer::wrap(
+			array(
 				Wrapper_Printer::field_tag(
 					$field_assets,
 					$field_id,
@@ -217,11 +186,7 @@ class Field_Template {
 					$field_settings,
 					$field_name_class,
 					$field_tag
-				),
-				$tabs_number,
-				false,
-				false,
-				$content
+				)->content( ...$content ),
 			) :
 			$content;
 
@@ -230,24 +195,18 @@ class Field_Template {
 			...$field_layer,
 		);
 		$row_layer = $is_with_row_wrapper ?
-			Wrapper_Printer::wrap(
+			array(
 				Wrapper_Printer::row_tag(
 					$field_name_class,
 					$layout_settings,
 					$row_type,
 					self::get_row_wrapper_class( $field_assets, $row_type ),
 					$row_tag
-				),
-				$tabs_number,
-				false,
-				true,
-				$row_inner
+				)->content( ...$row_inner ),
 			) :
 			$row_inner;
 
-		$this->html_renderer->print_html( ...$label_outside, ...$row_layer );
-
-		return $tabs_number;
+		$this->printer->print_html( ...$label_outside, ...$row_layer );
 	}
 
 	/**

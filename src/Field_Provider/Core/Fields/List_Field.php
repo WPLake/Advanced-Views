@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Loop_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
@@ -56,9 +57,7 @@ abstract class List_Field extends Markup_Field_Base {
 
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		if ( $markup_field_data->get_field_meta()->is_multiple() ) {
-			return array(
-				fn() => $this->print_item_loop( $field_id, $markup_field_data ),
-			);
+			return array( $this->item_loop( $field_id, $markup_field_data ) );
 		}
 
 		return array(
@@ -66,8 +65,7 @@ abstract class List_Field extends Markup_Field_Base {
 		);
 	}
 
-	protected function print_item_loop( string $field_id, Template_Field_Data $markup_field_data ): void {
-
+	protected function item_loop( string $field_id, Template_Field_Data $markup_field_data ): Loop_Token {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$source_var = $token_factory->variable( $field_id )
@@ -77,50 +75,29 @@ abstract class List_Field extends Markup_Field_Base {
 			->set_source_variable( $source_var )
 			->set_item_variable( $item_var );
 
-		$loop_body = $token_factory->html(
-			fn() => $this->print_loop_body( $loop->get_index_variable(), $field_id, $markup_field_data )
-		);
+		$print_loop_body = fn() => $this->print_loop_body( $loop->get_index_variable(), $field_id, $markup_field_data );
 
-		$token_factory->formatter()
-						->new_line();
-		$markup_field_data->print_tabs();
+		$loop_body = $token_factory->html( fn() => $this->printer->print_indented( $print_loop_body ) );
 
-		$loop
-						->set_body( $loop_body )
-						->display();
-
-		$token_factory->formatter()
-						->new_line();
+		return $loop->set_body( $loop_body );
 	}
 
 	protected function print_loop_body( Variable_Token $index_var, string $field_id, Template_Field_Data $markup_field_data ): void {
-		$token_factory    = $markup_field_data->get_token_factory();
 		$is_delimiter_set = strlen( $markup_field_data->get_field_data()->options_delimiter ) > 0;
 
-		$token_factory->formatter()
-			->new_line();
-		$markup_field_data->increment_and_print_tabs();
-
 		if ( $is_delimiter_set ) {
+			$token_factory    = $markup_field_data->get_token_factory();
 			$delimiter_branch = $this->delimiter_branch( $index_var, $field_id, $markup_field_data );
 
-			$if = $token_factory->if()->set_if_branch( $delimiter_branch );
+			$token_factory->if()
+							->set_if_branch( $delimiter_branch )
+							->display();
 
-			$token_factory->formatter()
-						->new_line();
-			$markup_field_data->print_tabs();
-
-			$if->display();
-
-			echo "\r\n\r\n";
-			$markup_field_data->print_tabs();
+			$this->printer->new_line()
+							->line_start();
 		}
 
 		$this->print_inner_item( $field_id, $markup_field_data );
-
-		$token_factory->formatter()
-			->new_line();
-		$markup_field_data->decrement_and_print_tabs();
 	}
 
 	protected function delimiter_branch( Variable_Token $index_var, string $field_id, Template_Field_Data $markup_field_data ): IF_Branch {
@@ -131,9 +108,9 @@ abstract class List_Field extends Markup_Field_Base {
 			->set_comparison_greater()
 			->set_right_operand( $token_factory->literal( 0 ) );
 
-		$body = $token_factory->html(
-			fn() => $this->print_item_delimiter( $field_id, $markup_field_data )
-		);
+		$print_delimiter = fn() => $this->print_item_delimiter( $field_id, $markup_field_data );
+
+		$body = $token_factory->html( fn() => $this->printer->print_indented( $print_delimiter ) );
 
 		return $token_factory->if_branch()
 			->set_condition( $secondary_element_comparison )
@@ -143,39 +120,19 @@ abstract class List_Field extends Markup_Field_Base {
 	protected function print_item_delimiter( string $field_id, Template_Field_Data $markup_field_data ): void {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$token_factory->formatter()
-						->new_line();
-		$markup_field_data->increment_and_print_tabs();
-
 		$item_class = $this->get_item_class(
 			'delimiter',
 			$markup_field_data->get_view_data(),
 			$markup_field_data->get_field_data()
 		);
 
-		$print_options = function () use ( $token_factory, $markup_field_data, $field_id ) {
-			$token_factory->formatter()
-							->new_line();
-			$markup_field_data->increment_and_print_tabs();
-
-			$token_factory->variable( $field_id )->add_item_path( self::OPTIONS_DELIMITER )->display();
-
-			$token_factory->formatter()
-							->new_line();
-			$markup_field_data->decrement_and_print_tabs();
-		};
-
 		$tags = tag( 'span' )
 			->attributes( array( 'class' => $item_class ) )
 			->content(
-				$print_options
+				$token_factory->variable( $field_id )->add_item_path( self::OPTIONS_DELIMITER )
 			);
 
-		$this->html_renderer->print_html( $tags );
-
-		$token_factory->formatter()
-						->new_line();
-		$markup_field_data->decrement_and_print_tabs();
+		$this->printer->print_html( $tags );
 	}
 
 	protected function print_inner_item( string $field_id, Template_Field_Data $markup_field_data ): void {

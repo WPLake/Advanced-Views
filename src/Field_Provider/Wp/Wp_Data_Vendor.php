@@ -255,61 +255,61 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 
 	protected function get_field_types(): array {
 		$comment = array(
-			Comment_Fields::FIELD_AUTHOR_EMAIL     => new Comment_Author_Email_Field( $this->html_renderer ),
-			Comment_Fields::FIELD_AUTHOR_NAME      => new Comment_Author_Name_Field( $this->html_renderer ),
-			Comment_Fields::FIELD_AUTHOR_NAME_LINK => new Comment_Author_Name_Link_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
-			Comment_Fields::FIELD_CONTENT          => new Comment_Content_Field( $this->html_renderer ),
-			Comment_Fields::FIELD_DATE             => new Comment_Date_Field( $this->html_renderer ),
-			Comment_Fields::FIELD_STATUS           => new Comment_Status_Field( $this->html_renderer ),
-			Comment_Fields::FIELD_PARENT           => new Comment_Parent_Field( $this->html_renderer ),
-			Comment_Fields::FIELD_USER             => new Comment_User_Field( $this->html_renderer ),
+			Comment_Fields::FIELD_AUTHOR_EMAIL     => new Comment_Author_Email_Field( $this->printer ),
+			Comment_Fields::FIELD_AUTHOR_NAME      => new Comment_Author_Name_Field( $this->printer ),
+			Comment_Fields::FIELD_AUTHOR_NAME_LINK => new Comment_Author_Name_Link_Field( new Link_Field( $this->printer ), $this->printer ),
+			Comment_Fields::FIELD_CONTENT          => new Comment_Content_Field( $this->printer ),
+			Comment_Fields::FIELD_DATE             => new Comment_Date_Field( $this->printer ),
+			Comment_Fields::FIELD_STATUS           => new Comment_Status_Field( $this->printer ),
+			Comment_Fields::FIELD_PARENT           => new Comment_Parent_Field( $this->printer ),
+			Comment_Fields::FIELD_USER             => new Comment_User_Field( $this->printer ),
 		);
 
 		$comment_item = array(
-			Comment_Item_Fields::FIELD_LIST => new Comment_Items_List_Field( $this->html_renderer ),
+			Comment_Item_Fields::FIELD_LIST => new Comment_Items_List_Field( $this->printer ),
 		);
 
 		$menu = array(
-			Menu_Fields::FIELD_ITEMS => new Menu_Items_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			Menu_Fields::FIELD_ITEMS => new Menu_Items_Field( new Link_Field( $this->printer ), $this->printer ),
 		);
 
 		$menu_item = array(
-			Menu_Item_Fields::FIELD_LINK => new Menu_Item_Link_Field( $this->html_renderer ),
+			Menu_Item_Fields::FIELD_LINK => new Menu_Item_Link_Field( $this->printer ),
 		);
 
 		$post = array(
-			Post_Fields::FIELD_ATTACHMENT_LINK  => new Post_Attachment_Link( $this->html_renderer ),
-			Post_Fields::FIELD_ATTACHMENT_VIDEO => new Post_Attachment_Video( $this->html_renderer ),
-			Post_Fields::FIELD_TITLE            => new Post_Title_Field( $this->html_renderer ),
-			Post_Fields::FIELD_TITLE_LINK       => new Post_Title_Link_Field( $this->html_renderer ),
-			Post_Fields::FIELD_CONTENT          => new Post_Content_Field( $this->html_renderer ),
-			Post_Fields::FIELD_EXCERPT          => new Post_Excerpt_Field( $this->html_renderer ),
-			Post_Fields::FIELD_THUMBNAIL        => new Post_Thumbnail_Field( $this->html_renderer ),
-			Post_Fields::FIELD_THUMBNAIL_LINK   => new Post_Thumbnail_Link_Field( new Image_Field( $this->html_renderer ), $this->html_renderer ),
-			Post_Fields::FIELD_AUTHOR           => new Post_Author_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
-			Post_Fields::FIELD_DATE             => new Post_Date_Field( $this->html_renderer ),
-			Post_Fields::FIELD_MODIFIED         => new Post_Modified_Field( $this->html_renderer ),
+			Post_Fields::FIELD_ATTACHMENT_LINK  => new Post_Attachment_Link( $this->printer ),
+			Post_Fields::FIELD_ATTACHMENT_VIDEO => new Post_Attachment_Video( $this->printer ),
+			Post_Fields::FIELD_TITLE            => new Post_Title_Field( $this->printer ),
+			Post_Fields::FIELD_TITLE_LINK       => new Post_Title_Link_Field( $this->printer ),
+			Post_Fields::FIELD_CONTENT          => new Post_Content_Field( $this->printer ),
+			Post_Fields::FIELD_EXCERPT          => new Post_Excerpt_Field( $this->printer ),
+			Post_Fields::FIELD_THUMBNAIL        => new Post_Thumbnail_Field( $this->printer ),
+			Post_Fields::FIELD_THUMBNAIL_LINK   => new Post_Thumbnail_Link_Field( new Image_Field( $this->printer ), $this->printer ),
+			Post_Fields::FIELD_AUTHOR           => new Post_Author_Field( new Link_Field( $this->printer ), $this->printer ),
+			Post_Fields::FIELD_DATE             => new Post_Date_Field( $this->printer ),
+			Post_Fields::FIELD_MODIFIED         => new Post_Modified_Field( $this->printer ),
 		);
 
 		$taxonomy_terms = array(
-			Taxonomy_Term_Fields::FIELD_TERMS => new Taxonomy_Terms_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			Taxonomy_Term_Fields::FIELD_TERMS => new Taxonomy_Terms_Field( new Link_Field( $this->printer ), $this->printer ),
 		);
 
 		$term = array(
-			Term_Fields::FIELD_NAME        => new Term_Name_Field( $this->html_renderer ),
-			Term_Fields::FIELD_SLUG        => new Term_Slug_Field( $this->html_renderer ),
-			Term_Fields::FIELD_DESCRIPTION => new Term_Description_Field( $this->html_renderer ),
-			Term_Fields::FIELD_NAME_LINK   => new Term_Name_Link_Field( $this->html_renderer ),
+			Term_Fields::FIELD_NAME        => new Term_Name_Field( $this->printer ),
+			Term_Fields::FIELD_SLUG        => new Term_Slug_Field( $this->printer ),
+			Term_Fields::FIELD_DESCRIPTION => new Term_Description_Field( $this->printer ),
+			Term_Fields::FIELD_NAME_LINK   => new Term_Name_Link_Field( $this->printer ),
 		);
 
 		$user = array(
-			User_Fields::FIELD_FIRST_NAME   => new User_First_Name_Field( $this->html_renderer ),
-			User_Fields::FIELD_LAST_NAME    => new User_Last_Name_Field( $this->html_renderer ),
-			User_Fields::FIELD_DISPLAY_NAME => new User_Display_Name_Field( $this->html_renderer ),
-			User_Fields::FIELD_BIO          => new User_Bio_Field( $this->html_renderer ),
-			User_Fields::FIELD_EMAIL        => new User_Email_Field( $this->html_renderer ),
-			User_Fields::FIELD_AUTHOR_LINK  => new User_Author_Link_Field( $this->html_renderer ),
-			User_Fields::FIELD_WEBSITE      => new User_Website_Field( $this->html_renderer ),
+			User_Fields::FIELD_FIRST_NAME   => new User_First_Name_Field( $this->printer ),
+			User_Fields::FIELD_LAST_NAME    => new User_Last_Name_Field( $this->printer ),
+			User_Fields::FIELD_DISPLAY_NAME => new User_Display_Name_Field( $this->printer ),
+			User_Fields::FIELD_BIO          => new User_Bio_Field( $this->printer ),
+			User_Fields::FIELD_EMAIL        => new User_Email_Field( $this->printer ),
+			User_Fields::FIELD_AUTHOR_LINK  => new User_Author_Link_Field( $this->printer ),
+			User_Fields::FIELD_WEBSITE      => new User_Website_Field( $this->printer ),
 		);
 
 		return array_merge( $post, $user, $comment_item, $comment, $taxonomy_terms, $term, $menu, $menu_item );

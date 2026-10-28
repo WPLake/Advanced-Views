@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Meta_Box;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use DateTime;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
@@ -362,73 +363,73 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			$container->resolve( Layout_Shortcode::class ),
 			$container->resolve( Settings_Storage::class ),
 			$container->resolve( Layouts_Cpt::class ),
-			$this->html_renderer
+			$container->resolve( Html_Renderer::class )
 		);
 	}
 
 	public function get_field_types(): array {
 		$basic = array(
-			'checkbox'      => new True_False_Field( $this->html_renderer ),
-			'checkbox_list' => new Select_Field( $this->html_renderer ),
-			'radio'         => new Select_Field( $this->html_renderer ),
-			'select'        => new Select_Field( $this->html_renderer ),
-			'text'          => new Plain_Field( $this->html_renderer ),
-			'textarea'      => new Html_Field( $this->html_renderer ),
+			'checkbox'      => new True_False_Field( $this->printer ),
+			'checkbox_list' => new Select_Field( $this->printer ),
+			'radio'         => new Select_Field( $this->printer ),
+			'select'        => new Select_Field( $this->printer ),
+			'text'          => new Plain_Field( $this->printer ),
+			'textarea'      => new Html_Field( $this->printer ),
 		);
 
 		$advanced = array(
-			'autocomplete'    => new Select_Field( $this->html_renderer ),
+			'autocomplete'    => new Select_Field( $this->printer ),
 			// we need to use 'the_value' function, so HTML field fits here.
-			'background'      => new Html_Field( $this->html_renderer ),
-			'button_group'    => new Select_Field( $this->html_renderer ),
-			'color'           => new Plain_Field( $this->html_renderer ),
-			'date'            => new Date_Picker_Field( $this->html_renderer ),
-			'datetime'        => new Date_Picker_Field( $this->html_renderer ),
-			'map'             => new Mb_Map_Field( $this->html_renderer ),
-			'hidden'          => new Plain_Field( $this->html_renderer ),
+			'background'      => new Html_Field( $this->printer ),
+			'button_group'    => new Select_Field( $this->printer ),
+			'color'           => new Plain_Field( $this->printer ),
+			'date'            => new Date_Picker_Field( $this->printer ),
+			'datetime'        => new Date_Picker_Field( $this->printer ),
+			'map'             => new Mb_Map_Field( $this->printer ),
+			'hidden'          => new Plain_Field( $this->printer ),
 			// FontAwesome or SVG icon.
-			'icon'            => new Html_Field( $this->html_renderer ),
-			'image_select'    => new Select_Field( $this->html_renderer ),
-			'oembed'          => new Html_Field( $this->html_renderer ),
-			'osm'             => new Mb_Map_Field( $this->html_renderer ),
-			'password'        => new Plain_Field( $this->html_renderer ),
-			'select_advanced' => new Select_Field( $this->html_renderer ),
+			'icon'            => new Html_Field( $this->printer ),
+			'image_select'    => new Select_Field( $this->printer ),
+			'oembed'          => new Html_Field( $this->printer ),
+			'osm'             => new Mb_Map_Field( $this->printer ),
+			'password'        => new Plain_Field( $this->printer ),
+			'select_advanced' => new Select_Field( $this->printer ),
 			// it's a range number.
-			'slider'          => new Plain_Field( $this->html_renderer ),
-			'switch'          => new True_False_Field( $this->html_renderer ),
-			'time'            => new Plain_Field( $this->html_renderer ),
-			'wysiwyg'         => new Html_Field( $this->html_renderer ),
+			'slider'          => new Plain_Field( $this->printer ),
+			'switch'          => new True_False_Field( $this->printer ),
+			'time'            => new Plain_Field( $this->printer ),
+			'wysiwyg'         => new Html_Field( $this->printer ),
 		);
 
 		$html5 = array(
-			'email'  => new Plain_Field( $this->html_renderer ),
-			'number' => new Plain_Field( $this->html_renderer ),
-			'range'  => new Plain_Field( $this->html_renderer ),
-			'url'    => new Url_Field( $this->html_renderer ),
+			'email'  => new Plain_Field( $this->printer ),
+			'number' => new Plain_Field( $this->printer ),
+			'range'  => new Plain_Field( $this->printer ),
+			'url'    => new Url_Field( $this->printer ),
 		);
 
 		$wordpress = array(
-			'post'              => new Post_Object_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
-			'sidebar'           => new Html_Field( $this->html_renderer ),
-			'taxonomy'          => new Mb_Taxonomy_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
-			'taxonomy_advanced' => new Mb_Taxonomy_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
-			'user'              => new User_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			'post'              => new Post_Object_Field( new Link_Field( $this->printer ), $this->printer ),
+			'sidebar'           => new Html_Field( $this->printer ),
+			'taxonomy'          => new Mb_Taxonomy_Field( new Link_Field( $this->printer ), $this->printer ),
+			'taxonomy_advanced' => new Mb_Taxonomy_Field( new Link_Field( $this->printer ), $this->printer ),
+			'user'              => new User_Field( new Link_Field( $this->printer ), $this->printer ),
 		);
 
 		$upload = array(
-			'file'           => new Mb_File_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
-			'file_advanced'  => new Mb_File_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
-			'file_input'     => new Mb_File_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
-			'file_upload'    => new Mb_File_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
-			'image'          => new Mb_Gallery_Field( new Mb_Image_Field( $this->html_renderer ), $this->html_renderer ),
-			'image_advanced' => new Mb_Gallery_Field( new Mb_Image_Field( $this->html_renderer ), $this->html_renderer ),
-			'image_upload'   => new Mb_Gallery_Field( new Mb_Image_Field( $this->html_renderer ), $this->html_renderer ),
-			'single_image'   => new Mb_Image_Field( $this->html_renderer ),
-			'video'          => new Html_Field( $this->html_renderer ),
+			'file'           => new Mb_File_Field( new Link_Field( $this->printer ), $this->printer ),
+			'file_advanced'  => new Mb_File_Field( new Link_Field( $this->printer ), $this->printer ),
+			'file_input'     => new Mb_File_Field( new Link_Field( $this->printer ), $this->printer ),
+			'file_upload'    => new Mb_File_Field( new Link_Field( $this->printer ), $this->printer ),
+			'image'          => new Mb_Gallery_Field( new Mb_Image_Field( $this->printer ), $this->printer ),
+			'image_advanced' => new Mb_Gallery_Field( new Mb_Image_Field( $this->printer ), $this->printer ),
+			'image_upload'   => new Mb_Gallery_Field( new Mb_Image_Field( $this->printer ), $this->printer ),
+			'single_image'   => new Mb_Image_Field( $this->printer ),
+			'video'          => new Html_Field( $this->printer ),
 		);
 
 		$layout = array(
-			'group' => new Pro_Stub_Field( $this->html_renderer ),
+			'group' => new Pro_Stub_Field( $this->printer ),
 		);
 
 		return array_merge( $basic, $advanced, $html5, $wordpress, $upload, $layout );

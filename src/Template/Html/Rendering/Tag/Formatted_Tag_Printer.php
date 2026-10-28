@@ -39,7 +39,10 @@ final class Formatted_Tag_Printer implements Tag_Printer {
 		$this->printer->print_single_tag( $tag );
 	}
 
-	protected function print_indented( Closure $print_content ): void {
+	/**
+	 * Also used for the content that isn't a tag, but is block-like, e.g. the body of a template condition or loop
+	 */
+	public function print_indented( Closure $print_content ): void {
 		++$this->depth;
 		$this->formatter->line_start( $this->depth );
 		$this->is_first = true;
@@ -49,6 +52,26 @@ final class Formatted_Tag_Printer implements Tag_Printer {
 		--$this->depth;
 		$this->formatter->line_start( $this->depth );
 		$this->is_first = false;
+	}
+
+	/**
+	 * For the manual formatting around non-tag nodes: the next tag is considered as the first one in the line
+	 */
+	public function print_line_start(): void {
+		$this->formatter->line_start( $this->depth );
+		$this->is_first = true;
+	}
+
+	public function print_tabs(): void {
+		$this->formatter->tab( $this->depth );
+	}
+
+	/**
+	 * Starts a new independent markup, as the instance is shared between them
+	 */
+	public function reset( int $depth = 0 ): void {
+		$this->depth    = $depth;
+		$this->is_first = true;
 	}
 
 	protected function print_break_before_node(): void {

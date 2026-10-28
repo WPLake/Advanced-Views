@@ -21,12 +21,15 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag\Plain_Tag_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag\Tag_Printer;
 
 class Plugin_Bootstrap extends Bootstrap_Base {
 	public static function get_type_definitions(): array {
 				return array(
 					Cpt_Theme_Settings::class => Settings_Storage::class,
 					Html_Escaper::class       => WP_Html_Escaper::class,
+					Tag_Printer::class        => Plain_Tag_Printer::class,
 				);
 	}
 

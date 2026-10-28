@@ -8,19 +8,12 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Formatter;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
 final class Web_Component_Factory {
-	protected Html_Formatter $formatter;
-
-	public function __construct( Html_Formatter $formatter ) {
-		$this->formatter = $formatter;
-	}
-
 	/**
 	 * @param Html_Node[] $content
 	 */
@@ -41,12 +34,11 @@ final class Web_Component_Factory {
 		$is_shadow_root = Cpt_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $settings->web_component;
 
 		if ( $is_shadow_root ) {
-			$new_line = $this->formatter->get_break_symbol();
 			$template = tag( 'template' )
 				->attributes( array( 'shadowrootmode' => 'open' ) )
 				->content( ...$content );
 
-			return array( $new_line, $template, $new_line );
+			return array( $template );
 		}
 
 		return $content;

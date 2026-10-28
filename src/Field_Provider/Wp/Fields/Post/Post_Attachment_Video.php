@@ -38,13 +38,11 @@ class Post_Attachment_Video extends Markup_Field_Base {
 					'controls' => true,
 				) )
 				->content(
-					fn() => $markup_field_data->print_new_line_and_increment_tabs(),
 					tag( 'source' )
 						->attributes( array(
 							'src'  => $src_var,
 							'type' => $type_var,
-						) ),
-					fn() => $markup_field_data->print_new_line_and_decrement_tabs()
+						) )
 				),
 		);
 	}

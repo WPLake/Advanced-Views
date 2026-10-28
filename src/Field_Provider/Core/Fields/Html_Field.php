@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -24,11 +24,11 @@ class Html_Field extends Markup_Field_Base {
 	 * @param bool $is_with_replace_new_line_to_br Can be enabled for specific cases, e.g. ACF textarea field
 	 */
 	public function __construct(
-		Html_Renderer $html_renderer,
+		Web_Component_Printer $printer,
 		bool $is_formatted_value_in_use = true,
 		bool $is_with_replace_new_line_to_br = false
 	) {
-		parent::__construct( $html_renderer );
+		parent::__construct( $printer );
 
 		$this->is_formatted_value_in_use      = $is_formatted_value_in_use;
 		$this->is_with_replace_new_line_to_br = $is_with_replace_new_line_to_br;

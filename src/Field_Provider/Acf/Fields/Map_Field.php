@@ -229,11 +229,7 @@ class Map_Field extends Map_Field_Base {
 														->add_item_path( $key );
 		}
 
-		$print_content = function () use ( $factory, $markup_field_data, $field_id, $field_meta, $field_data ) {
-			$factory->formatter()
-				->new_line();
-			$markup_field_data->increment_and_print_tabs();
-
+		$print_content = function () use ( $markup_field_data, $field_id, $field_meta, $field_data ) {
 			if ( $field_meta->is_multiple() ) {
 				$this->print_item_loop( $field_id, $markup_field_data );
 			} elseif ( $field_data->is_visible_when_empty ) {
@@ -241,10 +237,6 @@ class Map_Field extends Map_Field_Base {
 			} else {
 				$this->print_inner_item( $field_id, $field_id, $markup_field_data );
 			}
-
-			$factory->formatter()
-				->new_line();
-			$markup_field_data->decrement_and_print_tabs();
 		};
 
 		return array(
@@ -263,20 +255,9 @@ class Map_Field extends Map_Field_Base {
 										->add_item_path( self::VALUE );
 		$item_var   = $token_factory->variable( 'marker' );
 
-		$print_loop_item = function () use ( $field_id, $item_var, $markup_field_data, $token_factory ) {
-			$token_factory->formatter()
-							->new_line();
+		$print_loop_item = fn() => $this->print_inner_item( $field_id, $item_var->get_name(), $markup_field_data );
 
-			$markup_field_data->increment_and_print_tabs();
-
-			$this->print_inner_item( $field_id, $item_var->get_name(), $markup_field_data );
-
-			$token_factory->formatter()
-							->new_line();
-			$markup_field_data->decrement_and_print_tabs();
-		};
-
-		$loop_body = $token_factory->html( $print_loop_item );
+		$loop_body = $token_factory->html( fn() => $this->printer->print_indented( $print_loop_item ) );
 
 		$token_factory->loop()
 						->set_source_variable( $source_var )
@@ -300,19 +281,9 @@ class Map_Field extends Map_Field_Base {
 		$value_var     = $token_factory->variable( $field_id )
 										->add_item_path( self::VALUE );
 
-		$print_conditional_item = function () use ( $field_id, $item_id, $markup_field_data, $token_factory ) {
-			$token_factory->formatter()
-							->new_line();
-			$markup_field_data->increment_and_print_tabs();
+		$print_conditional_item = fn() => $this->print_inner_item( $field_id, $item_id, $markup_field_data );
 
-			$this->print_inner_item( $field_id, $item_id, $markup_field_data );
-
-			$token_factory->formatter()
-							->new_line();
-			$markup_field_data->decrement_and_print_tabs();
-		};
-
-		$body = $token_factory->html( $print_conditional_item );
+		$body = $token_factory->html( fn() => $this->printer->print_indented( $print_conditional_item ) );
 
 		return $token_factory->if_branch()
 			->set_condition( $value_var )
@@ -325,7 +296,7 @@ class Map_Field extends Map_Field_Base {
 		$tags = tag( 'div' )
 			->attributes( $marker_attrs );
 
-		$this->html_renderer->print_html( $tags );
+		$this->printer->print_html( $tags );
 	}
 
 	/**

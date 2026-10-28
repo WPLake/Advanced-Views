@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
@@ -25,8 +25,8 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 
 	protected Image_Field $image_field;
 
-	public function __construct( Image_Field $image_field, Html_Renderer $html_renderer ) {
-		parent::__construct( $html_renderer );
+	public function __construct( Image_Field $image_field, Web_Component_Printer $printer ) {
+		parent::__construct( $printer );
 
 		$this->image_field = $image_field;
 	}
@@ -45,27 +45,12 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 			'href'   => $href_var,
 		);
 
-		$print_image = function () use ( $token_factory, $markup_field_data, $field_id ) {
-			$token_factory->formatter()
-							->new_line();
-
-			$markup_field_data->increment_and_print_tabs();
-
-			$markup_field_data->set_is_with_field_wrapper( true );
-			$this->html_renderer->print_html( ...$this->image_field->compose_html( $field_id, $markup_field_data ) );
-
-			$token_factory->formatter()
-							->new_line();
-
-			$markup_field_data->decrement_and_print_tabs();
-		};
+		$markup_field_data->set_is_with_field_wrapper( true );
 
 		return array(
 			tag( 'a' )
 				->attributes( $link_attributes )
-				->content(
-					$print_image
-				),
+				->content( ...$this->image_field->compose_html( $field_id, $markup_field_data ) ),
 		);
 	}
 

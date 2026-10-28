@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Macy_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Masonry_Pattern;
@@ -20,8 +20,8 @@ defined( 'ABSPATH' ) || exit;
 class Gallery_Field extends Markup_Field_Base {
 	protected Image_Field $image_field;
 
-	public function __construct( Image_Field $image_field, Html_Renderer $html_renderer ) {
-		parent::__construct( $html_renderer );
+	public function __construct( Image_Field $image_field, Web_Component_Printer $printer ) {
+		parent::__construct( $printer );
 
 		$this->image_field = $image_field;
 	}
@@ -29,7 +29,7 @@ class Gallery_Field extends Markup_Field_Base {
 	protected function print_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
 		$markup_field_data->set_is_with_field_wrapper( true );
 
-		$this->html_renderer->print_html( ...$this->image_field->compose_html( $item_id, $markup_field_data ) );
+		$this->printer->print_html( ...$this->image_field->compose_html( $item_id, $markup_field_data ) );
 	}
 
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
@@ -40,24 +40,15 @@ class Gallery_Field extends Markup_Field_Base {
 		$item_var   = $token_factory->variable( 'image_item' );
 
 		$item_id   = $item_var->get_name();
-		$loop_body = $token_factory->html(
-			fn() => $this->print_item_block( $field_id, $item_id, $markup_field_data )
-		);
+		$print_item = fn() => $this->print_item( $field_id, $item_id, $markup_field_data );
+		$loop_body  = $token_factory->html( fn() => $this->printer->print_indented( $print_item ) );
 
 		$loop = $token_factory->loop()
 						->set_source_variable( $source_var )
 						->set_item_variable( $item_var )
 						->set_body( $loop_body );
 
-		$print_new_line = fn() => $token_factory->formatter()->new_line();
-		$print_tabs     = fn() => $markup_field_data->print_tabs();
-
-		return array(
-			$print_new_line,
-			$print_tabs,
-			$loop,
-			$print_new_line,
-		);
+		return array( $loop );
 	}
 
 	/**
@@ -147,19 +138,5 @@ class Gallery_Field extends Markup_Field_Base {
 		}
 
 		return array_merge( parent::get_front_assets( $field_settings ), $front_assets );
-	}
-
-	protected function print_item_block( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
-		$token_factory = $markup_field_data->get_token_factory();
-
-		$token_factory->formatter()
-					->new_line();
-		$markup_field_data->increment_and_print_tabs();
-
-		$this->print_item( $field_id, $item_id, $markup_field_data );
-
-		$token_factory->formatter()
-					->new_line();
-		$markup_field_data->decrement_and_print_tabs();
 	}
 }

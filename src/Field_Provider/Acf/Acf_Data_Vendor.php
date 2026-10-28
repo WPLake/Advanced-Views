@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Acf;
 
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use DateTime;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
@@ -201,7 +202,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 			$container->resolve( Layout_Shortcode::class ),
 			$container->resolve( Settings_Storage::class ),
 			$container->resolve( Layouts_Cpt::class ),
-			$this->html_renderer
+			$container->resolve( Html_Renderer::class )
 		);
 	}
 
@@ -210,59 +211,59 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	 */
 	public function get_field_types(): array {
 		$basic = array(
-			'text'     => new Plain_Field( $this->html_renderer ),
+			'text'     => new Plain_Field( $this->printer ),
 			// we don't need ACF to wrap every line of the value with <p> tags.
-			'textarea' => new Html_Field( $this->html_renderer, false, true ),
-			'number'   => new Plain_Field( $this->html_renderer ),
-			'range'    => new Plain_Field( $this->html_renderer ),
-			'email'    => new Plain_Field( $this->html_renderer ),
-			'url'      => new Url_Field( $this->html_renderer ),
-			'password' => new Plain_Field( $this->html_renderer ),
+			'textarea' => new Html_Field( $this->printer, false, true ),
+			'number'   => new Plain_Field( $this->printer ),
+			'range'    => new Plain_Field( $this->printer ),
+			'email'    => new Plain_Field( $this->printer ),
+			'url'      => new Url_Field( $this->printer ),
+			'password' => new Plain_Field( $this->printer ),
 		);
 
 		$content = array(
-			'image'   => new Image_Field( $this->html_renderer ),
-			'file'    => new File_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
-			'wysiwyg' => new Html_Field( $this->html_renderer ),
-			'oembed'  => new Html_Field( $this->html_renderer ),
-			'gallery' => new Gallery_Field( new Image_Field( $this->html_renderer ), $this->html_renderer ),
+			'image'   => new Image_Field( $this->printer ),
+			'file'    => new File_Field( new Link_Field( $this->printer ), $this->printer ),
+			'wysiwyg' => new Html_Field( $this->printer ),
+			'oembed'  => new Html_Field( $this->printer ),
+			'gallery' => new Gallery_Field( new Image_Field( $this->printer ), $this->printer ),
 		);
 
 		$choice = array(
-			'select'       => new Select_Field( $this->html_renderer ),
-			'checkbox'     => new Select_Field( $this->html_renderer ),
-			'radio'        => new Select_Field( $this->html_renderer ),
-			'button_group' => new Select_Field( $this->html_renderer ),
-			'true_false'   => new True_False_Field( $this->html_renderer ),
+			'select'       => new Select_Field( $this->printer ),
+			'checkbox'     => new Select_Field( $this->printer ),
+			'radio'        => new Select_Field( $this->printer ),
+			'button_group' => new Select_Field( $this->printer ),
+			'true_false'   => new True_False_Field( $this->printer ),
 		);
 
 		$relational = array(
-			'link'         => new Link_Field( $this->html_renderer ),
-			'post_object'  => new Post_Object_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
-			'page_link'    => new Page_Link_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
-			'relationship' => new Post_Object_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
-			'taxonomy'     => new Taxonomy_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
-			'user'         => new User_Field( new Link_Field( $this->html_renderer ), $this->html_renderer ),
+			'link'         => new Link_Field( $this->printer ),
+			'post_object'  => new Post_Object_Field( new Link_Field( $this->printer ), $this->printer ),
+			'page_link'    => new Page_Link_Field( new Link_Field( $this->printer ), $this->printer ),
+			'relationship' => new Post_Object_Field( new Link_Field( $this->printer ), $this->printer ),
+			'taxonomy'     => new Taxonomy_Field( new Link_Field( $this->printer ), $this->printer ),
+			'user'         => new User_Field( new Link_Field( $this->printer ), $this->printer ),
 		);
 
 		$advanced = array(
-			'google_map'       => new Map_Field( $this->html_renderer ),
+			'google_map'       => new Map_Field( $this->printer ),
 			// https://wordpress.org/plugins/acf-google-map-field-multiple-markers/.
-			'google_map_multi' => new Map_Field( $this->html_renderer ),
+			'google_map_multi' => new Map_Field( $this->printer ),
 			// https://wordpress.org/plugins/acf-openstreetmap-field/.
-			'open_street_map'  => new Map_Field( $this->html_renderer ),
-			'date_picker'      => new Date_Picker_Field( $this->html_renderer ),
-			'date_time_picker' => new Date_Picker_Field( $this->html_renderer ),
-			'time_picker'      => new Date_Picker_Field( $this->html_renderer ),
-			'color_picker'     => new Color_Picker_Field( $this->html_renderer ),
-			'icon_picker'      => new Icon_Picker_Field( new Image_Field( $this->html_renderer ), $this->html_renderer ),
+			'open_street_map'  => new Map_Field( $this->printer ),
+			'date_picker'      => new Date_Picker_Field( $this->printer ),
+			'date_time_picker' => new Date_Picker_Field( $this->printer ),
+			'time_picker'      => new Date_Picker_Field( $this->printer ),
+			'color_picker'     => new Color_Picker_Field( $this->printer ),
+			'icon_picker'      => new Icon_Picker_Field( new Image_Field( $this->printer ), $this->printer ),
 		);
 
 		$layout = array(
-			'group'            => new Pro_Stub_Field( $this->html_renderer ),
-			'repeater'         => new Pro_Stub_Field( $this->html_renderer ),
-			'flexible_content' => new Pro_Stub_Field( $this->html_renderer ),
-			'tab'              => new Tab_Field( $this->html_renderer ),
+			'group'            => new Pro_Stub_Field( $this->printer ),
+			'repeater'         => new Pro_Stub_Field( $this->printer ),
+			'flexible_content' => new Pro_Stub_Field( $this->printer ),
+			'tab'              => new Tab_Field( $this->printer ),
 		);
 
 		return array_merge( $basic, $content, $choice, $relational, $advanced, $layout );

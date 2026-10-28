@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
@@ -21,8 +21,8 @@ class Post_Object_Field extends List_Field {
 
 	private Link_Field $link_field;
 
-	public function __construct( Link_Field $link_field, Html_Renderer $html_renderer ) {
-		parent::__construct( $html_renderer );
+	public function __construct( Link_Field $link_field, Web_Component_Printer $printer ) {
+		parent::__construct( $printer );
 
 		$this->link_field = $link_field;
 	}
@@ -57,7 +57,7 @@ class Post_Object_Field extends List_Field {
 			$markup_field_data->is_with_field_wrapper()
 		);
 
-		$this->html_renderer->print_html( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
+		$this->printer->print_html( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
 	}
 
 	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {

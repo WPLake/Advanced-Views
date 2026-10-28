@@ -174,18 +174,18 @@ final class Woo_Data_Vendor extends Field_Provider_Base {
 	 */
 	protected function get_field_types(): array {
 		return array(
-			Woo_Fields::FIELD_GALLERY        => new Woo_Gallery_Field( new Image_Field( $this->html_renderer ), $this->html_renderer ),
-			Woo_Fields::FIELD_PRICE          => new Woo_Price_Field( $this->html_renderer ),
-			Woo_Fields::FIELD_REGULAR_PRICE  => new Woo_Regular_Price_Field( $this->html_renderer ),
-			Woo_Fields::FIELD_SALE_PRICE     => new Woo_Sale_Price_Field( $this->html_renderer ),
-			Woo_Fields::FIELD_SKU            => new Woo_Sku_Field( $this->html_renderer ),
-			Woo_Fields::FIELD_STOCK_STATUS   => new Woo_Stock_Status_Field( $this->html_renderer ),
-			Woo_Fields::FIELD_STOCK_QUANTITY => new Woo_Stock_Quantity_Field( $this->html_renderer ),
-			Woo_Fields::FIELD_WEIGHT         => new Woo_Weight_Field( $this->html_renderer ),
-			Woo_Fields::FIELD_LENGTH         => new Woo_Length_Field( $this->html_renderer ),
-			Woo_Fields::FIELD_WIDTH          => new Woo_Width_Field( $this->html_renderer ),
-			Woo_Fields::FIELD_HEIGHT         => new Woo_Height_Field( $this->html_renderer ),
-			Woo_Fields::FIELD_FEATURED       => new Woo_Featured_Field( $this->html_renderer ),
+			Woo_Fields::FIELD_GALLERY        => new Woo_Gallery_Field( new Image_Field( $this->printer ), $this->printer ),
+			Woo_Fields::FIELD_PRICE          => new Woo_Price_Field( $this->printer ),
+			Woo_Fields::FIELD_REGULAR_PRICE  => new Woo_Regular_Price_Field( $this->printer ),
+			Woo_Fields::FIELD_SALE_PRICE     => new Woo_Sale_Price_Field( $this->printer ),
+			Woo_Fields::FIELD_SKU            => new Woo_Sku_Field( $this->printer ),
+			Woo_Fields::FIELD_STOCK_STATUS   => new Woo_Stock_Status_Field( $this->printer ),
+			Woo_Fields::FIELD_STOCK_QUANTITY => new Woo_Stock_Quantity_Field( $this->printer ),
+			Woo_Fields::FIELD_WEIGHT         => new Woo_Weight_Field( $this->printer ),
+			Woo_Fields::FIELD_LENGTH         => new Woo_Length_Field( $this->printer ),
+			Woo_Fields::FIELD_WIDTH          => new Woo_Width_Field( $this->printer ),
+			Woo_Fields::FIELD_HEIGHT         => new Woo_Height_Field( $this->printer ),
+			Woo_Fields::FIELD_FEATURED       => new Woo_Featured_Field( $this->printer ),
 		);
 	}
 

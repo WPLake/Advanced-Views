@@ -7,19 +7,24 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Template;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\compose_html;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Layout_Markup {
 	/**
 	 * Cache
@@ -30,41 +35,34 @@ class Layout_Markup {
 	private Field_Template $field_markup;
 	private Field_Provider_Cluster $provider_cluster;
 	private Token_Factory_Storage $token_factory_storage;
-	protected Html_Renderer $html_renderer;
+	protected Web_Component_Printer $printer;
 	protected Web_Component_Factory $web_component_factory;
 
-	public function __construct( Field_Template $field_markup, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage, Html_Renderer $html_renderer, Web_Component_Factory $web_component_factory ) {
+	public function __construct( Field_Template $field_markup, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage, Web_Component_Printer $printer, Web_Component_Factory $web_component_factory ) {
 		$this->field_markup          = $field_markup;
 		$this->provider_cluster      = $provider_cluster;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->markups_safe          = array();
-		$this->html_renderer         = $html_renderer;
+		$this->printer               = $printer;
 		$this->web_component_factory = $web_component_factory;
 	}
 
-	protected function generate_row_markup(
+	protected function row_if(
 		Layout_Settings $layout_settings,
 		Field_Meta $field_meta,
 		Item_Settings $item_settings
-	): void {
+	): ?IF_Token {
 		if ( ! $field_meta->is_field_exist() ||
 			// e.g. tab.
 		$field_meta->is_ui_only() ) {
-			return;
+			return null;
 		}
 
 		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
 
 		$row_branch = $this->row_branch( $layout_settings, $field_meta, $item_settings );
 
-		$if = $token_factory->if()->set_if_branch( $row_branch );
-
-		$token_factory->formatter()->new_line();
-		$token_factory->formatter()->tab();
-
-		$if->display();
-
-		$token_factory->formatter()->new_line( 2 );
+		return $token_factory->if()->set_if_branch( $row_branch );
 	}
 
 	protected function row_branch(
@@ -83,9 +81,7 @@ class Layout_Markup {
 								$field_type
 							);
 
-		$print_row = function () use ( $field_meta, $layout_settings, $item_settings, $field_id, $field_type, $token_factory ) {
-			$row_tabs_number = 2;
-
+		$print_row = function () use ( $field_meta, $layout_settings, $item_settings, $field_id, $field_type ) {
 			$row_type = 'row';
 
 			if ( $this->provider_cluster->is_field_type_with_sub_fields(
@@ -95,9 +91,6 @@ class Layout_Markup {
 				$row_type = $field_type;
 			}
 
-			$token_factory->formatter()
-							->new_line();
-
 			$this->field_markup->print_row_markup(
 				$row_type,
 				'',
@@ -105,14 +98,11 @@ class Layout_Markup {
 				$item_settings,
 				$item_settings->field,
 				$field_meta,
-				$row_tabs_number,
 				$field_id
 			);
-
-			$token_factory->formatter()->tab();
 		};
 
-		$markup = $token_factory->html( $print_row );
+		$markup = $token_factory->html( fn() => $this->printer->print_indented( $print_row ) );
 
 		$value_var = $token_factory->variable( $field_id )
 									->add_item_path( 'value' );
@@ -128,27 +118,37 @@ class Layout_Markup {
 	protected function generate_markup( Layout_Settings $layout_settings ): void {
 		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
 
-		$new_line       = fn() => $token_factory->formatter()->new_line();
-		$rows           = function () use ( $layout_settings ) {
-			foreach ( $layout_settings->items as $item ) {
-				$this->generate_row_markup(
-					$layout_settings,
-					$item->field->get_field_meta(),
-					$item
-				);
-			}
-		};
-		$root_content = array(
-			$new_line,
-			$rows,
-		);
-
 		$root_class = $this->root_class( $token_factory, $layout_settings );
 
-		$root = $this->web_component_factory->create_web_component( $layout_settings, $root_content )
+		$root = $this->web_component_factory->create_web_component( $layout_settings, $this->rows( $layout_settings ) )
 			->attributes( array( 'class' => $root_class ) );
 
-		$this->html_renderer->print_html( $root, $new_line );
+		$this->printer->print_component( $root );
+		$this->printer->new_line();
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function rows( Layout_Settings $layout_settings ): array {
+		$rows = array();
+
+		foreach ( $layout_settings->items as $item ) {
+			$row = $this->row_if( $layout_settings, $item->field->get_field_meta(), $item );
+
+			if ( null === $row ) {
+				continue;
+			}
+
+			// the first row follows the root's own line start
+			if ( array() !== $rows ) {
+				$rows[] = fn() => $this->printer->new_line( 2 )->line_start();
+			}
+
+			$rows[] = $row;
+		}
+
+		return $rows;
 	}
 
 	protected function print_safe_markup( Layout_Settings $layout_settings, bool $is_cache_disabled ): void {

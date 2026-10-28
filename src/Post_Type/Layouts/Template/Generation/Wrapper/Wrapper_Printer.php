@@ -9,13 +9,9 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Format_Token;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
-/**
- * @phpstan-import-type Html_Node from Html_Tag
- */
 final class Wrapper_Printer {
 	public static function row_tag(
 		string $field_name_class,
@@ -59,51 +55,6 @@ final class Wrapper_Printer {
 
 		return tag( $tag )
 			->attributes( $field_attrs );
-	}
-
-	/**
-	 * Returns the group of the tag with the inner content inside it, and the formatting (tabs, new lines) around it,
-	 * which is kept in callbacks.
-	 *
-	 * @param Html_Node[] $inner
-	 *
-	 * @return Html_Node[]
-	 */
-	public static function wrap(
-		Html_Tag $tag,
-		int &$tabs_number,
-		bool $is_new_line_before,
-		bool $is_new_line_after_open,
-		array $inner
-	): array {
-		$print_opening_tabs = static function () use ( &$tabs_number, $is_new_line_before ) {
-			if ( $is_new_line_before ) {
-				Format_Token::next_line();
-			}
-
-			Format_Token::tabulation( $tabs_number );
-		};
-
-		$print_inner_start = static function () use ( &$tabs_number, $is_new_line_after_open ) {
-			if ( $is_new_line_after_open ) {
-				Format_Token::next_line();
-			}
-
-			++$tabs_number;
-		};
-
-		$print_closing_tabs = static function () use ( &$tabs_number ) {
-			Format_Token::tabulation( --$tabs_number );
-		};
-
-		$members = array_merge( array( $print_inner_start ), $inner, array( $print_closing_tabs ) );
-		$nested  = $tag->content( ...$members );
-
-		return array(
-			$print_opening_tabs,
-			$nested,
-			static fn() => Format_Token::next_line(),
-		);
 	}
 
 	/**

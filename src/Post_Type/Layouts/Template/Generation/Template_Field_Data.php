@@ -4,7 +4,6 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
-use Closure;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
@@ -27,7 +26,6 @@ final class Template_Field_Data extends Field_Data {
 	 * @var Template_Pattern[]
 	 */
 	private array $field_assets;
-	private int $tabs_number;
 	private bool $is_with_field_wrapper;
 	private bool $is_with_row_wrapper;
 	private Token_Factory $token_factory;
@@ -51,7 +49,6 @@ final class Template_Field_Data extends Field_Data {
 		);
 
 		$this->field_assets          = array();
-		$this->tabs_number           = 0;
 		$this->is_with_field_wrapper = false;
 		$this->is_with_row_wrapper   = false;
 		$this->token_factory         = $token_factory;
@@ -104,45 +101,15 @@ final class Template_Field_Data extends Field_Data {
 
 	/**
 	 * @param Html_Wrapper[] $item_outers
+	 * @param Html_Node $content
 	 *
-	 * @return Html_Tag|Closure
+	 * @return Html_Node
 	 */
-	public function wrap_with_item_outers( array $item_outers, Closure $print_content, bool $is_without_last_item_tabs = false ) {
-		$last_index = count( $item_outers ) - 1;
-		$content    = $print_content;
-
+	public function wrap_with_item_outers( array $item_outers, $content ) {
 		// the innermost outer goes first.
-		foreach ( array_reverse( $item_outers, true ) as $index => $outer ) {
-			$is_without_tabs = $index === $last_index && $is_without_last_item_tabs;
-
-			$print_outer_open = function () use ( $is_without_tabs ) {
-				$this->token_factory->formatter()
-					->new_line();
-
-				++$this->tabs_number;
-
-				if ( ! $is_without_tabs ) {
-					$this->token_factory->formatter()
-						->tab( $this->tabs_number );
-				}
-			};
-
-			$print_outer_close = function () use ( $is_without_tabs ) {
-				if ( ! $is_without_tabs ) {
-					$this->token_factory->formatter()
-						->new_line();
-				}
-
-				$this->token_factory->formatter()
-					->tab( --$this->tabs_number );
-			};
-
-			$content       = $this->item_outer_tag( $outer )
-				->content(
-					$print_outer_open,
-					$content,
-					$print_outer_close
-				);
+		foreach ( array_reverse( $item_outers ) as $outer ) {
+			$content = $this->item_outer_tag( $outer )
+				->content( $content );
 		}
 
 		return $content;
@@ -162,22 +129,6 @@ final class Template_Field_Data extends Field_Data {
 		$this->field_assets = $field_assets;
 	}
 
-	public function get_tabs_number(): int {
-		return $this->tabs_number;
-	}
-
-	public function increment_and_get_tabs_number(): int {
-		return ++$this->tabs_number;
-	}
-
-	public function decrement_and_get_tabs_number(): int {
-		return --$this->tabs_number;
-	}
-
-	public function set_tabs_number( int $tabs_number ): void {
-		$this->tabs_number = $tabs_number;
-	}
-
 	public function is_with_field_wrapper(): bool {
 		return $this->is_with_field_wrapper;
 	}
@@ -192,35 +143,6 @@ final class Template_Field_Data extends Field_Data {
 
 	public function set_is_with_row_wrapper( bool $is_with_row_wrapper ): void {
 		$this->is_with_row_wrapper = $is_with_row_wrapper;
-	}
-
-	public function print_tabs(): void {
-		$this->token_factory->formatter()
-							->tab( $this->get_tabs_number() );
-	}
-
-	public function increment_and_print_tabs(): void {
-		$this->token_factory->formatter()
-							->tab( $this->increment_and_get_tabs_number() );
-	}
-
-	public function decrement_and_print_tabs(): void {
-		$this->token_factory->formatter()
-							->tab( $this->decrement_and_get_tabs_number() );
-	}
-
-	public function print_new_line_and_increment_tabs(): void {
-		$this->token_factory->formatter()
-							->new_line();
-
-		$this->increment_and_print_tabs();
-	}
-
-	public function print_new_line_and_decrement_tabs(): void {
-		$this->token_factory->formatter()
-							->new_line();
-
-		$this->decrement_and_print_tabs();
 	}
 
 	public function get_token_factory(): Token_Factory {
