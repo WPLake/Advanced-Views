@@ -15,9 +15,12 @@ final class Plain_Tag_Printer implements Tag_Printer {
 	protected Html_Escaper $escaper;
 	protected Attribute_Printer $attribute_printer;
 
-	public function __construct( Html_Escaper $escaper ) {
+	public function __construct(
+		Html_Escaper $escaper,
+		?Attribute_Printer $attribute_printer = null
+	) {
 		$this->escaper           = $escaper;
-		$this->attribute_printer = new Attribute_Printer( $escaper );
+		$this->attribute_printer = $attribute_printer ?? new Attribute_Printer( $escaper );
 	}
 
 	public function print_pair_tag( Html_Tag $tag, Closure $print_content ): void {

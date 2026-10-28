@@ -13,9 +13,12 @@ final class Attribute_Printer {
 	protected Html_Escaper $escaper;
 	protected bool $display_empty;
 
-	public function __construct( Html_Escaper $escaper ) {
+	public function __construct(
+		Html_Escaper $escaper,
+		?Attribute_Normalizer $normalizer = null
+	) {
 		$this->escaper       = $escaper;
-		$this->normalizer    = new Attribute_Normalizer( $escaper );
+		$this->normalizer    = $normalizer ?? new Attribute_Normalizer( $escaper );
 		$this->display_empty = false;
 	}
 
@@ -55,6 +58,9 @@ final class Attribute_Printer {
 		}
 	}
 
+	/**
+	 * @param mixed $value
+	 */
 	protected function print_mixed_attribute( string $name, $value ): void {
 		$normalized_value = $this->normalizer->normalize_attribute( $name, $value );
 		$should_display   = $this->display_empty ||

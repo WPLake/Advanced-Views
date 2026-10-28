@@ -4,10 +4,10 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Html\Escaping;
 
-use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\stringExtendedOrNull;
-
 defined( 'ABSPATH' ) || exit;
+
+use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\stringExtended;
 
 abstract class Html_Escaper_Base implements Html_Escaper {
 	/**
@@ -19,13 +19,9 @@ abstract class Html_Escaper_Base implements Html_Escaper {
 			return $value->to_html( $this );
 		}
 
-		$text_value = stringExtendedOrNull( $value );
+		$text_value = stringExtended( $value );
 
-		if ( is_string( $text_value ) ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			return $this->esc_html( $text_value );
-		}
-
-		return '';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		return $this->esc_html( $text_value );
 	}
 }

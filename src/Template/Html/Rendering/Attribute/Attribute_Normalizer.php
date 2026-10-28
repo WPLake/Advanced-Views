@@ -9,12 +9,12 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
 /**
- * @phpstan-type Attribute_Normalizer callable(mixed):string
+ * @phpstan-type Normalizer_Callback callable(mixed):string
  */
 final class Attribute_Normalizer {
 	protected Html_Escaper $escaper;
 	/**
-	 * @var array<string,Attribute_Normalizer>
+	 * @var array<string,Normalizer_Callback>
 	 */
 	public array $normalizers;
 	/**
@@ -55,7 +55,7 @@ final class Attribute_Normalizer {
 	}
 
 	/**
-	 * @return Attribute_Normalizer|null
+	 * @return Normalizer_Callback|null
 	 */
 	protected function resolve_normalizer( string $name ): ?callable {
 		if ( key_exists( $name, $this->normalizers ) ) {
