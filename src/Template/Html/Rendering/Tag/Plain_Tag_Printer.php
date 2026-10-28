@@ -7,39 +7,39 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag;
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Attribute\Attribute_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Attribute\Attribute_Printer;
 
 final class Plain_Tag_Printer implements Tag_Printer {
 	protected Html_Escaper $escaper;
-	protected Attribute_Renderer $attribute_renderer;
+	protected Attribute_Printer $attribute_printer;
 
 	public function __construct(
 		Html_Escaper $escaper,
-		?Attribute_Renderer $attribute_renderer = null
+		?Attribute_Printer $attribute_renderer = null
 	) {
-		$this->escaper            = $escaper;
-		$this->attribute_renderer = $attribute_renderer ?? new Attribute_Renderer( $escaper );
+		$this->escaper           = $escaper;
+		$this->attribute_printer = $attribute_renderer ?? new Attribute_Printer( $escaper );
 	}
 
 	public function print_pair_tag( Html_Tag $tag, Closure $print_content ): void {
-		$this->open_tag( $tag );
+		$this->print_tag( $tag );
 		echo '>';
 		$print_content();
 		$this->print_closing_tag( $tag );
 	}
 
 	public function print_single_tag( Html_Tag $tag ): void {
-		$this->open_tag( $tag );
+		$this->print_tag( $tag );
 		echo '/>';
 	}
 
-	protected function open_tag( Html_Tag $tag ): void {
+	protected function print_tag( Html_Tag $tag ): void {
 		$attributes = $tag->get_attributes();
 
 		$this->print_opening_tag( $tag );
-		$this->attribute_renderer->print_attributes( $attributes );
+		$this->attribute_printer->print_attributes( $attributes );
 	}
 
 	protected function print_opening_tag( Html_Tag $tag ): void {

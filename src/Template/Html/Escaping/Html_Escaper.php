@@ -11,8 +11,6 @@ interface Html_Escaper {
 
 	public function esc_url( string $url ): string;
 
-	public function esc_attr( string $name, string $value ): string;
-
 	/**
 	 * Returns safe to use HTML string.
 	 *

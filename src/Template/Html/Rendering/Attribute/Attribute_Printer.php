@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
-class Attribute_Renderer {
+final class Attribute_Printer {
 	protected Attribute_Normalizer $normalizer;
 	protected Html_Escaper $escaper;
 	protected bool $display_empty_attributes;
@@ -42,23 +42,25 @@ class Attribute_Renderer {
 	 */
 	protected function print_attribute( string $name, $value ): void {
 		if ( is_bool( $value ) ) {
-			$this->print_boolean_attribute( $name, $value );
-
-			return;
+			$this->print_bool_attribute( $name, $value );
+		} else {
+			$this->print_mixed_attribute( $name, $value );
 		}
+	}
 
+	protected function print_bool_attribute( string $name, bool $value ): void {
+		if ( $value ) {
+			$this->print_pair( $name, '' );
+		}
+	}
+
+	protected function print_mixed_attribute( string $name, $value ): void {
 		$normalized_value = $this->normalizer->normalize_attribute( $name, $value );
 		$should_display   = $this->display_empty_attributes ||
 							strlen( $normalized_value ) > 0;
 
 		if ( $should_display ) {
 			$this->print_pair( $name, $normalized_value );
-		}
-	}
-
-	protected function print_boolean_attribute( string $name, bool $value ): void {
-		if ( $value ) {
-			$this->print_pair( $name, '' );
 		}
 	}
 

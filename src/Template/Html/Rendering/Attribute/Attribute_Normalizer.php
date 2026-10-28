@@ -9,25 +9,36 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
 /**
- * @phpstan-type Normalizer_Callback callable(mixed[]):string
+ * @phpstan-type Attribute_Normalizer callable(mixed):string
  */
-class Attribute_Normalizer {
+final class Attribute_Normalizer {
 	protected Html_Escaper $escaper;
 	/**
-	 * @var array<string,Normalizer_Callback>
+	 * @var array<string,Attribute_Normalizer>
 	 */
 	protected array $normalizers;
 
 	public function __construct( Html_Escaper $escaper ) {
-		$this->escaper     = $escaper;
-		$this->normalizers = array(
-			'class' => fn( array $classes ) => $this->normalize_class( $classes ),
-			'style' => fn( array $declarations ) => $this->normalize_style( $declarations ),
+		$this->escaper = $escaper;
+
+		$this->url_attributes = $url_attributes ?? array(
+			'href',
+			'src',
+			'action',
+			'formaction',
+		);
+		$this->normalizers    = array(
+			'class' => fn( $classes ) => is_array( $classes ) ?
+				$this->normalize_class( $classes ) :
+				$this->escaper->stringify( $classes ),
+			'style' => fn( $declarations ) => is_array( $declarations ) ?
+				$this->normalize_style( $declarations ) :
+				$this->escaper->stringify( $declarations ),
 		);
 	}
 
 	/**
-	 * @param array<string,Normalizer_Callback> $normalizers
+	 * @param array<string,Attribute_Normalizer> $normalizers
 	 */
 	public function set_normalizers( array $normalizers ): self {
 		$this->normalizers = $normalizers;
@@ -36,11 +47,19 @@ class Attribute_Normalizer {
 	}
 
 	/**
+	 * @param Attribute_Normalizer $normalizer
+	 */
+	public function set_normalizer( string $attribute, callable $normalizer ): self {
+		$this->normalizers[ $attribute ] = $normalizer;
+
+		return $this;
+	}
+
+	/**
 	 * @param mixed $value
 	 */
 	public function normalize_attribute( string $name, $value ): string {
-		if ( is_array( $value ) &&
-			key_exists( $name, $this->normalizers ) ) {
+		if ( key_exists( $name, $this->normalizers ) ) {
 			$normalizer = $this->normalizers[ $name ];
 
 			return $normalizer( $value );
