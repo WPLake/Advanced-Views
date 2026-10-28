@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
@@ -18,7 +19,6 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use function Org\Wplake\Advanced_Views\Template\Html\compose_html;
-use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 class Layout_Markup {
 	/**
@@ -31,13 +31,15 @@ class Layout_Markup {
 	private Field_Provider_Cluster $provider_cluster;
 	private Token_Factory_Storage $token_factory_storage;
 	protected Html_Renderer $html_renderer;
+	protected Web_Component_Factory $web_component_factory;
 
-	public function __construct( Field_Template $field_markup, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage, Html_Renderer $html_renderer ) {
+	public function __construct( Field_Template $field_markup, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage, Html_Renderer $html_renderer, Web_Component_Factory $web_component_factory ) {
 		$this->field_markup          = $field_markup;
 		$this->provider_cluster      = $provider_cluster;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->markups_safe          = array();
 		$this->html_renderer         = $html_renderer;
+		$this->web_component_factory = $web_component_factory;
 	}
 
 	protected function generate_row_markup(
@@ -136,30 +138,15 @@ class Layout_Markup {
 				);
 			}
 		};
-		$is_shadow_root = Layout_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $layout_settings->web_component;
-		$template_tag   = tag( 'template' )
-			->attributes( array( 'shadowrootmode' => 'open' ) )
-			->content(
-				$new_line,
-				$rows
-			);
-		$root_content   = $is_shadow_root ?
-			array(
-				$new_line,
-				$template_tag,
-				$new_line,
-			) :
-			array(
-				$new_line,
-				$rows,
-			);
+		$root_content = array(
+			$new_line,
+			$rows,
+		);
 
 		$root_class = $this->root_class( $token_factory, $layout_settings );
-		$tag_name   = $layout_settings->get_tag_name();
 
-		$root = tag( $tag_name )
-			->attributes( array( 'class' => $root_class ) )
-			->content( ...$root_content );
+		$root = $this->web_component_factory->create_web_component( $layout_settings, $root_content )
+			->attributes( array( 'class' => $root_class ) );
 
 		$this->html_renderer->print_html( $root, $new_line );
 	}

@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
@@ -29,12 +30,14 @@ class Post_Selection_Markup {
 	protected Token_Factory_Storage $token_factory_storage;
 	private Layouts_Cpt $layout_cpt;
 	protected Html_Renderer $html_renderer;
+	protected Web_Component_Factory $web_component_factory;
 
-	public function __construct( Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Layouts_Cpt $layout_cpt, Html_Renderer $html_renderer ) {
+	public function __construct( Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Layouts_Cpt $layout_cpt, Html_Renderer $html_renderer, Web_Component_Factory $web_component_factory ) {
 		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->layout_cpt            = $layout_cpt;
 		$this->html_renderer = $html_renderer;
+		$this->web_component_factory = $web_component_factory;
 	}
 
 	public function print_extra_markup( Post_Selection_Settings $post_selection_settings ): void {
@@ -325,24 +328,10 @@ class Post_Selection_Markup {
 			fn() => $this->print_extra_markup( $post_selection_settings ),
 			$new_line,
 		);
-		$is_shadow_root = Post_Selection_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $post_selection_settings->web_component;
-		$template_tag   = tag( 'template' )
-			->attributes( array( 'shadowrootmode' => 'open' ) )
-			->content( ...$content );
-		$root_content   = $is_shadow_root ?
-			array(
-				$new_line,
-				$template_tag,
-				$new_line,
-			) :
-			$content;
-
 		$root_class = $this->root_class( $token_factory, $post_selection_settings );
-		$tag_name   = $post_selection_settings->get_tag_name();
 
-		$root = tag( $tag_name )
-			->attributes( array( 'class' => $root_class ) )
-			->content( ...$root_content );
+		$root = $this->web_component_factory->create_web_component( $post_selection_settings, $content )
+			->attributes( array( 'class' => $root_class ) );
 
 		$this->html_renderer->print_html( $root, $new_line );
 	}

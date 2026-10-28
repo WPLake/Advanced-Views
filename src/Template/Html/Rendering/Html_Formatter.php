@@ -31,8 +31,12 @@ final class Html_Formatter {
 		return $this;
 	}
 
+	public function get_break_symbol( int $count = 1 ): string {
+		return str_repeat( $this->break_symbol, $count );
+	}
+
 	public function new_line( int $count = 1 ): self {
-		$symbols = str_repeat( $this->break_symbol, $count );
+		$symbols = $this->get_break_symbol( $count );
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $this->escaper->esc_html( $symbols );
