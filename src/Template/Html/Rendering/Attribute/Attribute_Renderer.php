@@ -6,9 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Attribute;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Attribute\Normalizer\Attribute_Normalizer;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Attribute\Normalizer\Nested_Attribute_Normalizer;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Escaper\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
 class Attribute_Renderer {
 	protected Attribute_Normalizer $normalizer;
@@ -20,7 +18,7 @@ class Attribute_Renderer {
 		?Attribute_Normalizer $normalizer = null
 	) {
 		$this->escaper                  = $escaper;
-		$this->normalizer               = $normalizer ?? new Nested_Attribute_Normalizer( $escaper );
+		$this->normalizer               = $normalizer ?? new Attribute_Normalizer( $escaper );
 		$this->display_empty_attributes = false;
 	}
 

@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Printer;
+namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag;
 
 defined( 'ABSPATH' ) || exit;
 

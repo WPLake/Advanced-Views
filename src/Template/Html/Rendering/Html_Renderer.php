@@ -7,8 +7,8 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Rendering;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Escaper\Html_Escaper;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Printer\Tag_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag\Tag_Printer;
 use Closure;
 
 /**

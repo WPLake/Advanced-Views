@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Escaper;
+namespace Org\Wplake\Advanced_Views\Template\Html\Escaping;
 
 defined( 'ABSPATH' ) || exit;
 

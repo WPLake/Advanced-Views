@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Utils;
 
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Escaper\Html_Escaper_Base;
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper_Base;
 
 defined( 'ABSPATH' ) || exit;
 

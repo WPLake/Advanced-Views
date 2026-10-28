@@ -2,19 +2,19 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Attribute\Normalizer;
+namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Attribute;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Escaper\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
 /**
- * @phpstan-type Normalizer callable(mixed[]):string
+ * @phpstan-type Normalizer_Callback callable(mixed[]):string
  */
-final class Nested_Attribute_Normalizer implements Attribute_Normalizer {
+class Attribute_Normalizer {
 	protected Html_Escaper $escaper;
 	/**
-	 * @var array<string,Normalizer>
+	 * @var array<string,Normalizer_Callback>
 	 */
 	protected array $normalizers;
 
@@ -27,7 +27,7 @@ final class Nested_Attribute_Normalizer implements Attribute_Normalizer {
 	}
 
 	/**
-	 * @param array<string,Normalizer> $normalizers
+	 * @param array<string,Normalizer_Callback> $normalizers
 	 */
 	public function set_normalizers( array $normalizers ): self {
 		$this->normalizers = $normalizers;

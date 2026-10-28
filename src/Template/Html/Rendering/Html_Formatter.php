@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Rendering;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Escaper\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
 final class Html_Formatter {
 	protected Html_Escaper $escaper;
