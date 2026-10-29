@@ -34,10 +34,10 @@ final class Attribute_Normalizer {
 		$this->normalizers    = array(
 			'class' => fn( $classes ) => is_array( $classes ) ?
 				$this->normalize_class( $classes ) :
-				$this->escaper->stringify( $classes ),
+				$this->escaper->esc_attr( $classes ),
 			'style' => fn( $declarations ) => is_array( $declarations ) ?
 				$this->normalize_style( $declarations ) :
-				$this->escaper->stringify( $declarations ),
+				$this->escaper->esc_attr( $declarations ),
 		);
 	}
 
@@ -74,7 +74,7 @@ final class Attribute_Normalizer {
 			return $this->escaper->esc_url( $value );
 		}
 
-		return $this->escaper->stringify( $value );
+		return $this->escaper->esc_attr( $value );
 	}
 
 	protected function is_url( string $name ): bool {
@@ -86,7 +86,7 @@ final class Attribute_Normalizer {
 	 */
 	protected function normalize_class( array $classes ): string {
 		$class_names = array_map(
-			fn( $tag_class ) => $this->escaper->stringify( $tag_class ),
+			fn( $tag_class ) => $this->escaper->esc_attr( $tag_class ),
 			$classes
 		);
 
@@ -101,7 +101,7 @@ final class Attribute_Normalizer {
 
 		foreach ( $declarations as $property => $value ) {
 			$escaped_name  = $this->escaper->esc_html( $property );
-			$escaped_value = $this->escaper->stringify( $value );
+			$escaped_value = $this->escaper->esc_attr( $value );
 
 			$lines[] = sprintf( '%s:%s;', $escaped_name, $escaped_value );
 		}

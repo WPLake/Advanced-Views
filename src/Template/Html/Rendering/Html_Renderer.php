@@ -10,6 +10,7 @@ use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Html_Formatter;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
@@ -18,16 +19,35 @@ final class Html_Renderer {
 	public ?Html_Formatter $formatter;
 
 	protected Html_Escaper $escaper;
+	protected Stringifier $node_renderer;
 	protected Tag_Printer $tag_printer;
 
 	public function __construct( Html_Escaper $escaper, ?Tag_Printer $tag_printer = null ) {
-		$this->escaper     = $escaper;
-		$this->tag_printer = $tag_printer ?? new Tag_Printer( $escaper );
-		$this->formatter   = null;
+		$this->escaper   = $escaper;
+		$this->formatter = null;
+
+		$tag_printer = $tag_printer ?? new Tag_Printer( $escaper );
+
+		$object_renderers = array(
+			Htmlable::class => fn( object $value ) => $value instanceof Htmlable ?
+				$value->to_html( $escaper ) :
+				'',
+			Html_Tag::class => fn( object $value ) =>$value instanceof Html_Tag ?
+				// fixme make it return html.
+				$tag_printer->print_tag( $value ) :
+				'',
+		);
+
+		// fixme: use it below instead of manual resolving.
+		$this->node_renderer = new Stringifier( $escaper, $object_renderers );
 	}
 
-	public function get_tag_printer(): Tag_Printer {
+	public function get_tag_renderer(): Tag_Printer {
 		return $this->tag_printer;
+	}
+
+	public function get_node_renderer(): Stringifier {
+		return $this->node_renderer;
 	}
 
 	/**
@@ -44,9 +64,12 @@ final class Html_Renderer {
 	 * @param Html_Node ...$nodes
 	 */
 	public function print_html( ...$nodes ): void {
-		foreach ( $nodes as $index => $node ) {
-			if ( $index > 0 && $this->formatter instanceof Html_Formatter ) {
-				$this->formatter->print_interleave();
+		$previous_node = null;
+
+		foreach ( $nodes as $node ) {
+			if ( ! is_null( $previous_node ) &&
+				$this->formatter instanceof Html_Formatter ) {
+				$this->formatter->print_interleave( $previous_node, $node );
 			}
 
 			$print_node = $node instanceof Html_Tag ?
@@ -58,6 +81,8 @@ final class Html_Renderer {
 			} else {
 				$print_node();
 			}
+
+			$previous_node = $node;
 		}
 	}
 

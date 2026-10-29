@@ -24,5 +24,9 @@ interface Html_Formatter {
 	 */
 	public function print_node_content( $node, callable $print_content ): void;
 
-	public function print_interleave(): void;
+	/**
+	 * @param Html_Node $previous_node
+	 * @param Html_Node $next_node
+	 */
+	public function print_interleave( $previous_node, $next_node ): void;
 }

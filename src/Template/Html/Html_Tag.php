@@ -10,9 +10,9 @@ use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 
 /**
- * @phpstan-type Html_Node Html_Tag|string|Htmlable|Closure
+ * @phpstan-import-type Html_Node from Html_Element
  */
-final class Html_Tag {
+final class Html_Tag implements Html_Element {
 	private string $tag;
 	/**
 	 * @var array<string,mixed>
@@ -52,6 +52,13 @@ final class Html_Tag {
 		return $this;
 	}
 
+	/**
+	 * @return Html_Node[]
+	 */
+	public function get_nodes(): array {
+		return $this->nodes;
+	}
+
 	public function get_tag(): string {
 		return $this->tag;
 	}
@@ -61,12 +68,5 @@ final class Html_Tag {
 	 */
 	public function get_attributes(): array {
 		return $this->attributes;
-	}
-
-	/**
-	 * @return Html_Node[]
-	 */
-	public function get_nodes(): array {
-		return $this->nodes;
 	}
 }

@@ -12,9 +12,9 @@ interface Html_Escaper {
 	public function esc_url( string $url ): string;
 
 	/**
-	 * Returns safe to use HTML string.
-	 *
 	 * @param mixed $value
+	 *
+	 * @return string
 	 */
-	public function stringify( $value ): string;
+	public function esc_attr( $value ): string;
 }

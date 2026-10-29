@@ -23,7 +23,7 @@ class Html_Tree_Formatter implements Html_Formatter {
 						->indent_line();
 	}
 
-	public function print_interleave(): void {
+	public function print_interleave( $previous_node, $next_node ): void {
 		$this->formatter->new_line();
 	}
 }
