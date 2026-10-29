@@ -13,12 +13,9 @@ final class Attribute_Printer {
 	protected Html_Escaper $escaper;
 	protected bool $display_empty;
 
-	public function __construct(
-		Html_Escaper $escaper,
-		?Attribute_Normalizer $normalizer = null
-	) {
+	public function __construct( Html_Escaper $escaper ) {
 		$this->escaper       = $escaper;
-		$this->normalizer    = $normalizer ?? new Attribute_Normalizer( $escaper );
+		$this->normalizer    = new Attribute_Normalizer( $escaper );
 		$this->display_empty = false;
 	}
 

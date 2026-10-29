@@ -6,19 +6,13 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Escaping;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Stringifier;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Stringifier;
 
 abstract class Html_Escaper_Base implements Html_Escaper {
-	protected Stringifier $attribute_stringifier;
+	protected Html_Stringifier $attribute_stringifier;
 
 	public function __construct() {
-		$attribute_handlers          = array(
-			Htmlable::class => fn( object $value ) => $value instanceof Htmlable ?
-				$value->to_html( $this ) :
-				'',
-		);
-		$this->attribute_stringifier = new Stringifier( $this, $attribute_handlers );
+		$this->attribute_stringifier = new Html_Stringifier( $this );
 	}
 
 	/**

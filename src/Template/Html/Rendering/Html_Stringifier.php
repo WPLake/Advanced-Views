@@ -7,12 +7,13 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Rendering;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\stringExtended;
 
 /**
  * @phpstan-type Object_Stringifier callable(object $value):string
  */
-final class Stringifier {
+final class Html_Stringifier {
 	/**
 	 * @var array<class-string, Object_Stringifier>
 	 */
@@ -24,12 +25,13 @@ final class Stringifier {
 
 	private Html_Escaper $escaper;
 
-	/**
-	 * @param array<class-string, Object_Stringifier> $object_handlers
-	 */
-	public function __construct( Html_Escaper $escaper, array $object_handlers = array() ) {
+	public function __construct( Html_Escaper $escaper ) {
 		$this->escaper         = $escaper;
-		$this->object_handlers = $object_handlers;
+		$this->object_handlers = array(
+			Htmlable::class => fn( object $value ) => $value instanceof Htmlable ?
+				$value->to_html( $escaper ) :
+				'',
+		);
 		$this->string_handler  = array( $this, 'get_safe_string' );
 	}
 

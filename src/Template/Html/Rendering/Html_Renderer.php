@@ -10,7 +10,6 @@ use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Html_Formatter;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
@@ -19,27 +18,25 @@ final class Html_Renderer {
 	private ?Html_Formatter $formatter;
 
 	protected Html_Escaper $escaper;
-	protected Stringifier $node_renderer;
+	protected Html_Stringifier $node_renderer;
 	protected Tag_Printer $tag_printer;
 
-	public function __construct( Html_Escaper $escaper, ?Tag_Printer $tag_printer = null ) {
+	public function __construct( Html_Escaper $escaper ) {
 		$this->escaper   = $escaper;
 		$this->formatter = null;
 
-		$tag_printer = $tag_printer ?? new Tag_Printer( $escaper );
-
-		$object_renderers = array(
-			Htmlable::class => fn( object $value ) => $value instanceof Htmlable ?
-				$value->to_html( $escaper ) :
-				'',
-			Html_Tag::class => fn( object $value ) =>$value instanceof Html_Tag ?
-				// fixme make it return html.
-				$tag_printer->print_tag( $value ) :
-				'',
-		);
+		$tag_printer = new Tag_Printer( $escaper );
 
 		// fixme: use it below instead of manual resolving.
-		$this->node_renderer = new Stringifier( $escaper, $object_renderers );
+		$this->node_renderer = new Html_Stringifier( $escaper );
+		$this->node_renderer->add_object_handlers(
+			array(
+				Html_Tag::class => fn( object $value ) =>$value instanceof Html_Tag ?
+					// fixme make it return html.
+					$tag_printer->print_tag( $value ) :
+					'',
+			)
+		);
 	}
 
 	public function set_formatter( ?Html_Formatter $formatter ): self {
@@ -52,7 +49,7 @@ final class Html_Renderer {
 		return $this->tag_printer;
 	}
 
-	public function get_node_renderer(): Stringifier {
+	public function get_node_renderer(): Html_Stringifier {
 		return $this->node_renderer;
 	}
 
