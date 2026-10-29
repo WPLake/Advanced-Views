@@ -44,12 +44,11 @@ final class Html_Renderer {
 	 * @param Html_Node ...$nodes
 	 */
 	public function print_html( ...$nodes ): void {
-		if ( $i > 0 &&
-			$this->formatter instanceof Html_Formatter ) {
-			$this->formatter->print_interleave();
-		}
+		foreach ( $nodes as $index => $node ) {
+			if ( $index > 0 && $this->formatter instanceof Html_Formatter ) {
+				$this->formatter->print_interleave();
+			}
 
-		foreach ( $nodes as $node ) {
 			if ( $node instanceof Html_Tag ) {
 				$this->print_tag( $node );
 			} else {
