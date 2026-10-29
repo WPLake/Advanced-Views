@@ -16,11 +16,11 @@ final class Attribute_Normalizer {
 	/**
 	 * @var array<string,Normalizer_Callback>
 	 */
-	public array $normalizers;
+	private array $normalizers;
 	/**
 	 * @var string[]
 	 */
-	public array $url_attributes;
+	private array $url_attributes;
 
 	public function __construct( Html_Escaper $escaper ) {
 		$this->escaper = $escaper;
@@ -39,6 +39,42 @@ final class Attribute_Normalizer {
 				$this->normalize_style( $declarations ) :
 				$this->escaper->esc_attr( $declarations ),
 		);
+	}
+
+	/**
+	 * @param array<string,Normalizer_Callback> $normalizers
+	 */
+	public function set_normalizers( array $normalizers ): self {
+		$this->normalizers = $normalizers;
+
+		return $this;
+	}
+
+	/**
+	 * @param array<string,Normalizer_Callback> $normalizers
+	 */
+	public function add_normalizers( array $normalizers ): self {
+		$this->normalizers = array_merge( $this->normalizers, $normalizers );
+
+		return $this;
+	}
+
+	/**
+	 * @param string[] $url_attributes
+	 */
+	public function set_url_attributes( array $url_attributes ): self {
+		$this->url_attributes = $url_attributes;
+
+		return $this;
+	}
+
+	/**
+	 * @param string[] $url_attributes
+	 */
+	public function add_url_attributes( array $url_attributes ): self {
+		$this->url_attributes = array_merge( $this->url_attributes, $url_attributes );
+
+		return $this;
 	}
 
 	/**

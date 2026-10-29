@@ -16,7 +16,7 @@ final class Stringifier {
 	/**
 	 * @var array<class-string, Object_Stringifier>
 	 */
-	public array $object_handlers;
+	private array $object_handlers;
 
 	private Html_Escaper $escaper;
 
@@ -26,6 +26,24 @@ final class Stringifier {
 	public function __construct( Html_Escaper $escaper, array $object_handlers = array() ) {
 		$this->escaper         = $escaper;
 		$this->object_handlers = $object_handlers;
+	}
+
+	/**
+	 * @param array<class-string, Object_Stringifier> $object_handlers
+	 */
+	public function set_object_handlers( array $object_handlers ): self {
+		$this->object_handlers = $object_handlers;
+
+		return $this;
+	}
+
+	/**
+	 * @param array<class-string, Object_Stringifier> $object_handlers
+	 */
+	public function add_object_handlers( array $object_handlers ): self {
+		$this->object_handlers = array_merge( $this->object_handlers, $object_handlers );
+
+		return $this;
 	}
 
 	public function stringify( $value ): string {

@@ -14,7 +14,7 @@ final class Tag_Printer {
 	/**
 	 * @var string[]
 	 */
-	public array $self_closing_tags;
+	private array $self_closing_tags;
 
 	protected Html_Escaper $escaper;
 	protected Attribute_Printer $attribute_printer;
@@ -40,6 +40,24 @@ final class Tag_Printer {
 			'track',
 			'wbr',
 		);
+	}
+
+	/**
+	 * @param string[] $self_closing_tags
+	 */
+	public function set_self_closing_tags( array $self_closing_tags ): self {
+		$this->self_closing_tags = $self_closing_tags;
+
+		return $this;
+	}
+
+	/**
+	 * @param string[] $self_closing_tags
+	 */
+	public function add_self_closing_tags( array $self_closing_tags ): self {
+		$this->self_closing_tags = array_merge( $this->self_closing_tags, $self_closing_tags );
+
+		return $this;
 	}
 
 	public function get_attribute_printer(): Attribute_Printer {

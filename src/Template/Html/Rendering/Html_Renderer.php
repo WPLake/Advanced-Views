@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
  * @phpstan-import-type Html_Node from Html_Tag
  */
 final class Html_Renderer {
-	public ?Html_Formatter $formatter;
+	private ?Html_Formatter $formatter;
 
 	protected Html_Escaper $escaper;
 	protected Stringifier $node_renderer;
@@ -40,6 +40,12 @@ final class Html_Renderer {
 
 		// fixme: use it below instead of manual resolving.
 		$this->node_renderer = new Stringifier( $escaper, $object_renderers );
+	}
+
+	public function set_formatter( ?Html_Formatter $formatter ): self {
+		$this->formatter = $formatter;
+
+		return $this;
 	}
 
 	public function get_tag_renderer(): Tag_Printer {
