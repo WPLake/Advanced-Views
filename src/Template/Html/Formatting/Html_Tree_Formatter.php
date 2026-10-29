@@ -6,14 +6,18 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Formatting;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Indent_Formatter implements Html_Formatter {
+class Html_Tree_Formatter implements Html_Formatter {
 	protected Text_Formatter $formatter;
 
 	public function __construct( Text_Formatter $formatter ) {
 		$this->formatter = $formatter;
 	}
 
-	public function print_content( callable $print_content ): void {
+	public function print_node( $node, callable $print_node ): void {
+		$print_node();
+	}
+
+	public function print_node_content( $node, callable $print_content ): void {
 		$this->formatter->new_line()
 						->tab_shift( $print_content )
 						->indent_line();

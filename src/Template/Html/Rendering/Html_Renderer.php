@@ -49,38 +49,55 @@ final class Html_Renderer {
 				$this->formatter->print_interleave();
 			}
 
-			if ( $node instanceof Html_Tag ) {
-				$this->print_tag( $node );
+			$print_node = $node instanceof Html_Tag ?
+				$this->create_tag_printer( $node ) :
+				$this->create_node_printer( $node );
+
+			if ( $this->formatter instanceof Html_Formatter ) {
+				$this->formatter->print_node( $node, $print_node );
 			} else {
-				$this->print_node( $node );
+				$print_node();
 			}
 		}
 	}
 
-	protected function print_tag( Html_Tag $tag ): void {
+	/**
+	 * @return callable():mixed
+	 */
+	protected function create_tag_printer( Html_Tag $tag ): callable {
 		$nodes     = $tag->get_nodes();
 		$has_nodes = count( $nodes ) > 0;
 
 		$content_printer = $has_nodes ?
-			$this->get_content_printer( $nodes ) :
+			$this->create_nested_node_printer( $tag, $nodes ) :
 			null;
 
-		$this->tag_printer->print_tag( $tag, $content_printer );
+		return fn() => $this->tag_printer->print_tag( $tag, $content_printer );
 	}
 
 	/**
+	 * @param Html_Node $node
 	 * @param Html_Node[] $nodes
 	 *
 	 * @return callback():mixed
 	 */
-	protected function get_content_printer( array $nodes ): callable {
+	protected function create_nested_node_printer( $node, array $nodes ): callable {
 		$printer = fn() => $this->print_html( ...$nodes );
 
 		if ( $this->formatter instanceof Html_Formatter ) {
-			return fn() => $this->formatter->print_content( $printer );
+			return fn() => $this->formatter->print_node_content( $node, $printer );
 		}
 
 		return $printer;
+	}
+
+	/**
+	 * @param Html_Node $node
+	 *
+	 * @return callback():mixed
+	 */
+	protected function create_node_printer( $node ): callable {
+		return fn()=> $this->print_node( $node );
 	}
 
 	/**
