@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag;
+namespace Org\Wplake\Advanced_Views\Template\Html\Rendering;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Attribute\Attribute_Printer;
 
-final class Plain_Tag_Printer implements Tag_Printer {
+final class Tag_Printer {
 	protected Html_Escaper $escaper;
 	protected Attribute_Printer $attribute_printer;
 

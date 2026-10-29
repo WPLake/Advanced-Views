@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Rendering;
+namespace Org\Wplake\Advanced_Views\Template\Html\Formatting;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
-final class Html_Formatter {
+final class Text_Formatter {
 	public string $line_break_symbol;
 	public string $tab_symbol;
 

@@ -22,7 +22,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_S
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag\Plain_Tag_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Plain_Tag_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
 
 class Plugin_Factory extends Factory_Base {

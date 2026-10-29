@@ -7,9 +7,9 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component;
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Formatter;
+use Org\Wplake\Advanced_Views\Template\Html\Formatting\Text_Formatter;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag\Formatted_Tag_Printer;
 
@@ -19,9 +19,9 @@ use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag\Formatted_Tag_Printer;
 final class Web_Component_Printer {
 	protected Html_Renderer $renderer;
 	protected Formatted_Tag_Printer $tag_printer;
-	protected Html_Formatter $formatter;
+	protected Text_Formatter $formatter;
 
-	public function __construct( Formatted_Tag_Printer $tag_printer, Html_Formatter $formatter, Html_Escaper $escaper ) {
+	public function __construct( Formatted_Tag_Printer $tag_printer, Text_Formatter $formatter, Html_Escaper $escaper ) {
 		$this->tag_printer = $tag_printer;
 		$this->formatter   = $formatter;
 		$this->renderer    = new Html_Renderer( $escaper, $tag_printer );

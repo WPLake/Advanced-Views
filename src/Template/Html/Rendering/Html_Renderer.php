@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) || exit;
 use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag\Tag_Printer;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
@@ -22,9 +21,9 @@ final class Html_Renderer {
 	 */
 	public array $self_closing_tags;
 
-	public function __construct( Html_Escaper $escaper, Tag_Printer $tag_printer ) {
+	public function __construct( Html_Escaper $escaper, ?Tag_Printer $tag_printer = null ) {
 		$this->escaper           = $escaper;
-		$this->tag_printer       = $tag_printer;
+		$this->tag_printer       = $tag_printer ?? new Tag_Printer( $escaper );
 		$this->self_closing_tags = array(
 			'area',
 			'base',
@@ -40,6 +39,10 @@ final class Html_Renderer {
 			'track',
 			'wbr',
 		);
+	}
+
+	public function get_tag_printer(): Tag_Printer {
+		return $this->tag_printer;
 	}
 
 	/**
@@ -60,6 +63,7 @@ final class Html_Renderer {
 			if ( $node instanceof Html_Tag ) {
 				$this->print_tag( $node );
 			} else {
+				// fixme formatter here.
 				$this->print_node( $node );
 			}
 		}
@@ -71,6 +75,7 @@ final class Html_Renderer {
 		} else {
 			$this->tag_printer->print_pair_tag(
 				$tag,
+				// fixme formatter here.
 				fn() => $this->print_html( ...$tag->get_content() )
 			);
 		}
