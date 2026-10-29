@@ -8,37 +8,22 @@ defined( 'ABSPATH' ) || exit;
 
 use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Formatting\Html_Formatter;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
 final class Html_Renderer {
+	public ?Html_Formatter $formatter;
+
 	protected Html_Escaper $escaper;
 	protected Tag_Printer $tag_printer;
-	/**
-	 * @var string[]
-	 */
-	public array $self_closing_tags;
 
 	public function __construct( Html_Escaper $escaper, ?Tag_Printer $tag_printer = null ) {
-		$this->escaper           = $escaper;
-		$this->tag_printer       = $tag_printer ?? new Tag_Printer( $escaper );
-		$this->self_closing_tags = array(
-			'area',
-			'base',
-			'br',
-			'col',
-			'embed',
-			'hr',
-			'img',
-			'input',
-			'link',
-			'meta',
-			'source',
-			'track',
-			'wbr',
-		);
+		$this->escaper     = $escaper;
+		$this->tag_printer = $tag_printer ?? new Tag_Printer( $escaper );
+		$this->formatter   = null;
 	}
 
 	public function get_tag_printer(): Tag_Printer {
@@ -59,26 +44,44 @@ final class Html_Renderer {
 	 * @param Html_Node ...$nodes
 	 */
 	public function print_html( ...$nodes ): void {
+		if ( $i > 0 &&
+			$this->formatter instanceof Html_Formatter ) {
+			$this->formatter->print_interleave();
+		}
+
 		foreach ( $nodes as $node ) {
 			if ( $node instanceof Html_Tag ) {
 				$this->print_tag( $node );
 			} else {
-				// fixme formatter here.
 				$this->print_node( $node );
 			}
 		}
 	}
 
 	protected function print_tag( Html_Tag $tag ): void {
-		if ( $this->is_self_closing( $tag ) ) {
-			$this->tag_printer->print_single_tag( $tag );
-		} else {
-			$this->tag_printer->print_pair_tag(
-				$tag,
-				// fixme formatter here.
-				fn() => $this->print_html( ...$tag->get_content() )
-			);
+		$nodes     = $tag->get_nodes();
+		$has_nodes = count( $nodes ) > 0;
+
+		$content_printer = $has_nodes ?
+			$this->get_content_printer( $nodes ) :
+			null;
+
+		$this->tag_printer->print_tag( $tag, $content_printer );
+	}
+
+	/**
+	 * @param Html_Node[] $nodes
+	 *
+	 * @return callback():mixed
+	 */
+	protected function get_content_printer( array $nodes ): callable {
+		$printer = fn() => $this->print_html( ...$nodes );
+
+		if ( $this->formatter instanceof Html_Formatter ) {
+			return fn() => $this->formatter->print_content( $printer );
 		}
+
+		return $printer;
 	}
 
 	/**
@@ -91,9 +94,5 @@ final class Html_Renderer {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $this->escaper->stringify( $node );
 		}
-	}
-
-	protected function is_self_closing( Html_Tag $tag ): bool {
-		return in_array( $tag->get_tag(), $this->self_closing_tags, true );
 	}
 }

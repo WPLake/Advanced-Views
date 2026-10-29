@@ -11,6 +11,11 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Attribute\Attribute_Printer;
 
 final class Tag_Printer {
+	/**
+	 * @var string[]
+	 */
+	public array $self_closing_tags;
+
 	protected Html_Escaper $escaper;
 	protected Attribute_Printer $attribute_printer;
 
@@ -20,10 +25,44 @@ final class Tag_Printer {
 	) {
 		$this->escaper           = $escaper;
 		$this->attribute_printer = $attribute_printer ?? new Attribute_Printer( $escaper );
+		$this->self_closing_tags = array(
+			'area',
+			'base',
+			'br',
+			'col',
+			'embed',
+			'hr',
+			'img',
+			'input',
+			'link',
+			'meta',
+			'source',
+			'track',
+			'wbr',
+		);
 	}
 
-	public function print_pair_tag( Html_Tag $tag, ?callable $print_content = null ): void {
-		$this->print_tag( $tag );
+	public function get_attribute_printer(): Attribute_Printer {
+		return $this->attribute_printer;
+	}
+
+	public function print_tag( Html_Tag $tag, ?callable $print_content = null ): void {
+		$is_self_closing = in_array( $tag->get_tag(), $this->self_closing_tags, true );
+
+		if ( $is_self_closing ) {
+			$this->print_single_tag( $tag );
+		} else {
+			$this->print_pair_tag( $tag, $print_content );
+		}
+	}
+
+	protected function print_single_tag( Html_Tag $tag ): void {
+		$this->open_tag( $tag );
+		echo '/>';
+	}
+
+	protected function print_pair_tag( Html_Tag $tag, ?callable $print_content = null ): void {
+		$this->open_tag( $tag );
 		echo '>';
 
 		if ( is_callable( $print_content ) ) {
@@ -33,16 +72,7 @@ final class Tag_Printer {
 		$this->print_closing_tag( $tag );
 	}
 
-	public function print_single_tag( Html_Tag $tag ): void {
-		$this->print_tag( $tag );
-		echo '/>';
-	}
-
-	public function get_attribute_printer(): Attribute_Printer {
-		return $this->attribute_printer;
-	}
-
-	protected function print_tag( Html_Tag $tag ): void {
+	protected function open_tag( Html_Tag $tag ): void {
 		$attributes = $tag->get_attributes();
 
 		$this->print_opening_tag( $tag );

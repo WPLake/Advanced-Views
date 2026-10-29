@@ -21,7 +21,7 @@ final class Html_Tag {
 	/**
 	 * @var array<int,Html_Node>
 	 */
-	private array $content = array();
+	private array $nodes = array();
 
 	public function __construct( string $tag ) {
 		$this->tag = $tag;
@@ -39,15 +39,15 @@ final class Html_Tag {
 	/**
 	 * Null items are dropped, to simplify the conditional rendering: `$condition ? $node : null` can be passed as is.
 	 *
-	 * @param Html_Node|null ...$items
+	 * @param Html_Node|null ...$nodes
 	 */
-	public function content( ...$items ): self {
+	public function content( ...$nodes ): self {
 		$nodes = array_filter(
-			$items,
+			$nodes,
 			static fn( $item ) => ! is_null( $item )
 		);
 
-		$this->content = array_values( $nodes );
+		$this->nodes = array_values( $nodes );
 
 		return $this;
 	}
@@ -64,9 +64,9 @@ final class Html_Tag {
 	}
 
 	/**
-	 * @return array<int,Html_Node>
+	 * @return Html_Node[]
 	 */
-	public function get_content(): array {
-		return $this->content;
+	public function get_nodes(): array {
+		return $this->nodes;
 	}
 }
