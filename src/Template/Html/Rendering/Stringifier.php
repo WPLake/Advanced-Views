@@ -17,6 +17,10 @@ final class Stringifier {
 	 * @var array<class-string, Object_Stringifier>
 	 */
 	private array $object_handlers;
+	/**
+	 * @var callable(mixed):string $string_handler
+	 */
+	private $string_handler;
 
 	private Html_Escaper $escaper;
 
@@ -26,6 +30,7 @@ final class Stringifier {
 	public function __construct( Html_Escaper $escaper, array $object_handlers = array() ) {
 		$this->escaper         = $escaper;
 		$this->object_handlers = $object_handlers;
+		$this->string_handler  = array( $this, 'get_safe_string' );
 	}
 
 	/**
@@ -46,12 +51,21 @@ final class Stringifier {
 		return $this;
 	}
 
+	/**
+	 * @param callable(mixed):string $string_handler
+	 */
+	public function set_string_handler( callable $string_handler ): self {
+		$this->string_handler = $string_handler;
+
+		return $this;
+	}
+
 	public function stringify( $value ): string {
 		if ( is_object( $value ) ) {
 			return $this->stringify_object( $value );
 		}
 
-		return $this->to_safe_string( $value );
+		return ( $this->string_handler )( $value );
 	}
 
 	protected function stringify_object( object $value ): string {
@@ -61,7 +75,7 @@ final class Stringifier {
 			return $stringifier( $value );
 		}
 
-		return $this->to_safe_string( $value );
+		return ( $this->string_handler )( $value );
 	}
 
 	/**
@@ -77,7 +91,7 @@ final class Stringifier {
 		return null;
 	}
 
-	protected function to_safe_string( $value ): string {
+	protected function get_safe_string( $value ): string {
 		$text_value = stringExtended( $value );
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
