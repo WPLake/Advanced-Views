@@ -9,52 +9,56 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
 final class Html_Formatter {
+	public string $line_break_symbol;
+	public string $tab_symbol;
+
 	protected Html_Escaper $escaper;
-	protected string $break_symbol;
-	protected string $tab_symbol;
+	protected int $tab_depth;
 
 	public function __construct( Html_Escaper $escaper ) {
-		$this->escaper      = $escaper;
-		$this->break_symbol = "\r\n";
-		$this->tab_symbol   = "\t";
-	}
+		$this->escaper   = $escaper;
+		$this->tab_depth = 0;
 
-	public function set_break_symbol( string $break_symbol ): self {
-		$this->break_symbol = $break_symbol;
-
-		return $this;
-	}
-
-	public function set_tab_symbol( string $tab_symbol ): self {
-		$this->tab_symbol = $tab_symbol;
-
-		return $this;
-	}
-
-	public function get_break_symbol( int $count = 1 ): string {
-		return str_repeat( $this->break_symbol, $count );
+		$this->line_break_symbol = "\r\n";
+		$this->tab_symbol        = "\t";
 	}
 
 	public function new_line( int $count = 1 ): self {
-		$symbols = $this->get_break_symbol( $count );
+		$line_breaks = str_repeat( $this->line_break_symbol, $count );
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $this->escaper->esc_html( $symbols );
+		echo $this->escaper->esc_html( $line_breaks );
 
 		return $this;
 	}
 
-	public function tab( int $count = 1 ): self {
-		$symbols = str_repeat( $this->tab_symbol, $count );
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $this->escaper->esc_html( $symbols );
-
-		return $this;
-	}
-
-	public function line_start( int $tabs_count ): self {
+	public function indent_line(): self {
 		return $this->new_line()
-					->tab( $tabs_count );
+			->tabulate();
+	}
+
+	/**
+	 * Callback return is ignored; mixed is declared for "fn() => print()" closures.
+	 *
+	 * @param callable():mixed $callback
+	 */
+	public function tab_shift( callable $callback, int $step = 1 ): self {
+		$this->tab_depth += $step;
+
+		$this->tabulate();
+		$callback();
+
+		$this->tab_depth -= $step;
+
+		return $this;
+	}
+
+	public function tabulate(): self {
+		$tabs = str_repeat( $this->tab_symbol, $this->tab_depth );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->escaper->esc_html( $tabs );
+
+		return $this;
 	}
 }

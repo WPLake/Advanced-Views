@@ -6,14 +6,13 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag;
 
 defined( 'ABSPATH' ) || exit;
 
-use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 interface Tag_Printer {
 	/**
-	 * @param Closure $print_content prints the tag content
+	 * @param callable():mixed|null $print_content prints the tag content
 	 */
-	public function print_pair_tag( Html_Tag $tag, Closure $print_content ): void;
+	public function print_pair_tag( Html_Tag $tag, ?callable $print_content = null ): void;
 
 	/**
 	 * A self-closing tag, e.g. `br`

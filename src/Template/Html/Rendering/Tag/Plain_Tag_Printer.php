@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag;
 
 defined( 'ABSPATH' ) || exit;
 
-use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Attribute\Attribute_Printer;
@@ -23,10 +22,14 @@ final class Plain_Tag_Printer implements Tag_Printer {
 		$this->attribute_printer = $attribute_printer ?? new Attribute_Printer( $escaper );
 	}
 
-	public function print_pair_tag( Html_Tag $tag, Closure $print_content ): void {
+	public function print_pair_tag( Html_Tag $tag, ?callable $print_content = null ): void {
 		$this->print_tag( $tag );
 		echo '>';
-		$print_content();
+
+		if ( is_callable( $print_content ) ) {
+			$print_content();
+		}
+
 		$this->print_closing_tag( $tag );
 	}
 
