@@ -18,30 +18,26 @@ final class Html_Renderer {
 	private ?Html_Formatter $formatter;
 
 	protected Tag_Renderer $tag_renderer;
-	protected Html_Stringifier $stringifier;
+	protected Html_Stringifier $node_renderer;
 
-	public function __construct( Tag_Renderer $tag_renderer, Html_Escaper $escaper ) {
-		$this->tag_renderer = $tag_renderer;
-		// fixme static ::get_object_handlers.
-		$this->stringifier = new Html_Stringifier( $escaper );
-		$this->formatter   = null;
-
-		$node_handlers = array(
-			Html_Tag::class => fn( object $value ) => $value instanceof Html_Tag ?
-				$this->render_tag( $value ) :
-				'',
-			Closure::class  => fn( object $value ) => $value instanceof Closure ?
-				self::capture_output( $value ) :
-				'',
-		);
-
-		$this->stringifier->add_object_handlers( $node_handlers );
+	public function __construct(
+		Tag_Renderer $tag_renderer,
+		Html_Escaper $escaper,
+		Html_Stringifier $node_renderer = null
+	) {
+		$this->tag_renderer  = $tag_renderer;
+		$this->node_renderer = $node_renderer ?? $this->create_node_renderer( $escaper );
+		$this->formatter     = null;
 	}
 
 	public function set_formatter( ?Html_Formatter $formatter ): self {
 		$this->formatter = $formatter;
 
 		return $this;
+	}
+
+	public function get_node_renderer(): Html_Stringifier {
+		return $this->node_renderer;
 	}
 
 	/**
@@ -57,7 +53,7 @@ final class Html_Renderer {
 				$parts[] = $this->formatter->format_interleave( $previous_node, $node );
 			}
 
-			$node_html = $this->stringifier->stringify( $node );
+			$node_html = $this->node_renderer->stringify( $node );
 
 			$parts[] = $this->formatter instanceof Html_Formatter ?
 				$this->formatter->format_node( $node, $node_html ) :
@@ -98,6 +94,19 @@ final class Html_Renderer {
 		return $this->formatter instanceof Html_Formatter ?
 			$this->formatter->format_node_content( $node, $render_nodes ) :
 			$render_nodes();
+	}
+
+	protected function create_node_renderer( Html_Escaper $escaper ): Html_Stringifier {
+		$node_handlers = array(
+			Html_Tag::class => fn( object $value ) => $value instanceof Html_Tag ?
+				$this->render_tag( $value ) :
+				'',
+			Closure::class  => fn( object $value ) => $value instanceof Closure ?
+				self::capture_output( $value ) :
+				'',
+		);
+
+		return new Html_Stringifier( $escaper, $node_handlers );
 	}
 
 	protected static function capture_output( Closure $do_print ): string {
