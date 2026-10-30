@@ -17,9 +17,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Layouts_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Post_Selections_Pre_Built_Tab extends Pre_Built_Tab {
 	private Selection_Settings_Storage $post_selections_settings_storage;
 	private Layouts_Pre_Built_Tab $layouts_pre_built_tab;
@@ -62,10 +66,15 @@ class Post_Selections_Pre_Built_Tab extends Pre_Built_Tab {
 		return $this->layouts_pre_built_tab->import_cpt_data_with_all_related_items( $card_data->acf_view_id );
 	}
 
-	protected function print_tab_description_middle(): void {
-		esc_html_e(
-			'View for Card along with responsive CSS rules are included.',
-			'acf-views'
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function tab_description_middle_nodes(): array {
+		return array(
+			__(
+				'View for Card along with responsive CSS rules are included.',
+				'acf-views'
+			),
 		);
 	}
 

@@ -16,6 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_S
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
 use WP_Query;
+use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class Debug_Dump_Creator {
@@ -50,41 +51,9 @@ final class Debug_Dump_Creator {
 			)
 		);
 
-		$print_download_script = function () use ( $dump_data, $redirect_url ) {
-			?>
-			(function () {
-				function save() {
-					const data = <?php echo wp_json_encode( $dump_data ); ?>;
-
-					let date = new Date().toISOString().slice(0, 10);
-					let timestamp = new Date().getTime();
-					let fileName = `advanced-views-debug-dump-${date}-${timestamp}.json`;
-					let content = JSON.stringify(data);
-
-					const file = new File([content], fileName, {
-						type: 'application/json',
-					})
-
-					let settingsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
-
-					const a = document.createElement('a');
-
-					a.href = URL.createObjectURL(file);
-					a.download = fileName;
-					a.click();
-					window.location.href = settingsUrl;
-				}
-
-				'loading' === document.readyState ?
-					window.document.addEventListener('DOMContentLoaded', save) :
-					save();
-			}())
-			<?php
-		};
-
 		$tags = tag( 'script' )
 			->content(
-				$print_download_script
+				raw_html( $this->download_script( $dump_data, $redirect_url ) )
 			);
 
 		$this->html_renderer->print_html( $tags );
@@ -142,5 +111,39 @@ final class Debug_Dump_Creator {
 		}
 
 		return $export_data;
+	}
+
+	protected function download_script( array $dump_data, string $redirect_url ): string {
+		ob_start();
+		?>
+			(function () {
+				function save() {
+					const data = <?php echo wp_json_encode( $dump_data ); ?>;
+
+					let date = new Date().toISOString().slice(0, 10);
+					let timestamp = new Date().getTime();
+					let fileName = `advanced-views-debug-dump-${date}-${timestamp}.json`;
+					let content = JSON.stringify(data);
+
+					const file = new File([content], fileName, {
+						type: 'application/json',
+					})
+
+					let settingsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
+
+					const a = document.createElement('a');
+
+					a.href = URL.createObjectURL(file);
+					a.download = fileName;
+					a.click();
+					window.location.href = settingsUrl;
+				}
+
+				'loading' === document.readyState ?
+					window.document.addEventListener('DOMContentLoaded', save) :
+					save();
+			}())
+		<?php
+		return (string) ob_get_clean();
 	}
 }

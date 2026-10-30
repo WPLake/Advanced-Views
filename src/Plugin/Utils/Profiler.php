@@ -171,16 +171,8 @@ class Profiler {
 
 		return tag( 'pre' )
 			->content(
-				fn() => self::print_data( $data, $prefix )
+				// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
+				$prefix . print_r( $data, true )
 			);
-	}
-
-	/**
-	 * @param mixed $data
-	 */
-	protected static function print_data( $data, string $prefix ): void {
-		echo esc_html( $prefix );
-		// @phpcs:ignore
-		print_r( $data );
 	}
 }

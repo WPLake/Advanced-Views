@@ -5,27 +5,25 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 final class Row_Title_Printer {
-	protected Html_Renderer $html_renderer;
-
-	public function __construct( Html_Renderer $html_renderer ) {
-		$this->html_renderer = $html_renderer;
-	}
-
 	/**
 	 * @param string $action_class e.g. 'import' or 'sync'
+	 *
+	 * @return Html_Node[]
 	 */
-	public function print_row_title(
+	public function row_title_nodes(
 		string $title,
 		string $action_class,
 		string $action_url,
 		string $action_label
-	): void {
+	): array {
 		$title_tags = tag( 'strong' )
 			->content(
 				tag( 'span' )
@@ -35,18 +33,20 @@ final class Row_Title_Printer {
 					)
 			);
 
-		$this->print_title_and_action( $title_tags, $action_class, $action_url, $action_label );
+		return $this->title_and_action_nodes( $title_tags, $action_class, $action_url, $action_label );
 	}
 
 	/**
 	 * @param string $action_class e.g. 'edit'
+	 *
+	 * @return Html_Node[]
 	 */
-	public function print_title_and_action(
+	public function title_and_action_nodes(
 		Html_Tag $title_tags,
 		string $action_class,
 		string $action_url,
 		string $action_label
-	): void {
+	): array {
 		$action_tags = tag( 'div' )
 			->attributes( array( 'class' => 'row-actions' ) )
 			->content(
@@ -61,6 +61,6 @@ final class Row_Title_Printer {
 					)
 			);
 
-		$this->html_renderer->print_html( $title_tags, $action_tags );
+		return array( $title_tags, $action_tags );
 	}
 }

@@ -19,8 +19,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	const ARGUMENT_FROM_LAYOUT = '_from';
 	const NONCE_MAKE_NEW       = 'av-make-card';
@@ -51,8 +55,8 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		return Hard_Layout_Cpt::cpt_name();
 	}
 
-	protected function print_link_with_js_hover( string $url, string $title ): void {
-		$tags = tag( 'a' )
+	protected function link_with_js_hover_tag( string $url, string $title ): Html_Tag {
+		return tag( 'a' )
 			->attributes(
 				array(
 					'href'        => $url,
@@ -65,8 +69,6 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			->content(
 				$title
 			);
-
-		$this->html_renderer->print_html( $tags );
 	}
 
 	/**
@@ -90,18 +92,44 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		Layout_Settings $layout_settings,
 		bool $is_skip_not_found_message = false
 	): void {
+		$nodes = $this->related_groups_nodes( $layout_settings, $is_skip_not_found_message );
+
+		$this->html_renderer->print_html( ...$nodes );
+	}
+
+	public function print_related_views_meta_box(
+		Layout_Settings $layout_settings,
+		bool $is_skip_not_found_message = false
+	): void {
+		$nodes = $this->related_views_nodes( $layout_settings, $is_skip_not_found_message );
+
+		$this->html_renderer->print_html( ...$nodes );
+	}
+
+	public function print_related_acf_cards_meta_box( Layout_Settings $layout_settings, bool $is_list_look = false ): void {
+		$nodes = $this->related_acf_cards_nodes( $layout_settings, $is_list_look );
+
+		$this->html_renderer->print_html( ...$nodes );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	public function related_groups_nodes(
+		Layout_Settings $layout_settings,
+		bool $is_skip_not_found_message = false
+	): array {
 		$used_meta_group_ids = $layout_settings->get_used_meta_group_ids();
 
 		if ( array() === $used_meta_group_ids ) {
 			$message = __( 'No assigned ACF Groups.', 'acf-views' );
 
-			if ( ! $is_skip_not_found_message ) {
-				echo esc_html( $message );
-			}
-
-			return;
+			return $is_skip_not_found_message ?
+				array() :
+				array( $message );
 		}
 
+		$nodes            = array();
 		$group_last_index = count( $used_meta_group_ids ) - 1;
 		$counter          = - 1;
 
@@ -114,21 +142,26 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				continue;
 			}
 
-			$this->print_link_with_js_hover(
+			$nodes[] = $this->link_with_js_hover_tag(
 				$group_link['url'],
 				$group_link['title']
 			);
 
 			if ( $counter !== $group_last_index ) {
-				echo ', ';
+				$nodes[] = ', ';
 			}
 		}
+
+		return $nodes;
 	}
 
-	public function print_related_views_meta_box(
+	/**
+	 * @return Html_Node[]
+	 */
+	public function related_views_nodes(
 		Layout_Settings $layout_settings,
 		bool $is_skip_not_found_message = false
-	): void {
+	): array {
 		$related_view_unique_ids = $this->get_related_view_unique_ids( $layout_settings );
 
 		if ( array() === $related_view_unique_ids ) {
@@ -138,33 +171,37 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				$this->layouts_cpt->labels()->plural_name()
 			);
 
-			if ( false === $is_skip_not_found_message ) {
-				echo esc_html( $message );
-			}
-
-			return;
+			return $is_skip_not_found_message ?
+				array() :
+				array( $message );
 		}
 
+		$nodes           = array();
 		$last_item_index = count( $related_view_unique_ids ) - 1;
 		$counter         = 0;
 
 		foreach ( $related_view_unique_ids as $related_view_unique_id ) {
 			$layout_settings = $this->layouts_settings_storage->get( $related_view_unique_id );
 
-			$this->print_link_with_js_hover(
+			$nodes[] = $this->link_with_js_hover_tag(
 				$layout_settings->get_edit_post_link(),
 				$layout_settings->title
 			);
 
 			if ( $counter !== $last_item_index ) {
-				echo ', ';
+				$nodes[] = ', ';
 			}
 
 			++$counter;
 		}
+
+		return $nodes;
 	}
 
-	public function print_related_acf_cards_meta_box( Layout_Settings $layout_settings, bool $is_list_look = false ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	public function related_acf_cards_nodes( Layout_Settings $layout_settings, bool $is_list_look = false ): array {
 		global $wpdb;
 
 		$query = $wpdb->prepare(
@@ -185,6 +222,8 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			$related_cards
 		);
 
+		$nodes = array();
+
 		if ( array() === $related_cards &&
 			false === $is_list_look ) {
 			$message = sprintf(
@@ -193,25 +232,23 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				$this->selections_cpt->labels()->plural_name()
 			);
 
-			$node = tag( 'p' )
+			$nodes[] = tag( 'p' )
 				->content(
 					$message
 				);
-
-			$this->html_renderer->print_html( $node );
 		}
 
 		$last_item_index = count( $related_cards ) - 1;
 		$counter         = 0;
 
 		foreach ( $related_cards as $related_card ) {
-			$this->print_link_with_js_hover(
+			$nodes[] = $this->link_with_js_hover_tag(
 				(string) get_edit_post_link( $related_card ),
 				get_the_title( $related_card )
 			);
 
 			if ( $counter !== $last_item_index ) {
-				echo ', ';
+				$nodes[] = ', ';
 			}
 
 			++$counter;
@@ -219,12 +256,8 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 
 		if ( array() !== $related_cards ||
 			$is_list_look ) {
-			$markup_tags = array(
-				tag( 'br' ),
-				tag( 'br' ),
-			);
-
-			$this->html_renderer->print_html( ...$markup_tags );
+			$nodes[] = tag( 'br' );
+			$nodes[] = tag( 'br' );
 		}
 
 		$post_id = $layout_settings->get_post_id();
@@ -242,7 +275,7 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 
 			$label = __( 'Query posts to display using this Layout', 'acf-views' );
 
-			$tags = tag( 'a' )
+			$nodes[] = tag( 'a' )
 				->attributes(
 					array(
 						'href'   => $url,
@@ -260,9 +293,9 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 				->content(
 					$label
 				);
-
-			$this->html_renderer->print_html( $tags );
 		}
+
+		return $nodes;
 	}
 
 	public function add_meta_boxes(): void {

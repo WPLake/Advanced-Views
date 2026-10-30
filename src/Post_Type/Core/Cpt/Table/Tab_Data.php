@@ -6,7 +6,11 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 
 use Closure;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Tab_Data {
 	private Cpt_Table_Tab $cpt_table_tab;
 
@@ -39,8 +43,11 @@ class Tab_Data {
 		$this->bulk_actions         = array();
 	}
 
-	public function print_row_title( Cpt_Settings $cpt_settings ): void {
-		$this->cpt_table_tab->print_row_title( $this, $cpt_settings );
+	/**
+	 * @return Html_Node[]
+	 */
+	public function row_title_nodes( Cpt_Settings $cpt_settings ): array {
+		return $this->cpt_table_tab->row_title_nodes( $this, $cpt_settings );
 	}
 
 	public function get_name(): string {

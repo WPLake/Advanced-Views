@@ -13,6 +13,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Shortcode\Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -92,8 +93,7 @@ final class Cpt_Renderer {
 			$tags = tag( 'style' )
 				->attributes( array( 'data-avf-id' => $unique_id ) )
 				->content(
-					// phpcs:ignore WordPress.Security.EscapeOutput
-					fn() => print( $minified_css )
+					raw_html( $minified_css )
 				);
 
 			return $this->html_renderer->render_html( $tags );

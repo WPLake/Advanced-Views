@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -117,17 +118,18 @@ class State_Report extends Report_Base implements Actor {
 		);
 		$style  = tag( 'style' )
 			->content(
-				fn() => $this->print_survey_css()
+				raw_html( $this->survey_css() )
 			);
 		$script = tag( 'script' )
 			->content(
-				fn() => $this->print_survey_script( $data )
+				raw_html( $this->survey_script( $data ) )
 			);
 
 		$this->html_renderer->print_html( $style, $script );
 	}
 
-	protected function print_survey_css(): void {
+	protected function survey_css(): string {
+		ob_start();
 		?>
 		/*hide other action links while survey is open,
 		otherwise may be links after deactivate (like 'loco translate') and it'll look weird*/
@@ -157,12 +159,14 @@ class State_Report extends Report_Base implements Actor {
 			margin: 0 0 0 10px !important;
 		}
 		<?php
+		return (string) ob_get_clean();
 	}
 
 	/**
 	 * @param array<string,mixed> $data
 	 */
-	protected function print_survey_script( array $data ): void {
+	protected function survey_script( array $data ): string {
+		ob_start();
 		?>
 		(function () {
 			class DeactivationSurveyPopup {
@@ -269,6 +273,7 @@ class State_Report extends Report_Base implements Actor {
 			new DeactivationSurveyPopup();
 		})();
 		<?php
+		return (string) ob_get_clean();
 	}
 
 	protected function is_activated_after_another_deactivation(): bool {

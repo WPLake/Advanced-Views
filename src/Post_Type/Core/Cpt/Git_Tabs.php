@@ -22,8 +22,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Stora
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Repository_Item;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 abstract class Git_Tabs extends External_Storage_Tab {
 	use Safe_Array_Arguments;
 
@@ -455,7 +459,10 @@ abstract class Git_Tabs extends External_Storage_Tab {
 		$this->html_renderer->print_html( $tags );
 	}
 
-	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	public function row_title_nodes( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): array {
 		$import_link = $this->get_cpt_table()->get_tab_url(
 			$this->get_cpt_table()->get_current_tab(),
 			array(
@@ -465,7 +472,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			)
 		);
 
-		$this->row_title_printer->print_row_title(
+		return $this->row_title_printer->row_title_nodes(
 			$cpt_settings->title,
 			'import',
 			$import_link,

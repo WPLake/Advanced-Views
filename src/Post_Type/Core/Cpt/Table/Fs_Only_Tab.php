@@ -9,10 +9,14 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Fs_Only_Tab extends Cpt_Table_Tab {
 
 	const NAME               = 'fs_only';
@@ -201,14 +205,17 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 		$this->html_renderer->print_html( $tags );
 	}
 
-	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	public function row_title_nodes( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): array {
 		$url = add_query_arg(
 			array(
 				self::KEY_SINGLE_ACTION => $cpt_settings->get_unique_id(),
 				'_wpnonce'              => wp_create_nonce( 'bulk-posts' ),
 			)
 		);
-		$this->row_title_printer->print_row_title(
+		return $this->row_title_printer->row_title_nodes(
 			$cpt_settings->title,
 			'sync',
 			$url,

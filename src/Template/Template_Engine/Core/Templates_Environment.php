@@ -14,10 +14,14 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Filesystem_Base;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Templates_Environment extends Loggable_Actor implements Actor {
 	private string $uploads_folder;
 
@@ -74,7 +78,7 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 			->content(
 				tag( 'p' )
 					->content(
-						fn() => $this->print_not_writable_message()
+						...$this->not_writable_nodes()
 					)
 			);
 
@@ -133,8 +137,11 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 		$wp_filesystem->rmdir( $templates_dir, true );
 	}
 
-	protected function print_not_writable_message(): void {
-		$tags = array(
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function not_writable_nodes(): array {
+		return array(
 			__( 'The templates directory is not writable.', 'acf-views' ),
 			' (path = ' . $this->uploads_folder . ')',
 			tag( 'br' ),
@@ -145,8 +152,6 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 				'acf-views'
 			),
 		);
-
-		$this->html_renderer->print_html( ...$tags );
 	}
 
 	protected function is_templates_dir_writable(): bool {

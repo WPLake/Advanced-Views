@@ -19,8 +19,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Pods_Integration extends Settings_Vendor_Integration {
 
 	private Pods_Data_Vendor $pods_data_vendor;
@@ -137,10 +141,9 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		$pod_object    = $item['pod_object'] ?? null;
 		$related_views = $this->get_related_acf_views( $name, $pod_object );
 
-		ob_start();
-		$this->print_related_acf_views( null, true, $related_views );
+		$nodes = $this->related_acf_views_nodes( null, true, $related_views );
 
-		return (string) ob_get_clean();
+		return $this->html_renderer->render_html( ...$nodes );
 	}
 
 	protected function create_related_block( string $view_file ): string {
@@ -217,7 +220,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 				)
 			)
 			->content(
-				fn() => $this->print_related_postbox( $pod_name, $pod )
+				$this->related_postbox_tag( $pod_name, $pod )
 			);
 
 		return $this->html_renderer->render_html( $tags );
@@ -226,22 +229,23 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	/**
 	 * @param object $pod
 	 */
-	protected function print_related_postbox( string $pod_name, $pod ): void {
+	protected function related_postbox_tag( string $pod_name, $pod ): Html_Tag {
 		$related_views = $this->get_related_acf_views( $pod_name, $pod );
 
-		$print_heading_text = function (): void {
-			$title = __( 'Advanced Views', 'acf-views' );
-
-			echo esc_html( $title );
-		};
-
+		$title   = __( 'Advanced Views', 'acf-views' );
 		$heading = tag( 'h4' )
 			->attributes( array( 'class' => 'advanced-views__heading' ) )
 			->content(
-				$print_heading_text
+				$title
 			);
 
-		$tags = tag( 'div' )
+		$nodes = array(
+			$heading,
+			...$this->related_acf_views_nodes( null, false, $related_views ),
+			$this->add_new_links_tag( $pod ),
+		);
+
+		return tag( 'div' )
 			->attributes(
 				array(
 					'class' => array(
@@ -251,53 +255,43 @@ class Pods_Integration extends Settings_Vendor_Integration {
 					'style' => array( 'padding' => '0 20px 20px' ),
 				)
 			)
-			->content(
-				$heading,
-				fn() => $this->print_related_acf_views( null, false, $related_views ),
-				fn() => $this->print_add_new_links_for_groups( $pod )
-			);
-
-		$this->html_renderer->print_html( $tags );
+			->content( ...$nodes );
 	}
 
 	/**
 	 * @param object $pod
 	 */
-	protected function print_add_new_links_for_groups( $pod ): void {
-		if ( method_exists( $pod, 'get_groups' ) ) {
-			$groups = $pod->get_groups();
-
-			$print_add_new_links = function () use ( $groups ): void {
-				foreach ( $groups as $group ) {
-					$group_info = self::get_group_args( $group );
-
-					if ( is_array( $group_info ) ) {
-						$group_title = $this->get_string_arg( 'label', $group_info );
-						$link_title  = sprintf( ' %s', $group_title );
-						$group_id    = $this->get_int_arg( 'id', $group_info );
-
-						$this->print_add_new_link( $group_id, $link_title );
-					}
-				}
-			};
-
-			$tags = tag( 'div' )
-				->attributes(
-					array(
-						'style' => array(
-							'display'   => 'flex',
-							'gap'       => '10px',
-							'flex-wrap' => 'wrap',
-							'margin'    => '20px 0 0',
-						),
-					)
-				)
-				->content(
-					$print_add_new_links
-				);
-
-			$this->html_renderer->print_html( $tags );
+	protected function add_new_links_tag( $pod ): ?Html_Tag {
+		if ( ! method_exists( $pod, 'get_groups' ) ) {
+			return null;
 		}
+
+		$links = array();
+
+		foreach ( $pod->get_groups() as $group ) {
+			$group_info = self::get_group_args( $group );
+
+			if ( is_array( $group_info ) ) {
+				$group_title = $this->get_string_arg( 'label', $group_info );
+				$link_title  = sprintf( ' %s', $group_title );
+				$group_id    = $this->get_int_arg( 'id', $group_info );
+
+				$links[] = $this->add_new_link_tag( $group_id, $link_title );
+			}
+		}
+
+		return tag( 'div' )
+			->attributes(
+				array(
+					'style' => array(
+						'display'   => 'flex',
+						'gap'       => '10px',
+						'flex-wrap' => 'wrap',
+						'margin'    => '20px 0 0',
+					),
+				)
+			)
+			->content( ...$links );
 	}
 
 	/**

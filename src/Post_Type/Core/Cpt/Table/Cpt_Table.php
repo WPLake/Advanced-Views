@@ -19,6 +19,7 @@ use WP_List_Table;
 use WP_Post;
 use WP_Post_Type;
 use WP_Query;
+use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
@@ -92,7 +93,10 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 
 	abstract protected function get_unique_id_prefix(): string;
 
-	abstract protected function print_column( string $short_column_name, Cpt_Settings $cpt_settings ): void;
+	/**
+	 * @return Html_Node[]
+	 */
+	abstract protected function column_nodes( string $short_column_name, Cpt_Settings $cpt_settings ): array;
 
 	protected function get_action_clone(): string {
 		return $this->cpt_name . '_clone';
@@ -190,8 +194,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			$node = tag( 'p' )
 				->content(
 					// don't use esc_html as it contains links.
-					// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					fn() => print( $wp_post_type->description )
+					raw_html( $wp_post_type->description )
 				);
 
 			$this->html_renderer->print_html( $node );
@@ -266,7 +269,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		// only primary search is available for custom items.
 		$tags = tag( 'style' )
 			->content(
-				fn() => print( sprintf( '#posts-filter .search-box::after{content:"%s";}', esc_html( $label ) ) )
+				raw_html( sprintf( '#posts-filter .search-box::after{content:"%s";}', esc_html( $label ) ) )
 			);
 
 		$this->html_renderer->print_html( $tags );
@@ -456,7 +459,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		// hide the origin items until the custom items are pasted via JS.
 		$hide_style   = tag( 'style' )
 			->content(
-				fn() => print( '#the-list{opacity: 0; transition: opacity ease .1s;}' )
+				raw_html( '#the-list{opacity: 0; transition: opacity ease .1s;}' )
 			);
 		$rows_table   = tag( 'div' )
 			->attributes( array( 'style' => array( 'display' => 'none' ) ) )
@@ -471,8 +474,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		$paste_script = tag( 'script' )
 			->attributes( array( 'type' => 'text/javascript' ) )
 			->content(
-				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				fn() => print( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' )
+				raw_html( 'jQuery(document).ready(function(){jQuery("#the-list").html(jQuery("#acf-views-the-list").children()).css("opacity","1");});' )
 			);
 
 		$this->html_renderer->print_html(
@@ -486,7 +488,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		$unique_id = get_post( $post_id )->post_name ?? '';
 		$cpt_data  = $this->cpt_settings_storage->get( $unique_id );
 
-		$this->print_column( $column_name, $cpt_data );
+		$this->html_renderer->print_html( ...$this->column_nodes( $column_name, $cpt_data ) );
 	}
 
 	/**
@@ -623,11 +625,12 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 			$classes[] = 'hidden';
 		}
 
-		$contents = array(
-			'cb'    => $this->checkbox_cell_content( $cpt_settings->get_unique_id(), $cpt_settings->title ),
-			'title' => array( fn() => $tab_data->print_row_title( $cpt_settings ) ),
+		$content_resolvers = array(
+			'cb'    => fn() => $this->checkbox_cell_content( $cpt_settings->get_unique_id(), $cpt_settings->title ),
+			'title' => fn() => $tab_data->row_title_nodes( $cpt_settings ),
 		);
-		$content  = $contents[ $column_name ] ?? array( fn() => $this->print_column( $column_name, $cpt_settings ) );
+		$resolve_content   = $content_resolvers[ $column_name ] ?? fn() => $this->column_nodes( $column_name, $cpt_settings );
+		$content           = $resolve_content();
 
 		$tag_name = $is_checkbox ?
 			'th' :

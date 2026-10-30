@@ -21,11 +21,16 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implements Field_Provider_Integration {
 	use Safe_Array_Arguments;
 
@@ -131,8 +136,8 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		echo $this->layout_shortcode->maybe_add_quick_link_and_shadow_css( $html, $layout_settings->get_unique_id(), array(), true );
 	}
 
-	protected function print_link_with_js_hover( string $url, string $title ): void {
-		$tags = tag( 'a' )
+	protected function link_with_js_hover_tag( string $url, string $title ): Html_Tag {
+		return tag( 'a' )
 			->attributes(
 				array(
 					'href'        => $url,
@@ -145,8 +150,6 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			->content(
 				$title
 			);
-
-		$this->html_renderer->print_html( $tags );
 	}
 
 	/**
@@ -183,7 +186,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	/**
 	 * @param array<string,string> $link_attrs
 	 */
-	protected function print_add_new_link( int $from, string $label_suffix = '', array $link_attrs = array() ): void {
+	protected function add_new_link_tag( int $from, string $label_suffix = '', array $link_attrs = array() ): Html_Tag {
 		$link_attrs = array_merge(
 			array(
 				'target'      => '_blank',
@@ -224,14 +227,12 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 				) :
 			null;
 
-		$tags = tag( 'a' )
+		return tag( 'a' )
 			->attributes( $link_attrs )
 			->content(
 				$icon_tag,
 				$label
 			);
-
-		$this->html_renderer->print_html( $tags );
 	}
 
 	/**
@@ -244,6 +245,23 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		array $related_views = array(),
 		array $add_new_link_args = array()
 	): void {
+		$nodes = $this->related_acf_views_nodes( $wp_post, $is_list_look, $related_views, $add_new_link_args );
+
+		$this->html_renderer->print_html( ...$nodes );
+	}
+
+	/**
+	 * @param Layout_Settings[] $related_views
+	 * @param array<string,string> $add_new_link_args
+	 *
+	 * @return Html_Node[]
+	 */
+	protected function related_acf_views_nodes(
+		?WP_Post $wp_post,
+		bool $is_list_look = false,
+		array $related_views = array(),
+		array $add_new_link_args = array()
+	): array {
 		$related_views = null !== $wp_post ?
 			$this->layouts_settings_storage->get_all_with_meta_group_in_use(
 				$this->data_vendor->get_group_key( $wp_post->post_name )
@@ -257,21 +275,21 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			__( 'Not assigned to any %s.', 'acf-views' );
 		$label = sprintf( $label, $this->layouts_cpt->labels()->plural_name() );
 
-		if ( ! $is_list_look ) {
-			echo esc_html( $label );
-		}
+		$nodes = $is_list_look ?
+			array() :
+			array( $label );
 
 		$last_index = count( $related_views ) - 1;
 		$counter    = 0;
 
 		foreach ( $related_views as $related_view ) {
-			$this->print_link_with_js_hover(
+			$nodes[] = $this->link_with_js_hover_tag(
 				$related_view->get_edit_post_link(),
 				$related_view->title,
 			);
 
 			if ( $counter !== $last_index ) {
-				echo ', ';
+				$nodes[] = ', ';
 			}
 
 			++$counter;
@@ -281,22 +299,14 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		// if post is missing (Pods).
 		if ( null === $wp_post ||
 			'publish' !== $wp_post->post_status ) {
-			return;
+			return $nodes;
 		}
 
-		if ( array() === $related_views &&
-			$is_list_look ) {
-			echo '';
-		}
+		$nodes[] = tag( 'br' );
+		$nodes[] = tag( 'br' );
+		$nodes[] = $this->add_new_link_tag( $wp_post->ID, '', $add_new_link_args );
 
-		$tags = array(
-			tag( 'br' ),
-			tag( 'br' ),
-		);
-
-		$this->html_renderer->print_html( ...$tags );
-
-		$this->print_add_new_link( $wp_post->ID, '', $add_new_link_args );
+		return $nodes;
 	}
 
 	/**
@@ -508,8 +518,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 						$links[] = tag( 'br' );
 					}
 
-					// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					$links[] = fn() => print( $link );
+					$links[] = raw_html( $link );
 				}
 
 				$links_amount = count( $related_view_links_with_invalid_custom_markup );

@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
@@ -287,23 +288,25 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 
 		$this->html_renderer->print_html( $tags );
 
-		$print_fallback_script = function () {
-			?>
+		$node = tag( 'script' )
+			->attributes( array( 'type' => 'module' ) )
+			->content(
+				raw_html( $this->fallback_script() )
+			);
+
+		$this->html_renderer->print_html( $node );
+	}
+
+	protected function fallback_script(): string {
+		ob_start();
+		?>
 		document.addEventListener('DOMContentLoaded', function () {
 			setTimeout(()=>{
 				document.querySelector('.acf-views__loading-fallback')
 					.classList.remove('acf-views__loading-fallback--hidden');
 			},15 * 1000)
 		});
-			<?php
-		};
-
-		$node = tag( 'script' )
-			->attributes( array( 'type' => 'module' ) )
-			->content(
-				$print_fallback_script
-			);
-
-		$this->html_renderer->print_html( $node );
+		<?php
+		return (string) ob_get_clean();
 	}
 }

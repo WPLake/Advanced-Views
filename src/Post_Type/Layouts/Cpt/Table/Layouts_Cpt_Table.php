@@ -19,8 +19,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Query;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Layouts_Cpt_Table extends Cpt_Table {
 	const COLUMN_DESCRIPTION             = self::COLUMN_PREFIX . 'description';
 	const COLUMN_SHORTCODE               = self::COLUMN_PREFIX . 'shortcode';
@@ -114,27 +118,30 @@ class Layouts_Cpt_Table extends Cpt_Table {
 		return $this->layouts_cpt_meta_boxes;
 	}
 
-	protected function print_column( string $short_column_name, Cpt_Settings $cpt_settings ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function column_nodes( string $short_column_name, Cpt_Settings $cpt_settings ): array {
 		if ( $cpt_settings instanceof Layout_Settings ) {
-			$column_printers = $this->get_column_printers( $cpt_settings );
-			$column_printer  = any( $column_printers, $short_column_name );
+			$column_resolvers = $this->get_column_resolvers( $cpt_settings );
+			$column_resolver  = any( $column_resolvers, $short_column_name );
 
-			if ( is_callable( $column_printer ) ) {
-				$column_printer();
+			if ( is_callable( $column_resolver ) ) {
+				return $column_resolver();
 			}
 		}
+
+		return array();
 	}
 
 	/**
-	 * @return array<string, Closure(): void>
+	 * @return array<string, Closure(): Html_Node[]>
 	 */
-	protected function get_column_printers( Layout_Settings $view_data ): array {
+	protected function get_column_resolvers( Layout_Settings $view_data ): array {
 		return array(
-			self::COLUMN_DESCRIPTION             => function () use ( $view_data ): void {
-				echo esc_html( $view_data->description );
-			},
+			self::COLUMN_DESCRIPTION             => fn() => array( $view_data->description ),
 			self::COLUMN_SHORTCODE               => fn() =>
-				$this->postbox->print_postbox_shortcode(
+				$this->postbox->postbox_shortcode_nodes(
 					$view_data->get_unique_id( true ),
 					true,
 					$this->public_plugin_cpt,
@@ -143,21 +150,19 @@ class Layouts_Cpt_Table extends Cpt_Table {
 					$view_data->is_for_internal_usage_only()
 				),
 			self::COLUMN_RELATED_GROUPS          => fn() =>
-				$this->layouts_cpt_meta_boxes->print_related_groups_meta_box( $view_data, true ),
+				$this->layouts_cpt_meta_boxes->related_groups_nodes( $view_data, true ),
 			self::COLUMN_RELATED_POST_SELECTIONS => fn() =>
-				$this->layouts_cpt_meta_boxes->print_related_acf_cards_meta_box( $view_data, true ),
-			self::COLUMN_LAST_MODIFIED           => function () use ( $view_data ): void {
+				$this->layouts_cpt_meta_boxes->related_acf_cards_nodes( $view_data, true ),
+			self::COLUMN_LAST_MODIFIED           => function () use ( $view_data ): array {
 				$post_id = $view_data->get_post_id();
 
 				$post = 0 !== $post_id ?
 					get_post( $post_id ) :
 					null;
 
-				if ( null === $post ) {
-					return;
-				}
-
-				echo esc_html( explode( ' ', $post->post_modified )[0] );
+				return null !== $post ?
+					array( explode( ' ', $post->post_modified )[0] ) :
+					array();
 			},
 		);
 	}

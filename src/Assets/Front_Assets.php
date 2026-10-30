@@ -20,6 +20,7 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pa
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map_Pattern;
+use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
@@ -452,15 +453,13 @@ class Front_Assets extends Actor_Base implements Actor {
 					// the wrapper is necessary to make .parentElement work.
 					$location_script = tag( 'script' )
 						->content(
-							// @phpcs:ignore WordPress.Security.EscapeOutput
-							fn() => print( 'class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)' )
+							raw_html( 'class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)' )
 						);
 
 					$tags = tag( 'div' )
 						->attributes( array( 'hidden' => true ) )
 						->content(
-							// @phpcs:ignore WordPress.Security.EscapeOutput
-							fn() => print( $all_css_code ),
+							raw_html( $all_css_code ),
 							tag( 'avf-styles-location' ),
 							$location_script
 						);
@@ -643,8 +642,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$tags = tag( $tag )
 			->attributes( $attrs )
 			->content(
-				// @phpcs:ignore WordPress.Security.EscapeOutput
-				fn() => print( $code )
+				raw_html( $code )
 			);
 
 		$code_html = $this->html_renderer->render_html( $tags );

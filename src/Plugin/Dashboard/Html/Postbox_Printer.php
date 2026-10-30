@@ -29,17 +29,37 @@ class Postbox_Printer {
 		bool $is_single,
 		bool $is_internal_usage_only = false
 	): void {
-		if ( $is_internal_usage_only ) {
-			echo esc_html( __( '(internal use only)', 'acf-views' ) );
+		$nodes = $this->postbox_shortcode_nodes(
+			$unique_id,
+			$is_short,
+			$public_cpt,
+			$entry_name,
+			$is_single,
+			$is_internal_usage_only
+		);
 
-			return;
+		$this->html_renderer->print_html( ...$nodes );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	public function postbox_shortcode_nodes(
+		string $unique_id,
+		bool $is_short,
+		Public_Cpt $public_cpt,
+		string $entry_name,
+		bool $is_single,
+		bool $is_internal_usage_only = false
+	): array {
+		if ( $is_internal_usage_only ) {
+			return array( __( '(internal use only)', 'acf-views' ) );
 		}
 
 		$shortcode_name = $public_cpt->shortcode();
 		$shortcode      = sprintf( '[%s name="%s" %s="%s"]', $shortcode_name, $entry_name, 'id', $unique_id );
-		$tags           = self::shortcode_tags( $shortcode, $is_short, $is_single );
 
-		$this->html_renderer->print_html( $tags );
+		return array( self::shortcode_tags( $shortcode, $is_short, $is_single ) );
 	}
 
 	public function print_postbox_upgrade(): void {

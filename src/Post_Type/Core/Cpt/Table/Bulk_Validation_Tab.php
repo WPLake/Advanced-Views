@@ -7,10 +7,14 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 	const NAME = 'bulk_validation';
 
@@ -106,11 +110,12 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 		// nothing to do here.
 	}
 
-	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	public function row_title_nodes( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): array {
 		if ( $this->cpt_settings_storage->is_fs_only_item( $cpt_settings->get_unique_id() ) ) {
-			$this->fs_only_tab->print_row_title( $tab_data, $cpt_settings );
-
-			return;
+			return $this->fs_only_tab->row_title_nodes( $tab_data, $cpt_settings );
 		}
 
 		$edit_post_link = $cpt_settings->get_edit_post_link();
@@ -126,7 +131,7 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 					)
 			);
 
-		$this->row_title_printer->print_title_and_action(
+		return $this->row_title_printer->title_and_action_nodes(
 			$title_tags,
 			'edit',
 			$edit_post_link,

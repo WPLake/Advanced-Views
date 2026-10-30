@@ -15,9 +15,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_S
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Query;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Post_Selections_Table extends Cpt_Table {
 	const COLUMN_DESCRIPTION   = self::COLUMN_PREFIX . 'description';
 	const COLUMN_SHORTCODE     = self::COLUMN_PREFIX . 'shortcode';
@@ -43,26 +47,27 @@ class Post_Selections_Table extends Cpt_Table {
 		$this->layout_cpt                     = $layout_cpt;
 	}
 
-	protected function print_column( string $short_column_name, Cpt_Settings $cpt_settings ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function column_nodes( string $short_column_name, Cpt_Settings $cpt_settings ): array {
 		if ( false === ( $cpt_settings instanceof Post_Selection_Settings ) ) {
-			return;
+			return array();
 		}
 
 		$card_data = $cpt_settings;
 
 		switch ( $short_column_name ) {
 			case self::COLUMN_DESCRIPTION:
-				echo esc_html( $card_data->description );
-				break;
+				return array( $card_data->description );
 			case self::COLUMN_SHORTCODE:
-				$this->postbox->print_postbox_shortcode(
+				return $this->postbox->postbox_shortcode_nodes(
 					$card_data->get_unique_id( true ),
 					true,
 					$this->public_plugin_cpt,
 					$card_data->title,
 					true
 				);
-				break;
 			case self::COLUMN_LAST_MODIFIED:
 				$post_id = $card_data->get_post_id();
 
@@ -70,17 +75,15 @@ class Post_Selections_Table extends Cpt_Table {
 					get_post( $post_id ) :
 					null;
 
-				if ( null === $post ) {
-					break;
-				}
-
-				echo esc_html( explode( ' ', $post->post_modified )[0] );
-				break;
+				return null !== $post ?
+					array( explode( ' ', $post->post_modified )[0] ) :
+					array();
 			case self::COLUMN_RELATED_VIEW:
 				// without the not found message.
-				$this->post_selections_cpt_meta_boxes->print_related_acf_view_meta_box( $card_data, true );
-				break;
+				return $this->post_selections_cpt_meta_boxes->related_acf_view_nodes( $card_data, true );
 		}
+
+		return array();
 	}
 
 	protected function get_cards_meta_boxes(): Selection_Meta_Boxes {

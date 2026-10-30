@@ -17,8 +17,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_S
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Selection_Settings_Storage $post_selections_settings_storage;
@@ -50,18 +54,28 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 		Post_Selection_Settings $post_selection_settings,
 		bool $is_skip_not_found_message = false
 	): void {
-		$message = sprintf(
-			// translators: %s - singular name of the CPT.
-			__( 'No related %s.', 'acf-views' ),
-			$this->layout_cpt->labels()->singular_name()
-		);
+		$nodes = $this->related_acf_view_nodes( $post_selection_settings, $is_skip_not_found_message );
 
+		$this->html_renderer->print_html( ...$nodes );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	public function related_acf_view_nodes(
+		Post_Selection_Settings $post_selection_settings,
+		bool $is_skip_not_found_message = false
+	): array {
 		if ( '' === $post_selection_settings->acf_view_id ) {
-			if ( false === $is_skip_not_found_message ) {
-				echo esc_html( $message );
-			}
+			$message = sprintf(
+				// translators: %s - singular name of the CPT.
+				__( 'No related %s.', 'acf-views' ),
+				$this->layout_cpt->labels()->singular_name()
+			);
 
-			return;
+			return $is_skip_not_found_message ?
+				array() :
+				array( $message );
 		}
 
 		// here we must use viewsDataStorage, as it's a View.
@@ -69,16 +83,16 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 
 		$edit_link = $view_data->get_edit_post_link();
 
-		$tags    = tag( 'a' )
-			->attributes( array(
-				'href'   => $edit_link,
-				'target' => '_blank',
-			) )
-			->content(
-				$view_data->title
-			);
-
-		$this->html_renderer->print_html( $tags );
+		return array(
+			tag( 'a' )
+				->attributes( array(
+					'href'   => $edit_link,
+					'target' => '_blank',
+				) )
+				->content(
+					$view_data->title
+				),
+		);
 	}
 
 	public function add_meta_boxes(): void {

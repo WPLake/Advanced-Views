@@ -14,8 +14,12 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 abstract class Pre_Built_Tab extends External_Storage_Tab {
 	use Safe_Array_Arguments;
 
@@ -52,9 +56,19 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 
 	abstract protected function import_related_cpt_data_items( string $unique_id ): ?Import_Result;
 
-	abstract protected function print_tab_description_middle(): void;
+	/**
+	 * @return Html_Node[]
+	 */
+	abstract protected function tab_description_middle_nodes(): array;
 
 	protected function print_tab_description(): void {
+		$this->html_renderer->print_html( ...$this->tab_description_nodes() );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function tab_description_nodes(): array {
 		$read_more_label = __( 'Read more', 'acf-views' );
 
 		$read_more_link = tag( 'a' )
@@ -66,18 +80,16 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 				$read_more_label
 			);
 
-		$tags = array(
+		return array(
 			__( 'Import pre-built components.', 'acf-views' ),
 			tag( 'br' ),
-			fn() => $this->print_tab_description_middle(),
+			...$this->tab_description_middle_nodes(),
 			tag( 'br' ),
 			__( 'Hover on the title and click Import.', 'acf-views' ),
 			' ',
 			$read_more_link,
 			'.',
 		);
-
-		$this->html_renderer->print_html( ...$tags );
 	}
 
 	protected function get_tab(): ?Tab_Data {
@@ -216,14 +228,17 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		exit;
 	}
 
-	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	public function row_title_nodes( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): array {
 		$url = add_query_arg(
 			array(
 				self::KEY_SINGLE_ACTION => $cpt_settings->get_unique_id(),
 				'_wpnonce'              => wp_create_nonce( 'bulk-posts' ),
 			)
 		);
-		$this->row_title_printer->print_row_title(
+		return $this->row_title_printer->row_title_nodes(
 			$cpt_settings->title,
 			'import',
 			$url,

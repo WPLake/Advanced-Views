@@ -31,6 +31,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Filesystem_Base;
 use WP_Post;
 use WP_Query;
+use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -165,44 +166,9 @@ final class Tools_Page extends Actor_Base implements Actor {
 		$redirect_url = Plugin::get_admin_url( self::SLUG ) .
 						sprintf( '&message=1&type=export&_views=%s&_cards=%s', $count_of_view_ids, $count_of_card_ids );
 
-		$print_download_script = function () use ( $redirect_url ) {
-			?>
-			(function () {
-				function save() {
-					const data = <?php echo wp_json_encode( $this->export_data ); ?>;
-
-					let date = new Date().toISOString().slice(0, 10);
-					let timestamp = new Date().getTime();
-					// .txt to pass WP Media library
-					let fileName = `advanced-views-export-${date}-${timestamp}.txt`;
-					// add some text prefix to avoid WP Media library to think it's a JSON
-					let content = "Advanced Views:" + JSON.stringify(data);
-
-					const file = new File([content], fileName, {
-						type: 'application/json',
-					})
-
-					let toolsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
-
-					const a = document.createElement('a');
-
-					a.href = URL.createObjectURL(file);
-					a.download = fileName;
-					a.click();
-
-					window.location.href = toolsUrl;
-				}
-
-				'loading' === document.readyState ?
-					window.document.addEventListener('DOMContentLoaded', save) :
-					save();
-			}())
-			<?php
-		};
-
 		$tags = tag( 'script' )
 			->content(
-				$print_download_script
+				raw_html( $this->download_script( $redirect_url ) )
 			);
 
 		$this->html_renderer->print_html( $tags );
@@ -710,5 +676,42 @@ final class Tools_Page extends Actor_Base implements Actor {
 				);
 		wp_safe_redirect( $url );
 		exit;
+	}
+
+	protected function download_script( string $redirect_url ): string {
+		ob_start();
+		?>
+			(function () {
+				function save() {
+					const data = <?php echo wp_json_encode( $this->export_data ); ?>;
+
+					let date = new Date().toISOString().slice(0, 10);
+					let timestamp = new Date().getTime();
+					// .txt to pass WP Media library
+					let fileName = `advanced-views-export-${date}-${timestamp}.txt`;
+					// add some text prefix to avoid WP Media library to think it's a JSON
+					let content = "Advanced Views:" + JSON.stringify(data);
+
+					const file = new File([content], fileName, {
+						type: 'application/json',
+					})
+
+					let toolsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
+
+					const a = document.createElement('a');
+
+					a.href = URL.createObjectURL(file);
+					a.download = fileName;
+					a.click();
+
+					window.location.href = toolsUrl;
+				}
+
+				'loading' === document.readyState ?
+					window.document.addEventListener('DOMContentLoaded', save) :
+					save();
+			}())
+		<?php
+		return (string) ob_get_clean();
 	}
 }

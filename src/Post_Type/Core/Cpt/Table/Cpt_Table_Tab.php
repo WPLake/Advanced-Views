@@ -10,9 +10,13 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 abstract class Cpt_Table_Tab extends Actor_Base implements Actor {
 
 	private Cpt_Table $cpt_table;
@@ -45,7 +49,10 @@ abstract class Cpt_Table_Tab extends Actor_Base implements Actor {
 
 	abstract public function maybe_show_action_result_message(): void;
 
-	abstract public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void;
+	/**
+	 * @return Html_Node[]
+	 */
+	abstract public function row_title_nodes( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): array;
 
 	protected function get_cpt_name(): string {
 		return $this->cpt_table->get_cpt_name();
