@@ -22,14 +22,14 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Plain_Tag_Printer;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Renderer;
 
 class Plugin_Bootstrap extends Bootstrap_Base {
 	public static function get_type_definitions(): array {
 				return array(
 					Cpt_Theme_Settings::class => Settings_Storage::class,
 					Html_Escaper::class       => WP_Html_Escaper::class,
-					Tag_Printer::class        => Plain_Tag_Printer::class,
+					Tag_Renderer::class       => Plain_Tag_Printer::class,
 				);
 	}
 

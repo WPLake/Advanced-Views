@@ -19,21 +19,19 @@ final class Html_Renderer {
 
 	protected Html_Escaper $escaper;
 	protected Html_Stringifier $node_renderer;
-	protected Tag_Printer $tag_printer;
+	protected Tag_Renderer $tag_renderer;
 
 	public function __construct( Html_Escaper $escaper ) {
 		$this->escaper   = $escaper;
 		$this->formatter = null;
 
-		$tag_printer = new Tag_Printer( $escaper );
+		$this->tag_renderer = new Tag_Renderer( $escaper );
 
-		// fixme: use it below instead of manual resolving.
 		$this->node_renderer = new Html_Stringifier( $escaper );
 		$this->node_renderer->add_object_handlers(
 			array(
 				Html_Tag::class => fn( object $value ) =>$value instanceof Html_Tag ?
-					// fixme make it return html.
-					$tag_printer->print_tag( $value ) :
+					$this->tag_renderer->render_tag( $value ) :
 					'',
 			)
 		);
@@ -45,8 +43,8 @@ final class Html_Renderer {
 		return $this;
 	}
 
-	public function get_tag_renderer(): Tag_Printer {
-		return $this->tag_printer;
+	public function get_tag_renderer(): Tag_Renderer {
+		return $this->tag_renderer;
 	}
 
 	public function get_node_renderer(): Html_Stringifier {
@@ -96,27 +94,33 @@ final class Html_Renderer {
 		$nodes     = $tag->get_nodes();
 		$has_nodes = count( $nodes ) > 0;
 
-		$content_printer = $has_nodes ?
-			$this->create_nested_node_printer( $tag, $nodes ) :
+		$content_renderer = $has_nodes ?
+			$this->create_nested_node_renderer( $tag, $nodes ) :
 			null;
 
-		return fn() => $this->tag_printer->print_tag( $tag, $content_printer );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		return fn() => print( $this->tag_renderer->render_tag( $tag, $content_renderer ) );
 	}
 
 	/**
 	 * @param Html_Node $node
 	 * @param Html_Node[] $nodes
 	 *
-	 * @return callback():mixed
+	 * @return Closure():string
 	 */
-	protected function create_nested_node_printer( $node, array $nodes ): callable {
+	protected function create_nested_node_renderer( $node, array $nodes ): Closure {
 		$printer = fn() => $this->print_html( ...$nodes );
 
 		if ( $this->formatter instanceof Html_Formatter ) {
-			return fn() => $this->formatter->print_node_content( $node, $printer );
+			return function () use ( $node, $printer ): string {
+				ob_start();
+				$this->formatter->print_node_content( $node, $printer );
+
+				return (string) ob_get_clean();
+			};
 		}
 
-		return $printer;
+		return fn(): string => $this->render_html( ...$nodes );
 	}
 
 	/**
