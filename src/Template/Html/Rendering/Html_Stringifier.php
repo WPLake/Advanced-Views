@@ -25,14 +25,16 @@ final class Html_Stringifier {
 
 	private Html_Escaper $escaper;
 
-	public function __construct( Html_Escaper $escaper ) {
-		$this->escaper         = $escaper;
-		$this->object_handlers = array(
-			Htmlable::class => fn( object $value ) => $value instanceof Htmlable ?
-				$value->to_html( $escaper ) :
-				'',
-		);
-		$this->string_handler  = array( $this, 'get_safe_string' );
+	/**
+	 * @param array<class-string, Object_Stringifier> $object_handlers
+	 */
+	public function __construct( Html_Escaper $escaper, array $object_handlers = array() ) {
+		$this->escaper = $escaper;
+
+		$default_handlers      = self::get_object_handlers( $escaper );
+		$this->object_handlers = array_merge( $default_handlers, $object_handlers );
+
+		$this->string_handler = array( $this, 'get_safe_string' );
 	}
 
 	/**
@@ -98,5 +100,16 @@ final class Html_Stringifier {
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		return $this->escaper->esc_html( $text_value );
+	}
+
+	/**
+	 * @return array<class-string, Object_Stringifier>
+	 */
+	protected static function get_object_handlers( Html_Escaper $escaper ): array {
+		return array(
+			Htmlable::class => fn( object $value ) => $value instanceof Htmlable ?
+				$value->to_html( $escaper ) :
+				'',
+		);
 	}
 }

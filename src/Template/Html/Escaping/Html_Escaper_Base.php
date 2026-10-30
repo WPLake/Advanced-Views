@@ -11,8 +11,8 @@ use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Stringifier;
 abstract class Html_Escaper_Base implements Html_Escaper {
 	protected Html_Stringifier $attribute_stringifier;
 
-	public function __construct() {
-		$this->attribute_stringifier = new Html_Stringifier( $this );
+	public function __construct( Html_Stringifier $attribute_stringifier = null ) {
+		$this->attribute_stringifier = $attribute_stringifier ?? new Html_Stringifier( $this );
 	}
 
 	/**

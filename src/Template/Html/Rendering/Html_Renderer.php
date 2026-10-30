@@ -7,6 +7,7 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Rendering;
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Html_Formatter;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
@@ -19,14 +20,11 @@ final class Html_Renderer {
 	protected Tag_Renderer $tag_renderer;
 	protected Html_Stringifier $stringifier;
 
-	public function __construct(
-		Tag_Renderer $tag_renderer,
-		Html_Stringifier $stringifier,
-		?Html_Formatter $formatter = null
-	) {
+	public function __construct( Tag_Renderer $tag_renderer, Html_Escaper $escaper ) {
 		$this->tag_renderer = $tag_renderer;
-		$this->stringifier  = $stringifier;
-		$this->formatter    = $formatter;
+		// fixme static ::get_object_handlers.
+		$this->stringifier = new Html_Stringifier( $escaper );
+		$this->formatter   = null;
 
 		$node_handlers = array(
 			Html_Tag::class => fn( object $value ) => $value instanceof Html_Tag ?

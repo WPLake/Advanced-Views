@@ -19,12 +19,9 @@ final class Tag_Renderer {
 	protected Html_Escaper $escaper;
 	protected Attribute_Renderer $attribute_renderer;
 
-	public function __construct(
-		Html_Escaper $escaper,
-		?Attribute_Renderer $attribute_renderer = null
-	) {
+	public function __construct( Html_Escaper $escaper ) {
 		$this->escaper            = $escaper;
-		$this->attribute_renderer = $attribute_renderer ?? new Attribute_Renderer( $escaper );
+		$this->attribute_renderer = new Attribute_Renderer( $escaper );
 		$this->self_closing_tags  = array(
 			'area',
 			'base',

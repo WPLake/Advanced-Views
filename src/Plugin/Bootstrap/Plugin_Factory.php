@@ -22,8 +22,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_S
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Stringifier;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
 
 class Plugin_Factory extends Factory_Base {
@@ -56,12 +54,7 @@ class Plugin_Factory extends Factory_Base {
 	}
 
 	public function html_renderer(): Html_Renderer {
-		$escaper = $this->resolve( Html_Escaper::class );
-
-		return new Html_Renderer(
-			new Tag_Renderer( $escaper ),
-			new Html_Stringifier( $escaper )
-		);
+		return new Html_Renderer( $this->resolve( Html_Escaper::class ) );
 	}
 
 	public function plugin_translations(): Plugin_Translations {
