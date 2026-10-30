@@ -16,7 +16,8 @@ class Html_Tree_Formatter implements Html_Formatter {
 	}
 
 	public function format_node( $node, string $node_html ): string {
-		return $node_html;
+		return $this->formatter->tabulate() .
+				$node_html;
 	}
 
 	public function format_node_content( $node, Closure $render_content ): string {

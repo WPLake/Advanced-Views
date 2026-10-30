@@ -56,13 +56,11 @@ final class Text_Formatter {
 	public function tab_shift( Closure $render_content, int $step = 1 ): string {
 		$this->tab_depth += $step;
 
-		$tabs    = $this->tabulate();
 		$content = $render_content();
 
 		$this->tab_depth -= $step;
 
-		$content_parts = array( $tabs, $content );
-		return join( '', $content_parts );
+		return $content;
 	}
 
 	public function tabulate(): string {
