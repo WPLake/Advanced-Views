@@ -6,12 +6,8 @@ namespace Org\Wplake\Advanced_Views\Template\Html;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
-
 /**
- * fixme get rid of the Closure.
- *
- * @phpstan-type Html_Node string|Html_Element|Htmlable|Closure
+ * @phpstan-type Html_Node string|Html_Element
  */
 interface Html_Element {
 	/**

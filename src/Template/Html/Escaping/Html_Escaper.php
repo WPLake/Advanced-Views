@@ -17,4 +17,11 @@ interface Html_Escaper {
 	 * @return string
 	 */
 	public function esc_attr( $value ): string;
+
+	/**
+	 * @param mixed $value
+	 *
+	 * @return string
+	 */
+	public function to_safe_string( $value ): string;
 }

@@ -6,16 +6,18 @@ namespace Org\Wplake\Advanced_Views\Template\Html;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Composed_Htmlable;
-use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
-
 function tag( string $name ): Html_Tag {
 	return new Html_Tag( $name );
 }
 
 /**
- * @param array<string|Htmlable> $parts
+ * @param array<string|object> $items
  */
-function compose_html( array $parts ): Htmlable {
-	return new Composed_Htmlable( $parts );
+function compose_attribute( array $items, string $delimiter = '' ): Composite_Attribute {
+	$attribute = new Composite_Attribute();
+
+	$attribute->items     = $items;
+	$attribute->delimiter = $delimiter;
+
+	return $attribute;
 }

@@ -2,21 +2,22 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Attribute;
+namespace Org\Wplake\Advanced_Views\Template\Html\Rendering;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Attribute_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
 final class Attribute_Renderer {
-	protected Attribute_Normalizer $normalizer;
+	protected Attribute_Escaper $attribute_escaper;
 	protected Html_Escaper $escaper;
 	protected bool $display_empty;
 
 	public function __construct( Html_Escaper $escaper ) {
-		$this->escaper       = $escaper;
-		$this->normalizer    = new Attribute_Normalizer( $escaper );
-		$this->display_empty = false;
+		$this->escaper           = $escaper;
+		$this->attribute_escaper = new Attribute_Escaper( $escaper );
+		$this->display_empty     = false;
 	}
 
 	public function should_display_empty( bool $display_empty ): self {
@@ -25,8 +26,8 @@ final class Attribute_Renderer {
 		return $this;
 	}
 
-	public function get_normalizer(): Attribute_Normalizer {
-		return $this->normalizer;
+	public function get_escaper(): Attribute_Escaper {
+		return $this->attribute_escaper;
 	}
 
 	/**
@@ -61,7 +62,7 @@ final class Attribute_Renderer {
 	 * @param mixed $value
 	 */
 	protected function render_mixed_attribute( string $name, $value ): string {
-		$normalized_value = $this->normalizer->normalize_attribute( $name, $value );
+		$normalized_value = $this->attribute_escaper->esc_attr( $name, $value );
 		$should_display   = $this->display_empty ||
 							strlen( $normalized_value ) > 0;
 
@@ -73,14 +74,6 @@ final class Attribute_Renderer {
 	protected function render_pair( string $name, string $escaped_value ): string {
 		$escaped_key = $this->escaper->esc_html( $name );
 
-		$parts = array(
-			' ',
-			$escaped_key,
-			'="',
-			$escaped_value,
-			'"',
-		);
-
-		return join( '', $parts );
+		return sprintf( ' %s="%s"', $escaped_key, $escaped_value );
 	}
 }

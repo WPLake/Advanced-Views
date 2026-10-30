@@ -2,16 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Attribute;
+namespace Org\Wplake\Advanced_Views\Template\Html\Escaping;
 
 defined( 'ABSPATH' ) || exit;
-
-use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
 /**
  * @phpstan-type Normalizer_Callback callable(mixed):string
  */
-final class Attribute_Normalizer {
+final class Attribute_Escaper {
 	protected Html_Escaper $escaper;
 	/**
 	 * @var array<string,Normalizer_Callback>
@@ -80,14 +78,14 @@ final class Attribute_Normalizer {
 	/**
 	 * @param mixed $value
 	 */
-	public function normalize_attribute( string $name, $value ): string {
+	public function esc_attr( string $name, $value ): string {
 		$normalizer = $this->resolve_normalizer( $name );
 
 		if ( is_callable( $normalizer ) ) {
 			return $normalizer( $value );
 		}
 
-		return $this->stringify( $name, $value );
+		return $this->escape( $name, $value );
 	}
 
 	/**
@@ -104,7 +102,7 @@ final class Attribute_Normalizer {
 	/**
 	 * @param mixed $value
 	 */
-	protected function stringify( string $name, $value ): string {
+	protected function escape( string $name, $value ): string {
 		if ( is_string( $value ) &&
 			$this->is_url( $name ) ) {
 			return $this->escaper->esc_url( $value );
@@ -122,7 +120,7 @@ final class Attribute_Normalizer {
 	 */
 	protected function normalize_class( array $classes ): string {
 		$class_names = array_map(
-			fn( $tag_class ) => $this->escaper->esc_attr( $tag_class ),
+			fn( $class_item ) => $this->escaper->esc_attr( $class_item ),
 			$classes
 		);
 
