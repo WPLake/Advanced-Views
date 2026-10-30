@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Rendering;
 
 defined( 'ABSPATH' ) || exit;
 
-use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Attribute\Attribute_Renderer;
@@ -65,16 +64,13 @@ final class Tag_Renderer {
 		return $this->attribute_renderer;
 	}
 
-	/**
-	 * @param (Closure():string)|null $render_content
-	 */
-	public function render_tag( Html_Tag $tag, ?Closure $render_content = null ): string {
+	public function render_tag( Html_Tag $tag, string $content = '' ): string {
 		$tag_name        = $tag->get_tag();
 		$is_self_closing = in_array( $tag_name, $this->self_closing_tags, true );
 
 		return $is_self_closing ?
 			$this->render_single_tag( $tag ) :
-			$this->render_pair_tag( $tag, $render_content );
+			$this->render_pair_tag( $tag, $content );
 	}
 
 	protected function render_single_tag( Html_Tag $tag ): string {
@@ -83,11 +79,8 @@ final class Tag_Renderer {
 		return sprintf( '%s/>', $opening_tag );
 	}
 
-	protected function render_pair_tag( Html_Tag $tag, ?Closure $render_content = null ): string {
+	protected function render_pair_tag( Html_Tag $tag, string $content ): string {
 		$opening_tag = $this->render_opening_tag( $tag );
-		$content     = $render_content instanceof Closure ?
-			$render_content() :
-			'';
 		$closing_tag = $this->render_closing_tag( $tag );
 
 		$tag_parts = array(

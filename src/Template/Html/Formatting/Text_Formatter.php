@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Formatting;
 
 defined( 'ABSPATH' ) || exit;
 
+use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
 final class Text_Formatter {
@@ -35,42 +36,38 @@ final class Text_Formatter {
 		return $this;
 	}
 
-	public function new_line( int $count = 1 ): self {
+	public function new_line( int $count = 1 ): string {
 		$line_breaks = str_repeat( $this->line_break_symbol, $count );
 
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $this->escaper->esc_html( $line_breaks );
-
-		return $this;
+		return $this->escaper->esc_html( $line_breaks );
 	}
 
-	public function indent_line(): self {
-		return $this->new_line()
-			->tabulate();
+	public function indent_line(): string {
+		$new_line = $this->new_line();
+		$tabs     = $this->tabulate();
+
+		$line_parts = array( $new_line, $tabs );
+		return join( '', $line_parts );
 	}
 
 	/**
-	 * Callback return is ignored; mixed is declared for "fn() => print()" closures.
-	 *
-	 * @param callable():mixed $callback
+	 * @param Closure():string $render_content
 	 */
-	public function tab_shift( callable $callback, int $step = 1 ): self {
+	public function tab_shift( Closure $render_content, int $step = 1 ): string {
 		$this->tab_depth += $step;
 
-		$this->tabulate();
-		$callback();
+		$tabs    = $this->tabulate();
+		$content = $render_content();
 
 		$this->tab_depth -= $step;
 
-		return $this;
+		$content_parts = array( $tabs, $content );
+		return join( '', $content_parts );
 	}
 
-	public function tabulate(): self {
+	public function tabulate(): string {
 		$tabs = str_repeat( $this->tab_symbol, $this->tab_depth );
 
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $this->escaper->esc_html( $tabs );
-
-		return $this;
+		return $this->escaper->esc_html( $tabs );
 	}
 }

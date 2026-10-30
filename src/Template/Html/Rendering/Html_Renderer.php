@@ -30,7 +30,7 @@ final class Html_Renderer {
 		$this->node_renderer = new Html_Stringifier( $escaper );
 		$this->node_renderer->add_object_handlers(
 			array(
-				Html_Tag::class => fn( object $value ) =>$value instanceof Html_Tag ?
+				Html_Tag::class => fn( object $value ) => $value instanceof Html_Tag ?
 					$this->tag_renderer->render_tag( $value ) :
 					'',
 			)
@@ -55,92 +55,73 @@ final class Html_Renderer {
 	 * @param Html_Node ...$nodes
 	 */
 	public function render_html( ...$nodes ): string {
-		ob_start();
-		$this->print_html( ...$nodes );
+		$parts         = array();
+		$previous_node = null;
 
-		return (string) ob_get_clean();
+		foreach ( $nodes as $node ) {
+			if ( ! is_null( $previous_node ) &&
+				$this->formatter instanceof Html_Formatter ) {
+				$parts[] = $this->formatter->format_interleave( $previous_node, $node );
+			}
+
+			$node_html = $this->render_node( $node );
+
+			$parts[] = $this->formatter instanceof Html_Formatter ?
+				$this->formatter->format_node( $node, $node_html ) :
+				$node_html;
+
+			$previous_node = $node;
+		}
+
+		return join( '', $parts );
 	}
 
 	/**
 	 * @param Html_Node ...$nodes
 	 */
 	public function print_html( ...$nodes ): void {
-		$previous_node = null;
-
-		foreach ( $nodes as $node ) {
-			if ( ! is_null( $previous_node ) &&
-				$this->formatter instanceof Html_Formatter ) {
-				$this->formatter->print_interleave( $previous_node, $node );
-			}
-
-			$print_node = $node instanceof Html_Tag ?
-				$this->create_tag_printer( $node ) :
-				$this->create_node_printer( $node );
-
-			if ( $this->formatter instanceof Html_Formatter ) {
-				$this->formatter->print_node( $node, $print_node );
-			} else {
-				$print_node();
-			}
-
-			$previous_node = $node;
-		}
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->render_html( ...$nodes );
 	}
 
 	/**
-	 * @return callable():mixed
+	 * @param Html_Node $node
 	 */
-	protected function create_tag_printer( Html_Tag $tag ): callable {
+	protected function render_node( $node ): string {
+		if ( $node instanceof Html_Tag ) {
+			return $this->render_tag_node( $node );
+		}
+
+		if ( $node instanceof Closure ) {
+			ob_start();
+			$node();
+
+			return (string) ob_get_clean();
+		}
+
+		return $this->escaper->stringify( $node );
+	}
+
+	protected function render_tag_node( Html_Tag $tag ): string {
 		$nodes     = $tag->get_nodes();
 		$has_nodes = count( $nodes ) > 0;
 
-		$content_renderer = $has_nodes ?
-			$this->create_nested_node_renderer( $tag, $nodes ) :
-			null;
+		$content = $has_nodes ?
+			$this->render_nested_nodes( $tag, $nodes ) :
+			'';
 
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		return fn() => print( $this->tag_renderer->render_tag( $tag, $content_renderer ) );
+		return $this->tag_renderer->render_tag( $tag, $content );
 	}
 
 	/**
 	 * @param Html_Node $node
 	 * @param Html_Node[] $nodes
-	 *
-	 * @return Closure():string
 	 */
-	protected function create_nested_node_renderer( $node, array $nodes ): Closure {
-		$printer = fn() => $this->print_html( ...$nodes );
+	protected function render_nested_nodes( $node, array $nodes ): string {
+		$render_nodes = fn(): string => $this->render_html( ...$nodes );
 
-		if ( $this->formatter instanceof Html_Formatter ) {
-			return function () use ( $node, $printer ): string {
-				ob_start();
-				$this->formatter->print_node_content( $node, $printer );
-
-				return (string) ob_get_clean();
-			};
-		}
-
-		return fn(): string => $this->render_html( ...$nodes );
-	}
-
-	/**
-	 * @param Html_Node $node
-	 *
-	 * @return callback():mixed
-	 */
-	protected function create_node_printer( $node ): callable {
-		return fn()=> $this->print_node( $node );
-	}
-
-	/**
-	 * @param Html_Node $node
-	 */
-	protected function print_node( $node ): void {
-		if ( $node instanceof Closure ) {
-			$node();
-		} else {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $this->escaper->stringify( $node );
-		}
+		return $this->formatter instanceof Html_Formatter ?
+			$this->formatter->format_node_content( $node, $render_nodes ) :
+			$render_nodes();
 	}
 }

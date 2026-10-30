@@ -6,6 +6,8 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Formatting;
 
 defined( 'ABSPATH' ) || exit;
 
+use Closure;
+
 class Html_Tree_Formatter implements Html_Formatter {
 	protected Text_Formatter $formatter;
 
@@ -13,17 +15,25 @@ class Html_Tree_Formatter implements Html_Formatter {
 		$this->formatter = $formatter;
 	}
 
-	public function print_node( $node, callable $print_node ): void {
-		$print_node();
+	public function format_node( $node, string $node_html ): string {
+		return $node_html;
 	}
 
-	public function print_node_content( $node, callable $print_content ): void {
-		$this->formatter->new_line()
-						->tab_shift( $print_content )
-						->indent_line();
+	public function format_node_content( $node, Closure $render_content ): string {
+		$new_line        = $this->formatter->new_line();
+		$shifted_content = $this->formatter->tab_shift( $render_content );
+		$indented_end    = $this->formatter->indent_line();
+
+		$content_parts = array(
+			$new_line,
+			$shifted_content,
+			$indented_end,
+		);
+
+		return join( '', $content_parts );
 	}
 
-	public function print_interleave( $previous_node, $next_node ): void {
-		$this->formatter->new_line();
+	public function format_interleave( $previous_node, $next_node ): string {
+		return $this->formatter->new_line();
 	}
 }
