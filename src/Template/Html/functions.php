@@ -10,6 +10,10 @@ function tag( string $name ): Html_Tag {
 	return new Html_Tag( $name );
 }
 
+function raw_html( string $html ): Raw_Html {
+	return new Raw_Html( $html );
+}
+
 /**
  * @param array<string|object> $items
  */

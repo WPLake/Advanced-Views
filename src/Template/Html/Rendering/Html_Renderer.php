@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Html_Formatter;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Element;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Raw_Html;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
@@ -29,6 +30,9 @@ final class Html_Renderer {
 		$this->element_renderers = array(
 			Html_Tag::class => fn( $element, string $content ) => $element instanceof Html_Tag ?
 				$tag_renderer->render_tag( $element, $content ) :
+				'',
+			Raw_Html::class => fn( $element ) => $element instanceof Raw_Html ?
+				$element->get_html() :
 				'',
 		);
 	}
