@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
@@ -19,11 +20,13 @@ final class PHP_Template_Engine implements Template_Engine {
 	private Logger $logger;
 	private Settings_Storage $settings;
 	private Html_Renderer $html_renderer;
+	private Html_Escaper $escaper;
 
-	public function __construct( Logger $logger, Settings_Storage $settings, Html_Renderer $html_renderer ) {
+	public function __construct( Logger $logger, Settings_Storage $settings, Html_Renderer $html_renderer, Html_Escaper $escaper ) {
 		$this->logger   = $logger;
 		$this->settings = $settings;
 		$this->html_renderer = $html_renderer;
+		$this->escaper       = $escaper;
 	}
 
 	public function get_name(): string {
@@ -43,6 +46,6 @@ final class PHP_Template_Engine implements Template_Engine {
 	}
 
 	public function create_token_factory(): Token_Factory {
-		return new PHP_Tokens( PHP_Printer::class );
+		return new PHP_Tokens( PHP_Printer::class, $this->escaper );
 	}
 }

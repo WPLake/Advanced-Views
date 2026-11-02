@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Stateme
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Rendering\Token_Printer;
 
@@ -22,8 +23,8 @@ abstract class Variable_Token extends Statement_Token_Base {
 	/**
 	 * @param class-string<Token_Printer> $printer_class
 	 */
-	public function __construct( string $printer_class, string $name ) {
-		parent::__construct( $printer_class );
+	public function __construct( string $printer_class, Html_Escaper $escaper, string $name ) {
+		parent::__construct( $printer_class, $escaper );
 
 		$this->set_name( $name );
 	}

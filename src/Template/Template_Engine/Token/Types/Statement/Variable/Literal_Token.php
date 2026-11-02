@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Stateme
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Rendering\Token_Printer;
@@ -24,8 +25,8 @@ abstract class Literal_Token extends Statement_Token_Base {
 	 * @param class-string<Token_Printer> $printer_class
 	 * @param Literal_Value $value
 	 */
-	public function __construct( string $printer_class, $value ) {
-		parent::__construct( $printer_class );
+	public function __construct( string $printer_class, Html_Escaper $escaper, $value ) {
+		parent::__construct( $printer_class, $escaper );
 
 		$this->value = $value;
 	}
@@ -39,7 +40,9 @@ abstract class Literal_Token extends Statement_Token_Base {
 	 */
 	protected function literally( $value ): string {
 		if ( is_string( $value ) ) {
-			return sprintf( "'%s'", esc_html( $value ) );
+			$escaped_value = $this->escaper->esc_html( $value );
+
+			return sprintf( "'%s'", $escaped_value );
 		}
 
 		return $this->as_string( $value );
@@ -65,7 +68,7 @@ abstract class Literal_Token extends Statement_Token_Base {
 
 		$text = string( $value );
 
-		return esc_html( $text );
+		return $this->escaper->esc_html( $text );
 	}
 
 	/**

@@ -26,27 +26,43 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Statement\Var
 
 final class PHP_Tokens extends Token_Factory_Base {
 	public function comment( string $content ): Comment_Token {
-		return new PHP_Comment( $this->printer_class, $content );
+		return new PHP_Comment(
+			$this->printer_class,
+			$this->escaper,
+			$content
+		);
 	}
 
 	public function variable( string $name ): Variable_Token {
-		return new PHP_Variable( $this->printer_class, $name );
+		return new PHP_Variable(
+			$this->printer_class,
+			$this->escaper,
+			$name
+		);
 	}
 
 	public function if(): IF_Token {
-		return new PHP_IF( $this->printer_class );
+		return new PHP_IF( $this->printer_class, $this->escaper );
 	}
 
 	public function loop(): Loop_Token {
-		return new PHP_Loop( $this->printer_class, $this );
+		return new PHP_Loop(
+			$this->printer_class,
+			$this->escaper,
+			$this
+		);
 	}
 
 	public function assignment(): Assignment_Token {
-		return new PHP_Assignment( $this->printer_class );
+		return new PHP_Assignment( $this->printer_class, $this->escaper );
 	}
 
 	public function literal( $value ): Literal_Token {
-		return new PHP_Literal( $this->printer_class, $value );
+		return new PHP_Literal(
+			$this->printer_class,
+			$this->escaper,
+			$value
+		);
 	}
 
 	public function functions(): Functions_Token {
@@ -54,6 +70,6 @@ final class PHP_Tokens extends Token_Factory_Base {
 	}
 
 	public function range(): Range_Token {
-		return new PHP_Range( $this->printer_class );
+		return new PHP_Range( $this->printer_class, $this->escaper );
 	}
 }

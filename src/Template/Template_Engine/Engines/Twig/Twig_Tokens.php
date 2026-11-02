@@ -28,31 +28,47 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Statement\Va
 
 final class Twig_Tokens extends Token_Factory_Base {
 	public function comment( string $content ): Comment_Token {
-		return new Twig_Comment( $this->printer_class, $content );
+		return new Twig_Comment(
+			$this->printer_class,
+			$this->escaper,
+			$content
+		);
 	}
 
 	public function variable( string $name ): Variable_Token {
-		return new Twig_Variable( $this->printer_class, $name );
+		return new Twig_Variable(
+			$this->printer_class,
+			$this->escaper,
+			$name
+		);
 	}
 
 	public function if(): IF_Token {
-		return new Twig_IF( $this->printer_class );
+		return new Twig_IF( $this->printer_class, $this->escaper );
 	}
 
 	public function loop(): Loop_Token {
-		return new Twig_Loop( $this->printer_class, $this );
+		return new Twig_Loop(
+			$this->printer_class,
+			$this->escaper,
+			$this
+		);
 	}
 
 	public function assignment(): Assignment_Token {
-		return new Twig_Assignnment( $this->printer_class );
+		return new Twig_Assignnment( $this->printer_class, $this->escaper );
 	}
 
 	public function comparison(): Comparison_Token {
-		return new Twig_Comparison( $this->printer_class );
+		return new Twig_Comparison( $this->printer_class, $this->escaper );
 	}
 
 	public function literal( $value ): Literal_Token {
-		return new Twig_Literal( $this->printer_class, $value );
+		return new Twig_Literal(
+			$this->printer_class,
+			$this->escaper,
+			$value
+		);
 	}
 
 	public function functions(): Functions_Token {
@@ -60,6 +76,6 @@ final class Twig_Tokens extends Token_Factory_Base {
 	}
 
 	public function range(): Range_Token {
-		return new Twig_Range( $this->printer_class );
+		return new Twig_Range( $this->printer_class, $this->escaper );
 	}
 }

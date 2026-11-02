@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
@@ -21,11 +22,13 @@ class Twig_Template_Engine implements Template_Engine {
 	protected Logger $logger;
 	protected Settings_Storage $settings;
 	protected Html_Renderer $html_renderer;
+	protected Html_Escaper $escaper;
 
-	public function __construct( Logger $logger, Settings_Storage $settings, Html_Renderer $html_renderer ) {
+	public function __construct( Logger $logger, Settings_Storage $settings, Html_Renderer $html_renderer, Html_Escaper $escaper ) {
 		$this->logger        = $logger;
 		$this->settings      = $settings;
 		$this->html_renderer = $html_renderer;
+		$this->escaper       = $escaper;
 	}
 
 	public function get_name(): string {
@@ -51,6 +54,6 @@ class Twig_Template_Engine implements Template_Engine {
 	}
 
 	public function create_token_factory(): Token_Factory {
-		return new Twig_Tokens( Twig_Printer::class );
+		return new Twig_Tokens( Twig_Printer::class, $this->escaper );
 	}
 }

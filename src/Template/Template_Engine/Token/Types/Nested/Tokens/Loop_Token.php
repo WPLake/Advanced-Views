@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Element;
 use Org\Wplake\Advanced_Views\Template\Html\Raw_Html;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Nested_Token;
@@ -34,8 +35,8 @@ abstract class Loop_Token extends Template_Token_Base implements Nested_Token {
 	/**
 	 * @param class-string<Token_Printer> $printer_class
 	 */
-	public function __construct( string $printer_class, Token_Factory $token_factory ) {
-		parent::__construct( $printer_class );
+	public function __construct( string $printer_class, Html_Escaper $escaper, Token_Factory $token_factory ) {
+		parent::__construct( $printer_class, $escaper );
 
 		$this->index_var = $token_factory->variable( self::LOOP_INDEX_KEY );
 	}

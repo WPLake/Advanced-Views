@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Stateme
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Rendering\Token_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token_Base;
@@ -20,8 +21,8 @@ class Function_Token extends Statement_Token_Base {
 	/**
 	 * @param class-string<Token_Printer> $printer_class
 	 */
-	public function __construct( string $printer_class, string $name ) {
-		parent::__construct( $printer_class );
+	public function __construct( string $printer_class, Html_Escaper $escaper, string $name ) {
+		parent::__construct( $printer_class, $escaper );
 
 		$this->name = $name;
 	}
@@ -43,6 +44,8 @@ class Function_Token extends Statement_Token_Base {
 
 		$joined_arguments = join( ', ', $arguments );
 
-		return sprintf( '%s(%s)', esc_html( $this->name ), $joined_arguments );
+		$escaped_name = $this->escaper->esc_html( $this->name );
+
+		return sprintf( '%s(%s)', $escaped_name, $joined_arguments );
 	}
 }
