@@ -13,13 +13,16 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Nested
 
 /**
  * Sections (the parts of loops and conditions) are laid out like tag content: wrapped by new lines and shifted.
- * Nested tokens (loops, IF) are transparent: their nodes are formatted as the nodes of the parent level.
+ * Nested tokens (loops, IF) add no level of their own, their nodes are formatted as the nodes of the parent level,
+ * but they are set apart by an empty line above and below (so two nested tokens in a row have two between them).
  */
 final class Token_Tree_Formatter extends Html_Tree_Formatter {
 	public function format_node( $node, string $node_html ): string {
-		return $node instanceof Nested_Token ?
-			$node_html :
-			parent::format_node( $node, $node_html );
+		if ( $node instanceof Nested_Token ) {
+			return $this->set_apart( $node_html );
+		}
+
+		return parent::format_node( $node, $node_html );
 	}
 
 	public function format_node_content( $node, Closure $render_content ): string {
@@ -32,6 +35,12 @@ final class Token_Tree_Formatter extends Html_Tree_Formatter {
 		}
 
 		return parent::format_node_content( $node, $render_content );
+	}
+
+	protected function set_apart( string $node_html ): string {
+		$new_line = $this->formatter->new_line();
+
+		return $new_line . $node_html . $new_line;
 	}
 
 	/**
