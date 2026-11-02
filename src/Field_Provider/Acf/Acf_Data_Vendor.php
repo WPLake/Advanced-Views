@@ -211,59 +211,59 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	 */
 	public function get_field_types(): array {
 		$basic = array(
-			'text'     => new Plain_Field( $this->printer ),
+			'text'     => new Plain_Field( $this->renderer ),
 			// we don't need ACF to wrap every line of the value with <p> tags.
-			'textarea' => new Html_Field( $this->printer, false, true ),
-			'number'   => new Plain_Field( $this->printer ),
-			'range'    => new Plain_Field( $this->printer ),
-			'email'    => new Plain_Field( $this->printer ),
-			'url'      => new Url_Field( $this->printer ),
-			'password' => new Plain_Field( $this->printer ),
+			'textarea' => new Html_Field( $this->renderer, false, true ),
+			'number'   => new Plain_Field( $this->renderer ),
+			'range'    => new Plain_Field( $this->renderer ),
+			'email'    => new Plain_Field( $this->renderer ),
+			'url'      => new Url_Field( $this->renderer ),
+			'password' => new Plain_Field( $this->renderer ),
 		);
 
 		$content = array(
-			'image'   => new Image_Field( $this->printer ),
-			'file'    => new File_Field( new Link_Field( $this->printer ), $this->printer ),
-			'wysiwyg' => new Html_Field( $this->printer ),
-			'oembed'  => new Html_Field( $this->printer ),
-			'gallery' => new Gallery_Field( new Image_Field( $this->printer ), $this->printer ),
+			'image'   => new Image_Field( $this->renderer ),
+			'file'    => new File_Field( new Link_Field( $this->renderer ), $this->renderer ),
+			'wysiwyg' => new Html_Field( $this->renderer ),
+			'oembed'  => new Html_Field( $this->renderer ),
+			'gallery' => new Gallery_Field( new Image_Field( $this->renderer ), $this->renderer ),
 		);
 
 		$choice = array(
-			'select'       => new Select_Field( $this->printer ),
-			'checkbox'     => new Select_Field( $this->printer ),
-			'radio'        => new Select_Field( $this->printer ),
-			'button_group' => new Select_Field( $this->printer ),
-			'true_false'   => new True_False_Field( $this->printer ),
+			'select'       => new Select_Field( $this->renderer ),
+			'checkbox'     => new Select_Field( $this->renderer ),
+			'radio'        => new Select_Field( $this->renderer ),
+			'button_group' => new Select_Field( $this->renderer ),
+			'true_false'   => new True_False_Field( $this->renderer ),
 		);
 
 		$relational = array(
-			'link'         => new Link_Field( $this->printer ),
-			'post_object'  => new Post_Object_Field( new Link_Field( $this->printer ), $this->printer ),
-			'page_link'    => new Page_Link_Field( new Link_Field( $this->printer ), $this->printer ),
-			'relationship' => new Post_Object_Field( new Link_Field( $this->printer ), $this->printer ),
-			'taxonomy'     => new Taxonomy_Field( new Link_Field( $this->printer ), $this->printer ),
-			'user'         => new User_Field( new Link_Field( $this->printer ), $this->printer ),
+			'link'         => new Link_Field( $this->renderer ),
+			'post_object'  => new Post_Object_Field( new Link_Field( $this->renderer ), $this->renderer ),
+			'page_link'    => new Page_Link_Field( new Link_Field( $this->renderer ), $this->renderer ),
+			'relationship' => new Post_Object_Field( new Link_Field( $this->renderer ), $this->renderer ),
+			'taxonomy'     => new Taxonomy_Field( new Link_Field( $this->renderer ), $this->renderer ),
+			'user'         => new User_Field( new Link_Field( $this->renderer ), $this->renderer ),
 		);
 
 		$advanced = array(
-			'google_map'       => new Map_Field( $this->printer ),
+			'google_map'       => new Map_Field( $this->renderer ),
 			// https://wordpress.org/plugins/acf-google-map-field-multiple-markers/.
-			'google_map_multi' => new Map_Field( $this->printer ),
+			'google_map_multi' => new Map_Field( $this->renderer ),
 			// https://wordpress.org/plugins/acf-openstreetmap-field/.
-			'open_street_map'  => new Map_Field( $this->printer ),
-			'date_picker'      => new Date_Picker_Field( $this->printer ),
-			'date_time_picker' => new Date_Picker_Field( $this->printer ),
-			'time_picker'      => new Date_Picker_Field( $this->printer ),
-			'color_picker'     => new Color_Picker_Field( $this->printer ),
-			'icon_picker'      => new Icon_Picker_Field( new Image_Field( $this->printer ), $this->printer ),
+			'open_street_map'  => new Map_Field( $this->renderer ),
+			'date_picker'      => new Date_Picker_Field( $this->renderer ),
+			'date_time_picker' => new Date_Picker_Field( $this->renderer ),
+			'time_picker'      => new Date_Picker_Field( $this->renderer ),
+			'color_picker'     => new Color_Picker_Field( $this->renderer ),
+			'icon_picker'      => new Icon_Picker_Field( new Image_Field( $this->renderer ), $this->renderer ),
 		);
 
 		$layout = array(
-			'group'            => new Pro_Stub_Field( $this->printer ),
-			'repeater'         => new Pro_Stub_Field( $this->printer ),
-			'flexible_content' => new Pro_Stub_Field( $this->printer ),
-			'tab'              => new Tab_Field( $this->printer ),
+			'group'            => new Pro_Stub_Field( $this->renderer ),
+			'repeater'         => new Pro_Stub_Field( $this->renderer ),
+			'flexible_content' => new Pro_Stub_Field( $this->renderer ),
+			'tab'              => new Tab_Field( $this->renderer ),
 		);
 
 		return array_merge( $basic, $content, $choice, $relational, $advanced, $layout );

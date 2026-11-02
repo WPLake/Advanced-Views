@@ -369,67 +369,67 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 
 	public function get_field_types(): array {
 		$basic = array(
-			'checkbox'      => new True_False_Field( $this->printer ),
-			'checkbox_list' => new Select_Field( $this->printer ),
-			'radio'         => new Select_Field( $this->printer ),
-			'select'        => new Select_Field( $this->printer ),
-			'text'          => new Plain_Field( $this->printer ),
-			'textarea'      => new Html_Field( $this->printer ),
+			'checkbox'      => new True_False_Field( $this->renderer ),
+			'checkbox_list' => new Select_Field( $this->renderer ),
+			'radio'         => new Select_Field( $this->renderer ),
+			'select'        => new Select_Field( $this->renderer ),
+			'text'          => new Plain_Field( $this->renderer ),
+			'textarea'      => new Html_Field( $this->renderer ),
 		);
 
 		$advanced = array(
-			'autocomplete'    => new Select_Field( $this->printer ),
+			'autocomplete'    => new Select_Field( $this->renderer ),
 			// we need to use 'the_value' function, so HTML field fits here.
-			'background'      => new Html_Field( $this->printer ),
-			'button_group'    => new Select_Field( $this->printer ),
-			'color'           => new Plain_Field( $this->printer ),
-			'date'            => new Date_Picker_Field( $this->printer ),
-			'datetime'        => new Date_Picker_Field( $this->printer ),
-			'map'             => new Mb_Map_Field( $this->printer ),
-			'hidden'          => new Plain_Field( $this->printer ),
+			'background'      => new Html_Field( $this->renderer ),
+			'button_group'    => new Select_Field( $this->renderer ),
+			'color'           => new Plain_Field( $this->renderer ),
+			'date'            => new Date_Picker_Field( $this->renderer ),
+			'datetime'        => new Date_Picker_Field( $this->renderer ),
+			'map'             => new Mb_Map_Field( $this->renderer ),
+			'hidden'          => new Plain_Field( $this->renderer ),
 			// FontAwesome or SVG icon.
-			'icon'            => new Html_Field( $this->printer ),
-			'image_select'    => new Select_Field( $this->printer ),
-			'oembed'          => new Html_Field( $this->printer ),
-			'osm'             => new Mb_Map_Field( $this->printer ),
-			'password'        => new Plain_Field( $this->printer ),
-			'select_advanced' => new Select_Field( $this->printer ),
+			'icon'            => new Html_Field( $this->renderer ),
+			'image_select'    => new Select_Field( $this->renderer ),
+			'oembed'          => new Html_Field( $this->renderer ),
+			'osm'             => new Mb_Map_Field( $this->renderer ),
+			'password'        => new Plain_Field( $this->renderer ),
+			'select_advanced' => new Select_Field( $this->renderer ),
 			// it's a range number.
-			'slider'          => new Plain_Field( $this->printer ),
-			'switch'          => new True_False_Field( $this->printer ),
-			'time'            => new Plain_Field( $this->printer ),
-			'wysiwyg'         => new Html_Field( $this->printer ),
+			'slider'          => new Plain_Field( $this->renderer ),
+			'switch'          => new True_False_Field( $this->renderer ),
+			'time'            => new Plain_Field( $this->renderer ),
+			'wysiwyg'         => new Html_Field( $this->renderer ),
 		);
 
 		$html5 = array(
-			'email'  => new Plain_Field( $this->printer ),
-			'number' => new Plain_Field( $this->printer ),
-			'range'  => new Plain_Field( $this->printer ),
-			'url'    => new Url_Field( $this->printer ),
+			'email'  => new Plain_Field( $this->renderer ),
+			'number' => new Plain_Field( $this->renderer ),
+			'range'  => new Plain_Field( $this->renderer ),
+			'url'    => new Url_Field( $this->renderer ),
 		);
 
 		$wordpress = array(
-			'post'              => new Post_Object_Field( new Link_Field( $this->printer ), $this->printer ),
-			'sidebar'           => new Html_Field( $this->printer ),
-			'taxonomy'          => new Mb_Taxonomy_Field( new Link_Field( $this->printer ), $this->printer ),
-			'taxonomy_advanced' => new Mb_Taxonomy_Field( new Link_Field( $this->printer ), $this->printer ),
-			'user'              => new User_Field( new Link_Field( $this->printer ), $this->printer ),
+			'post'              => new Post_Object_Field( new Link_Field( $this->renderer ), $this->renderer ),
+			'sidebar'           => new Html_Field( $this->renderer ),
+			'taxonomy'          => new Mb_Taxonomy_Field( new Link_Field( $this->renderer ), $this->renderer ),
+			'taxonomy_advanced' => new Mb_Taxonomy_Field( new Link_Field( $this->renderer ), $this->renderer ),
+			'user'              => new User_Field( new Link_Field( $this->renderer ), $this->renderer ),
 		);
 
 		$upload = array(
-			'file'           => new Mb_File_Field( new Link_Field( $this->printer ), $this->printer ),
-			'file_advanced'  => new Mb_File_Field( new Link_Field( $this->printer ), $this->printer ),
-			'file_input'     => new Mb_File_Field( new Link_Field( $this->printer ), $this->printer ),
-			'file_upload'    => new Mb_File_Field( new Link_Field( $this->printer ), $this->printer ),
-			'image'          => new Mb_Gallery_Field( new Mb_Image_Field( $this->printer ), $this->printer ),
-			'image_advanced' => new Mb_Gallery_Field( new Mb_Image_Field( $this->printer ), $this->printer ),
-			'image_upload'   => new Mb_Gallery_Field( new Mb_Image_Field( $this->printer ), $this->printer ),
-			'single_image'   => new Mb_Image_Field( $this->printer ),
-			'video'          => new Html_Field( $this->printer ),
+			'file'           => new Mb_File_Field( new Link_Field( $this->renderer ), $this->renderer ),
+			'file_advanced'  => new Mb_File_Field( new Link_Field( $this->renderer ), $this->renderer ),
+			'file_input'     => new Mb_File_Field( new Link_Field( $this->renderer ), $this->renderer ),
+			'file_upload'    => new Mb_File_Field( new Link_Field( $this->renderer ), $this->renderer ),
+			'image'          => new Mb_Gallery_Field( new Mb_Image_Field( $this->renderer ), $this->renderer ),
+			'image_advanced' => new Mb_Gallery_Field( new Mb_Image_Field( $this->renderer ), $this->renderer ),
+			'image_upload'   => new Mb_Gallery_Field( new Mb_Image_Field( $this->renderer ), $this->renderer ),
+			'single_image'   => new Mb_Image_Field( $this->renderer ),
+			'video'          => new Html_Field( $this->renderer ),
 		);
 
 		$layout = array(
-			'group' => new Pro_Stub_Field( $this->printer ),
+			'group' => new Pro_Stub_Field( $this->renderer ),
 		);
 
 		return array_merge( $basic, $advanced, $html5, $wordpress, $upload, $layout );
