@@ -83,8 +83,10 @@ abstract class Git_Tabs extends External_Storage_Tab {
 
 	/**
 	 * @param array{id:string, accessToken:string, name:string} $git_repository
+	 *
+	 * @return Html_Node[]
 	 */
-	protected function print_description( array $git_repository ): void {
+	protected function description_nodes( array $git_repository ): array {
 		$reset_cache_link = $this->get_reset_cache_link( $git_repository['id'] );
 
 		$read_more_label = __( 'Read more', 'acf-views' );
@@ -106,7 +108,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 				$here_label
 			);
 
-		$tags = array(
+		return array(
 			__(
 				'By saving items in your GitLab repository, you can create your own library and reuse them on other websites.',
 				'acf-views'
@@ -120,8 +122,6 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			' ',
 			__( 'to clear the cache.', 'acf-views' ),
 		);
-
-		$this->html_renderer->print_html( ...$tags );
 	}
 
 	protected function get_reset_cache_link( string $repository_id ): string {
@@ -488,11 +488,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			$tab_data = new Tab_Data( $this );
 			$tab_data->set_name( self::TAB_PREFIX . $git_repository['id'] );
 			$tab_data->set_label( $git_repository['name'] );
-			$tab_data->set_description_callback(
-				function () use ( $git_repository ): void {
-					$this->print_description( $git_repository );
-				}
-			);
+			$tab_data->set_description_nodes( $this->description_nodes( $git_repository ) );
 			$tab_data->set_label_in_brackets( __( 'gitlab', 'acf-views' ) );
 			$tab_data->set_items( $this->get_items( $pagination_per_page, $total_items_count ) );
 			$tab_data->set_total_items_count( $total_items_count );

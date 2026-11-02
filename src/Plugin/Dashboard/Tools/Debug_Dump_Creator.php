@@ -113,6 +113,9 @@ final class Debug_Dump_Creator {
 		return $export_data;
 	}
 
+	/**
+	 * @param array<string,mixed> $dump_data
+	 */
 	protected function download_script( array $dump_data, string $redirect_url ): string {
 		ob_start();
 		?>

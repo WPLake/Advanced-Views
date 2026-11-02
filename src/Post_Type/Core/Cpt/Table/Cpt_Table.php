@@ -175,15 +175,13 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 	protected function print_post_type_description( WP_Post_Type $wp_post_type ): void {
 		$current_tab_data = $this->get_current_tab_data();
 
-		$description_callback = null !== $current_tab_data ?
-			$current_tab_data->get_description_callback() :
-			null;
+		$description_nodes = null !== $current_tab_data ?
+			$current_tab_data->get_description_nodes() :
+			array();
 
-		if ( null !== $description_callback ) {
+		if ( array() !== $description_nodes ) {
 			$tags = tag( 'p' )
-				->content(
-					$description_callback
-				);
+				->content( ...$description_nodes );
 
 			$this->html_renderer->print_html( $tags );
 

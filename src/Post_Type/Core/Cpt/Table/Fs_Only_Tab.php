@@ -61,43 +61,7 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 		$tab_data->set_name( self::NAME );
 		$tab_data->set_label( __( 'FS only', 'acf-views' ) );
 
-		$print_description = function (): void {
-			$read_more_label = __( 'Read more', 'acf-views' );
-
-			$read_more_link = tag( 'a' )
-				->attributes(
-					array(
-						'target' => '_blank',
-						'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
-					)
-				)
-				->content(
-					$read_more_label
-				);
-
-			$tags = array(
-				__(
-					'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
-					'acf-views'
-				),
-				tag( 'br' ),
-				__(
-					'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
-					'acf-views'
-				),
-				tag( 'br' ),
-				__(
-					'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
-					'acf-views'
-				),
-				' ',
-				$read_more_link,
-			);
-
-			$this->html_renderer->print_html( ...$tags );
-		};
-
-		$tab_data->set_description_callback( $print_description );
+		$tab_data->set_description_nodes( $this->description_nodes() );
 		$tab_data->set_label_in_brackets( (string) $fs_only_items_count );
 		$tab_data->set_bulk_actions( $this->get_bulk_actions() );
 		$tab_data->set_total_items_count( $fs_only_items_count );
@@ -220,6 +184,43 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 			'sync',
 			$url,
 			__( 'Sync', 'acf-views' )
+		);
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function description_nodes(): array {
+		$read_more_label = __( 'Read more', 'acf-views' );
+
+		$read_more_link = tag( 'a' )
+			->attributes(
+				array(
+					'target' => '_blank',
+					'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
+				)
+			)
+			->content(
+				$read_more_label
+			);
+
+		return array(
+			__(
+				'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
+				'acf-views'
+			),
+			tag( 'br' ),
+			__(
+				'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
+				'acf-views'
+			),
+			tag( 'br' ),
+			__(
+				'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
+				'acf-views'
+			),
+			' ',
+			$read_more_link,
 		);
 	}
 }

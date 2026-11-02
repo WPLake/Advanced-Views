@@ -61,10 +61,6 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 	 */
 	abstract protected function tab_description_middle_nodes(): array;
 
-	protected function print_tab_description(): void {
-		$this->html_renderer->print_html( ...$this->tab_description_nodes() );
-	}
-
 	/**
 	 * @return Html_Node[]
 	 */
@@ -120,7 +116,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		$tab_data = new Tab_Data( $this );
 		$tab_data->set_name( self::NAME );
 		$tab_data->set_label( __( 'Pre-built components', 'acf-views' ) );
-		$tab_data->set_description_callback( fn() => $this->print_tab_description() );
+		$tab_data->set_description_nodes( $this->tab_description_nodes() );
 		$tab_data->set_label_in_brackets( (string) $items_count );
 		$tab_data->set_bulk_actions( $this->get_bulk_actions() );
 		$tab_data->set_total_items_count( $items_count );

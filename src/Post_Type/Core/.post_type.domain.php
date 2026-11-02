@@ -7,6 +7,7 @@ use Org\Wplake\Advanced_Views\Assets\assets_domain;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\field_provider_domain;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\dashboard_domain;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\template_engine_domain;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\template_token_domain;
 
 class post_type_domain extends Domain_Policy {
 	const WHITELIST_DOMAINS = [
@@ -16,6 +17,7 @@ class post_type_domain extends Domain_Policy {
 		dashboard_domain::class,
 		field_provider_domain::class,
 		template_engine_domain::class,
+		template_token_domain::class,
 	];
 	const WHITELIST_NAMESPACES = [
 		'Psr\Container',

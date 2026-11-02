@@ -4,7 +4,6 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 
-use Closure;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
@@ -16,7 +15,10 @@ class Tab_Data {
 
 	private string $name;
 	private string $label;
-	private ?Closure $description_callback;
+	/**
+	 * @var Html_Node[]
+	 */
+	private array $description_nodes;
 	private string $label_in_brackets;
 	private int $total_items_count;
 	/**
@@ -34,7 +36,7 @@ class Tab_Data {
 		$this->cpt_table_tab        = $cpt_table_tab;
 		$this->name                 = '';
 		$this->label                = '';
-		$this->description_callback = null;
+		$this->description_nodes    = array();
 		$this->label_in_brackets    = '';
 		$this->total_items_count    = 0;
 		$this->items                = array();
@@ -66,12 +68,18 @@ class Tab_Data {
 		$this->label = $label;
 	}
 
-	public function get_description_callback(): ?Closure {
-		return $this->description_callback;
+	/**
+	 * @return Html_Node[]
+	 */
+	public function get_description_nodes(): array {
+		return $this->description_nodes;
 	}
 
-	public function set_description_callback( ?Closure $description_callback ): void {
-		$this->description_callback = $description_callback;
+	/**
+	 * @param Html_Node[] $description_nodes
+	 */
+	public function set_description_nodes( array $description_nodes ): void {
+		$this->description_nodes = $description_nodes;
 	}
 
 	public function get_label_in_brackets(): string {
