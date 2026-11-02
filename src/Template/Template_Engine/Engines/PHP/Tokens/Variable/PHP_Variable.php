@@ -9,32 +9,23 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 
 final class PHP_Variable extends Variable_Token {
-	public function print_token(): void {
-		printf(
-			'$%s',
-			esc_html( $this->name ),
-		);
+	public function get_token(): string {
+		$token = sprintf( '$%s', esc_html( $this->name ) );
 
 		foreach ( $this->item_path as $item_key ) {
-			if ( $this->is_object ) {
-				$this->print_object_key( $item_key );
-			} else {
-				$this->print_array_key( $item_key );
-			}
+			$token .= $this->is_object ?
+				$this->object_key( $item_key ) :
+				$this->array_key( $item_key );
 		}
+
+		return $token;
 	}
 
-	protected function print_array_key( string $key ): void {
-		printf(
-			'["%s"]',
-			esc_html( $key ),
-		);
+	protected function array_key( string $key ): string {
+		return sprintf( '["%s"]', esc_html( $key ) );
 	}
 
-	protected function print_object_key( string $key ): void {
-		printf(
-			'->%s',
-			esc_html( $key ),
-		);
+	protected function object_key( string $key ): string {
+		return sprintf( '->%s', esc_html( $key ) );
 	}
 }

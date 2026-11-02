@@ -36,6 +36,12 @@ final class Text_Formatter {
 		return $this;
 	}
 
+	public function set_tab_depth( int $tab_depth ): self {
+		$this->tab_depth = $tab_depth;
+
+		return $this;
+	}
+
 	public function new_line( int $count = 1 ): string {
 		$line_breaks = str_repeat( $this->line_break_symbol, $count );
 

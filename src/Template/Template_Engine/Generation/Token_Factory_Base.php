@@ -11,7 +11,6 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditi
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Conditional_Value_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Function_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Html_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Shortcode_Token;
 
 abstract class Token_Factory_Base implements Token_Factory {
@@ -25,10 +24,6 @@ abstract class Token_Factory_Base implements Token_Factory {
 	 */
 	public function __construct( string $printer_class ) {
 		$this->printer_class = $printer_class;
-	}
-
-	public function html( callable $printer ): Html_Token {
-		return new Html_Token( $this->printer_class, $printer );
 	}
 
 	public function comparison(): Comparison_Token {

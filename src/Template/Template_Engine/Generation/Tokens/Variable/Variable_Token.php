@@ -6,10 +6,10 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\V
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Statement\Statement_Token_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Printer;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token_Base;
 
-abstract class Variable_Token extends Template_Token_Base {
+abstract class Variable_Token extends Statement_Token_Base {
 	const ITEM_PATH_SEPARATOR = '.';
 
 	protected string $name;
@@ -49,13 +49,5 @@ abstract class Variable_Token extends Template_Token_Base {
 		$this->item_path[] = $item_path;
 
 		return $this;
-	}
-
-	public function display(): void {
-		$this->printer_class::display( $this );
-	}
-
-	public function raw_display(): void {
-		$this->printer_class::raw_display( $this );
 	}
 }

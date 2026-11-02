@@ -6,31 +6,13 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Token
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Assignment_Token;
 
 final class Blade_Assignment extends Assignment_Token {
-	public function print_token(): void {
-		echo '@php';
+	public function get_token(): string {
+		$variable = self::bare( $this->variable );
+		$value    = self::bare( $this->value );
 
-		if ( $this->variable instanceof Template_Token ) {
-			$this->variable->print_token();
-		}
-
-		echo ' = ';
-
-		if ( $this->value instanceof Template_Token ) {
-			$this->value->print_token();
-		}
-
-		echo ' @endphp';
-	}
-
-	public function display(): void {
-		$this->print_token();
-	}
-
-	public function raw_display(): void {
-		$this->print_token();
+		return sprintf( '@php%s = %s @endphp', $variable, $value );
 	}
 }

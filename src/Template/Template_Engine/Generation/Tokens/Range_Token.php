@@ -6,22 +6,36 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Statement\Statement_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Statement\Statement_Token;
 
-abstract class Range_Token extends Template_Token_Base {
-	protected ?Template_Token $from = null;
-	protected ?Template_Token $to   = null;
+abstract class Range_Token extends Statement_Token_Base {
+	protected ?Statement_Token $from = null;
+	protected ?Statement_Token $to   = null;
 
-	public function set_from( Template_Token $from ): self {
+	public function set_from( Statement_Token $from ): self {
 		$this->from = $from;
 
 		return $this;
 	}
 
-	public function set_to( Template_Token $to ): self {
+	public function set_to( Statement_Token $to ): self {
 		$this->to = $to;
 
 		return $this;
+	}
+
+	public function get_statement(): string {
+		return $this->get_token();
+	}
+
+	public function get_raw_statement(): string {
+		return $this->get_token();
+	}
+
+	protected static function bare( ?Statement_Token $token ): string {
+		return $token instanceof Statement_Token ?
+			$token->get_token() :
+			'';
 	}
 }

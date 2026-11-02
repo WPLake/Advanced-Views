@@ -6,9 +6,16 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\C
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Element;
+use Org\Wplake\Advanced_Views\Template\Html\Raw_Html;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Nested_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Statement\Statement_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Base;
 
-abstract class IF_Token extends Template_Token_Base {
+/**
+ * @phpstan-import-type Html_Node from Html_Element
+ */
+abstract class IF_Token extends Token_Base implements Nested_Token {
 	protected ?IF_Branch $if_branch = null;
 	/**
 	 * @var IF_Branch[]
@@ -32,5 +39,61 @@ abstract class IF_Token extends Template_Token_Base {
 		$this->else_branch = $branch;
 
 		return $this;
+	}
+
+	/**
+	 * Flattens the branches: every branch tag is followed by the branch body.
+	 *
+	 * @return Html_Node[]
+	 */
+	public function get_nodes(): array {
+		$nodes = array();
+
+		foreach ( $this->typed_branches() as $typed_branch ) {
+			list( $type, $branch ) = $typed_branch;
+
+			$branch_html = $this->get_branch_html( $type, $branch );
+
+			$nodes[] = new Raw_Html( $branch_html );
+
+			array_push( $nodes, ...$branch->body );
+		}
+
+		$end_html = $this->get_end_html();
+
+		$nodes[] = new Raw_Html( $end_html );
+
+		return $nodes;
+	}
+
+	abstract protected function get_branch_html( string $type, IF_Branch $branch ): string;
+
+	abstract protected function get_end_html(): string;
+
+	/**
+	 * @return array<int,array{string,IF_Branch}>
+	 */
+	protected function typed_branches(): array {
+		$typed_branches = array();
+
+		if ( $this->if_branch instanceof IF_Branch ) {
+			$typed_branches[] = array( 'if', $this->if_branch );
+		}
+
+		foreach ( $this->elseif_branches as $branch ) {
+			$typed_branches[] = array( 'elseif', $branch );
+		}
+
+		if ( $this->else_branch instanceof IF_Branch ) {
+			$typed_branches[] = array( 'else', $this->else_branch );
+		}
+
+		return $typed_branches;
+	}
+
+	protected static function bare_condition( IF_Branch $branch ): string {
+		return $branch->condition instanceof Statement_Token ?
+			$branch->condition->get_token() :
+			'';
 	}
 }

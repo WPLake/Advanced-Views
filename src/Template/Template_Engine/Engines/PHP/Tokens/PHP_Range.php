@@ -7,30 +7,12 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Tokens;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Range_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 
 final class PHP_Range extends Range_Token {
-	public function print_token(): void {
-		echo 'range(';
+	public function get_token(): string {
+		$from = self::bare( $this->from );
+		$to   = self::bare( $this->to );
 
-		if ( $this->from instanceof Template_Token ) {
-			$this->from->print_token();
-		}
-
-		echo ', ';
-
-		if ( $this->to instanceof Template_Token ) {
-			$this->to->print_token();
-		}
-
-		echo ')';
-	}
-
-	public function display(): void {
-		$this->print_token();
-	}
-
-	public function raw_display(): void {
-		$this->print_token();
+		return sprintf( 'range(%s, %s)', $from, $to );
 	}
 }

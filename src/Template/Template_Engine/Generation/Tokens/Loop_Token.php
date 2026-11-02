@@ -6,21 +6,29 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Element;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Block_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Statement\Statement_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 
-abstract class Loop_Token extends Template_Token_Base {
+/**
+ * @phpstan-import-type Html_Node from Html_Element
+ */
+abstract class Loop_Token extends Token_Base implements Block_Token {
 	protected const LOOP_INDEX_KEY = 'index';
 
 	protected Variable_Token $index_var;
 
-	protected ?Template_Token $source_var = null;
-	protected ?Variable_Token $item_var   = null;
+	protected ?Statement_Token $source_var = null;
+	protected ?Variable_Token $item_var    = null;
 
-	protected ?Template_Token $body = null;
+	/**
+	 * @var Html_Node[]
+	 */
+	protected array $body = array();
 
 	/**
 	 * @param class-string<Token_Printer> $printer_class
@@ -32,7 +40,7 @@ abstract class Loop_Token extends Template_Token_Base {
 	}
 
 	// source can be not just a variable, but also a function call.
-	public function set_source_variable( Template_Token $source_var ): self {
+	public function set_source_variable( Statement_Token $source_var ): self {
 		$this->source_var = $source_var;
 
 		return $this;
@@ -48,9 +56,22 @@ abstract class Loop_Token extends Template_Token_Base {
 		return $this->index_var;
 	}
 
-	public function set_body( Template_Token $body ): self {
+	/**
+	 * @param Html_Node[] $body
+	 */
+	public function set_body( array $body ): self {
 		$this->body = $body;
 
 		return $this;
+	}
+
+	public function get_nodes(): array {
+		return $this->body;
+	}
+
+	protected static function bare_token( ?Statement_Token $token ): string {
+		return $token instanceof Statement_Token ?
+			$token->get_token() :
+			'';
 	}
 }

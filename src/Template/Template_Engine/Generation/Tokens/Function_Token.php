@@ -6,16 +6,16 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Statement\Statement_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Statement\Statement_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Printer;
 
-class Function_Token extends Template_Token_Base {
+class Function_Token extends Statement_Token_Base {
 	protected string $name;
 	/**
-	 * @var Template_Token[]
+	 * @var Statement_Token[]
 	 */
-	protected array $arguments;
+	protected array $arguments = array();
 
 	/**
 	 * @param class-string<Token_Printer> $printer_class
@@ -26,14 +26,8 @@ class Function_Token extends Template_Token_Base {
 		$this->name = $name;
 	}
 
-	public function print_token(): void {
-		printf( '%s(', esc_html( $this->name ) );
-		$this->print_arguments();
-		echo ')';
-	}
-
 	/**
-	 * @param Template_Token[] $arguments
+	 * @param Statement_Token[] $arguments
 	 */
 	public function set_arguments( array $arguments ): self {
 		$this->arguments = $arguments;
@@ -41,25 +35,14 @@ class Function_Token extends Template_Token_Base {
 		return $this;
 	}
 
-	public function display(): void {
-		$this->printer_class::display( $this );
-	}
+	public function get_token(): string {
+		$arguments = array_map(
+			fn( Statement_Token $argument ): string => $argument->get_token(),
+			$this->arguments
+		);
 
-	public function raw_display(): void {
-		$this->printer_class::raw_display( $this );
-	}
+		$joined_arguments = join( ', ', $arguments );
 
-	protected function print_arguments(): void {
-		$is_first = true;
-
-		foreach ( $this->arguments as $argument ) {
-			if ( $is_first ) {
-				$is_first = false;
-			} else {
-				echo ', ';
-			}
-
-			$argument->print_token();
-		}
+		return sprintf( '%s(%s)', esc_html( $this->name ), $joined_arguments );
 	}
 }

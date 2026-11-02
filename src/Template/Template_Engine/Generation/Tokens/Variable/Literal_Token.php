@@ -6,15 +6,15 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\V
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Statement\Statement_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Statement\Statement_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Printer;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token_Base;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
- * @phpstan-type Literal_Value string|numeric|bool|Template_Token|mixed[]
+ * @phpstan-type Literal_Value string|numeric|bool|Statement_Token|mixed[]
  */
-abstract class Literal_Token extends Template_Token_Base {
+abstract class Literal_Token extends Statement_Token_Base {
 	/**
 	 * @var Literal_Value
 	 */
@@ -30,51 +30,46 @@ abstract class Literal_Token extends Template_Token_Base {
 		$this->value = $value;
 	}
 
-	public function print_token(): void {
-		$this->print_literally( $this->value );
-	}
-
-	public function display(): void {
-		$this->printer_class::display( $this );
-	}
-
-	public function raw_display(): void {
-		$this->printer_class::raw_display( $this );
+	public function get_token(): string {
+		return $this->literally( $this->value );
 	}
 
 	/**
 	 * @param mixed $value
 	 */
-	protected function print_literally( $value ): void {
+	protected function literally( $value ): string {
 		if ( is_string( $value ) ) {
-			printf( "'%s'", esc_html( $value ) );
-		} else {
-			$this->print_as_string( $value );
+			return sprintf( "'%s'", esc_html( $value ) );
 		}
+
+		return $this->as_string( $value );
 	}
 
 	/**
 	 * @param mixed $value
 	 */
-	protected function print_as_string( $value ): void {
+	protected function as_string( $value ): string {
 		if ( is_bool( $value ) ) {
-			echo $value ?
+			return $value ?
 				'true' :
 				'false';
-		} elseif ( is_array( $value ) ) {
-			$this->print_array( $value );
-		} elseif ( $value instanceof Literal_Token ) {
-			// e.g. Variable_Token.
-			$value->print_token();
-		} else {
-			echo esc_html(
-				string( $value )
-			);
 		}
+
+		if ( is_array( $value ) ) {
+			return $this->array_literal( $value );
+		}
+
+		if ( $value instanceof Statement_Token ) {
+			return $value->get_token();
+		}
+
+		$text = string( $value );
+
+		return esc_html( $text );
 	}
 
 	/**
 	 * @param mixed[] $value
 	 */
-	abstract protected function print_array( array $value ): void;
+	abstract protected function array_literal( array $value ): string;
 }

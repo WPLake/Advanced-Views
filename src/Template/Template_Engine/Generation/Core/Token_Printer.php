@@ -6,8 +6,10 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core;
 
 defined( 'ABSPATH' ) || exit;
 
-interface Token_Printer {
-	public static function display( Template_Token $token ): void;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Statement\Statement_Token;
 
-	public static function raw_display( Template_Token $token ): void;
+interface Token_Printer {
+	public static function statement( Statement_Token $token ): string;
+
+	public static function raw_statement( Statement_Token $token ): string;
 }

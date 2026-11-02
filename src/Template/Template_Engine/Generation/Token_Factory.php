@@ -13,7 +13,6 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditi
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Function_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Functions_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Html_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Loop_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Range_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Shortcode_Token;
@@ -36,8 +35,6 @@ interface Token_Factory {
 	public function loop(): Loop_Token;
 
 	public function assignment(): Assignment_Token;
-
-	public function html( callable $printer ): Html_Token;
 
 	/**
 	 * @param Literal_Value $value

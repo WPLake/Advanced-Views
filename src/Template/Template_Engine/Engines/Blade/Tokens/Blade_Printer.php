@@ -6,23 +6,19 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Token
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Statement\Statement_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Printer;
 
 final class Blade_Printer implements Token_Printer {
-	public static function display( Template_Token $token ): void {
-		echo '{{ ';
+	public static function statement( Statement_Token $token ): string {
+		$bare_token = $token->get_token();
 
-		$token->print_token();
-
-		echo ' }}';
+		return sprintf( '{{ %s }}', $bare_token );
 	}
 
-	public static function raw_display( Template_Token $token ): void {
-		echo '{!! ';
+	public static function raw_statement( Statement_Token $token ): string {
+		$bare_token = $token->get_token();
 
-		$token->print_token();
-
-		echo ' !!}';
+		return sprintf( '{!! %s !!}', $bare_token );
 	}
 }

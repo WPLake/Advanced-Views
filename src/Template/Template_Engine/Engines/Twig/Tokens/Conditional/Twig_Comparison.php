@@ -12,11 +12,13 @@ final class Twig_Comparison extends Comparison_Token {
 	public const COMPARISON_EMPTY = '|default(';
 	public const COMPARISON_OR    = ' or ';
 
-	public function print_token(): void {
-		parent::print_token();
+	public function get_token(): string {
+		$token = parent::get_token();
 
 		if ( self::COMPARISON_EMPTY === $this->operator_escaped ) {
-			echo ')';
+			return sprintf( '%s)', $token );
 		}
+
+		return $token;
 	}
 }

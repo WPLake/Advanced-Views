@@ -6,10 +6,10 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Statement\Statement_Token_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Printer;
 
-abstract class Comment_Token extends Template_Token_Base {
+abstract class Comment_Token extends Statement_Token_Base {
 	protected string $content;
 
 	/**
@@ -19,5 +19,13 @@ abstract class Comment_Token extends Template_Token_Base {
 		parent::__construct( $printer_class );
 
 		$this->content = $content;
+	}
+
+	public function get_statement(): string {
+		return $this->get_token();
+	}
+
+	public function get_raw_statement(): string {
+		return $this->get_token();
 	}
 }

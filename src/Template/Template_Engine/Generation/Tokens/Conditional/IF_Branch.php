@@ -6,18 +6,29 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\C
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Element;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Statement\Statement_Token;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Element
+ */
 final class IF_Branch {
-	public ?Template_Token $condition = null;
-	public ?Template_Token $body      = null;
+	public ?Statement_Token $condition = null;
+	/**
+	 * @var Html_Node[]
+	 */
+	public array $body = array();
 
-	public function set_condition( Template_Token $condition ): self {
+	public function set_condition( Statement_Token $condition ): self {
 		$this->condition = $condition;
 
 		return $this;
 	}
-	public function set_body( Template_Token $body ): self {
+
+	/**
+	 * @param Html_Node[] $body
+	 */
+	public function set_body( array $body ): self {
 		$this->body = $body;
 
 		return $this;

@@ -6,14 +6,14 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Statement\Statement_Token_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
 
 /**
  * WordPress shortcode, e.g. [name attr="value"], with the variable (engine-specific) or plain values
  */
-class Shortcode_Token extends Template_Token_Base {
+class Shortcode_Token extends Statement_Token_Base {
 	protected string $name;
 	/**
 	 * @var array<string,Variable_Token|string>
@@ -39,29 +39,25 @@ class Shortcode_Token extends Template_Token_Base {
 		return $this;
 	}
 
-	public function print_token(): void {
-		printf( '[%s', esc_html( $this->name ) );
+	public function get_token(): string {
+		$token = sprintf( '[%s', esc_html( $this->name ) );
 
 		foreach ( $this->attributes as $name => $value ) {
-			printf( ' %s="', esc_html( $name ) );
+			$value_html = $value instanceof Variable_Token ?
+				$value->get_statement() :
+				esc_html( $value );
 
-			if ( $value instanceof Variable_Token ) {
-				$value->display();
-			} else {
-				echo esc_html( $value );
-			}
-
-			echo '"';
+			$token .= sprintf( ' %s="%s"', esc_html( $name ), $value_html );
 		}
 
-		echo ']';
+		return sprintf( '%s]', $token );
 	}
 
-	public function display(): void {
-		$this->print_token();
+	public function get_statement(): string {
+		return $this->get_token();
 	}
 
-	public function raw_display(): void {
-		$this->print_token();
+	public function get_raw_statement(): string {
+		return $this->get_token();
 	}
 }

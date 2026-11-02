@@ -9,23 +9,18 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Literal_Token;
 
 final class PHP_Literal extends Literal_Token {
+	protected function array_literal( array $value ): string {
+		$items = array();
 
-	protected function print_array( array $value ): void {
-		echo '[';
-
-		$is_first = true;
 		foreach ( $value as $key => $item ) {
-			if ( $is_first ) {
-				$is_first = false;
-			} else {
-				echo ', ';
-			}
+			$key_literal  = $this->literally( $key );
+			$item_literal = $this->literally( $item );
 
-			$this->print_literally( $key );
-			echo ' => ';
-			$this->print_literally( $item );
+			$items[] = sprintf( '%s => %s', $key_literal, $item_literal );
 		}
 
-		echo ']';
+		$joined_items = join( ', ', $items );
+
+		return sprintf( '[%s]', $joined_items );
 	}
 }

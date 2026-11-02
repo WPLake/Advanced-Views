@@ -8,51 +8,19 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Template_Token;
 
 final class PHP_IF extends IF_Token {
-	public function print_token(): void {
-		if ( $this->if_branch instanceof IF_Branch ) {
-			$this->print_branch( 'if', $this->if_branch );
+	protected function get_branch_html( string $type, IF_Branch $branch ): string {
+		$condition = self::bare_condition( $branch );
+
+		if ( strlen( $condition ) > 0 ) {
+			return sprintf( '<? %s (%s): ?>', $type, $condition );
 		}
 
-		foreach ( $this->elseif_branches as $elseif_branch ) {
-			$this->print_branch( 'elseif', $elseif_branch );
-		}
-
-		if ( $this->else_branch instanceof IF_Branch ) {
-			$this->print_branch( 'else', $this->else_branch );
-		}
-
-		$this->print_branch_token( 'endif' );
-		echo '; ?>';
+		return sprintf( '<? %s: ?>', $type );
 	}
 
-	public function display(): void {
-		$this->print_token();
-	}
-
-	public function raw_display(): void {
-		$this->print_token();
-	}
-
-	protected function print_branch( string $type, IF_Branch $branch ): void {
-		$this->print_branch_token( $type );
-
-		if ( $branch->condition instanceof Template_Token ) {
-			echo ' (';
-			$branch->condition->print_token();
-			echo ')';
-		}
-
-		echo ': ?>';
-
-		if ( $branch->body instanceof Template_Token ) {
-			$branch->body->print_token();
-		}
-	}
-
-	protected function print_branch_token( string $type ): void {
-		printf( '<? %s', esc_html( $type ) );
+	protected function get_end_html(): string {
+		return '<? endif; ?>';
 	}
 }

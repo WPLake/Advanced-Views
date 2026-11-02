@@ -6,25 +6,37 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component;
 
 defined( 'ABSPATH' ) || exit;
 
-use Closure;
-use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
+use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Text_Formatter;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag\Formatted_Tag_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Renderer;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Renderer;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Core\Token_Tree_Formatter;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
 final class Web_Component_Printer {
 	protected Html_Renderer $renderer;
-	protected Formatted_Tag_Printer $tag_printer;
-	protected Text_Formatter $formatter;
+	protected Text_Formatter $text_formatter;
 
-	public function __construct( Formatted_Tag_Printer $tag_printer, Text_Formatter $formatter, Html_Escaper $escaper ) {
-		$this->tag_printer = $tag_printer;
-		$this->formatter   = $formatter;
-		$this->renderer    = new Html_Renderer( $escaper, $tag_printer );
+	public function __construct(
+		Token_Tree_Formatter $formatter,
+		Text_Formatter $text_formatter,
+		Tag_Renderer $tag_renderer,
+		WP_Html_Escaper $escaper
+	) {
+		$this->text_formatter = $text_formatter;
+		$this->renderer       = new Html_Renderer( $tag_renderer, $escaper );
+
+		$this->renderer->set_formatter( $formatter );
+
+		$element_renderers = Token_Renderer::element_renderers();
+		$attr_renderers    = Token_Renderer::attr_renderers();
+
+		$this->renderer->add_element_renderers( $element_renderers );
+		$escaper->add_attr_renderers( $attr_renderers );
 	}
 
 	/**
@@ -40,7 +52,7 @@ final class Web_Component_Printer {
 	 * For the markup parts printed on their own, without a root tag
 	 */
 	public function start( int $depth = 0 ): self {
-		$this->tag_printer->reset( $depth );
+		$this->text_formatter->set_tab_depth( $depth );
 
 		return $this;
 	}
@@ -52,29 +64,9 @@ final class Web_Component_Printer {
 		$this->renderer->print_html( ...$nodes );
 	}
 
-	/**
-	 * For the content of non-tag blocks (template conditions, loops), which must be indented like a tag content
-	 */
-	public function print_indented( Closure $print_content ): self {
-		$this->tag_printer->print_indented( $print_content );
-
-		return $this;
-	}
-
-	public function line_start(): self {
-		$this->tag_printer->print_line_start();
-
-		return $this;
-	}
-
-	public function tabs(): self {
-		$this->tag_printer->print_tabs();
-
-		return $this;
-	}
-
 	public function new_line( int $count = 1 ): self {
-		$this->formatter->new_line( $count );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $this->text_formatter->new_line( $count );
 
 		return $this;
 	}

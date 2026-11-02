@@ -9,18 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Comment_Token;
 
 final class Twig_Comment extends Comment_Token {
-	public function print_token(): void {
-		printf(
-			'{# %s #}',
-			esc_html( $this->content )
-		);
-	}
-
-	public function display(): void {
-		$this->print_token();
-	}
-
-	public function raw_display(): void {
-		$this->print_token();
+	public function get_token(): string {
+		return sprintf( '{# %s #}', esc_html( $this->content ) );
 	}
 }
