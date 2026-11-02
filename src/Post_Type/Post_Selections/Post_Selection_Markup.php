@@ -46,8 +46,7 @@ class Post_Selection_Markup {
 	public function print_extra_markup( Post_Selection_Settings $post_selection_settings ): void {
 		$nodes = $this->extra_nodes( $post_selection_settings );
 
-		$this->printer->start( 1 )
-						->print_html( ...$nodes );
+		$this->printer->print_html_at( 1, $nodes );
 	}
 
 	/**
@@ -273,7 +272,6 @@ class Post_Selection_Markup {
 			->attributes( array( 'class' => $root_class ) );
 
 		$this->printer->print_component( $root );
-		$this->printer->new_line();
 	}
 
 	protected function items_branch( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): IF_Branch {
@@ -315,10 +313,7 @@ class Post_Selection_Markup {
 
 		$loop = $this->loop_token( $token_factory, $post_selection_settings );
 
-		$this->printer->start( 2 )
-						->print_html( $loop );
-
-		$this->printer->new_line();
+		$this->printer->print_html_at( 2, array( $loop ) );
 	}
 
 	protected function loop_token( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): Loop_Token {

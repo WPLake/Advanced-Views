@@ -29,35 +29,29 @@ final class Web_Component_Printer {
 	}
 
 	/**
-	 * Starts a new markup, with the indentation from scratch
+	 * A whole markup, from the root tag, ends with a line break
 	 */
 	public function print_component( Html_Tag $component ): void {
-		$this->start();
+		$html     = $this->renderer->render_html( $component );
+		$new_line = $this->text_formatter->new_line();
 
-		$this->renderer->print_html( $component );
-	}
-
-	/**
-	 * For the markup parts printed on their own, without a root tag
-	 */
-	public function start( int $depth = 0 ): self {
-		$this->text_formatter->set_tab_depth( $depth );
-
-		return $this;
-	}
-
-	/**
-	 * @param Html_Node ...$nodes
-	 */
-	public function print_html( ...$nodes ): void {
-		$this->renderer->print_html( ...$nodes );
-	}
-
-	public function new_line( int $count = 1 ): self {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $this->text_formatter->new_line( $count );
+		echo $html . $new_line;
+	}
 
-		return $this;
+	/**
+	 * For the markup parts printed on their own, indented as if they were nested into the markup
+	 *
+	 * @param Html_Node[] $nodes
+	 */
+	public function print_html_at( int $depth, array $nodes ): void {
+		$html = $this->text_formatter->tab_shift(
+			fn() => $this->renderer->render_html( ...$nodes ),
+			$depth
+		);
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $html;
 	}
 
 	protected static function create_renderer(): Html_Renderer {

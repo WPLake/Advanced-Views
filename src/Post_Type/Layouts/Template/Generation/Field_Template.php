@@ -59,7 +59,7 @@ class Field_Template {
 			$field_id
 		);
 
-		$this->printer->print_html( ...$nodes );
+		$this->printer->print_html_at( 0, $nodes );
 	}
 
 	/**
@@ -134,7 +134,7 @@ class Field_Template {
 			$custom_nodes
 		);
 
-		$this->printer->print_html( ...$nodes );
+		$this->printer->print_html_at( 0, $nodes );
 	}
 
 	/**

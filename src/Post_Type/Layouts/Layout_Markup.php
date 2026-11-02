@@ -118,7 +118,6 @@ class Layout_Markup {
 			->attributes( array( 'class' => $root_class ) );
 
 		$this->printer->print_component( $root );
-		$this->printer->new_line();
 	}
 
 	/**
