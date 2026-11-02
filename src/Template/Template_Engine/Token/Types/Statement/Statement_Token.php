@@ -23,7 +23,9 @@ interface Statement_Token extends Template_Token {
 	public function get_token(): string;
 
 	/**
-	 * The complete statement, whose output isn't escaped by the engine.
+	 * Switches the statement to the unescaped output, e.g. for the already safe HTML.
+	 *
+	 * @return static
 	 */
-	public function get_raw_statement(): string;
+	public function display_as_raw( bool $is_raw ): self;
 }

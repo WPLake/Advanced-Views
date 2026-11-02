@@ -11,7 +11,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -23,10 +22,10 @@ class Post_Content_Field extends Markup_Field_Base {
 
 		$value_var = $token_factory
 			->variable( $field_id )
-			->add_item_path( self::VALUE );
-		$raw_value = $value_var->get_raw_statement();
+			->add_item_path( self::VALUE )
+			->display_as_raw( true );
 
-		return array( raw_html( $raw_value ) );
+		return array( $value_var );
 	}
 
 	/**

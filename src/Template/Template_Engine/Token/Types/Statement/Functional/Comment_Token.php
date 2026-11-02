@@ -24,8 +24,4 @@ abstract class Comment_Token extends Statement_Token_Base {
 	public function get_statement(): string {
 		return $this->get_token();
 	}
-
-	public function get_raw_statement(): string {
-		return $this->get_token();
-	}
 }

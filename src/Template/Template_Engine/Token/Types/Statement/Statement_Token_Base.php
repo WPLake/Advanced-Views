@@ -13,12 +13,18 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Template_Token_Base
  * Statements without such a wrapper (e.g. comments) override both getters.
  */
 abstract class Statement_Token_Base extends Template_Token_Base implements Statement_Token {
-	public function get_statement(): string {
-		return $this->printer_class::statement( $this );
+	protected bool $is_raw = false;
+
+	public function display_as_raw( bool $is_raw ): self {
+		$this->is_raw = $is_raw;
+
+		return $this;
 	}
 
-	public function get_raw_statement(): string {
-		return $this->printer_class::raw_statement( $this );
+	public function get_statement(): string {
+		return $this->is_raw ?
+			$this->printer_class::raw_statement( $this ) :
+			$this->printer_class::statement( $this );
 	}
 
 	public function get_nodes(): array {

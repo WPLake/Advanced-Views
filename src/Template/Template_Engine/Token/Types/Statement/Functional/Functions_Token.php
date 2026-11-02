@@ -6,10 +6,8 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Stateme
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Raw_Html;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
-use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 
 abstract class Functions_Token {
 	protected Token_Factory $token_factory;
@@ -18,7 +16,7 @@ abstract class Functions_Token {
 		$this->token_factory = $token_factory;
 	}
 
-	public function include_inner_layout_for_flexible( string $field, string $classes ): Raw_Html {
+	public function include_inner_layout_for_flexible( string $field, string $classes ): Statement_Token {
 		$views_variable = $this->token_factory
 			->variable( $field )
 			->add_item_path( 'layout_views' );
@@ -36,7 +34,7 @@ abstract class Functions_Token {
 		return $this->create_raw_call( $function_name, $arguments );
 	}
 
-	public function include_inner_layout( string $field_id, string $data_field_id, string $inner_view_class ): Raw_Html {
+	public function include_inner_layout( string $field_id, string $data_field_id, string $inner_view_class ): Statement_Token {
 		$layout_id_var = $this->token_factory
 			->variable( $field_id )
 			->add_item_path( 'layout_id' );
@@ -57,7 +55,7 @@ abstract class Functions_Token {
 	/**
 	 * @param mixed[] $settings
 	 */
-	public function paginate_links( array $settings ): Raw_Html {
+	public function paginate_links( array $settings ): Statement_Token {
 		$default_settings = array(
 			'prev_text' => '<',
 			'next_text' => '>',
@@ -76,11 +74,10 @@ abstract class Functions_Token {
 	/**
 	 * @param Statement_Token[] $arguments
 	 */
-	protected function create_raw_call( string $function_name, array $arguments ): Raw_Html {
-		$function = $this->token_factory
+	protected function create_raw_call( string $function_name, array $arguments ): Statement_Token {
+		return $this->token_factory
 			->function( $function_name )
-			->set_arguments( $arguments );
-
-		return raw_html( $function->get_raw_statement() );
+			->set_arguments( $arguments )
+			->display_as_raw( true );
 	}
 }

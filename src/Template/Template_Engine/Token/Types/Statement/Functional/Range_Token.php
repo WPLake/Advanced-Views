@@ -29,10 +29,6 @@ abstract class Range_Token extends Statement_Token_Base {
 		return $this->get_token();
 	}
 
-	public function get_raw_statement(): string {
-		return $this->get_token();
-	}
-
 	protected static function bare( ?Statement_Token $token ): string {
 		return $token instanceof Statement_Token ?
 			$token->get_token() :
