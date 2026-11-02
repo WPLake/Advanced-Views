@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
@@ -35,15 +35,15 @@ class Layout_Markup {
 	private Field_Template $field_markup;
 	private Field_Provider_Cluster $provider_cluster;
 	private Token_Factory_Storage $token_factory_storage;
-	protected Web_Component_Printer $printer;
+	protected Web_Component_Renderer $renderer;
 	protected Web_Component_Factory $web_component_factory;
 
-	public function __construct( Field_Template $field_markup, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage, Web_Component_Printer $printer, Web_Component_Factory $web_component_factory ) {
+	public function __construct( Field_Template $field_markup, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage, Web_Component_Renderer $renderer, Web_Component_Factory $web_component_factory ) {
 		$this->field_markup          = $field_markup;
 		$this->provider_cluster      = $provider_cluster;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->markups_safe          = array();
-		$this->printer               = $printer;
+		$this->renderer               = $renderer;
 		$this->web_component_factory = $web_component_factory;
 	}
 
@@ -117,7 +117,10 @@ class Layout_Markup {
 		$root = $this->web_component_factory->create_web_component( $layout_settings, $this->rows( $layout_settings ) )
 			->attributes( array( 'class' => $root_class ) );
 
-		$this->printer->print_component( $root );
+		$html = $this->renderer->render_component( $root );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $html;
 	}
 
 	/**

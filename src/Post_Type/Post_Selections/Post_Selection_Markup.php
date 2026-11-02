@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Post_Selections;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
@@ -31,14 +31,14 @@ class Post_Selection_Markup {
 	private Front_Assets $front_assets;
 	protected Token_Factory_Storage $token_factory_storage;
 	private Layouts_Cpt $layout_cpt;
-	protected Web_Component_Printer $printer;
+	protected Web_Component_Renderer $renderer;
 	protected Web_Component_Factory $web_component_factory;
 
-	public function __construct( Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Layouts_Cpt $layout_cpt, Web_Component_Printer $printer, Web_Component_Factory $web_component_factory ) {
+	public function __construct( Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Layouts_Cpt $layout_cpt, Web_Component_Renderer $renderer, Web_Component_Factory $web_component_factory ) {
 		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->layout_cpt            = $layout_cpt;
-		$this->printer               = $printer;
+		$this->renderer               = $renderer;
 		$this->web_component_factory = $web_component_factory;
 	}
 
@@ -46,7 +46,10 @@ class Post_Selection_Markup {
 	public function print_extra_markup( Post_Selection_Settings $post_selection_settings ): void {
 		$nodes = $this->extra_nodes( $post_selection_settings );
 
-		$this->printer->print_html_at( 1, $nodes );
+		$html = $this->renderer->render_html( $nodes, 1 );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $html;
 	}
 
 	/**
@@ -271,7 +274,10 @@ class Post_Selection_Markup {
 		$root = $this->web_component_factory->create_web_component( $post_selection_settings, $content )
 			->attributes( array( 'class' => $root_class ) );
 
-		$this->printer->print_component( $root );
+		$html = $this->renderer->render_component( $root );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $html;
 	}
 
 	protected function items_branch( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): IF_Branch {
@@ -313,7 +319,10 @@ class Post_Selection_Markup {
 
 		$loop = $this->loop_token( $token_factory, $post_selection_settings );
 
-		$this->printer->print_html_at( 2, array( $loop ) );
+		$html = $this->renderer->render_html( array( $loop ), 2 );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $html;
 	}
 
 	protected function loop_token( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): Loop_Token {

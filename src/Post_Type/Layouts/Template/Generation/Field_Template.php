@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -28,13 +28,13 @@ class Field_Template {
 	private Field_Provider_Cluster $provider_cluster;
 	private Front_Assets $front_assets;
 	private Token_Factory_Storage $token_factory_storage;
-	protected Web_Component_Printer $printer;
+	protected Web_Component_Renderer $renderer;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Web_Component_Printer $printer ) {
+	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Web_Component_Renderer $renderer ) {
 		$this->provider_cluster      = $provider_cluster;
 		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;
-		$this->printer               = $printer;
+		$this->renderer               = $renderer;
 	}
 
 	// public, as used in Upgrades.
@@ -59,7 +59,10 @@ class Field_Template {
 			$field_id
 		);
 
-		$this->printer->print_html_at( 0, $nodes );
+		$html = $this->renderer->render_html( $nodes );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $html;
 	}
 
 	/**
@@ -134,7 +137,10 @@ class Field_Template {
 			$custom_nodes
 		);
 
-		$this->printer->print_html_at( 0, $nodes );
+		$html = $this->renderer->render_html( $nodes );
+
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $html;
 	}
 
 	/**

@@ -37,7 +37,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Pods_Migrate_Packages;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -50,8 +50,8 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	 */
 	private ?array $pick_related_objects;
 
-	public function __construct( Logger $logger, Web_Component_Printer $printer ) {
-		parent::__construct( $logger, $printer );
+	public function __construct( Logger $logger, Web_Component_Renderer $renderer ) {
+		parent::__construct( $logger, $renderer );
 
 		$this->pick_related_objects = null;
 	}
@@ -433,51 +433,51 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 
 	public function get_field_types(): array {
 		$text = array(
-			'text'     => new Plain_Field( $this->printer ),
-			'website'  => new Url_Field( $this->printer ),
-			'phone'    => new Plain_Field( $this->printer ),
-			'email'    => new Plain_Field( $this->printer ),
-			'password' => new Plain_Field( $this->printer ),
+			'text'     => new Plain_Field( $this->renderer ),
+			'website'  => new Url_Field( $this->renderer ),
+			'phone'    => new Plain_Field( $this->renderer ),
+			'email'    => new Plain_Field( $this->renderer ),
+			'password' => new Plain_Field( $this->renderer ),
 		);
 
 		$paragraph = array(
-			'paragraph' => new Html_Field( $this->printer, true, true ),
-			'wysiwyg'   => new Html_Field( $this->printer, true, true ),
-			'code'      => new Html_Field( $this->printer ),
+			'paragraph' => new Html_Field( $this->renderer, true, true ),
+			'wysiwyg'   => new Html_Field( $this->renderer, true, true ),
+			'code'      => new Html_Field( $this->renderer ),
 		);
 
 		$date = array(
-			'datetime' => new Date_Picker_Field( $this->printer ),
-			'date'     => new Date_Picker_Field( $this->printer ),
-			'time'     => new Date_Picker_Field( $this->printer ),
+			'datetime' => new Date_Picker_Field( $this->renderer ),
+			'date'     => new Date_Picker_Field( $this->renderer ),
+			'time'     => new Date_Picker_Field( $this->renderer ),
 		);
 
 		$number = array(
-			'number'   => new Plain_Field( $this->printer ),
-			'currency' => new Html_Field( $this->printer ),
+			'number'   => new Plain_Field( $this->renderer ),
+			'currency' => new Html_Field( $this->renderer ),
 		);
 
 		$relationship = array(
 			'file'   => new Pods_Upload_Field(
-				new Image_Field( $this->printer ),
-				new File_Field( new Link_Field( $this->printer ), $this->printer ),
-				new Gallery_Field( new Image_Field( $this->printer ), $this->printer ),
-				$this->printer
+				new Image_Field( $this->renderer ),
+				new File_Field( new Link_Field( $this->renderer ), $this->renderer ),
+				new Gallery_Field( new Image_Field( $this->renderer ), $this->renderer ),
+				$this->renderer
 			),
-			'oembed' => new Html_Field( $this->printer ),
+			'oembed' => new Html_Field( $this->renderer ),
 			'pick'   => new Pods_Pick_Field(
-				new Select_Field( $this->printer ),
-				new User_Field( new Link_Field( $this->printer ), $this->printer ),
-				new Post_Object_Field( new Link_Field( $this->printer ), $this->printer ),
-				new Taxonomy_Field( new Link_Field( $this->printer ), $this->printer ),
-				new File_Field( new Link_Field( $this->printer ), $this->printer ),
-				$this->printer
+				new Select_Field( $this->renderer ),
+				new User_Field( new Link_Field( $this->renderer ), $this->renderer ),
+				new Post_Object_Field( new Link_Field( $this->renderer ), $this->renderer ),
+				new Taxonomy_Field( new Link_Field( $this->renderer ), $this->renderer ),
+				new File_Field( new Link_Field( $this->renderer ), $this->renderer ),
+				$this->renderer
 			),
 		);
 
 		$other = array(
-			'boolean' => new True_False_Field( $this->printer ),
-			'color'   => new Plain_Field( $this->printer ),
+			'boolean' => new True_False_Field( $this->renderer ),
+			'color'   => new Plain_Field( $this->renderer ),
 		);
 
 		return array_merge( $text, $paragraph, $date, $number, $relationship, $other );

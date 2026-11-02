@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -23,12 +23,12 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 	 */
 	private array $field_types;
 
-	protected Web_Component_Printer $printer;
+	protected Web_Component_Renderer $renderer;
 
-	public function __construct( Logger $logger, Web_Component_Printer $printer ) {
+	public function __construct( Logger $logger, Web_Component_Renderer $renderer ) {
 		parent::__construct( $logger );
 
-		$this->printer = $printer;
+		$this->renderer = $renderer;
 		$this->field_types   = $this->get_field_types();
 	}
 

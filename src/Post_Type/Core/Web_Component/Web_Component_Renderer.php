@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Rendering\Token_Tre
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-final class Web_Component_Printer {
+final class Web_Component_Renderer {
 	protected Html_Renderer $renderer;
 	protected Text_Formatter $text_formatter;
 
@@ -31,27 +31,23 @@ final class Web_Component_Printer {
 	/**
 	 * A whole markup, from the root tag, ends with a line break
 	 */
-	public function print_component( Html_Tag $component ): void {
+	public function render_component( Html_Tag $component ): string {
 		$html     = $this->renderer->render_html( $component );
 		$new_line = $this->text_formatter->new_line();
 
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $html . $new_line;
+		return $html . $new_line;
 	}
 
 	/**
-	 * For the markup parts printed on their own, indented as if they were nested into the markup
+	 * For the markup parts rendered on their own, with the depth they would have nested into the markup
 	 *
 	 * @param Html_Node[] $nodes
 	 */
-	public function print_html_at( int $depth, array $nodes ): void {
-		$html = $this->text_formatter->tab_shift(
+	public function render_html( array $nodes, int $depth = 0 ): string {
+		return $this->text_formatter->tab_shift(
 			fn() => $this->renderer->render_html( ...$nodes ),
 			$depth
 		);
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $html;
 	}
 
 	protected static function create_renderer(): Html_Renderer {
