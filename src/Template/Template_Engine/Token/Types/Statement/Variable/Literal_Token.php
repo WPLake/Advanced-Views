@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Token_Printer;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Rendering\Token_Printer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**

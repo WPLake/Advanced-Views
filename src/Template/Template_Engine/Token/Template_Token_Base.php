@@ -6,7 +6,9 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Token;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Token_Base {
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Rendering\Token_Printer;
+
+abstract class Template_Token_Base implements Template_Token {
 	/**
 	 * @var class-string<Token_Printer>
 	 */

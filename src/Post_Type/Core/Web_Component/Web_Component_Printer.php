@@ -11,8 +11,8 @@ use Org\Wplake\Advanced_Views\Template\Html\Formatting\Text_Formatter;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Renderer;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Token_Renderer;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Token_Tree_Formatter;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Rendering\Token_Renderer;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Rendering\Token_Tree_Formatter;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag

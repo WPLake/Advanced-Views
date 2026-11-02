@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Token_Printer;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Rendering\Token_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Conditional\Comparison_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Conditional\Conditional_Value_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;

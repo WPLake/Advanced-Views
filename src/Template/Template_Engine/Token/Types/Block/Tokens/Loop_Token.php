@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Html_Element;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Block\Block_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Token_Base;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Token_Printer;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Template_Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Rendering\Token_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Facto
 /**
  * @phpstan-import-type Html_Node from Html_Element
  */
-abstract class Loop_Token extends Token_Base implements Block_Token {
+abstract class Loop_Token extends Template_Token_Base implements Block_Token {
 	protected const LOOP_INDEX_KEY = 'index';
 
 	protected Variable_Token $index_var;

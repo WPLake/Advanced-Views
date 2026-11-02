@@ -8,14 +8,14 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Html_Element;
 use Org\Wplake\Advanced_Views\Template\Html\Raw_Html;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Template_Token_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Nested_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token;
 
 /**
  * @phpstan-import-type Html_Node from Html_Element
  */
-abstract class IF_Token extends Token_Base implements Nested_Token {
+abstract class IF_Token extends Template_Token_Base implements Nested_Token {
 	protected ?IF_Branch $if_branch = null;
 	/**
 	 * @var IF_Branch[]

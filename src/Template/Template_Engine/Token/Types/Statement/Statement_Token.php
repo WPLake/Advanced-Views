@@ -6,12 +6,12 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Stateme
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Html_Element;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Template_Token;
 
 /**
  * A single-line token, usable both as a node and as an attribute value. Has no nested nodes.
  */
-interface Statement_Token extends Html_Element {
+interface Statement_Token extends Template_Token {
 	/**
 	 * The complete statement, as it appears in the template (output tags included for values).
 	 */

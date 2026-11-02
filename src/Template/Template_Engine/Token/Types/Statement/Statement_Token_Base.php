@@ -6,13 +6,13 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Stateme
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Token_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Template_Token_Base;
 
 /**
  * By default, a statement is a value wrapped by the engine printer (escaped output, or unescaped for the raw form).
  * Statements without such a wrapper (e.g. comments) override both getters.
  */
-abstract class Statement_Token_Base extends Token_Base implements Statement_Token {
+abstract class Statement_Token_Base extends Template_Token_Base implements Statement_Token {
 	public function get_statement(): string {
 		return $this->printer_class::statement( $this );
 	}
