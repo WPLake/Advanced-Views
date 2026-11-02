@@ -7,14 +7,14 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Statement\Functional\Blade_Comment;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Block\Blade_Loop;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Nested\Blade_Loop;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Nested\Blade_IF;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Statement\Variable\Blade_Assignment;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Functional\Comment_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Functional\Functions_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Block\Tokens\Loop_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\Loop_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Functional\Range_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Assignment_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Literal_Token;

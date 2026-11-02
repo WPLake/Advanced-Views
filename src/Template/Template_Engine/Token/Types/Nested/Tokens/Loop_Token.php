@@ -2,12 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Block\Tokens;
+namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Html_Element;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Block\Block_Token;
+use Org\Wplake\Advanced_Views\Template\Html\Raw_Html;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Nested_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Template_Token_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Rendering\Token_Printer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token;
@@ -17,7 +18,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Facto
 /**
  * @phpstan-import-type Html_Node from Html_Element
  */
-abstract class Loop_Token extends Template_Token_Base implements Block_Token {
+abstract class Loop_Token extends Template_Token_Base implements Nested_Token {
 	protected const LOOP_INDEX_KEY = 'index';
 
 	protected Variable_Token $index_var;
@@ -65,9 +66,22 @@ abstract class Loop_Token extends Template_Token_Base implements Block_Token {
 		return $this;
 	}
 
+	/**
+	 * @return Html_Node[]
+	 */
 	public function get_nodes(): array {
-		return $this->body;
+		$open_statement = $this->get_open_statement();
+		$end_statement  = $this->get_end_statement();
+
+		return array(
+			new Section_Token( $open_statement, $this->body ),
+			new Raw_Html( $end_statement ),
+		);
 	}
+
+	abstract protected function get_open_statement(): string;
+
+	abstract protected function get_end_statement(): string;
 
 	protected static function bare_token( ?Statement_Token $token ): string {
 		return $token instanceof Statement_Token ?

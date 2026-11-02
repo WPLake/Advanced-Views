@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Block;
+namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Nested;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Block\Tokens\Loop_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\Loop_Token;
 
 final class Twig_Loop extends Loop_Token {
-	public function get_open_statement(): string {
+	protected function get_open_statement(): string {
 		$index  = $this->index_var->get_token();
 		$item   = self::bare_token( $this->item_var );
 		$source = self::bare_token( $this->source_var );
@@ -17,7 +17,7 @@ final class Twig_Loop extends Loop_Token {
 		return sprintf( '{%% for %s, %s in %s %%}', $index, $item, $source );
 	}
 
-	public function get_close_statement(): string {
+	protected function get_end_statement(): string {
 		return '{% endfor %}';
 	}
 }

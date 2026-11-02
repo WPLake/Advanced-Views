@@ -54,7 +54,7 @@ abstract class IF_Token extends Template_Token_Base implements Nested_Token {
 
 			$branch_html = $this->get_branch_html( $type, $branch );
 
-			$nodes[] = new Branch_Token( $branch_html, $branch->body );
+			$nodes[] = new Section_Token( $branch_html, $branch->body );
 		}
 
 		$end_html = $this->get_end_html();

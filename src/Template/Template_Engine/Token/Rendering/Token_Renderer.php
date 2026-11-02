@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Rendering;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Html_Element;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Block\Block_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\Section_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Nested_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token;
 
@@ -24,8 +24,8 @@ final class Token_Renderer {
 			Statement_Token::class => fn( $element ) => $element instanceof Statement_Token ?
 				$element->get_statement() :
 				'',
-			Block_Token::class     => fn( $element, string $content ) => $element instanceof Block_Token ?
-				$element->get_open_statement() . $content . $element->get_close_statement() :
+			Section_Token::class   => fn( $element, string $content ) => $element instanceof Section_Token ?
+				$element->get_open_statement() . $content :
 				'',
 			Nested_Token::class    => fn( $element, string $content ) => $content,
 		);
