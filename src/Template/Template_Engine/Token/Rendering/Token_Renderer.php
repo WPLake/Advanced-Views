@@ -25,7 +25,7 @@ final class Token_Renderer {
 				$element->get_statement() :
 				'',
 			Block_Token::class     => fn( $element, string $content ) => $element instanceof Block_Token ?
-				$element->get_open_html() . $content . $element->get_close_html() :
+				$element->get_open_statement() . $content . $element->get_close_statement() :
 				'',
 			Nested_Token::class    => fn( $element, string $content ) => $content,
 		);

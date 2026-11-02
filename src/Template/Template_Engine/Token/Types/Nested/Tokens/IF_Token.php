@@ -42,7 +42,7 @@ abstract class IF_Token extends Template_Token_Base implements Nested_Token {
 	}
 
 	/**
-	 * Flattens the branches: every branch tag is followed by the branch body.
+	 * Every branch is a block with its body as the content, followed by the end tag.
 	 *
 	 * @return Html_Node[]
 	 */
@@ -54,9 +54,7 @@ abstract class IF_Token extends Template_Token_Base implements Nested_Token {
 
 			$branch_html = $this->get_branch_html( $type, $branch );
 
-			$nodes[] = new Raw_Html( $branch_html );
-
-			array_push( $nodes, ...$branch->body );
+			$nodes[] = new Branch_Token( $branch_html, $branch->body );
 		}
 
 		$end_html = $this->get_end_html();
