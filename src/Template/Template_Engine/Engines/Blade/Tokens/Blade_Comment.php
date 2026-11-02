@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Token
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Comment_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Functional\Comment_Token;
 
 final class Blade_Comment extends Comment_Token {
 	public function get_token(): string {

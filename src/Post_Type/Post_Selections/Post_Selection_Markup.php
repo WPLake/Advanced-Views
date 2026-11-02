@@ -16,10 +16,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selectio
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Storage;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Branch;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Loop_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Token_Factory;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Token_Factory_Storage;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Nested\Tokens\IF_Branch;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Block\Tokens\Loop_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\compose_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 

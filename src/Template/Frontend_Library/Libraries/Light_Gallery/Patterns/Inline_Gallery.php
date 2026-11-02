@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Patter
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class Inline_Gallery implements Frontend_Pattern, Template_Pattern, JS_Pattern, CSS_Pattern {

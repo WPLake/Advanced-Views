@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Template_Engine;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Tokens\Blade_Printer;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Token_Factory;
 
 final class Blade_Template_Engine implements Template_Engine {
 	private Logger $logger;

@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Assignment_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Assignment_Token;
 
 final class Twig_Assignnment extends Assignment_Token {
 	public function get_token(): string {

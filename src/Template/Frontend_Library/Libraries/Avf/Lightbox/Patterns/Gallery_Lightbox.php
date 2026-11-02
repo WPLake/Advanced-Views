@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class Gallery_Lightbox implements Frontend_Pattern, Template_Pattern, CSS_Pattern {

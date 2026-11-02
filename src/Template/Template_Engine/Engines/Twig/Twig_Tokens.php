@@ -6,16 +6,16 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory_Base;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Comment_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\Comparison_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Conditional\IF_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Functions_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Loop_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Range_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Assignment_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Literal_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Token_Factory_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Functional\Comment_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Conditional\Comparison_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Nested\Tokens\IF_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Functional\Functions_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Block\Tokens\Loop_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Functional\Range_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Assignment_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Literal_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Variable_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Conditional\Twig_Comparison;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Conditional\Twig_IF;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Comment;

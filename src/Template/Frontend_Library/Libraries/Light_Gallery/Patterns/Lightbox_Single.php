@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Patt
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;

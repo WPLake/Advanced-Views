@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Patter
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Variable_Token;
 
 final class Lightbox_Multi implements Frontend_Pattern, Template_Pattern, JS_Pattern, CSS_Pattern {
 	public static function get_id(): string {

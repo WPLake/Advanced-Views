@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Template_Engine;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Printer;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Token_Factory;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Token_Factory;
 
 class Twig_Template_Engine implements Template_Engine {
 	const NAME = 'twig';

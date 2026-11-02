@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Loop_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Block\Tokens\Loop_Token;
 
 final class Twig_Loop extends Loop_Token {
 	public function get_open_html(): string {

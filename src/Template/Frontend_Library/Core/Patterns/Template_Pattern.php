@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Generation\Tokens\Variable\Variable_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Variable_Token;
 
 interface Template_Pattern {
 	/**
