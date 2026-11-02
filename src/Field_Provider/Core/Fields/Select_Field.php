@@ -6,16 +6,23 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Select_Field extends List_Field {
 	const LOOP_ITEM_NAME = 'choice_item';
 	const TITLE          = 'title';
 	const CHOICES        = 'choices';
 
-	protected function print_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
 		$twig_name = $markup_field_data->get_field_meta()->is_multiple() ?
 			static::LOOP_ITEM_NAME :
 			$field_id;
@@ -37,7 +44,7 @@ class Select_Field extends List_Field {
 				$title_var
 			);
 
-		$this->printer->print_html( $tags );
+		return array( $tags );
 	}
 
 	/**

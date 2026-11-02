@@ -6,8 +6,6 @@ namespace Org\Wplake\Advanced_Views\Template\Html;
 
 defined( 'ABSPATH' ) || exit;
 
-use Closure;
-use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 
 /**
  * @phpstan-import-type Html_Node from Html_Element

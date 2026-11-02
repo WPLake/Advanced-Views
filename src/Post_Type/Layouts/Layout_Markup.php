@@ -15,12 +15,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Template;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
+use Org\Wplake\Advanced_Views\Template\Html\Composite_Attribute;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Token;
-use function Org\Wplake\Advanced_Views\Template\Html\compose_html;
+use function Org\Wplake\Advanced_Views\Template\Html\compose_attribute;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
@@ -81,28 +81,22 @@ class Layout_Markup {
 								$field_type
 							);
 
-		$print_row = function () use ( $field_meta, $layout_settings, $item_settings, $field_id, $field_type ) {
-			$row_type = 'row';
+		$row_type = $this->provider_cluster->is_field_type_with_sub_fields(
+			$field_meta->get_vendor_name(),
+			$field_meta->get_type()
+		) ?
+			$field_meta->get_type() :
+			'row';
 
-			if ( $this->provider_cluster->is_field_type_with_sub_fields(
-				$field_meta->get_vendor_name(),
-				$field_meta->get_type()
-			) ) {
-				$row_type = $field_type;
-			}
-
-			$this->field_markup->print_row_markup(
-				$row_type,
-				'',
-				$layout_settings,
-				$item_settings,
-				$item_settings->field,
-				$field_meta,
-				$field_id
-			);
-		};
-
-		$markup = $token_factory->html( fn() => $this->printer->print_indented( $print_row ) );
+		$markup = $this->field_markup->compose_row_markup(
+			$row_type,
+			'',
+			$layout_settings,
+			$item_settings,
+			$item_settings->field,
+			$field_meta,
+			$field_id
+		);
 
 		$value_var = $token_factory->variable( $field_id )
 									->add_item_path( 'value' );
@@ -138,11 +132,6 @@ class Layout_Markup {
 
 			if ( null === $row ) {
 				continue;
-			}
-
-			// the first row follows the root's own line start
-			if ( array() !== $rows ) {
-				$rows[] = fn() => $this->printer->new_line( 2 )->line_start();
 			}
 
 			$rows[] = $row;
@@ -196,9 +185,9 @@ class Layout_Markup {
 		$this->markups_safe[ $layout_id ] = $view_markup_safe;
 	}
 
-	protected function root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Htmlable {
+	protected function root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Composite_Attribute {
 		if ( Layout_Settings::CLASS_GENERATION_NONE === $layout_settings->classes_generation ) {
-			return compose_html( array() );
+			return compose_attribute( array() );
 		}
 
 		$bem_name = $layout_settings->get_bem_name();
@@ -219,6 +208,6 @@ class Layout_Markup {
 		$parts[] = $token_factory->variable( Hard_Layout_Cpt::variable_name() )
 								->add_item_path( 'object_id' );
 
-		return compose_html( $parts );
+		return compose_attribute( $parts );
 	}
 }

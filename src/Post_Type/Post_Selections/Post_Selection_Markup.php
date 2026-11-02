@@ -14,13 +14,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
+use Org\Wplake\Advanced_Views\Template\Html\Composite_Attribute;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\Loop_Token;
-use function Org\Wplake\Advanced_Views\Template\Html\compose_html;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Functional\Shortcode_Token;
+use function Org\Wplake\Advanced_Views\Template\Html\compose_attribute;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 /**
@@ -43,10 +44,10 @@ class Post_Selection_Markup {
 
 	// public, as called from Upgrades.php.
 	public function print_extra_markup( Post_Selection_Settings $post_selection_settings ): void {
-		$nodes = $this->separate_with_breaks( $this->extra_nodes( $post_selection_settings ) );
+		$nodes = $this->extra_nodes( $post_selection_settings );
 
-		$this->printer->start()
-						->print_indented( fn() => $this->printer->print_html( ...$nodes ) );
+		$this->printer->start( 1 )
+						->print_html( ...$nodes );
 	}
 
 	/**
@@ -63,27 +64,6 @@ class Post_Selection_Markup {
 		return array( $token_factory->if()->set_if_branch( $pagination_branch ) );
 	}
 
-	/**
-	 * Separates the non-tag nodes with a blank line
-	 *
-	 * @param Html_Node[] $nodes
-	 *
-	 * @return Html_Node[]
-	 */
-	protected function separate_with_breaks( array $nodes ): array {
-		$separated = array();
-
-		foreach ( $nodes as $node ) {
-			if ( array() !== $separated ) {
-				$separated[] = fn() => $this->printer->new_line()->line_start();
-			}
-
-			$separated[] = $node;
-		}
-
-		return $separated;
-	}
-
 	protected function pagination_branch( Token_Factory $token_factory ): IF_Branch {
 		$pages_var  = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 									->add_item_path( 'pages_amount' );
@@ -92,20 +72,13 @@ class Post_Selection_Markup {
 									->set_comparison_greater()
 									->set_right_operand( $token_factory->literal( 1 ) );
 
-		$print_pagination = function () use ( $token_factory ) {
-			$pages_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
-										->add_item_path( 'pages_amount' );
+		$paginate_links = $token_factory->functions()
+										->paginate_links( array( 'total' => $pages_var ) );
 
-			$pagination = tag( 'div' )
-				->content(
-					fn() => $token_factory->functions()
-											->paginate_links( array( 'total' => $pages_var ) )
-				);
+		$pagination = tag( 'div' )
+			->content( $paginate_links );
 
-			$this->printer->print_html( $pagination );
-		};
-
-		$body = $token_factory->html( fn() => $this->printer->print_indented( $print_pagination ) );
+		$body = array( $pagination );
 
 		return $token_factory->if_branch()
 			->set_condition( $comparison )
@@ -146,7 +119,7 @@ class Post_Selection_Markup {
 			->attributes( $attrs );
 	}
 
-	protected function print_shortcode( Post_Selection_Settings $post_selection_settings ): void {
+	protected function shortcode_token( Post_Selection_Settings $post_selection_settings ): Shortcode_Token {
 		$token_factory = $this->token_factory_storage->resolve_token_factory( $post_selection_settings->template_engine );
 
 		$id_var      = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
@@ -155,7 +128,7 @@ class Post_Selection_Markup {
 
 		$asset_attrs = $this->front_assets->get_card_shortcode_attrs( $post_selection_settings );
 
-		$token_factory->shortcode( $this->layout_cpt->shortcode() )
+		return $token_factory->shortcode( $this->layout_cpt->shortcode() )
 			->set_attributes(
 				array_merge(
 					array(
@@ -164,8 +137,7 @@ class Post_Selection_Markup {
 					),
 					$asset_attrs
 				)
-			)
-			->display();
+			);
 	}
 
 	public function print_markup(
@@ -294,7 +266,7 @@ class Post_Selection_Markup {
 			$if->set_else_branch( $not_found_branch );
 		}
 
-		$content    = $this->separate_with_breaks( array( $if, ...$this->extra_nodes( $post_selection_settings ) ) );
+		$content    = array( $if, ...$this->extra_nodes( $post_selection_settings ) );
 		$root_class = $this->root_class( $token_factory, $post_selection_settings );
 
 		$root = $this->web_component_factory->create_web_component( $post_selection_settings, $content )
@@ -308,9 +280,7 @@ class Post_Selection_Markup {
 		$post_ids_var = $token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
 										->add_item_path( 'post_ids' );
 
-		$print_items = fn() => $this->printer->print_html( $this->items_tag( $token_factory, $post_selection_settings ) );
-
-		$body = $token_factory->html( fn() => $this->printer->print_indented( $print_items ) );
+		$body = array( $this->items_tag( $token_factory, $post_selection_settings ) );
 
 		return $token_factory->if_branch()
 			->set_condition( $post_ids_var )
@@ -318,9 +288,7 @@ class Post_Selection_Markup {
 	}
 
 	protected function not_found_branch( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): IF_Branch {
-		$print_not_found = fn() => $this->printer->print_html( $this->not_found_tag( $token_factory, $post_selection_settings ) );
-
-		$body = $token_factory->html( fn() => $this->printer->print_indented( $print_not_found ) );
+		$body = array( $this->not_found_tag( $token_factory, $post_selection_settings ) );
 
 		return $token_factory->if_branch()
 			->set_body( $body );
@@ -345,10 +313,10 @@ class Post_Selection_Markup {
 	protected function print_loop( Post_Selection_Settings $post_selection_settings ): void {
 		$token_factory = $this->token_factory_storage->resolve_token_factory( $post_selection_settings->template_engine );
 
-		$this->printer->start( 2 )
-						->tabs();
+		$loop = $this->loop_token( $token_factory, $post_selection_settings );
 
-		$this->loop_token( $token_factory, $post_selection_settings )->display();
+		$this->printer->start( 2 )
+						->print_html( $loop );
 
 		$this->printer->new_line();
 	}
@@ -359,9 +327,7 @@ class Post_Selection_Markup {
 
 		$post_id_var = $token_factory->variable( 'post_id' );
 
-		$print_shortcode = fn() => $this->print_shortcode( $post_selection_settings );
-
-		$loop_body = $token_factory->html( fn() => $this->printer->print_indented( $print_shortcode ) );
+		$loop_body = array( $this->shortcode_token( $post_selection_settings ) );
 
 		return $token_factory->loop()
 						->set_source_variable( $post_ids_var )
@@ -384,7 +350,7 @@ class Post_Selection_Markup {
 			);
 	}
 
-	protected function root_class( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): Htmlable {
+	protected function root_class( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): Composite_Attribute {
 		$bem_name = $post_selection_settings->get_bem_name();
 		$parts    = array(
 			$token_factory->variable( Hard_Post_Selection_Cpt::variable_name() )
@@ -398,6 +364,6 @@ class Post_Selection_Markup {
 									->add_item_path( 'id' );
 		}
 
-		return compose_html( $parts );
+		return compose_attribute( $parts );
 	}
 }

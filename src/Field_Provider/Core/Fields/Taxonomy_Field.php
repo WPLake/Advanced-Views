@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
@@ -16,6 +17,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer
 use WP_Term;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Taxonomy_Field extends List_Field {
 	const LOOP_ITEM_NAME = 'term_item';
 	const PARENT_ID      = 'parent_id';
@@ -53,16 +57,22 @@ class Taxonomy_Field extends List_Field {
 		);
 	}
 
-	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): array {
 		$markup_field_data->set_is_with_field_wrapper(
 			$markup_field_data->get_field_meta()->is_multiple() ||
 			$markup_field_data->is_with_field_wrapper()
 		);
 
-		$this->printer->print_html( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
+		return $this->link_field->compose_html( $item_id, $markup_field_data );
 	}
 
-	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory    = $markup_field_data->get_token_factory();
 		$object_id_source = $markup_field_data->get_field_meta()->is_multiple() ?
 			static::LOOP_ITEM_NAME :
@@ -73,15 +83,16 @@ class Taxonomy_Field extends List_Field {
 		$term_id_var = $token_factory->variable( $object_id_source )
 										->add_item_path( self::VALUE );
 
-		$token_factory->shortcode( Hard_Layout_Cpt::cpt_name() )
+		$shortcode = $token_factory->shortcode( Hard_Layout_Cpt::cpt_name() )
 			->set_attributes(
 				array(
 					'id'        => $id_var,
 					'object-id' => 'term',
 					'term-id'   => $term_id_var,
 				)
-			)
-			->display();
+			);
+
+		return array( $shortcode );
 	}
 
 	/**

@@ -13,11 +13,17 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map_Pattern;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\Loop_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Map_Field extends Map_Field_Base {
 	const MAP = 'map';
 
@@ -200,14 +206,13 @@ class Map_Field extends Map_Field_Base {
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
 		$factory    = $markup_field_data->get_token_factory();
 		$field_meta = $markup_field_data->get_field_meta();
-		$field_data = $markup_field_data->get_field_data();
 
 		if ( 'open_street_map' === $field_meta->get_type() ) {
-			return array(
-				fn() => $factory->variable( $field_id )
-					->add_item_path( self::MAP )
-				->raw_display(),
-			);
+			$map_var = $factory->variable( $field_id )
+								->add_item_path( self::MAP )
+								->display_as_raw( true );
+
+			return array( $map_var );
 		}
 
 		$attributes_map = array(
@@ -229,51 +234,51 @@ class Map_Field extends Map_Field_Base {
 														->add_item_path( $key );
 		}
 
-		$print_content = function () use ( $markup_field_data, $field_id, $field_meta, $field_data ) {
-			if ( $field_meta->is_multiple() ) {
-				$this->print_item_loop( $field_id, $markup_field_data );
-			} elseif ( $field_data->is_visible_when_empty ) {
-				$this->print_conditional_item( $field_id, $field_id, $markup_field_data );
-			} else {
-				$this->print_inner_item( $field_id, $field_id, $markup_field_data );
-			}
-		};
+		$content_nodes = $this->compose_content( $field_id, $markup_field_data );
 
 		return array(
 			tag( 'div' )
 				->attributes( $div_attributes )
-				->content(
-					$print_content
-				),
+				->content( ...$content_nodes ),
 		);
 	}
 
-	protected function print_item_loop( string $field_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_content( string $field_id, Template_Field_Data $markup_field_data ): array {
+		if ( $markup_field_data->get_field_meta()->is_multiple() ) {
+			return array( $this->item_loop( $field_id, $markup_field_data ) );
+		}
+
+		if ( $markup_field_data->get_field_data()->is_visible_when_empty ) {
+			return array( $this->conditional_item( $field_id, $field_id, $markup_field_data ) );
+		}
+
+		return $this->compose_inner_item( $field_id, $field_id, $markup_field_data );
+	}
+
+	protected function item_loop( string $field_id, Template_Field_Data $markup_field_data ): Loop_Token {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$source_var = $token_factory->variable( $field_id )
 										->add_item_path( self::VALUE );
 		$item_var   = $token_factory->variable( 'marker' );
 
-		$print_loop_item = fn() => $this->print_inner_item( $field_id, $item_var->get_name(), $markup_field_data );
+		$loop_body = $this->compose_inner_item( $field_id, $item_var->get_name(), $markup_field_data );
 
-		$loop_body = $token_factory->html( fn() => $this->printer->print_indented( $print_loop_item ) );
-
-		$token_factory->loop()
+		return $token_factory->loop()
 						->set_source_variable( $source_var )
 						->set_item_variable( $item_var )
-						->set_body( $loop_body )
-						->display();
+						->set_body( $loop_body );
 	}
 
-	protected function print_conditional_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+	protected function conditional_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): IF_Token {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$item_branch = $this->item_branch( $field_id, $item_id, $markup_field_data );
 
-		$if = $token_factory->if()->set_if_branch( $item_branch );
-
-		$if->display();
+		return $token_factory->if()->set_if_branch( $item_branch );
 	}
 
 	protected function item_branch( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): IF_Branch {
@@ -281,22 +286,23 @@ class Map_Field extends Map_Field_Base {
 		$value_var     = $token_factory->variable( $field_id )
 										->add_item_path( self::VALUE );
 
-		$print_conditional_item = fn() => $this->print_inner_item( $field_id, $item_id, $markup_field_data );
-
-		$body = $token_factory->html( fn() => $this->printer->print_indented( $print_conditional_item ) );
+		$body = $this->compose_inner_item( $field_id, $item_id, $markup_field_data );
 
 		return $token_factory->if_branch()
 			->set_condition( $value_var )
 			->set_body( $body );
 	}
 
-	protected function print_inner_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_inner_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
 		$marker_attrs = $this->map_marker_attributes( $field_id, $item_id, $markup_field_data );
 
 		$tags = tag( 'div' )
 			->attributes( $marker_attrs );
 
-		$this->printer->print_html( $tags );
+		return array( $tags );
 	}
 
 	/**

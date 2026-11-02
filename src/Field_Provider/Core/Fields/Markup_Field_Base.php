@@ -11,9 +11,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 abstract class Markup_Field_Base implements Markup_Field {
 	protected Web_Component_Printer $printer;
 	use Safe_Array_Arguments;
@@ -27,29 +31,39 @@ abstract class Markup_Field_Base implements Markup_Field {
 		$this->printer = $printer;
 	}
 
-	protected function print_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
 		if ( $markup_field_data->get_field_data()->has_external_layout() ) {
-			$this->print_external_item_layout( $field_id, $item_id, $markup_field_data );
-		} else {
-			$this->print_internal_item_layout( $item_id, $markup_field_data );
+			return $this->compose_external_item_layout( $field_id, $item_id, $markup_field_data );
 		}
+
+		return $this->compose_internal_item_layout( $item_id, $markup_field_data );
 	}
 
-	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
+		return array();
 	}
 
-	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): array {
+		return array();
 	}
 
-	protected function print_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
 		$item_outers = $markup_field_data->get_item_outers( $field_id, $item_id );
+		$item_nodes  = $this->compose_item_markup( $field_id, $item_id, $markup_field_data );
 
-		$tags = $markup_field_data->wrap_with_item_outers(
-			$item_outers,
-			fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data )
-		);
-
-		$this->printer->print_html( $tags );
+		return $markup_field_data->wrap_with_item_outers( $item_outers, $item_nodes );
 	}
 
 	protected function get_field_class( string $suffix, Template_Field_Data $markup_field_data ): string {

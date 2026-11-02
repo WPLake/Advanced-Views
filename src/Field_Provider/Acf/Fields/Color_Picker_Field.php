@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
@@ -31,26 +32,18 @@ class Color_Picker_Field extends Markup_Field_Base {
 			);
 		}
 
-		$parts       = array( 'red', 'green', 'blue', 'alpha' );
-		$items_count = count( $parts );
+		$parts      = array( 'red', 'green', 'blue', 'alpha' );
+		$statements = array();
 
-		$print_rgba = function () use ( $token_factory, $field_id, $parts, $items_count ) {
-			echo 'rgba(';
+		foreach ( $parts as $part ) {
+			$part_var     = $token_factory->variable( $field_id )
+											->add_item_path( $part );
+			$statements[] = $part_var->get_statement();
+		}
 
-			for ( $i = 0;$i < $items_count;$i++ ) {
-				if ( $i > 0 ) {
-					echo ';';
-				}
+		$rgba = sprintf( 'rgba(%s)', join( ';', $statements ) );
 
-				$token_factory->variable( $field_id )->add_item_path( $parts[ $i ] )->display();
-			}
-
-			echo ')';
-		};
-
-		return array(
-			$print_rgba,
-		);
+		return array( raw_html( $rgba ) );
 	}
 
 	/**

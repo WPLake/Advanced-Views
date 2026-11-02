@@ -101,18 +101,20 @@ final class Template_Field_Data extends Field_Data {
 
 	/**
 	 * @param Html_Wrapper[] $item_outers
-	 * @param Html_Node $content
+	 * @param Html_Node[] $nodes
 	 *
-	 * @return Html_Node
+	 * @return Html_Node[]
 	 */
-	public function wrap_with_item_outers( array $item_outers, $content ) {
+	public function wrap_with_item_outers( array $item_outers, array $nodes ): array {
 		// the innermost outer goes first.
 		foreach ( array_reverse( $item_outers ) as $outer ) {
-			$content = $this->item_outer_tag( $outer )
-				->content( $content );
+			$outer_tag = $this->item_outer_tag( $outer )
+				->content( ...$nodes );
+
+			$nodes = array( $outer_tag );
 		}
 
-		return $content;
+		return $nodes;
 	}
 
 	/**

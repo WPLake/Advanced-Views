@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
@@ -16,6 +17,9 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Post_Object_Field extends List_Field {
 	const LOOP_ITEM_NAME = 'post_item';
 
@@ -51,28 +55,42 @@ class Post_Object_Field extends List_Field {
 		);
 	}
 
-	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): array {
 		$markup_field_data->set_is_with_field_wrapper(
 			$markup_field_data->get_field_meta()->is_multiple() ||
 			$markup_field_data->is_with_field_wrapper()
 		);
 
-		$this->printer->print_html( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
+		return $this->link_field->compose_html( $item_id, $markup_field_data );
 	}
 
-	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
 		$object_id_source = $markup_field_data->get_field_meta()->is_multiple() ?
 			static::LOOP_ITEM_NAME :
 			$field_id;
 
-		printf(
-			'[%s id="{{ %s.%s }}" object-id="{{ %s.%s }}"]',
-			esc_html( Hard_Layout_Cpt::cpt_name() ),
-			esc_html( $field_id ),
-			esc_html( self::LAYOUT_ID ),
-			esc_html( $object_id_source ),
-			esc_html( self::VALUE )
-		);
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$id_var        = $token_factory->variable( $field_id )
+										->add_item_path( self::LAYOUT_ID );
+		$object_id_var = $token_factory->variable( $object_id_source )
+										->add_item_path( self::VALUE );
+
+		$shortcode = $token_factory->shortcode( Hard_Layout_Cpt::cpt_name() )
+			->set_attributes(
+				array(
+					'id'        => $id_var,
+					'object-id' => $object_id_var,
+				)
+			);
+
+		return array( $shortcode );
 	}
 
 	/**

@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
 defined( 'ABSPATH' ) || exit;
 
-use Closure;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
@@ -18,9 +17,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Label_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Outer_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Wrapper_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Field_Template {
 	private Field_Provider_Cluster $provider_cluster;
 	private Front_Assets $front_assets;
@@ -47,17 +50,42 @@ class Field_Template {
 		Field_Meta $field_meta,
 		string $field_id
 	): void {
+		$nodes = $this->compose_field_markup(
+			$field_assets,
+			$layout_settings,
+			$item_settings,
+			$field_settings,
+			$field_meta,
+			$field_id
+		);
+
+		$this->printer->print_html( ...$nodes );
+	}
+
+	/**
+	 * @param Template_Pattern[] $field_assets
+	 *
+	 * @return Html_Node[]
+	 */
+	public function compose_field_markup(
+		array $field_assets,
+		Layout_Settings $layout_settings,
+		?Item_Settings $item_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta,
+		string $field_id
+	): array {
 		$field_type = $field_meta->get_type();
 
 		if ( false === $field_meta->is_field_exist() ) {
-			return;
+			return array();
 		}
 
 		$vendor_name           = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
 		$markup_field_instance = $this->get_markup_field_instance( $vendor_name, $field_type );
 
 		if ( ! $markup_field_instance instanceof Markup_Field ) {
-			return;
+			return array();
 		}
 
 		$is_with_wrapper = $this->is_with_field_wrapper( $field_assets, $layout_settings, $field_settings, $field_meta, 'field' );
@@ -79,11 +107,11 @@ class Field_Template {
 		$markup_field_data->set_is_with_field_wrapper( $is_with_wrapper );
 		$markup_field_data->set_is_with_row_wrapper( $is_with_row_wrapper );
 
-		$this->printer->print_html( ...$markup_field_instance->compose_html( $field_id, $markup_field_data ) );
+		return $markup_field_instance->compose_html( $field_id, $markup_field_data );
 	}
 
 	/**
-	 * $print_custom_content is used in RepeaterField
+	 * @param Html_Node[]|null $custom_nodes Used in RepeaterField, replaces the field's own markup
 	 */
 	public function print_row_markup(
 		string $row_type,
@@ -93,8 +121,37 @@ class Field_Template {
 		Field_Settings $field_settings,
 		Field_Meta $field_meta,
 		string $field_id,
-		?Closure $print_custom_content = null
+		?array $custom_nodes = null
 	): void {
+		$nodes = $this->compose_row_markup(
+			$row_type,
+			$row_suffix,
+			$layout_settings,
+			$item_settings,
+			$field_settings,
+			$field_meta,
+			$field_id,
+			$custom_nodes
+		);
+
+		$this->printer->print_html( ...$nodes );
+	}
+
+	/**
+	 * @param Html_Node[]|null $custom_nodes Used in RepeaterField, replaces the field's own markup
+	 *
+	 * @return Html_Node[]
+	 */
+	public function compose_row_markup(
+		string $row_type,
+		string $row_suffix,
+		Layout_Settings $layout_settings,
+		?Item_Settings $item_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta,
+		string $field_id,
+		?array $custom_nodes = null
+	): array {
 		$vendor_name         = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
 		$front_assets        = $this->provider_cluster->get_field_front_assets( $vendor_name, $field_settings );
 		$field_assets        = $this->front_assets->resolve_template_patterns( $front_assets );
@@ -133,28 +190,16 @@ class Field_Template {
 			'div' :
 			$field_tag;
 
-		$print_content = function () use (
-			$print_custom_content,
-			$field_assets,
-			$layout_settings,
-			$item_settings,
-			$field_settings,
-			$field_meta,
-			$field_id
-		): void {
-			if ( null !== $print_custom_content ) {
-				$print_custom_content();
-			} else {
-				$this->print_field_markup(
-					$field_assets,
-					$layout_settings,
-					$item_settings,
-					$field_settings,
-					$field_meta,
-					$field_id
-				);
-			}
-		};
+		$field_nodes = is_array( $custom_nodes ) ?
+			$custom_nodes :
+			$this->compose_field_markup(
+				$field_assets,
+				$layout_settings,
+				$item_settings,
+				$field_settings,
+				$field_meta,
+				$field_id
+			);
 
 		$label = Label_Renderer::get_tag( $token_factory, $layout_settings, $field_settings, $field_id );
 
@@ -173,7 +218,7 @@ class Field_Template {
 			$field_id,
 			$row_type,
 			$token_factory,
-			$print_content
+			$field_nodes
 		);
 
 		$field_layer = $is_with_field_wrapper ?
@@ -206,7 +251,7 @@ class Field_Template {
 			) :
 			$row_inner;
 
-		$this->printer->print_html( ...$label_outside, ...$row_layer );
+		return array( ...$label_outside, ...$row_layer );
 	}
 
 	/**

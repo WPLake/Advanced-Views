@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Macy_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Masonry_Pattern;
@@ -17,6 +18,9 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Splide_Pattern;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Gallery_Field extends Markup_Field_Base {
 	protected Image_Field $image_field;
 
@@ -24,12 +28,6 @@ class Gallery_Field extends Markup_Field_Base {
 		parent::__construct( $printer );
 
 		$this->image_field = $image_field;
-	}
-
-	protected function print_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
-		$markup_field_data->set_is_with_field_wrapper( true );
-
-		$this->printer->print_html( ...$this->image_field->compose_html( $item_id, $markup_field_data ) );
 	}
 
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
@@ -40,8 +38,7 @@ class Gallery_Field extends Markup_Field_Base {
 		$item_var   = $token_factory->variable( 'image_item' );
 
 		$item_id   = $item_var->get_name();
-		$print_item = fn() => $this->print_item( $field_id, $item_id, $markup_field_data );
-		$loop_body  = $token_factory->html( fn() => $this->printer->print_indented( $print_item ) );
+		$loop_body = $this->compose_item( $field_id, $item_id, $markup_field_data );
 
 		$loop = $token_factory->loop()
 						->set_source_variable( $source_var )
@@ -49,6 +46,15 @@ class Gallery_Field extends Markup_Field_Base {
 						->set_body( $loop_body );
 
 		return array( $loop );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
+		$markup_field_data->set_is_with_field_wrapper( true );
+
+		return $this->image_field->compose_html( $item_id, $markup_field_data );
 	}
 
 	/**

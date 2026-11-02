@@ -21,7 +21,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 final class Outer_Printer {
 	/**
 	 * @param Template_Pattern[] $field_assets
-	 * @param callable(): void $print_content
+	 * @param Html_Node[] $content
 	 *
 	 * @return Html_Node[]
 	 */
@@ -32,10 +32,9 @@ final class Outer_Printer {
 		string $field_id,
 		string $row_type,
 		Token_Factory $token_factory,
-		callable $print_content
+		array $content
 	): array {
 		$field_outers = self::get_field_outers( $field_assets, $layout_settings, $field_settings, $field_id, $row_type );
-		$content      = array( fn() => $print_content() );
 
 		// the innermost outer goes first.
 		foreach ( array_reverse( $field_outers ) as $outer ) {

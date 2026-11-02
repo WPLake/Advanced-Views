@@ -14,9 +14,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use WP_Comment;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Comment_Items_List_Field extends Markup_Field_Base {
 	const AUTHOR_NAME = 'author_name';
 	const CONTENT     = 'content';
@@ -24,7 +28,10 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 
 	use Custom_Field;
 
-	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$comment_attributes = array( 'class' => $this->get_field_class( 'comment', $markup_field_data ) );
@@ -51,10 +58,13 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 			->attributes( $comment_attributes )
 			->content( $author_name, $content );
 
-		$this->printer->print_html( $tags );
+		return array( $tags );
 	}
 
-	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$id_var         = $token_factory->variable( $field_id )
@@ -62,15 +72,16 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		$comment_id_var = $token_factory->variable( $item_id )
 											->add_item_path( self::COMMENT_ID );
 
-		$token_factory->shortcode( Hard_Layout_Cpt::cpt_name() )
+		$shortcode = $token_factory->shortcode( Hard_Layout_Cpt::cpt_name() )
 			->set_attributes(
 				array(
 								'id'         => $id_var,
 								'object-id'  => 'comment',
 								'comment-id' => $comment_id_var,
 							)
-			)
-			->display();
+			);
+
+		return array( $shortcode );
 	}
 
 	/**
@@ -171,14 +182,12 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 
 		$item_var = $token_factory->variable( 'comment_item' );
 
-		$print_item = fn() => $this->print_item( $field_id, $item_var->get_name(), $markup_field_data );
-
-		$body = $token_factory->html( fn() => $this->printer->print_indented( $print_item ) );
+		$item_nodes = $this->compose_item( $field_id, $item_var->get_name(), $markup_field_data );
 
 		$loop = $token_factory->loop()
 			->set_source_variable( $value_var )
 			->set_item_variable( $item_var )
-			->set_body( $body );
+			->set_body( $item_nodes );
 
 		return array( $loop );
 	}

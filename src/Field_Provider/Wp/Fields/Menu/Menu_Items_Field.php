@@ -15,15 +15,19 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
+use Org\Wplake\Advanced_Views\Template\Html\Composite_Attribute;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Template_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token;
 use WP_Post;
-use function Org\Wplake\Advanced_Views\Template\Html\compose_html;
+use function Org\Wplake\Advanced_Views\Template\Html\compose_attribute;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Menu_Items_Field extends Markup_Field_Base {
 	const IS_ACTIVE       = 'isActive';
 	const IS_CHILD_ACTIVE = 'isChildActive';
@@ -39,11 +43,17 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$this->link_field = $link_field;
 	}
 
-	protected function print_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): void {
-		$this->printer->print_html( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): array {
+		return $this->link_field->compose_html( $item_id, $markup_field_data );
 	}
 
-	protected function print_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$id_var        = $token_factory->variable( $field_id )
@@ -51,14 +61,15 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$object_id_var = $token_factory->variable( $item_id )
 										->add_item_path( self::VALUE );
 
-		$token_factory->shortcode( Hard_Layout_Cpt::cpt_name() )
+		$shortcode = $token_factory->shortcode( Hard_Layout_Cpt::cpt_name() )
 			->set_attributes(
 				array(
 					'id'        => $id_var,
 					'object-id' => $object_id_var,
 				)
-			)
-			->display();
+			);
+
+		return array( $shortcode );
 	}
 
 	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
@@ -68,8 +79,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 			->add_item_path( self::VALUE );
 		$item_var  = $token_factory->variable( 'menu_item' );
 
-		$print_loop_body = fn() => $this->print_loop_body( $field_id, $item_var->get_name(), $markup_field_data );
-		$loop_body       = $token_factory->html( fn() => $this->printer->print_indented( $print_loop_body ) );
+		$loop_body = $this->compose_loop_body( $field_id, $item_var->get_name(), $markup_field_data );
 
 		$loop = $token_factory->loop()
 						->set_source_variable( $value_var )
@@ -79,7 +89,10 @@ class Menu_Items_Field extends Markup_Field_Base {
 		return array( $loop );
 	}
 
-	protected function print_loop_body( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_loop_body( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$is_active_var        = $token_factory->variable( $item_id )
@@ -94,16 +107,13 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$children_if          = $token_factory->if()->set_if_branch( $children_branch );
 
 		$item_class = $this->compose_class( 'menu-item', 'menu-item--active', $is_active_comparison, $markup_field_data );
+		$item_nodes = $this->compose_item_markup( $field_id, $item_id, $markup_field_data );
 
 		$item = tag( 'li' )
 			->attributes( array( 'class' => $item_class ) )
-			->content(
-				fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data ),
-				fn() => $this->printer->new_line()->line_start(),
-				$children_if
-			);
+			->content( ...array_merge( $item_nodes, array( $children_if ) ) );
 
-		$this->printer->print_html( $item );
+		return array( $item );
 	}
 
 	protected function children_branch( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): IF_Branch {
@@ -112,15 +122,17 @@ class Menu_Items_Field extends Markup_Field_Base {
 		$children_var = $token_factory->variable( $item_id )
 			->add_item_path( self::CHILDREN );
 
-		$print_children = fn() => $this->print_children( $field_id, $item_id, $markup_field_data );
-		$body           = $token_factory->html( fn() => $this->printer->print_indented( $print_children ) );
+		$body = $this->compose_children( $field_id, $item_id, $markup_field_data );
 
 		return $token_factory->if_branch()
 			->set_condition( $children_var )
 			->set_body( $body );
 	}
 
-	protected function print_children( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_children( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$item_class = $this->get_item_class(
@@ -133,8 +145,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 											->add_item_path( self::CHILDREN );
 		$sub_menu_item_var = $token_factory->variable( 'sub_menu_item' );
 
-		$print_sub_loop_body = fn() => $this->print_sub_loop_body( $field_id, $sub_menu_item_var->get_name(), $markup_field_data );
-		$loop_body           = $token_factory->html( fn() => $this->printer->print_indented( $print_sub_loop_body ) );
+		$loop_body = $this->compose_sub_loop_body( $field_id, $sub_menu_item_var->get_name(), $markup_field_data );
 
 		$loop = $token_factory->loop()
 						->set_source_variable( $children_var )
@@ -145,63 +156,47 @@ class Menu_Items_Field extends Markup_Field_Base {
 			->attributes( array( 'class' => $item_class ) )
 			->content( $loop );
 
-		$this->printer->print_html( $tags );
+		return array( $tags );
 	}
 
-	protected function print_sub_loop_body( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_sub_loop_body( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$is_active_var = $token_factory->variable( $item_id )
 										->add_item_path( self::IS_ACTIVE );
 
 		$item_class = $this->compose_class( 'sub-menu-item', 'sub-menu-item--active', $is_active_var, $markup_field_data );
+		$item_nodes = $this->compose_item_markup( $field_id, $item_id, $markup_field_data );
 
 		$item = tag( 'li' )
 			->attributes( array( 'class' => $item_class ) )
-			->content(
-				fn() => $this->print_item_markup( $field_id, $item_id, $markup_field_data )
-			);
+			->content( ...$item_nodes );
 
-		$this->printer->print_html( $item );
+		return array( $item );
 	}
 
 	protected function compose_class(
 		string $base_suffix,
 		string $conditional_suffix,
-		Template_Token $comparison,
+		Statement_Token $condition,
 		Template_Field_Data $markup_field_data
-	): Htmlable {
+	): Composite_Attribute {
 		$token_factory = $markup_field_data->get_token_factory();
+		$layout_data   = $markup_field_data->get_view_data();
+		$field_data    = $markup_field_data->get_field_data();
 
-		$class_branch = $this->class_branch( $conditional_suffix, $comparison, $markup_field_data );
+		$base_class        = $this->get_item_class( $base_suffix, $layout_data, $field_data );
+		$conditional_class = $this->get_item_class( $conditional_suffix, $layout_data, $field_data );
 
-		return compose_html(
-			array(
-				$this->get_item_class( $base_suffix, $markup_field_data->get_view_data(), $markup_field_data->get_field_data() ),
-				$token_factory->if()->set_if_branch( $class_branch ),
-			)
-		);
-	}
+		$active_class = $token_factory->conditional_value()
+										->set_comparison( $condition )
+										->set_accept_value( $token_factory->literal( sprintf( ' %s', $conditional_class ) ) )
+										->set_decline_value( $token_factory->literal( '' ) );
 
-	protected function class_branch( string $classes, Template_Token $comparison, Template_Field_Data $markup_field_data ): IF_Branch {
-		$token_factory = $markup_field_data->get_token_factory();
-
-		$print_item_class = function () use ( $classes, $markup_field_data ) {
-			echo ' ';
-			echo esc_html(
-				$this->get_item_class(
-					$classes,
-					$markup_field_data->get_view_data(),
-					$markup_field_data->get_field_data()
-				)
-			);
-		};
-
-		$body = $token_factory->html( $print_item_class );
-
-		return $token_factory->if_branch()
-			->set_condition( $comparison )
-			->set_body( $body );
+		return compose_attribute( array( $base_class, $active_class ) );
 	}
 
 	protected function is_active_item( WP_Post $wp_post ): bool {

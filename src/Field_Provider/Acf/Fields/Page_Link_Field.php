@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Acf\Fields;
 
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Link_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\List_Field;
@@ -14,6 +15,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Page_Link_Field extends List_Field {
 	const LOOP_ITEM_NAME = 'link_item';
 
@@ -82,13 +86,16 @@ class Page_Link_Field extends List_Field {
 		return $this->link_field->get_validation_template_variables( $variable_field_data );
 	}
 
-	protected function print_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
 		$markup_field_data->set_is_with_field_wrapper(
 			$markup_field_data->get_field_meta()->is_multiple() ||
 			$markup_field_data->is_with_field_wrapper()
 		);
 
-		$this->printer->print_html( ...$this->link_field->compose_html( $item_id, $markup_field_data ) );
+		return $this->link_field->compose_html( $item_id, $markup_field_data );
 	}
 
 	/**
