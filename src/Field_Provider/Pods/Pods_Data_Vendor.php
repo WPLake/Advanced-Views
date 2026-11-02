@@ -37,7 +37,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Pods_Migrate_Packages;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
@@ -50,8 +49,8 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	 */
 	private ?array $pick_related_objects;
 
-	public function __construct( Logger $logger, Web_Component_Renderer $renderer ) {
-		parent::__construct( $logger, $renderer );
+	public function __construct( Logger $logger ) {
+		parent::__construct( $logger );
 
 		$this->pick_related_objects = null;
 	}
@@ -433,51 +432,49 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 
 	public function get_field_types(): array {
 		$text = array(
-			'text'     => new Plain_Field( $this->renderer ),
-			'website'  => new Url_Field( $this->renderer ),
-			'phone'    => new Plain_Field( $this->renderer ),
-			'email'    => new Plain_Field( $this->renderer ),
-			'password' => new Plain_Field( $this->renderer ),
+			'text'     => new Plain_Field(),
+			'website'  => new Url_Field(),
+			'phone'    => new Plain_Field(),
+			'email'    => new Plain_Field(),
+			'password' => new Plain_Field(),
 		);
 
 		$paragraph = array(
-			'paragraph' => new Html_Field( $this->renderer, true, true ),
-			'wysiwyg'   => new Html_Field( $this->renderer, true, true ),
-			'code'      => new Html_Field( $this->renderer ),
+			'paragraph' => new Html_Field( true, true ),
+			'wysiwyg'   => new Html_Field( true, true ),
+			'code'      => new Html_Field(),
 		);
 
 		$date = array(
-			'datetime' => new Date_Picker_Field( $this->renderer ),
-			'date'     => new Date_Picker_Field( $this->renderer ),
-			'time'     => new Date_Picker_Field( $this->renderer ),
+			'datetime' => new Date_Picker_Field(),
+			'date'     => new Date_Picker_Field(),
+			'time'     => new Date_Picker_Field(),
 		);
 
 		$number = array(
-			'number'   => new Plain_Field( $this->renderer ),
-			'currency' => new Html_Field( $this->renderer ),
+			'number'   => new Plain_Field(),
+			'currency' => new Html_Field(),
 		);
 
 		$relationship = array(
 			'file'   => new Pods_Upload_Field(
-				new Image_Field( $this->renderer ),
-				new File_Field( new Link_Field( $this->renderer ), $this->renderer ),
-				new Gallery_Field( new Image_Field( $this->renderer ), $this->renderer ),
-				$this->renderer
+				new Image_Field(),
+				new File_Field( new Link_Field() ),
+				new Gallery_Field( new Image_Field() )
 			),
-			'oembed' => new Html_Field( $this->renderer ),
+			'oembed' => new Html_Field(),
 			'pick'   => new Pods_Pick_Field(
-				new Select_Field( $this->renderer ),
-				new User_Field( new Link_Field( $this->renderer ), $this->renderer ),
-				new Post_Object_Field( new Link_Field( $this->renderer ), $this->renderer ),
-				new Taxonomy_Field( new Link_Field( $this->renderer ), $this->renderer ),
-				new File_Field( new Link_Field( $this->renderer ), $this->renderer ),
-				$this->renderer
+				new Select_Field(),
+				new User_Field( new Link_Field() ),
+				new Post_Object_Field( new Link_Field() ),
+				new Taxonomy_Field( new Link_Field() ),
+				new File_Field( new Link_Field() )
 			),
 		);
 
 		$other = array(
-			'boolean' => new True_False_Field( $this->renderer ),
-			'color'   => new Plain_Field( $this->renderer ),
+			'boolean' => new True_False_Field(),
+			'color'   => new Plain_Field(),
 		);
 
 		return array_merge( $text, $paragraph, $date, $number, $relationship, $other );

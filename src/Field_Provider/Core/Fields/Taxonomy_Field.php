@@ -13,7 +13,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 use WP_Term;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
@@ -26,9 +25,7 @@ class Taxonomy_Field extends List_Field {
 
 	private Link_Field $link_field;
 
-	public function __construct( Link_Field $link_field, Web_Component_Renderer $renderer ) {
-		parent::__construct( $renderer );
-
+	public function __construct( Link_Field $link_field ) {
 		$this->link_field = $link_field;
 	}
 

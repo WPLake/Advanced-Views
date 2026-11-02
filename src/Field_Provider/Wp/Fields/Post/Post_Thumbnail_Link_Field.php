@@ -13,7 +13,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
@@ -25,9 +24,7 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 
 	protected Image_Field $image_field;
 
-	public function __construct( Image_Field $image_field, Web_Component_Renderer $renderer ) {
-		parent::__construct( $renderer );
-
+	public function __construct( Image_Field $image_field ) {
 		$this->image_field = $image_field;
 	}
 

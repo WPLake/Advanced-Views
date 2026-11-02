@@ -13,7 +13,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -22,9 +21,7 @@ class Pods_Upload_Field extends Markup_Field_Base {
 	private File_Field $file_field;
 	private Gallery_Field $gallery_field;
 
-	public function __construct( Image_Field $image_field, File_Field $file_field, Gallery_Field $gallery_field, Web_Component_Renderer $renderer ) {
-		parent::__construct( $renderer );
-
+	public function __construct( Image_Field $image_field, File_Field $file_field, Gallery_Field $gallery_field ) {
 		$this->image_field   = $image_field;
 		$this->file_field    = $file_field;
 		$this->gallery_field = $gallery_field;

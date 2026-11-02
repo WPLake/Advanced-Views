@@ -13,7 +13,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Conditional\Comparison_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
@@ -30,9 +29,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 
 	private Image_Field $image_field;
 
-	public function __construct( Image_Field $image_field, Web_Component_Renderer $renderer ) {
-		parent::__construct( $renderer );
-
+	public function __construct( Image_Field $image_field ) {
 		$this->image_field = $image_field;
 	}
 

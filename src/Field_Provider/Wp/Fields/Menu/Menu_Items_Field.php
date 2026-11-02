@@ -17,7 +17,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Fie
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Html\Composite_Attribute;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token;
 use WP_Post;
@@ -37,9 +36,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 
 	private Link_Field $link_field;
 
-	public function __construct( Link_Field $link_field, Web_Component_Renderer $renderer ) {
-		parent::__construct( $renderer );
-
+	public function __construct( Link_Field $link_field ) {
 		$this->link_field = $link_field;
 	}
 

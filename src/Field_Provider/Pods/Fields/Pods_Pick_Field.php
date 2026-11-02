@@ -15,7 +15,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -31,11 +30,8 @@ class Pods_Pick_Field extends Markup_Field_Base {
 		User_Field $user_field,
 		Post_Object_Field $post_object_field,
 		Taxonomy_Field $taxonomy_field,
-		File_Field $file_field,
-		Web_Component_Renderer $renderer
+		File_Field $file_field
 	) {
-		parent::__construct( $renderer );
-
 		$this->select_field      = $select_field;
 		$this->user_field        = $user_field;
 		$this->post_object_field = $post_object_field;

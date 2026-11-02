@@ -211,59 +211,59 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	 */
 	public function get_field_types(): array {
 		$basic = array(
-			'text'     => new Plain_Field( $this->renderer ),
+			'text'     => new Plain_Field(),
 			// we don't need ACF to wrap every line of the value with <p> tags.
-			'textarea' => new Html_Field( $this->renderer, false, true ),
-			'number'   => new Plain_Field( $this->renderer ),
-			'range'    => new Plain_Field( $this->renderer ),
-			'email'    => new Plain_Field( $this->renderer ),
-			'url'      => new Url_Field( $this->renderer ),
-			'password' => new Plain_Field( $this->renderer ),
+			'textarea' => new Html_Field( false, true ),
+			'number'   => new Plain_Field(),
+			'range'    => new Plain_Field(),
+			'email'    => new Plain_Field(),
+			'url'      => new Url_Field(),
+			'password' => new Plain_Field(),
 		);
 
 		$content = array(
-			'image'   => new Image_Field( $this->renderer ),
-			'file'    => new File_Field( new Link_Field( $this->renderer ), $this->renderer ),
-			'wysiwyg' => new Html_Field( $this->renderer ),
-			'oembed'  => new Html_Field( $this->renderer ),
-			'gallery' => new Gallery_Field( new Image_Field( $this->renderer ), $this->renderer ),
+			'image'   => new Image_Field(),
+			'file'    => new File_Field( new Link_Field() ),
+			'wysiwyg' => new Html_Field(),
+			'oembed'  => new Html_Field(),
+			'gallery' => new Gallery_Field( new Image_Field() ),
 		);
 
 		$choice = array(
-			'select'       => new Select_Field( $this->renderer ),
-			'checkbox'     => new Select_Field( $this->renderer ),
-			'radio'        => new Select_Field( $this->renderer ),
-			'button_group' => new Select_Field( $this->renderer ),
-			'true_false'   => new True_False_Field( $this->renderer ),
+			'select'       => new Select_Field(),
+			'checkbox'     => new Select_Field(),
+			'radio'        => new Select_Field(),
+			'button_group' => new Select_Field(),
+			'true_false'   => new True_False_Field(),
 		);
 
 		$relational = array(
-			'link'         => new Link_Field( $this->renderer ),
-			'post_object'  => new Post_Object_Field( new Link_Field( $this->renderer ), $this->renderer ),
-			'page_link'    => new Page_Link_Field( new Link_Field( $this->renderer ), $this->renderer ),
-			'relationship' => new Post_Object_Field( new Link_Field( $this->renderer ), $this->renderer ),
-			'taxonomy'     => new Taxonomy_Field( new Link_Field( $this->renderer ), $this->renderer ),
-			'user'         => new User_Field( new Link_Field( $this->renderer ), $this->renderer ),
+			'link'         => new Link_Field(),
+			'post_object'  => new Post_Object_Field( new Link_Field() ),
+			'page_link'    => new Page_Link_Field( new Link_Field() ),
+			'relationship' => new Post_Object_Field( new Link_Field() ),
+			'taxonomy'     => new Taxonomy_Field( new Link_Field() ),
+			'user'         => new User_Field( new Link_Field() ),
 		);
 
 		$advanced = array(
-			'google_map'       => new Map_Field( $this->renderer ),
+			'google_map'       => new Map_Field(),
 			// https://wordpress.org/plugins/acf-google-map-field-multiple-markers/.
-			'google_map_multi' => new Map_Field( $this->renderer ),
+			'google_map_multi' => new Map_Field(),
 			// https://wordpress.org/plugins/acf-openstreetmap-field/.
-			'open_street_map'  => new Map_Field( $this->renderer ),
-			'date_picker'      => new Date_Picker_Field( $this->renderer ),
-			'date_time_picker' => new Date_Picker_Field( $this->renderer ),
-			'time_picker'      => new Date_Picker_Field( $this->renderer ),
-			'color_picker'     => new Color_Picker_Field( $this->renderer ),
-			'icon_picker'      => new Icon_Picker_Field( new Image_Field( $this->renderer ), $this->renderer ),
+			'open_street_map'  => new Map_Field(),
+			'date_picker'      => new Date_Picker_Field(),
+			'date_time_picker' => new Date_Picker_Field(),
+			'time_picker'      => new Date_Picker_Field(),
+			'color_picker'     => new Color_Picker_Field(),
+			'icon_picker'      => new Icon_Picker_Field( new Image_Field() ),
 		);
 
 		$layout = array(
-			'group'            => new Pro_Stub_Field( $this->renderer ),
-			'repeater'         => new Pro_Stub_Field( $this->renderer ),
-			'flexible_content' => new Pro_Stub_Field( $this->renderer ),
-			'tab'              => new Tab_Field( $this->renderer ),
+			'group'            => new Pro_Stub_Field(),
+			'repeater'         => new Pro_Stub_Field(),
+			'flexible_content' => new Pro_Stub_Field(),
+			'tab'              => new Tab_Field(),
 		);
 
 		return array_merge( $basic, $content, $choice, $relational, $advanced, $layout );

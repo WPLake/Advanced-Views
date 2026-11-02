@@ -10,7 +10,6 @@ use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -28,41 +27,11 @@ class Field_Template {
 	private Field_Provider_Cluster $provider_cluster;
 	private Front_Assets $front_assets;
 	private Token_Factory_Storage $token_factory_storage;
-	protected Web_Component_Renderer $renderer;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Web_Component_Renderer $renderer ) {
+	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
 		$this->provider_cluster      = $provider_cluster;
 		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;
-		$this->renderer               = $renderer;
-	}
-
-	// public, as used in Upgrades.
-
-	/**
-	 * @param Template_Pattern[] $field_assets
-	 */
-	public function print_field_markup(
-		array $field_assets,
-		Layout_Settings $layout_settings,
-		?Item_Settings $item_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta,
-		string $field_id
-	): void {
-		$nodes = $this->compose_field_markup(
-			$field_assets,
-			$layout_settings,
-			$item_settings,
-			$field_settings,
-			$field_meta,
-			$field_id
-		);
-
-		$html = $this->renderer->render_html( $nodes );
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $html;
 	}
 
 	/**
@@ -111,36 +80,6 @@ class Field_Template {
 		$markup_field_data->set_is_with_row_wrapper( $is_with_row_wrapper );
 
 		return $markup_field_instance->compose_html( $field_id, $markup_field_data );
-	}
-
-	/**
-	 * @param Html_Node[]|null $custom_nodes Used in RepeaterField, replaces the field's own markup
-	 */
-	public function print_row_markup(
-		string $row_type,
-		string $row_suffix,
-		Layout_Settings $layout_settings,
-		?Item_Settings $item_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta,
-		string $field_id,
-		?array $custom_nodes = null
-	): void {
-		$nodes = $this->compose_row_markup(
-			$row_type,
-			$row_suffix,
-			$layout_settings,
-			$item_settings,
-			$field_settings,
-			$field_meta,
-			$field_id,
-			$custom_nodes
-		);
-
-		$html = $this->renderer->render_html( $nodes );
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $html;
 	}
 
 	/**

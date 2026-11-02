@@ -10,7 +10,6 @@ use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 defined( 'ABSPATH' ) || exit;
@@ -19,17 +18,12 @@ defined( 'ABSPATH' ) || exit;
  * @phpstan-import-type Html_Node from Html_Tag
  */
 abstract class Markup_Field_Base implements Markup_Field {
-	protected Web_Component_Renderer $renderer;
 	use Safe_Array_Arguments;
 
 	const VALUE     = 'value';
 	const VIEW_ID   = 'view_id';
 	const LAYOUT_ID = 'layout_id';
 	const LABEL     = 'label';
-
-	public function __construct( Web_Component_Renderer $renderer ) {
-		$this->renderer = $renderer;
-	}
 
 	/**
 	 * @return Html_Node[]
