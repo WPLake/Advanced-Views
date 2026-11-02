@@ -6,24 +6,23 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Tokens\Blade_Comment;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Tokens\Blade_Printer;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Tokens\Blade_Loop;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Tokens\Conditional\Blade_IF;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Tokens\Variable\Blade_Assignment;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Token_Factory_Base;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Functional\Comment_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Nested\Tokens\IF_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Functional\Functions_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Block\Tokens\Loop_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Functional\Range_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Assignment_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Literal_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Variable_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Tokens\PHP_Functions;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Tokens\PHP_Range;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Tokens\Variable\PHP_Literal;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Tokens\Variable\PHP_Variable;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Statement\Functional\Blade_Comment;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Block\Blade_Loop;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Nested\Blade_IF;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Statement\Variable\Blade_Assignment;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Functional\Comment_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Functional\Functions_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Block\Tokens\Loop_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Functional\Range_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Assignment_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Literal_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Statement\Functional\PHP_Functions;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Statement\Functional\PHP_Range;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Statement\Variable\PHP_Literal;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\Statement\Variable\PHP_Variable;
 
 final class Blade_Tokens extends Token_Factory_Base {
 	public function comment( string $content ): Comment_Token {

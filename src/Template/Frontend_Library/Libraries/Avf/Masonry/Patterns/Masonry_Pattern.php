@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Patt
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Variable_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class Masonry_Pattern implements Frontend_Pattern, Template_Pattern, JS_Pattern, CSS_Pattern {

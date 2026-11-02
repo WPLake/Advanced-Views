@@ -3,11 +3,11 @@
 namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Core;
 
 use Architecture\Policy\Domain_Policy;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\template_tokens_domain;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\template_token_domain;
 
 class template_engine_domain extends Domain_Policy {
 	const WHITELIST_DOMAINS = [
-		template_tokens_domain::class,
+		template_token_domain::class,
 	];
 	const WHITELIST_GLOBALS = [
 		'WP_Filesystem_Base',

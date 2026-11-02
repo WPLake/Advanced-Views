@@ -14,8 +14,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Fie
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Conditional\Comparison_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Nested\Tokens\IF_Branch;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Conditional\Comparison_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;

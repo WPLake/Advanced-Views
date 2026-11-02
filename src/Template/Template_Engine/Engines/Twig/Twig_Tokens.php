@@ -6,26 +6,25 @@ namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Token_Factory_Base;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Functional\Comment_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Conditional\Comparison_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Nested\Tokens\IF_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Functional\Functions_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Block\Tokens\Loop_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Functional\Range_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Assignment_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Literal_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Statement\Variable\Variable_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Conditional\Twig_Comparison;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Conditional\Twig_IF;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Comment;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Printer;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Functions;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Loop;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Twig_Range;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Variable\Twig_Assignnment;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Variable\Twig_Literal;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Tokens\Variable\Twig_Variable;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Functional\Comment_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Conditional\Comparison_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Functional\Functions_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Block\Tokens\Loop_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Functional\Range_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Assignment_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Literal_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Statement\Conditional\Twig_Comparison;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Nested\Twig_IF;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Statement\Functional\Twig_Comment;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Statement\Functional\Twig_Functions;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Block\Twig_Loop;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Statement\Functional\Twig_Range;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Statement\Variable\Twig_Assignnment;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Statement\Variable\Twig_Literal;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Statement\Variable\Twig_Variable;
 
 final class Twig_Tokens extends Token_Factory_Base {
 	public function comment( string $content ): Comment_Token {

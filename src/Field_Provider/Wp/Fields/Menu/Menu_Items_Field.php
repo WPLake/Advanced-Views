@@ -17,8 +17,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Fie
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
 use Org\Wplake\Advanced_Views\Template\Html\Htmlable\Htmlable;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Printer;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Core\Template_Token;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Tokens\Nested\Tokens\IF_Branch;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Template_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Template\Html\compose_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
