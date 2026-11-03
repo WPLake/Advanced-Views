@@ -42,14 +42,10 @@ class Post_Selection_Markup {
 		$this->web_component_factory = $web_component_factory;
 	}
 
-	// public, as called from Upgrades.php.
-	public function print_extra_markup( Post_Selection_Settings $post_selection_settings ): void {
+	public function render_extra_markup( Post_Selection_Settings $post_selection_settings ): string {
 		$nodes = $this->extra_nodes( $post_selection_settings );
 
-		$html = $this->renderer->render_html( $nodes, 1 );
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $html;
+		return $this->renderer->render_html( $nodes, 1 );
 	}
 
 	/**

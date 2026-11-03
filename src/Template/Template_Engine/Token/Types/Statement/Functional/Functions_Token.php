@@ -61,7 +61,7 @@ abstract class Functions_Token {
 			'next_text' => '>',
 		);
 		$settings         = array_merge( $default_settings, $settings );
-		$settings_literal = $this->token_factory->literal( array( $settings ) );
+		$settings_literal = $this->token_factory->literal( $settings );
 
 		// it's a built-in WordPress function.
 		return $this->create_raw_call( 'paginate_links', array( $settings_literal ) );
