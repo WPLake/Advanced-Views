@@ -2,14 +2,15 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Formatting\Node;
+namespace Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters;
 
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
-use Org\Wplake\Advanced_Views\Template\Html\Formatting\Text_Formatter;
+use Org\Wplake\Advanced_Views\Template\Html\Formatting\Node_Formatter;
+use Org\Wplake\Advanced_Views\Template\Html\Formatting\Tag_Formatter;
 
-class Node_Tree_Formatter implements Node_Formatter {
+class Tree_Formatter implements Node_Formatter, Tag_Formatter {
 	protected Text_Formatter $formatter;
 
 	public function __construct( Text_Formatter $formatter ) {
@@ -33,6 +34,16 @@ class Node_Tree_Formatter implements Node_Formatter {
 		);
 
 		return join( '', $content_parts );
+	}
+
+	public function format_attributes( array $attributes ): string {
+		$html = '';
+
+		foreach ( $attributes as $name => $value ) {
+			$html .= sprintf( ' %s="%s"', $name, $value );
+		}
+
+		return $html;
 	}
 
 	public function format_interleave( $previous_node, $next_node ): string {

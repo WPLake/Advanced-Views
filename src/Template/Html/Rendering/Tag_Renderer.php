@@ -19,9 +19,9 @@ final class Tag_Renderer {
 	protected Attribute_Normalizer $attribute_normalizer;
 
 	public function __construct( Html_Escaper $escaper ) {
-		$this->escaper            = $escaper;
+		$this->escaper              = $escaper;
 		$this->attribute_normalizer = new Attribute_Normalizer( $escaper );
-		$this->self_closing_tags  = array(
+		$this->self_closing_tags    = array(
 			'area',
 			'base',
 			'br',
@@ -93,9 +93,10 @@ final class Tag_Renderer {
 		$tag_name   = $tag->get_tag();
 		$attributes = $tag->get_attributes();
 
-		$escaped_tag         = $this->escaper->esc_html( $tag_name );
+		$escaped_tag           = $this->escaper->esc_html( $tag_name );
 		$normalized_attributes = $this->attribute_normalizer->normalize_attributes( $attributes );
-		$rendered_attributes   = $this->render_attributes( $normalized_attributes );
+		// fixme call the formatter.
+		$rendered_attributes = $this->render_attributes( $normalized_attributes );
 
 		$tag_parts = array(
 			'<',

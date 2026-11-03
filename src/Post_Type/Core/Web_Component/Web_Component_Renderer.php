@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
-use Org\Wplake\Advanced_Views\Template\Html\Formatting\Text_Formatter;
+use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Text_Formatter;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Tag_Renderer;

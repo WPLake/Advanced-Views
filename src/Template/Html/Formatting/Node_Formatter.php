@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Formatting\Node;
+namespace Org\Wplake\Advanced_Views\Template\Html\Formatting;
 
 defined( 'ABSPATH' ) || exit;
 

@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Rendering;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
-use Org\Wplake\Advanced_Views\Template\Html\Formatting\Node\Node_Formatter;
+use Org\Wplake\Advanced_Views\Template\Html\Formatting\Node_Formatter;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Element;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Raw_Html;

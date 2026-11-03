@@ -7,14 +7,14 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Escaping;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * @phpstan-type Normalizer_Callback callable(mixed):string
+ * @phpstan-type Escaper_Callback callable(mixed):string
  */
 final class Attribute_Escaper {
 	protected Html_Escaper $escaper;
 	/**
-	 * @var array<string,Normalizer_Callback>
+	 * @var array<string,Escaper_Callback>
 	 */
-	private array $normalizers;
+	private array $escapers;
 	/**
 	 * @var string[]
 	 */
@@ -29,30 +29,30 @@ final class Attribute_Escaper {
 			'action',
 			'formaction',
 		);
-		$this->normalizers    = array(
+		$this->escapers       = array(
 			'class' => fn( $classes ) => is_array( $classes ) ?
-				$this->normalize_class( $classes ) :
+				$this->escape_classes( $classes ) :
 				$this->escaper->esc_attr( $classes ),
 			'style' => fn( $declarations ) => is_array( $declarations ) ?
-				$this->normalize_style( $declarations ) :
+				$this->escape_styles( $declarations ) :
 				$this->escaper->esc_attr( $declarations ),
 		);
 	}
 
 	/**
-	 * @param array<string,Normalizer_Callback> $normalizers
+	 * @param array<string,Escaper_Callback> $escapers
 	 */
-	public function set_normalizers( array $normalizers ): self {
-		$this->normalizers = $normalizers;
+	public function set_escapers( array $escapers ): self {
+		$this->escapers = $escapers;
 
 		return $this;
 	}
 
 	/**
-	 * @param array<string,Normalizer_Callback> $normalizers
+	 * @param array<string,Escaper_Callback> $normalizers
 	 */
 	public function add_normalizers( array $normalizers ): self {
-		$this->normalizers = array_merge( $this->normalizers, $normalizers );
+		$this->escapers = array_merge( $this->escapers, $normalizers );
 
 		return $this;
 	}
@@ -89,11 +89,11 @@ final class Attribute_Escaper {
 	}
 
 	/**
-	 * @return Normalizer_Callback|null
+	 * @return Escaper_Callback|null
 	 */
 	protected function resolve_normalizer( string $name ): ?callable {
-		if ( key_exists( $name, $this->normalizers ) ) {
-			return $this->normalizers[ $name ];
+		if ( key_exists( $name, $this->escapers ) ) {
+			return $this->escapers[ $name ];
 		}
 
 		return null;
@@ -118,7 +118,7 @@ final class Attribute_Escaper {
 	/**
 	 * @param mixed[] $classes
 	 */
-	protected function normalize_class( array $classes ): string {
+	protected function escape_classes( array $classes ): string {
 		$class_names = array_map(
 			fn( $class_item ) => $this->escaper->esc_attr( $class_item ),
 			$classes
@@ -130,7 +130,7 @@ final class Attribute_Escaper {
 	/**
 	 * @param mixed[] $declarations
 	 */
-	protected function normalize_style( array $declarations ): string {
+	protected function escape_styles( array $declarations ): string {
 		$lines = array();
 
 		foreach ( $declarations as $property => $value ) {
