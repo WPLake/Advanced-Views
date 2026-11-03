@@ -34,46 +34,58 @@ final class Attribute_Renderer {
 	 * @param array<string,mixed> $attributes
 	 */
 	public function render_attributes( array $attributes ): string {
+		$escaped_attributes = $this->normalize_attributes( $attributes );
+
 		$html = '';
 
-		foreach ( $attributes as $name => $value ) {
-			$html .= $this->render_attribute( $name, $value );
+		foreach ( $escaped_attributes as $escaped_name => $escaped_value ) {
+			$html .= $this->render_pair( $escaped_name, $escaped_value );
 		}
 
 		return $html;
 	}
 
 	/**
-	 * @param mixed $value
+	 * @param array<string,mixed> $attributes
+	 *
+	 * @return array<string,string> escaped name => escaped value, only the attributes to display
 	 */
-	protected function render_attribute( string $name, $value ): string {
-		return is_bool( $value ) ?
-			$this->render_bool_attribute( $name, $value ) :
-			$this->render_mixed_attribute( $name, $value );
-	}
+	protected function normalize_attributes( array $attributes ): array {
+		$escaped_attributes = array();
 
-	protected function render_bool_attribute( string $name, bool $value ): string {
-		return $value ?
-			$this->render_pair( $name, '' ) :
-			'';
+		foreach ( $attributes as $name => $value ) {
+			$escaped_value = is_bool( $value ) ?
+				self::normalize_bool( $value ) :
+				$this->normalize_mixed( $name, $value );
+
+			if ( is_string( $escaped_value ) ) {
+				$escaped_name                        = $this->escaper->esc_html( $name );
+				$escaped_attributes[ $escaped_name ] = $escaped_value;
+			}
+		}
+
+		return $escaped_attributes;
 	}
 
 	/**
 	 * @param mixed $value
 	 */
-	protected function render_mixed_attribute( string $name, $value ): string {
-		$normalized_value = $this->attribute_escaper->esc_attr( $name, $value );
-		$should_display   = $this->display_empty ||
-							strlen( $normalized_value ) > 0;
+	protected function normalize_mixed( string $name, $value ): ?string {
+		$escaped_value = $this->attribute_escaper->esc_attr( $name, $value );
+		$is_filled     = strlen( $escaped_value ) > 0;
 
-		return $should_display ?
-			$this->render_pair( $name, $normalized_value ) :
-			'';
+		return $is_filled || $this->display_empty ?
+			$escaped_value :
+			null;
 	}
 
-	protected function render_pair( string $name, string $escaped_value ): string {
-		$escaped_key = $this->escaper->esc_html( $name );
+	protected function render_pair( string $escaped_name, string $escaped_value ): string {
+		return sprintf( ' %s="%s"', $escaped_name, $escaped_value );
+	}
 
-		return sprintf( ' %s="%s"', $escaped_key, $escaped_value );
+	protected static function normalize_bool( bool $value ): ?string {
+		return $value ?
+			'' :
+			null;
 	}
 }
