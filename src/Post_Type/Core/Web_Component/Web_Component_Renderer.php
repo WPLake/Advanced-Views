@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Compact_Tag_Formatter;
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Text_Formatter;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
@@ -22,9 +23,18 @@ final class Web_Component_Renderer {
 	protected Html_Renderer $renderer;
 	protected Text_Formatter $text_formatter;
 
-	public function __construct( Token_Tree_Formatter $formatter, Text_Formatter $text_formatter ) {
+	public function __construct(
+		Token_Tree_Formatter $formatter,
+		Compact_Tag_Formatter $tag_formatter,
+		Text_Formatter $text_formatter
+	) {
 		$this->text_formatter = $text_formatter;
-		$this->renderer       = self::create_renderer( $formatter );
+
+		$escaper      = self::create_escaper();
+		$tag_renderer = self::create_tag_renderer( $escaper, $tag_formatter );
+
+		$this->renderer = self::create_renderer( $tag_renderer, $escaper )
+								->set_formatter( $formatter );
 	}
 
 	/**
@@ -49,17 +59,18 @@ final class Web_Component_Renderer {
 		);
 	}
 
-	protected static function create_renderer( Token_Tree_Formatter $formatter ): Html_Renderer {
-		$escaper           = self::create_escaper();
+	protected static function create_renderer( Tag_Renderer $tag_renderer, Html_Escaper $escaper ): Html_Renderer {
 		$element_renderers = Token_Renderer::element_renderers();
-
-		$tag_renderer = new Tag_Renderer( $escaper );
-		$tag_renderer->set_formatter( $formatter );
 
 		$renderer = new Html_Renderer( $tag_renderer, $escaper );
 
-		return $renderer->add_element_renderers( $element_renderers )
-			->set_formatter( $formatter );
+		return $renderer->add_element_renderers( $element_renderers );
+	}
+
+	protected static function create_tag_renderer( Html_Escaper $escaper, Compact_Tag_Formatter $tag_formatter ): Tag_Renderer {
+		$tag_renderer = new Tag_Renderer( $escaper );
+
+		return $tag_renderer->set_formatter( $tag_formatter );
 	}
 
 	/**
