@@ -46,18 +46,9 @@ class Tree_Formatter implements Node_Formatter, Tag_Formatter {
 	}
 
 	public function format_attributes( array $escaped_attributes, int $tag_length ): string {
-		$attr_groups = array();
+		$attr_groups = $this->group_attributes( $escaped_attributes );
 
-		if ( key_exists( 'class', $escaped_attributes ) ) {
-			$attr_groups[] = array( 'class' => $escaped_attributes['class'] );
-			unset( $escaped_attributes['class'] );
-		}
-
-		$rest_groups    = array_chunk( $escaped_attributes, $this->max_attrs_in_line, true );
-		$attr_groups    = array_merge( $attr_groups, $rest_groups );
-		$has_attributes = count( $attr_groups ) > 0;
-
-		if ( $has_attributes ) {
+		if ( count( $attr_groups ) > 0 ) {
 			return $this->print_attributes( $attr_groups, $tag_length );
 		}
 
@@ -66,6 +57,27 @@ class Tree_Formatter implements Node_Formatter, Tag_Formatter {
 
 	public function format_interleave( $previous_node, $next_node ): string {
 		return $this->formatter->new_line();
+	}
+
+	/**
+	 * The class goes first on its own, the rest are chunked by the line limit (at least one per line)
+	 *
+	 * @param array<string,string> $escaped_attributes
+	 *
+	 * @return array<int,array<string,string>>
+	 */
+	protected function group_attributes( array $escaped_attributes ): array {
+		$attr_groups = array();
+
+		if ( key_exists( 'class', $escaped_attributes ) ) {
+			$attr_groups[] = array( 'class' => $escaped_attributes['class'] );
+			unset( $escaped_attributes['class'] );
+		}
+
+		$chunk_size  = max( 1, $this->max_attrs_in_line );
+		$rest_groups = array_chunk( $escaped_attributes, $chunk_size, true );
+
+		return array_merge( $attr_groups, $rest_groups );
 	}
 
 	/**
