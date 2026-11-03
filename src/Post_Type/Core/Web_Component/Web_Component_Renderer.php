@@ -24,8 +24,7 @@ final class Web_Component_Renderer {
 
 	public function __construct( Token_Tree_Formatter $formatter, Text_Formatter $text_formatter ) {
 		$this->text_formatter = $text_formatter;
-		$this->renderer       = self::create_renderer()
-									->set_formatter( $formatter );
+		$this->renderer       = self::create_renderer( $formatter );
 	}
 
 	/**
@@ -50,14 +49,17 @@ final class Web_Component_Renderer {
 		);
 	}
 
-	protected static function create_renderer(): Html_Renderer {
-		$escaper      = self::create_escaper();
-		$tag_renderer = new Tag_Renderer( $escaper );
-		$renderer     = new Html_Renderer( $tag_renderer, $escaper );
-
+	protected static function create_renderer( Token_Tree_Formatter $formatter ): Html_Renderer {
+		$escaper           = self::create_escaper();
 		$element_renderers = Token_Renderer::element_renderers();
 
-		return $renderer->add_element_renderers( $element_renderers );
+		$tag_renderer = new Tag_Renderer( $escaper );
+		$tag_renderer->set_formatter( $formatter );
+
+		$renderer = new Html_Renderer( $tag_renderer, $escaper );
+
+		return $renderer->add_element_renderers( $element_renderers )
+			->set_formatter( $formatter );
 	}
 
 	/**
