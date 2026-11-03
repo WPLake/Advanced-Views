@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Formatting;
+namespace Org\Wplake\Advanced_Views\Template\Html\Formatting\Node;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-interface Html_Formatter {
+interface Node_Formatter {
 	/**
 	 * @param Html_Node $node
 	 */

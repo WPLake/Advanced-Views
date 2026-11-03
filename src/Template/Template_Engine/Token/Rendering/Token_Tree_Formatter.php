@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Closure;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\Section_Token;
-use Org\Wplake\Advanced_Views\Template\Html\Formatting\Html_Tree_Formatter;
+use Org\Wplake\Advanced_Views\Template\Html\Formatting\Node\Node_Tree_Formatter;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Nested_Token;
 
 /**
@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Nested
  * Nested tokens (loops, IF) add no level of their own, their nodes are formatted as the nodes of the parent level,
  * but they are set apart by an empty line above and below (so two nested tokens in a row have two between them).
  */
-final class Token_Tree_Formatter extends Html_Tree_Formatter {
+final class Token_Tree_Formatter extends Node_Tree_Formatter {
 	public function format_node( $node, string $node_html ): string {
 		if ( $node instanceof Nested_Token ) {
 			return $this->set_apart( $node_html );

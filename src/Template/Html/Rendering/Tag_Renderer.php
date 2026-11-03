@@ -16,11 +16,11 @@ final class Tag_Renderer {
 	private array $self_closing_tags;
 
 	protected Html_Escaper $escaper;
-	protected Attribute_Renderer $attribute_renderer;
+	protected Attribute_Normalizer $attribute_normalizer;
 
 	public function __construct( Html_Escaper $escaper ) {
 		$this->escaper            = $escaper;
-		$this->attribute_renderer = new Attribute_Renderer( $escaper );
+		$this->attribute_normalizer = new Attribute_Normalizer( $escaper );
 		$this->self_closing_tags  = array(
 			'area',
 			'base',
@@ -56,8 +56,8 @@ final class Tag_Renderer {
 		return $this;
 	}
 
-	public function get_attribute_renderer(): Attribute_Renderer {
-		return $this->attribute_renderer;
+	public function get_attribute_normalizer(): Attribute_Normalizer {
+		return $this->attribute_normalizer;
 	}
 
 	public function render_tag( Html_Tag $tag, string $content = '' ): string {
@@ -94,7 +94,8 @@ final class Tag_Renderer {
 		$attributes = $tag->get_attributes();
 
 		$escaped_tag         = $this->escaper->esc_html( $tag_name );
-		$rendered_attributes = $this->attribute_renderer->render_attributes( $attributes );
+		$normalized_attributes = $this->attribute_normalizer->normalize_attributes( $attributes );
+		$rendered_attributes   = $this->render_attributes( $normalized_attributes );
 
 		$tag_parts = array(
 			'<',
@@ -103,6 +104,19 @@ final class Tag_Renderer {
 		);
 
 		return join( '', $tag_parts );
+	}
+
+	/**
+	 * @param array<string,string> $normalized_attributes escaped name => escaped value
+	 */
+	protected function render_attributes( array $normalized_attributes ): string {
+		$html = '';
+
+		foreach ( $normalized_attributes as $escaped_name => $escaped_value ) {
+			$html .= sprintf( ' %s="%s"', $escaped_name, $escaped_value );
+		}
+
+		return $html;
 	}
 
 	protected function render_closing_tag( Html_Tag $tag ): string {

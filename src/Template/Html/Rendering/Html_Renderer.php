@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Template\Html\Rendering;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
-use Org\Wplake\Advanced_Views\Template\Html\Formatting\Html_Formatter;
+use Org\Wplake\Advanced_Views\Template\Html\Formatting\Node\Node_Formatter;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Element;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Raw_Html;
@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Raw_Html;
  */
 final class Html_Renderer {
 	private Html_Escaper $escaper;
-	private ?Html_Formatter $formatter;
+	private ?Node_Formatter $formatter;
 	/**
 	 * @var array<class-string, Element_Renderer>
 	 */
@@ -46,7 +46,7 @@ final class Html_Renderer {
 		return $this;
 	}
 
-	public function set_formatter( ?Html_Formatter $formatter ): self {
+	public function set_formatter( ?Node_Formatter $formatter ): self {
 		$this->formatter = $formatter;
 
 		return $this;
@@ -61,7 +61,7 @@ final class Html_Renderer {
 
 		foreach ( $nodes as $node ) {
 			if ( ! is_null( $previous_node ) &&
-				$this->formatter instanceof Html_Formatter ) {
+				$this->formatter instanceof Node_Formatter ) {
 				$parts[] = $this->formatter->format_interleave( $previous_node, $node );
 			}
 
@@ -69,7 +69,7 @@ final class Html_Renderer {
 				$this->render_element( $node ) :
 				$this->escaper->to_safe_string( $node );
 
-			$parts[] = $this->formatter instanceof Html_Formatter ?
+			$parts[] = $this->formatter instanceof Node_Formatter ?
 				$this->formatter->format_node( $node, $node_html ) :
 				$node_html;
 
@@ -131,7 +131,7 @@ final class Html_Renderer {
 	protected function render_nested_nodes( $node, array $nodes ): string {
 		$render_nodes = fn(): string => $this->render_html( ...$nodes );
 
-		return $this->formatter instanceof Html_Formatter ?
+		return $this->formatter instanceof Node_Formatter ?
 			$this->formatter->format_node_content( $node, $render_nodes ) :
 			$render_nodes();
 	}

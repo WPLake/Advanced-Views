@@ -2,13 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Formatting;
+namespace Org\Wplake\Advanced_Views\Template\Html\Formatting\Node;
 
 defined( 'ABSPATH' ) || exit;
 
 use Closure;
+use Org\Wplake\Advanced_Views\Template\Html\Formatting\Text_Formatter;
 
-class Html_Tree_Formatter implements Html_Formatter {
+class Node_Tree_Formatter implements Node_Formatter {
 	protected Text_Formatter $formatter;
 
 	public function __construct( Text_Formatter $formatter ) {

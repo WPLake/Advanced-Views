@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Attribute_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
-final class Attribute_Renderer {
+final class Attribute_Normalizer {
 	protected Attribute_Escaper $attribute_escaper;
 	protected Html_Escaper $escaper;
 	protected bool $display_empty;
@@ -32,25 +32,10 @@ final class Attribute_Renderer {
 
 	/**
 	 * @param array<string,mixed> $attributes
-	 */
-	public function render_attributes( array $attributes ): string {
-		$escaped_attributes = $this->normalize_attributes( $attributes );
-
-		$html = '';
-
-		foreach ( $escaped_attributes as $escaped_name => $escaped_value ) {
-			$html .= $this->render_pair( $escaped_name, $escaped_value );
-		}
-
-		return $html;
-	}
-
-	/**
-	 * @param array<string,mixed> $attributes
 	 *
 	 * @return array<string,string> escaped name => escaped value, only the attributes to display
 	 */
-	protected function normalize_attributes( array $attributes ): array {
+	public function normalize_attributes( array $attributes ): array {
 		$escaped_attributes = array();
 
 		foreach ( $attributes as $name => $value ) {
@@ -77,10 +62,6 @@ final class Attribute_Renderer {
 		return $is_filled || $this->display_empty ?
 			$escaped_value :
 			null;
-	}
-
-	protected function render_pair( string $escaped_name, string $escaped_value ): string {
-		return sprintf( ' %s="%s"', $escaped_name, $escaped_value );
 	}
 
 	protected static function normalize_bool( bool $value ): ?string {
