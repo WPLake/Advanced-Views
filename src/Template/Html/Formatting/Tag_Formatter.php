@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
 
 interface Tag_Formatter {
 	/**
-	 * @param int                  $tag_spaces_count length of the tag opening (`<` and the escaped name)
-	 * @param array<string,string> $attributes escaped name => escaped value
+	 * @param array<string,string> $escaped_attributes name => value
+	 * @param int                  $tag_length length of the tag opening (`<` and the escaped name)
 	 */
-	public function format_attributes( int $tag_spaces_count, array $attributes ): string;
+	public function format_attributes( array $escaped_attributes, int $tag_length ): string;
 }

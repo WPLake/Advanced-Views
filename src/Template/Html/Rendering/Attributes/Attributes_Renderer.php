@@ -31,18 +31,18 @@ final class Attributes_Renderer {
 	/**
 	 * @param array<string,mixed> $attributes
 	 */
-	public function render( array $attributes, int $tag_spaces_count ): string {
+	public function render( array $attributes, int $tag_length ): string {
 		$normalized_attributes = $this->attributes_normalizer->normalize_attributes( $attributes );
 
-		return $this->format_attributes( $tag_spaces_count, $normalized_attributes );
+		return $this->format_attributes( $normalized_attributes, $tag_length );
 	}
 
 	/**
 	 * @param array<string,string> $normalized_attributes escaped name => escaped value
 	 */
-	protected function format_attributes( int $tag_spaces_count, array $normalized_attributes ): string {
+	protected function format_attributes( array $normalized_attributes, int $tag_length ): string {
 		if ( $this->formatter instanceof Tag_Formatter ) {
-			return $this->formatter->format_attributes( $tag_spaces_count, $normalized_attributes );
+			return $this->formatter->format_attributes( $normalized_attributes, $tag_length );
 		}
 
 		return $this->render_plain_attributes( $normalized_attributes );

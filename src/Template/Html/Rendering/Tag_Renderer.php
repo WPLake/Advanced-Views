@@ -85,10 +85,8 @@ final class Tag_Renderer {
 	}
 
 	protected function render_pair_tag( Html_Tag $tag, string $content ): string {
-		$tag_name = $tag->get_name();
-
 		$opening_tag = $this->render_opening_part( $tag );
-		$closing_tag = $this->render_closing_tag( $tag_name );
+		$closing_tag = $this->render_closing_tag( $tag );
 
 		$tag_parts = array(
 			$opening_tag,
@@ -101,25 +99,30 @@ final class Tag_Renderer {
 	}
 
 	protected function render_opening_part( Html_Tag $tag ): string {
-		$tag_name = $tag->get_name();
-		$open_tag = $this->render_opening_tag( $tag_name );
+		$open_tag   = $this->render_opening_tag( $tag );
+		$attributes = $this->render_attributes( $tag, $open_tag );
 
-		$tag_spaces_count    = strlen( $open_tag );
-		$attributes          = $tag->get_attributes();
-		$rendered_attributes = $this->attributes_renderer->render( $attributes, $tag_spaces_count );
-
-		return $open_tag . $rendered_attributes;
+		return $open_tag . $attributes;
 	}
 
-	protected function render_opening_tag( string $tag_name ): string {
-		$escaped_tag = $this->escaper->esc_html( $tag_name );
+	protected function render_opening_tag( Html_Tag $tag ): string {
+		$tag_name = $tag->get_name();
 
+		$escaped_tag = $this->escaper->esc_html( $tag_name );
 		return sprintf( '<%s', $escaped_tag );
 	}
 
-	protected function render_closing_tag( string $tag_name ): string {
-		$escaped_tag = $this->escaper->esc_html( $tag_name );
+	protected function render_attributes( Html_Tag $tag, string $open_tag ): string {
+		$tag_length = strlen( $open_tag );
+		$attributes       = $tag->get_attributes();
 
+		return $this->attributes_renderer->render( $attributes, $tag_length );
+	}
+
+	protected function render_closing_tag( Html_Tag $tag ): string {
+		$tag_name = $tag->get_name();
+
+		$escaped_tag = $this->escaper->esc_html( $tag_name );
 		return sprintf( '</%s>', $escaped_tag );
 	}
 }
