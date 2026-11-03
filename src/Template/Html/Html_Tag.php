@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
  * @phpstan-import-type Html_Node from Html_Element
  */
 final class Html_Tag implements Html_Element {
-	private string $tag;
+	private string $name;
 	/**
 	 * @var array<string,mixed>
 	 */
@@ -22,7 +22,7 @@ final class Html_Tag implements Html_Element {
 	private array $nodes = array();
 
 	public function __construct( string $tag ) {
-		$this->tag = $tag;
+		$this->name = $tag;
 	}
 
 	/**
@@ -57,8 +57,8 @@ final class Html_Tag implements Html_Element {
 		return $this->nodes;
 	}
 
-	public function get_tag(): string {
-		return $this->tag;
+	public function get_name(): string {
+		return $this->name;
 	}
 
 	/**

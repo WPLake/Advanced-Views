@@ -9,6 +9,8 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Tag_Formatter;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Attributes\Attributes_Normalizer;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Attributes\Attributes_Renderer;
 
 final class Tag_Renderer {
 	/**
@@ -17,14 +19,12 @@ final class Tag_Renderer {
 	private array $self_closing_tags;
 
 	protected Html_Escaper $escaper;
-	protected Attribute_Normalizer $attribute_normalizer;
-	protected ?Tag_Formatter $formatter;
+	protected Attributes_Renderer $attributes_renderer;
 
 	public function __construct( Html_Escaper $escaper ) {
-		$this->escaper              = $escaper;
-		$this->attribute_normalizer = new Attribute_Normalizer( $escaper );
-		$this->formatter            = null;
-		$this->self_closing_tags    = array(
+		$this->escaper             = $escaper;
+		$this->attributes_renderer = new Attributes_Renderer( $escaper );
+		$this->self_closing_tags   = array(
 			'area',
 			'base',
 			'br',
@@ -60,17 +60,17 @@ final class Tag_Renderer {
 	}
 
 	public function set_formatter( ?Tag_Formatter $formatter ): self {
-		$this->formatter = $formatter;
+		$this->attributes_renderer->set_formatter( $formatter );
 
 		return $this;
 	}
 
-	public function get_attribute_normalizer(): Attribute_Normalizer {
-		return $this->attribute_normalizer;
+	public function get_attributes_normalizer(): Attributes_Normalizer {
+		return $this->attributes_renderer->get_normalizer();
 	}
 
 	public function render_tag( Html_Tag $tag, string $content = '' ): string {
-		$tag_name        = $tag->get_tag();
+		$tag_name        = $tag->get_name();
 		$is_self_closing = in_array( $tag_name, $this->self_closing_tags, true );
 
 		return $is_self_closing ?
@@ -85,8 +85,10 @@ final class Tag_Renderer {
 	}
 
 	protected function render_pair_tag( Html_Tag $tag, string $content ): string {
+		$tag_name = $tag->get_name();
+
 		$opening_tag = $this->render_opening_part( $tag );
-		$closing_tag = $this->render_closing_tag( $tag );
+		$closing_tag = $this->render_closing_tag( $tag_name );
 
 		$tag_parts = array(
 			$opening_tag,
@@ -99,54 +101,23 @@ final class Tag_Renderer {
 	}
 
 	protected function render_opening_part( Html_Tag $tag ): string {
-		$open_tag   = $this->render_opening_tag( $tag );
-		$attributes = $this->render_attributes( $tag, $open_tag );
+		$tag_name = $tag->get_name();
+		$open_tag = $this->render_opening_tag( $tag_name );
 
-		return $open_tag . $attributes;
+		$tag_spaces_count    = strlen( $open_tag );
+		$attributes          = $tag->get_attributes();
+		$rendered_attributes = $this->attributes_renderer->render( $attributes, $tag_spaces_count );
+
+		return $open_tag . $rendered_attributes;
 	}
 
-	protected function render_opening_tag( Html_Tag $tag ): string {
-		$tag_name    = $tag->get_tag();
+	protected function render_opening_tag( string $tag_name ): string {
 		$escaped_tag = $this->escaper->esc_html( $tag_name );
 
 		return sprintf( '<%s', $escaped_tag );
 	}
 
-	protected function render_attributes( Html_Tag $tag, string $open_tag ): string {
-		$attributes            = $tag->get_attributes();
-		$normalized_attributes = $this->attribute_normalizer->normalize_attributes( $attributes );
-
-		return $this->format_attributes( $open_tag, $normalized_attributes );
-	}
-
-	/**
-	 * @param array<string,string> $normalized_attributes escaped name => escaped value
-	 */
-	protected function format_attributes( string $open_tag, array $normalized_attributes ): string {
-		if ( $this->formatter instanceof Tag_Formatter ) {
-			$open_spaces_count = strlen( $open_tag );
-
-			return $this->formatter->format_attributes( $open_spaces_count, $normalized_attributes );
-		}
-
-		return $this->render_plain_attributes( $normalized_attributes );
-	}
-
-	/**
-	 * @param array<string,string> $normalized_attributes escaped name => escaped value
-	 */
-	protected function render_plain_attributes( array $normalized_attributes ): string {
-		$html = '';
-
-		foreach ( $normalized_attributes as $escaped_name => $escaped_value ) {
-			$html .= sprintf( ' %s="%s"', $escaped_name, $escaped_value );
-		}
-
-		return $html;
-	}
-
-	protected function render_closing_tag( Html_Tag $tag ): string {
-		$tag_name    = $tag->get_tag();
+	protected function render_closing_tag( string $tag_name ): string {
 		$escaped_tag = $this->escaper->esc_html( $tag_name );
 
 		return sprintf( '</%s>', $escaped_tag );

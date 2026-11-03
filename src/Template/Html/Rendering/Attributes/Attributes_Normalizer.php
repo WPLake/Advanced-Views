@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Html\Rendering;
+namespace Org\Wplake\Advanced_Views\Template\Html\Rendering\Attributes;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Attribute_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
-final class Attribute_Normalizer {
+final class Attributes_Normalizer {
 	protected Attribute_Escaper $attribute_escaper;
 	protected Html_Escaper $escaper;
 	protected bool $display_empty;

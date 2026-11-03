@@ -45,7 +45,7 @@ class Tree_Formatter implements Node_Formatter, Tag_Formatter {
 		return join( '', $content_parts );
 	}
 
-	public function format_attributes( int $open_spaces_count, array $attributes ): string {
+	public function format_attributes( int $tag_spaces_count, array $attributes ): string {
 		$attr_groups = array();
 
 		if ( key_exists( 'class', $attributes ) ) {
@@ -58,7 +58,7 @@ class Tree_Formatter implements Node_Formatter, Tag_Formatter {
 		$has_attributes = count( $attr_groups ) > 0;
 
 		if ( $has_attributes ) {
-			return $this->print_attributes( $open_spaces_count, $attr_groups );
+			return $this->print_attributes( $tag_spaces_count, $attr_groups );
 		}
 
 		return '';
@@ -71,10 +71,10 @@ class Tree_Formatter implements Node_Formatter, Tag_Formatter {
 	/**
 	 * @param array<int,array<string,string>> $groups
 	 */
-	protected function print_attributes( int $open_spaces_count, array $groups ): string {
+	protected function print_attributes( int $tag_spaces_count, array $groups ): string {
 		$lines = array_map( array( self::class, 'format_attribute_group' ), $groups );
 
-		$aligned = str_repeat( ' ', $open_spaces_count + 1 );
+		$aligned = str_repeat( ' ', $tag_spaces_count + 1 );
 		$indent  = $this->formatter->indent_line();
 
 		$delimiter = $indent . $aligned;
