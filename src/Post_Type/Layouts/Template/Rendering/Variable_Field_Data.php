@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Template;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 
 final class Variable_Field_Data extends Field_Data {
 	/**
@@ -39,7 +39,7 @@ final class Variable_Field_Data extends Field_Data {
 		?Item_Settings $item_settings,
 		Field_Settings $field_settings,
 		Field_Meta $field_meta,
-		Field_Template $field_markup,
+		Row_Builder $field_markup,
 		Layout $layout,
 		Source $source,
 		Markup_Field $markup_field,

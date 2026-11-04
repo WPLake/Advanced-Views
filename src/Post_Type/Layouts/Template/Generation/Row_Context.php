@@ -31,14 +31,19 @@ final class Row_Context {
 	public function __construct(
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
-		Field_Meta $field_meta,
 		Token_Factory $token_factory
 	) {
 		$this->layout_settings   = $layout_settings;
 		$this->field_settings    = $field_settings;
-		$this->field_meta        = $field_meta;
+		$this->field_meta        = $field_settings->get_field_meta();
 		$this->token_factory     = $token_factory;
 		$this->pattern_container = new Pattern_Container( array() );
+	}
+
+	public function set_field_meta( Field_Meta $field_meta ): self {
+		$this->field_meta = $field_meta;
+
+		return $this;
 	}
 
 	public function set_item_settings( ?Item_Settings $item_settings ): self {

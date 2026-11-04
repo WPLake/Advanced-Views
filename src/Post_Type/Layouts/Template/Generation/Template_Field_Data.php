@@ -10,11 +10,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Outer_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Pattern_Container;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -26,6 +27,7 @@ final class Template_Field_Data extends Field_Data {
 	 * @var Template_Pattern[]
 	 */
 	private array $field_assets;
+	private Pattern_Container $patterns;
 	private bool $is_with_field_wrapper;
 	private bool $is_with_row_wrapper;
 	private Token_Factory $token_factory;
@@ -35,7 +37,7 @@ final class Template_Field_Data extends Field_Data {
 		?Item_Settings $item_settings,
 		Field_Settings $field_settings,
 		Field_Meta $field_meta,
-		Field_Template $field_markup,
+		Row_Builder $field_markup,
 		Markup_Field $markup_field,
 		Token_Factory $token_factory
 	) {
@@ -49,39 +51,10 @@ final class Template_Field_Data extends Field_Data {
 		);
 
 		$this->field_assets          = array();
+		$this->patterns              = new Pattern_Container( array() );
 		$this->is_with_field_wrapper = false;
 		$this->is_with_row_wrapper   = false;
 		$this->token_factory         = $token_factory;
-	}
-
-	/**
-	 * Merges the outers of every asset by depth: the n-th outers of all assets form the n-th result item.
-	 *
-	 * @param Html_Wrapper[][] $assets_outers
-	 *
-	 * @return Html_Wrapper[]
-	 */
-	public static function merge_outers( array $assets_outers ): array {
-		/**
-		 * @var Html_Wrapper[] $merged_outers
-		 */
-		$merged_outers = array();
-
-		foreach ( $assets_outers as $asset_outers ) {
-			$counter = 0;
-
-			foreach ( $asset_outers as $asset_outer ) {
-				$merged_outers[ $counter ] = key_exists( $counter, $merged_outers ) ?
-					$merged_outers[ $counter ] :
-					new Html_Wrapper( '', array() );
-
-				$merged_outers[ $counter ]->merge( $asset_outer );
-
-				++$counter;
-			}
-		}
-
-		return $merged_outers;
 	}
 
 	/**
@@ -90,13 +63,13 @@ final class Template_Field_Data extends Field_Data {
 	public function get_item_outers( string $field_id, string $item_id ): array {
 		$layout_settings = $this->get_view_data();
 		$field_settings  = $this->get_field_data();
-		$assets_outers   = array();
 
-		foreach ( $this->field_assets as $field_asset ) {
-			$assets_outers[] = $field_asset->get_item_outers( $layout_settings, $field_settings, $field_id, $item_id );
-		}
-
-		return self::merge_outers( $assets_outers );
+		return $this->patterns->item_outers(
+			$layout_settings,
+			$field_settings,
+			$field_id,
+			$item_id
+		);
 	}
 
 	/**
@@ -106,15 +79,16 @@ final class Template_Field_Data extends Field_Data {
 	 * @return Html_Node[]
 	 */
 	public function wrap_with_item_outers( array $item_outers, array $nodes ): array {
-		// the innermost outer goes first.
-		foreach ( array_reverse( $item_outers ) as $outer ) {
-			$outer_tag = $this->item_outer_tag( $outer )
-				->content( ...$nodes );
+		$layout_settings = $this->get_view_data();
+		$field_settings  = $this->get_field_data();
+		$item_class      = $layout_settings->get_item_class( 'item', $field_settings );
 
-			$nodes = array( $outer_tag );
-		}
-
-		return $nodes;
+		return Outer_Builder::compose_outers(
+			$this->token_factory,
+			$item_outers,
+			$nodes,
+			$item_class
+		);
 	}
 
 	/**
@@ -129,6 +103,7 @@ final class Template_Field_Data extends Field_Data {
 	 */
 	public function set_field_assets( array $field_assets ): void {
 		$this->field_assets = $field_assets;
+		$this->patterns     = new Pattern_Container( $field_assets );
 	}
 
 	public function is_with_field_wrapper(): bool {
@@ -149,22 +124,5 @@ final class Template_Field_Data extends Field_Data {
 
 	public function get_token_factory(): Token_Factory {
 		return $this->token_factory;
-	}
-
-	protected function item_outer_tag( Html_Wrapper $outer ): Html_Tag {
-		$attr_class = $outer->attrs['class'] ?? '';
-		$class      = '' !== $attr_class ?
-			$attr_class :
-			$this->get_view_data()->get_item_class( 'item', $this->get_field_data() );
-
-		$attrs = array_merge( array( 'class' => $class ), $outer->attrs );
-
-		foreach ( $outer->variable_attrs as $attr => $variable_info ) {
-			$attrs[ $attr ] = $this->token_factory->variable( $variable_info['field_id'] )
-													->add_item_path( $variable_info['item_key'] );
-		}
-
-		return tag( $outer->tag )
-			->attributes( $attrs );
 	}
 }

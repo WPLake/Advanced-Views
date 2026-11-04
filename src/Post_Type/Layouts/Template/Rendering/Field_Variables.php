@@ -14,14 +14,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field_Template;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 final class Field_Variables {
 	private Field_Provider_Cluster $provider_cluster;
-	private Field_Template $field_template;
+	private Row_Builder $field_template;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, Field_Template $field_template ) {
+	public function __construct( Field_Provider_Cluster $provider_cluster, Row_Builder $field_template ) {
 		$this->provider_cluster = $provider_cluster;
 		$this->field_template   = $field_template;
 	}
