@@ -18,13 +18,13 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Sta
  * provided by the tokens themselves.
  */
 final class Token_Renderer {
-	public static function configure_renderer( Html_Renderer $renderer ): Html_Renderer {
+	public static function configure_element_renderering( Html_Renderer $renderer ): Html_Renderer {
 		$renderers = self::element_renderers();
 
 		return $renderer->add_element_renderers( $renderers );
 	}
 
-	public static function configure_escaper( Html_Escaper_Base $escaper ): Html_Escaper_Base {
+	public static function configure_attribute_rendering( Html_Escaper_Base $escaper ): Html_Escaper_Base {
 		$renderers = self::attr_renderers();
 
 		return $escaper->add_attr_renderers( $renderers );

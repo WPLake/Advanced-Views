@@ -12,7 +12,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Lab_Api;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Mount_Point\Point_Mounter;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 
 class Post_Type_Bootstrap extends Bootstrap_Base {
 	public static function get_type_definitions(): array {
@@ -25,9 +24,8 @@ class Post_Type_Bootstrap extends Bootstrap_Base {
 		$factory = $container->resolve( Post_Type_Factory::class );
 
 		return array(
-			Git_Lab_Api::class            => fn() => $factory->git_lab_api(),
-			Point_Mounter::class          => fn() => $factory->point_mounter(),
-			Web_Component_Renderer::class => fn() => $factory->web_component_renderer(),
+			Git_Lab_Api::class   => fn() => $factory->git_lab_api(),
+			Point_Mounter::class => fn() => $factory->point_mounter(),
 		);
 	}
 
