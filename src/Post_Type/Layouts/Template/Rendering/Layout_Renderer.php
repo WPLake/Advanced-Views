@@ -41,7 +41,7 @@ final class Layout_Renderer {
 		$is_markup_filled  = strlen( $view_markup_safe ) > 0;
 		$view_markup_safe  = $is_markup_filled ?
 			$view_markup_safe :
-			$this->capture_markup( $layout_settings, $is_skip_cache );
+			$this->render_markup( $layout_settings, $is_skip_cache );
 
 		// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $view_markup_safe;
@@ -50,36 +50,20 @@ final class Layout_Renderer {
 		$this->markups_safe[ $layout_id ] = $view_markup_safe;
 	}
 
-	protected function capture_markup( Layout_Settings $layout_settings, bool $is_skip_cache ): string {
-		ob_start();
-		$this->print_safe_markup( $layout_settings, $is_skip_cache );
-		$markup_safe = (string) ob_get_clean();
-
-		// remove the empty class attribute if the generation is disabled.
-		$is_class_generation_none = Layout_Settings::CLASS_GENERATION_NONE === $layout_settings->classes_generation;
-
-		return $is_class_generation_none ?
-			str_replace( ' class=""', '', $markup_safe ) :
-			$markup_safe;
-	}
-
-	protected function generate_markup( Layout_Settings $layout_settings ): void {
-		$root = $this->layout_builder->compose_layout( $layout_settings );
-		$html = $this->renderer->render_component( $root );
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $html;
-	}
-
-	protected function print_safe_markup( Layout_Settings $layout_settings, bool $is_cache_disabled ): void {
+	protected function render_markup( Layout_Settings $layout_settings, bool $is_cache_disabled ): string {
 		$short_unique_id = $layout_settings->get_unique_id( true );
 		$is_cached       = key_exists( $short_unique_id, $this->markups_safe ) && ! $is_cache_disabled;
 
 		if ( $is_cached ) {
-			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $this->markups_safe[ $short_unique_id ];
-		} else {
-			$this->generate_markup( $layout_settings );
+			return $this->markups_safe[ $short_unique_id ];
 		}
+
+		return $this->generate_markup( $layout_settings );
+	}
+
+	protected function generate_markup( Layout_Settings $layout_settings ): string {
+		$root = $this->layout_builder->compose_layout( $layout_settings );
+
+		return $this->renderer->render_component( $root );
 	}
 }

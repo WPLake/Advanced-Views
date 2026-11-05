@@ -156,23 +156,11 @@ class Post_Selection_Markup {
 			}
 		}
 
-		ob_start();
-
 		if ( $is_load_more ) {
 			$this->print_loop( $post_selection_settings );
 		} else {
 			$this->print_full_markup( $post_selection_settings );
 		}
-
-		$markup = (string) ob_get_clean();
-
-		// remove the empty class attribute if the generation is disabled.
-		if ( Post_Selection_Settings::CLASS_GENERATION_NONE === $post_selection_settings->classes_generation ) {
-			$markup = str_replace( ' class=""', '', $markup );
-		}
-
-		// @phpcs:ignore WordPress.Security.EscapeOutput
-		echo $markup;
 	}
 
 	public function print_layout_css( Post_Selection_Settings $post_selection_settings ): void {
