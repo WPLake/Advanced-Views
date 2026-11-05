@@ -67,7 +67,7 @@ final class Field_Builder {
 		);
 
 		$field_assets      = $patterns->get_patterns();
-		$has_field_wrapper = $this->policy->has_field_wrapper( $context );
+		$has_field_wrapper = Inner_Row_Policy::has_field_wrapper( $context );
 		$has_row_wrapper   = $this->policy->is_row_wrapper_required( $context );
 
 		$markup_field_data->set_field_assets( $field_assets );

@@ -11,7 +11,6 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Builder;
 use Org\Wplake\Advanced_Views\Template\Html\Composite_Attribute;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
@@ -113,7 +112,7 @@ final class Layout_Builder {
 
 	protected function generate_root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Composite_Attribute {
 		$parts = $layout_settings->is_classes_generation_enabled() ?
-			$this->resolve_root_parts( $token_factory, $layout_settings ) :
+			self::resolve_root_parts( $token_factory, $layout_settings ) :
 			array();
 
 		return compose_attribute( $parts );
@@ -122,7 +121,7 @@ final class Layout_Builder {
 	/**
 	 * @return array<int,string|Variable_Token>
 	 */
-	protected function resolve_root_parts( Token_Factory $token_factory, Layout_Settings $layout_settings ): array {
+	protected static function resolve_root_parts( Token_Factory $token_factory, Layout_Settings $layout_settings ): array {
 		$bem_name      = $layout_settings->get_bem_name();
 		$variable_name = Hard_Layout_Cpt::variable_name();
 		$parts         = array(

@@ -22,14 +22,21 @@ final class Outers_Builder {
 	 * @return Html_Node[]
 	 */
 	public static function compose_field_outers( Row_Context $context, array $nodes ): array {
-		$field_outers = $context->get_pattern_container()->field_outers(
-			$context->get_layout_settings(),
-			$context->get_field_settings(),
-			$context->get_field_id(),
-			$context->get_row_type()
+		$patterns        = $context->get_pattern_container();
+		$layout_settings = $context->get_layout_settings();
+		$field_settings  = $context->get_field_settings();
+		$field_id        = $context->get_field_id();
+		$row_type        = $context->get_row_type();
+		$token_factory   = $context->get_token_factory();
+
+		$field_outers = $patterns->field_outers(
+			$layout_settings,
+			$field_settings,
+			$field_id,
+			$row_type
 		);
 
-		return self::compose_outers( $context->get_token_factory(), $field_outers, $nodes );
+		return self::compose_outers( $token_factory, $field_outers, $nodes );
 	}
 
 	/**

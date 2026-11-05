@@ -22,32 +22,17 @@ final class Field_Wrapper_Builder {
 		$this->policy = $policy;
 	}
 
-	/**
-	 * @param Html_Node[] $nodes
-	 *
-	 * @return Html_Node[]
-	 */
-	public function wrap( Row_Context $context, array $nodes ): array {
-		if ( $this->policy->has_field_wrapper( $context ) ) {
-			$has_row_wrapper = $this->policy->has_row_wrapper( $context );
-			$wrapper         = $this->compose_wrapper( $context, $has_row_wrapper );
-
-			return array( $wrapper->content( ...$nodes ) );
-		}
-
-		return $nodes;
-	}
-
 	public static function resolve_field_name( Row_Context $context ): string {
 		$layout_settings = $context->get_layout_settings();
 		$field_settings  = $context->get_field_settings();
 		$bem_name        = $layout_settings->get_bem_name();
+		$row_suffix      = $context->get_row_suffix();
 
 		return sprintf(
 			'%s__%s%s',
 			$bem_name,
 			$field_settings->id,
-			$context->get_row_suffix()
+			$row_suffix
 		);
 	}
 
@@ -63,7 +48,23 @@ final class Field_Wrapper_Builder {
 		return join( ' ', $filled_classes );
 	}
 
-	protected function compose_wrapper( Row_Context $context, bool $has_row_wrapper ): Html_Tag {
+	/**
+	 * @param Html_Node[] $nodes
+	 *
+	 * @return Html_Node[]
+	 */
+	public function wrap( Row_Context $context, array $nodes ): array {
+		if ( Inner_Row_Policy::has_field_wrapper( $context ) ) {
+			$has_row_wrapper = $this->policy->has_row_wrapper( $context );
+			$wrapper         = self::compose_wrapper( $context, $has_row_wrapper );
+
+			return array( $wrapper->content( ...$nodes ) );
+		}
+
+		return $nodes;
+	}
+
+	protected static function compose_wrapper( Row_Context $context, bool $has_row_wrapper ): Html_Tag {
 		$field_settings = $context->get_field_settings();
 		$field_id       = $context->get_field_id();
 		$patterns       = $context->get_pattern_container();
@@ -71,8 +72,8 @@ final class Field_Wrapper_Builder {
 		$attrs = $patterns->field_wrapper_attrs( $field_settings, $field_id );
 		unset( $attrs['class'] );
 
-		$classes = $this->generate_class( $context, $has_row_wrapper );
-		$tag     = $this->policy->resolve_field_wrapper_tag( $context );
+		$classes = self::generate_class( $context, $has_row_wrapper );
+		$tag     = Inner_Row_Policy::resolve_field_wrapper_tag( $context );
 
 		$class_attrs = array( 'class' => $classes );
 		$all_attrs   = array_merge( $class_attrs, $attrs );
@@ -84,15 +85,16 @@ final class Field_Wrapper_Builder {
 	/**
 	 * The class from a pattern, e.g. 'splide', is kept even if the generation is off, as JS requires it
 	 */
-	protected function generate_class( Row_Context $context, bool $has_row_wrapper ): string {
+	protected static function generate_class( Row_Context $context, bool $has_row_wrapper ): string {
 		$layout_settings = $context->get_layout_settings();
 		$field_settings  = $context->get_field_settings();
 		$patterns        = $context->get_pattern_container();
 
-		$pattern_attrs  = $patterns->field_wrapper_attrs( $field_settings, $context->get_field_id() );
+		$field_id       = $context->get_field_id();
+		$pattern_attrs  = $patterns->field_wrapper_attrs( $field_settings, $field_id );
 		$external_class = string( $pattern_attrs, 'class' );
 		$classes        = $layout_settings->is_classes_generation_enabled() ?
-			$this->resolve_classes( $context, $has_row_wrapper ) :
+			self::resolve_classes( $context, $has_row_wrapper ) :
 			array();
 
 		return self::get_filled_classes( array( ...$classes, $external_class ) );
@@ -101,7 +103,7 @@ final class Field_Wrapper_Builder {
 	/**
 	 * @return string[]
 	 */
-	protected function resolve_classes( Row_Context $context, bool $has_row_wrapper ): array {
+	protected static function resolve_classes( Row_Context $context, bool $has_row_wrapper ): array {
 		$layout_settings = $context->get_layout_settings();
 		$field_settings  = $context->get_field_settings();
 		$bem_name        = $layout_settings->get_bem_name();

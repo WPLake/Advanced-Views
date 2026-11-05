@@ -13,11 +13,12 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class Label_Builder {
 	public static function compose_label( Row_Context $context ): Html_Tag {
-		$classes     = self::resolve_classes( $context );
-		$attributes  = array( 'class' => $classes );
-		$label_value = $context
-			->get_token_factory()
-			->variable( $context->get_field_id() )
+		$classes       = self::resolve_classes( $context );
+		$attributes    = array( 'class' => $classes );
+		$field_id      = $context->get_field_id();
+		$token_factory = $context->get_token_factory();
+		$label_value   = $token_factory
+			->variable( $field_id )
 			->add_item_path( Markup_Field_Base::LABEL );
 
 		return tag( 'p' )
