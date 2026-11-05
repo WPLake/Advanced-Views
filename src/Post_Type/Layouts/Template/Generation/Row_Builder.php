@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pa
  *
  * @phpstan-import-type Html_Node from Html_Tag
  */
-interface Nested_Row_Builder {
+interface Row_Builder {
 	/**
 	 * @param Template_Pattern[] $field_assets
 	 *

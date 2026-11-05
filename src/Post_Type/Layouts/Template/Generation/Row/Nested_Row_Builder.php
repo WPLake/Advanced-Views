@@ -12,9 +12,9 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Field_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Label_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Nested_Row_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Field\Field_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Field\Label_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Classes_Generator;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Inner_Row_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Field_Wrapper_Builder;
@@ -29,7 +29,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-class Row_Builder implements Nested_Row_Builder {
+class Nested_Row_Builder implements Row_Builder {
 	private Token_Factory_Storage $token_factory_storage;
 	private Row_Context_Loader $context_loader;
 	private Inner_Row_Policy $policy;

@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Field;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context\Field_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Inner_Row_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Context;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
@@ -28,7 +29,7 @@ final class Field_Builder {
 	 *
 	 * @return Html_Node[]
 	 */
-	public function compose_field( Row_Context $context, Nested_Row_Builder $row_builder ): array {
+	public function compose_field( Row_Context $context, Row_Builder $row_builder ): array {
 		$field_meta   = $context->get_field_meta();
 		$is_existing  = $field_meta->is_field_exist();
 		$markup_field = $context->get_markup_field();
@@ -43,7 +44,7 @@ final class Field_Builder {
 		return array();
 	}
 
-	protected function create_field_meta( Row_Context $context, Markup_Field $markup_field, Nested_Row_Builder $row_builder ): Template_Field_Meta {
+	protected function create_field_meta( Row_Context $context, Markup_Field $markup_field, Row_Builder $row_builder ): Template_Field_Meta {
 		$layout_settings = $context->get_layout_settings();
 		$item_settings   = $context->get_item_settings();
 		$field_settings  = $context->get_field_settings();
