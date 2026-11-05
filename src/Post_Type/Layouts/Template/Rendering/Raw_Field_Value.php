@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering;
 
 defined( 'ABSPATH' ) || exit;
 
 use DateTime;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context\Field_Context;
 
 final class Raw_Field_Value {
 	private Field_Context $context;

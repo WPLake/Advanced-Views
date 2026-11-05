@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context\Field_Context;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 final class Field_Value_Resolver {

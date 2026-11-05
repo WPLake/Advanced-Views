@@ -7,11 +7,11 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context\Field_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Policy;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 /**
