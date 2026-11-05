@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context\Field_Context;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Wrapper_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Outers_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Pattern_Container;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
@@ -77,7 +77,7 @@ final class Template_Field_Meta {
 		$field_settings  = $this->context->get_field_settings();
 		$item_class      = $layout_settings->get_item_class( 'item', $field_settings );
 
-		return Wrapper_Builder::compose_outers(
+		return Outers_Builder::compose_outers(
 			$this->token_factory,
 			$item_outers,
 			$nodes,

@@ -15,29 +15,28 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Inner_Row_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context_Loader;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Wrapper_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Outers_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Token;
-use function Org\Wplake\Advanced_Views\Template\Html\tag;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
 class Nested_Row_Builder implements Row_Builder {
-	private Token_Factory_Storage $token_factory_storage;
 	private Row_Context_Loader $context_loader;
 	private Inner_Row_Policy $policy;
 	private Field_Builder $field_builder;
+	private Field_Wrapper_Builder $field_wrapper_builder;
+	private Row_Wrapper_Builder $row_wrapper_builder;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
-		$this->token_factory_storage = $token_factory_storage;
 		$this->context_loader        = new Row_Context_Loader( $provider_cluster, $front_assets, $token_factory_storage );
 		$this->policy                = new Inner_Row_Policy( $provider_cluster );
 		$this->field_builder         = new Field_Builder( $this->policy );
+		$this->field_wrapper_builder = new Field_Wrapper_Builder( $this->policy );
+		$this->row_wrapper_builder   = new Row_Wrapper_Builder( $this->policy );
 	}
 
 	/**
@@ -101,46 +100,6 @@ class Nested_Row_Builder implements Row_Builder {
 	}
 
 	/**
-	 * A top-level row of the layout: shown only if the field has a value (or always, if it's shown when empty).
-	 */
-	public function compose_row_if(
-		string $row_type,
-		bool $is_shown_when_empty,
-		Layout_Settings $layout_settings,
-		Item_Settings $item_settings,
-		Field_Meta $field_meta
-	): IF_Token {
-		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
-		$field_id      = $item_settings->field->get_template_field_id();
-
-		$body = $this->compose_row(
-			$row_type,
-			'',
-			$layout_settings,
-			$item_settings,
-			$item_settings->field,
-			$field_meta,
-			$field_id
-		);
-
-		$value_var = $token_factory
-			->variable( $field_id )
-			->add_item_path( 'value' );
-		$condition = $is_shown_when_empty ?
-			$token_factory->literal( true ) :
-			$value_var;
-
-		$branch = $token_factory
-			->if_branch()
-			->set_condition( $condition )
-			->set_body( $body );
-
-		return $token_factory
-			->if()
-			->set_if_branch( $branch );
-	}
-
-	/**
 	 * The field's own markup (or the custom one) inside the pattern outers.
 	 *
 	 * @param Html_Node[]|null $custom_nodes
@@ -167,7 +126,7 @@ class Nested_Row_Builder implements Row_Builder {
 			$row_type
 		);
 
-		return Wrapper_Builder::compose_outers(
+		return Outers_Builder::compose_outers(
 			$token_factory,
 			$field_outers,
 			$field_nodes
@@ -183,31 +142,13 @@ class Nested_Row_Builder implements Row_Builder {
 		$has_field_wrapper = $this->policy->has_field_wrapper( $context );
 
 		if ( $has_field_wrapper ) {
-			$wrapper       = $this->compose_field_wrapper( $context, $has_row_wrapper );
+			$wrapper       = $this->field_wrapper_builder->compose( $context, $has_row_wrapper );
 			$field_wrapper = $wrapper->content( ...$content );
 
 			return array( $field_wrapper );
 		}
 
 		return $content;
-	}
-
-	protected function compose_field_wrapper( Row_Context $context, bool $has_row_wrapper ): Html_Tag {
-		$field_settings = $context->get_field_settings();
-		$field_id       = $context->get_field_id();
-		$patterns       = $context->get_pattern_container();
-
-		$attrs = $patterns->field_wrapper_attrs( $field_settings, $field_id );
-		unset( $attrs['class'] );
-
-		$classes = $this->generate_field_wrapper_class( $context, $has_row_wrapper );
-		$tag     = $this->policy->field_wrapper_tag( $context );
-
-		$class_attrs = array( 'class' => $classes );
-		$all_attrs   = array_merge( $class_attrs, $attrs );
-
-		return tag( $tag )
-			->attributes( $all_attrs );
 	}
 
 	/**
@@ -234,7 +175,7 @@ class Nested_Row_Builder implements Row_Builder {
 		);
 
 		if ( $has_row_wrapper ) {
-			$wrapper     = $this->compose_row_wrapper( $context );
+			$wrapper     = $this->row_wrapper_builder->compose( $context );
 			$row_wrapper = $wrapper->content( ...$row_layer );
 
 			$row_layer = array( $row_wrapper );
@@ -244,16 +185,6 @@ class Nested_Row_Builder implements Row_Builder {
 			...$label_outside,
 			...$row_layer,
 		);
-	}
-
-	protected function compose_row_wrapper( Row_Context $context ): Html_Tag {
-		$classes = $this->generate_row_wrapper_class( $context );
-		$tag     = $this->policy->row_wrapper_tag( $context );
-
-		$attributes = array( 'class' => $classes );
-
-		return tag( $tag )
-			->attributes( $attributes );
 	}
 
 	/**
@@ -267,107 +198,5 @@ class Nested_Row_Builder implements Row_Builder {
 		}
 
 		return array();
-	}
-
-	/**
-	 * The class from a pattern, e.g. 'splide', is kept even if the generation is off, as JS requires it
-	 */
-	protected function generate_field_wrapper_class( Row_Context $context, bool $has_row_wrapper ): string {
-		$layout_settings = $context->get_layout_settings();
-		$field_settings  = $context->get_field_settings();
-		$patterns        = $context->get_pattern_container();
-
-		$pattern_attrs  = $patterns->field_wrapper_attrs( $field_settings, $context->get_field_id() );
-		$external_class = string( $pattern_attrs, 'class' );
-		$classes        = $layout_settings->is_classes_generation_enabled() ?
-			$this->resolve_field_classes( $context, $has_row_wrapper ) :
-			array();
-
-		return $this->join_with_external( $classes, $external_class );
-	}
-
-	/**
-	 * The class from a pattern, e.g. 'splide', is kept even if the generation is off, as JS requires it
-	 */
-	protected function generate_row_wrapper_class( Row_Context $context ): string {
-		$layout_settings = $context->get_layout_settings();
-		$patterns        = $context->get_pattern_container();
-
-		$external_class = $patterns->row_wrapper_class( $context->get_row_type() );
-		$classes        = $layout_settings->is_classes_generation_enabled() ?
-			$this->resolve_row_classes( $context ) :
-			array();
-
-		return $this->join_with_external( $classes, $external_class );
-	}
-
-	protected function generate_field_name_class( Row_Context $context ): string {
-		$layout_settings = $context->get_layout_settings();
-		$field_settings  = $context->get_field_settings();
-		$bem_name        = $layout_settings->get_bem_name();
-
-		return sprintf(
-			'%s__%s%s',
-			$bem_name,
-			$field_settings->id,
-			$context->get_row_suffix()
-		);
-	}
-
-	/**
-	 * @return string[]
-	 */
-	protected function resolve_field_classes( Row_Context $context, bool $has_row_wrapper ): array {
-		$layout_settings = $context->get_layout_settings();
-		$field_settings  = $context->get_field_settings();
-		$bem_name        = $layout_settings->get_bem_name();
-
-		$row_wrapper_class = sprintf(
-			'%s__%s-field',
-			$bem_name,
-			$field_settings->id
-		);
-		$field_name_class  = $this->generate_field_name_class( $context );
-
-		$classes = array(
-			$has_row_wrapper ?
-				$row_wrapper_class :
-				$field_name_class,
-		);
-
-		if ( $layout_settings->is_with_common_classes ) {
-			$classes[] = sprintf( '%s__field', $bem_name );
-		}
-
-		return $classes;
-	}
-
-	/**
-	 * @return string[]
-	 */
-	protected function resolve_row_classes( Row_Context $context ): array {
-		$layout_settings = $context->get_layout_settings();
-		$classes         = array( $this->generate_field_name_class( $context ) );
-
-		if ( $layout_settings->is_with_common_classes ) {
-			$bem_name = $layout_settings->get_bem_name();
-
-			$classes[] = sprintf( '%s__%s', $bem_name, $context->get_row_type() );
-		}
-
-		return $classes;
-	}
-
-	/**
-	 * @param string[] $classes
-	 */
-	protected function join_with_external( array $classes, string $external_class ): string {
-		$is_filled = strlen( $external_class ) > 0;
-
-		if ( $is_filled ) {
-			$classes[] = $external_class;
-		}
-
-		return join( ' ', $classes );
 	}
 }

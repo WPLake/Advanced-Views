@@ -8,6 +8,8 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Row_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Nested_Row_Builder;
@@ -56,7 +58,7 @@ final class Layout_Builder {
 			if ( is_string( $row_type ) ) {
 				$is_shown_when_empty = $this->row_policy->is_shown_when_empty( $field_meta, $item->field );
 
-				$rows[] = $this->row_builder->compose_row_if(
+				$rows[] = $this->compose_row_if(
 					$row_type,
 					$is_shown_when_empty,
 					$layout_settings,
@@ -67,6 +69,46 @@ final class Layout_Builder {
 		}
 
 		return $rows;
+	}
+
+	/**
+	 * A top-level row of the layout: shown only if the field has a value (or always, if it's shown when empty).
+	 */
+	protected function compose_row_if(
+		string $row_type,
+		bool $is_shown_when_empty,
+		Layout_Settings $layout_settings,
+		Item_Settings $item_settings,
+		Field_Meta $field_meta
+	): IF_Token {
+		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
+		$field_id      = $item_settings->field->get_template_field_id();
+
+		$body = $this->row_builder->compose_row(
+			$row_type,
+			'',
+			$layout_settings,
+			$item_settings,
+			$item_settings->field,
+			$field_meta,
+			$field_id
+		);
+
+		$value_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( 'value' );
+		$condition = $is_shown_when_empty ?
+			$token_factory->literal( true ) :
+			$value_var;
+
+		$branch = $token_factory
+			->if_branch()
+			->set_condition( $condition )
+			->set_body( $body );
+
+		return $token_factory
+			->if()
+			->set_if_branch( $branch );
 	}
 
 	protected function generate_root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Composite_Attribute {

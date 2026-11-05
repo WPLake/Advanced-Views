@@ -14,7 +14,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-final class Wrapper_Builder {
+final class Outers_Builder {
 	/**
 	 * @param Html_Wrapper[] $outers
 	 * @param Html_Node[] $nodes
