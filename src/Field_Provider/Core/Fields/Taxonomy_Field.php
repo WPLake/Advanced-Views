@@ -59,7 +59,7 @@ class Taxonomy_Field extends List_Field {
 	 */
 	protected function compose_internal_item_layout( string $item_id, Template_Field_Meta $markup_field_data ): array {
 		$markup_field_data->set_is_with_field_wrapper(
-			$markup_field_data->get_field_meta()->is_multiple() ||
+			$markup_field_data->get_context()->get_field_meta()->is_multiple() ||
 			$markup_field_data->is_with_field_wrapper()
 		);
 
@@ -71,7 +71,7 @@ class Taxonomy_Field extends List_Field {
 	 */
 	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory    = $markup_field_data->get_token_factory();
-		$object_id_source = $markup_field_data->get_field_meta()->is_multiple() ?
+		$object_id_source = $markup_field_data->get_context()->get_field_meta()->is_multiple() ?
 			static::LOOP_ITEM_NAME :
 			$field_id;
 
@@ -96,7 +96,7 @@ class Taxonomy_Field extends List_Field {
 	 * @return array<string, mixed>
 	 */
 	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
+		$layout_id = $variable_field_data->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
 		return array_merge(
 			parent::get_template_variables( $variable_field_data ),
@@ -111,7 +111,7 @@ class Taxonomy_Field extends List_Field {
 	 * @return array<string, mixed>
 	 */
 	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
+		$layout_id = $variable_field_data->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
 		return array_merge(
 			parent::get_validation_template_variables( $variable_field_data ),
@@ -135,7 +135,7 @@ class Taxonomy_Field extends List_Field {
 			$wp_term->parent :
 			0;
 
-		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
+		if ( $variable_field_data->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
 				self::VALUE     => $term_id,
 				self::PARENT_ID => $parent_id,
@@ -158,7 +158,7 @@ class Taxonomy_Field extends List_Field {
 	 * @return array<string, mixed>
 	 */
 	protected function get_validation_item_template_args( Raw_Field_Value $variable_field_data ): array {
-		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
+		if ( $variable_field_data->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
 				self::VALUE     => 0,
 				self::PARENT_ID => 0,

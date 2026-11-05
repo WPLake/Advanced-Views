@@ -60,7 +60,7 @@ abstract class List_Field extends Markup_Field_Base {
 	}
 
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
-		if ( $markup_field_data->get_field_meta()->is_multiple() ) {
+		if ( $markup_field_data->get_context()->get_field_meta()->is_multiple() ) {
 			return array( $this->item_loop( $field_id, $markup_field_data ) );
 		}
 
@@ -88,7 +88,7 @@ abstract class List_Field extends Markup_Field_Base {
 	 */
 	protected function compose_loop_body( Variable_Token $index_var, string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$inner_item       = $this->compose_inner_item( $field_id, $markup_field_data );
-		$is_delimiter_set = strlen( $markup_field_data->get_field_data()->options_delimiter ) > 0;
+		$is_delimiter_set = strlen( $markup_field_data->get_context()->get_field_settings()->options_delimiter ) > 0;
 
 		if ( $is_delimiter_set ) {
 			$token_factory    = $markup_field_data->get_token_factory();
@@ -126,8 +126,8 @@ abstract class List_Field extends Markup_Field_Base {
 
 		$item_class = $this->get_item_class(
 			'delimiter',
-			$markup_field_data->get_view_data(),
-			$markup_field_data->get_field_data()
+			$markup_field_data->get_context()->get_layout_settings(),
+			$markup_field_data->get_context()->get_field_settings()
 		);
 
 		$delimiter_var = $token_factory->variable( $field_id )
@@ -144,7 +144,7 @@ abstract class List_Field extends Markup_Field_Base {
 	 * @return Html_Node[]
 	 */
 	protected function compose_inner_item( string $field_id, Template_Field_Meta $markup_field_data ): array {
-		$item_id = $markup_field_data->get_field_meta()->is_multiple() ?
+		$item_id = $markup_field_data->get_context()->get_field_meta()->is_multiple() ?
 			static::LOOP_ITEM_NAME :
 			$field_id;
 
@@ -159,16 +159,16 @@ abstract class List_Field extends Markup_Field_Base {
 			self::VALUE => array(),
 		);
 
-		if ( $variable_field_data->get_field_meta()->is_multiple() ) {
-			$args[ self::OPTIONS_DELIMITER ] = $variable_field_data->get_field_data()->options_delimiter;
+		if ( $variable_field_data->get_context()->get_field_meta()->is_multiple() ) {
+			$args[ self::OPTIONS_DELIMITER ] = $variable_field_data->get_context()->get_field_settings()->options_delimiter;
 		}
 
-		$value = $this->get_value( $variable_field_data->get_field_meta(), $variable_field_data->get_value() );
+		$value = $this->get_value( $variable_field_data->get_context()->get_field_meta(), $variable_field_data->get_value() );
 
 		if ( array() === $value ||
 			'' === $value ) {
 			// it's a single item, so merge, not assign to the 'value' key.
-			if ( ! $variable_field_data->get_field_meta()->is_multiple() ) {
+			if ( ! $variable_field_data->get_context()->get_field_meta()->is_multiple() ) {
 				$variable_field_data->set_value( null );
 
 				$args = array_merge(
@@ -180,7 +180,7 @@ abstract class List_Field extends Markup_Field_Base {
 			return $args;
 		}
 
-		if ( $variable_field_data->get_field_meta()->is_multiple() ) {
+		if ( $variable_field_data->get_context()->get_field_meta()->is_multiple() ) {
 			$value = (array) $value;
 
 			foreach ( $value as $item ) {
@@ -209,14 +209,14 @@ abstract class List_Field extends Markup_Field_Base {
 			self::VALUE => array(),
 		);
 
-		if ( $variable_field_data->get_field_meta()->is_multiple() ) {
-			$args[ self::OPTIONS_DELIMITER ] = $variable_field_data->get_field_data()->options_delimiter;
+		if ( $variable_field_data->get_context()->get_field_meta()->is_multiple() ) {
+			$args[ self::OPTIONS_DELIMITER ] = $variable_field_data->get_context()->get_field_settings()->options_delimiter;
 		}
 
 		$item_args = $this->get_validation_item_template_args( $variable_field_data );
 		$item      = array();
 
-		if ( $variable_field_data->get_field_meta()->is_multiple() ) {
+		if ( $variable_field_data->get_context()->get_field_meta()->is_multiple() ) {
 			$item[] = $item_args;
 
 			return array_merge(

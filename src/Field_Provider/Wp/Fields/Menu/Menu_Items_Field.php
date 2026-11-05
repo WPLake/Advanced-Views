@@ -134,8 +134,8 @@ class Menu_Items_Field extends Markup_Field_Base {
 
 		$item_class = $this->get_item_class(
 			'sub-menu',
-			$markup_field_data->get_view_data(),
-			$markup_field_data->get_field_data()
+			$markup_field_data->get_context()->get_layout_settings(),
+			$markup_field_data->get_context()->get_field_settings()
 		);
 
 		$children_var      = $token_factory->variable( $item_id )
@@ -182,8 +182,8 @@ class Menu_Items_Field extends Markup_Field_Base {
 		Template_Field_Meta $markup_field_data
 	): Composite_Attribute {
 		$token_factory = $markup_field_data->get_token_factory();
-		$layout_data   = $markup_field_data->get_view_data();
-		$field_data    = $markup_field_data->get_field_data();
+		$layout_data   = $markup_field_data->get_context()->get_layout_settings();
+		$field_data    = $markup_field_data->get_context()->get_field_settings();
 
 		$base_class        = $this->get_item_class( $base_suffix, $layout_data, $field_data );
 		$conditional_class = $this->get_item_class( $conditional_suffix, $layout_data, $field_data );
@@ -230,7 +230,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		Raw_Field_Value $variable_field_data,
 		bool $is_for_validation = false
 	): array {
-		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
+		if ( $variable_field_data->get_context()->get_field_settings()->has_external_layout() ) {
 			$args = array(
 				self::VALUE           => 0,
 				self::IS_ACTIVE       => false,
@@ -333,7 +333,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 	 * @return array<string, mixed>
 	 */
 	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
+		$layout_id = $variable_field_data->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
 		$args = array(
 			self::VALUE     => array(),

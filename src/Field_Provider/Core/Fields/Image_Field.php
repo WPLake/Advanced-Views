@@ -83,8 +83,8 @@ class Image_Field extends Markup_Field_Base {
 			self::ID          => 0,
 		);
 
-		$image_size = '' !== $variable_field_data->get_field_data()->image_size ?
-			$variable_field_data->get_field_data()->image_size :
+		$image_size = '' !== $variable_field_data->get_context()->get_field_settings()->image_size ?
+			$variable_field_data->get_context()->get_field_settings()->image_size :
 			'full';
 
 		$value = is_numeric( $variable_field_data->get_value() ) ?
@@ -240,7 +240,7 @@ class Image_Field extends Markup_Field_Base {
 		foreach ( $markup_field_data->get_field_assets() as $field_asset ) {
 			$inner_attributes = array_merge(
 				$inner_attributes,
-				$field_asset->get_inner_variable_attributes( $markup_field_data->get_field_data(), $field_id )
+				$field_asset->get_inner_variable_attributes( $markup_field_data->get_context()->get_field_settings(), $field_id )
 			);
 		}
 

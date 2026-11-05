@@ -24,7 +24,7 @@ class Color_Picker_Field extends Markup_Field_Base {
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		if ( 'string' === $markup_field_data->get_field_meta()->get_return_format() ) {
+		if ( 'string' === $markup_field_data->get_context()->get_field_meta()->get_return_format() ) {
 			$var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
 
 			return array(
@@ -60,7 +60,7 @@ class Color_Picker_Field extends Markup_Field_Base {
 
 		$value = null;
 
-		if ( 'string' === $variable_field_data->get_field_meta()->get_return_format() &&
+		if ( 'string' === $variable_field_data->get_context()->get_field_meta()->get_return_format() &&
 			is_string( $variable_field_data->get_value() ) ) {
 			$value = $variable_field_data->get_value();
 		} elseif ( is_array( $variable_field_data->get_value() ) ) {
@@ -71,7 +71,7 @@ class Color_Picker_Field extends Markup_Field_Base {
 			return $args;
 		}
 
-		if ( 'string' === $variable_field_data->get_field_meta()->get_return_format() ) {
+		if ( 'string' === $variable_field_data->get_context()->get_field_meta()->get_return_format() ) {
 			$args[ self::VALUE ] = $value;
 		} else {
 			$red = string( $value, 'red' );

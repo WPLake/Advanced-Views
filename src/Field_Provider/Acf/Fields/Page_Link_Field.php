@@ -88,7 +88,7 @@ class Page_Link_Field extends List_Field {
 	 */
 	protected function compose_item_markup( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
 		$markup_field_data->set_is_with_field_wrapper(
-			$markup_field_data->get_field_meta()->is_multiple() ||
+			$markup_field_data->get_context()->get_field_meta()->is_multiple() ||
 			$markup_field_data->is_with_field_wrapper()
 		);
 

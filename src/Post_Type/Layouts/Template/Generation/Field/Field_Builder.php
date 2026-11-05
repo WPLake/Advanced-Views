@@ -7,6 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Policy;
@@ -38,13 +39,17 @@ final class Field_Builder {
 			$patterns      = $context->get_pattern_container();
 			$field_id      = $context->get_field_id();
 
-			$markup_field_data = new Template_Field_Meta(
+			$field_data_context = new Field_Context(
 				$context->get_layout_settings(),
 				$context->get_item_settings(),
 				$context->get_field_settings(),
 				$field_meta,
+				$markup_field
+			);
+
+			$markup_field_data = new Template_Field_Meta(
+				$field_data_context,
 				$row_builder,
-				$markup_field,
 				$context->get_token_factory()
 			);
 

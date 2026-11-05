@@ -64,7 +64,7 @@ class Link_Field extends Markup_Field_Base {
 			self::VALUE      => '',
 			self::TARGET     => '_self',
 			self::TITLE      => '',
-			self::LINK_LABEL => $variable_field_data->get_field_data()->get_link_label_translation(),
+			self::LINK_LABEL => $variable_field_data->get_context()->get_field_settings()->get_link_label_translation(),
 		);
 
 		$value = arr( $variable_field_data->get_value() );
@@ -78,7 +78,7 @@ class Link_Field extends Markup_Field_Base {
 
 		$args[ self::VALUE ]  = string( $value, self::URL );
 		$args[ self::TITLE ]  = string( $value, self::TITLE );
-		$args[ self::TARGET ] = $variable_field_data->get_field_data()->is_link_target_blank || $is_target_set ?
+		$args[ self::TARGET ] = $variable_field_data->get_context()->get_field_settings()->is_link_target_blank || $is_target_set ?
 			'_blank' :
 			'_self';
 
@@ -93,7 +93,7 @@ class Link_Field extends Markup_Field_Base {
 			self::VALUE      => 'https://wordpress.org/',
 			self::TARGET     => '_self',
 			self::TITLE      => 'wordpress.org',
-			self::LINK_LABEL => $variable_field_data->get_field_data()->get_link_label_translation(),
+			self::LINK_LABEL => $variable_field_data->get_context()->get_field_settings()->get_link_label_translation(),
 		);
 	}
 

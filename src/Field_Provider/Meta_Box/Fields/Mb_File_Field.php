@@ -11,7 +11,7 @@ defined( 'ABSPATH' ) || exit;
 
 class Mb_File_Field extends File_Field {
 	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		if ( $variable_field_data->get_field_meta()->is_multiple() ) {
+		if ( $variable_field_data->get_context()->get_field_meta()->is_multiple() ) {
 			// ids are array keys.
 			$variable_field_data->set_value(
 				is_array( $variable_field_data->get_value() ) ?

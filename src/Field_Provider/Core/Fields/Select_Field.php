@@ -23,12 +23,12 @@ class Select_Field extends List_Field {
 	 * @return Html_Node[]
 	 */
 	protected function compose_item_markup( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
-		$twig_name = $markup_field_data->get_field_meta()->is_multiple() ?
+		$twig_name = $markup_field_data->get_context()->get_field_meta()->is_multiple() ?
 			static::LOOP_ITEM_NAME :
 			$field_id;
 
 		$markup_field_data->set_is_with_field_wrapper(
-			$markup_field_data->get_field_meta()->is_multiple() ||
+			$markup_field_data->get_context()->get_field_meta()->is_multiple() ||
 			$markup_field_data->is_with_field_wrapper()
 		);
 
@@ -56,7 +56,7 @@ class Select_Field extends List_Field {
 			'';
 
 		return array(
-			self::TITLE => $variable_field_data->get_field_meta()->get_choices()[ $value ] ?? '',
+			self::TITLE => $variable_field_data->get_context()->get_field_meta()->get_choices()[ $value ] ?? '',
 			self::VALUE => $value,
 		);
 	}
@@ -68,7 +68,7 @@ class Select_Field extends List_Field {
 		return array_merge(
 			parent::get_template_variables( $variable_field_data ),
 			array(
-				self::CHOICES => $variable_field_data->get_field_meta()->get_choices(),
+				self::CHOICES => $variable_field_data->get_context()->get_field_meta()->get_choices(),
 			)
 		);
 	}

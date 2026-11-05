@@ -22,8 +22,8 @@ class True_False_Field extends Markup_Field_Base {
 		$state_var     = $token_factory->variable( $field_id )->add_item_path( self::STATE );
 		$item_class    = $this->get_item_class(
 			'true-false--state--:',
-			$markup_field_data->get_view_data(),
-			$markup_field_data->get_field_data()
+			$markup_field_data->get_context()->get_layout_settings(),
+			$markup_field_data->get_context()->get_field_settings()
 		);
 
 		// the state token goes in place of the ':' placeholder.

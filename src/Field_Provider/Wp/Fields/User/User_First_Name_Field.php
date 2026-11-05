@@ -32,7 +32,7 @@ class User_First_Name_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$args = array(
-			self::VALUE => $variable_field_data->get_field_data()->default_value,
+			self::VALUE => $variable_field_data->get_context()->get_field_settings()->default_value,
 		);
 
 		$user = $this->get_user( $variable_field_data->get_value() );

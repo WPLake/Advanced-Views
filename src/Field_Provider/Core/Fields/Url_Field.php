@@ -25,7 +25,7 @@ class Url_Field extends Link_Field {
 
 		$field_args = array(
 			self::URL   => $value,
-			self::TITLE => $variable_field_data->get_field_data()->get_label_translation(),
+			self::TITLE => $variable_field_data->get_context()->get_field_settings()->get_label_translation(),
 		);
 
 		$variable_field_data->set_value( $field_args );

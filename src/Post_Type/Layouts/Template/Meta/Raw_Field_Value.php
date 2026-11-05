@@ -7,16 +7,12 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta;
 defined( 'ABSPATH' ) || exit;
 
 use DateTime;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context;
 
-final class Raw_Field_Value extends Field_Data {
+final class Raw_Field_Value {
+	private Field_Context $context;
 	/**
 	 * In case of repeater field, the formatted value isn't available directly
 	 *
@@ -34,17 +30,12 @@ final class Raw_Field_Value extends Field_Data {
 	private Template_Field_Value $field_variables;
 
 	public function __construct(
-		Layout_Settings $layout_settings,
-		?Item_Settings $item_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta,
+		Field_Context $context,
 		Layout $layout,
 		Source $source,
-		Markup_Field $markup_field,
 		Template_Field_Value $field_variables
 	) {
-		parent::__construct( $layout_settings, $item_settings, $field_settings, $field_meta, $markup_field );
-
+		$this->context                = $context;
 		$this->layout                 = $layout;
 		$this->source                 = $source;
 		$this->field_variables        = $field_variables;
@@ -52,6 +43,10 @@ final class Raw_Field_Value extends Field_Data {
 		$this->is_set_formatted_value = false;
 
 		$this->value = null;
+	}
+
+	public function get_context(): Field_Context {
+		return $this->context;
 	}
 
 	/**
@@ -73,9 +68,9 @@ final class Raw_Field_Value extends Field_Data {
 		}
 
 		// get the formatted value on fly (as it's used for some fields only, and shouldn't be called for all fields).
-		$field_settings = $this->get_field_data();
-		$field_meta     = $this->get_field_meta();
-		$item_settings  = $this->get_item_data();
+		$field_settings = $this->context->get_field_settings();
+		$field_meta     = $this->context->get_field_meta();
+		$item_settings  = $this->context->get_item_settings();
 
 		return $this->layout->get_field_value( $field_settings, $field_meta, $item_settings, true );
 	}
@@ -85,7 +80,7 @@ final class Raw_Field_Value extends Field_Data {
 			return null;
 		}
 
-		$field_meta = $this->get_field_meta();
+		$field_meta = $this->context->get_field_meta();
 
 		return $this->layout->convert_string_to_date_time( $field_meta, $this->value );
 	}

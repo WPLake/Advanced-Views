@@ -56,7 +56,7 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$args = array(
-			Link_Field::TARGET => $variable_field_data->get_field_data()->is_link_target_blank ?
+			Link_Field::TARGET => $variable_field_data->get_context()->get_field_settings()->is_link_target_blank ?
 				'_blank' :
 				'_self',
 			self::HREF         => '',
@@ -90,7 +90,7 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 	 */
 	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$args = array(
-			Link_Field::TARGET => $variable_field_data->get_field_data()->is_link_target_blank ?
+			Link_Field::TARGET => $variable_field_data->get_context()->get_field_settings()->is_link_target_blank ?
 				'_blank' :
 				'_self',
 			self::HREF         => '',

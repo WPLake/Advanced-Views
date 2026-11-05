@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 
 class Mb_Taxonomy_Field extends Taxonomy_Field {
 	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		if ( false === $variable_field_data->get_field_meta()->is_multiple() ) {
+		if ( false === $variable_field_data->get_context()->get_field_meta()->is_multiple() ) {
 			$variable_field_data->set_value(
 				( $variable_field_data->get_value() instanceof WP_Term ) ?
 					$variable_field_data->get_value()->term_id :

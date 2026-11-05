@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 final class Template_Field_Value {
@@ -48,14 +49,18 @@ final class Template_Field_Value {
 			return array();
 		}
 
-		$variable_field_data = new Raw_Field_Value(
+		$field_context = new Field_Context(
 			$layout_settings,
 			$item_settings,
 			$field_settings,
 			$field_meta,
+			$markup_field
+		);
+
+		$variable_field_data = new Raw_Field_Value(
+			$field_context,
 			$layout,
 			$source,
-			$markup_field,
 			$this
 		);
 

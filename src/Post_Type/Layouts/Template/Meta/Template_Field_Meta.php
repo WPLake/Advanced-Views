@@ -4,12 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta;
 
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Outer_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
@@ -23,7 +18,8 @@ defined( 'ABSPATH' ) || exit;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-final class Template_Field_Meta extends Field_Data {
+final class Template_Field_Meta {
+	private Field_Context $context;
 	/**
 	 * @var Template_Pattern[]
 	 */
@@ -35,28 +31,21 @@ final class Template_Field_Meta extends Field_Data {
 	private Row_Builder $field_markup;
 
 	public function __construct(
-		Layout_Settings $layout_settings,
-		?Item_Settings $item_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta,
+		Field_Context $context,
 		Row_Builder $field_markup,
-		Markup_Field $markup_field,
 		Token_Factory $token_factory
 	) {
-		parent::__construct(
-			$layout_settings,
-			$item_settings,
-			$field_settings,
-			$field_meta,
-			$markup_field
-		);
-
+		$this->context               = $context;
 		$this->field_assets          = array();
 		$this->patterns              = new Pattern_Container( array() );
 		$this->is_with_field_wrapper = false;
 		$this->is_with_row_wrapper   = false;
 		$this->token_factory         = $token_factory;
 		$this->field_markup          = $field_markup;
+	}
+
+	public function get_context(): Field_Context {
+		return $this->context;
 	}
 
 	public function get_field_markup(): Row_Builder {
@@ -67,8 +56,8 @@ final class Template_Field_Meta extends Field_Data {
 	 * @return Html_Wrapper[]
 	 */
 	public function get_item_outers( string $field_id, string $item_id ): array {
-		$layout_settings = $this->get_view_data();
-		$field_settings  = $this->get_field_data();
+		$layout_settings = $this->context->get_layout_settings();
+		$field_settings  = $this->context->get_field_settings();
 
 		return $this->patterns->item_outers(
 			$layout_settings,
@@ -85,8 +74,8 @@ final class Template_Field_Meta extends Field_Data {
 	 * @return Html_Node[]
 	 */
 	public function wrap_with_item_outers( array $item_outers, array $nodes ): array {
-		$layout_settings = $this->get_view_data();
-		$field_settings  = $this->get_field_data();
+		$layout_settings = $this->context->get_layout_settings();
+		$field_settings  = $this->context->get_field_settings();
 		$item_class      = $layout_settings->get_item_class( 'item', $field_settings );
 
 		return Outer_Builder::compose_outers(

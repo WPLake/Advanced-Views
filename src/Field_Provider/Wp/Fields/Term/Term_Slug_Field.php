@@ -32,7 +32,7 @@ class Term_Slug_Field extends Markup_Field_Base {
 	 */
 	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$args = array(
-			self::VALUE => $variable_field_data->get_field_data()->default_value,
+			self::VALUE => $variable_field_data->get_context()->get_field_settings()->default_value,
 		);
 
 		$term = $this->get_term( $variable_field_data->get_value() );

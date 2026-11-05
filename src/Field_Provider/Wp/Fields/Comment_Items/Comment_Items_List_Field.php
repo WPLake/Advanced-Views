@@ -196,7 +196,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 	 * @return array<string, mixed>
 	 */
 	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
+		$layout_id = $variable_field_data->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
 		$args = array(
 			self::VALUE     => array(),
@@ -224,7 +224,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		$comments = $this->group_comments_by_parent( $comments );
 
 		foreach ( $comments as $comment ) {
-			$args[ self::VALUE ][] = $this->get_item_twig_args( $comment, $variable_field_data->get_field_data() );
+			$args[ self::VALUE ][] = $this->get_item_twig_args( $comment, $variable_field_data->get_context()->get_field_settings() );
 		}
 
 		return $args;
@@ -234,11 +234,11 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 	 * @return array<string, mixed>
 	 */
 	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
+		$layout_id = $variable_field_data->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
 		return array(
 			self::VALUE     => array(
-				$this->get_item_twig_args( null, $variable_field_data->get_field_data(), true ),
+				$this->get_item_twig_args( null, $variable_field_data->get_context()->get_field_settings(), true ),
 			),
 			self::VIEW_ID   => $layout_id,
 			self::LAYOUT_ID => $layout_id,

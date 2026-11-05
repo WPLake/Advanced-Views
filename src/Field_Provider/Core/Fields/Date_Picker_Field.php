@@ -46,7 +46,7 @@ class Date_Picker_Field extends Markup_Field_Base {
 			array(
 				// date_i18n() unlike the '$date->format($displayFormat)' supports different languages.
 				self::VALUE     => date_i18n(
-					$variable_field_data->get_field_meta()->get_display_format(),
+					$variable_field_data->get_context()->get_field_meta()->get_display_format(),
 					$date_time->getTimestamp()
 				),
 				self::TIMESTAMP => $date_time->getTimestamp(),
@@ -61,7 +61,7 @@ class Date_Picker_Field extends Markup_Field_Base {
 		$now = new DateTime();
 
 		return array(
-			self::VALUE     => $now->format( $variable_field_data->get_field_meta()->get_display_format() ),
+			self::VALUE     => $now->format( $variable_field_data->get_context()->get_field_meta()->get_display_format() ),
 			self::TIMESTAMP => $now->getTimestamp(),
 		);
 	}

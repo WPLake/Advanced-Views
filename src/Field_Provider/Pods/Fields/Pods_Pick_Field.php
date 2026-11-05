@@ -87,14 +87,14 @@ class Pods_Pick_Field extends Markup_Field_Base {
 	}
 
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
-		return $this->get_field_instance( $markup_field_data->get_field_meta() )
+		return $this->get_field_instance( $markup_field_data->get_context()->get_field_meta() )
 			->compose_html( $field_id, $markup_field_data );
 	}
 
 	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$field_instance = $this->get_field_instance( $variable_field_data->get_field_meta() );
+		$field_instance = $this->get_field_instance( $variable_field_data->get_context()->get_field_meta() );
 
-		if ( $variable_field_data->get_field_meta()->is_multiple() ) {
+		if ( $variable_field_data->get_context()->get_field_meta()->is_multiple() ) {
 			if ( is_array( $variable_field_data->get_value() ) ) {
 				$variable_field_data->set_value(
 					array_map(
@@ -113,7 +113,7 @@ class Pods_Pick_Field extends Markup_Field_Base {
 	}
 
 	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
-		return $this->get_field_instance( $variable_field_data->get_field_meta() )->get_validation_template_variables( $variable_field_data );
+		return $this->get_field_instance( $variable_field_data->get_context()->get_field_meta() )->get_validation_template_variables( $variable_field_data );
 	}
 
 	public function is_with_field_wrapper(

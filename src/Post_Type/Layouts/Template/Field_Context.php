@@ -1,6 +1,5 @@
 <?php
 
-
 declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template;
@@ -13,7 +12,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 
 defined( 'ABSPATH' ) || exit;
 
-class Field_Data {
+final class Field_Context {
 	private Layout_Settings $layout_settings;
 	// item can be null (in case of repeater sub-field).
 	private ?Item_Settings $item_settings;
@@ -35,15 +34,15 @@ class Field_Data {
 		$this->markup_field    = $markup_field;
 	}
 
-	public function get_view_data(): Layout_Settings {
+	public function get_layout_settings(): Layout_Settings {
 		return $this->layout_settings;
 	}
 
-	public function get_item_data(): ?Item_Settings {
+	public function get_item_settings(): ?Item_Settings {
 		return $this->item_settings;
 	}
 
-	public function get_field_data(): Field_Settings {
+	public function get_field_settings(): Field_Settings {
 		return $this->field_settings;
 	}
 
@@ -51,11 +50,13 @@ class Field_Data {
 		return $this->field_meta;
 	}
 
-	public function set_field_meta( Field_Meta $field_meta ): void {
+	public function set_field_meta( Field_Meta $field_meta ): self {
 		$this->field_meta = $field_meta;
+
+		return $this;
 	}
 
-	public function get_field_instance(): Markup_Field {
+	public function get_markup_field(): Markup_Field {
 		return $this->markup_field;
 	}
 }

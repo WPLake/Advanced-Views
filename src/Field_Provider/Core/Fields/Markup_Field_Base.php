@@ -29,7 +29,7 @@ abstract class Markup_Field_Base implements Markup_Field {
 	 * @return Html_Node[]
 	 */
 	protected function compose_item_markup( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
-		if ( $markup_field_data->get_field_data()->has_external_layout() ) {
+		if ( $markup_field_data->get_context()->get_field_settings()->has_external_layout() ) {
 			return $this->compose_external_item_layout( $field_id, $item_id, $markup_field_data );
 		}
 
@@ -61,7 +61,7 @@ abstract class Markup_Field_Base implements Markup_Field {
 	}
 
 	protected function get_field_class( string $suffix, Template_Field_Meta $markup_field_data ): string {
-		if ( Cpt_Settings::CLASS_GENERATION_NONE === $markup_field_data->get_view_data()->classes_generation ) {
+		if ( Cpt_Settings::CLASS_GENERATION_NONE === $markup_field_data->get_context()->get_layout_settings()->classes_generation ) {
 			return '';
 		}
 
@@ -70,18 +70,18 @@ abstract class Markup_Field_Base implements Markup_Field {
 						! $markup_field_data->is_with_field_wrapper();
 
 		if ( $is_first_tag ) {
-			$classes[] = $markup_field_data->get_view_data()->get_bem_name() . '__' . $markup_field_data->get_field_data()->id;
+			$classes[] = $markup_field_data->get_context()->get_layout_settings()->get_bem_name() . '__' . $markup_field_data->get_context()->get_field_settings()->id;
 
-			if ( ! $markup_field_data->get_view_data()->is_with_common_classes ) {
+			if ( ! $markup_field_data->get_context()->get_layout_settings()->is_with_common_classes ) {
 				return implode( ' ', $classes );
 			}
 		}
 
-		$classes[] = $this->get_item_class( $suffix, $markup_field_data->get_view_data(), $markup_field_data->get_field_data() );
+		$classes[] = $this->get_item_class( $suffix, $markup_field_data->get_context()->get_layout_settings(), $markup_field_data->get_context()->get_field_settings() );
 
 		if ( ! $markup_field_data->is_with_field_wrapper() &&
-			$markup_field_data->get_view_data()->is_with_common_classes ) {
-			$classes[] = $markup_field_data->get_view_data()->get_bem_name() . '__field';
+			$markup_field_data->get_context()->get_layout_settings()->is_with_common_classes ) {
+			$classes[] = $markup_field_data->get_context()->get_layout_settings()->get_bem_name() . '__field';
 		}
 
 		return implode( ' ', $classes );

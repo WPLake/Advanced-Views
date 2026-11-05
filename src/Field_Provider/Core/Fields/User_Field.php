@@ -64,7 +64,7 @@ class User_Field extends List_Field {
 		Template_Field_Meta $markup_field_data
 	): array {
 		$token_factory    = $markup_field_data->get_token_factory();
-		$object_id_source = $markup_field_data->get_field_meta()->is_multiple() ?
+		$object_id_source = $markup_field_data->get_context()->get_field_meta()->is_multiple() ?
 			static::LOOP_ITEM_NAME :
 			$field_id;
 
@@ -89,7 +89,7 @@ class User_Field extends List_Field {
 	 * @return array<string, mixed>
 	 */
 	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
+		$layout_id = $variable_field_data->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
 		return array_merge(
 			parent::get_template_variables( $variable_field_data ),
@@ -104,7 +104,7 @@ class User_Field extends List_Field {
 	 * @return array<string, mixed>
 	 */
 	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
+		$layout_id = $variable_field_data->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
 		return array_merge(
 			parent::get_validation_template_variables( $variable_field_data ),
@@ -119,7 +119,7 @@ class User_Field extends List_Field {
 	 * @return array<string, mixed>
 	 */
 	protected function get_item_template_args( Raw_Field_Value $variable_field_data ): array {
-		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
+		if ( $variable_field_data->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
 				self::VALUE => $variable_field_data->get_value(),
 			);
@@ -136,7 +136,7 @@ class User_Field extends List_Field {
 	 * @return array<string, mixed>
 	 */
 	protected function get_validation_item_template_args( Raw_Field_Value $variable_field_data ): array {
-		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
+		if ( $variable_field_data->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
 				self::VALUE => '',
 			);
