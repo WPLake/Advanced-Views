@@ -7,23 +7,13 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 final class Field_Value_Resolver {
-	private Field_Provider_Cluster $provider_cluster;
-
-	public function __construct( Field_Provider_Cluster $provider_cluster ) {
-		$this->provider_cluster = $provider_cluster;
-	}
-
 	/**
 	 * @param mixed $value
 	 * @param mixed $formatted_value In repeater, formatted value must be passed directly
@@ -31,32 +21,13 @@ final class Field_Value_Resolver {
 	 * @return mixed[]
 	 */
 	public function resolve_value(
-		Layout_Settings $layout_settings,
-		?Item_Settings $item_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta,
+		Field_Context $field_context,
 		Layout $layout,
 		Source $source,
 		$value,
 		bool $is_for_validation = false,
 		$formatted_value = null
 	): array {
-		$vendor_name  = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
-		$field_type   = $field_meta->get_type();
-		$markup_field = $this->provider_cluster->get_markup_field_instance( $vendor_name, $field_type );
-
-		if ( null === $markup_field ) {
-			return array();
-		}
-
-		$field_context = new Field_Context(
-			$layout_settings,
-			$item_settings,
-			$field_settings,
-			$field_meta,
-			$markup_field
-		);
-
 		$field_value = new Raw_Field_Value(
 			$field_context,
 			$layout,
@@ -71,12 +42,13 @@ final class Field_Value_Resolver {
 		}
 
 		$field_data = ! $is_for_validation ?
-			$markup_field->get_template_variables( $field_value ) :
-			$markup_field->get_validation_template_variables( $field_value );
+			$field_context->get_markup_field()->get_template_variables( $field_value ) :
+			$field_context->get_markup_field()->get_validation_template_variables( $field_value );
 
+		$layout_settings = $field_context->get_layout_settings();
 		$short_unique_id = $layout_settings->get_unique_id( true );
 
-		return $this->apply_field_data_filter( $field_data, $field_meta, $short_unique_id );
+		return $this->apply_field_data_filter( $field_data, $field_context->get_field_meta(), $short_unique_id );
 	}
 
 	/**

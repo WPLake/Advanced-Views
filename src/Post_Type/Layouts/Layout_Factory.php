@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Field_Value_Resolver;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
@@ -22,6 +23,7 @@ class Layout_Factory extends Instance_Factory {
 	private Layout_Markup $layout_markup;
 	protected Template_Renderer_Storage $template_renderer_storage;
 	protected Field_Value_Resolver $field_value_resolver;
+	protected Field_Context_Loader $field_context_loader;
 	protected Field_Provider_Cluster $provider_cluster;
 	protected Html_Renderer $html_renderer;
 
@@ -31,6 +33,7 @@ class Layout_Factory extends Instance_Factory {
 		Layout_Markup $layout_markup,
 		Template_Renderer_Storage $template_renderer_storage,
 		Field_Value_Resolver $field_value_resolver,
+		Field_Context_Loader $field_context_loader,
 		Field_Provider_Cluster $provider_cluster,
 		Html_Renderer $html_renderer
 	) {
@@ -39,7 +42,8 @@ class Layout_Factory extends Instance_Factory {
 		$this->layouts_settings_storage  = $layouts_settings_storage;
 		$this->layout_markup             = $layout_markup;
 		$this->template_renderer_storage = $template_renderer_storage;
-		$this->field_value_resolver           = $field_value_resolver;
+		$this->field_value_resolver      = $field_value_resolver;
+		$this->field_context_loader      = $field_context_loader;
 		$this->provider_cluster          = $provider_cluster;
 		$this->html_renderer             = $html_renderer;
 	}
@@ -130,6 +134,7 @@ class Layout_Factory extends Instance_Factory {
 			$settings,
 			$source,
 			$this->field_value_resolver,
+			$this->field_context_loader,
 			$this->html_renderer,
 			$classes
 		);

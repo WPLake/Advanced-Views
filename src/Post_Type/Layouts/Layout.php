@@ -17,6 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Field_Value_Resolver;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
@@ -28,6 +29,7 @@ class Layout extends Instance {
 	private Layout_Settings $layout_settings;
 	private Field_Provider_Cluster $provider_cluster;
 	private Field_Value_Resolver $field_value_resolver;
+	private Field_Context_Loader $field_context_loader;
 	private Template_Renderer_Storage $template_renderer_storage;
 	/**
 	 * @var array<string, mixed>
@@ -48,6 +50,7 @@ class Layout extends Instance {
 		Layout_Settings $layout_settings,
 		Source $source,
 		Field_Value_Resolver $field_value_resolver,
+		Field_Context_Loader $field_context_loader,
 		Html_Renderer $html_renderer,
 		string $classes = ''
 	) {
@@ -56,7 +59,8 @@ class Layout extends Instance {
 		$this->layout_settings           = $layout_settings;
 		$this->provider_cluster          = $provider_cluster;
 		$this->source                    = $source;
-		$this->field_value_resolver           = $field_value_resolver;
+		$this->field_value_resolver      = $field_value_resolver;
+		$this->field_context_loader      = $field_context_loader;
 		$this->template_renderer_storage = $template_renderer_storage;
 		$this->field_values              = array();
 		$this->local_data                = null;
@@ -224,16 +228,21 @@ class Layout extends Instance {
 		$field_value,
 		bool $is_for_validation
 	): array {
-		$twig_args = $this->field_value_resolver->resolve_value(
+		$field_context = $this->field_context_loader->load(
 			$this->layout_settings,
 			$item_settings,
 			$item_settings->field,
-			$field_meta,
-			$this,
-			$source,
-			$field_value,
-			$is_for_validation
+			$field_meta
 		);
+		$twig_args     = null !== $field_context ?
+			$this->field_value_resolver->resolve_value(
+				$field_context,
+				$this,
+				$source,
+				$field_value,
+				$is_for_validation
+			) :
+			array();
 
 		return array(
 			$item_settings->field->get_template_field_id() => array_merge(
