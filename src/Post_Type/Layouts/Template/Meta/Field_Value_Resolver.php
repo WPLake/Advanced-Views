@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
-final class Template_Field_Value {
+final class Field_Value_Resolver {
 	private Field_Provider_Cluster $provider_cluster;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster ) {
@@ -25,19 +25,19 @@ final class Template_Field_Value {
 	}
 
 	/**
-	 * @param mixed $field_value
+	 * @param mixed $value
 	 * @param mixed $formatted_value In repeater, formatted value must be passed directly
 	 *
 	 * @return mixed[]
 	 */
-	public function get_field_variables(
+	public function resolve_value(
 		Layout_Settings $layout_settings,
 		?Item_Settings $item_settings,
 		Field_Settings $field_settings,
 		Field_Meta $field_meta,
 		Layout $layout,
 		Source $source,
-		$field_value,
+		$value,
 		bool $is_for_validation = false,
 		$formatted_value = null
 	): array {
@@ -57,22 +57,22 @@ final class Template_Field_Value {
 			$markup_field
 		);
 
-		$variable_field_data = new Raw_Field_Value(
+		$field_value = new Raw_Field_Value(
 			$field_context,
 			$layout,
 			$source,
 			$this
 		);
 
-		$variable_field_data->set_value( $field_value );
+		$field_value->set_value( $value );
 
 		if ( null !== $formatted_value ) {
-			$variable_field_data->set_formatted_value( $formatted_value );
+			$field_value->set_formatted_value( $formatted_value );
 		}
 
 		$field_data = ! $is_for_validation ?
-			$markup_field->get_template_variables( $variable_field_data ) :
-			$markup_field->get_validation_template_variables( $variable_field_data );
+			$markup_field->get_template_variables( $field_value ) :
+			$markup_field->get_validation_template_variables( $field_value );
 
 		$short_unique_id = $layout_settings->get_unique_id( true );
 

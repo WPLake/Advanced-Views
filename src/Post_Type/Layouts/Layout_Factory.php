@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Template_Field_Value;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Field_Value_Resolver;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use WP_REST_Request;
@@ -21,7 +21,7 @@ class Layout_Factory extends Instance_Factory {
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Layout_Markup $layout_markup;
 	protected Template_Renderer_Storage $template_renderer_storage;
-	protected Template_Field_Value $field_variables;
+	protected Field_Value_Resolver $field_value_resolver;
 	protected Field_Provider_Cluster $provider_cluster;
 	protected Html_Renderer $html_renderer;
 
@@ -30,7 +30,7 @@ class Layout_Factory extends Instance_Factory {
 		Layout_Settings_Storage $layouts_settings_storage,
 		Layout_Markup $layout_markup,
 		Template_Renderer_Storage $template_renderer_storage,
-		Template_Field_Value $field_variables,
+		Field_Value_Resolver $field_value_resolver,
 		Field_Provider_Cluster $provider_cluster,
 		Html_Renderer $html_renderer
 	) {
@@ -39,7 +39,7 @@ class Layout_Factory extends Instance_Factory {
 		$this->layouts_settings_storage  = $layouts_settings_storage;
 		$this->layout_markup             = $layout_markup;
 		$this->template_renderer_storage = $template_renderer_storage;
-		$this->field_variables           = $field_variables;
+		$this->field_value_resolver           = $field_value_resolver;
 		$this->provider_cluster          = $provider_cluster;
 		$this->html_renderer             = $html_renderer;
 	}
@@ -129,7 +129,7 @@ class Layout_Factory extends Instance_Factory {
 			$markup,
 			$settings,
 			$source,
-			$this->field_variables,
+			$this->field_value_resolver,
 			$this->html_renderer,
 			$classes
 		);

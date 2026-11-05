@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Template_Field_Value;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Field_Value_Resolver;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use WP_REST_Request;
@@ -27,7 +27,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 class Layout extends Instance {
 	private Layout_Settings $layout_settings;
 	private Field_Provider_Cluster $provider_cluster;
-	private Template_Field_Value $field_variables;
+	private Field_Value_Resolver $field_value_resolver;
 	private Template_Renderer_Storage $template_renderer_storage;
 	/**
 	 * @var array<string, mixed>
@@ -47,7 +47,7 @@ class Layout extends Instance {
 		string $twig_template,
 		Layout_Settings $layout_settings,
 		Source $source,
-		Template_Field_Value $field_variables,
+		Field_Value_Resolver $field_value_resolver,
 		Html_Renderer $html_renderer,
 		string $classes = ''
 	) {
@@ -56,7 +56,7 @@ class Layout extends Instance {
 		$this->layout_settings           = $layout_settings;
 		$this->provider_cluster          = $provider_cluster;
 		$this->source                    = $source;
-		$this->field_variables           = $field_variables;
+		$this->field_value_resolver           = $field_value_resolver;
 		$this->template_renderer_storage = $template_renderer_storage;
 		$this->field_values              = array();
 		$this->local_data                = null;
@@ -224,7 +224,7 @@ class Layout extends Instance {
 		$field_value,
 		bool $is_for_validation
 	): array {
-		$twig_args = $this->field_variables->get_field_variables(
+		$twig_args = $this->field_value_resolver->resolve_value(
 			$this->layout_settings,
 			$item_settings,
 			$item_settings->field,

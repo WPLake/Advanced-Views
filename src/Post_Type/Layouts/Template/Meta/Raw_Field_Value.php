@@ -27,18 +27,18 @@ final class Raw_Field_Value {
 	 */
 	private $value;
 	private Layout $layout;
-	private Template_Field_Value $field_variables;
+	private Field_Value_Resolver $field_value_resolver;
 
 	public function __construct(
 		Field_Context $context,
 		Layout $layout,
 		Source $source,
-		Template_Field_Value $field_variables
+		Field_Value_Resolver $field_value_resolver
 	) {
 		$this->context                = $context;
 		$this->layout                 = $layout;
 		$this->source                 = $source;
-		$this->field_variables        = $field_variables;
+		$this->field_value_resolver        = $field_value_resolver;
 		$this->formatted_value        = null;
 		$this->is_set_formatted_value = false;
 
@@ -99,8 +99,8 @@ final class Raw_Field_Value {
 		$this->value = $value;
 	}
 
-	public function get_field_variables(): Template_Field_Value {
-		return $this->field_variables;
+	public function get_resolver(): Field_Value_Resolver {
+		return $this->field_value_resolver;
 	}
 
 	public function get_source(): Source {
