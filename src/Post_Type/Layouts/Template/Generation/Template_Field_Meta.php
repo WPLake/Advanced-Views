@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context\Field_Context;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Composer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Outers_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Pattern_Container;
@@ -28,11 +28,11 @@ final class Template_Field_Meta {
 	private bool $is_with_field_wrapper;
 	private bool $is_with_row_wrapper;
 	private Token_Factory $token_factory;
-	private Row_Builder $field_markup;
+	private Row_Composer $field_markup;
 
 	public function __construct(
 		Field_Context $context,
-		Row_Builder $field_markup,
+		Row_Composer $field_markup,
 		Token_Factory $token_factory
 	) {
 		$this->context               = $context;
@@ -48,7 +48,7 @@ final class Template_Field_Meta {
 		return $this->context;
 	}
 
-	public function get_field_markup(): Row_Builder {
+	public function get_field_markup(): Row_Composer {
 		return $this->field_markup;
 	}
 

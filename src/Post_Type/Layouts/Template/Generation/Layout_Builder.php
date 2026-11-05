@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Policy;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Nested_Row_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Builder;
 use Org\Wplake\Advanced_Views\Template\Html\Composite_Attribute;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
@@ -22,12 +22,12 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Var
 use function Org\Wplake\Advanced_Views\Template\Html\compose_attribute;
 
 final class Layout_Builder {
-	private Nested_Row_Builder $row_builder;
+	private Row_Builder $row_builder;
 	private Row_Policy $row_policy;
 	private Token_Factory_Storage $token_factory_storage;
 	private Web_Component_Factory $web_component_factory;
 
-	public function __construct( Nested_Row_Builder $row_builder, Row_Policy $row_policy, Token_Factory_Storage $token_factory_storage, Web_Component_Factory $web_component_factory ) {
+	public function __construct( Row_Builder $row_builder, Row_Policy $row_policy, Token_Factory_Storage $token_factory_storage, Web_Component_Factory $web_component_factory ) {
 		$this->row_builder           = $row_builder;
 		$this->row_policy            = $row_policy;
 		$this->token_factory_storage = $token_factory_storage;
