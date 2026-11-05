@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row;
 
 defined( 'ABSPATH' ) || exit;
 
