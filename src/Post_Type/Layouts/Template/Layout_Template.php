@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -25,7 +25,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\compose_attribute;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-class Layout_Markup {
+class Layout_Template {
 	/**
 	 * Cache
 	 *
@@ -45,6 +45,39 @@ class Layout_Markup {
 		$this->markups_safe          = array();
 		$this->renderer              = $renderer;
 		$this->web_component_factory = $web_component_factory;
+	}
+
+	public function print_markup(
+		Layout_Settings $layout_settings,
+		int $page_id,
+		string $view_markup_safe = '',
+		bool $is_skip_cache = false,
+		bool $is_ignore_custom_markup = false
+	): void {
+		$view_markup_safe = ( strlen( $view_markup_safe ) > 0 ||
+								$is_ignore_custom_markup ) ?
+			$view_markup_safe :
+			trim( $layout_settings->custom_markup );
+
+		if ( 0 === strlen( $view_markup_safe ) ) {
+			ob_start();
+			$this->print_safe_markup( $layout_settings, $is_skip_cache );
+			$view_markup_safe = (string) ob_get_clean();
+
+			// remove the empty class attribute if the generation is disabled.
+			if ( Layout_Settings::CLASS_GENERATION_NONE === $layout_settings->classes_generation ) {
+				$view_markup_safe = str_replace( ' class=""', '', $view_markup_safe );
+			}
+
+			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $view_markup_safe;
+		} else {
+			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $view_markup_safe;
+		}
+
+		$layout_id                        = $layout_settings->get_unique_id( true );
+		$this->markups_safe[ $layout_id ] = $view_markup_safe;
 	}
 
 	protected function row_if(
@@ -152,39 +185,6 @@ class Layout_Markup {
 		} else {
 			$this->generate_markup( $layout_settings );
 		}
-	}
-
-	public function print_markup(
-		Layout_Settings $layout_settings,
-		int $page_id,
-		string $view_markup_safe = '',
-		bool $is_skip_cache = false,
-		bool $is_ignore_custom_markup = false
-	): void {
-		$view_markup_safe = ( strlen( $view_markup_safe ) > 0 ||
-								$is_ignore_custom_markup ) ?
-			$view_markup_safe :
-			trim( $layout_settings->custom_markup );
-
-		if ( 0 === strlen( $view_markup_safe ) ) {
-			ob_start();
-			$this->print_safe_markup( $layout_settings, $is_skip_cache );
-			$view_markup_safe = (string) ob_get_clean();
-
-			// remove the empty class attribute if the generation is disabled.
-			if ( Layout_Settings::CLASS_GENERATION_NONE === $layout_settings->classes_generation ) {
-				$view_markup_safe = str_replace( ' class=""', '', $view_markup_safe );
-			}
-
-			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $view_markup_safe;
-		} else {
-			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $view_markup_safe;
-		}
-
-		$layout_id                        = $layout_settings->get_unique_id( true );
-		$this->markups_safe[ $layout_id ] = $view_markup_safe;
 	}
 
 	protected function root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Composite_Attribute {

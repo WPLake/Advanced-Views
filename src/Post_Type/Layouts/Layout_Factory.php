@@ -13,6 +13,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context_Loader;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Layout_Template;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Field_Value_Resolver;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
@@ -20,7 +21,7 @@ use WP_REST_Request;
 
 class Layout_Factory extends Instance_Factory {
 	private Layout_Settings_Storage $layouts_settings_storage;
-	private Layout_Markup $layout_markup;
+	private Layout_Template $layout_template;
 	protected Template_Renderer_Storage $template_renderer_storage;
 	protected Field_Value_Resolver $field_value_resolver;
 	protected Field_Context_Loader $field_context_loader;
@@ -30,7 +31,7 @@ class Layout_Factory extends Instance_Factory {
 	public function __construct(
 		Front_Assets $front_assets,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Layout_Markup $layout_markup,
+		Layout_Template $layout_template,
 		Template_Renderer_Storage $template_renderer_storage,
 		Field_Value_Resolver $field_value_resolver,
 		Field_Context_Loader $field_context_loader,
@@ -40,7 +41,7 @@ class Layout_Factory extends Instance_Factory {
 		parent::__construct( $front_assets );
 
 		$this->layouts_settings_storage  = $layouts_settings_storage;
-		$this->layout_markup             = $layout_markup;
+		$this->layout_template             = $layout_template;
 		$this->template_renderer_storage = $template_renderer_storage;
 		$this->field_value_resolver      = $field_value_resolver;
 		$this->field_context_loader      = $field_context_loader;
@@ -66,7 +67,7 @@ class Layout_Factory extends Instance_Factory {
 		$layout_settings ??= $this->layouts_settings_storage->get( $unique_view_id );
 
 		ob_start();
-		$this->layout_markup->print_markup( $layout_settings, $page_id );
+		$this->layout_template->print_markup( $layout_settings, $page_id );
 		$markup = (string) ob_get_clean();
 
 		return $this->create_layout_instance( $source, $layout_settings, $markup, $classes );

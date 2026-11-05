@@ -17,12 +17,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Markup;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Layout_Template;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration_Storage;
 
 class Layout_Save_Actions extends Cpt_Save_Actions {
-	private Layout_Markup $layout_markup;
+	private Layout_Template $layout_template;
 	private Layout_Settings $layout_settings;
 	private Layout_Factory $layout_factory;
 	private Layout_Settings_Storage $layouts_settings_storage;
@@ -33,7 +33,7 @@ class Layout_Save_Actions extends Cpt_Save_Actions {
 		Plugin $plugin,
 		Layout_Settings $layout_settings,
 		Front_Assets $front_assets,
-		Layout_Markup $layout_markup,
+		Layout_Template $layout_template,
 		Layout_Factory $layout_factory,
 		Template_Integration_Storage $template_integration_storage
 	) {
@@ -52,7 +52,7 @@ class Layout_Save_Actions extends Cpt_Save_Actions {
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
 		$this->layout_settings          = $layout_settings;
-		$this->layout_markup            = $layout_markup;
+		$this->layout_template            = $layout_template;
 		$this->layout_factory           = $layout_factory;
 	}
 
@@ -77,7 +77,7 @@ class Layout_Save_Actions extends Cpt_Save_Actions {
 
 		ob_start();
 		// pageId 0, so without CSS, also skipCache and customMarkup.
-		$this->layout_markup->print_markup( $cpt_settings, 0, '', true, true );
+		$this->layout_template->print_markup( $cpt_settings, 0, '', true, true );
 		$view_markup = (string) ob_get_clean();
 
 		$cpt_settings->markup = $view_markup;
