@@ -12,7 +12,6 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Classes_Generator;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Inner_Row_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context_Loader;
@@ -23,6 +22,7 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pa
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
@@ -200,7 +200,7 @@ class Nested_Row_Builder implements Row_Builder {
 		$attrs = $patterns->field_wrapper_attrs( $field_settings, $field_id );
 		unset( $attrs['class'] );
 
-		$classes = Classes_Generator::generate_field_wrapper_class( $context, $has_row_wrapper );
+		$classes = $this->generate_field_wrapper_class( $context, $has_row_wrapper );
 		$tag     = $this->policy->field_wrapper_tag( $context );
 
 		$class_attrs = array( 'class' => $classes );
@@ -247,7 +247,7 @@ class Nested_Row_Builder implements Row_Builder {
 	}
 
 	protected function compose_row_wrapper( Row_Context $context ): Html_Tag {
-		$classes = Classes_Generator::generate_row_wrapper_class( $context );
+		$classes = $this->generate_row_wrapper_class( $context );
 		$tag     = $this->policy->row_wrapper_tag( $context );
 
 		$attributes = array( 'class' => $classes );
@@ -263,15 +263,111 @@ class Nested_Row_Builder implements Row_Builder {
 		$has_label = $this->policy->has_label( $context );
 
 		if ( $has_label ) {
-			$token_factory = $context->get_token_factory();
-			$field_id      = $context->get_field_id();
-
-			$classes = Classes_Generator::generate_label_class( $context );
-			$label   = Field_Builder::compose_label( $token_factory, $field_id, $classes );
-
-			return array( $label );
+			return array( Label_Builder::compose_label( $context ) );
 		}
 
 		return array();
+	}
+
+	/**
+	 * The class from a pattern, e.g. 'splide', is kept even if the generation is off, as JS requires it
+	 */
+	protected function generate_field_wrapper_class( Row_Context $context, bool $has_row_wrapper ): string {
+		$layout_settings = $context->get_layout_settings();
+		$field_settings  = $context->get_field_settings();
+		$patterns        = $context->get_pattern_container();
+
+		$pattern_attrs  = $patterns->field_wrapper_attrs( $field_settings, $context->get_field_id() );
+		$external_class = string( $pattern_attrs, 'class' );
+		$classes        = $layout_settings->is_classes_generation_enabled() ?
+			$this->resolve_field_classes( $context, $has_row_wrapper ) :
+			array();
+
+		return $this->join_with_external( $classes, $external_class );
+	}
+
+	/**
+	 * The class from a pattern, e.g. 'splide', is kept even if the generation is off, as JS requires it
+	 */
+	protected function generate_row_wrapper_class( Row_Context $context ): string {
+		$layout_settings = $context->get_layout_settings();
+		$patterns        = $context->get_pattern_container();
+
+		$external_class = $patterns->row_wrapper_class( $context->get_row_type() );
+		$classes        = $layout_settings->is_classes_generation_enabled() ?
+			$this->resolve_row_classes( $context ) :
+			array();
+
+		return $this->join_with_external( $classes, $external_class );
+	}
+
+	protected function generate_field_name_class( Row_Context $context ): string {
+		$layout_settings = $context->get_layout_settings();
+		$field_settings  = $context->get_field_settings();
+		$bem_name        = $layout_settings->get_bem_name();
+
+		return sprintf(
+			'%s__%s%s',
+			$bem_name,
+			$field_settings->id,
+			$context->get_row_suffix()
+		);
+	}
+
+	/**
+	 * @return string[]
+	 */
+	protected function resolve_field_classes( Row_Context $context, bool $has_row_wrapper ): array {
+		$layout_settings = $context->get_layout_settings();
+		$field_settings  = $context->get_field_settings();
+		$bem_name        = $layout_settings->get_bem_name();
+
+		$row_wrapper_class = sprintf(
+			'%s__%s-field',
+			$bem_name,
+			$field_settings->id
+		);
+		$field_name_class  = $this->generate_field_name_class( $context );
+
+		$classes = array(
+			$has_row_wrapper ?
+				$row_wrapper_class :
+				$field_name_class,
+		);
+
+		if ( $layout_settings->is_with_common_classes ) {
+			$classes[] = sprintf( '%s__field', $bem_name );
+		}
+
+		return $classes;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	protected function resolve_row_classes( Row_Context $context ): array {
+		$layout_settings = $context->get_layout_settings();
+		$classes         = array( $this->generate_field_name_class( $context ) );
+
+		if ( $layout_settings->is_with_common_classes ) {
+			$bem_name = $layout_settings->get_bem_name();
+
+			$classes[] = sprintf( '%s__%s', $bem_name, $context->get_row_type() );
+		}
+
+		return $classes;
+	}
+
+	/**
+	 * @param string[] $classes
+	 */
+	protected function join_with_external( array $classes, string $external_class ): string {
+		$is_filled = strlen( $external_class ) > 0;
+
+		if ( $is_filled ) {
+			$classes[] = $external_class;
+		}
+
+		return join( ' ', $classes );
 	}
 }

@@ -373,6 +373,10 @@ return new class extends Layout_Controller_Base {
 		return $css_code;
 	}
 
+	public function is_classes_generation_enabled(): bool {
+		return self::CLASS_GENERATION_NONE !== $this->classes_generation;
+	}
+
 	public function has_unique_bem_name(): bool {
 		$bem_name = trim( $this->bem_name );
 
