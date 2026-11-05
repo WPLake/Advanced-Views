@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Field_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Label_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Nested_Row_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Naming\Class_Names_Generator;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Classes_Generator;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Inner_Row_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Field_Wrapper_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Outer_Builder;
@@ -150,20 +150,27 @@ class Row_Builder implements Nested_Row_Builder {
 	 * @return Html_Node[]
 	 */
 	protected function compose_content( Row_Context $context, ?array $custom_nodes ): array {
-		$field_nodes = is_array( $custom_nodes ) ?
+		$field_context = $context->with_row_type( 'field' );
+		$field_nodes   = is_array( $custom_nodes ) ?
 			$custom_nodes :
-			$this->field_builder->compose_field( $context->with_row_type( 'field' ), $this );
+			$this->field_builder->compose_field( $field_context, $this );
 
 		$layout_settings = $context->get_layout_settings();
 		$field_settings  = $context->get_field_settings();
 		$field_id        = $context->get_field_id();
 		$row_type        = $context->get_row_type();
+		$token_factory   = $context->get_token_factory();
 
 		$patterns     = $context->get_pattern_container();
-		$field_outers = $patterns->field_outers( $layout_settings, $field_settings, $field_id, $row_type );
+		$field_outers = $patterns->field_outers(
+			$layout_settings,
+			$field_settings,
+			$field_id,
+			$row_type
+		);
 
 		return Outer_Builder::compose_outers(
-			$context->get_token_factory(),
+			$token_factory,
 			$field_outers,
 			$field_nodes
 		);
@@ -178,30 +185,40 @@ class Row_Builder implements Nested_Row_Builder {
 		$has_field_wrapper = $this->policy->has_field_wrapper( $context );
 
 		if ( $has_field_wrapper ) {
-			$field_settings = $context->get_field_settings();
-
-			$attrs         = $context->get_pattern_container()->field_wrapper_attrs( $field_settings, $context->get_field_id() );
-			$pattern_class = string( $attrs, 'class' );
-			unset( $attrs['class'] );
-
-			$classes = Class_Names_Generator::field_wrapper(
-				$context->get_layout_settings(),
-				$field_settings,
-				$context->get_row_suffix(),
-				$has_row_wrapper,
-				$pattern_class
-			);
-
-			$field_wrapper = Field_Wrapper_Builder::compose_wrapper(
-				$this->policy->field_wrapper_tag( $context ),
-				$classes,
-				$attrs
-			)->content( ...$content );
+			$wrapper       = $this->compose_field_wrapper( $context, $has_row_wrapper );
+			$field_wrapper = $wrapper->content( ...$content );
 
 			return array( $field_wrapper );
 		}
 
 		return $content;
+	}
+
+	protected function compose_field_wrapper( Row_Context $context, bool $has_row_wrapper ): Html_Tag {
+		$layout_settings = $context->get_layout_settings();
+		$field_settings  = $context->get_field_settings();
+		$field_id        = $context->get_field_id();
+		$row_suffix      = $context->get_row_suffix();
+		$patterns        = $context->get_pattern_container();
+
+		$attrs         = $patterns->field_wrapper_attrs( $field_settings, $field_id );
+		$pattern_class = string( $attrs, 'class' );
+		unset( $attrs['class'] );
+
+		$classes = Classes_Generator::field_wrapper(
+			$layout_settings,
+			$field_settings,
+			$row_suffix,
+			$has_row_wrapper,
+			$pattern_class
+		);
+		$tag     = $this->policy->field_wrapper_tag( $context );
+
+		return Field_Wrapper_Builder::compose_wrapper(
+			$tag,
+			$classes,
+			$attrs
+		);
 	}
 
 	/**
@@ -228,32 +245,36 @@ class Row_Builder implements Nested_Row_Builder {
 		);
 
 		if ( $has_row_wrapper ) {
-			$row_wrapper = $this->compose_row_wrapper( $context )
-								->content( ...$row_layer );
+			$wrapper     = $this->compose_row_wrapper( $context );
+			$row_wrapper = $wrapper->content( ...$row_layer );
 
 			$row_layer = array( $row_wrapper );
 		}
 
-		return array( ...$label_outside, ...$row_layer );
+		return array(
+			...$label_outside,
+			...$row_layer,
+		);
 	}
 
 	protected function compose_row_wrapper( Row_Context $context ): Html_Tag {
-		$row_type       = $context->get_row_type();
-		$field_settings = $context->get_field_settings();
+		$layout_settings = $context->get_layout_settings();
+		$field_settings  = $context->get_field_settings();
+		$row_suffix      = $context->get_row_suffix();
+		$row_type        = $context->get_row_type();
+		$patterns        = $context->get_pattern_container();
 
-		$pattern_class = $context->get_pattern_container()->row_wrapper_class( $row_type );
-		$classes       = Class_Names_Generator::row_wrapper(
-			$context->get_layout_settings(),
+		$pattern_class = $patterns->row_wrapper_class( $row_type );
+		$classes       = Classes_Generator::row_wrapper(
+			$layout_settings,
 			$field_settings,
-			$context->get_row_suffix(),
+			$row_suffix,
 			$row_type,
 			$pattern_class
 		);
+		$tag           = $this->policy->row_wrapper_tag( $context );
 
-		return Row_Wrapper_Builder::compose_wrapper(
-			$this->policy->row_wrapper_tag( $context ),
-			$classes
-		);
+		return Row_Wrapper_Builder::compose_wrapper( $tag, $classes );
 	}
 
 	/**
@@ -263,15 +284,15 @@ class Row_Builder implements Nested_Row_Builder {
 		$has_label = $this->policy->has_label( $context );
 
 		if ( $has_label ) {
-			$classes = Class_Names_Generator::label( $context->get_layout_settings(), $context->get_field_settings() );
+			$layout_settings = $context->get_layout_settings();
+			$field_settings  = $context->get_field_settings();
+			$token_factory   = $context->get_token_factory();
+			$field_id        = $context->get_field_id();
 
-			return array(
-				Label_Builder::compose_label(
-					$context->get_token_factory(),
-					$context->get_field_id(),
-					$classes
-				),
-			);
+			$classes = Classes_Generator::label( $layout_settings, $field_settings );
+			$label   = Label_Builder::compose_label( $token_factory, $field_id, $classes );
+
+			return array( $label );
 		}
 
 		return array();

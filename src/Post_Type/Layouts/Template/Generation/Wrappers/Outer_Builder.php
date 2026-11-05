@@ -58,8 +58,9 @@ final class Outer_Builder {
 		}
 
 		foreach ( $outer->variable_attrs as $attr => $variable_info ) {
-			$attrs[ $attr ] = $token_factory->variable( $variable_info['field_id'] )
-											->add_item_path( $variable_info['item_key'] );
+			$attrs[ $attr ] = $token_factory
+				->variable( $variable_info['field_id'] )
+				->add_item_path( $variable_info['item_key'] );
 		}
 
 		return tag( $outer->tag )

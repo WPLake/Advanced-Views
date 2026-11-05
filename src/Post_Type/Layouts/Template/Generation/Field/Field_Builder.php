@@ -34,34 +34,45 @@ final class Field_Builder {
 		$markup_field = $context->get_markup_field();
 
 		if ( $is_existing && $markup_field instanceof Markup_Field ) {
-			$patterns = $context->get_pattern_container();
-			$field_id = $context->get_field_id();
-
-			$field_data_context = new Field_Context(
-				$context->get_layout_settings(),
-				$context->get_item_settings(),
-				$context->get_field_settings(),
-				$field_meta,
-				$markup_field
-			);
-
-			$markup_field_data = new Template_Field_Meta(
-				$field_data_context,
-				$row_builder,
-				$context->get_token_factory()
-			);
-
-			$field_assets      = $patterns->get_patterns();
-			$has_field_wrapper = $this->policy->has_field_wrapper( $context );
-			$has_row_wrapper   = $this->policy->is_row_wrapper_required( $context );
-
-			$markup_field_data->set_field_assets( $field_assets );
-			$markup_field_data->set_is_with_field_wrapper( $has_field_wrapper );
-			$markup_field_data->set_is_with_row_wrapper( $has_row_wrapper );
+			$field_id          = $context->get_field_id();
+			$markup_field_data = $this->create_field_meta( $context, $markup_field, $row_builder );
 
 			return $markup_field->compose_html( $field_id, $markup_field_data );
 		}
 
 		return array();
+	}
+
+	protected function create_field_meta( Row_Context $context, Markup_Field $markup_field, Nested_Row_Builder $row_builder ): Template_Field_Meta {
+		$layout_settings = $context->get_layout_settings();
+		$item_settings   = $context->get_item_settings();
+		$field_settings  = $context->get_field_settings();
+		$field_meta      = $context->get_field_meta();
+		$token_factory   = $context->get_token_factory();
+		$patterns        = $context->get_pattern_container();
+
+		$field_data_context = new Field_Context(
+			$layout_settings,
+			$item_settings,
+			$field_settings,
+			$field_meta,
+			$markup_field
+		);
+
+		$markup_field_data = new Template_Field_Meta(
+			$field_data_context,
+			$row_builder,
+			$token_factory
+		);
+
+		$field_assets      = $patterns->get_patterns();
+		$has_field_wrapper = $this->policy->has_field_wrapper( $context );
+		$has_row_wrapper   = $this->policy->is_row_wrapper_required( $context );
+
+		$markup_field_data->set_field_assets( $field_assets );
+		$markup_field_data->set_is_with_field_wrapper( $has_field_wrapper );
+		$markup_field_data->set_is_with_row_wrapper( $has_row_wrapper );
+
+		return $markup_field_data;
 	}
 }

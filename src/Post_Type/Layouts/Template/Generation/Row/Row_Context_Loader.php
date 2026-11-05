@@ -43,9 +43,11 @@ final class Row_Context_Loader {
 		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
 
 		$vendor_name  = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
-		$markup_field = $this->provider_cluster->get_markup_field_instance( $vendor_name, $field_meta->get_type() );
+		$field_type   = $field_meta->get_type();
+		$markup_field = $this->provider_cluster->get_markup_field_instance( $vendor_name, $field_type );
 
-		$patterns = $patterns ?? $this->resolve_field_patterns( $field_settings );
+		$patterns          = $patterns ?? $this->resolve_field_patterns( $field_settings );
+		$pattern_container = new Pattern_Container( $patterns );
 
 		return new Row_Context(
 			$layout_settings,
@@ -54,7 +56,7 @@ final class Row_Context_Loader {
 			$field_meta,
 			$markup_field,
 			$token_factory,
-			new Pattern_Container( $patterns ),
+			$pattern_container,
 			$field_id,
 			$row_type,
 			$row_suffix
