@@ -29,13 +29,13 @@ final class Pattern_Container {
 		return $this->patterns;
 	}
 
-	public function row_wrapper_tag( Field_Settings $field_settings, string $row_type ): string {
+	public function resolve_row_wrapper_tag( Field_Settings $field_settings, string $row_type ): string {
 		return $this->first_non_empty(
 			static fn( Template_Pattern $pattern ): string => $pattern->get_row_wrapper_tag( $field_settings, $row_type )
 		);
 	}
 
-	public function field_wrapper_tag( Field_Settings $field_settings, string $row_type ): string {
+	public function resolve_field_wrapper_tag( Field_Settings $field_settings, string $row_type ): string {
 		return $this->first_non_empty(
 			static fn( Template_Pattern $pattern ): string => $pattern->get_field_wrapper_tag( $field_settings, $row_type )
 		);

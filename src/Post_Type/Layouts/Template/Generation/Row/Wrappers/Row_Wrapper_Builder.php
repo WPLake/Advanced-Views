@@ -2,13 +2,12 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Wrappers;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Inner_Row_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Field\Field_Wrapper_Builder;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
@@ -39,7 +38,7 @@ final class Row_Wrapper_Builder {
 
 	protected function compose_wrapper( Row_Context $context ): Html_Tag {
 		$classes = $this->generate_class( $context );
-		$tag     = $this->policy->row_wrapper_tag( $context );
+		$tag     = $this->policy->resolve_row_wrapper_tag( $context );
 
 		$attributes = array( 'class' => $classes );
 

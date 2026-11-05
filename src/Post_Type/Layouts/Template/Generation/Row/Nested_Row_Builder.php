@@ -16,9 +16,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Inner
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Field\Field_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Field\Field_Wrapper_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Wrappers\Field_Wrapper_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Field\Label_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Outers_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Wrappers\Outers_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Wrappers\Row_Wrapper_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
@@ -109,30 +110,9 @@ class Nested_Row_Builder implements Row_Builder {
 	 * @return Html_Node[]
 	 */
 	protected function compose_content( Row_Context $context, ?array $custom_nodes ): array {
-		$field_context = $context->with_row_type( 'field' );
-		$field_nodes   = is_array( $custom_nodes ) ?
-			$custom_nodes :
-			$this->field_builder->compose_field( $field_context, $this );
+		$field_nodes = $custom_nodes ?? $this->field_builder->compose_field( $context->with_row_type( 'field' ), $this );
 
-		$layout_settings = $context->get_layout_settings();
-		$field_settings  = $context->get_field_settings();
-		$field_id        = $context->get_field_id();
-		$row_type        = $context->get_row_type();
-		$token_factory   = $context->get_token_factory();
-
-		$patterns     = $context->get_pattern_container();
-		$field_outers = $patterns->field_outers(
-			$layout_settings,
-			$field_settings,
-			$field_id,
-			$row_type
-		);
-
-		return Outers_Builder::compose_outers(
-			$token_factory,
-			$field_outers,
-			$field_nodes
-		);
+		return Outers_Builder::compose_field_outers( $context, $field_nodes );
 	}
 
 	/**
@@ -158,12 +138,8 @@ class Nested_Row_Builder implements Row_Builder {
 	 * @return Html_Node[]
 	 */
 	protected function compose_label_nodes( Row_Context $context ): array {
-		$has_label = $this->policy->has_label( $context );
-
-		if ( $has_label ) {
-			return array( Label_Builder::compose_label( $context ) );
-		}
-
-		return array();
+		return $this->policy->has_label( $context ) ?
+			array( Label_Builder::compose_label( $context ) ) :
+			array();
 	}
 }

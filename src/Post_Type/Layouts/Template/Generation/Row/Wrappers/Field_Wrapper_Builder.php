@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Field;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Wrappers;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -72,7 +72,7 @@ final class Field_Wrapper_Builder {
 		unset( $attrs['class'] );
 
 		$classes = $this->generate_class( $context, $has_row_wrapper );
-		$tag     = $this->policy->field_wrapper_tag( $context );
+		$tag     = $this->policy->resolve_field_wrapper_tag( $context );
 
 		$class_attrs = array( 'class' => $classes );
 		$all_attrs   = array_merge( $class_attrs, $attrs );

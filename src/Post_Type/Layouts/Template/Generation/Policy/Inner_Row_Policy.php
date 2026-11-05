@@ -24,7 +24,7 @@ final class Inner_Row_Policy {
 		$field_settings = $context->get_field_settings();
 		$row_type       = $context->get_row_type();
 
-		$row_tag       = $patterns->row_wrapper_tag( $field_settings, $row_type );
+		$row_tag       = $patterns->resolve_row_wrapper_tag( $field_settings, $row_type );
 		$is_tag_filled = strlen( $row_tag ) > 0;
 
 		return $is_necessary || $is_tag_filled;
@@ -52,7 +52,7 @@ final class Inner_Row_Policy {
 			$field_settings = $context->get_field_settings();
 			$row_type       = $context->get_row_type();
 
-			$pattern_tag    = $patterns->field_wrapper_tag( $field_settings, $row_type );
+			$pattern_tag    = $patterns->resolve_field_wrapper_tag( $field_settings, $row_type );
 			$is_pattern_tag = strlen( $pattern_tag ) > 0;
 
 			$custom_tag    = $markup_field->get_custom_field_wrapper_tag();
@@ -83,12 +83,12 @@ final class Inner_Row_Policy {
 		return $patterns->is_label_out_of_row();
 	}
 
-	public function row_wrapper_tag( Row_Context $context ): string {
+	public function resolve_row_wrapper_tag( Row_Context $context ): string {
 		$patterns       = $context->get_pattern_container();
 		$field_settings = $context->get_field_settings();
 		$row_type       = $context->get_row_type();
 
-		$pattern_tag = $patterns->row_wrapper_tag( $field_settings, $row_type );
+		$pattern_tag = $patterns->resolve_row_wrapper_tag( $field_settings, $row_type );
 		$is_filled   = strlen( $pattern_tag ) > 0;
 
 		return $is_filled ?
@@ -96,12 +96,12 @@ final class Inner_Row_Policy {
 			'div';
 	}
 
-	public function field_wrapper_tag( Row_Context $context ): string {
+	public function resolve_field_wrapper_tag( Row_Context $context ): string {
 		$patterns       = $context->get_pattern_container();
 		$field_settings = $context->get_field_settings();
 		$row_type       = $context->get_row_type();
 
-		$pattern_tag    = $patterns->field_wrapper_tag( $field_settings, $row_type );
+		$pattern_tag    = $patterns->resolve_field_wrapper_tag( $field_settings, $row_type );
 		$is_pattern_tag = strlen( $pattern_tag ) > 0;
 
 		if ( $is_pattern_tag ) {

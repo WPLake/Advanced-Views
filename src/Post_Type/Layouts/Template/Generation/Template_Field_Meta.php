@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context\Field_Context;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Outers_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Wrappers\Outers_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Pattern_Container;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
