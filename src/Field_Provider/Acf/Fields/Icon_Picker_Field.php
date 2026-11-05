@@ -55,13 +55,13 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		$args = array(
 			self::TYPE  => '',
 			self::VALUE => '',
 		);
 
-		$value = $variable_field_data->get_value();
+		$value = $field_value->get_value();
 
 		if ( false === is_array( $value ) ) {
 			return $args;
@@ -77,9 +77,9 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 			case 'media_library':
 				$attachment_id = $this->get_string_arg( 'value', $value );
 
-				$variable_field_data->set_value( $attachment_id );
+				$field_value->set_value( $attachment_id );
 
-				$image_variables = $this->image_field->get_template_variables( $variable_field_data );
+				$image_variables = $this->image_field->get_template_variables( $field_value );
 				$args            = array_merge( $args, $image_variables );
 				break;
 		}
@@ -87,7 +87,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		return $args;
 	}
 
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		return array(
 			self::TYPE  => 'dashicons',
 			self::VALUE => 'dashicons-admin-generic',

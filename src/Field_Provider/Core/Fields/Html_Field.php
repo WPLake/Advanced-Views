@@ -44,7 +44,7 @@ class Html_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		$twig_args = array(
 			self::VALUE     => '',
 			self::RAW_VALUE => '',
@@ -52,8 +52,8 @@ class Html_Field extends Markup_Field_Base {
 
 		// by default use the formatted value, as we need html (e.g. for oembed) instead of the pure value.
 		$value = $this->is_formatted_value_in_use ?
-			$variable_field_data->get_formatted_value() :
-			$variable_field_data->get_value();
+			$field_value->get_formatted_value() :
+			$field_value->get_value();
 
 		$value = is_string( $value ) ||
 				is_numeric( $value ) ?
@@ -69,7 +69,7 @@ class Html_Field extends Markup_Field_Base {
 				self::VALUE     => $value,
 				// always provide the raw value alongside with the current,
 				// e.g. in oEmbed case, it allows to get the url instead of the iframe's html.
-				self::RAW_VALUE => $variable_field_data->get_value(),
+				self::RAW_VALUE => $field_value->get_value(),
 			)
 		);
 	}
@@ -77,7 +77,7 @@ class Html_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		return array(
 			self::VALUE     => '1',
 			self::RAW_VALUE => '1',

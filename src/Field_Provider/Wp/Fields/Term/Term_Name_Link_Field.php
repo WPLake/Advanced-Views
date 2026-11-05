@@ -16,13 +16,13 @@ class Term_Name_Link_Field extends Link_Field {
 	/**
 	 * @return array<string, string>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$term = $this->get_term( $variable_field_data->get_value() );
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$term = $this->get_term( $field_value->get_value() );
 
 		if ( null === $term ) {
-			$variable_field_data->set_value( array() );
+			$field_value->set_value( array() );
 
-			return parent::get_template_variables( $variable_field_data );
+			return parent::get_template_variables( $field_value );
 		}
 
 		$term_link = get_term_link( $term );
@@ -37,8 +37,8 @@ class Term_Name_Link_Field extends Link_Field {
 			self::TITLE => html_entity_decode( $term->name, ENT_QUOTES ),
 		);
 
-		$variable_field_data->set_value( $field_args );
+		$field_value->set_value( $field_args );
 
-		return parent::get_template_variables( $variable_field_data );
+		return parent::get_template_variables( $field_value );
 	}
 }

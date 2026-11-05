@@ -30,12 +30,12 @@ class Comment_Parent_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		$args = array(
 			self::VALUE => '',
 		);
 
-		$comment = $this->get_comment( $variable_field_data->get_value() );
+		$comment = $this->get_comment( $field_value->get_value() );
 
 		if ( null === $comment ) {
 			return $args;
@@ -49,7 +49,7 @@ class Comment_Parent_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		return array(
 			self::VALUE => '1',
 		);

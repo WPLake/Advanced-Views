@@ -18,12 +18,14 @@ class True_False_Field extends Markup_Field_Base {
 	const STATE = 'state';
 
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
+		$field_context = $markup_field_data->get_context();
+
 		$token_factory = $markup_field_data->get_token_factory();
 		$state_var     = $token_factory->variable( $field_id )->add_item_path( self::STATE );
 		$item_class    = $this->get_item_class(
 			'true-false--state--:',
-			$markup_field_data->get_context()->get_layout_settings(),
-			$markup_field_data->get_context()->get_field_settings()
+			$field_context->get_layout_settings(),
+			$field_context->get_field_settings()
 		);
 
 		// the state token goes in place of the ':' placeholder.
@@ -48,8 +50,8 @@ class True_False_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$is_checked = in_array( $variable_field_data->get_value(), array( 1, '1', true ), true );
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$is_checked = in_array( $field_value->get_value(), array( 1, '1', true ), true );
 
 		$args = array(
 			self::VALUE => $is_checked,
@@ -64,8 +66,8 @@ class True_False_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$is_checked = in_array( $variable_field_data->get_value(), array( 1, '1', true ), true );
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
+		$is_checked = in_array( $field_value->get_value(), array( 1, '1', true ), true );
 
 		$args = array(
 			self::VALUE => $is_checked,

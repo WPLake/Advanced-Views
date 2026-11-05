@@ -54,22 +54,22 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		$args = array(
-			Link_Field::TARGET => $variable_field_data->get_context()->get_field_settings()->is_link_target_blank ?
+			Link_Field::TARGET => $field_value->get_context()->get_field_settings()->is_link_target_blank ?
 				'_blank' :
 				'_self',
 			self::HREF         => '',
 		);
 
-		$post = $this->get_post( $variable_field_data->get_value() );
+		$post = $this->get_post( $field_value->get_value() );
 
 		if ( null === $post ) {
-			$variable_field_data->set_value( 0 );
+			$field_value->set_value( 0 );
 
 			return array_merge(
 				$args,
-				$this->image_field->get_template_variables( $variable_field_data )
+				$this->image_field->get_template_variables( $field_value )
 			);
 		}
 
@@ -77,26 +77,26 @@ class Post_Thumbnail_Link_Field extends Markup_Field_Base {
 		$args[ self::HREF ] = (string) get_the_permalink( $post );
 		$image_id           = (int) get_post_thumbnail_id( $post );
 
-		$variable_field_data->set_value( $image_id );
+		$field_value->set_value( $image_id );
 
 		return array_merge(
 			$args,
-			$this->image_field->get_template_variables( $variable_field_data )
+			$this->image_field->get_template_variables( $field_value )
 		);
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		$args = array(
-			Link_Field::TARGET => $variable_field_data->get_context()->get_field_settings()->is_link_target_blank ?
+			Link_Field::TARGET => $field_value->get_context()->get_field_settings()->is_link_target_blank ?
 				'_blank' :
 				'_self',
 			self::HREF         => '',
 		);
 
-		$link_args = $this->image_field->get_validation_template_variables( $variable_field_data );
+		$link_args = $this->image_field->get_validation_template_variables( $field_value );
 
 		return array_merge( $args, $link_args );
 	}

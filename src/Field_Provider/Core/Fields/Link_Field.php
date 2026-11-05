@@ -59,15 +59,17 @@ class Link_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, string>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$field_context = $field_value->get_context();
+
 		$args = array(
 			self::VALUE      => '',
 			self::TARGET     => '_self',
 			self::TITLE      => '',
-			self::LINK_LABEL => $variable_field_data->get_context()->get_field_settings()->get_link_label_translation(),
+			self::LINK_LABEL => $field_context->get_field_settings()->get_link_label_translation(),
 		);
 
-		$value = arr( $variable_field_data->get_value() );
+		$value = arr( $field_value->get_value() );
 
 		if ( 0 === count( $value ) ) {
 			return $args;
@@ -78,7 +80,7 @@ class Link_Field extends Markup_Field_Base {
 
 		$args[ self::VALUE ]  = string( $value, self::URL );
 		$args[ self::TITLE ]  = string( $value, self::TITLE );
-		$args[ self::TARGET ] = $variable_field_data->get_context()->get_field_settings()->is_link_target_blank || $is_target_set ?
+		$args[ self::TARGET ] = $field_context->get_field_settings()->is_link_target_blank || $is_target_set ?
 			'_blank' :
 			'_self';
 
@@ -88,12 +90,12 @@ class Link_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		return array(
 			self::VALUE      => 'https://wordpress.org/',
 			self::TARGET     => '_self',
 			self::TITLE      => 'wordpress.org',
-			self::LINK_LABEL => $variable_field_data->get_context()->get_field_settings()->get_link_label_translation(),
+			self::LINK_LABEL => $field_value->get_context()->get_field_settings()->get_link_label_translation(),
 		);
 	}
 

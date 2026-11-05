@@ -27,7 +27,7 @@ class Pro_Stub_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		return array(
 			self::VALUE => '',
 		);
@@ -36,7 +36,7 @@ class Pro_Stub_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		return array(
 			self::VALUE => '',
 		);

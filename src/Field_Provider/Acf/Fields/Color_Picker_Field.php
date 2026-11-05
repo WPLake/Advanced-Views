@@ -49,7 +49,9 @@ class Color_Picker_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$field_context = $field_value->get_context();
+
 		$args = array(
 			self::VALUE => '',
 			self::RED   => '',
@@ -60,18 +62,18 @@ class Color_Picker_Field extends Markup_Field_Base {
 
 		$value = null;
 
-		if ( 'string' === $variable_field_data->get_context()->get_field_meta()->get_return_format() &&
-			is_string( $variable_field_data->get_value() ) ) {
-			$value = $variable_field_data->get_value();
-		} elseif ( is_array( $variable_field_data->get_value() ) ) {
-			$value = $variable_field_data->get_value();
+		if ( 'string' === $field_context->get_field_meta()->get_return_format() &&
+			is_string( $field_value->get_value() ) ) {
+			$value = $field_value->get_value();
+		} elseif ( is_array( $field_value->get_value() ) ) {
+			$value = $field_value->get_value();
 		}
 
 		if ( null === $value ) {
 			return $args;
 		}
 
-		if ( 'string' === $variable_field_data->get_context()->get_field_meta()->get_return_format() ) {
+		if ( 'string' === $field_context->get_field_meta()->get_return_format() ) {
 			$args[ self::VALUE ] = $value;
 		} else {
 			$red = string( $value, 'red' );
@@ -86,7 +88,7 @@ class Color_Picker_Field extends Markup_Field_Base {
 		return $args;
 	}
 
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		return array(
 			self::VALUE => true,
 			self::RED   => '1',

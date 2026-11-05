@@ -64,7 +64,9 @@ class Image_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$field_context = $field_value->get_context();
+
 		$args = array(
 			self::WIDTH       => 0,
 			self::HEIGHT      => 0,
@@ -83,12 +85,12 @@ class Image_Field extends Markup_Field_Base {
 			self::ID          => 0,
 		);
 
-		$image_size = '' !== $variable_field_data->get_context()->get_field_settings()->image_size ?
-			$variable_field_data->get_context()->get_field_settings()->image_size :
+		$image_size = '' !== $field_context->get_field_settings()->image_size ?
+			$field_context->get_field_settings()->image_size :
 			'full';
 
-		$value = is_numeric( $variable_field_data->get_value() ) ?
-			(int) $variable_field_data->get_value() :
+		$value = is_numeric( $field_value->get_value() ) ?
+			(int) $field_value->get_value() :
 			0;
 
 		if ( 0 === $value ) {
@@ -153,7 +155,7 @@ class Image_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		$args = array(
 			self::WIDTH       => 0,
 			self::HEIGHT      => 0,

@@ -31,13 +31,13 @@ class Comment_Author_Name_Link_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$comment = $this->get_comment( $variable_field_data->get_value() );
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$comment = $this->get_comment( $field_value->get_value() );
 
 		if ( null === $comment ) {
-			$variable_field_data->set_value( array() );
+			$field_value->set_value( array() );
 
-			return $this->link_field->get_template_variables( $variable_field_data );
+			return $this->link_field->get_template_variables( $field_value );
 		}
 
 		$author_name = get_comment_author( $comment );
@@ -49,16 +49,16 @@ class Comment_Author_Name_Link_Field extends Markup_Field_Base {
 			Link_Field::TITLE => html_entity_decode( $author_name, ENT_QUOTES ),
 		);
 
-		$variable_field_data->set_value( $filed_args );
+		$field_value->set_value( $filed_args );
 
-		return $this->link_field->get_template_variables( $variable_field_data );
+		return $this->link_field->get_template_variables( $field_value );
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
-		return $this->link_field->get_validation_template_variables( $variable_field_data );
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
+		return $this->link_field->get_validation_template_variables( $field_value );
 	}
 
 	public function is_with_field_wrapper(

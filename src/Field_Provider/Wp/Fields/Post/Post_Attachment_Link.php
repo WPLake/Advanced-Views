@@ -16,12 +16,12 @@ class Post_Attachment_Link extends Link_Field {
 	/**
 	 * @return array<string, string>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$post = $this->get_post( $variable_field_data->get_value() );
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$post = $this->get_post( $field_value->get_value() );
 
 		if ( null === $post ||
 		'attachment' !== $post->post_type ) {
-			$variable_field_data->set_value( array() );
+			$field_value->set_value( array() );
 		} else {
 			$title = get_the_title( $post );
 
@@ -30,7 +30,7 @@ class Post_Attachment_Link extends Link_Field {
 				html_entity_decode( $title, ENT_QUOTES ) :
 				$title;
 
-			$variable_field_data->set_value(
+			$field_value->set_value(
 				array(
 					self::TITLE => $title,
 					self::URL   => (string) wp_get_attachment_url( $post->ID ),
@@ -38,6 +38,6 @@ class Post_Attachment_Link extends Link_Field {
 			);
 		}
 
-		return parent::get_template_variables( $variable_field_data );
+		return parent::get_template_variables( $field_value );
 	}
 }

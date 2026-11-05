@@ -23,12 +23,14 @@ class Select_Field extends List_Field {
 	 * @return Html_Node[]
 	 */
 	protected function compose_item_markup( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
-		$twig_name = $markup_field_data->get_context()->get_field_meta()->is_multiple() ?
+		$field_context = $markup_field_data->get_context();
+
+		$twig_name = $field_context->get_field_meta()->is_multiple() ?
 			static::LOOP_ITEM_NAME :
 			$field_id;
 
 		$markup_field_data->set_is_with_field_wrapper(
-			$markup_field_data->get_context()->get_field_meta()->is_multiple() ||
+			$field_context->get_field_meta()->is_multiple() ||
 			$markup_field_data->is_with_field_wrapper()
 		);
 
@@ -50,13 +52,13 @@ class Select_Field extends List_Field {
 	/**
 	 * @return array<string, string>
 	 */
-	protected function get_item_template_args( Raw_Field_Value $variable_field_data ): array {
-		$value = is_string( $variable_field_data->get_value() ) ?
-			$variable_field_data->get_value() :
+	protected function get_item_template_args( Raw_Field_Value $field_value ): array {
+		$value = is_string( $field_value->get_value() ) ?
+			$field_value->get_value() :
 			'';
 
 		return array(
-			self::TITLE => $variable_field_data->get_context()->get_field_meta()->get_choices()[ $value ] ?? '',
+			self::TITLE => $field_value->get_context()->get_field_meta()->get_choices()[ $value ] ?? '',
 			self::VALUE => $value,
 		);
 	}
@@ -64,11 +66,11 @@ class Select_Field extends List_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		return array_merge(
-			parent::get_template_variables( $variable_field_data ),
+			parent::get_template_variables( $field_value ),
 			array(
-				self::CHOICES => $variable_field_data->get_context()->get_field_meta()->get_choices(),
+				self::CHOICES => $field_value->get_context()->get_field_meta()->get_choices(),
 			)
 		);
 	}
@@ -76,7 +78,7 @@ class Select_Field extends List_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_validation_item_template_args( Raw_Field_Value $variable_field_data ): array {
+	protected function get_validation_item_template_args( Raw_Field_Value $field_value ): array {
 		return array(
 			self::TITLE => 'Option',
 			self::VALUE => 'option',
@@ -86,9 +88,9 @@ class Select_Field extends List_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		return array_merge(
-			parent::get_validation_template_variables( $variable_field_data ),
+			parent::get_validation_template_variables( $field_value ),
 			array(
 				self::CHOICES => array(
 					'option' => 'Option',

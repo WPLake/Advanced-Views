@@ -50,8 +50,8 @@ class Post_Attachment_Video extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$post = $this->get_post( $variable_field_data->get_value() );
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$post = $this->get_post( $field_value->get_value() );
 
 		if ( null === $post ||
 			'attachment' !== $post->post_type ||
@@ -70,7 +70,7 @@ class Post_Attachment_Video extends Markup_Field_Base {
 		);
 	}
 
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		return array(
 			self::VALUE     => 'https://site.com/video.mp4',
 			self::MIME_TYPE => 'video/mp4',

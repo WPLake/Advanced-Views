@@ -10,14 +10,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 defined( 'ABSPATH' ) || exit;
 
 class Mb_Gallery_Field extends Gallery_Field {
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		// ids are array keys.
-		$variable_field_data->set_value(
-			is_array( $variable_field_data->get_value() ) ?
-				array_keys( $variable_field_data->get_value() ) :
+		$field_value->set_value(
+			is_array( $field_value->get_value() ) ?
+				array_keys( $field_value->get_value() ) :
 				array()
 		);
 
-		return parent::get_template_variables( $variable_field_data );
+		return parent::get_template_variables( $field_value );
 	}
 }

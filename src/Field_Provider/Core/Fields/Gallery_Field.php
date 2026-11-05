@@ -57,13 +57,13 @@ class Gallery_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		$args = array(
 			self::VALUE => array(),
 		);
 
-		$value = is_array( $variable_field_data->get_value() ) ?
-			$variable_field_data->get_value() :
+		$value = is_array( $field_value->get_value() ) ?
+			$field_value->get_value() :
 			array();
 
 		if ( array() === $value ) {
@@ -71,9 +71,9 @@ class Gallery_Field extends Markup_Field_Base {
 		}
 
 		foreach ( $value as $image ) {
-			$variable_field_data->set_value( $image );
+			$field_value->set_value( $image );
 
-			$args[ self::VALUE ][] = $this->image_field->get_template_variables( $variable_field_data );
+			$args[ self::VALUE ][] = $this->image_field->get_template_variables( $field_value );
 		}
 
 		return $args;
@@ -82,13 +82,13 @@ class Gallery_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		$args = array(
 			self::VALUE => array(),
 		);
 
 		$value   = array();
-		$value[] = $this->image_field->get_validation_template_variables( $variable_field_data );
+		$value[] = $this->image_field->get_validation_template_variables( $field_value );
 
 		return array_merge(
 			$args,

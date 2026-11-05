@@ -25,12 +25,12 @@ interface Markup_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array;
+	public function get_template_variables( Raw_Field_Value $field_value ): array;
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array;
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array;
 
 	/**
 	 * @return string[]

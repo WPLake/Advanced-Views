@@ -19,22 +19,22 @@ class Post_Thumbnail_Field extends Image_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$post = $this->get_post( $variable_field_data->get_value() );
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$post = $this->get_post( $field_value->get_value() );
 
 		if ( null === $post ) {
-			$variable_field_data->set_value( 0 );
+			$field_value->set_value( 0 );
 
-			return parent::get_template_variables( $variable_field_data );
+			return parent::get_template_variables( $field_value );
 		}
 
 		$image_id = 'attachment' !== $post->post_type ?
 			(int) get_post_thumbnail_id( $post ) :
 			$post->ID;
 
-		$variable_field_data->set_value( $image_id );
+		$field_value->set_value( $image_id );
 
-		return parent::get_template_variables( $variable_field_data );
+		return parent::get_template_variables( $field_value );
 	}
 
 	public function get_front_assets( Field_Settings $field_settings ): array {

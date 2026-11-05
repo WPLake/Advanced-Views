@@ -29,13 +29,13 @@ class Date_Picker_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		$args = array(
 			self::VALUE     => '',
 			self::TIMESTAMP => 0,
 		);
 
-		$date_time = $variable_field_data->convert_value_to_date_time();
+		$date_time = $field_value->convert_value_to_date_time();
 
 		if ( null === $date_time ) {
 			return $args;
@@ -46,7 +46,7 @@ class Date_Picker_Field extends Markup_Field_Base {
 			array(
 				// date_i18n() unlike the '$date->format($displayFormat)' supports different languages.
 				self::VALUE     => date_i18n(
-					$variable_field_data->get_context()->get_field_meta()->get_display_format(),
+					$field_value->get_context()->get_field_meta()->get_display_format(),
 					$date_time->getTimestamp()
 				),
 				self::TIMESTAMP => $date_time->getTimestamp(),
@@ -57,11 +57,11 @@ class Date_Picker_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		$now = new DateTime();
 
 		return array(
-			self::VALUE     => $now->format( $variable_field_data->get_context()->get_field_meta()->get_display_format() ),
+			self::VALUE     => $now->format( $field_value->get_context()->get_field_meta()->get_display_format() ),
 			self::TIMESTAMP => $now->getTimestamp(),
 		);
 	}

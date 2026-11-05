@@ -130,12 +130,14 @@ class Menu_Items_Field extends Markup_Field_Base {
 	 * @return Html_Node[]
 	 */
 	protected function compose_children( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
+		$field_context = $markup_field_data->get_context();
+
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$item_class = $this->get_item_class(
 			'sub-menu',
-			$markup_field_data->get_context()->get_layout_settings(),
-			$markup_field_data->get_context()->get_field_settings()
+			$field_context->get_layout_settings(),
+			$field_context->get_field_settings()
 		);
 
 		$children_var      = $token_factory->variable( $item_id )
@@ -181,9 +183,11 @@ class Menu_Items_Field extends Markup_Field_Base {
 		Statement_Token $condition,
 		Template_Field_Meta $markup_field_data
 	): Composite_Attribute {
+		$field_context = $markup_field_data->get_context();
+
 		$token_factory = $markup_field_data->get_token_factory();
-		$layout_data   = $markup_field_data->get_context()->get_layout_settings();
-		$field_data    = $markup_field_data->get_context()->get_field_settings();
+		$layout_data   = $field_context->get_layout_settings();
+		$field_data    = $field_context->get_field_settings();
 
 		$base_class        = $this->get_item_class( $base_suffix, $layout_data, $field_data );
 		$conditional_class = $this->get_item_class( $conditional_suffix, $layout_data, $field_data );
@@ -227,10 +231,10 @@ class Menu_Items_Field extends Markup_Field_Base {
 	protected function get_item_twig_args(
 		?WP_Post $wp_post,
 		array $children,
-		Raw_Field_Value $variable_field_data,
+		Raw_Field_Value $field_value,
 		bool $is_for_validation = false
 	): array {
-		if ( $variable_field_data->get_context()->get_field_settings()->has_external_layout() ) {
+		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
 			$args = array(
 				self::VALUE           => 0,
 				self::IS_ACTIVE       => false,
@@ -271,11 +275,11 @@ class Menu_Items_Field extends Markup_Field_Base {
 			$this->get_menu_item_info( $wp_post ) :
 			array();
 
-		$variable_field_data->set_value( $link_args );
+		$field_value->set_value( $link_args );
 
 		$args = ! $is_for_validation ?
-			$this->link_field->get_template_variables( $variable_field_data ) :
-			$this->link_field->get_validation_template_variables( $variable_field_data );
+			$this->link_field->get_template_variables( $field_value ) :
+			$this->link_field->get_validation_template_variables( $field_value );
 
 		$args = array_merge(
 			$args,
@@ -287,7 +291,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		);
 
 		if ( $is_for_validation ) {
-			$child_args = $this->link_field->get_validation_template_variables( $variable_field_data );
+			$child_args = $this->link_field->get_validation_template_variables( $field_value );
 
 			$args[ self::CHILDREN ][] = array_merge(
 				$child_args,
@@ -304,9 +308,9 @@ class Menu_Items_Field extends Markup_Field_Base {
 		foreach ( $children as $child_menu_item ) {
 			$link_args = $this->get_menu_item_info( $child_menu_item );
 
-			$variable_field_data->set_value( $link_args );
+			$field_value->set_value( $link_args );
 
-			$child_args = $this->link_field->get_template_variables( $variable_field_data );
+			$child_args = $this->link_field->get_template_variables( $field_value );
 
 			$is_sub_active = $this->is_active_item( $child_menu_item );
 
@@ -332,8 +336,8 @@ class Menu_Items_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$layout_id = $variable_field_data->get_context()->get_field_settings()->get_short_unique_acf_view_id();
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
 		$args = array(
 			self::VALUE     => array(),
@@ -341,7 +345,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 			self::LAYOUT_ID => $layout_id,
 		);
 
-		$menu = $this->get_term( $variable_field_data->get_value(), 'nav_menu' );
+		$menu = $this->get_term( $field_value->get_value(), 'nav_menu' );
 
 		if ( null === $menu ) {
 			return $args;
@@ -370,7 +374,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 			$args[ self::VALUE ][] = $this->get_item_twig_args(
 				$menu_item,
 				$children[ $menu_item->ID ] ?? array(),
-				$variable_field_data
+				$field_value
 			);
 		}
 
@@ -380,11 +384,11 @@ class Menu_Items_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		$item_args = $this->get_item_twig_args(
 			null,
 			array(),
-			$variable_field_data,
+			$field_value,
 			true
 		);
 

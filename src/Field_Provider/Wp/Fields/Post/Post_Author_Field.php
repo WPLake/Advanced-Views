@@ -38,29 +38,29 @@ class Post_Author_Field extends User_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_item_template_args( Raw_Field_Value $variable_field_data ): array {
-		$variable_field_data->set_value( $this->get_post_author_id( $variable_field_data->get_value() ) );
+	protected function get_item_template_args( Raw_Field_Value $field_value ): array {
+		$field_value->set_value( $this->get_post_author_id( $field_value->get_value() ) );
 
-		if ( $variable_field_data->get_context()->get_field_settings()->has_external_layout() ) {
+		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
-				self::VALUE => $variable_field_data->get_value(),
+				self::VALUE => $field_value->get_value(),
 			);
 		}
 
-		return parent::get_item_template_args( $variable_field_data );
+		return parent::get_item_template_args( $field_value );
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_validation_item_template_args( Raw_Field_Value $variable_field_data ): array {
-		if ( $variable_field_data->get_context()->get_field_settings()->has_external_layout() ) {
+	protected function get_validation_item_template_args( Raw_Field_Value $field_value ): array {
+		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
-				self::VALUE => $variable_field_data->get_value(),
+				self::VALUE => $field_value->get_value(),
 			);
 		}
 
-		return parent::get_validation_item_template_args( $variable_field_data );
+		return parent::get_validation_item_template_args( $field_value );
 	}
 
 	/**

@@ -42,10 +42,12 @@ class Pods_Upload_Field extends Markup_Field_Base {
 			->compose_html( $field_id, $markup_field_data );
 	}
 
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		if ( $variable_field_data->get_context()->get_field_meta()->is_multiple() ) {
-			if ( is_array( $variable_field_data->get_value() ) ) {
-				$variable_field_data->set_value(
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$field_context = $field_value->get_context();
+
+		if ( $field_context->get_field_meta()->is_multiple() ) {
+			if ( is_array( $field_value->get_value() ) ) {
+				$field_value->set_value(
 					array_map(
 						function ( $value ) {
 							if ( false === is_array( $value ) ) {
@@ -59,29 +61,29 @@ class Pods_Upload_Field extends Markup_Field_Base {
 								$id :
 								$this->get_int_arg( 'id', $value );
 						},
-						$variable_field_data->get_value()
+						$field_value->get_value()
 					)
 				);
 			} else {
-				$variable_field_data->set_value( array() );
+				$field_value->set_value( array() );
 			}
-		} elseif ( is_array( $variable_field_data->get_value() ) ) {
-			$id = $this->get_int_arg( 'ID', $variable_field_data->get_value() );
+		} elseif ( is_array( $field_value->get_value() ) ) {
+			$id = $this->get_int_arg( 'ID', $field_value->get_value() );
 			// in Pod Blocks 'id' is in lower case.
-			$variable_field_data->set_value(
+			$field_value->set_value(
 				0 !== $id ?
 					$id :
-					$this->get_int_arg( 'id', $variable_field_data->get_value() )
+					$this->get_int_arg( 'id', $field_value->get_value() )
 			);
 		} else {
-			$variable_field_data->set_value( 0 );
+			$field_value->set_value( 0 );
 		}
 
-		return $this->get_field_instance( $variable_field_data->get_context()->get_field_meta() )->get_template_variables( $variable_field_data );
+		return $this->get_field_instance( $field_context->get_field_meta() )->get_template_variables( $field_value );
 	}
 
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
-		return $this->get_field_instance( $variable_field_data->get_context()->get_field_meta() )->get_validation_template_variables( $variable_field_data );
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
+		return $this->get_field_instance( $field_value->get_context()->get_field_meta() )->get_validation_template_variables( $field_value );
 	}
 
 	public function is_with_field_wrapper(

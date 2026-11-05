@@ -61,7 +61,9 @@ abstract class Markup_Field_Base implements Markup_Field {
 	}
 
 	protected function get_field_class( string $suffix, Template_Field_Meta $markup_field_data ): string {
-		if ( Cpt_Settings::CLASS_GENERATION_NONE === $markup_field_data->get_context()->get_layout_settings()->classes_generation ) {
+		$field_context = $markup_field_data->get_context();
+
+		if ( Cpt_Settings::CLASS_GENERATION_NONE === $field_context->get_layout_settings()->classes_generation ) {
 			return '';
 		}
 
@@ -70,18 +72,18 @@ abstract class Markup_Field_Base implements Markup_Field {
 						! $markup_field_data->is_with_field_wrapper();
 
 		if ( $is_first_tag ) {
-			$classes[] = $markup_field_data->get_context()->get_layout_settings()->get_bem_name() . '__' . $markup_field_data->get_context()->get_field_settings()->id;
+			$classes[] = $field_context->get_layout_settings()->get_bem_name() . '__' . $field_context->get_field_settings()->id;
 
-			if ( ! $markup_field_data->get_context()->get_layout_settings()->is_with_common_classes ) {
+			if ( ! $field_context->get_layout_settings()->is_with_common_classes ) {
 				return implode( ' ', $classes );
 			}
 		}
 
-		$classes[] = $this->get_item_class( $suffix, $markup_field_data->get_context()->get_layout_settings(), $markup_field_data->get_context()->get_field_settings() );
+		$classes[] = $this->get_item_class( $suffix, $field_context->get_layout_settings(), $field_context->get_field_settings() );
 
 		if ( ! $markup_field_data->is_with_field_wrapper() &&
-			$markup_field_data->get_context()->get_layout_settings()->is_with_common_classes ) {
-			$classes[] = $markup_field_data->get_context()->get_layout_settings()->get_bem_name() . '__field';
+			$field_context->get_layout_settings()->is_with_common_classes ) {
+			$classes[] = $field_context->get_layout_settings()->get_bem_name() . '__field';
 		}
 
 		return implode( ' ', $classes );

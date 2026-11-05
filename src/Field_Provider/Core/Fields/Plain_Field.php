@@ -26,14 +26,14 @@ class Plain_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		$twig_args = array(
 			self::VALUE => '',
 		);
 
-		$value = is_string( $variable_field_data->get_value() ) ||
-				is_numeric( $variable_field_data->get_value() ) ?
-			(string) $variable_field_data->get_value() :
+		$value = is_string( $field_value->get_value() ) ||
+				is_numeric( $field_value->get_value() ) ?
+			(string) $field_value->get_value() :
 			'';
 
 		return array_merge(
@@ -47,7 +47,7 @@ class Plain_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		return array(
 			self::VALUE => '1',
 		);

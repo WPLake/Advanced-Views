@@ -93,11 +93,11 @@ class Post_Object_Field extends List_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$layout_id = $variable_field_data->get_context()->get_field_settings()->get_short_unique_acf_view_id();
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
 		return array_merge(
-			parent::get_template_variables( $variable_field_data ),
+			parent::get_template_variables( $field_value ),
 			array(
 				self::VIEW_ID   => $layout_id,
 				self::LAYOUT_ID => $layout_id,
@@ -108,11 +108,11 @@ class Post_Object_Field extends List_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$layout_id = $variable_field_data->get_context()->get_field_settings()->get_short_unique_acf_view_id();
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
+		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
 		return array_merge(
-			parent::get_validation_template_variables( $variable_field_data ),
+			parent::get_validation_template_variables( $field_value ),
 			array(
 				self::VIEW_ID   => $layout_id,
 				self::LAYOUT_ID => $layout_id,
@@ -123,37 +123,37 @@ class Post_Object_Field extends List_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_item_template_args( Raw_Field_Value $variable_field_data ): array {
-		if ( $variable_field_data->get_context()->get_field_settings()->has_external_layout() ) {
+	protected function get_item_template_args( Raw_Field_Value $field_value ): array {
+		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
-				self::VALUE => $variable_field_data->get_value(),
+				self::VALUE => $field_value->get_value(),
 			);
 		}
 
-		$value = $variable_field_data->get_value();
+		$value = $field_value->get_value();
 		$value = is_numeric( $value ) ?
 			int( $value ) :
 			null;
 
 		$link_args = $this->get_post_info( $value );
 
-		$variable_field_data->set_value( $link_args );
+		$field_value->set_value( $link_args );
 
-		return $this->link_field->get_template_variables( $variable_field_data );
+		return $this->link_field->get_template_variables( $field_value );
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_validation_item_template_args( Raw_Field_Value $variable_field_data ): array {
-		if ( $variable_field_data->get_context()->get_field_settings()->has_external_layout() ) {
+	protected function get_validation_item_template_args( Raw_Field_Value $field_value ): array {
+		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
 				self::VALUE => '',
 			);
 
 		}
 
-		return $this->link_field->get_validation_template_variables( $variable_field_data );
+		return $this->link_field->get_validation_template_variables( $field_value );
 	}
 
 	/**

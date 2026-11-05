@@ -10,16 +10,16 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 defined( 'ABSPATH' ) || exit;
 
 class Mb_Image_Field extends Image_Field {
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		if ( is_array( $variable_field_data->get_value() ) &&
-			key_exists( 'ID', $variable_field_data->get_value() ) ) {
-			$id = is_numeric( $variable_field_data->get_value()['ID'] ) ?
-				$variable_field_data->get_value()['ID'] :
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		if ( is_array( $field_value->get_value() ) &&
+			key_exists( 'ID', $field_value->get_value() ) ) {
+			$id = is_numeric( $field_value->get_value()['ID'] ) ?
+				$field_value->get_value()['ID'] :
 				0;
 
-			$variable_field_data->set_value( $id );
+			$field_value->set_value( $id );
 		}
 
-		return parent::get_template_variables( $variable_field_data );
+		return parent::get_template_variables( $field_value );
 	}
 }

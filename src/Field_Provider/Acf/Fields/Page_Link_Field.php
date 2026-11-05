@@ -66,21 +66,21 @@ class Page_Link_Field extends List_Field {
 	/**
 	 * @return array<string, string>
 	 */
-	protected function get_item_template_args( Raw_Field_Value $variable_field_data ): array {
-		$value = is_string( $variable_field_data->get_value() ) ||
-				is_numeric( $variable_field_data->get_value() ) ?
-			(string) $variable_field_data->get_value() :
+	protected function get_item_template_args( Raw_Field_Value $field_value ): array {
+		$value = is_string( $field_value->get_value() ) ||
+				is_numeric( $field_value->get_value() ) ?
+			(string) $field_value->get_value() :
 			'';
-		$variable_field_data->set_value( $this->get_post_info( $value ) );
+		$field_value->set_value( $this->get_post_info( $value ) );
 
-		return $this->link_field->get_template_variables( $variable_field_data );
+		return $this->link_field->get_template_variables( $field_value );
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_validation_item_template_args( Raw_Field_Value $variable_field_data ): array {
-		return $this->link_field->get_validation_template_variables( $variable_field_data );
+	protected function get_validation_item_template_args( Raw_Field_Value $field_value ): array {
+		return $this->link_field->get_validation_template_variables( $field_value );
 	}
 
 	/**

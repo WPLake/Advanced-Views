@@ -60,11 +60,11 @@ class File_Field extends List_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$layout_id = $variable_field_data->get_context()->get_field_settings()->get_short_unique_acf_view_id();
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
 		return array_merge(
-			parent::get_template_variables( $variable_field_data ),
+			parent::get_template_variables( $field_value ),
 			array(
 				self::VIEW_ID   => $layout_id,
 				self::LAYOUT_ID => $layout_id,
@@ -75,11 +75,11 @@ class File_Field extends List_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
-		$layout_id = $variable_field_data->get_context()->get_field_settings()->get_short_unique_acf_view_id();
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
+		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
 		return array_merge(
-			parent::get_validation_template_variables( $variable_field_data ),
+			parent::get_validation_template_variables( $field_value ),
 			array(
 				self::VIEW_ID   => $layout_id,
 				self::LAYOUT_ID => $layout_id,
@@ -87,18 +87,18 @@ class File_Field extends List_Field {
 		);
 	}
 
-	protected function get_item_template_args( Raw_Field_Value $variable_field_data ): array {
-		if ( $variable_field_data->get_context()->get_field_settings()->has_external_layout() ) {
+	protected function get_item_template_args( Raw_Field_Value $field_value ): array {
+		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
-				self::VALUE => int( $variable_field_data->get_value() ),
+				self::VALUE => int( $field_value->get_value() ),
 			);
 		}
 
-		$post_id = is_numeric( $variable_field_data->get_value() ) ?
-			(int) $variable_field_data->get_value() :
+		$post_id = is_numeric( $field_value->get_value() ) ?
+			(int) $field_value->get_value() :
 			0;
 
-		$variable_field_data->set_value(
+		$field_value->set_value(
 			0 !== $post_id ?
 				array(
 					Link_Field::URL   => (string) wp_get_attachment_url( $post_id ),
@@ -107,17 +107,17 @@ class File_Field extends List_Field {
 				array()
 		);
 
-		return $this->link_field->get_template_variables( $variable_field_data );
+		return $this->link_field->get_template_variables( $field_value );
 	}
 
-	protected function get_validation_item_template_args( Raw_Field_Value $variable_field_data ): array {
-		if ( $variable_field_data->get_context()->get_field_settings()->has_external_layout() ) {
+	protected function get_validation_item_template_args( Raw_Field_Value $field_value ): array {
+		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
 				self::VALUE => 0,
 			);
 		}
 
-		return $this->link_field->get_validation_template_variables( $variable_field_data );
+		return $this->link_field->get_validation_template_variables( $field_value );
 	}
 
 	/**

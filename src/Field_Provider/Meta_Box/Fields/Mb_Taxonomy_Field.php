@@ -11,26 +11,26 @@ use WP_Term;
 defined( 'ABSPATH' ) || exit;
 
 class Mb_Taxonomy_Field extends Taxonomy_Field {
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		if ( false === $variable_field_data->get_context()->get_field_meta()->is_multiple() ) {
-			$variable_field_data->set_value(
-				( $variable_field_data->get_value() instanceof WP_Term ) ?
-					$variable_field_data->get_value()->term_id :
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		if ( false === $field_value->get_context()->get_field_meta()->is_multiple() ) {
+			$field_value->set_value(
+				( $field_value->get_value() instanceof WP_Term ) ?
+					$field_value->get_value()->term_id :
 					0
 			);
 		} else {
-			$variable_field_data->set_value(
-				is_array( $variable_field_data->get_value() ) ?
+			$field_value->set_value(
+				is_array( $field_value->get_value() ) ?
 					array_map(
 						fn( $term ) =>  $term instanceof WP_Term ?
 								$term->term_id :
 								0,
-						$variable_field_data->get_value()
+						$field_value->get_value()
 					) :
 					array()
 			);
 		}
 
-		return parent::get_template_variables( $variable_field_data );
+		return parent::get_template_variables( $field_value );
 	}
 }

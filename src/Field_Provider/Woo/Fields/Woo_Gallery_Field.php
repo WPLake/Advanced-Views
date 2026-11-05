@@ -16,12 +16,12 @@ class Woo_Gallery_Field extends Gallery_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		$args = array(
 			self::VALUE => array(),
 		);
 
-		$product = $this->get_product( $variable_field_data->get_value() );
+		$product = $this->get_product( $field_value->get_value() );
 
 		if ( null === $product ) {
 			return $args;
@@ -30,9 +30,9 @@ class Woo_Gallery_Field extends Gallery_Field {
 		$image_ids = $product->get_gallery_image_ids();
 
 		foreach ( $image_ids as $image_id ) {
-			$variable_field_data->set_value( $image_id );
+			$field_value->set_value( $image_id );
 
-			$args[ self::VALUE ][] = $this->image_field->get_template_variables( $variable_field_data );
+			$args[ self::VALUE ][] = $this->image_field->get_template_variables( $field_value );
 		}
 
 		return $args;
@@ -41,13 +41,13 @@ class Woo_Gallery_Field extends Gallery_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		$args = array(
 			self::VALUE => array(),
 		);
 
 		$value   = array();
-		$value[] = $this->image_field->get_validation_template_variables( $variable_field_data );
+		$value[] = $this->image_field->get_validation_template_variables( $field_value );
 
 		return array_merge(
 			$args,

@@ -35,13 +35,15 @@ class Map_Field extends Map_Field_Base {
 		string $item_id,
 		Template_Field_Meta $markup_field_data
 	): array {
+		$field_context = $markup_field_data->get_context();
+
 		$token_factory = $markup_field_data->get_token_factory();
 
 		return array(
 			'class'    => $this->get_item_class(
 				'map-marker',
-				$markup_field_data->get_context()->get_layout_settings(),
-				$markup_field_data->get_context()->get_field_settings()
+				$field_context->get_layout_settings(),
+				$field_context->get_field_settings()
 			),
 			'data-lat' => $token_factory->variable( $item_id )
 										->add_item_path( self::LAT ),
@@ -53,8 +55,10 @@ class Map_Field extends Map_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_template_args_for_google( Raw_Field_Value $variable_field_data ): array {
-		$args = ! $variable_field_data->get_context()->get_field_meta()->is_multiple() ?
+	protected function get_template_args_for_google( Raw_Field_Value $field_value ): array {
+		$field_context = $field_value->get_context();
+
+		$args = ! $field_context->get_field_meta()->is_multiple() ?
 			array(
 				self::VALUE => '',
 				self::LAT   => 0,
@@ -70,19 +74,19 @@ class Map_Field extends Map_Field_Base {
 			array(
 				// set default values, so if the field has no markers, and showWhenEmpty flag,
 				// then it can show the map in right position.
-				self::ZOOM       => $variable_field_data->get_context()->get_field_meta()->get_zoom(),
-				self::CENTER_LAT => $variable_field_data->get_context()->get_field_meta()->get_center_lat(),
-				self::CENTER_LNG => $variable_field_data->get_context()->get_field_meta()->get_center_lng(),
+				self::ZOOM       => $field_context->get_field_meta()->get_zoom(),
+				self::CENTER_LAT => $field_context->get_field_meta()->get_center_lat(),
+				self::CENTER_LNG => $field_context->get_field_meta()->get_center_lng(),
 			)
 		);
 
-		$value = arr( $variable_field_data->get_value() );
+		$value = arr( $field_value->get_value() );
 
 		if ( 0 === count( $value ) ) {
 			return $args;
 		}
 
-		if ( ! $variable_field_data->get_context()->get_field_meta()->is_multiple() ) {
+		if ( ! $field_context->get_field_meta()->is_multiple() ) {
 			$lat = string( $value, 'lat' );
 
 			$args[ self::VALUE ] = strlen( $lat ) > 0;
@@ -91,7 +95,7 @@ class Map_Field extends Map_Field_Base {
 			$args[ self::LNG ]   = string( $value, 'lng' );
 		} else {
 			// the plugin doesn't support zoom, so use the default from the ACF field settings.
-			$args[ self::ZOOM ] = $variable_field_data->get_context()->get_field_meta()->get_zoom();
+			$args[ self::ZOOM ] = $field_context->get_field_meta()->get_zoom();
 
 			$args[ self::VALUE ] = array();
 
@@ -111,15 +115,17 @@ class Map_Field extends Map_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_template_args_for_os( Raw_Field_Value $variable_field_data ): array {
+	protected function get_template_args_for_os( Raw_Field_Value $field_value ): array {
+		$field_context = $field_value->get_context();
+
 		$args = array(
-			self::VALUE => $variable_field_data->get_context()->get_field_settings()->is_map_with_address ?
+			self::VALUE => $field_context->get_field_settings()->is_map_with_address ?
 				array() :
 				false,
 			self::MAP   => '',
 		);
 
-		switch ( $variable_field_data->get_context()->get_field_meta()->get_return_format() ) {
+		switch ( $field_context->get_field_meta()->get_return_format() ) {
 			case 'leaflet':
 			case 'osm':
 				// used formatted value, as output already made by the plugin, and we just need to show it.
@@ -127,18 +133,18 @@ class Map_Field extends Map_Field_Base {
 					$args,
 					array(
 						// todo it doesn't work if return format is not set to 'leaflet js' (e.g. the default 'Raw data' value).
-						self::MAP => $variable_field_data->get_formatted_value(),
+						self::MAP => $field_value->get_formatted_value(),
 					)
 				);
 				break;
 		}
 
 		// if withAddress, will be filled in the Pro class.
-		if ( ! $variable_field_data->get_context()->get_field_settings()->is_map_with_address ) {
-			$markers             = is_array( $variable_field_data->get_value() ) &&
-							key_exists( 'markers', $variable_field_data->get_value() ) &&
-							is_array( $variable_field_data->get_value()['markers'] ) ?
-				$variable_field_data->get_value()['markers'] :
+		if ( ! $field_context->get_field_settings()->is_map_with_address ) {
+			$markers             = is_array( $field_value->get_value() ) &&
+							key_exists( 'markers', $field_value->get_value() ) &&
+							is_array( $field_value->get_value()['markers'] ) ?
+				$field_value->get_value()['markers'] :
 				array();
 			$args[ self::VALUE ] = array() !== $markers;
 		}
@@ -149,9 +155,11 @@ class Map_Field extends Map_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_validation_args( Raw_Field_Value $variable_field_data ): array {
-		if ( 'open_street_map' !== $variable_field_data->get_context()->get_field_meta()->get_type() ) {
-			$args = ! $variable_field_data->get_context()->get_field_meta()->is_multiple() ?
+	protected function get_validation_args( Raw_Field_Value $field_value ): array {
+		$field_context = $field_value->get_context();
+
+		if ( 'open_street_map' !== $field_context->get_field_meta()->get_type() ) {
+			$args = ! $field_context->get_field_meta()->is_multiple() ?
 				array(
 					self::VALUE => '',
 					self::LAT   => 0,
@@ -164,9 +172,9 @@ class Map_Field extends Map_Field_Base {
 				$args,
 				array(// set default values, so if the field has no markers, and showWhenEmpty flag,
 					// then it can show the map in right position.
-					self::ZOOM       => $variable_field_data->get_context()->get_field_meta()->get_zoom(),
-					self::CENTER_LAT => $variable_field_data->get_context()->get_field_meta()->get_center_lat(),
-					self::CENTER_LNG => $variable_field_data->get_context()->get_field_meta()->get_center_lng(),
+					self::ZOOM       => $field_context->get_field_meta()->get_zoom(),
+					self::CENTER_LAT => $field_context->get_field_meta()->get_center_lat(),
+					self::CENTER_LNG => $field_context->get_field_meta()->get_center_lng(),
 				)
 			);
 
@@ -175,7 +183,7 @@ class Map_Field extends Map_Field_Base {
 				self::LNG => '1',
 			);
 
-			if ( ! $variable_field_data->get_context()->get_field_meta()->is_multiple() ) {
+			if ( ! $field_context->get_field_meta()->is_multiple() ) {
 				$validation_args = array_merge( $args, $validation_args );
 
 				return array_merge(
@@ -196,7 +204,7 @@ class Map_Field extends Map_Field_Base {
 		}
 
 		return array(
-			self::VALUE => $variable_field_data->get_context()->get_field_settings()->is_map_with_address ?
+			self::VALUE => $field_context->get_field_settings()->is_map_with_address ?
 				array() :
 				true,
 			self::MAP   => '<iframe src="https://www.openstreetmap.org/export/embed.html?bbox=5.390371665521,50.7343356,14.857431134479,56.3593356&amp;marker=53.5500279,10.0136948" height="400" width="425" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>',
@@ -247,11 +255,13 @@ class Map_Field extends Map_Field_Base {
 	 * @return Html_Node[]
 	 */
 	protected function compose_content( string $field_id, Template_Field_Meta $markup_field_data ): array {
-		if ( $markup_field_data->get_context()->get_field_meta()->is_multiple() ) {
+		$field_context = $markup_field_data->get_context();
+
+		if ( $field_context->get_field_meta()->is_multiple() ) {
 			return array( $this->item_loop( $field_id, $markup_field_data ) );
 		}
 
-		if ( $markup_field_data->get_context()->get_field_settings()->is_visible_when_empty ) {
+		if ( $field_context->get_field_settings()->is_visible_when_empty ) {
 			return array( $this->conditional_item( $field_id, $field_id, $markup_field_data ) );
 		}
 
@@ -308,17 +318,17 @@ class Map_Field extends Map_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
-		return 'open_street_map' !== $variable_field_data->get_context()->get_field_meta()->get_type() ?
-			$this->get_template_args_for_google( $variable_field_data ) :
-			$this->get_template_args_for_os( $variable_field_data );
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		return 'open_street_map' !== $field_value->get_context()->get_field_meta()->get_type() ?
+			$this->get_template_args_for_google( $field_value ) :
+			$this->get_template_args_for_os( $field_value );
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
-		return $this->get_validation_args( $variable_field_data );
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
+		return $this->get_validation_args( $field_value );
 	}
 
 	public function is_with_field_wrapper(

@@ -31,12 +31,12 @@ class Term_Description_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		$args = array(
-			self::VALUE => $variable_field_data->get_context()->get_field_settings()->default_value,
+			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$term = $this->get_term( $variable_field_data->get_value() );
+		$term = $this->get_term( $field_value->get_value() );
 
 		if ( null === $term ) {
 			return $args;
@@ -55,7 +55,7 @@ class Term_Description_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		return array(
 			self::VALUE => 'description',
 		);
