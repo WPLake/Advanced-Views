@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappe
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Context;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Context;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
