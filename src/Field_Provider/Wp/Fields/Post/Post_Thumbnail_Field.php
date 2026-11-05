@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox_Pattern;
 
@@ -19,7 +19,7 @@ class Post_Thumbnail_Field extends Image_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$post = $this->get_post( $variable_field_data->get_value() );
 
 		if ( null === $post ) {

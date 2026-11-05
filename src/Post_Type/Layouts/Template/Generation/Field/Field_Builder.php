@@ -2,11 +2,15 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Context;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Policy;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 /**
@@ -34,7 +38,7 @@ final class Field_Builder {
 			$patterns      = $context->get_pattern_container();
 			$field_id      = $context->get_field_id();
 
-			$markup_field_data = new Template_Field_Data(
+			$markup_field_data = new Template_Field_Meta(
 				$context->get_layout_settings(),
 				$context->get_item_settings(),
 				$context->get_field_settings(),

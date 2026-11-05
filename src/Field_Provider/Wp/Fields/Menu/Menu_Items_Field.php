@@ -13,8 +13,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 use Org\Wplake\Advanced_Views\Template\Html\Composite_Attribute;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
@@ -43,14 +43,14 @@ class Menu_Items_Field extends Markup_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_internal_item_layout( string $item_id, Template_Field_Meta $markup_field_data ): array {
 		return $this->link_field->compose_html( $item_id, $markup_field_data );
 	}
 
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$id_var        = $token_factory->variable( $field_id )
@@ -69,7 +69,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		return array( $shortcode );
 	}
 
-	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$value_var = $token_factory->variable( $field_id )
@@ -89,7 +89,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_loop_body( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_loop_body( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$is_active_var        = $token_factory->variable( $item_id )
@@ -113,7 +113,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		return array( $item );
 	}
 
-	protected function children_branch( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): IF_Branch {
+	protected function children_branch( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): IF_Branch {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$children_var = $token_factory->variable( $item_id )
@@ -129,7 +129,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_children( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_children( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$item_class = $this->get_item_class(
@@ -159,7 +159,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_sub_loop_body( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_sub_loop_body( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$is_active_var = $token_factory->variable( $item_id )
@@ -179,7 +179,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 		string $base_suffix,
 		string $conditional_suffix,
 		Statement_Token $condition,
-		Template_Field_Data $markup_field_data
+		Template_Field_Meta $markup_field_data
 	): Composite_Attribute {
 		$token_factory = $markup_field_data->get_token_factory();
 		$layout_data   = $markup_field_data->get_view_data();
@@ -227,7 +227,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 	protected function get_item_twig_args(
 		?WP_Post $wp_post,
 		array $children,
-		Variable_Field_Data $variable_field_data,
+		Raw_Field_Value $variable_field_data,
 		bool $is_for_validation = false
 	): array {
 		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
@@ -332,7 +332,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
 
 		$args = array(
@@ -380,7 +380,7 @@ class Menu_Items_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$item_args = $this->get_item_twig_args(
 			null,
 			array(),

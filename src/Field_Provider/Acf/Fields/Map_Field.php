@@ -10,8 +10,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Map_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map_Pattern;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
@@ -33,7 +33,7 @@ class Map_Field extends Map_Field_Base {
 	protected function map_marker_attributes(
 		string $field_id,
 		string $item_id,
-		Template_Field_Data $markup_field_data
+		Template_Field_Meta $markup_field_data
 	): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
@@ -53,7 +53,7 @@ class Map_Field extends Map_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_template_args_for_google( Variable_Field_Data $variable_field_data ): array {
+	protected function get_template_args_for_google( Raw_Field_Value $variable_field_data ): array {
 		$args = ! $variable_field_data->get_field_meta()->is_multiple() ?
 			array(
 				self::VALUE => '',
@@ -111,7 +111,7 @@ class Map_Field extends Map_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_template_args_for_os( Variable_Field_Data $variable_field_data ): array {
+	protected function get_template_args_for_os( Raw_Field_Value $variable_field_data ): array {
 		$args = array(
 			self::VALUE => $variable_field_data->get_field_data()->is_map_with_address ?
 				array() :
@@ -149,7 +149,7 @@ class Map_Field extends Map_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_validation_args( Variable_Field_Data $variable_field_data ): array {
+	protected function get_validation_args( Raw_Field_Value $variable_field_data ): array {
 		if ( 'open_street_map' !== $variable_field_data->get_field_meta()->get_type() ) {
 			$args = ! $variable_field_data->get_field_meta()->is_multiple() ?
 				array(
@@ -203,7 +203,7 @@ class Map_Field extends Map_Field_Base {
 		);
 	}
 
-	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$factory    = $markup_field_data->get_token_factory();
 		$field_meta = $markup_field_data->get_field_meta();
 
@@ -246,7 +246,7 @@ class Map_Field extends Map_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_content( string $field_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_content( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		if ( $markup_field_data->get_field_meta()->is_multiple() ) {
 			return array( $this->item_loop( $field_id, $markup_field_data ) );
 		}
@@ -258,7 +258,7 @@ class Map_Field extends Map_Field_Base {
 		return $this->compose_inner_item( $field_id, $field_id, $markup_field_data );
 	}
 
-	protected function item_loop( string $field_id, Template_Field_Data $markup_field_data ): Loop_Token {
+	protected function item_loop( string $field_id, Template_Field_Meta $markup_field_data ): Loop_Token {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$source_var = $token_factory->variable( $field_id )
@@ -273,7 +273,7 @@ class Map_Field extends Map_Field_Base {
 						->set_body( $loop_body );
 	}
 
-	protected function conditional_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): IF_Token {
+	protected function conditional_item( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): IF_Token {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$item_branch = $this->item_branch( $field_id, $item_id, $markup_field_data );
@@ -281,7 +281,7 @@ class Map_Field extends Map_Field_Base {
 		return $token_factory->if()->set_if_branch( $item_branch );
 	}
 
-	protected function item_branch( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): IF_Branch {
+	protected function item_branch( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): IF_Branch {
 		$token_factory = $markup_field_data->get_token_factory();
 		$value_var     = $token_factory->variable( $field_id )
 										->add_item_path( self::VALUE );
@@ -296,7 +296,7 @@ class Map_Field extends Map_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_inner_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_inner_item( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
 		$marker_attrs = $this->map_marker_attributes( $field_id, $item_id, $markup_field_data );
 
 		$tags = tag( 'div' )
@@ -308,7 +308,7 @@ class Map_Field extends Map_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		return 'open_street_map' !== $variable_field_data->get_field_meta()->get_type() ?
 			$this->get_template_args_for_google( $variable_field_data ) :
 			$this->get_template_args_for_os( $variable_field_data );
@@ -317,7 +317,7 @@ class Map_Field extends Map_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
 		return $this->get_validation_args( $variable_field_data );
 	}
 

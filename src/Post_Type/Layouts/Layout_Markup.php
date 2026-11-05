@@ -6,16 +6,16 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Composite_Attribute;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
@@ -43,7 +43,7 @@ class Layout_Markup {
 		$this->provider_cluster      = $provider_cluster;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->markups_safe          = array();
-		$this->renderer               = $renderer;
+		$this->renderer              = $renderer;
 		$this->web_component_factory = $web_component_factory;
 	}
 
@@ -88,7 +88,7 @@ class Layout_Markup {
 			$field_meta->get_type() :
 			'row';
 
-		$markup = $this->field_markup->compose_row_markup(
+		$markup = $this->field_markup->compose_row(
 			$row_type,
 			'',
 			$layout_settings,

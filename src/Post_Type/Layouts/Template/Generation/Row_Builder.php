@@ -12,10 +12,11 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Field_Wrapper_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Label_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Outer_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrapper\Row_Wrapper_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Field_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Label_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Field_Wrapper_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Outer_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Row_Wrapper_Builder;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
@@ -43,7 +44,7 @@ class Row_Builder {
 	 *
 	 * @return Html_Node[]
 	 */
-	public function compose_field_markup(
+	public function compose_field(
 		array $field_assets,
 		Layout_Settings $layout_settings,
 		?Item_Settings $item_settings,
@@ -68,7 +69,7 @@ class Row_Builder {
 	 *
 	 * @return Html_Node[]
 	 */
-	public function compose_row_markup(
+	public function compose_row(
 		string $row_type,
 		string $row_suffix,
 		Layout_Settings $layout_settings,

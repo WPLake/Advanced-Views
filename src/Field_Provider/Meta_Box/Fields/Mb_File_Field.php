@@ -5,12 +5,12 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Field_Provider\Meta_Box\Fields;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\File_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 
 defined( 'ABSPATH' ) || exit;
 
 class Mb_File_Field extends File_Field {
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		if ( $variable_field_data->get_field_meta()->is_multiple() ) {
 			// ids are array keys.
 			$variable_field_data->set_value(

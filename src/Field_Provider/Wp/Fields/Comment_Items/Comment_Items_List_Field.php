@@ -12,8 +12,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use WP_Comment;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
@@ -31,7 +31,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_internal_item_layout( string $item_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$comment_attributes = array( 'class' => $this->get_field_class( 'comment', $markup_field_data ) );
@@ -64,7 +64,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$id_var         = $token_factory->variable( $field_id )
@@ -174,7 +174,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 		return $grouped;
 	}
 
-	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$value_var = $token_factory->variable( $field_id )
@@ -195,7 +195,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
 
 		$args = array(
@@ -233,7 +233,7 @@ class Comment_Items_List_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
 
 		return array(

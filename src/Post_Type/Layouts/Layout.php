@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Field_Variables;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Template_Field_Value;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use WP_REST_Request;
@@ -27,7 +27,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 class Layout extends Instance {
 	private Layout_Settings $layout_settings;
 	private Field_Provider_Cluster $provider_cluster;
-	private Field_Variables $field_variables;
+	private Template_Field_Value $field_variables;
 	private Template_Renderer_Storage $template_renderer_storage;
 	/**
 	 * @var array<string, mixed>
@@ -47,7 +47,7 @@ class Layout extends Instance {
 		string $twig_template,
 		Layout_Settings $layout_settings,
 		Source $source,
-		Field_Variables $field_variables,
+		Template_Field_Value $field_variables,
 		Html_Renderer $html_renderer,
 		string $classes = ''
 	) {

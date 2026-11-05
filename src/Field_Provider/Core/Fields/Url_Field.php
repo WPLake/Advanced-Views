@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -12,7 +12,7 @@ class Url_Field extends Link_Field {
 	/**
 	 * @return array<string, string>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$value = is_string( $variable_field_data->get_value() ) ?
 			$variable_field_data->get_value() :
 			'';

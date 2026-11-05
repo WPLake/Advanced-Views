@@ -5,13 +5,13 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Field_Provider\Meta_Box\Fields;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Taxonomy_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 use WP_Term;
 
 defined( 'ABSPATH' ) || exit;
 
 class Mb_Taxonomy_Field extends Taxonomy_Field {
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		if ( false === $variable_field_data->get_field_meta()->is_multiple() ) {
 			$variable_field_data->set_value(
 				( $variable_field_data->get_value() instanceof WP_Term ) ?

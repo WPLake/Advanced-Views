@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Woo\Fields;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Gallery_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -16,7 +16,7 @@ class Woo_Gallery_Field extends Gallery_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$args = array(
 			self::VALUE => array(),
 		);
@@ -41,7 +41,7 @@ class Woo_Gallery_Field extends Gallery_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$args = array(
 			self::VALUE => array(),
 		);

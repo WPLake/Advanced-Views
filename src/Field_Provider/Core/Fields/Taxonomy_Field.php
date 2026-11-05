@@ -11,8 +11,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 use WP_Term;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
@@ -57,7 +57,7 @@ class Taxonomy_Field extends List_Field {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_internal_item_layout( string $item_id, Template_Field_Meta $markup_field_data ): array {
 		$markup_field_data->set_is_with_field_wrapper(
 			$markup_field_data->get_field_meta()->is_multiple() ||
 			$markup_field_data->is_with_field_wrapper()
@@ -69,7 +69,7 @@ class Taxonomy_Field extends List_Field {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory    = $markup_field_data->get_token_factory();
 		$object_id_source = $markup_field_data->get_field_meta()->is_multiple() ?
 			static::LOOP_ITEM_NAME :
@@ -95,7 +95,7 @@ class Taxonomy_Field extends List_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
 
 		return array_merge(
@@ -110,7 +110,7 @@ class Taxonomy_Field extends List_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
 
 		return array_merge(
@@ -125,7 +125,7 @@ class Taxonomy_Field extends List_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_item_template_args( Variable_Field_Data $variable_field_data ): array {
+	protected function get_item_template_args( Raw_Field_Value $variable_field_data ): array {
 		$term_id = $variable_field_data->get_value();
 		$wp_term = is_numeric( $term_id ) ?
 			get_term( (int) $term_id ) :
@@ -157,7 +157,7 @@ class Taxonomy_Field extends List_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	protected function get_validation_item_template_args( Variable_Field_Data $variable_field_data ): array {
+	protected function get_validation_item_template_args( Raw_Field_Value $variable_field_data ): array {
 		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
 			return array(
 				self::VALUE     => 0,

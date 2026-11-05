@@ -5,12 +5,12 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Field_Provider\Meta_Box\Fields;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 
 defined( 'ABSPATH' ) || exit;
 
 class Mb_Image_Field extends Image_Field {
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		if ( is_array( $variable_field_data->get_value() ) &&
 			key_exists( 'ID', $variable_field_data->get_value() ) ) {
 			$id = is_numeric( $variable_field_data->get_value()['ID'] ) ?

@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 defined( 'ABSPATH' ) || exit;
@@ -28,7 +28,7 @@ abstract class Markup_Field_Base implements Markup_Field {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_item_markup( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_item_markup( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
 		if ( $markup_field_data->get_field_data()->has_external_layout() ) {
 			return $this->compose_external_item_layout( $field_id, $item_id, $markup_field_data );
 		}
@@ -39,28 +39,28 @@ abstract class Markup_Field_Base implements Markup_Field {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
 		return array();
 	}
 
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_internal_item_layout( string $item_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_internal_item_layout( string $item_id, Template_Field_Meta $markup_field_data ): array {
 		return array();
 	}
 
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_item( string $field_id, string $item_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_item( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
 		$item_outers = $markup_field_data->get_item_outers( $field_id, $item_id );
 		$item_nodes  = $this->compose_item_markup( $field_id, $item_id, $markup_field_data );
 
 		return $markup_field_data->wrap_with_item_outers( $item_outers, $item_nodes );
 	}
 
-	protected function get_field_class( string $suffix, Template_Field_Data $markup_field_data ): string {
+	protected function get_field_class( string $suffix, Template_Field_Meta $markup_field_data ): string {
 		if ( Cpt_Settings::CLASS_GENERATION_NONE === $markup_field_data->get_view_data()->classes_generation ) {
 			return '';
 		}

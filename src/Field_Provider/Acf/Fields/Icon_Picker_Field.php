@@ -10,8 +10,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Conditional\Comparison_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
@@ -36,7 +36,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
-	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$dashicons_branch     = $this->dashicons_branch( $field_id, $markup_field_data );
@@ -55,7 +55,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$args = array(
 			self::TYPE  => '',
 			self::VALUE => '',
@@ -87,7 +87,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		return $args;
 	}
 
-	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
 		return array(
 			self::TYPE  => 'dashicons',
 			self::VALUE => 'dashicons-admin-generic',
@@ -102,7 +102,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		return false;
 	}
 
-	protected function dashicons_branch( string $field_id, Template_Field_Data $markup_field_data ): IF_Branch {
+	protected function dashicons_branch( string $field_id, Template_Field_Meta $markup_field_data ): IF_Branch {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$condition = self::type_comparison( 'dashicons', $field_id, $markup_field_data );
@@ -113,7 +113,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 			->set_body( $body );
 	}
 
-	protected function media_library_branch( string $field_id, Template_Field_Data $markup_field_data ): IF_Branch {
+	protected function media_library_branch( string $field_id, Template_Field_Meta $markup_field_data ): IF_Branch {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$condition = self::type_comparison( 'media_library', $field_id, $markup_field_data );
@@ -124,7 +124,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 			->set_body( $body );
 	}
 
-	protected function custom_image_branch( string $field_id, Template_Field_Data $markup_field_data ): IF_Branch {
+	protected function custom_image_branch( string $field_id, Template_Field_Meta $markup_field_data ): IF_Branch {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$body = $this->compose_custom_image_markup( $field_id, $markup_field_data );
@@ -136,7 +136,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_icon_markup( string $field_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_icon_markup( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$icon_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
@@ -160,14 +160,14 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_icon_image_markup( string $field_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_icon_image_markup( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		return $this->image_field->compose_html( $field_id, $markup_field_data );
 	}
 
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_custom_image_markup( string $field_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_custom_image_markup( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$src_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
@@ -187,7 +187,7 @@ final class Icon_Picker_Field extends Markup_Field_Base {
 		return array( $tag );
 	}
 
-	protected static function type_comparison( string $type, string $field_id, Template_Field_Data $markup_field_data ): Comparison_Token {
+	protected static function type_comparison( string $type, string $field_id, Template_Field_Meta $markup_field_data ): Comparison_Token {
 		$token_factory = $markup_field_data->get_token_factory();
 		$type_var      = $token_factory->variable( $field_id )
 										->add_item_path( self::TYPE );

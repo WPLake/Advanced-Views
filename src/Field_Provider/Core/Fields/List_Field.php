@@ -9,8 +9,8 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\Loop_Token;
@@ -27,12 +27,12 @@ abstract class List_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	abstract protected function get_item_template_args( Variable_Field_Data $variable_field_data ): array;
+	abstract protected function get_item_template_args( Raw_Field_Value $variable_field_data ): array;
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	abstract protected function get_validation_item_template_args( Variable_Field_Data $variable_field_data ): array;
+	abstract protected function get_validation_item_template_args( Raw_Field_Value $variable_field_data ): array;
 
 	// separate method, so it can be overridden in the child classes.
 
@@ -59,7 +59,7 @@ abstract class List_Field extends Markup_Field_Base {
 		return '';
 	}
 
-	public function compose_html( string $field_id, Template_Field_Data $markup_field_data ): array {
+	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		if ( $markup_field_data->get_field_meta()->is_multiple() ) {
 			return array( $this->item_loop( $field_id, $markup_field_data ) );
 		}
@@ -67,7 +67,7 @@ abstract class List_Field extends Markup_Field_Base {
 		return $this->compose_inner_item( $field_id, $markup_field_data );
 	}
 
-	protected function item_loop( string $field_id, Template_Field_Data $markup_field_data ): Loop_Token {
+	protected function item_loop( string $field_id, Template_Field_Meta $markup_field_data ): Loop_Token {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$source_var = $token_factory->variable( $field_id )
@@ -86,7 +86,7 @@ abstract class List_Field extends Markup_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_loop_body( Variable_Token $index_var, string $field_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_loop_body( Variable_Token $index_var, string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$inner_item       = $this->compose_inner_item( $field_id, $markup_field_data );
 		$is_delimiter_set = strlen( $markup_field_data->get_field_data()->options_delimiter ) > 0;
 
@@ -103,7 +103,7 @@ abstract class List_Field extends Markup_Field_Base {
 		return $inner_item;
 	}
 
-	protected function delimiter_branch( Variable_Token $index_var, string $field_id, Template_Field_Data $markup_field_data ): IF_Branch {
+	protected function delimiter_branch( Variable_Token $index_var, string $field_id, Template_Field_Meta $markup_field_data ): IF_Branch {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$secondary_element_comparison = $token_factory->comparison()
@@ -121,7 +121,7 @@ abstract class List_Field extends Markup_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_item_delimiter( string $field_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_item_delimiter( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$item_class = $this->get_item_class(
@@ -143,7 +143,7 @@ abstract class List_Field extends Markup_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function compose_inner_item( string $field_id, Template_Field_Data $markup_field_data ): array {
+	protected function compose_inner_item( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$item_id = $markup_field_data->get_field_meta()->is_multiple() ?
 			static::LOOP_ITEM_NAME :
 			$field_id;
@@ -154,7 +154,7 @@ abstract class List_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$args = array(
 			self::VALUE => array(),
 		);
@@ -204,7 +204,7 @@ abstract class List_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$args = array(
 			self::VALUE => array(),
 		);

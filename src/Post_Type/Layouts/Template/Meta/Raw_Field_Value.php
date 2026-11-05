@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 
-final class Variable_Field_Data extends Field_Data {
+final class Raw_Field_Value extends Field_Data {
 	/**
 	 * In case of repeater field, the formatted value isn't available directly
 	 *
@@ -32,7 +32,7 @@ final class Variable_Field_Data extends Field_Data {
 	 */
 	private $value;
 	private Layout $layout;
-	private Field_Variables $field_variables;
+	private Template_Field_Value $field_variables;
 
 	public function __construct(
 		Layout_Settings $layout_settings,
@@ -43,7 +43,7 @@ final class Variable_Field_Data extends Field_Data {
 		Layout $layout,
 		Source $source,
 		Markup_Field $markup_field,
-		Field_Variables $field_variables
+		Template_Field_Value $field_variables
 	) {
 		parent::__construct( $layout_settings, $item_settings, $field_settings, $field_meta, $field_markup, $markup_field );
 
@@ -106,7 +106,7 @@ final class Variable_Field_Data extends Field_Data {
 		$this->value = $value;
 	}
 
-	public function get_field_variables(): Field_Variables {
+	public function get_field_variables(): Template_Field_Value {
 		return $this->field_variables;
 	}
 

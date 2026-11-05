@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
-final class Field_Variables {
+final class Template_Field_Value {
 	private Field_Provider_Cluster $provider_cluster;
 	private Row_Builder $field_template;
 
@@ -51,7 +51,7 @@ final class Field_Variables {
 			return array();
 		}
 
-		$variable_field_data = new Variable_Field_Data(
+		$variable_field_data = new Raw_Field_Value(
 			$layout_settings,
 			$item_settings,
 			$field_settings,

@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\User;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Link_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Meta\Raw_Field_Value;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -16,7 +16,7 @@ class User_Website_Field extends Link_Field {
 	/**
 	 * @return array<string, string>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $variable_field_data ): array {
 		$user = $this->get_user( $variable_field_data->get_value() );
 
 		if ( null === $user ) {
