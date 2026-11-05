@@ -12,81 +12,53 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Pattern_Container;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 
+/**
+ * Immutable, created by the Row_Context_Loader.
+ */
 final class Row_Context {
 	private Layout_Settings $layout_settings;
+	// item can be null (in case of repeater sub-field).
+	private ?Item_Settings $item_settings;
 	private Field_Settings $field_settings;
 	private Field_Meta $field_meta;
+	private ?Markup_Field $markup_field;
 	private Token_Factory $token_factory;
 	private Pattern_Container $pattern_container;
-	// item can be null (in case of repeater sub-field).
-	private ?Item_Settings $item_settings = null;
-	private ?Markup_Field $markup_field   = null;
-	private string $field_id              = '';
-	private string $row_type              = '';
-	private string $row_suffix            = '';
+	private string $field_id;
+	private string $row_type;
+	private string $row_suffix;
 
 	public function __construct(
 		Layout_Settings $layout_settings,
+		?Item_Settings $item_settings,
 		Field_Settings $field_settings,
-		Token_Factory $token_factory
+		Field_Meta $field_meta,
+		?Markup_Field $markup_field,
+		Token_Factory $token_factory,
+		Pattern_Container $pattern_container,
+		string $field_id,
+		string $row_type,
+		string $row_suffix
 	) {
 		$this->layout_settings   = $layout_settings;
+		$this->item_settings     = $item_settings;
 		$this->field_settings    = $field_settings;
-		$this->field_meta        = $field_settings->get_field_meta();
+		$this->field_meta        = $field_meta;
+		$this->markup_field      = $markup_field;
 		$this->token_factory     = $token_factory;
-		$this->pattern_container = new Pattern_Container( array() );
+		$this->pattern_container = $pattern_container;
+		$this->field_id          = $field_id;
+		$this->row_type          = $row_type;
+		$this->row_suffix        = $row_suffix;
 	}
 
-	public function set_field_meta( Field_Meta $field_meta ): self {
-		$this->field_meta = $field_meta;
+	public function with_row_type( string $row_type ): self {
+		$context           = clone $this;
+		$context->row_type = $row_type;
 
-		return $this;
-	}
-
-	public function set_item_settings( ?Item_Settings $item_settings ): self {
-		$this->item_settings = $item_settings;
-
-		return $this;
-	}
-
-	public function set_markup_field( ?Markup_Field $markup_field ): self {
-		$this->markup_field = $markup_field;
-
-		return $this;
-	}
-
-	public function set_field_id( string $field_id ): self {
-		$this->field_id = $field_id;
-
-		return $this;
-	}
-
-	public function set_row_type( string $row_type ): self {
-		$this->row_type = $row_type;
-
-		return $this;
-	}
-
-	public function set_row_suffix( string $row_suffix ): self {
-		$this->row_suffix = $row_suffix;
-
-		return $this;
-	}
-
-	/**
-	 * @param Template_Pattern[] $patterns
-	 */
-	public function set_patterns( array $patterns ): self {
-		$this->pattern_container = new Pattern_Container( $patterns );
-
-		return $this;
-	}
-
-	public function clone(): self {
-		return clone $this;
+		return $context;
 	}
 
 	public function get_layout_settings(): Layout_Settings {
@@ -127,16 +99,5 @@ final class Row_Context {
 
 	public function get_row_suffix(): string {
 		return $this->row_suffix;
-	}
-
-	public function get_field_name_class(): string {
-		$bem_name = $this->layout_settings->get_bem_name();
-
-		return sprintf(
-			'%s__%s%s',
-			$bem_name,
-			$this->field_settings->id,
-			$this->row_suffix
-		);
 	}
 }

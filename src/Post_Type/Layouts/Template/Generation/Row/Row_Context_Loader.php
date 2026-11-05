@@ -1,0 +1,73 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row;
+
+defined( 'ABSPATH' ) || exit;
+
+use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Pattern_Container;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
+
+final class Row_Context_Loader {
+	private Field_Provider_Cluster $provider_cluster;
+	private Front_Assets $front_assets;
+	private Token_Factory_Storage $token_factory_storage;
+
+	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
+		$this->provider_cluster      = $provider_cluster;
+		$this->front_assets          = $front_assets;
+		$this->token_factory_storage = $token_factory_storage;
+	}
+
+	/**
+	 * @param Template_Pattern[]|null $patterns Null means the field's own patterns
+	 */
+	public function load(
+		Layout_Settings $layout_settings,
+		?Item_Settings $item_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta,
+		string $field_id,
+		string $row_type,
+		string $row_suffix = '',
+		?array $patterns = null
+	): Row_Context {
+		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
+
+		$vendor_name  = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
+		$markup_field = $this->provider_cluster->get_markup_field_instance( $vendor_name, $field_meta->get_type() );
+
+		$patterns = $patterns ?? $this->resolve_field_patterns( $field_settings );
+
+		return new Row_Context(
+			$layout_settings,
+			$item_settings,
+			$field_settings,
+			$field_meta,
+			$markup_field,
+			$token_factory,
+			new Pattern_Container( $patterns ),
+			$field_id,
+			$row_type,
+			$row_suffix
+		);
+	}
+
+	/**
+	 * @return Template_Pattern[]
+	 */
+	protected function resolve_field_patterns( Field_Settings $field_settings ): array {
+		$vendor_name  = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
+		$front_assets = $this->provider_cluster->get_field_front_assets( $vendor_name, $field_settings );
+
+		return $this->front_assets->resolve_template_patterns( $front_assets );
+	}
+}

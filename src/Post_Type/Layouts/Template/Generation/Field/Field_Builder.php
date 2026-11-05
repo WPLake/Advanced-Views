@@ -8,9 +8,8 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context\Field_Context;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Inner_Row_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Context;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
@@ -18,26 +17,25 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
  * @phpstan-import-type Html_Node from Html_Tag
  */
 final class Field_Builder {
-	private Row_Policy $policy;
+	private Inner_Row_Policy $policy;
 
-	public function __construct( Row_Policy $policy ) {
+	public function __construct( Inner_Row_Policy $policy ) {
 		$this->policy = $policy;
 	}
 
 	/**
+	 * @param Row_Context $context Must have the 'field' row type
+	 *
 	 * @return Html_Node[]
 	 */
-	public function compose_field( Row_Context $context, Row_Builder $row_builder ): array {
+	public function compose_field( Row_Context $context, Nested_Row_Builder $row_builder ): array {
 		$field_meta   = $context->get_field_meta();
 		$is_existing  = $field_meta->is_field_exist();
 		$markup_field = $context->get_markup_field();
 
 		if ( $is_existing && $markup_field instanceof Markup_Field ) {
-			$field_context = $context
-				->clone()
-				->set_row_type( 'field' );
-			$patterns      = $context->get_pattern_container();
-			$field_id      = $context->get_field_id();
+			$patterns = $context->get_pattern_container();
+			$field_id = $context->get_field_id();
 
 			$field_data_context = new Field_Context(
 				$context->get_layout_settings(),
@@ -54,8 +52,8 @@ final class Field_Builder {
 			);
 
 			$field_assets      = $patterns->get_patterns();
-			$has_field_wrapper = $this->policy->has_field_wrapper( $field_context );
-			$has_row_wrapper   = $this->policy->is_row_wrapper_required( $field_context );
+			$has_field_wrapper = $this->policy->has_field_wrapper( $context );
+			$has_row_wrapper   = $this->policy->is_row_wrapper_required( $context );
 
 			$markup_field_data->set_field_assets( $field_assets );
 			$markup_field_data->set_is_with_field_wrapper( $has_field_wrapper );

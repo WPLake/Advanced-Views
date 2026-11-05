@@ -2,14 +2,15 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Context;
 
-final class Row_Policy {
+final class Inner_Row_Policy {
 	private Field_Provider_Cluster $provider_cluster;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster ) {
@@ -22,15 +23,13 @@ final class Row_Policy {
 		$patterns       = $context->get_pattern_container();
 		$field_settings = $context->get_field_settings();
 		$row_type       = $context->get_row_type();
-		$row_tag        = $patterns->row_wrapper_tag( $field_settings, $row_type );
-		$is_tag_filled  = strlen( $row_tag ) > 0;
+
+		$row_tag       = $patterns->row_wrapper_tag( $field_settings, $row_type );
+		$is_tag_filled = strlen( $row_tag ) > 0;
 
 		return $is_necessary || $is_tag_filled;
 	}
 
-	/**
-	 * Without the wrapper required by the patterns.
-	 */
 	public function is_row_wrapper_required( Row_Context $context ): bool {
 		$field_meta     = $context->get_field_meta();
 		$vendor_name    = $field_meta->get_vendor_name();
@@ -52,6 +51,7 @@ final class Row_Policy {
 			$patterns       = $context->get_pattern_container();
 			$field_settings = $context->get_field_settings();
 			$row_type       = $context->get_row_type();
+
 			$pattern_tag    = $patterns->field_wrapper_tag( $field_settings, $row_type );
 			$is_pattern_tag = strlen( $pattern_tag ) > 0;
 
@@ -81,5 +81,41 @@ final class Row_Policy {
 		$patterns = $context->get_pattern_container();
 
 		return $patterns->is_label_out_of_row();
+	}
+
+	public function row_wrapper_tag( Row_Context $context ): string {
+		$patterns       = $context->get_pattern_container();
+		$field_settings = $context->get_field_settings();
+		$row_type       = $context->get_row_type();
+
+		$pattern_tag = $patterns->row_wrapper_tag( $field_settings, $row_type );
+		$is_filled   = strlen( $pattern_tag ) > 0;
+
+		return $is_filled ?
+			$pattern_tag :
+			'div';
+	}
+
+	public function field_wrapper_tag( Row_Context $context ): string {
+		$patterns       = $context->get_pattern_container();
+		$field_settings = $context->get_field_settings();
+		$row_type       = $context->get_row_type();
+
+		$pattern_tag    = $patterns->field_wrapper_tag( $field_settings, $row_type );
+		$is_pattern_tag = strlen( $pattern_tag ) > 0;
+
+		if ( $is_pattern_tag ) {
+			return $pattern_tag;
+		}
+
+		$markup_field  = $context->get_markup_field();
+		$custom_tag    = $markup_field instanceof Markup_Field ?
+			$markup_field->get_custom_field_wrapper_tag() :
+			'';
+		$is_custom_tag = strlen( $custom_tag ) > 0;
+
+		return $is_custom_tag ?
+			$custom_tag :
+			'div';
 	}
 }

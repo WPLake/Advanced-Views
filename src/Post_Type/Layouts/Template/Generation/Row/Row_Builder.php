@@ -14,28 +14,31 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Field_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Label_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Nested_Row_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Naming\Class_Names_Generator;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Inner_Row_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Field_Wrapper_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Outer_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Row_Wrapper_Builder;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Token;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-class Row_Builder {
-	private Field_Provider_Cluster $provider_cluster;
-	private Front_Assets $front_assets;
+class Row_Builder implements Nested_Row_Builder {
 	private Token_Factory_Storage $token_factory_storage;
-	private Row_Policy $policy;
+	private Row_Context_Loader $context_loader;
+	private Inner_Row_Policy $policy;
 	private Field_Builder $field_builder;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
-		$this->provider_cluster      = $provider_cluster;
-		$this->front_assets          = $front_assets;
 		$this->token_factory_storage = $token_factory_storage;
-		$this->policy                = new Row_Policy( $provider_cluster );
+		$this->context_loader        = new Row_Context_Loader( $provider_cluster, $front_assets, $token_factory_storage );
+		$this->policy                = new Inner_Row_Policy( $provider_cluster );
 		$this->field_builder         = new Field_Builder( $this->policy );
 	}
 
@@ -52,14 +55,16 @@ class Row_Builder {
 		Field_Meta $field_meta,
 		string $field_id
 	): array {
-		$context = $this->create_context( $layout_settings, $field_settings );
-
-		$context->set_field_meta( $field_meta )
-			->set_item_settings( $item_settings )
-			->set_field_id( $field_id )
-			->set_row_type( 'field' )
-			->set_patterns( $field_assets );
-		$this->define_markup_field( $context );
+		$context = $this->context_loader->load(
+			$layout_settings,
+			$item_settings,
+			$field_settings,
+			$field_meta,
+			$field_id,
+			'field',
+			'',
+			$field_assets
+		);
 
 		return $this->field_builder->compose_field( $context, $this );
 	}
@@ -79,16 +84,15 @@ class Row_Builder {
 		string $field_id,
 		?array $custom_nodes = null
 	): array {
-		$field_assets = $this->resolve_field_assets( $field_settings );
-
-		$context = $this->create_context( $layout_settings, $field_settings )
-						->set_field_meta( $field_meta )
-						->set_item_settings( $item_settings )
-						->set_field_id( $field_id )
-						->set_row_type( $row_type )
-						->set_row_suffix( $row_suffix )
-						->set_patterns( $field_assets );
-		$this->define_markup_field( $context );
+		$context = $this->context_loader->load(
+			$layout_settings,
+			$item_settings,
+			$field_settings,
+			$field_meta,
+			$field_id,
+			$row_type,
+			$row_suffix
+		);
 
 		$content = $this->compose_content( $context, $custom_nodes );
 
@@ -99,33 +103,43 @@ class Row_Builder {
 	}
 
 	/**
-	 * @return Template_Pattern[]
+	 * A top-level row of the layout: shown only if the field has a value (or always, if it's shown when empty).
 	 */
-	protected function resolve_field_assets( Field_Settings $field_settings ): array {
-		$vendor_name  = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
-		$front_assets = $this->provider_cluster->get_field_front_assets( $vendor_name, $field_settings );
-
-		return $this->front_assets->resolve_template_patterns( $front_assets );
-	}
-
-	protected function create_context( Layout_Settings $layout_settings, Field_Settings $field_settings ): Row_Context {
+	public function compose_row_if(
+		string $row_type,
+		bool $is_shown_when_empty,
+		Layout_Settings $layout_settings,
+		Item_Settings $item_settings,
+		Field_Meta $field_meta
+	): IF_Token {
 		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
+		$field_id      = $item_settings->field->get_template_field_id();
 
-		return new Row_Context(
+		$body = $this->compose_row(
+			$row_type,
+			'',
 			$layout_settings,
-			$field_settings,
-			$token_factory
+			$item_settings,
+			$item_settings->field,
+			$field_meta,
+			$field_id
 		);
-	}
 
-	protected function define_markup_field( Row_Context $context ): void {
-		$field_settings = $context->get_field_settings();
-		$field_meta     = $context->get_field_meta();
-		$vendor_name    = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
-		$field_type     = $field_meta->get_type();
-		$markup_field   = $this->provider_cluster->get_markup_field_instance( $vendor_name, $field_type );
+		$value_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( 'value' );
+		$condition = $is_shown_when_empty ?
+			$token_factory->literal( true ) :
+			$value_var;
 
-		$context->set_markup_field( $markup_field );
+		$branch = $token_factory
+			->if_branch()
+			->set_condition( $condition )
+			->set_body( $body );
+
+		return $token_factory
+			->if()
+			->set_if_branch( $branch );
 	}
 
 	/**
@@ -136,12 +150,9 @@ class Row_Builder {
 	 * @return Html_Node[]
 	 */
 	protected function compose_content( Row_Context $context, ?array $custom_nodes ): array {
-		$field_context = $context
-			->clone()
-			->set_row_type( 'field' );
-		$field_nodes   = is_array( $custom_nodes ) ?
+		$field_nodes = is_array( $custom_nodes ) ?
 			$custom_nodes :
-			$this->field_builder->compose_field( $field_context, $this );
+			$this->field_builder->compose_field( $context->with_row_type( 'field' ), $this );
 
 		$layout_settings = $context->get_layout_settings();
 		$field_settings  = $context->get_field_settings();
@@ -151,10 +162,8 @@ class Row_Builder {
 		$patterns     = $context->get_pattern_container();
 		$field_outers = $patterns->field_outers( $layout_settings, $field_settings, $field_id, $row_type );
 
-		$token_factory = $context->get_token_factory();
-
 		return Outer_Builder::compose_outers(
-			$token_factory,
+			$context->get_token_factory(),
 			$field_outers,
 			$field_nodes
 		);
@@ -169,8 +178,25 @@ class Row_Builder {
 		$has_field_wrapper = $this->policy->has_field_wrapper( $context );
 
 		if ( $has_field_wrapper ) {
-			$field_wrapper = Field_Wrapper_Builder::compose_wrapper( $context, $has_row_wrapper )
-													->content( ...$content );
+			$field_settings = $context->get_field_settings();
+
+			$attrs         = $context->get_pattern_container()->field_wrapper_attrs( $field_settings, $context->get_field_id() );
+			$pattern_class = string( $attrs, 'class' );
+			unset( $attrs['class'] );
+
+			$classes = Class_Names_Generator::field_wrapper(
+				$context->get_layout_settings(),
+				$field_settings,
+				$context->get_row_suffix(),
+				$has_row_wrapper,
+				$pattern_class
+			);
+
+			$field_wrapper = Field_Wrapper_Builder::compose_wrapper(
+				$this->policy->field_wrapper_tag( $context ),
+				$classes,
+				$attrs
+			)->content( ...$content );
 
 			return array( $field_wrapper );
 		}
@@ -202,13 +228,32 @@ class Row_Builder {
 		);
 
 		if ( $has_row_wrapper ) {
-			$row_wrapper = Row_Wrapper_Builder::compose_wrapper( $context )
-											->content( ...$row_layer );
+			$row_wrapper = $this->compose_row_wrapper( $context )
+								->content( ...$row_layer );
 
 			$row_layer = array( $row_wrapper );
 		}
 
 		return array( ...$label_outside, ...$row_layer );
+	}
+
+	protected function compose_row_wrapper( Row_Context $context ): Html_Tag {
+		$row_type       = $context->get_row_type();
+		$field_settings = $context->get_field_settings();
+
+		$pattern_class = $context->get_pattern_container()->row_wrapper_class( $row_type );
+		$classes       = Class_Names_Generator::row_wrapper(
+			$context->get_layout_settings(),
+			$field_settings,
+			$context->get_row_suffix(),
+			$row_type,
+			$pattern_class
+		);
+
+		return Row_Wrapper_Builder::compose_wrapper(
+			$this->policy->row_wrapper_tag( $context ),
+			$classes
+		);
 	}
 
 	/**
@@ -218,7 +263,15 @@ class Row_Builder {
 		$has_label = $this->policy->has_label( $context );
 
 		if ( $has_label ) {
-			return array( Label_Builder::compose_label( $context ) );
+			$classes = Class_Names_Generator::label( $context->get_layout_settings(), $context->get_field_settings() );
+
+			return array(
+				Label_Builder::compose_label(
+					$context->get_token_factory(),
+					$context->get_field_id(),
+					$classes
+				),
+			);
 		}
 
 		return array();
