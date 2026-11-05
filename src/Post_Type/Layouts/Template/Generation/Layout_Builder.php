@@ -31,7 +31,7 @@ final class Layout_Builder {
 	public function compose_layout( Layout_Settings $layout_settings ): Html_Tag {
 		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
 
-		$root_class = Classes_Generator::root( $token_factory, $layout_settings );
+		$root_class = Classes_Generator::generate_root_class( $token_factory, $layout_settings );
 		$rows       = $this->rows( $layout_settings );
 
 		return $this->web_component_factory

@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Wrappers;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -14,7 +14,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-final class Outer_Builder {
+final class Wrapper_Builder {
 	/**
 	 * @param Html_Wrapper[] $outers
 	 * @param Html_Node[] $nodes

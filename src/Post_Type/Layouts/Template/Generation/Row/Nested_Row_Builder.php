@@ -12,21 +12,17 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Field\Field_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Field\Label_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context_Loader;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Classes_Generator;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Inner_Row_Policy;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Wrappers\Field_Wrapper_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Wrappers\Outer_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Wrappers\Row_Wrapper_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context_Loader;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Wrapper_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Token;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
@@ -171,7 +167,7 @@ class Nested_Row_Builder implements Row_Builder {
 			$row_type
 		);
 
-		return Outer_Builder::compose_outers(
+		return Wrapper_Builder::compose_outers(
 			$token_factory,
 			$field_outers,
 			$field_nodes
@@ -197,30 +193,21 @@ class Nested_Row_Builder implements Row_Builder {
 	}
 
 	protected function compose_field_wrapper( Row_Context $context, bool $has_row_wrapper ): Html_Tag {
-		$layout_settings = $context->get_layout_settings();
-		$field_settings  = $context->get_field_settings();
-		$field_id        = $context->get_field_id();
-		$row_suffix      = $context->get_row_suffix();
-		$patterns        = $context->get_pattern_container();
+		$field_settings = $context->get_field_settings();
+		$field_id       = $context->get_field_id();
+		$patterns       = $context->get_pattern_container();
 
-		$attrs         = $patterns->field_wrapper_attrs( $field_settings, $field_id );
-		$pattern_class = string( $attrs, 'class' );
+		$attrs = $patterns->field_wrapper_attrs( $field_settings, $field_id );
 		unset( $attrs['class'] );
 
-		$classes = Classes_Generator::field_wrapper(
-			$layout_settings,
-			$field_settings,
-			$row_suffix,
-			$has_row_wrapper,
-			$pattern_class
-		);
+		$classes = Classes_Generator::generate_field_wrapper_class( $context, $has_row_wrapper );
 		$tag     = $this->policy->field_wrapper_tag( $context );
 
-		return Field_Wrapper_Builder::compose_wrapper(
-			$tag,
-			$classes,
-			$attrs
-		);
+		$class_attrs = array( 'class' => $classes );
+		$all_attrs   = array_merge( $class_attrs, $attrs );
+
+		return tag( $tag )
+			->attributes( $all_attrs );
 	}
 
 	/**
@@ -260,23 +247,13 @@ class Nested_Row_Builder implements Row_Builder {
 	}
 
 	protected function compose_row_wrapper( Row_Context $context ): Html_Tag {
-		$layout_settings = $context->get_layout_settings();
-		$field_settings  = $context->get_field_settings();
-		$row_suffix      = $context->get_row_suffix();
-		$row_type        = $context->get_row_type();
-		$patterns        = $context->get_pattern_container();
+		$classes = Classes_Generator::generate_row_wrapper_class( $context );
+		$tag     = $this->policy->row_wrapper_tag( $context );
 
-		$pattern_class = $patterns->row_wrapper_class( $row_type );
-		$classes       = Classes_Generator::row_wrapper(
-			$layout_settings,
-			$field_settings,
-			$row_suffix,
-			$row_type,
-			$pattern_class
-		);
-		$tag           = $this->policy->row_wrapper_tag( $context );
+		$attributes = array( 'class' => $classes );
 
-		return Row_Wrapper_Builder::compose_wrapper( $tag, $classes );
+		return tag( $tag )
+			->attributes( $attributes );
 	}
 
 	/**
@@ -286,13 +263,11 @@ class Nested_Row_Builder implements Row_Builder {
 		$has_label = $this->policy->has_label( $context );
 
 		if ( $has_label ) {
-			$layout_settings = $context->get_layout_settings();
-			$field_settings  = $context->get_field_settings();
-			$token_factory   = $context->get_token_factory();
-			$field_id        = $context->get_field_id();
+			$token_factory = $context->get_token_factory();
+			$field_id      = $context->get_field_id();
 
-			$classes = Classes_Generator::label( $layout_settings, $field_settings );
-			$label   = Label_Builder::compose_label( $token_factory, $field_id, $classes );
+			$classes = Classes_Generator::generate_label_class( $context );
+			$label   = Field_Builder::compose_label( $token_factory, $field_id, $classes );
 
 			return array( $label );
 		}
