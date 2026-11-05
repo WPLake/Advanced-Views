@@ -12,6 +12,9 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 final class Field_Wrapper_Builder {
 	private Inner_Row_Policy $policy;
 
@@ -19,7 +22,23 @@ final class Field_Wrapper_Builder {
 		$this->policy = $policy;
 	}
 
-	public function compose( Row_Context $context, bool $has_row_wrapper ): Html_Tag {
+	/**
+	 * @param Html_Node[] $nodes
+	 *
+	 * @return Html_Node[]
+	 */
+	public function wrap( Row_Context $context, array $nodes ): array {
+		if ( $this->policy->has_field_wrapper( $context ) ) {
+			$has_row_wrapper = $this->policy->has_row_wrapper( $context );
+			$wrapper         = $this->compose_wrapper( $context, $has_row_wrapper );
+
+			return array( $wrapper->content( ...$nodes ) );
+		}
+
+		return $nodes;
+	}
+
+	protected function compose_wrapper( Row_Context $context, bool $has_row_wrapper ): Html_Tag {
 		$field_settings = $context->get_field_settings();
 		$field_id       = $context->get_field_id();
 		$patterns       = $context->get_pattern_container();

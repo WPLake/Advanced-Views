@@ -6,9 +6,9 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Policy\Row_Policy;
@@ -38,7 +38,7 @@ final class Layout_Builder {
 		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
 
 		$root_class = $this->generate_root_class( $token_factory, $layout_settings );
-		$rows       = $this->rows( $layout_settings );
+		$rows       = $this->compose_rows( $layout_settings );
 
 		return $this->web_component_factory
 			->create_web_component( $layout_settings, $rows )
@@ -48,7 +48,7 @@ final class Layout_Builder {
 	/**
 	 * @return IF_Token[]
 	 */
-	protected function rows( Layout_Settings $layout_settings ): array {
+	protected function compose_rows( Layout_Settings $layout_settings ): array {
 		$rows = array();
 
 		foreach ( $layout_settings->items as $item ) {

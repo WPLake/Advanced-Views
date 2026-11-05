@@ -93,10 +93,9 @@ class Nested_Row_Builder implements Row_Builder {
 
 		$content = $this->compose_content( $context, $custom_nodes );
 
-		$has_row_wrapper = $this->policy->has_row_wrapper( $context );
-		$field_layer     = $this->compose_field_layer( $context, $has_row_wrapper, $content );
+		$field_layer = $this->field_wrapper_builder->wrap( $context, $content );
 
-		return $this->compose_row_layer( $context, $has_row_wrapper, $field_layer );
+		return $this->compose_row_layer( $context, $field_layer );
 	}
 
 	/**
@@ -134,57 +133,22 @@ class Nested_Row_Builder implements Row_Builder {
 	}
 
 	/**
-	 * @param Html_Node[] $content
-	 *
-	 * @return Html_Node[]
-	 */
-	protected function compose_field_layer( Row_Context $context, bool $has_row_wrapper, array $content ): array {
-		$has_field_wrapper = $this->policy->has_field_wrapper( $context );
-
-		if ( $has_field_wrapper ) {
-			$wrapper       = $this->field_wrapper_builder->compose( $context, $has_row_wrapper );
-			$field_wrapper = $wrapper->content( ...$content );
-
-			return array( $field_wrapper );
-		}
-
-		return $content;
-	}
-
-	/**
-	 * The label (inside or outside of the row) and the row wrapper around the field layer.
+	 * The label (inside or outside of the row wrapper) and the row wrapper around the field layer.
 	 *
 	 * @param Html_Node[] $field_layer
 	 *
 	 * @return Html_Node[]
 	 */
-	protected function compose_row_layer( Row_Context $context, bool $has_row_wrapper, array $field_layer ): array {
+	protected function compose_row_layer( Row_Context $context, array $field_layer ): array {
 		$label_nodes = $this->compose_label_nodes( $context );
 
-		$is_label_out  = $this->policy->is_label_out_of_row( $context );
-		$label_outside = $is_label_out ?
-			$label_nodes :
-			array();
-		$label_inside  = $is_label_out ?
-			array() :
-			$label_nodes;
+		if ( $this->policy->is_label_out_of_row( $context ) ) {
+			$wrapped = $this->row_wrapper_builder->wrap( $context, $field_layer );
 
-		$row_layer = array(
-			...$label_inside,
-			...$field_layer,
-		);
-
-		if ( $has_row_wrapper ) {
-			$wrapper     = $this->row_wrapper_builder->compose( $context );
-			$row_wrapper = $wrapper->content( ...$row_layer );
-
-			$row_layer = array( $row_wrapper );
+			return array( ...$label_nodes, ...$wrapped );
 		}
 
-		return array(
-			...$label_outside,
-			...$row_layer,
-		);
+		return $this->row_wrapper_builder->wrap( $context, array( ...$label_nodes, ...$field_layer ) );
 	}
 
 	/**

@@ -11,6 +11,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 final class Row_Wrapper_Builder {
 	private Inner_Row_Policy $policy;
 
@@ -18,7 +21,22 @@ final class Row_Wrapper_Builder {
 		$this->policy = $policy;
 	}
 
-	public function compose( Row_Context $context ): Html_Tag {
+	/**
+	 * @param Html_Node[] $nodes
+	 *
+	 * @return Html_Node[]
+	 */
+	public function wrap( Row_Context $context, array $nodes ): array {
+		if ( $this->policy->has_row_wrapper( $context ) ) {
+			$wrapper = $this->compose_wrapper( $context );
+
+			return array( $wrapper->content( ...$nodes ) );
+		}
+
+		return $nodes;
+	}
+
+	protected function compose_wrapper( Row_Context $context ): Html_Tag {
 		$classes = $this->generate_class( $context );
 		$tag     = $this->policy->row_wrapper_tag( $context );
 
