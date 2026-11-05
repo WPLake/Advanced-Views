@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -10,10 +10,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 use Org\Wplake\Advanced_Views\Template\Html\Composite_Attribute;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
@@ -25,59 +23,46 @@ use function Org\Wplake\Advanced_Views\Template\Html\compose_attribute;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-class Layout_Template {
-	/**
-	 * Cache
-	 *
-	 * @var array<string, string>
-	 */
-	private array $markups_safe;
-	private Row_Builder $field_markup;
+class Layout_Builder {
+	private Row_Builder $row_builder;
 	private Field_Provider_Cluster $provider_cluster;
 	private Token_Factory_Storage $token_factory_storage;
-	protected Web_Component_Renderer $renderer;
 	protected Web_Component_Factory $web_component_factory;
 
-	public function __construct( Row_Builder $field_markup, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage, Web_Component_Renderer $renderer, Web_Component_Factory $web_component_factory ) {
-		$this->field_markup          = $field_markup;
+	public function __construct( Row_Builder $row_builder, Field_Provider_Cluster $provider_cluster, Token_Factory_Storage $token_factory_storage, Web_Component_Factory $web_component_factory ) {
+		$this->row_builder           = $row_builder;
 		$this->provider_cluster      = $provider_cluster;
 		$this->token_factory_storage = $token_factory_storage;
-		$this->markups_safe          = array();
-		$this->renderer              = $renderer;
 		$this->web_component_factory = $web_component_factory;
 	}
 
-	public function print_markup(
-		Layout_Settings $layout_settings,
-		int $page_id,
-		string $view_markup_safe = '',
-		bool $is_skip_cache = false,
-		bool $is_ignore_custom_markup = false
-	): void {
-		$view_markup_safe = ( strlen( $view_markup_safe ) > 0 ||
-								$is_ignore_custom_markup ) ?
-			$view_markup_safe :
-			trim( $layout_settings->custom_markup );
+	public function compose_layout( Layout_Settings $layout_settings ): Html_Tag {
+		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
 
-		if ( 0 === strlen( $view_markup_safe ) ) {
-			ob_start();
-			$this->print_safe_markup( $layout_settings, $is_skip_cache );
-			$view_markup_safe = (string) ob_get_clean();
+		$root_class = $this->root_class( $token_factory, $layout_settings );
+		$rows       = $this->rows( $layout_settings );
 
-			// remove the empty class attribute if the generation is disabled.
-			if ( Layout_Settings::CLASS_GENERATION_NONE === $layout_settings->classes_generation ) {
-				$view_markup_safe = str_replace( ' class=""', '', $view_markup_safe );
+		return $this->web_component_factory->create_web_component( $layout_settings, $rows )
+			->attributes( array( 'class' => $root_class ) );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function rows( Layout_Settings $layout_settings ): array {
+		$rows = array();
+
+		foreach ( $layout_settings->items as $item ) {
+			$row = $this->row_if( $layout_settings, $item->field->get_field_meta(), $item );
+
+			if ( null === $row ) {
+				continue;
 			}
 
-			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $view_markup_safe;
-		} else {
-			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $view_markup_safe;
+			$rows[] = $row;
 		}
 
-		$layout_id                        = $layout_settings->get_unique_id( true );
-		$this->markups_safe[ $layout_id ] = $view_markup_safe;
+		return $rows;
 	}
 
 	protected function row_if(
@@ -121,7 +106,7 @@ class Layout_Template {
 			$field_meta->get_type() :
 			'row';
 
-		$markup = $this->field_markup->compose_row(
+		$markup = $this->row_builder->compose_row(
 			$row_type,
 			'',
 			$layout_settings,
@@ -140,51 +125,6 @@ class Layout_Template {
 		return $token_factory->if_branch()
 			->set_condition( $condition )
 			->set_body( $markup );
-	}
-
-	protected function generate_markup( Layout_Settings $layout_settings ): void {
-		$token_factory = $this->token_factory_storage->resolve_token_factory( $layout_settings->template_engine );
-
-		$root_class = $this->root_class( $token_factory, $layout_settings );
-
-		$root = $this->web_component_factory->create_web_component( $layout_settings, $this->rows( $layout_settings ) )
-			->attributes( array( 'class' => $root_class ) );
-
-		$html = $this->renderer->render_component( $root );
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $html;
-	}
-
-	/**
-	 * @return Html_Node[]
-	 */
-	protected function rows( Layout_Settings $layout_settings ): array {
-		$rows = array();
-
-		foreach ( $layout_settings->items as $item ) {
-			$row = $this->row_if( $layout_settings, $item->field->get_field_meta(), $item );
-
-			if ( null === $row ) {
-				continue;
-			}
-
-			$rows[] = $row;
-		}
-
-		return $rows;
-	}
-
-	protected function print_safe_markup( Layout_Settings $layout_settings, bool $is_cache_disabled ): void {
-		$short_unique_id = $layout_settings->get_unique_id( true );
-
-		if ( key_exists( $short_unique_id, $this->markups_safe ) &&
-			! $is_cache_disabled ) {
-			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $this->markups_safe[ $short_unique_id ];
-		} else {
-			$this->generate_markup( $layout_settings );
-		}
 	}
 
 	protected function root_class( Token_Factory $token_factory, Layout_Settings $layout_settings ): Composite_Attribute {
