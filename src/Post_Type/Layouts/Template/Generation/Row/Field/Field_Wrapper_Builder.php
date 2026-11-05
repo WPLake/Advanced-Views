@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row;
+namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Field;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -38,6 +38,31 @@ final class Field_Wrapper_Builder {
 		return $nodes;
 	}
 
+	public static function resolve_field_name( Row_Context $context ): string {
+		$layout_settings = $context->get_layout_settings();
+		$field_settings  = $context->get_field_settings();
+		$bem_name        = $layout_settings->get_bem_name();
+
+		return sprintf(
+			'%s__%s%s',
+			$bem_name,
+			$field_settings->id,
+			$context->get_row_suffix()
+		);
+	}
+
+	/**
+	 * @param string[] $classes
+	 */
+	public static function get_filled_classes( array $classes ): string {
+		$filled_classes = array_filter(
+			$classes,
+			static fn( string $class_name ): bool => strlen( $class_name ) > 0
+		);
+
+		return join( ' ', $filled_classes );
+	}
+
 	protected function compose_wrapper( Row_Context $context, bool $has_row_wrapper ): Html_Tag {
 		$field_settings = $context->get_field_settings();
 		$field_id       = $context->get_field_id();
@@ -70,7 +95,7 @@ final class Field_Wrapper_Builder {
 			$this->resolve_classes( $context, $has_row_wrapper ) :
 			array();
 
-		return Row_Class_Names::join_with_external( $classes, $external_class );
+		return self::get_filled_classes( array( ...$classes, $external_class ) );
 	}
 
 	/**
@@ -86,7 +111,7 @@ final class Field_Wrapper_Builder {
 			$bem_name,
 			$field_settings->id
 		);
-		$field_name_class  = Row_Class_Names::field_name( $context );
+		$field_name_class  = self::resolve_field_name( $context );
 
 		$classes = array(
 			$has_row_wrapper ?
