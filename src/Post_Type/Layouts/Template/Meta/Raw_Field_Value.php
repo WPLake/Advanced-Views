@@ -15,7 +15,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 
 final class Raw_Field_Value extends Field_Data {
 	/**
@@ -39,13 +38,12 @@ final class Raw_Field_Value extends Field_Data {
 		?Item_Settings $item_settings,
 		Field_Settings $field_settings,
 		Field_Meta $field_meta,
-		Row_Builder $field_markup,
 		Layout $layout,
 		Source $source,
 		Markup_Field $markup_field,
 		Template_Field_Value $field_variables
 	) {
-		parent::__construct( $layout_settings, $item_settings, $field_settings, $field_meta, $field_markup, $markup_field );
+		parent::__construct( $layout_settings, $item_settings, $field_settings, $field_meta, $markup_field );
 
 		$this->layout                 = $layout;
 		$this->source                 = $source;

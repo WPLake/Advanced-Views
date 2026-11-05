@@ -32,6 +32,7 @@ final class Template_Field_Meta extends Field_Data {
 	private bool $is_with_field_wrapper;
 	private bool $is_with_row_wrapper;
 	private Token_Factory $token_factory;
+	private Row_Builder $field_markup;
 
 	public function __construct(
 		Layout_Settings $layout_settings,
@@ -47,7 +48,6 @@ final class Template_Field_Meta extends Field_Data {
 			$item_settings,
 			$field_settings,
 			$field_meta,
-			$field_markup,
 			$markup_field
 		);
 
@@ -56,6 +56,11 @@ final class Template_Field_Meta extends Field_Data {
 		$this->is_with_field_wrapper = false;
 		$this->is_with_row_wrapper   = false;
 		$this->token_factory         = $token_factory;
+		$this->field_markup          = $field_markup;
+	}
+
+	public function get_field_markup(): Row_Builder {
+		return $this->field_markup;
 	}
 
 	/**

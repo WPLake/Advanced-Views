@@ -10,7 +10,6 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row_Builder;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -20,7 +19,6 @@ class Field_Data {
 	private ?Item_Settings $item_settings;
 	private Field_Settings $field_settings;
 	private Field_Meta $field_meta;
-	private Row_Builder $field_markup;
 	private Markup_Field $markup_field;
 
 	public function __construct(
@@ -28,14 +26,12 @@ class Field_Data {
 		?Item_Settings $item_settings,
 		Field_Settings $field_settings,
 		Field_Meta $field_meta,
-		Row_Builder $field_markup,
 		Markup_Field $markup_field
 	) {
 		$this->layout_settings = $layout_settings;
 		$this->item_settings   = $item_settings;
 		$this->field_settings  = $field_settings;
 		$this->field_meta      = $field_meta;
-		$this->field_markup    = $field_markup;
 		$this->markup_field    = $markup_field;
 	}
 
@@ -49,10 +45,6 @@ class Field_Data {
 
 	public function get_field_data(): Field_Settings {
 		return $this->field_settings;
-	}
-
-	public function get_field_markup(): Row_Builder {
-		return $this->field_markup;
 	}
 
 	public function get_field_meta(): Field_Meta {
