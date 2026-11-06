@@ -35,6 +35,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Sto
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
+use WP_Post;
 use RWMB_Field;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
@@ -493,87 +494,31 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	 * @param mixed[] $meta_data
 	 */
 	public function import_group( array $group_data, array $meta_data ): ?string {
-		if ( false === function_exists( 'rwmb_get_registry' ) ) {
-			return null;
+		$registry = $this->get_registry();
+
+		$prepared_data = is_object( $registry ) ?
+			$this->prepare_group_data( $group_data ) :
+			null;
+
+		$post = is_array( $prepared_data ) ?
+			$this->insert_group_post( $prepared_data ) :
+			null;
+
+		$is_ready = is_object( $post ) &&
+					is_object( $registry ) &&
+					method_exists( $registry, 'make' );
+
+		if ( $is_ready ) {
+			$this->save_group_meta( $post->ID, $prepared_data );
+
+			// manually signup in MetaBox registry,
+			// otherwise won't be available for query within this request.
+			$registry->make( $prepared_data );
+
+			return $post->post_name;
 		}
 
-		$logger   = $this->get_logger();
-		$registry = rwmb_get_registry( 'meta_box' );
-
-		$is_unusable = false === is_object( $registry ) || false === method_exists( $registry, 'make' );
-
-		if ( $is_unusable ) {
-			return null;
-		}
-
-		$post_name = $this->get_string_arg_if_present( 'post_name', $group_data );
-
-		if ( null === $post_name ) {
-			$logger->warning(
-				'failed to get post_name from MetaBox group data',
-				array(
-					'group_data' => $group_data,
-				)
-			);
-
-			return null;
-		}
-
-		$existing_post = get_page_by_path( $post_name, OBJECT, 'meta-box' );
-
-		// set existing post id, so it'll be updated instead of inserted.
-		if ( null !== $existing_post ) {
-			$group_data['ID'] = $existing_post->ID;
-		}
-
-		// @phpstan-ignore-next-line
-		$post_id = wp_insert_post( $group_data, true );
-
-		if ( is_wp_error( $post_id ) ) {
-			$logger->warning(
-				'failed to insert MetaBox group',
-				array(
-					'error_message' => $post_id->get_error_message(),
-					'error_code'    => $post_id->get_error_code(),
-					'group_data'    => $group_data,
-				)
-			);
-
-			return null;
-		}
-
-		$post = get_post( $post_id );
-
-		if ( null === $post ) {
-			$logger->warning(
-				'failed to get MetaBox group by id',
-				array(
-					'post_id' => $post_id,
-				)
-			);
-
-			return null;
-		}
-
-		$meta_keys = self::get_export_meta_keys();
-
-		foreach ( $meta_keys as $meta_key ) {
-			if ( ! key_exists( $meta_key, $group_data ) ) {
-				continue;
-			}
-
-			update_post_meta(
-				$post_id,
-				$meta_key,
-				$group_data[ $meta_key ]
-			);
-		}
-
-		// manually signup in MetaBox registry,
-		// otherwise won't be available for query within this request.
-		$registry->make( $group_data );
-
-		return $post->post_name;
+		return null;
 	}
 
 	/**
@@ -657,6 +602,101 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		}
 
 		return $args;
+	}
+
+	protected function get_registry(): ?object {
+		$registry = function_exists( 'rwmb_get_registry' ) ?
+			rwmb_get_registry( 'meta_box' ) :
+			null;
+
+		$is_usable = is_object( $registry ) && method_exists( $registry, 'make' );
+
+		return $is_usable ?
+			$registry :
+			null;
+	}
+
+	/**
+	 * Returns the data with the existing post id (if any), so the post is updated instead of inserted.
+	 *
+	 * @param mixed[] $group_data
+	 *
+	 * @return mixed[]|null
+	 */
+	protected function prepare_group_data( array $group_data ): ?array {
+		$post_name = $this->get_string_arg_if_present( 'post_name', $group_data );
+
+		if ( null === $post_name ) {
+			$logger      = $this->get_logger();
+			$log_context = array(
+				'group_data' => $group_data,
+			);
+
+			$logger->warning( 'failed to get post_name from MetaBox group data', $log_context );
+
+			return null;
+		}
+
+		$existing_post = get_page_by_path( $post_name, OBJECT, 'meta-box' );
+
+		if ( null !== $existing_post ) {
+			$group_data['ID'] = $existing_post->ID;
+		}
+
+		return $group_data;
+	}
+
+	/**
+	 * @param mixed[] $group_data
+	 */
+	protected function insert_group_post( array $group_data ): ?WP_Post {
+		$logger = $this->get_logger();
+
+		// @phpstan-ignore-next-line
+		$post_id = wp_insert_post( $group_data, true );
+
+		if ( is_wp_error( $post_id ) ) {
+			$log_context = array(
+				'error_message' => $post_id->get_error_message(),
+				'error_code'    => $post_id->get_error_code(),
+				'group_data'    => $group_data,
+			);
+
+			$logger->warning( 'failed to insert MetaBox group', $log_context );
+
+			return null;
+		}
+
+		$post = get_post( $post_id );
+
+		if ( null === $post ) {
+			$log_context = array(
+				'post_id' => $post_id,
+			);
+
+			$logger->warning( 'failed to get MetaBox group by id', $log_context );
+		}
+
+		return $post;
+	}
+
+	/**
+	 * @param mixed[] $group_data
+	 */
+	protected function save_group_meta( int $post_id, array $group_data ): void {
+		$meta_keys = self::get_export_meta_keys();
+
+		foreach ( $meta_keys as $meta_key ) {
+			if ( ! key_exists( $meta_key, $group_data ) ) {
+				continue;
+			}
+
+			update_post_meta(
+				$post_id,
+				$meta_key,
+				$group_data[ $meta_key ]
+			);
+		}
 	}
 
 	/**

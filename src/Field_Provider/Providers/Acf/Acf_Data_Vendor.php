@@ -394,19 +394,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 						continue;
 					}
 
-					$sub_fields = $this->get_array_arg( 'sub_fields', $group_field );
-					$sub_fields = $this->paste_clone_fields( $sub_fields );
-
-					// by default, layouts don't have any type.
-					$layouts = $this->get_array_arg( 'layouts', $group_field );
-					foreach ( $layouts as &$layout ) {
-						if ( false === is_array( $layout ) ) {
-							continue;
-						}
-						$layout['type'] = '_flexible_content_layout';
-					}
-
-					$sub_fields = array_merge( $sub_fields, $layouts );
+					$sub_fields = $this->get_sub_fields( $group_field );
 
 					$is_with_sub_fields = in_array(
 						$field_type,
@@ -462,54 +450,15 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 						function_exists( 'acf_get_fields' ) &&
 						function_exists( 'acf_prepare_internal_post_type_for_export' );
 
-		if ( ! $is_supported ) {
-			return null;
+		$group_info = $is_supported ?
+			$this->get_group_with_fields( $group_id ) :
+			null;
+
+		if ( is_array( $group_info ) ) {
+			return $this->prepare_group_for_export( $group_info, $group_id );
 		}
 
-		$logger     = $this->get_logger();
-		$group_info = acf_get_field_group( $group_id );
-
-		if ( false === is_array( $group_info ) ) {
-			$logger->warning(
-				'failed to get ACF field group info',
-				array(
-					'group_id' => $group_id,
-				)
-			);
-
-			return null;
-		}
-
-		// fields are missing (empty) in the 'acf_get_field_group' call.
-		$fields_info = acf_get_fields( $group_info );
-
-		if ( false === is_array( $fields_info ) ) {
-			$logger->warning(
-				'failed to get ACF fields info',
-				array(
-					'group_id' => $group_id,
-				)
-			);
-
-			return null;
-		}
-
-		$group_info['fields'] = $fields_info;
-
-		$group_info = acf_prepare_internal_post_type_for_export( $group_info );
-
-		if ( false === is_array( $group_info ) ) {
-			$logger->warning(
-				'failed to prepare ACF field group for export',
-				array(
-					'group_id' => $group_id,
-				)
-			);
-
-			return null;
-		}
-
-		return $group_info;
+		return null;
 	}
 
 	/**
@@ -589,6 +538,67 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	}
 
 	/**
+	 * @return array<string|int,mixed>|null
+	 */
+	protected function get_group_with_fields( string $group_id ): ?array {
+		if ( false === function_exists( 'acf_get_field_group' ) || false === function_exists( 'acf_get_fields' ) ) {
+			return null;
+		}
+
+		$logger      = $this->get_logger();
+		$log_context = array(
+			'group_id' => $group_id,
+		);
+
+		$group_info = acf_get_field_group( $group_id );
+
+		if ( false === is_array( $group_info ) ) {
+			$logger->warning( 'failed to get ACF field group info', $log_context );
+
+			return null;
+		}
+
+		// fields are missing (empty) in the 'acf_get_field_group' call.
+		$fields_info = acf_get_fields( $group_info );
+
+		if ( false === is_array( $fields_info ) ) {
+			$logger->warning( 'failed to get ACF fields info', $log_context );
+
+			return null;
+		}
+
+		$group_info['fields'] = $fields_info;
+
+		return $group_info;
+	}
+
+	/**
+	 * @param array<string|int,mixed> $group_info
+	 *
+	 * @return mixed[]|null
+	 */
+	protected function prepare_group_for_export( array $group_info, string $group_id ): ?array {
+		if ( false === function_exists( 'acf_prepare_internal_post_type_for_export' ) ) {
+			return null;
+		}
+
+		$prepared_info = acf_prepare_internal_post_type_for_export( $group_info );
+
+		if ( is_array( $prepared_info ) ) {
+			return $prepared_info;
+		}
+
+		$logger      = $this->get_logger();
+		$log_context = array(
+			'group_id' => $group_id,
+		);
+
+		$logger->warning( 'failed to prepare ACF field group for export', $log_context );
+
+		return null;
+	}
+
+	/**
 	 * @param array<string|int,mixed> $fields
 	 *
 	 * @return array<string|int,mixed>
@@ -596,6 +606,28 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	protected function paste_clone_fields( array $fields ): array {
 		// stub for the Pro version (for clone fields).
 		return $fields;
+	}
+
+	/**
+	 * @param array<string|int,mixed> $group_field
+	 *
+	 * @return array<string|int,mixed>
+	 */
+	protected function get_sub_fields( array $group_field ): array {
+		$sub_fields = $this->get_array_arg( 'sub_fields', $group_field );
+		$sub_fields = $this->paste_clone_fields( $sub_fields );
+
+		$layouts = $this->get_array_arg( 'layouts', $group_field );
+		// by default, layouts don't have any type.
+		foreach ( $layouts as &$layout ) {
+			if ( false === is_array( $layout ) ) {
+				continue;
+			}
+
+			$layout['type'] = '_flexible_content_layout';
+		}
+
+		return array_merge( $sub_fields, $layouts );
 	}
 
 	/**
@@ -648,20 +680,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 
 			$field_choices[ $field_key ] = $field_meta;
 
-			$sub_fields = $this->get_array_arg( 'sub_fields', $group_field );
-			$sub_fields = $this->paste_clone_fields( $sub_fields );
-
-			$layouts = $this->get_array_arg( 'layouts', $group_field );
-			// by default, layouts don't have any type.
-			foreach ( $layouts as &$layout ) {
-				if ( false === is_array( $layout ) ) {
-					continue;
-				}
-
-				$layout['type'] = '_flexible_content_layout';
-			}
-
-			$sub_fields = array_merge( $sub_fields, $layouts );
+			$sub_fields = $this->get_sub_fields( $group_field );
 
 			if ( array() !== $sub_fields ) {
 				$field_choices = $this->get_field_choices_recursively(

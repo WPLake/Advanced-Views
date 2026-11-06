@@ -763,7 +763,7 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 			$field_class::_TYPE_ :
 			'';
 
-		$candidates = array( $specific, $common );
+		$candidates = array( $common, $specific );
 		$parts      = array_filter(
 			$candidates,
 			static fn( string $part ): bool => strlen( $part ) > 0
