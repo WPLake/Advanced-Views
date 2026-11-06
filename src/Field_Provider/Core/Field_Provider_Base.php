@@ -47,6 +47,17 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 	}
 
 	/**
+	 * @return class-string|''
+	 */
+	protected function get_field_class( string $field_type ): string {
+		$instance = $this->get_markup_field_instance( $field_type );
+
+		return null !== $instance ?
+			get_class( $instance ) :
+			'';
+	}
+
+	/**
 	 * @return string[]
 	 */
 	protected function get_pro_stub_field_types(): array {

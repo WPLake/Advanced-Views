@@ -95,7 +95,6 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	 * @param array<string|int,mixed> $fields
 	 * @param string[] $supported_field_types
 	 * @param string[] $include_only_types
-	 * @param string[] $pro_stub_field_types
 	 *
 	 * @param array<string, Field_Meta> $field_choices
 	 *
@@ -106,7 +105,6 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 		array $fields,
 		array $supported_field_types,
 		array $include_only_types,
-		array $pro_stub_field_types,
 		string $group_id,
 		string $parent_choice_value = ''
 	): array {
@@ -129,10 +127,6 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 
 			$field_meta = new Field_Meta( $this->get_name(), $field_id );
 			$this->fill_field_meta( $field_meta, $group_field );
-			$field_meta->set_label( string( $group_field, 'label' ) );
-			$field_meta->set_identifier( $this->get_string_arg( 'name', $group_field ) );
-			$field_meta->set_type_label( $type );
-			$field_meta->set_is_pro_only( in_array( $type, $pro_stub_field_types, true ) );
 
 			$field_choices[ $field_key ] = $field_meta;
 
@@ -157,7 +151,6 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 					$sub_fields,
 					$supported_field_types,
 					$include_only_types,
-					$pro_stub_field_types,
 					$group_id,
 					$field_key
 				);
@@ -294,7 +287,6 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 		$field_choices = array();
 
 		$supported_field_types = $this->get_supported_field_types();
-		$pro_stub_field_types  = $this->get_pro_stub_field_types();
 
 		foreach ( $this->get_groups() as $group ) {
 			$fields = acf_get_fields( $group );
@@ -307,7 +299,6 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 				$fields,
 				$supported_field_types,
 				$include_only_types,
-				$pro_stub_field_types,
 				$group_id
 			);
 		}
@@ -333,6 +324,10 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 		$field_meta->set_is_native_type( true );
 		$field_meta->set_name( $this->get_string_arg( 'name', $data ) );
 		$field_meta->set_type( $this->get_string_arg( 'type', $data ) );
+		$field_meta->set_label( $this->get_string_arg( 'label', $data ) );
+		$field_meta->set_identifier( $this->get_string_arg( 'name', $data ) );
+		$field_meta->set_field_class( $this->get_field_class( $field_meta->get_type() ) );
+		$field_meta->set_is_pro_only( in_array( $field_meta->get_type(), $this->get_pro_stub_field_types(), true ) );
 		$field_meta->set_return_format( $this->get_string_arg( 'return_format', $data ) );
 		$field_meta->set_choices( $this->get_array_arg( 'choices', $data ) );
 		$field_meta->set_display_format( $this->get_string_arg( 'display_format', $data ) );
@@ -517,7 +512,6 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 					$sub_field_choices,
 					$sub_fields,
 					$supported_field_types,
-					array(),
 					array(),
 					$group_key,
 					$field_key

@@ -127,7 +127,6 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	 * @param array<string|int,mixed> $fields
 	 * @param string[] $supported_field_types
 	 * @param string[] $include_only_types
-	 * @param string[] $pro_stub_field_types
 	 *
 	 * @return array<string, Field_Meta>
 	 */
@@ -136,10 +135,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		array $fields,
 		array $supported_field_types,
 		array $include_only_types,
-		array $pro_stub_field_types,
 		string $group_id,
-		string $repeatable_label,
-		bool $is_repeatable_not_supported,
 		string $parent_choice_value = ''
 	): array {
 		foreach ( $fields as $field ) {
@@ -160,21 +156,8 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 				$this->get_field_key( $group_id, $field_id ) :
 				Field_Settings::create_field_key( $parent_choice_value, $field_id );
 
-			$is_repeatable = $this->get_bool_arg( 'clone', $field );
-			// hidden type doesn't have label.
-			$label = 'hidden' !== $field_type ?
-				string( $field, 'name' ) :
-				__( 'Hidden', 'acf-views' );
-
 			$field_meta = new Field_Meta( $this->get_name(), $field_id );
 			$this->fill_field_meta( $field_meta, $field );
-			$field_meta->set_label( $label );
-			$field_meta->set_identifier( $field_id );
-			$field_meta->set_type_label( $is_repeatable ? $repeatable_label . ' ' . $field_type : $field_type );
-			$field_meta->set_is_pro_only(
-				in_array( $field_type, $pro_stub_field_types, true ) ||
-				( $is_repeatable && $is_repeatable_not_supported )
-			);
 
 			$field_choices[ $field_key ] = $field_meta;
 
@@ -186,10 +169,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 					$sub_fields,
 					$supported_field_types,
 					$include_only_types,
-					$pro_stub_field_types,
 					$group_id,
-					$repeatable_label,
-					$is_repeatable_not_supported,
 					$field_key
 				);
 			}
@@ -450,13 +430,6 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	public function get_field_choices( array $include_only_types = array() ): array {
 		$field_choices = array();
 
-		$repeatable_label     = __( 'repeatable', 'acf-views' );
-		$pro_stub_field_types = $this->get_pro_stub_field_types();
-
-		// we can check if repeatable is supported by checking if group field is a ProStubField.
-		$group_instance              = $this->get_registered_field_types()['group'] ?? null;
-		$is_repeatable_not_supported = $group_instance instanceof Pro_Stub_Field;
-
 		foreach ( $this->get_groups() as $group_info ) {
 			$fields   = $this->get_array_arg( 'fields', $group_info );
 			$group_id = $this->get_string_arg( 'id', $group_info );
@@ -466,10 +439,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 				$fields,
 				$this->get_supported_field_types(),
 				$include_only_types,
-				$pro_stub_field_types,
-				$group_id,
-				$repeatable_label,
-				$is_repeatable_not_supported
+				$group_id
 			);
 		}
 
@@ -494,6 +464,13 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		$field_meta->set_is_native_type( true );
 		$field_meta->set_name( $this->get_string_arg( 'name', $data ) );
 		$field_meta->set_type( $field_type );
+		$field_meta->set_label(
+			'hidden' !== $field_type ?
+				$this->get_string_arg( 'name', $data ) :
+				__( 'Hidden', 'acf-views' )
+		);
+		$field_meta->set_identifier( $this->get_string_arg( 'id', $data ) );
+		$field_meta->set_field_class( $this->get_field_class( $field_type ) );
 		$field_meta->set_choices( $this->get_array_arg( 'options', $data ) );
 		$field_meta->set_is_multiple( $this->get_bool_arg( 'multiple', $data ) );
 		$field_meta->set_return_format( $this->get_string_arg( 'save_format', $data ) );
@@ -548,6 +525,12 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		$field_meta->set_is_field_exist( true );
 
 		$is_repeatable = ( $this->get_bool_arg( 'clone', $data ) );
+
+		$field_meta->set_is_pro_only(
+			in_array( $field_type, $this->get_pro_stub_field_types(), true ) ||
+			( $is_repeatable && $this->is_repeatable_not_supported() )
+		);
+
 		// some fields don't require the repeater trick, as they use the HTML field with the formatted value.
 		// so markup will already include all the content.
 		$field_types_without_self_repeatable = array(
@@ -703,8 +686,6 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	public function get_sub_field_choices(): array {
 		$sub_field_choices = array();
 
-		$repeatable_label = __( 'repeatable', 'acf-views' );
-
 		foreach ( $this->get_groups() as $group_info ) {
 			$fields = $this->get_array_arg( 'fields', $group_info );
 
@@ -725,10 +706,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 					$sub_fields,
 					$this->get_supported_field_types(),
 					array(),
-					array(),
 					$group_id,
-					$repeatable_label,
-					false,
 					$field_key
 				);
 			}
@@ -848,5 +826,12 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		$registry->make( $group_data );
 
 		return $post->post_name;
+	}
+
+	/**
+	 * Repeatable is supported only if the group field isn't a Pro stub.
+	 */
+	protected function is_repeatable_not_supported(): bool {
+		return ( $this->get_registered_field_types()['group'] ?? null ) instanceof Pro_Stub_Field;
 	}
 }

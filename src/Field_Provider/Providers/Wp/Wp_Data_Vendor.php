@@ -131,9 +131,16 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 		if ( 0 === strpos( $field_id, Taxonomy_Term_Fields::PREFIX ) ) {
 			$term_name = str_replace( Taxonomy_Term_Fields::PREFIX, '', $field_id );
 
+			$taxonomy = get_taxonomy( $term_name );
+			// @phpstan-ignore-next-line for some reason label can be bool (e.g. post_multilingual, likely from Polylang).
+			$label = false !== $taxonomy ? (string) $taxonomy->label : $term_name;
+
 			$field_meta->set_type( Taxonomy_Term_Fields::FIELD_TERMS );
 			// name is necessary for the identifier and markup generation.
 			$field_meta->set_name( $term_name );
+			$field_meta->set_label( $label );
+			$field_meta->set_identifier( $label );
+			$field_meta->set_field_class( $this->get_field_class( $field_meta->get_type() ) );
 			// it's necessary to define, as the custom field will include the Taxonomy field,
 			// which waits for this setting.
 			$field_meta->set_is_multiple( true );
@@ -149,6 +156,11 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 			$field_meta->set_type( $field_id );
 			// name is necessary for the identifier and markup generation.
 			$field_meta->set_name( $field_id );
+
+			$field_names = $this->get_field_names( $field_id );
+			$field_meta->set_label( $field_names['label'] );
+			$field_meta->set_identifier( $field_names['identifier'] );
+			$field_meta->set_field_class( $this->get_field_class( $field_id ) );
 
 			$field_meta->set_is_field_exist( true );
 		}
@@ -316,13 +328,16 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 		$field_choices = array();
 
 		foreach ( self::get_fields_with_labels_in_groups() as $group_name => $group_choices ) {
-			foreach ( $group_choices as $field_id => $field_names ) {
+			foreach ( array_keys( $group_choices ) as $field_id ) {
 				$is_included = array() === $include_only_types || in_array( $field_id, $include_only_types, true );
 
 				if ( $is_included ) {
 					$field_key = $this->get_field_key( $group_name, $field_id );
 
-					$field_choices[ $field_key ] = $this->create_field_choice( $field_id, $field_names['label'], $field_names['identifier'] );
+					$field_meta = new Field_Meta( $this->get_name(), $field_id );
+					$this->fill_field_meta( $field_meta );
+
+					$field_choices[ $field_key ] = $field_meta;
 				}
 			}
 		}
@@ -340,22 +355,30 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 		foreach ( $taxonomies as $taxonomy ) {
 			$field_id     = Taxonomy_Term_Fields::PREFIX . $taxonomy->name;
 			$taxonomy_key = $this->get_field_key( Taxonomy_Term_Fields::GROUP_NAME, $field_id );
-			// @phpstan-ignore-next-line for some reason can be bool (e.g. post_multilingual, likely from Polylang).
-			$taxonomy_label = (string) $taxonomy->label;
 
-			$taxonomy_choices[ $taxonomy_key ] = $this->create_field_choice( $field_id, $taxonomy_label, $taxonomy_label );
+			$field_meta = new Field_Meta( $this->get_name(), $field_id );
+			$this->fill_field_meta( $field_meta );
+
+			$taxonomy_choices[ $taxonomy_key ] = $field_meta;
 		}
 
 		return $taxonomy_choices;
 	}
 
-	protected function create_field_choice( string $field_id, string $label, string $identifier ): Field_Meta {
-		$field_meta = new Field_Meta( $this->get_name(), $field_id );
-		$this->fill_field_meta( $field_meta );
-		$field_meta->set_label( $label );
-		$field_meta->set_identifier( $identifier );
+	/**
+	 * @return array{label:string,identifier:string}
+	 */
+	protected function get_field_names( string $field_id ): array {
+		foreach ( self::get_fields_with_labels_in_groups() as $group_choices ) {
+			if ( key_exists( $field_id, $group_choices ) ) {
+				return $group_choices[ $field_id ];
+			}
+		}
 
-		return $field_meta;
+		return array(
+			'label'      => '',
+			'identifier' => '',
+		);
 	}
 
 	/**

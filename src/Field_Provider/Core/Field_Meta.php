@@ -14,7 +14,10 @@ class Field_Meta {
 	private string $name;
 	private string $label;
 	private string $identifier;
-	private string $type_label;
+	/**
+	 * @var class-string|''
+	 */
+	private string $field_class;
 	private bool $is_pro_only;
 	private string $type;
 	private string $return_format;
@@ -48,7 +51,7 @@ class Field_Meta {
 		$this->name           = '';
 		$this->label          = '';
 		$this->identifier     = '';
-		$this->type_label     = '';
+		$this->field_class    = '';
 		$this->is_pro_only    = false;
 		$this->type           = '';
 		$this->return_format  = '';
@@ -84,8 +87,11 @@ class Field_Meta {
 		return $this->identifier;
 	}
 
-	public function get_type_label(): string {
-		return $this->type_label;
+	/**
+	 * @return class-string|''
+	 */
+	public function get_field_class(): string {
+		return $this->field_class;
 	}
 
 	public function is_pro_only(): bool {
@@ -206,10 +212,10 @@ class Field_Meta {
 	}
 
 	/**
-	 * Vendor-native type shown next to the label, left empty when the type adds nothing to the label.
+	 * @param class-string|'' $field_class
 	 */
-	public function set_type_label( string $type_label ): void {
-		$this->type_label = $type_label;
+	public function set_field_class( string $field_class ): void {
+		$this->field_class = $field_class;
 	}
 
 	public function set_is_pro_only( bool $is_pro_only ): void {

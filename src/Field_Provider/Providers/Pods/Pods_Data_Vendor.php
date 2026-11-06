@@ -517,11 +517,6 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	public function get_field_choices( array $include_only_types = array() ): array {
 		$field_choices = array();
 
-		$repeatable_label     = __( 'repeatable', 'acf-views' );
-		$pro_stub_field_types = $this->get_pro_stub_field_types();
-
-		$is_repeatable_not_supported = ! key_exists( 'group', $this->get_registered_field_types() );
-
 		foreach ( $this->get_groups() as $type => $groups ) {
 			foreach ( $groups as $group ) {
 				if ( false === method_exists( $group, 'get_args' ) ||
@@ -563,21 +558,8 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 
 					$field_key = $this->get_field_key( $group_id, $field_id );
 
-					$is_repeatable = $this->get_bool_arg( 'repeatable', $field_info );
-
 					$field_meta = new Field_Meta( $this->get_name(), $field_id );
 					$this->fill_field_meta( $field_meta, $field_info );
-					$field_meta->set_label( $this->get_string_arg( 'label', $field_info ) );
-					$field_meta->set_identifier( $this->get_string_arg( 'name', $field_info ) );
-					$field_meta->set_type_label(
-						$is_repeatable ?
-							$repeatable_label . ' ' . $field_type :
-							$field_type
-					);
-					$field_meta->set_is_pro_only(
-						in_array( $field_type, $pro_stub_field_types, true ) ||
-						( $is_repeatable && $is_repeatable_not_supported )
-					);
 
 					$field_choices[ $field_key ] = $field_meta;
 				}
@@ -636,6 +618,9 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 		$field_meta->set_is_native_type( true );
 		$field_meta->set_name( $this->get_string_arg( 'name', $data ) );
 		$field_meta->set_type( $field_type );
+		$field_meta->set_label( $this->get_string_arg( 'label', $data ) );
+		$field_meta->set_identifier( $this->get_string_arg( 'name', $data ) );
+		$field_meta->set_field_class( $this->get_field_class( $field_type ) );
 		$field_meta->set_display_format( $this->get_display_format( $data ) );
 
 		// for file and pick fields.
@@ -657,6 +642,11 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 		$field_meta->set_is_field_exist( true );
 
 		$is_repeatable = ( $this->get_bool_arg( 'repeatable', $data ) );
+
+		$field_meta->set_is_pro_only(
+			in_array( $field_type, $this->get_pro_stub_field_types(), true ) ||
+			( $is_repeatable && ! key_exists( 'group', $this->get_registered_field_types() ) )
+		);
 
 		if ( $is_repeatable ) {
 			$field_meta->set_self_repeatable_meta( clone $field_meta );

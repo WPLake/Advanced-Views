@@ -10,6 +10,7 @@ use DateTime;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Field_Type;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -658,11 +659,34 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		return $label_choices;
 	}
 
-	protected static function get_choice_label( Field_Meta $field_meta ): string {
-		$type_label = $field_meta->get_type_label();
+	/**
+	 * The Field_Type classes give their own type, otherwise the plain type is shown,
+	 * unless it just repeats the field id (built-in fields like Woo's are self-explanatory).
+	 */
+	protected static function get_type_text( Field_Meta $field_meta ): string {
+		// repeatable fields are 'group' in the meta, while the original is kept in the self-repeatable one.
+		$self_repeatable_meta = $field_meta->get_self_repeatable_meta();
+		$type_meta            = $self_repeatable_meta ?? $field_meta;
+		$field_class          = $type_meta->get_field_class();
 
-		$label = '' !== $type_label ?
-			sprintf( '%s (%s)', $field_meta->get_label(), $type_label ) :
+		if ( is_a( $field_class, Field_Type::class, true ) ) {
+			$type = $field_class::_TYPE_;
+		} elseif ( $type_meta->get_type() !== $type_meta->get_field_id() ) {
+			$type = $type_meta->get_type();
+		} else {
+			return '';
+		}
+
+		return null !== $self_repeatable_meta ?
+			__( 'repeatable', 'acf-views' ) . ' ' . $type :
+			$type;
+	}
+
+	protected static function get_choice_label( Field_Meta $field_meta ): string {
+		$type_text = self::get_type_text( $field_meta );
+
+		$label = '' !== $type_text ?
+			sprintf( '%s (%s)', $field_meta->get_label(), $type_text ) :
 			$field_meta->get_label();
 
 		return $field_meta->is_pro_only() ?

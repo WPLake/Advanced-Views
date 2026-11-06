@@ -69,14 +69,17 @@ final class Woo_Data_Vendor extends Field_Provider_Base {
 	public function get_field_choices( array $include_only_types = array() ): array {
 		$field_choices = array();
 
-		foreach ( self::get_fields_with_labels() as $field_id => $field_names ) {
+		foreach ( array_keys( self::get_fields_with_labels() ) as $field_id ) {
 			$is_included = array() === $include_only_types ||
 							in_array( $field_id, $include_only_types, true );
 
 			if ( $is_included ) {
 				$field_key = $this->get_field_key( Woo_Fields::GROUP_NAME, $field_id );
 
-				$field_choices[ $field_key ] = $this->create_field_choice( $field_id, $field_names['label'], $field_names['identifier'] );
+				$field_meta = new Field_Meta( $this->get_name(), $field_id );
+				$this->fill_field_meta( $field_meta );
+
+				$field_choices[ $field_key ] = $field_meta;
 			}
 		}
 
@@ -96,6 +99,11 @@ final class Woo_Data_Vendor extends Field_Provider_Base {
 
 			$field_meta->set_type( $field_id );
 			$field_meta->set_name( $real_field_name );
+
+			$field_names = self::get_fields_with_labels()[ $field_id ] ?? array();
+			$field_meta->set_label( $field_names['label'] ?? '' );
+			$field_meta->set_identifier( $field_names['identifier'] ?? '' );
+			$field_meta->set_field_class( $this->get_field_class( $field_id ) );
 			$field_meta->set_is_field_exist( true );
 
 			if ( Woo_Fields::FIELD_GALLERY === $field_id ) {
@@ -182,15 +190,6 @@ final class Woo_Data_Vendor extends Field_Provider_Base {
 			Woo_Fields::FIELD_HEIGHT         => new Woo_Height_Field(),
 			Woo_Fields::FIELD_FEATURED       => new Woo_Featured_Field(),
 		);
-	}
-
-	protected function create_field_choice( string $field_id, string $label, string $identifier ): Field_Meta {
-		$field_meta = new Field_Meta( $this->get_name(), $field_id );
-		$this->fill_field_meta( $field_meta );
-		$field_meta->set_label( $label );
-		$field_meta->set_identifier( $identifier );
-
-		return $field_meta;
 	}
 
 	/**
