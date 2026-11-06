@@ -64,24 +64,19 @@ final class Woo_Data_Vendor extends Field_Provider_Base {
 	/**
 	 * @param string[] $include_only_types
 	 *
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
-	public function get_field_choices(
-		array $include_only_types = array(),
-		bool $is_meta_format = false,
-		bool $is_field_name_as_label = false
-	): array {
+	public function get_field_choices( array $include_only_types = array() ): array {
 		$field_choices = array();
-		$fields        = self::get_fields_with_labels( $is_field_name_as_label );
 
-		foreach ( $fields as $field_id => $field_name ) {
+		foreach ( self::get_fields_with_labels() as $field_id => $field_names ) {
 			$is_included = array() === $include_only_types ||
 							in_array( $field_id, $include_only_types, true );
 
 			if ( $is_included ) {
 				$field_key = $this->get_field_key( Woo_Fields::GROUP_NAME, $field_id );
 
-				$field_choices[ $field_key ] = $this->create_field_choice( $field_id, $field_name, $is_meta_format );
+				$field_choices[ $field_key ] = $this->create_field_choice( $field_id, $field_names['label'], $field_names['identifier'] );
 			}
 		}
 
@@ -189,49 +184,68 @@ final class Woo_Data_Vendor extends Field_Provider_Base {
 		);
 	}
 
-	/**
-	 * @return Field_Meta|string
-	 */
-	protected function create_field_choice( string $field_id, string $field_name, bool $is_meta_format ) {
-		if ( $is_meta_format ) {
-			$field_meta = new Field_Meta( $this->get_name(), $field_id );
-			$this->fill_field_meta( $field_meta );
+	protected function create_field_choice( string $field_id, string $label, string $identifier ): Field_Meta {
+		$field_meta = new Field_Meta( $this->get_name(), $field_id );
+		$this->fill_field_meta( $field_meta );
+		$field_meta->set_label( $label );
+		$field_meta->set_identifier( $identifier );
 
-			return $field_meta;
-		}
-
-		return $field_name;
+		return $field_meta;
 	}
 
 	/**
-	 * @return array<string,string>
+	 * @return array<string,array{label:string,identifier:string}>
 	 */
-	protected static function get_fields_with_labels( bool $is_field_name_as_label = false ): array {
+	protected static function get_fields_with_labels(): array {
 		return array(
-			Woo_Fields::FIELD_GALLERY        => false === $is_field_name_as_label ?
-				__( 'Gallery', 'acf-views' ) : 'gallery',
-			Woo_Fields::FIELD_PRICE          => false === $is_field_name_as_label ?
-				__( 'Price', 'acf-views' ) : 'price',
-			Woo_Fields::FIELD_REGULAR_PRICE  => false === $is_field_name_as_label ?
-				__( 'Regular price', 'acf-views' ) : 'regular_price',
-			Woo_Fields::FIELD_SALE_PRICE     => false === $is_field_name_as_label ?
-				__( 'Sale price', 'acf-views' ) : 'sale_price',
-			Woo_Fields::FIELD_SKU            => false === $is_field_name_as_label ?
-				__( 'SKU', 'acf-views' ) : 'sku',
-			Woo_Fields::FIELD_STOCK_STATUS   => false === $is_field_name_as_label ?
-				__( 'Stock status', 'acf-views' ) : 'stock_status',
-			Woo_Fields::FIELD_STOCK_QUANTITY => false === $is_field_name_as_label ?
-				__( 'Stock quantity', 'acf-views' ) : 'stock_quantity',
-			Woo_Fields::FIELD_WEIGHT         => false === $is_field_name_as_label ?
-				__( 'Weight', 'acf-views' ) : 'weight',
-			Woo_Fields::FIELD_LENGTH         => false === $is_field_name_as_label ?
-				__( 'Length', 'acf-views' ) : 'length',
-			Woo_Fields::FIELD_WIDTH          => false === $is_field_name_as_label ?
-				__( 'Width', 'acf-views' ) : 'width',
-			Woo_Fields::FIELD_HEIGHT         => false === $is_field_name_as_label ?
-				__( 'Height', 'acf-views' ) : 'height',
-			Woo_Fields::FIELD_FEATURED       => false === $is_field_name_as_label ?
-				__( 'Featured', 'acf-views' ) : 'featured',
+			Woo_Fields::FIELD_GALLERY        => array(
+				'label'      => __( 'Gallery', 'acf-views' ),
+				'identifier' => 'gallery',
+			),
+			Woo_Fields::FIELD_PRICE          => array(
+				'label'      => __( 'Price', 'acf-views' ),
+				'identifier' => 'price',
+			),
+			Woo_Fields::FIELD_REGULAR_PRICE  => array(
+				'label'      => __( 'Regular price', 'acf-views' ),
+				'identifier' => 'regular_price',
+			),
+			Woo_Fields::FIELD_SALE_PRICE     => array(
+				'label'      => __( 'Sale price', 'acf-views' ),
+				'identifier' => 'sale_price',
+			),
+			Woo_Fields::FIELD_SKU            => array(
+				'label'      => __( 'SKU', 'acf-views' ),
+				'identifier' => 'sku',
+			),
+			Woo_Fields::FIELD_STOCK_STATUS   => array(
+				'label'      => __( 'Stock status', 'acf-views' ),
+				'identifier' => 'stock_status',
+			),
+			Woo_Fields::FIELD_STOCK_QUANTITY => array(
+				'label'      => __( 'Stock quantity', 'acf-views' ),
+				'identifier' => 'stock_quantity',
+			),
+			Woo_Fields::FIELD_WEIGHT         => array(
+				'label'      => __( 'Weight', 'acf-views' ),
+				'identifier' => 'weight',
+			),
+			Woo_Fields::FIELD_LENGTH         => array(
+				'label'      => __( 'Length', 'acf-views' ),
+				'identifier' => 'length',
+			),
+			Woo_Fields::FIELD_WIDTH          => array(
+				'label'      => __( 'Width', 'acf-views' ),
+				'identifier' => 'width',
+			),
+			Woo_Fields::FIELD_HEIGHT         => array(
+				'label'      => __( 'Height', 'acf-views' ),
+				'identifier' => 'height',
+			),
+			Woo_Fields::FIELD_FEATURED       => array(
+				'label'      => __( 'Featured', 'acf-views' ),
+				'identifier' => 'featured',
+			),
 		);
 	}
 

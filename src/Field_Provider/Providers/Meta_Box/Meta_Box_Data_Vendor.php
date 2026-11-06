@@ -123,13 +123,13 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	}
 
 	/**
-	 * @param array<string,Field_Meta|string> $field_choices
+	 * @param array<string,Field_Meta> $field_choices
 	 * @param array<string|int,mixed> $fields
 	 * @param string[] $supported_field_types
 	 * @param string[] $include_only_types
 	 * @param string[] $pro_stub_field_types
 	 *
-	 * @return array<string, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
 	protected function get_field_choices_recursively(
 		array $field_choices,
@@ -138,11 +138,9 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		array $include_only_types,
 		array $pro_stub_field_types,
 		string $group_id,
-		bool $is_meta_format,
 		string $repeatable_label,
 		bool $is_repeatable_not_supported,
-		string $parent_choice_value = '',
-		bool $is_field_name_as_label = false
+		string $parent_choice_value = ''
 	): array {
 		foreach ( $fields as $field ) {
 			if ( false === is_array( $field ) ) {
@@ -162,29 +160,23 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 				$this->get_field_key( $group_id, $field_id ) :
 				Field_Settings::create_field_key( $parent_choice_value, $field_id );
 
-			if ( $is_meta_format ) {
-				$value = new Field_Meta( $this->get_name(), $field_id );
-				$this->fill_field_meta( $value, $field );
-			} elseif ( false === $is_field_name_as_label ) {
-				$is_repeatable    = $this->get_bool_arg( 'clone', $field );
-				$repeatable_field = $is_repeatable ?
-					$repeatable_label . ' ' :
-					'';
-				// hidden type doesn't have label.
-				$name  = 'hidden' !== $field_type ?
-					string( $field, 'name' ) :
-					__( 'Hidden', 'acf-views' );
-				$value = sprintf( '%s (%s%s)', $name, $repeatable_field, $field_type );
+			$is_repeatable = $this->get_bool_arg( 'clone', $field );
+			// hidden type doesn't have label.
+			$label = 'hidden' !== $field_type ?
+				string( $field, 'name' ) :
+				__( 'Hidden', 'acf-views' );
 
-				if ( in_array( $field_type, $pro_stub_field_types, true ) ||
-					( $is_repeatable && $is_repeatable_not_supported ) ) {
-					$value .= ' ' . $this->get_pro_only_label();
-				}
-			} else {
-				$value = $this->get_string_arg( 'id', $field );
-			}
+			$field_meta = new Field_Meta( $this->get_name(), $field_id );
+			$this->fill_field_meta( $field_meta, $field );
+			$field_meta->set_label( $label );
+			$field_meta->set_identifier( $field_id );
+			$field_meta->set_type_label( $is_repeatable ? $repeatable_label . ' ' . $field_type : $field_type );
+			$field_meta->set_is_pro_only(
+				in_array( $field_type, $pro_stub_field_types, true ) ||
+				( $is_repeatable && $is_repeatable_not_supported )
+			);
 
-			$field_choices[ $field_key ] = $value;
+			$field_choices[ $field_key ] = $field_meta;
 
 			$sub_fields = $this->get_array_arg( 'fields', $field );
 
@@ -196,11 +188,9 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 					$include_only_types,
 					$pro_stub_field_types,
 					$group_id,
-					$is_meta_format,
 					$repeatable_label,
 					$is_repeatable_not_supported,
-					$field_key,
-					$is_field_name_as_label
+					$field_key
 				);
 			}
 		}
@@ -455,13 +445,9 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	/**
 	 * @param string[] $include_only_types
 	 *
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
-	public function get_field_choices(
-		array $include_only_types = array(),
-		bool $is_meta_format = false,
-		bool $is_field_name_as_label = false
-	): array {
+	public function get_field_choices( array $include_only_types = array() ): array {
 		$field_choices = array();
 
 		$repeatable_label     = __( 'repeatable', 'acf-views' );
@@ -482,11 +468,8 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 				$include_only_types,
 				$pro_stub_field_types,
 				$group_id,
-				$is_meta_format,
 				$repeatable_label,
-				$is_repeatable_not_supported,
-				'',
-				$is_field_name_as_label
+				$is_repeatable_not_supported
 			);
 		}
 
@@ -715,9 +698,9 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	}
 
 	/**
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
-	public function get_sub_field_choices( bool $is_meta_format = false, bool $is_field_name_as_label = false ): array {
+	public function get_sub_field_choices(): array {
 		$sub_field_choices = array();
 
 		$repeatable_label = __( 'repeatable', 'acf-views' );
@@ -744,11 +727,9 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 					array(),
 					array(),
 					$group_id,
-					$is_meta_format,
 					$repeatable_label,
 					false,
-					$field_key,
-					$is_field_name_as_label
+					$field_key
 				);
 			}
 		}

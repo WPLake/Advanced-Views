@@ -12,6 +12,10 @@ class Field_Meta {
 	private string $vendor_name;
 	private string $field_id;
 	private string $name;
+	private string $label;
+	private string $identifier;
+	private string $type_label;
+	private bool $is_pro_only;
 	private string $type;
 	private string $return_format;
 	/**
@@ -42,6 +46,10 @@ class Field_Meta {
 		$this->vendor_name    = $vendor_name;
 		$this->field_id       = $field_id;
 		$this->name           = '';
+		$this->label          = '';
+		$this->identifier     = '';
+		$this->type_label     = '';
+		$this->is_pro_only    = false;
 		$this->type           = '';
 		$this->return_format  = '';
 		$this->choices        = array();
@@ -66,6 +74,22 @@ class Field_Meta {
 
 	public function get_field_id(): string {
 		return $this->field_id;
+	}
+
+	public function get_label(): string {
+		return $this->label;
+	}
+
+	public function get_identifier(): string {
+		return $this->identifier;
+	}
+
+	public function get_type_label(): string {
+		return $this->type_label;
+	}
+
+	public function is_pro_only(): bool {
+		return $this->is_pro_only;
 	}
 
 	public function get_name(): string {
@@ -168,6 +192,28 @@ class Field_Meta {
 
 	public function set_name( string $name ): void {
 		$this->name = $name;
+	}
+
+	public function set_label( string $label ): void {
+		$this->label = $label;
+	}
+
+	/**
+	 * Vendor-native name, used instead of the label for the language-independent identifiers.
+	 */
+	public function set_identifier( string $identifier ): void {
+		$this->identifier = $identifier;
+	}
+
+	/**
+	 * Vendor-native type shown next to the label, left empty when the type adds nothing to the label.
+	 */
+	public function set_type_label( string $type_label ): void {
+		$this->type_label = $type_label;
+	}
+
+	public function set_is_pro_only( bool $is_pro_only ): void {
+		$this->is_pro_only = $is_pro_only;
 	}
 
 	public function set_type( string $type ): void {

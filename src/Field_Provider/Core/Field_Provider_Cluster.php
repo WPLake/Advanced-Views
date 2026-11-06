@@ -21,7 +21,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	/**
@@ -143,7 +142,8 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 			$choices = array_merge(
 				$choices,
 				self::get_label_choices(
-					$data_vendor->get_field_choices( $only_field_types, false, $is_field_name_as_label )
+					$data_vendor->get_field_choices( $only_field_types ),
+					$is_field_name_as_label
 				)
 			);
 		}
@@ -167,7 +167,7 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 
 			$choices = array_merge(
 				$choices,
-				self::get_label_choices( $data_vendor->get_sub_field_choices( false, $is_field_name_as_label ) )
+				self::get_label_choices( $data_vendor->get_sub_field_choices(), $is_field_name_as_label )
 			);
 		}
 
@@ -642,22 +642,32 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	}
 
 	/**
-	 * Non-meta format choices are always labels, Field_Meta appears only in the meta format.
-	 *
-	 * @param array<string|int,Field_Meta|string> $choices
+	 * @param array<string,Field_Meta> $choices
 	 *
 	 * @return array<string,string>
 	 */
-	protected static function get_label_choices( array $choices ): array {
+	protected static function get_label_choices( array $choices, bool $is_identifier ): array {
 		$label_choices = array();
 
-		foreach ( $choices as $key => $label ) {
-			if ( is_string( $label ) ) {
-				$label_choices[ string( $key ) ] = $label;
-			}
+		foreach ( $choices as $key => $field_meta ) {
+			$label_choices[ $key ] = $is_identifier ?
+				$field_meta->get_identifier() :
+				self::get_choice_label( $field_meta );
 		}
 
 		return $label_choices;
+	}
+
+	protected static function get_choice_label( Field_Meta $field_meta ): string {
+		$type_label = $field_meta->get_type_label();
+
+		$label = '' !== $type_label ?
+			sprintf( '%s (%s)', $field_meta->get_label(), $type_label ) :
+			$field_meta->get_label();
+
+		return $field_meta->is_pro_only() ?
+			$label . ' ' . __( '[PRO only]', 'acf-views' ) :
+			$label;
 	}
 
 	protected function make_integration_instances( Route_Detector $route_detector ): void {

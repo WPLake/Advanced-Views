@@ -512,13 +512,9 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	/**
 	 * @param string[] $include_only_types
 	 *
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
-	public function get_field_choices(
-		array $include_only_types = array(),
-		bool $is_meta_format = false,
-		bool $is_field_name_as_label = false
-	): array {
+	public function get_field_choices( array $include_only_types = array() ): array {
 		$field_choices = array();
 
 		$repeatable_label     = __( 'repeatable', 'acf-views' );
@@ -567,26 +563,23 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 
 					$field_key = $this->get_field_key( $group_id, $field_id );
 
-					if ( $is_meta_format ) {
-						$value = new Field_Meta( $this->get_name(), $field_id );
-						$this->fill_field_meta( $value, $field_info );
-					} elseif ( false === $is_field_name_as_label ) {
-						$is_repeatable    = $this->get_bool_arg( 'repeatable', $field_info );
-						$repeatable_field = $is_repeatable ?
-							$repeatable_label . ' ' :
-							'';
-						$label            = $this->get_string_arg( 'label', $field_info );
-						$value            = sprintf( '%s (%s%s)', $label, $repeatable_field, $field_type );
+					$is_repeatable = $this->get_bool_arg( 'repeatable', $field_info );
 
-						if ( in_array( $field_type, $pro_stub_field_types, true ) ||
-							( $is_repeatable && $is_repeatable_not_supported ) ) {
-							$value .= ' ' . $this->get_pro_only_label();
-						}
-					} else {
-						$value = $this->get_string_arg( 'name', $field_info );
-					}
+					$field_meta = new Field_Meta( $this->get_name(), $field_id );
+					$this->fill_field_meta( $field_meta, $field_info );
+					$field_meta->set_label( $this->get_string_arg( 'label', $field_info ) );
+					$field_meta->set_identifier( $this->get_string_arg( 'name', $field_info ) );
+					$field_meta->set_type_label(
+						$is_repeatable ?
+							$repeatable_label . ' ' . $field_type :
+							$field_type
+					);
+					$field_meta->set_is_pro_only(
+						in_array( $field_type, $pro_stub_field_types, true ) ||
+						( $is_repeatable && $is_repeatable_not_supported )
+					);
 
-					$field_choices[ $field_key ] = $value;
+					$field_choices[ $field_key ] = $field_meta;
 				}
 			}
 		}
@@ -779,9 +772,9 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	}
 
 	/**
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
-	public function get_sub_field_choices( bool $is_meta_format = false, bool $is_field_name_as_label = false ): array {
+	public function get_sub_field_choices(): array {
 		return array();
 	}
 

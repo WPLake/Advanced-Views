@@ -108,22 +108,14 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 	/**
 	 * @param string[] $include_only_types
 	 *
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
-	public function get_field_choices(
-		array $include_only_types = array(),
-		bool $is_meta_format = false,
-		bool $is_field_name_as_label = false
-	): array {
-		$field_choices = $this->create_group_field_choices(
-			$include_only_types,
-			$is_meta_format,
-			$is_field_name_as_label
-		);
+	public function get_field_choices( array $include_only_types = array() ): array {
+		$field_choices = $this->create_group_field_choices( $include_only_types );
 
 		if ( array() === $include_only_types ||
 			in_array( Taxonomy_Term_Fields::FIELD_TERMS, $include_only_types, true ) ) {
-			$taxonomy_choices = $this->create_taxonomy_choices( $is_meta_format );
+			$taxonomy_choices = $this->create_taxonomy_choices();
 			$field_choices    = array_replace( $field_choices, $taxonomy_choices );
 		}
 
@@ -318,24 +310,19 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 	/**
 	 * @param string[] $include_only_types
 	 *
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
-	protected function create_group_field_choices(
-		array $include_only_types,
-		bool $is_meta_format,
-		bool $is_field_name_as_label
-	): array {
+	protected function create_group_field_choices( array $include_only_types ): array {
 		$field_choices = array();
-		$groups        = self::get_fields_with_labels_in_groups( $is_field_name_as_label );
 
-		foreach ( $groups as $group_name => $group_choices ) {
-			foreach ( $group_choices as $field_id => $field_label ) {
+		foreach ( self::get_fields_with_labels_in_groups() as $group_name => $group_choices ) {
+			foreach ( $group_choices as $field_id => $field_names ) {
 				$is_included = array() === $include_only_types || in_array( $field_id, $include_only_types, true );
 
 				if ( $is_included ) {
 					$field_key = $this->get_field_key( $group_name, $field_id );
 
-					$field_choices[ $field_key ] = $this->create_field_choice( $field_id, $field_label, $is_meta_format );
+					$field_choices[ $field_key ] = $this->create_field_choice( $field_id, $field_names['label'], $field_names['identifier'] );
 				}
 			}
 		}
@@ -344,9 +331,9 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 	}
 
 	/**
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
-	protected function create_taxonomy_choices( bool $is_meta_format ): array {
+	protected function create_taxonomy_choices(): array {
 		$taxonomy_choices = array();
 		$taxonomies       = get_taxonomies( array(), 'objects' );
 
@@ -356,110 +343,171 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 			// @phpstan-ignore-next-line for some reason can be bool (e.g. post_multilingual, likely from Polylang).
 			$taxonomy_label = (string) $taxonomy->label;
 
-			$taxonomy_choices[ $taxonomy_key ] = $this->create_field_choice( $field_id, $taxonomy_label, $is_meta_format );
+			$taxonomy_choices[ $taxonomy_key ] = $this->create_field_choice( $field_id, $taxonomy_label, $taxonomy_label );
 		}
 
 		return $taxonomy_choices;
 	}
 
-	/**
-	 * @return Field_Meta|string
-	 */
-	protected function create_field_choice( string $field_id, string $label, bool $is_meta_format ) {
-		if ( $is_meta_format ) {
-			$field_meta = new Field_Meta( $this->get_name(), $field_id );
-			$this->fill_field_meta( $field_meta );
+	protected function create_field_choice( string $field_id, string $label, string $identifier ): Field_Meta {
+		$field_meta = new Field_Meta( $this->get_name(), $field_id );
+		$this->fill_field_meta( $field_meta );
+		$field_meta->set_label( $label );
+		$field_meta->set_identifier( $identifier );
 
-			return $field_meta;
-		}
-
-		return $label;
+		return $field_meta;
 	}
 
 	/**
-	 * @return array<string,array<string,string>>
+	 * @return array<string,array<string,array{label:string,identifier:string}>>
 	 */
-	protected static function get_fields_with_labels_in_groups( bool $is_field_name_as_label = false ): array {
+	protected static function get_fields_with_labels_in_groups(): array {
 		return array(
 			Post_Fields::GROUP_NAME         => array(
-				Post_Fields::FIELD_TITLE            => false === $is_field_name_as_label ?
-					__( 'Title', 'acf-views' ) : 'post_title',
-				Post_Fields::FIELD_TITLE_LINK       => false === $is_field_name_as_label ?
-					__( 'Title with link', 'acf-views' ) : 'post_title_link',
-				Post_Fields::FIELD_CONTENT          => false === $is_field_name_as_label ?
-					__( 'Post Content / Product Description', 'acf-views' ) : 'post_content',
-				Post_Fields::FIELD_EXCERPT          => false === $is_field_name_as_label ?
-					__( 'Post Excerpt / Short Product Description', 'acf-views' ) : 'post_excerpt',
-				Post_Fields::FIELD_THUMBNAIL        => false === $is_field_name_as_label ?
-					__( 'Featured Image', 'acf-views' ) : 'post_featured_image',
-				Post_Fields::FIELD_THUMBNAIL_LINK   => false === $is_field_name_as_label ?
-					__( 'Featured Image with link', 'acf-views' ) : 'post_featured_image_link',
-				Post_Fields::FIELD_AUTHOR           => false === $is_field_name_as_label ?
-					__( 'Author', 'acf-views' ) : 'post_author',
-				Post_Fields::FIELD_DATE             => false === $is_field_name_as_label ?
-					__( 'Published date', 'acf-views' ) : 'post_date',
-				Post_Fields::FIELD_MODIFIED         => false === $is_field_name_as_label ?
-					__( 'Modified date', 'acf-views' ) : 'post_modified',
-				Post_Fields::FIELD_ATTACHMENT_LINK  => false === $is_field_name_as_label ?
-					__( 'Attachment link', 'acf-views' ) : 'post_attachment_link',
-				Post_Fields::FIELD_ATTACHMENT_VIDEO => false === $is_field_name_as_label ?
-					__( 'Attachment video', 'acf-views' ) : 'post_attachment_video',
+				Post_Fields::FIELD_TITLE            => array(
+					'label'      => __( 'Title', 'acf-views' ),
+					'identifier' => 'post_title',
+				),
+				Post_Fields::FIELD_TITLE_LINK       => array(
+					'label'      => __( 'Title with link', 'acf-views' ),
+					'identifier' => 'post_title_link',
+				),
+				Post_Fields::FIELD_CONTENT          => array(
+					'label'      => __( 'Post Content / Product Description', 'acf-views' ),
+					'identifier' => 'post_content',
+				),
+				Post_Fields::FIELD_EXCERPT          => array(
+					'label'      => __( 'Post Excerpt / Short Product Description', 'acf-views' ),
+					'identifier' => 'post_excerpt',
+				),
+				Post_Fields::FIELD_THUMBNAIL        => array(
+					'label'      => __( 'Featured Image', 'acf-views' ),
+					'identifier' => 'post_featured_image',
+				),
+				Post_Fields::FIELD_THUMBNAIL_LINK   => array(
+					'label'      => __( 'Featured Image with link', 'acf-views' ),
+					'identifier' => 'post_featured_image_link',
+				),
+				Post_Fields::FIELD_AUTHOR           => array(
+					'label'      => __( 'Author', 'acf-views' ),
+					'identifier' => 'post_author',
+				),
+				Post_Fields::FIELD_DATE             => array(
+					'label'      => __( 'Published date', 'acf-views' ),
+					'identifier' => 'post_date',
+				),
+				Post_Fields::FIELD_MODIFIED         => array(
+					'label'      => __( 'Modified date', 'acf-views' ),
+					'identifier' => 'post_modified',
+				),
+				Post_Fields::FIELD_ATTACHMENT_LINK  => array(
+					'label'      => __( 'Attachment link', 'acf-views' ),
+					'identifier' => 'post_attachment_link',
+				),
+				Post_Fields::FIELD_ATTACHMENT_VIDEO => array(
+					'label'      => __( 'Attachment video', 'acf-views' ),
+					'identifier' => 'post_attachment_video',
+				),
 			),
 			User_Fields::GROUP_NAME         => array(
-				User_Fields::FIELD_FIRST_NAME   => false === $is_field_name_as_label ?
-					__( 'First Name', 'acf-views' ) : 'user_first_name',
-				User_Fields::FIELD_LAST_NAME    => false === $is_field_name_as_label ?
-					__( 'Last Name', 'acf-views' ) : 'user_last_name',
-				User_Fields::FIELD_DISPLAY_NAME => false === $is_field_name_as_label ?
-					__( 'Display Name', 'acf-views' ) : 'user_display_name',
-				User_Fields::FIELD_BIO          => false === $is_field_name_as_label ?
-					__( 'Bio', 'acf-views' ) : 'user_bio',
-				User_Fields::FIELD_EMAIL        => false === $is_field_name_as_label ?
-					__( 'Email', 'acf-views' ) : 'user_email',
-				User_Fields::FIELD_AUTHOR_LINK  => false === $is_field_name_as_label ?
-					__( 'Author link', 'acf-views' ) : 'user_author_link',
-				User_Fields::FIELD_WEBSITE      => false === $is_field_name_as_label ?
-					__( 'Website', 'acf-views' ) : 'user_website',
+				User_Fields::FIELD_FIRST_NAME   => array(
+					'label'      => __( 'First Name', 'acf-views' ),
+					'identifier' => 'user_first_name',
+				),
+				User_Fields::FIELD_LAST_NAME    => array(
+					'label'      => __( 'Last Name', 'acf-views' ),
+					'identifier' => 'user_last_name',
+				),
+				User_Fields::FIELD_DISPLAY_NAME => array(
+					'label'      => __( 'Display Name', 'acf-views' ),
+					'identifier' => 'user_display_name',
+				),
+				User_Fields::FIELD_BIO          => array(
+					'label'      => __( 'Bio', 'acf-views' ),
+					'identifier' => 'user_bio',
+				),
+				User_Fields::FIELD_EMAIL        => array(
+					'label'      => __( 'Email', 'acf-views' ),
+					'identifier' => 'user_email',
+				),
+				User_Fields::FIELD_AUTHOR_LINK  => array(
+					'label'      => __( 'Author link', 'acf-views' ),
+					'identifier' => 'user_author_link',
+				),
+				User_Fields::FIELD_WEBSITE      => array(
+					'label'      => __( 'Website', 'acf-views' ),
+					'identifier' => 'user_website',
+				),
 			),
 			Comment_Item_Fields::GROUP_NAME => array(
-				Comment_Item_Fields::FIELD_LIST => false === $is_field_name_as_label ?
-					__( 'List', 'acf-views' ) : 'comments_list',
+				Comment_Item_Fields::FIELD_LIST => array(
+					'label'      => __( 'List', 'acf-views' ),
+					'identifier' => 'comments_list',
+				),
 			),
 			Comment_Fields::GROUP_NAME      => array(
-				Comment_Fields::FIELD_AUTHOR_EMAIL     => false === $is_field_name_as_label ?
-					__( 'Author Email', 'acf-views' ) : 'comment_author_email',
-				Comment_Fields::FIELD_AUTHOR_NAME      => false === $is_field_name_as_label ?
-					__( 'Author Name', 'acf-views' ) : 'comment_author_name',
-				Comment_Fields::FIELD_AUTHOR_NAME_LINK => false === $is_field_name_as_label ?
-					__( 'Author Name link', 'acf-views' ) : 'comment_author_name_link',
-				Comment_Fields::FIELD_CONTENT          => false === $is_field_name_as_label ?
-					__( 'Content', 'acf-views' ) : 'comment_content',
-				Comment_Fields::FIELD_DATE             => false === $is_field_name_as_label ?
-					__( 'Date', 'acf-views' ) : 'comment_date',
-				Comment_Fields::FIELD_STATUS           => false === $is_field_name_as_label ?
-					__( 'Status', 'acf-views' ) : 'comment_status',
-				Comment_Fields::FIELD_PARENT           => false === $is_field_name_as_label ?
-					__( 'Parent', 'acf-views' ) : 'comment_parent',
-				Comment_Fields::FIELD_USER             => false === $is_field_name_as_label ?
-					__( 'User', 'acf-views' ) : 'comment_user',
+				Comment_Fields::FIELD_AUTHOR_EMAIL     => array(
+					'label'      => __( 'Author Email', 'acf-views' ),
+					'identifier' => 'comment_author_email',
+				),
+				Comment_Fields::FIELD_AUTHOR_NAME      => array(
+					'label'      => __( 'Author Name', 'acf-views' ),
+					'identifier' => 'comment_author_name',
+				),
+				Comment_Fields::FIELD_AUTHOR_NAME_LINK => array(
+					'label'      => __( 'Author Name link', 'acf-views' ),
+					'identifier' => 'comment_author_name_link',
+				),
+				Comment_Fields::FIELD_CONTENT          => array(
+					'label'      => __( 'Content', 'acf-views' ),
+					'identifier' => 'comment_content',
+				),
+				Comment_Fields::FIELD_DATE             => array(
+					'label'      => __( 'Date', 'acf-views' ),
+					'identifier' => 'comment_date',
+				),
+				Comment_Fields::FIELD_STATUS           => array(
+					'label'      => __( 'Status', 'acf-views' ),
+					'identifier' => 'comment_status',
+				),
+				Comment_Fields::FIELD_PARENT           => array(
+					'label'      => __( 'Parent', 'acf-views' ),
+					'identifier' => 'comment_parent',
+				),
+				Comment_Fields::FIELD_USER             => array(
+					'label'      => __( 'User', 'acf-views' ),
+					'identifier' => 'comment_user',
+				),
 			),
 			Term_Fields::GROUP_NAME         => array(
-				Term_Fields::FIELD_NAME        => false === $is_field_name_as_label ?
-					__( 'Name', 'acf-views' ) : 'term_name',
-				Term_Fields::FIELD_SLUG        => false === $is_field_name_as_label ?
-					__( 'Slug', 'acf-views' ) : 'term_slug',
-				Term_Fields::FIELD_DESCRIPTION => false === $is_field_name_as_label ?
-					__( 'Description', 'acf-views' ) : 'term_description',
-				Term_Fields::FIELD_NAME_LINK   => false === $is_field_name_as_label ?
-					__( 'Name link', 'acf-views' ) : 'term_name_link',
+				Term_Fields::FIELD_NAME        => array(
+					'label'      => __( 'Name', 'acf-views' ),
+					'identifier' => 'term_name',
+				),
+				Term_Fields::FIELD_SLUG        => array(
+					'label'      => __( 'Slug', 'acf-views' ),
+					'identifier' => 'term_slug',
+				),
+				Term_Fields::FIELD_DESCRIPTION => array(
+					'label'      => __( 'Description', 'acf-views' ),
+					'identifier' => 'term_description',
+				),
+				Term_Fields::FIELD_NAME_LINK   => array(
+					'label'      => __( 'Name link', 'acf-views' ),
+					'identifier' => 'term_name_link',
+				),
 			),
 			Menu_Fields::GROUP_NAME         => array(
-				Menu_Fields::FIELD_ITEMS => false === $is_field_name_as_label ?
-					__( 'Items', 'acf-views' ) : 'menu_items',
+				Menu_Fields::FIELD_ITEMS => array(
+					'label'      => __( 'Items', 'acf-views' ),
+					'identifier' => 'menu_items',
+				),
 			),
 			Menu_Item_Fields::GROUP_NAME    => array(
-				Menu_Item_Fields::FIELD_LINK => false === $is_field_name_as_label ?
-					__( 'Link', 'acf-views' ) : 'menu_item_link',
+				Menu_Item_Fields::FIELD_LINK => array(
+					'label'      => __( 'Link', 'acf-views' ),
+					'identifier' => 'menu_item_link',
+				),
 			),
 		);
 	}

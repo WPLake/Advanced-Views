@@ -63,10 +63,6 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 		return $pro_stub_field_types;
 	}
 
-	protected function get_pro_only_label(): string {
-		return __( '[PRO only]', 'acf-views' );
-	}
-
 	/**
 	 * @return  array<string,Markup_Field>
 	 */
@@ -90,9 +86,9 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 	}
 
 	/**
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
-	public function get_sub_field_choices( bool $is_meta_format = false, bool $is_field_name_as_label = false ): array {
+	public function get_sub_field_choices(): array {
 		return array();
 	}
 
@@ -111,12 +107,9 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 		$field_key_conditional_rules = array();
 
 		$field_choices = false === $is_sub_fields ?
-			$this->get_field_choices( array(), true ) :
-			$this->get_sub_field_choices( true );
+			$this->get_field_choices() :
+			$this->get_sub_field_choices();
 
-		/**
-		 * @var Field_Meta $field_meta
-		 */
 		foreach ( $field_choices as $field_key => $field_meta ) {
 			if ( false === $field_meta->is_field_exist() ) {
 				continue;

@@ -97,7 +97,9 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	 * @param string[] $include_only_types
 	 * @param string[] $pro_stub_field_types
 	 *
-	 * @return array<string|int, Field_Meta|string>
+	 * @param array<string, Field_Meta> $field_choices
+	 *
+	 * @return array<string, Field_Meta>
 	 */
 	protected function get_field_choices_recursively(
 		array $field_choices,
@@ -106,9 +108,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 		array $include_only_types,
 		array $pro_stub_field_types,
 		string $group_id,
-		bool $is_meta_format,
-		string $parent_choice_value = '',
-		bool $is_field_name_as_label = false
+		string $parent_choice_value = ''
 	): array {
 		foreach ( $fields as $group_field ) {
 			if ( false === is_array( $group_field ) ) {
@@ -127,22 +127,14 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 				$this->get_field_key( $group_id, $field_id ) :
 				Field_Settings::create_field_key( $parent_choice_value, $field_id );
 
-			if ( false === $is_meta_format ) {
-				if ( false === $is_field_name_as_label ) {
-					$value = string( $group_field, 'label' ) . ' (' . $type . ')';
+			$field_meta = new Field_Meta( $this->get_name(), $field_id );
+			$this->fill_field_meta( $field_meta, $group_field );
+			$field_meta->set_label( string( $group_field, 'label' ) );
+			$field_meta->set_identifier( $this->get_string_arg( 'name', $group_field ) );
+			$field_meta->set_type_label( $type );
+			$field_meta->set_is_pro_only( in_array( $type, $pro_stub_field_types, true ) );
 
-					if ( in_array( $type, $pro_stub_field_types, true ) ) {
-						$value .= ' ' . $this->get_pro_only_label();
-					}
-				} else {
-					$value = $this->get_string_arg( 'name', $group_field );
-				}
-			} else {
-				$value = new Field_Meta( $this->get_name(), $field_id );
-				$this->fill_field_meta( $value, $group_field );
-			}
-
-			$field_choices[ $field_key ] = $value;
+			$field_choices[ $field_key ] = $field_meta;
 
 			$sub_fields = $this->get_array_arg( 'sub_fields', $group_field );
 			$sub_fields = $this->paste_clone_fields( $sub_fields );
@@ -167,9 +159,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 					$include_only_types,
 					$pro_stub_field_types,
 					$group_id,
-					$is_meta_format,
-					$field_key,
-					$is_field_name_as_label
+					$field_key
 				);
 			}
 		}
@@ -294,13 +284,9 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	/**
 	 * @param string[] $include_only_types
 	 *
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
-	public function get_field_choices(
-		array $include_only_types = array(),
-		bool $is_meta_format = false,
-		bool $is_field_name_as_label = false
-	): array {
+	public function get_field_choices( array $include_only_types = array() ): array {
 		if ( ! function_exists( 'acf_get_fields' ) ) {
 			return array();
 		}
@@ -322,10 +308,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 				$supported_field_types,
 				$include_only_types,
 				$pro_stub_field_types,
-				$group_id,
-				$is_meta_format,
-				'',
-				$is_field_name_as_label
+				$group_id
 			);
 		}
 
@@ -485,9 +468,9 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	}
 
 	/**
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
-	public function get_sub_field_choices( bool $is_meta_format = false, bool $is_field_name_as_label = false ): array {
+	public function get_sub_field_choices(): array {
 		if ( false === function_exists( 'acf_get_fields' ) ) {
 			return array();
 		}
@@ -537,9 +520,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 					array(),
 					array(),
 					$group_key,
-					$is_meta_format,
-					$field_key,
-					$is_field_name_as_label
+					$field_key
 				);
 			}
 		}
