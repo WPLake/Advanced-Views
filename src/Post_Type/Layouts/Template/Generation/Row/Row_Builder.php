@@ -12,12 +12,10 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Field_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Label_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context_Loader;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Field_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Field_Wrapper_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Label_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Outers_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Row_Wrapper_Builder;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
@@ -30,19 +28,17 @@ class Row_Builder implements Row_Composer {
 	private Row_Context_Loader $context_loader;
 	private Inner_Row_Policy $policy;
 	private Field_Builder $field_builder;
-	private Field_Wrapper_Builder $field_wrapper_builder;
 	private Row_Wrapper_Builder $row_wrapper_builder;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
-		$this->context_loader        = new Row_Context_Loader(
+		$this->context_loader      = new Row_Context_Loader(
 			$provider_cluster,
 			$front_assets,
 			$token_factory_storage
 		);
-		$this->policy                = new Inner_Row_Policy( $provider_cluster );
-		$this->field_builder         = new Field_Builder( $this->policy );
-		$this->field_wrapper_builder = new Field_Wrapper_Builder( $this->policy );
-		$this->row_wrapper_builder   = new Row_Wrapper_Builder( $this->policy );
+		$this->policy              = new Inner_Row_Policy( $provider_cluster );
+		$this->field_builder       = new Field_Builder( $this->policy );
+		$this->row_wrapper_builder = new Row_Wrapper_Builder( $this->policy );
 	}
 
 	/**
@@ -69,7 +65,7 @@ class Row_Builder implements Row_Composer {
 			$field_assets
 		);
 
-		return $this->field_builder->compose_field( $context, $this );
+		return $this->field_builder->compose_content( $context, $this );
 	}
 
 	/**
@@ -97,25 +93,13 @@ class Row_Builder implements Row_Composer {
 			$row_suffix
 		);
 
-		$content = $this->compose_content( $context, $custom_nodes );
-
-		$field_layer = $this->field_wrapper_builder->wrap( $context, $content );
+		$field_layer = $this->field_builder->compose_field(
+			$context,
+			$this,
+			$custom_nodes
+		);
 
 		return $this->compose_row_layer( $context, $field_layer );
-	}
-
-	/**
-	 * The field's own markup (or the custom one) inside the pattern outers.
-	 *
-	 * @param Html_Node[]|null $custom_nodes
-	 *
-	 * @return Html_Node[]
-	 */
-	protected function compose_content( Row_Context $context, ?array $custom_nodes ): array {
-		$field_context = $context->with_row_type( 'field' );
-		$field_nodes   = $custom_nodes ?? $this->field_builder->compose_field( $field_context, $this );
-
-		return Outers_Builder::compose_field_outers( $context, $field_nodes );
 	}
 
 	/**

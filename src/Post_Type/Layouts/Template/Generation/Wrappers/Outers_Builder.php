@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappe
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
@@ -16,29 +15,6 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
  * @phpstan-import-type Html_Node from Html_Tag
  */
 final class Outers_Builder {
-	/**
-	 * @param Html_Node[] $nodes
-	 *
-	 * @return Html_Node[]
-	 */
-	public static function compose_field_outers( Row_Context $context, array $nodes ): array {
-		$patterns        = $context->get_pattern_container();
-		$layout_settings = $context->get_layout_settings();
-		$field_settings  = $context->get_field_settings();
-		$field_id        = $context->get_field_id();
-		$row_type        = $context->get_row_type();
-		$token_factory   = $context->get_token_factory();
-
-		$field_outers = $patterns->field_outers(
-			$layout_settings,
-			$field_settings,
-			$field_id,
-			$row_type
-		);
-
-		return self::compose_outers( $token_factory, $field_outers, $nodes );
-	}
-
 	/**
 	 * @param Html_Wrapper[] $outers
 	 * @param Html_Node[] $nodes

@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappe
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Field\Wrapper_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Inner_Row_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
@@ -59,7 +60,7 @@ final class Row_Wrapper_Builder {
 			self::resolve_classes( $context ) :
 			array();
 
-		return Field_Wrapper_Builder::get_filled_classes( array( ...$classes, $external_class ) );
+		return Wrapper_Builder::get_filled_classes( array( ...$classes, $external_class ) );
 	}
 
 	/**
@@ -67,7 +68,7 @@ final class Row_Wrapper_Builder {
 	 */
 	protected static function resolve_classes( Row_Context $context ): array {
 		$layout_settings = $context->get_layout_settings();
-		$classes         = array( Field_Wrapper_Builder::resolve_field_name( $context ) );
+		$classes         = array( Wrapper_Builder::resolve_field_name( $context ) );
 
 		if ( $layout_settings->is_with_common_classes ) {
 			$bem_name = $layout_settings->get_bem_name();
