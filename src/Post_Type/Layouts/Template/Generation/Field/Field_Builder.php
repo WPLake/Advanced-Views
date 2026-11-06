@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context\Field_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Inner_Row_Policy;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Structure\Inner_Row_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Composer;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
@@ -35,12 +35,12 @@ final class Field_Builder {
 		$field_context = $context->with_row_type( 'field' );
 		$field_nodes   = $custom_nodes ?? $this->compose_content( $field_context, $row_builder );
 
-		$inner_nodes = Wrapper_Builder::wrap_inners( $context, $field_nodes );
+		$inner_nodes = Field_Wrapper::wrap_inners( $context, $field_nodes );
 
 		if ( Inner_Row_Policy::has_field_wrapper( $context ) ) {
 			$is_inside_row_wrapper = $this->policy->has_row_wrapper( $context );
 
-			return Wrapper_Builder::wrap_field(
+			return Field_Wrapper::wrap_field(
 				$context,
 				$inner_nodes,
 				$is_inside_row_wrapper

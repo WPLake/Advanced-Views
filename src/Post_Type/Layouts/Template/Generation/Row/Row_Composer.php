@@ -24,7 +24,7 @@ interface Row_Composer {
 	 *
 	 * @return Html_Node[]
 	 */
-	public function compose_field(
+	public function compose_field_content(
 		array $field_assets,
 		Layout_Settings $layout_settings,
 		?Item_Settings $item_settings,

@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context\Field_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Composer;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Wrappers\Outers_Builder;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Outers_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Pattern_Container;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
