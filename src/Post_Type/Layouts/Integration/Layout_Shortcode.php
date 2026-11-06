@@ -8,7 +8,6 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Shortcode\Shortcode_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
@@ -19,13 +18,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Comment;
 use WP_Term;
+
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arrayOrNull;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
 final class Layout_Shortcode extends Shortcode_Base {
 
-	use Safe_Array_Arguments;
 
 	private Layout_Factory $layout_factory;
 	private Layout_Settings_Storage $layouts_settings_storage;
@@ -215,7 +215,7 @@ final class Layout_Shortcode extends Shortcode_Base {
 		}
 
 		// for inner Views.
-		$local_data = $this->get_array_arg_if_present( 'local-data', $attrs );
+		$local_data = arrayOrNull( $attrs, 'local-data' );
 
 		ob_start();
 		$this->layout_factory->make_and_print_html(

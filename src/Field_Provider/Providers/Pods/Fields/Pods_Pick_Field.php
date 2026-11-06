@@ -17,6 +17,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Raw_Field_Value;
 
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
+
 defined( 'ABSPATH' ) || exit;
 
 class Pods_Pick_Field implements Markup_Field {
@@ -72,18 +74,18 @@ class Pods_Pick_Field implements Markup_Field {
 				return 0;
 			}
 
-			$id = $this->get_int_arg( 'ID', $value );
+			$id = int( $value, 'ID' );
 
 			// in Pod Blocks 'id' is in lower case.
 			return 0 !== $id ?
 				$id :
-				$this->get_int_arg( 'id', $value );
+				int( $value, 'id' );
 		} elseif ( $markup_field instanceof Taxonomy_Field ) {
 			if ( false === is_array( $value ) ) {
 				return 0;
 			}
 
-			return $this->get_int_arg( 'term_id', $value );
+			return int( $value, 'term_id' );
 		}
 
 		return $value;

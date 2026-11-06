@@ -20,13 +20,16 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
 class Pods_Integration extends Settings_Vendor_Integration {
-
 	private Pods_Data_Vendor $pods_data_vendor;
 
 	public function __construct(
@@ -112,9 +115,9 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	 * @return array<string,mixed>
 	 */
 	protected function append_views_column( array $options ): array {
-		$options['fields']           = $this->get_array_arg( 'fields', $options );
-		$options['fields']['manage'] = $this->get_array_arg( 'manage', $options['fields'] );
-		$options['data']             = $this->get_array_arg( 'data', $options );
+		$options['fields']           = arr( $options, 'fields' );
+		$options['fields']['manage'] = arr( $options['fields'], 'manage' );
+		$options['data']             = arr( $options, 'data' );
 
 		$options['fields']['manage']['acf_views'] = array(
 			'label' => __( 'Assigned to View', 'acf-views' ),
@@ -136,7 +139,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	 */
 	protected function render_views_cell( array $item ): string {
 		// post, page, taxonomy.
-		$name = $this->get_string_arg( 'name', $item );
+		$name = string( $item, 'name' );
 
 		$pod_object    = $item['pod_object'] ?? null;
 		$related_views = $this->get_related_acf_views( $name, $pod_object );
@@ -176,7 +179,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			$args :
 			array();
 
-		return $this->get_string_arg( 'name', $args );
+		return string( $args, 'name' );
 	}
 
 	/**
@@ -184,7 +187,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	 */
 	protected function get_group_key_by_from_post( WP_Post $wp_post, array $field ): string {
 		// filled in $this->getGroupFields() method.
-		$pod_type = $this->get_string_arg( '_pod_name', $field );
+		$pod_type = string( $field, '_pod_name' );
 
 		$group_id = Pods_Data_Vendor::get_pods_group_id( $pod_type, $wp_post->post_name );
 
@@ -196,10 +199,10 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	 */
 	protected function fill_field_id_and_type( array $field, string &$field_id, string &$field_type ): void {
 		// filled in $this->getGroupFields() method.
-		$pod_type = $this->get_string_arg( '_pod_name', $field );
-		$name     = $this->get_string_arg( 'name', $field );
+		$pod_type = string( $field, '_pod_name' );
+		$name     = string( $field, 'name' );
 
-		$field_type = $this->get_string_arg( 'type', $field );
+		$field_type = string( $field, 'type' );
 		$field_id   = Pods_Data_Vendor::get_pods_field_id( $pod_type, $name );
 	}
 
@@ -272,9 +275,9 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			$group_info = self::get_group_args( $group );
 
 			if ( is_array( $group_info ) ) {
-				$group_title = $this->get_string_arg( 'label', $group_info );
+				$group_title = string( $group_info, 'label' );
 				$link_title  = sprintf( ' %s', $group_title );
-				$group_id    = $this->get_int_arg( 'id', $group_info );
+				$group_id    = int( $group_info, 'id' );
 
 				$links[] = $this->add_new_link_tag( $group_id, $link_title );
 			}
@@ -333,7 +336,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		$group_info = self::get_group_args( $group );
 
 		if ( is_array( $group_info ) ) {
-			$group_name = $this->get_string_arg( 'name', $group_info );
+			$group_name = string( $group_info, 'name' );
 			$group_id   = Pods_Data_Vendor::get_pods_group_id( $pod_name, $group_name );
 			$group_key  = $this->pods_data_vendor->get_group_key( $group_id );
 

@@ -9,7 +9,6 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Twig_Template_Engine;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\PHP_Template_Engine;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
@@ -20,7 +19,6 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 class Settings_Storage implements Cpt_Theme_Settings {
 	const QUERY_ARG_PAGE_DEV_MODE = 'avf_page-dev-mode';
 
-	use Safe_Array_Arguments;
 
 	private Options_Storage $options;
 
@@ -77,9 +75,9 @@ class Settings_Storage implements Cpt_Theme_Settings {
 			}
 
 			$valid_git_repositories[] = array(
-				'id'          => $this->get_string_arg( 'id', $git_repository ),
-				'accessToken' => $this->get_string_arg( 'accessToken', $git_repository ),
-				'name'        => $this->get_string_arg( 'name', $git_repository ),
+				'id'          => string( $git_repository, 'id' ),
+				'accessToken' => string( $git_repository, 'accessToken' ),
+				'name'        => string( $git_repository, 'name' ),
 			);
 		}
 

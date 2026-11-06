@@ -8,7 +8,6 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
@@ -16,7 +15,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Raw_Field_Val
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Conditional\Comparison_Token;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
+
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -28,7 +29,6 @@ final class Icon_Picker_Field implements Markup_Field {
 
 	const TYPE = 'type';
 
-	use Safe_Array_Arguments;
 
 	private Image_Field $image_field;
 
@@ -70,15 +70,15 @@ final class Icon_Picker_Field implements Markup_Field {
 			return $args;
 		}
 
-		$args[ self::TYPE ] = $this->get_string_arg( 'type', $value );
+		$args[ self::TYPE ] = string( $value, 'type' );
 
 		switch ( $args[ self::TYPE ] ) {
 			case 'dashicons':
 			case 'url':
-				$args[ self::VALUE ] = $this->get_string_arg( 'value', $value );
+				$args[ self::VALUE ] = string( $value, 'value' );
 				break;
 			case 'media_library':
-				$attachment_id = $this->get_string_arg( 'value', $value );
+				$attachment_id = string( $value, 'value' );
 
 				$field_value->set_value( $attachment_id );
 

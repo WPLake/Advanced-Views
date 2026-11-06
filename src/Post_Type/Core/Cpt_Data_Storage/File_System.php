@@ -10,17 +10,16 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Filesystem_Base;
+
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
 class File_System extends Loggable_Actor implements Actor {
-	use Safe_Array_Arguments;
-
 	private static bool $is_fs_not_writable_notice_shown = false;
 
 	/**
@@ -82,7 +81,7 @@ class File_System extends Loggable_Actor implements Actor {
 			array();
 
 		foreach ( $sub_folders as $sub_folder_info ) {
-			$folder_name = $this->get_string_arg( 'name', $sub_folder_info );
+			$folder_name = string( $sub_folder_info, 'name' );
 
 			$folder_info = explode( '_', $folder_name );
 

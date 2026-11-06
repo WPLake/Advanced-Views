@@ -41,7 +41,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
+
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\boolExtended;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\stringOrNull;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -185,7 +190,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 				$fields = acf_get_fields( $group );
 				$fields = $this->paste_clone_fields( $fields );
 
-				$group_id = $this->get_string_arg( 'key', $group );
+				$group_id = string( $group, 'key' );
 
 				$field_choices = $this->get_field_choices_recursively(
 					$field_choices,
@@ -217,18 +222,18 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 				array();
 		}
 
-		$name           = $this->get_string_arg( 'name', $data );
-		$type           = $this->get_string_arg( 'type', $data );
-		$label          = $this->get_string_arg( 'label', $data );
+		$name           = string( $data, 'name' );
+		$type           = string( $data, 'type' );
+		$label          = string( $data, 'label' );
 		$field_class    = $this->get_field_class( $type );
 		$pro_stub_types = $this->get_pro_stub_field_types();
-		$return_format  = $this->get_string_arg( 'return_format', $data );
-		$choices        = $this->get_array_arg( 'choices', $data );
-		$display_format = $this->get_string_arg( 'display_format', $data );
-		$is_multiple    = $this->get_bool_arg( 'multiple', $data );
-		$zoom           = $this->get_int_arg( 'zoom', $data );
-		$center_lat     = $this->get_string_arg( 'center_lat', $data );
-		$center_lng     = $this->get_string_arg( 'center_lng', $data );
+		$return_format  = string( $data, 'return_format' );
+		$choices        = arr( $data, 'choices' );
+		$display_format = string( $data, 'display_format' );
+		$is_multiple    = boolExtended( $data, 'multiple' );
+		$zoom           = int( $data, 'zoom' );
+		$center_lat     = string( $data, 'center_lat' );
+		$center_lng     = string( $data, 'center_lng' );
 		$is_pro_only    = in_array(
 			$type,
 			$pro_stub_types,
@@ -257,7 +262,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 			if ( is_array( $data['default_value'] ) ) {
 				$field_meta->set_default_value( $data['default_value'] );
 			} else {
-				$default_value = $this->get_string_arg( 'default_value', $data );
+				$default_value = string( $data, 'default_value' );
 
 				$field_meta->set_default_value( $default_value );
 			}
@@ -379,10 +384,10 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 			foreach ( $groups as $group ) {
 				$fields = acf_get_fields( $group );
 
-				$group_key = $this->get_string_arg( 'key', $group );
+				$group_key = string( $group, 'key' );
 
 				foreach ( $fields as $group_field ) {
-					$field_type = $this->get_string_arg( 'type', $group_field );
+					$field_type = string( $group_field, 'type' );
 
 					$is_supported = in_array(
 						$field_type,
@@ -407,7 +412,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 						continue;
 					}
 
-					$group_field_id = $this->get_string_arg( 'key', $group_field );
+					$group_field_id = string( $group_field, 'key' );
 					$field_key      = $this->get_field_key( $group_key, $group_field_id );
 
 					$sub_field_choices = $this->get_field_choices_recursively(
@@ -475,11 +480,11 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 		}
 
 		$logger              = $this->get_logger();
-		$group_key           = $this->get_string_arg( 'key', $group_data );
+		$group_key           = string( $group_data, 'key' );
 		$existing_group_info = acf_get_field_group( $group_key );
 
 		if ( is_array( $existing_group_info ) ) {
-			$group_id         = $this->get_int_arg( 'ID', $existing_group_info );
+			$group_id         = int( $existing_group_info, 'ID' );
 			$group_data['ID'] = $group_id;
 
 			$logger->debug(
@@ -504,7 +509,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 			return null;
 		}
 
-		return $this->get_string_arg_if_present( 'key', $group_data );
+		return stringOrNull( $group_data, 'key' );
 	}
 
 	// for back compatibility only.
@@ -522,8 +527,8 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 			// Important! To avoid recursion, otherwise within 'getChoices()' will be available the same group as the current
 			// and this class will call 'acf_get_fields()' that will call 'getChoices()'.
 			$is_available = function ( $acf_group ) {
-				$group_key  = $this->get_string_arg( 'key', $acf_group );
-				$is_private = $this->get_bool_arg( 'private', $acf_group );
+				$group_key  = string( $acf_group, 'key' );
+				$is_private = boolExtended( $acf_group, 'private' );
 				$is_own     = 0 === strpos( $group_key, Group::GROUP_NAME_PREFIX );
 				// don't check for 'local' at all, as 'local' not presented only when json is disabled.
 				// in other cases contains 'php' or 'json'.
@@ -615,10 +620,10 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	 * @return array<string|int,mixed>
 	 */
 	protected function get_sub_fields( array $group_field ): array {
-		$sub_fields = $this->get_array_arg( 'sub_fields', $group_field );
+		$sub_fields = arr( $group_field, 'sub_fields' );
 		$sub_fields = $this->paste_clone_fields( $sub_fields );
 
-		$layouts = $this->get_array_arg( 'layouts', $group_field );
+		$layouts = arr( $group_field, 'layouts' );
 		// by default, layouts don't have any type.
 		foreach ( $layouts as &$layout ) {
 			if ( false === is_array( $layout ) ) {
@@ -654,7 +659,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 				continue;
 			}
 
-			$type = $this->get_string_arg( 'type', $group_field );
+			$type = string( $group_field, 'type' );
 
 			$is_supported = in_array(
 				$type,
@@ -671,7 +676,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 				continue;
 			}
 
-			$field_id  = $this->get_string_arg( 'key', $group_field );
+			$field_id  = string( $group_field, 'key' );
 			$field_key = '' === $parent_choice_value ?
 				$this->get_field_key( $group_id, $field_id ) :
 				Field_Settings::create_field_key( $parent_choice_value, $field_id );
@@ -702,7 +707,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	 * @param mixed[] $data
 	 */
 	protected function fill_taxonomy_meta( Field_Meta $field_meta, array $data ): void {
-		$appearance          = $this->get_string_arg( 'field_type', $data );
+		$appearance          = string( $data, 'field_type' );
 		$multiple_appearance = array( 'checkbox', 'multi_select' );
 
 		$is_multiple = in_array(

@@ -11,19 +11,18 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
+
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
 class Post_Selection_Settings_Integration extends Acf_Integration_Base {
-	use Safe_Array_Arguments;
-
 	private Field_Provider_Cluster $provider_cluster;
 	private Plugin_Cpt $plugin_cpt;
 	private Engines_Storage $engines_storage;
@@ -81,7 +80,7 @@ class Post_Selection_Settings_Integration extends Acf_Integration_Base {
 	 * @return void
 	 */
 	public function print_add_new_view_link( array $field ): void {
-		$type = $this->get_string_arg( 'type', $field );
+		$type = string( $field, 'type' );
 
 		// this hook called twice, as our custom field inherits 'select',
 		// so we must skip the first call to avoid printing the link twice.

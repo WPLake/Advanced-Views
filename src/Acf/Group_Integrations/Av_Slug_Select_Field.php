@@ -9,8 +9,10 @@ defined( 'ABSPATH' ) || exit;
 use acf_field_select;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+
+use function Org\Wplake\Advanced_Views\Utils\paginate_array;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 if ( class_exists( 'acf_field_select' ) ) {
 	/**
@@ -19,8 +21,6 @@ if ( class_exists( 'acf_field_select' ) ) {
 	 *  b) includes fs-only items.
 	 */
 	class Av_Slug_Select_Field extends acf_field_select {
-		use Safe_Array_Arguments;
-
 		private Layout_Settings_Storage $layouts_settings_storage;
 
 		public function __construct( Layout_Settings_Storage $layouts_settings_storage ) {
@@ -64,7 +64,7 @@ if ( class_exists( 'acf_field_select' ) ) {
 			$field['ajax']    = 1;
 			$field['choices'] = array();
 
-			$value = $this->get_string_arg( 'value', $field );
+			$value = string( $field, 'value' );
 
 			if ( '' !== $value ) {
 				$title                      = $this->layouts_settings_storage->get_unique_id_with_name_items_list()[ $value ] ?? '';
@@ -102,7 +102,7 @@ if ( class_exists( 'acf_field_select' ) ) {
 				) :
 				$this->layouts_settings_storage->get_unique_id_with_name_items_list();
 
-			$paginated_items = self::apply_array_pagination(
+			$paginated_items = paginate_array(
 				$filtered_items,
 				$per_page,
 				$current_page

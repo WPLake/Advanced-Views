@@ -12,7 +12,6 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\External_Storage_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Import_Result;
@@ -29,8 +28,6 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
  * @phpstan-import-type Html_Node from Html_Tag
  */
 abstract class Git_Tabs extends External_Storage_Tab {
-	use Safe_Array_Arguments;
-
 	const TAB_PREFIX             = 'gitlab_';
 	const KEY_PREFIX             = 'acf-views-import-';
 	const KEY_BATCH_ACTION       = self::KEY_PREFIX . 'items';

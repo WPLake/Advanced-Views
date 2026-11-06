@@ -7,11 +7,10 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
+
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 class Git_Lab_Api extends Git_Api {
-	use Safe_Array_Arguments;
-
 	protected function get_transient_prefix(): string {
 		return Options_Storage::PREFIX . 'gitlab_';
 	}
@@ -110,8 +109,8 @@ class Git_Lab_Api extends Git_Api {
 			}
 
 			$git_repository_item       = new Git_Repository_Item();
-			$git_repository_item->name = $this->get_string_arg( 'name', $item );
-			$git_repository_item->path = $this->get_string_arg( 'path', $item );
+			$git_repository_item->name = string( $item, 'name' );
+			$git_repository_item->path = string( $item, 'path' );
 
 			$repository_items[] = $git_repository_item;
 		}

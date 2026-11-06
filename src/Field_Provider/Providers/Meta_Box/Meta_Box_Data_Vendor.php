@@ -37,11 +37,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use WP_Post;
 use RWMB_Field;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
+
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\boolExtended;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\stringOrNull;
 
 class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	const NAME = 'meta-box';
@@ -150,8 +153,8 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		$groups_info  = $this->get_groups();
 
 		foreach ( $groups_info as $group_info ) {
-			$group_id = $this->get_string_arg( 'id', $group_info );
-			$title    = $this->get_string_arg( 'title', $group_info );
+			$group_id = string( $group_info, 'id' );
+			$title    = string( $group_info, 'title' );
 
 			$group_key = $this->get_group_key( $group_id );
 			$parts     = array(
@@ -176,8 +179,8 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		$groups_info           = $this->get_groups();
 
 		foreach ( $groups_info as $group_info ) {
-			$fields   = $this->get_array_arg( 'fields', $group_info );
-			$group_id = $this->get_string_arg( 'id', $group_info );
+			$fields   = arr( $group_info, 'fields' );
+			$group_id = string( $group_info, 'id' );
 
 			$field_choices = $this->get_field_choices_recursively(
 				$field_choices,
@@ -199,7 +202,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			$data = $this->get_field_info( $field_meta->get_field_id() );
 		}
 
-		$field_type      = $this->get_string_arg( 'type', $data );
+		$field_type      = string( $data, 'type' );
 		$supported_types = $this->get_supported_field_types();
 
 		$is_supported = array() !== $data && in_array(
@@ -212,13 +215,13 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			return;
 		}
 
-		$name           = $this->get_string_arg( 'name', $data );
-		$identifier     = $this->get_string_arg( 'id', $data );
+		$name           = string( $data, 'name' );
+		$identifier     = string( $data, 'id' );
 		$field_class    = $this->get_field_class( $field_type );
-		$choices        = $this->get_array_arg( 'options', $data );
-		$is_multiple    = $this->get_bool_arg( 'multiple', $data );
-		$save_format    = $this->get_string_arg( 'save_format', $data );
-		$is_repeatable  = $this->get_bool_arg( 'clone', $data );
+		$choices        = arr( $data, 'options' );
+		$is_multiple    = boolExtended( $data, 'multiple' );
+		$save_format    = string( $data, 'save_format' );
+		$is_repeatable  = boolExtended( $data, 'clone' );
 		$pro_stub_types = $this->get_pro_stub_field_types();
 		$timestamp      = (bool) ( $data['timestamp'] ?? false );
 		$label          = 'hidden' !== $field_type ?
@@ -254,7 +257,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			if ( is_array( $data['std'] ) ) {
 				$field_meta->set_default_value( $data['std'] );
 			} else {
-				$default_value = $this->get_string_arg( 'std', $data );
+				$default_value = string( $data, 'std' );
 
 				$field_meta->set_default_value( $default_value );
 			}
@@ -419,19 +422,19 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		$groups_info           = $this->get_groups();
 
 		foreach ( $groups_info as $group_info ) {
-			$fields = $this->get_array_arg( 'fields', $group_info );
+			$fields = arr( $group_info, 'fields' );
 
-			$group_id = $this->get_string_arg( 'id', $group_info );
+			$group_id = string( $group_info, 'id' );
 
 			foreach ( $fields as $field ) {
-				$is_group = is_array( $field ) && 'group' === $this->get_string_arg( 'type', $field );
+				$is_group = is_array( $field ) && 'group' === string( $field, 'type' );
 
 				if ( ! $is_group ) {
 					continue;
 				}
 
-				$sub_fields = $this->get_array_arg( 'fields', $field );
-				$field_id   = $this->get_string_arg( 'id', $field );
+				$sub_fields = arr( $field, 'fields' );
+				$field_id   = string( $field, 'id' );
 
 				$field_key = $this->get_field_key( $group_id, $field_id );
 
@@ -624,7 +627,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	 * @return mixed[]|null
 	 */
 	protected function prepare_group_data( array $group_data ): ?array {
-		$post_name = $this->get_string_arg_if_present( 'post_name', $group_data );
+		$post_name = stringOrNull( $group_data, 'post_name' );
 
 		if ( null === $post_name ) {
 			$logger      = $this->get_logger();
@@ -722,7 +725,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 				continue;
 			}
 
-			$field_type = $this->get_string_arg( 'type', $field );
+			$field_type = string( $field, 'type' );
 
 			$is_supported = in_array(
 				$field_type,
@@ -739,7 +742,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 				continue;
 			}
 
-			$field_id = $this->get_string_arg( 'id', $field );
+			$field_id = string( $field, 'id' );
 
 			$field_key = '' === $parent_choice_value ?
 				$this->get_field_key( $group_id, $field_id ) :
@@ -750,7 +753,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 
 			$field_choices[ $field_key ] = $field_meta;
 
-			$sub_fields = $this->get_array_arg( 'fields', $field );
+			$sub_fields = arr( $field, 'fields' );
 
 			if ( array() !== $sub_fields ) {
 				$field_choices = $this->get_field_choices_recursively(
@@ -778,13 +781,13 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 				continue;
 			}
 
-			$field_id = $this->get_string_arg( 'id', $field );
+			$field_id = string( $field, 'id' );
 
 			if ( $field_id === $target_field_id ) {
 				return $field;
 			}
 
-			$sub_fields = $this->get_array_arg( 'fields', $field );
+			$sub_fields = arr( $field, 'fields' );
 
 			if ( array() !== $sub_fields ) {
 				$sub_field_info = $this->get_field_recursively( $target_field_id, $sub_fields );
@@ -808,7 +811,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		$groups_info = $this->get_groups();
 
 		foreach ( $groups_info as $group_info ) {
-			$fields = $this->get_array_arg( 'fields', $group_info );
+			$fields = arr( $group_info, 'fields' );
 
 			$data = $this->get_field_recursively( $target_field_id, $fields );
 

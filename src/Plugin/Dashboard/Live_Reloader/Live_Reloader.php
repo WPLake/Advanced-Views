@@ -11,7 +11,6 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
@@ -19,11 +18,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_S
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Post_Selection_Shortcode;
 use WP_REST_Request;
 
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\boolExtended;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+
 defined( 'ABSPATH' ) || exit;
 
 class Live_Reloader extends Actor_Base implements Actor {
-	use Safe_Array_Arguments;
-
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Selection_Settings_Storage $post_selections_settings_storage;
 	private Layout_Shortcode $layout_shortcode;
@@ -57,8 +59,8 @@ class Live_Reloader extends Actor_Base implements Actor {
 	 * @return array<string,mixed>|null
 	 */
 	protected function maybe_get_page_changed_response( array $request_args ): ?array {
-		$post_id   = $this->get_int_arg( 'post_id', $request_args );
-		$post_hash = $this->get_string_arg( 'post_hash', $request_args );
+		$post_id   = int( $request_args, 'post_id' );
+		$post_hash = string( $request_args, 'post_hash' );
 
 		// post_id is 0 e.g. on archive pages.
 		if ( 0 === $post_id ) {
@@ -140,11 +142,11 @@ class Live_Reloader extends Actor_Base implements Actor {
 			$this->post_selection_shortcode;
 
 		$new_code_hashes = $cpt_settings->get_code_hashes();
-		$is_css_changed  = $this->get_string_arg( Cpt_Settings::HASH_CSS, $old_code_hashes ) !==
+		$is_css_changed  = string( $old_code_hashes, Cpt_Settings::HASH_CSS ) !==
 							$new_code_hashes[ Cpt_Settings::HASH_CSS ];
-		$is_js_changed   = $this->get_string_arg( Cpt_Settings::HASH_JS, $old_code_hashes ) !==
+		$is_js_changed   = string( $old_code_hashes, Cpt_Settings::HASH_JS ) !==
 							$new_code_hashes[ Cpt_Settings::HASH_JS ];
-		$is_html_changed = $this->get_string_arg( Cpt_Settings::HASH_HTML, $old_code_hashes ) !==
+		$is_html_changed = string( $old_code_hashes, Cpt_Settings::HASH_HTML ) !==
 							$new_code_hashes[ Cpt_Settings::HASH_HTML ];
 
 		$response = array(
@@ -182,7 +184,7 @@ class Live_Reloader extends Actor_Base implements Actor {
 	 * @param array<string,mixed> $code_hashes
 	 */
 	protected function is_page_reload_required( Cpt_Settings $cpt_settings, array $code_hashes, bool $is_gutenberg_block ): bool {
-		$is_html_changed = $this->get_string_arg( Cpt_Settings::HASH_HTML, $code_hashes ) !==
+		$is_html_changed = string( $code_hashes, Cpt_Settings::HASH_HTML ) !==
 							$cpt_settings->get_code_hashes()[ Cpt_Settings::HASH_HTML ];
 
 		// 1. HTML changed for gutenberg blocks or on non-post related pages
@@ -196,7 +198,7 @@ class Live_Reloader extends Actor_Base implements Actor {
 		// Declarative Shadow DOM currently is only processed during DOMContentLoaded event,
 		// so if it's added later dynamically, it's just hidden. Confirmed by local tests and also by others:
 		// see https://stackoverflow.com/questions/67932949/html-template-shadow-dom-not-rendering-within-handlebars-template.
-		$is_css_changed = $this->get_string_arg( Cpt_Settings::HASH_CSS, $code_hashes ) !==
+		$is_css_changed = string( $code_hashes, Cpt_Settings::HASH_CSS ) !==
 							$cpt_settings->get_code_hashes()[ Cpt_Settings::HASH_CSS ];
 
 		// 2. Html or CSS changed for elements with the Declarative Shadow DOM.
@@ -209,13 +211,13 @@ class Live_Reloader extends Actor_Base implements Actor {
 	 */
 	protected function is_html_force_change_required( Cpt_Settings $cpt_settings, array $code_hashes ): bool {
 		// 1. JS change required HTML update (so web component will be created and processed by the new JS).
-		$is_js_changed = $this->get_string_arg( Cpt_Settings::HASH_JS, $code_hashes ) !==
+		$is_js_changed = string( $code_hashes, Cpt_Settings::HASH_JS ) !==
 						$cpt_settings->get_code_hashes()[ Cpt_Settings::HASH_JS ];
 
 		// 2. CSS changes when JS shadow root is enabled require HTML update (as CSS is inside HTML in that case).
 		// (Declarative shadow root requires full page reloading, so that in the other place).
 		$is_css_in_js_shadow_dom_changed = Cpt_Settings::WEB_COMPONENT_SHADOW_DOM === $cpt_settings->web_component &&
-											$this->get_string_arg( Cpt_Settings::HASH_CSS, $code_hashes ) !==
+											string( $code_hashes, Cpt_Settings::HASH_CSS ) !==
 											$cpt_settings->get_code_hashes()[ Cpt_Settings::HASH_CSS ];
 
 		return $is_js_changed ||
@@ -234,7 +236,7 @@ class Live_Reloader extends Actor_Base implements Actor {
 		array $changed_instances,
 		bool &$is_page_reload_required
 	): array {
-		$items = $this->get_array_arg( 'items', $request_args );
+		$items = arr( $request_args, 'items' );
 
 		$response = array();
 
@@ -243,14 +245,14 @@ class Live_Reloader extends Actor_Base implements Actor {
 				continue;
 			}
 
-			$parent_card_id = sanitize_text_field( $this->get_string_arg( 'parent_card_id', $item_data ) );
+			$parent_card_id = sanitize_text_field( string( $item_data, 'parent_card_id' ) );
 
 			$item_id   = sanitize_text_field( (string) $item_id );
-			$unique_id = sanitize_text_field( $this->get_string_arg( 'unique_id', $item_data ) );
+			$unique_id = sanitize_text_field( string( $item_data, 'unique_id' ) );
 			/**
 			 * @var array<string,string> $code_hashes
 			 */
-			$code_hashes = $this->get_array_arg( 'code_hashes', $item_data );
+			$code_hashes = arr( $item_data, 'code_hashes' );
 
 			$is_view_item = 0 === strpos( $unique_id, Layout_Settings::UNIQUE_ID_PREFIX );
 
@@ -270,8 +272,8 @@ class Live_Reloader extends Actor_Base implements Actor {
 			/**
 			 * @var array<string,mixed> $shortcode_arguments
 			 */
-			$shortcode_arguments = $this->get_array_arg( 'shortcode_arguments', $item_data );
-			$is_gutenberg_block  = $this->get_bool_arg( 'is_gutenberg_block', $item_data );
+			$shortcode_arguments = arr( $item_data, 'shortcode_arguments' );
+			$is_gutenberg_block  = boolExtended( $item_data, 'is_gutenberg_block' );
 
 			$is_page_reload_required = $this->is_page_reload_required( $cpt_data, $code_hashes, $is_gutenberg_block );
 
@@ -302,7 +304,7 @@ class Live_Reloader extends Actor_Base implements Actor {
 	 * @throws Exception
 	 */
 	protected function get_card_ids_on_top_level_with_children_that_changed_html( array $request_args ): array {
-		$items               = $this->get_array_arg( 'items', $request_args );
+		$items               = arr( $request_args, 'items' );
 		$card_ids_to_refresh = array();
 
 		foreach ( $items as $item_data ) {
@@ -310,12 +312,12 @@ class Live_Reloader extends Actor_Base implements Actor {
 				continue;
 			}
 
-			$unique_id      = sanitize_text_field( $this->get_string_arg( 'unique_id', $item_data ) );
-			$parent_card_id = sanitize_text_field( $this->get_string_arg( 'parent_card_id', $item_data ) );
+			$unique_id      = sanitize_text_field( string( $item_data, 'unique_id' ) );
+			$parent_card_id = sanitize_text_field( string( $item_data, 'parent_card_id' ) );
 			/**
 			 * @var array<string,string> $code_hashes
 			 */
-			$code_hashes = $this->get_array_arg( 'code_hashes', $item_data );
+			$code_hashes = arr( $item_data, 'code_hashes' );
 
 			// process only child level at this point.
 			if ( '' === $parent_card_id ) {
@@ -328,7 +330,7 @@ class Live_Reloader extends Actor_Base implements Actor {
 				$this->layouts_settings_storage->get( $unique_id ) :
 				$this->post_selections_settings_storage->get( $unique_id );
 
-			$is_html_changed = $this->get_string_arg( Cpt_Settings::HASH_HTML, $code_hashes ) !==
+			$is_html_changed = string( $code_hashes, Cpt_Settings::HASH_HTML ) !==
 								$cpt_data->get_code_hashes()[ Cpt_Settings::HASH_HTML ] ||
 			$this->is_html_force_change_required( $cpt_data, $code_hashes );
 
@@ -355,7 +357,7 @@ class Live_Reloader extends Actor_Base implements Actor {
 		array $card_ids_on_top_level_to_refresh,
 		bool &$is_page_reload_required
 	): array {
-		$items = $this->get_array_arg( 'items', $request_args );
+		$items = arr( $request_args, 'items' );
 
 		$response = array();
 
@@ -365,7 +367,7 @@ class Live_Reloader extends Actor_Base implements Actor {
 			}
 
 			$item_id   = sanitize_text_field( (string) $item_id );
-			$unique_id = sanitize_text_field( $this->get_string_arg( 'unique_id', $item_data ) );
+			$unique_id = sanitize_text_field( string( $item_data, 'unique_id' ) );
 
 			if ( ! in_array( $unique_id, $card_ids_on_top_level_to_refresh, true ) ) {
 				continue;
@@ -380,12 +382,12 @@ class Live_Reloader extends Actor_Base implements Actor {
 			/**
 			 * @var array<string,mixed> $shortcode_arguments
 			 */
-			$shortcode_arguments = $this->get_array_arg( 'shortcode_arguments', $item_data );
+			$shortcode_arguments = arr( $item_data, 'shortcode_arguments' );
 			/**
 			 * @var array<string,string> $code_hashes
 			 */
-			$code_hashes        = $this->get_array_arg( 'code_hashes', $item_data );
-			$is_gutenberg_block = $this->get_bool_arg( 'is_gutenberg_block', $item_data );
+			$code_hashes        = arr( $item_data, 'code_hashes' );
+			$is_gutenberg_block = boolExtended( $item_data, 'is_gutenberg_block' );
 
 			// force HTML update, as children have been changed.
 			$code_hashes[ Cpt_Settings::HASH_HTML ] = '';

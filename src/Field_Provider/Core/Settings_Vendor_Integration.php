@@ -9,7 +9,6 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Settings_Creator;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -32,8 +31,6 @@ defined( 'ABSPATH' ) || exit;
  * @phpstan-import-type Html_Node from Html_Tag
  */
 abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implements Field_Provider_Integration {
-	use Safe_Array_Arguments;
-
 	const NONCE_ADD_NEW = 'av-add-new';
 	const ARGUMENT_FROM = '_from-group';
 

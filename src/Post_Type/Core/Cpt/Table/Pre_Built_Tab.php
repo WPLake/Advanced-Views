@@ -10,19 +10,19 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Utils\paginate_array;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
 abstract class Pre_Built_Tab extends External_Storage_Tab {
-	use Safe_Array_Arguments;
-
 	const NAME              = 'pre_built';
 	const KEY_PREFIX        = 'acf-views-pre-built-import-';
 	const KEY_RESULT_ITEMS  = self::KEY_PREFIX . 'result-items';
@@ -107,7 +107,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		/**
 		 * @var Cpt_Settings[] $current_pre_built_items
 		 */
-		$current_pre_built_items = self::apply_array_pagination(
+		$current_pre_built_items = paginate_array(
 			$all_pre_built_items,
 			$this->get_pagination_per_page(),
 			$this->get_cpt_table()->get_current_page_number()
@@ -164,7 +164,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		// read_fields_from_fs() returns mixed (array for data.json)
 		// so instead of the standard 'merge' we must use the custom one.
 		foreach ( $vendor_meta_groups_data as $field_name => $field_value ) {
-			$field_values[ $field_name ] = $this->get_string_arg( $field_name, $vendor_meta_groups_data );
+			$field_values[ $field_name ] = string( $vendor_meta_groups_data, array( $field_name ) );
 		}
 
 		$import_result = $this->import_cpt_data( $unique_id, $field_values );

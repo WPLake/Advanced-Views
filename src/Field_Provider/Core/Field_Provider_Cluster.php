@@ -14,7 +14,6 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
@@ -30,7 +29,6 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	 */
 	const PLUGINS_LOADED_HOOK_PRIORITY = 15;
 
-	use Safe_Array_Arguments;
 
 	/**
 	 * @var array<string, Field_Provider> name => instance

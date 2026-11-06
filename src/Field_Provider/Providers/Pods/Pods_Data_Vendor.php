@@ -39,7 +39,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Pods_Migrate_Packages;
+
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arrayOrNull;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\boolExtended;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\stringOrNull;
 
 class Pods_Data_Vendor extends Field_Provider_Base {
 	const NAME = 'pods';
@@ -171,8 +176,8 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 					$group_info :
 					array();
 
-				$group_id    = $this->get_string_arg( 'name', $group_info );
-				$group_title = $this->get_string_arg( 'label', $group_info );
+				$group_id    = string( $group_info, 'name' );
+				$group_title = string( $group_info, 'label' );
 
 				$pods_group_id = self::get_pods_group_id( $type, $group_id );
 				$group_key     = $this->get_group_key( $pods_group_id );
@@ -216,7 +221,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			$data = $this->find_field_info( $field_meta->get_field_id() );
 		}
 
-		$field_type      = $this->get_string_arg( 'type', $data );
+		$field_type      = string( $data, 'type' );
 		$supported_types = $this->get_supported_field_types();
 
 		$is_supported = array() !== $data && in_array(
@@ -229,25 +234,25 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			return;
 		}
 
-		$name           = $this->get_string_arg( 'name', $data );
-		$label          = $this->get_string_arg( 'label', $data );
+		$name           = string( $data, 'name' );
+		$label          = string( $data, 'label' );
 		$field_class    = $this->get_field_class( $field_type );
 		$display_format = $this->get_display_format( $data );
 		$choices        = $this->get_choices( $data );
-		$is_repeatable  = $this->get_bool_arg( 'repeatable', $data );
+		$is_repeatable  = boolExtended( $data, 'repeatable' );
 		$pro_stub_types = $this->get_pro_stub_field_types();
 		$registered     = $this->get_registered_field_types();
 
 		// for file and pick fields.
-		$return_format = $this->get_string_arg( 'file_type', $data );
+		$return_format = string( $data, 'file_type' );
 		$return_format = '' === $return_format ?
-			$this->get_string_arg( 'pick_object', $data ) :
+			string( $data, 'pick_object' ) :
 			$return_format;
 
 		// for file and pick fields.
-		$format_type = $this->get_string_arg( 'file_format_type', $data );
+		$format_type = string( $data, 'file_format_type' );
 		$format_type = '' === $format_type ?
-			$this->get_string_arg( 'pick_format_type', $data ) :
+			string( $data, 'pick_format_type' ) :
 			$format_type;
 
 		$is_pro_stub                 = in_array(
@@ -374,8 +379,8 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 				$group_info :
 				array();
 
-			$pod_id      = $this->get_int_arg( 'id', $pod_info );
-			$group_label = $this->get_string_arg( 'label', $group_info );
+			$pod_id      = int( $pod_info, 'id' );
+			$group_label = string( $group_info, 'label' );
 			$edit_path   = sprintf( 'admin.php?page=pods&action=edit&id=%d', $pod_id );
 
 			return array(
@@ -443,7 +448,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			return null;
 		}
 
-		$pods_export_data = $this->get_array_arg_if_present( 'pods', $export_data );
+		$pods_export_data = arrayOrNull( $export_data, 'pods' );
 
 		if ( null === $pods_export_data ) {
 			$logger->warning( 'pods missing in the export data', $log_context );
@@ -516,7 +521,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			return null;
 		}
 
-		return $this->get_string_arg_if_present( 'name', $group_data );
+		return stringOrNull( $group_data, 'name' );
 	}
 
 	/**
@@ -556,7 +561,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	 * @param array<string,mixed> $data
 	 */
 	protected function get_display_format( array $data ): string {
-		$field_type = $this->get_string_arg( 'type', $data );
+		$field_type = string( $data, 'type' );
 
 		$resolvers = array(
 			'datetime' => fn() => $this->get_datetime_display_format( $data ),
@@ -575,7 +580,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	 * @param array<string,mixed> $data
 	 */
 	protected function get_datetime_display_format( array $data ): string {
-		$date_time_type = $this->get_string_arg( 'datetime_type', $data );
+		$date_time_type = string( $data, 'datetime_type' );
 
 		if ( 'wp' === $date_time_type ) {
 			$date_format = get_option( 'date_format' );
@@ -587,17 +592,17 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			return sprintf( '%s %s', $date_format, $time_format );
 		}
 
-		$display_format = $this->get_string_arg( 'datetime_format', $data );
+		$display_format = string( $data, 'datetime_format' );
 		$is_date_filled = strlen( $display_format ) > 0;
 		$display_format = $is_date_filled ?
 			self::get_php_date_format( $display_format ) :
 			'';
 
-		$date_time_type = $this->get_string_arg( 'datetime_time_type', $data );
+		$date_time_type = string( $data, 'datetime_time_type' );
 
 		$display_time_format = '24' === $date_time_type ?
-			$this->get_string_arg( 'datetime_time_format_24', $data ) :
-			$this->get_string_arg( 'datetime_time_format', $data );
+			string( $data, 'datetime_time_format_24' ) :
+			string( $data, 'datetime_time_format' );
 		$is_time_filled      = strlen( $display_time_format ) > 0;
 		$display_time_format = $is_time_filled ?
 			self::get_php_time_format( $display_time_format ) :
@@ -620,7 +625,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	 * @param array<string,mixed> $data
 	 */
 	protected function get_date_display_format( array $data ): string {
-		$date_type = $this->get_string_arg( 'date_type', $data );
+		$date_type = string( $data, 'date_type' );
 
 		if ( 'wp' === $date_type ) {
 			$format = get_option( 'date_format' );
@@ -628,7 +633,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			return string( $format );
 		}
 
-		$display_format = $this->get_string_arg( 'date_format', $data );
+		$display_format = string( $data, 'date_format' );
 
 		return self::get_php_date_format( $display_format );
 	}
@@ -637,7 +642,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	 * @param array<string,mixed> $data
 	 */
 	protected function get_time_display_format( array $data ): string {
-		$time_type = $this->get_string_arg( 'time_type', $data );
+		$time_type = string( $data, 'time_type' );
 
 		if ( 'wp' === $time_type ) {
 			$format = get_option( 'time_format' );
@@ -646,8 +651,8 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 		}
 
 		$display_time_format = '24' === $time_type ?
-			$this->get_string_arg( 'time_format_24', $data ) :
-			$this->get_string_arg( 'time_format', $data );
+			string( $data, 'time_format_24' ) :
+			string( $data, 'time_format' );
 
 		return self::get_php_time_format( $display_time_format );
 	}
@@ -695,10 +700,10 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	 * @return mixed[]
 	 */
 	protected function get_choices( array $data ): array {
-		$pick_object = $this->get_string_arg( 'pick_object', $data );
+		$pick_object = string( $data, 'pick_object' );
 
 		if ( 'custom-simple' === $pick_object ) {
-			$pick_choices = $this->get_string_arg( 'pick_custom', $data );
+			$pick_choices = string( $data, 'pick_custom' );
 			$is_filled    = strlen( $pick_choices ) > 0;
 			$choices      = array();
 
@@ -843,7 +848,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 						$field_info :
 						array();
 
-					if ( $this->get_string_arg( 'name', $field_info ) === $field_name ) {
+					if ( string( $field_info, 'name' ) === $field_name ) {
 						$data = $field_info;
 						break;
 					}
@@ -873,7 +878,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			$group_info :
 			array();
 
-		$group_name            = $this->get_string_arg( 'name', $group_info );
+		$group_name            = string( $group_info, 'name' );
 		$group_id              = self::get_pods_group_id( $type, $group_name );
 		$vendor_name           = $this->get_name();
 		$supported_field_types = $this->get_supported_field_types();
@@ -890,7 +895,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			$field_info = is_array( $field_info ) ?
 				$field_info :
 				array();
-			$field_type = $this->get_string_arg( 'type', $field_info );
+			$field_type = string( $field_info, 'type' );
 
 			$is_supported = in_array(
 				$field_type,
@@ -907,7 +912,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 				continue;
 			}
 
-			$field_name = $this->get_string_arg( 'name', $field_info );
+			$field_name = string( $field_info, 'name' );
 			$field_id   = self::get_pods_field_id( $type, $field_name );
 
 			$field_key = $this->get_field_key( $group_id, $field_id );

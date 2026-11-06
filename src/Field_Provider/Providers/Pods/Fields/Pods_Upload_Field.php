@@ -15,6 +15,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Raw_Field_Value;
 
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
+
 defined( 'ABSPATH' ) || exit;
 
 class Pods_Upload_Field implements Markup_Field {
@@ -57,12 +59,12 @@ class Pods_Upload_Field implements Markup_Field {
 								return 0;
 							}
 
-							$id = $this->get_int_arg( 'ID', $value );
+							$id = int( $value, 'ID' );
 
 							// in Pod Blocks 'id' is in lower case.
 							return 0 !== $id ?
 								$id :
-								$this->get_int_arg( 'id', $value );
+								int( $value, 'id' );
 						},
 						$field_value->get_value()
 					)
@@ -71,12 +73,12 @@ class Pods_Upload_Field implements Markup_Field {
 				$field_value->set_value( array() );
 			}
 		} elseif ( is_array( $field_value->get_value() ) ) {
-			$id = $this->get_int_arg( 'ID', $field_value->get_value() );
+			$id = int( $field_value->get_value(), 'ID' );
 			// in Pod Blocks 'id' is in lower case.
 			$field_value->set_value(
 				0 !== $id ?
 					$id :
-					$this->get_int_arg( 'id', $field_value->get_value() )
+					int( $field_value->get_value(), 'id' )
 			);
 		} else {
 			$field_value->set_value( 0 );
