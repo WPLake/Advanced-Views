@@ -186,7 +186,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		// filled in $this->getGroupFields() method.
 		$pod_type = $this->get_string_arg( '_pod_name', $field );
 
-		$group_id = $this->pods_data_vendor->get_pods_group_id( $pod_type, $wp_post->post_name );
+		$group_id = Pods_Data_Vendor::get_pods_group_id( $pod_type, $wp_post->post_name );
 
 		return $this->pods_data_vendor->get_group_key( $group_id );
 	}
@@ -200,7 +200,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		$name     = $this->get_string_arg( 'name', $field );
 
 		$field_type = $this->get_string_arg( 'type', $field );
-		$field_id   = $this->pods_data_vendor->get_pods_field_id( $pod_type, $name );
+		$field_id   = Pods_Data_Vendor::get_pods_field_id( $pod_type, $name );
 	}
 
 	protected function render_postbox( object $pod ): string {
@@ -334,7 +334,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 
 		if ( is_array( $group_info ) ) {
 			$group_name = $this->get_string_arg( 'name', $group_info );
-			$group_id   = $this->pods_data_vendor->get_pods_group_id( $pod_name, $group_name );
+			$group_id   = Pods_Data_Vendor::get_pods_group_id( $pod_name, $group_name );
 			$group_key  = $this->pods_data_vendor->get_group_key( $group_id );
 
 			$views_storage = $this->get_views_data_storage();

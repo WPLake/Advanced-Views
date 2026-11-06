@@ -7,11 +7,8 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core;
 defined( 'ABSPATH' ) || exit;
 
 use DateTime;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Field_Type;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Field_Type;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
@@ -19,6 +16,9 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
@@ -99,12 +99,14 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		);
 
 		foreach ( $this->provider_cluster as $data_vendor ) {
-			if ( $is_only_meta_vendors &&
-				! $data_vendor->is_meta_vendor() ) {
+			$is_skipped = $is_only_meta_vendors && ! $data_vendor->is_meta_vendor();
+
+			if ( $is_skipped ) {
 				continue;
 			}
 
-			$choices = array_merge( $choices, $data_vendor->get_group_choices() );
+			$vendor_choices = $data_vendor->get_group_choices();
+			$choices        = array_merge( $choices, $vendor_choices );
 		}
 
 		return $choices;
@@ -125,8 +127,9 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 			array();
 
 		foreach ( $this->provider_cluster as $data_vendor ) {
-			if ( $is_only_meta_vendors &&
-				false === $data_vendor->is_meta_vendor() ) {
+			$is_skipped = $is_only_meta_vendors && false === $data_vendor->is_meta_vendor();
+
+			if ( $is_skipped ) {
 				continue;
 			}
 
@@ -140,13 +143,9 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 				continue;
 			}
 
-			$choices = array_merge(
-				$choices,
-				self::get_label_choices(
-					$data_vendor->get_field_choices( $only_field_types ),
-					$is_field_name_as_label
-				)
-			);
+			$vendor_choices = $data_vendor->get_field_choices( $only_field_types );
+			$label_choices  = self::get_label_choices( $vendor_choices, $is_field_name_as_label );
+			$choices        = array_merge( $choices, $label_choices );
 		}
 
 		return $choices;
@@ -161,15 +160,15 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		);
 
 		foreach ( $this->provider_cluster as $data_vendor ) {
-			if ( $is_only_meta_vendors &&
-				! $data_vendor->is_meta_vendor() ) {
+			$is_skipped = $is_only_meta_vendors && ! $data_vendor->is_meta_vendor();
+
+			if ( $is_skipped ) {
 				continue;
 			}
 
-			$choices = array_merge(
-				$choices,
-				self::get_label_choices( $data_vendor->get_sub_field_choices(), $is_field_name_as_label )
-			);
+			$vendor_choices = $data_vendor->get_sub_field_choices();
+			$label_choices  = self::get_label_choices( $vendor_choices, $is_field_name_as_label );
+			$choices        = array_merge( $choices, $label_choices );
 		}
 
 		return $choices;
@@ -283,13 +282,18 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 
 	// use $isForceLoading for tests only.
 	public function load_available_vendors( bool $is_force_loading = false ): void {
-		foreach ( $this->resolve_providers() as $vendor ) {
-			if ( ! $vendor->is_available() &&
-				! $is_force_loading ) {
+		$providers = $this->resolve_providers();
+
+		foreach ( $providers as $vendor ) {
+			$is_skipped = ! $vendor->is_available() && ! $is_force_loading;
+
+			if ( $is_skipped ) {
 				continue;
 			}
 
-			$this->provider_cluster[ $vendor->get_name() ] = $vendor;
+			$vendor_name = $vendor->get_name();
+
+			$this->provider_cluster[ $vendor_name ] = $vendor;
 		}
 	}
 
@@ -318,18 +322,20 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 
 		foreach ( $layout_settings->items as $item ) {
 			foreach ( $item->repeater_fields as $repeater_field ) {
-				$vendor_name = $this->get_vendor_name_by_key( $repeater_field->key );
+				$vendor_name  = $this->get_vendor_name_by_key( $repeater_field->key );
+				$front_assets = $this->get_field_front_assets( $vendor_name, $repeater_field );
 
-				if ( ! in_array( $asset_name, $this->get_field_front_assets( $vendor_name, $repeater_field ), true ) ) {
+				if ( ! in_array( $asset_name, $front_assets, true ) ) {
 					continue;
 				}
 
 				$fields[1][] = $repeater_field;
 			}
 
-			$vendor_name = $this->get_vendor_name_by_key( $item->field->key );
+			$vendor_name  = $this->get_vendor_name_by_key( $item->field->key );
+			$front_assets = $this->get_field_front_assets( $vendor_name, $item->field );
 
-			if ( ! in_array( $asset_name, $this->get_field_front_assets( $vendor_name, $item->field ), true ) ) {
+			if ( ! in_array( $asset_name, $front_assets, true ) ) {
 				continue;
 			}
 
@@ -342,7 +348,7 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	/**
 	 * @return string[]
 	 */
-	public function get_all_conditional_fields(): array {
+	public static function get_all_conditional_fields(): array {
 		return array(
 			Field_Settings::FIELD_LINK_LABEL,
 			Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
@@ -366,9 +372,11 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 			return false;
 		}
 
+		$types_with_sub_fields = $this->provider_cluster[ $vendor ]->get_field_types_with_sub_fields();
+
 		return in_array(
 			$field_type,
-			$this->provider_cluster[ $vendor ]->get_field_types_with_sub_fields(),
+			$types_with_sub_fields,
 			true
 		);
 	}
@@ -390,11 +398,15 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 
 	public function get_vendor_name_by_key( string $key ): string {
 		// for ACF and custom fields source isn't set.
-		if ( false !== strpos( $key, ':' ) ) {
+		$separator_position = strpos( $key, ':' );
+
+		if ( is_int( $separator_position ) ) {
 			return explode( ':', $key )[0];
 		}
 
-		return $this->resolve_legacy_vendor_name( Field_Settings::get_field_id_by_key( $key ) );
+		$field_id = Field_Settings::get_field_id_by_key( $key );
+
+		return $this->resolve_legacy_vendor_name( $field_id );
 	}
 
 	/**
@@ -402,7 +414,8 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	 */
 	public function get_group_link_by_group_id( string $group_id, string $vendor_name = '' ): ?array {
 		if ( '' === $vendor_name ) {
-			$vendor_name                    = $this->get_vendor_name_by_key( $group_id . '|fake-field-id' );
+			$fake_key                       = sprintf( '%s|fake-field-id', $group_id );
+			$vendor_name                    = $this->get_vendor_name_by_key( $fake_key );
 			$group_id_without_vendor_prefix = explode( ':', $group_id )[1] ?? $group_id;
 		} else {
 			$group_id_without_vendor_prefix = $group_id;
@@ -431,14 +444,18 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	public function import_related_group_files( array $import_files ): Related_Groups_Import_Result {
 		$related_groups_import_result = new Related_Groups_Import_Result();
 
+		$providers = $this->get_provider_cluster();
+
 		foreach ( $import_files as $file_name => $file_content ) {
-			if ( false === strpos( $file_name, '.json' ) ) {
+			$json_position = strpos( $file_name, '.json' );
+
+			if ( ! is_int( $json_position ) ) {
 				continue;
 			}
 
 			$file_vendor = str_replace( '.json', '', $file_name );
 
-			if ( ! key_exists( $file_vendor, $this->get_provider_cluster() ) ) {
+			if ( ! key_exists( $file_vendor, $providers ) ) {
 				continue;
 			}
 
@@ -448,7 +465,7 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 				continue;
 			}
 
-			$vendor = $this->get_provider_cluster()[ $file_vendor ];
+			$vendor = $providers[ $file_vendor ];
 
 			$meta_data = arr( $import_data, 'meta' );
 			// compatibility with the old export format, which didn't have meta at all.
@@ -462,7 +479,9 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 					continue;
 				}
 
-				$related_groups_import_result->add_group( $vendor->get_name(), $imported_group_id );
+				$vendor_name = $vendor->get_name();
+
+				$related_groups_import_result->add_group( $vendor_name, $imported_group_id );
 			}
 		}
 
@@ -477,13 +496,17 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		$fields_with_active_view_link = $layout_settings->get_fields_with_view_link();
 
 		foreach ( $fields_with_active_view_link as $field_data ) {
-			$field_meta = $field_data->get_field_meta();
+			$field_meta  = $field_data->get_field_meta();
+			$vendor_name = $field_meta->get_vendor_name();
+			$field_type  = $field_meta->get_type();
 
-			if ( $this->is_field_with_active_view_link(
+			$is_active_link = $this->is_field_with_active_view_link(
 				$field_data,
-				$field_meta->get_vendor_name(),
-				$field_meta->get_type()
-			) ) {
+				$vendor_name,
+				$field_type
+			);
+
+			if ( $is_active_link ) {
 				$related_view_unique_ids[] = $field_data->acf_view_id;
 			}
 		}
@@ -500,6 +523,7 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	public function get_related_group_export_files( Layout_Settings $layout_settings ): array {
 		$related_groups            = array();
 		$related_group_export_data = array();
+		$providers                 = $this->get_provider_cluster();
 
 		// 1. get all related group ids (not unique)
 		foreach ( $layout_settings->items as $item ) {
@@ -507,7 +531,7 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 
 			$vendor_name = $this->get_vendor_name_by_key( $item->field->key );
 
-			if ( ! key_exists( $vendor_name, $this->get_provider_cluster() ) ) {
+			if ( ! key_exists( $vendor_name, $providers ) ) {
 				continue;
 			}
 
@@ -517,11 +541,11 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 
 		// 2. get export data for each related group
 		foreach ( $related_groups as $vendor_name => $group_ids ) {
-			if ( ! key_exists( $vendor_name, $this->get_provider_cluster() ) ) {
+			if ( ! key_exists( $vendor_name, $providers ) ) {
 				continue;
 			}
 
-			$vendor = $this->get_provider_cluster()[ $vendor_name ];
+			$vendor = $providers[ $vendor_name ];
 			// remove duplicates.
 			$group_ids = array_unique( $group_ids );
 
@@ -542,26 +566,29 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		$related_group_export_files = array();
 
 		foreach ( $related_group_export_data as $vendor_name => $groups_export_data ) {
-			if ( ! key_exists( $vendor_name, $this->get_provider_cluster() ) ) {
+			if ( ! key_exists( $vendor_name, $providers ) ) {
 				continue;
 			}
 
-			$vendor           = $this->get_provider_cluster()[ $vendor_name ];
+			$vendor           = $providers[ $vendor_name ];
 			$export_meta_data = $vendor->get_export_meta_data( $groups_export_data );
 
+			$export_data = array(
+				'meta'   => $export_meta_data,
+				'groups' => $groups_export_data,
+			);
+
 			$groups_export_content = wp_json_encode(
-				array(
-					'meta'   => $export_meta_data,
-					'groups' => $groups_export_data,
-				),
+				$export_data,
 				JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
 			);
 
-			if ( false === $groups_export_content ) {
+			if ( ! is_string( $groups_export_content ) ) {
 				continue;
 			}
 
-			$file_name                                = $vendor_name . '.json';
+			$file_name = sprintf( '%s.json', $vendor_name );
+
 			$related_group_export_files[ $file_name ] = $groups_export_content;
 		}
 
@@ -574,8 +601,11 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	public function get_export_file_names(): array {
 		$export_file_names = array();
 
-		foreach ( array_keys( $this->get_provider_cluster() ) as $vendor_name ) {
-			$export_file_names[] = $vendor_name . '.json';
+		$providers    = $this->get_provider_cluster();
+		$vendor_names = array_keys( $providers );
+
+		foreach ( $vendor_names as $vendor_name ) {
+			$export_file_names[] = sprintf( '%s.json', $vendor_name );
 		}
 
 		return $export_file_names;
@@ -625,73 +655,26 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		// b) check if the field has acfViewId in the conditional fields
 		// (as can leave from the previous field type, e.g. after clone).
 
-		if ( ! key_exists( $vendor_name, $this->get_provider_cluster() ) ) {
+		$providers = $this->get_provider_cluster();
+
+		if ( ! key_exists( $vendor_name, $providers ) ) {
 			return false;
 		}
 
-		$markup_instance = $this->get_provider_cluster()[ $vendor_name ]->get_markup_field_instance( $field_type );
+		$markup_instance = $providers[ $vendor_name ]->get_markup_field_instance( $field_type );
 
 		if ( null === $markup_instance ) {
 			return false;
 		}
 
-		$conditional_fields = $markup_instance->get_conditional_fields(
-			$field_settings->get_field_meta()
+		$field_meta         = $field_settings->get_field_meta();
+		$conditional_fields = $markup_instance->get_conditional_fields( $field_meta );
+
+		return in_array(
+			Field_Settings::FIELD_ACF_VIEW_ID,
+			$conditional_fields,
+			true
 		);
-
-		return in_array( Field_Settings::FIELD_ACF_VIEW_ID, $conditional_fields, true );
-	}
-
-	/**
-	 * @param array<string,Field_Meta> $choices
-	 *
-	 * @return array<string,string>
-	 */
-	protected static function get_label_choices( array $choices, bool $is_identifier ): array {
-		$label_choices = array();
-
-		foreach ( $choices as $key => $field_meta ) {
-			$label_choices[ $key ] = $is_identifier ?
-				$field_meta->get_identifier() :
-				self::get_choice_label( $field_meta );
-		}
-
-		return $label_choices;
-	}
-
-	/**
-	 * The Field_Type classes give their own type, otherwise the plain type is shown,
-	 * unless it just repeats the field id (built-in fields like Woo's are self-explanatory).
-	 */
-	protected static function get_type_text( Field_Meta $field_meta ): string {
-		// repeatable fields are 'group' in the meta, while the original is kept in the self-repeatable one.
-		$self_repeatable_meta = $field_meta->get_self_repeatable_meta();
-		$type_meta            = $self_repeatable_meta ?? $field_meta;
-		$field_class          = $type_meta->get_field_class();
-
-		if ( is_a( $field_class, Field_Type::class, true ) ) {
-			$type = $field_class::_TYPE_;
-		} elseif ( $type_meta->get_type() !== $type_meta->get_field_id() ) {
-			$type = $type_meta->get_type();
-		} else {
-			return '';
-		}
-
-		return null !== $self_repeatable_meta ?
-			__( 'repeatable', 'acf-views' ) . ' ' . $type :
-			$type;
-	}
-
-	protected static function get_choice_label( Field_Meta $field_meta ): string {
-		$type_text = self::get_type_text( $field_meta );
-
-		$label = '' !== $type_text ?
-			sprintf( '%s (%s)', $field_meta->get_label(), $type_text ) :
-			$field_meta->get_label();
-
-		return $field_meta->is_pro_only() ?
-			$label . ' ' . __( '[PRO only]', 'acf-views' ) :
-			$label;
 	}
 
 	protected function make_integration_instances( Route_Detector $route_detector ): void {
@@ -714,5 +697,91 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 									}
 								}
 							);
+	}
+
+	/**
+	 * @param array<string,Field_Meta> $choices
+	 *
+	 * @return array<string,string>
+	 */
+	protected static function get_label_choices( array $choices, bool $is_identifier ): array {
+		$label_choices = array();
+
+		foreach ( $choices as $key => $field_meta ) {
+			$label_choices[ $key ] = $is_identifier ?
+				$field_meta->get_identifier() :
+				self::get_choice_label( $field_meta );
+		}
+
+		return $label_choices;
+	}
+
+	protected static function get_choice_label( Field_Meta $field_meta ): string {
+		$type_label = self::resolve_type_label( $field_meta );
+		$label      = $field_meta->get_label();
+		$is_typed   = strlen( $type_label ) > 0;
+
+		if ( $is_typed ) {
+			$label = sprintf( '%s (%s)', $label, $type_label );
+		}
+
+		if ( $field_meta->is_pro_only() ) {
+			$pro_only_label = __( '[PRO only]', 'acf-views' );
+			$parts          = array(
+				$label,
+				$pro_only_label,
+			);
+
+			return join( ' ', $parts );
+		}
+
+		return $label;
+	}
+
+	/**
+	 * Format is 'specific:common', e.g. 'file:list' for the vendor's 'file' type rendered by a List-based field class.
+	 * The specific part is skipped when it just repeats the field id (built-in fields like Woo's),
+	 * the common part exists only for the Field_Type classes, and equal parts are shown once.
+	 */
+	protected static function resolve_type_label( Field_Meta $field_meta ): string {
+		// repeatable fields are 'group' in the meta, while the original is kept in the self-repeatable one.
+		$self_repeatable_meta = $field_meta->get_self_repeatable_meta();
+		$type_meta            = $self_repeatable_meta ?? $field_meta;
+		$field_class          = $type_meta->get_field_class();
+		$meta_type            = $type_meta->get_type();
+
+		$is_field_type_class = is_a(
+			$field_class,
+			Field_Type::class,
+			true
+		);
+
+		$specific = $meta_type !== $type_meta->get_field_id() ?
+			$meta_type :
+			'';
+		$common   = $is_field_type_class ?
+			$field_class::_TYPE_ :
+			'';
+
+		$candidates = array( $specific, $common );
+		$parts      = array_filter(
+			$candidates,
+			static fn( string $part ): bool => strlen( $part ) > 0
+		);
+		$unique     = array_unique( $parts );
+		$type       = implode( ':', $unique );
+		$is_filled  = strlen( $type ) > 0;
+
+		if ( $is_filled && null !== $self_repeatable_meta ) {
+			$repeatable_label = __( 'repeatable', 'acf-views' );
+			$labeled_parts    = array(
+				$repeatable_label,
+				$type,
+			);
+
+			return join( ' ', $labeled_parts );
+		}
+
+		return $type;
 	}
 }

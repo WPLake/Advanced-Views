@@ -239,12 +239,15 @@ class Field_Meta {
 	 */
 	public function set_choices( array $choices ): void {
 		foreach ( $choices as $key => $value ) {
-			if ( false === is_string( $value ) &&
-				false === is_numeric( $value ) ) {
+			$is_unsupported = false === is_string( $value ) && false === is_numeric( $value );
+
+			if ( $is_unsupported ) {
 				continue;
 			}
 
-			$this->choices[ string( $key ) ] = string( $value );
+			$choice_key = string( $key );
+
+			$this->choices[ $choice_key ] = string( $value );
 		}
 	}
 

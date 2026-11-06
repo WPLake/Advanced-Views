@@ -172,7 +172,7 @@ class Field_Settings_Integration extends Acf_Integration_Base {
 			$this->add_conditional_filter( $field_name, $target_choices, true );
 		}
 
-		$all_conditional_fields = $this->provider_cluster->get_all_conditional_fields();
+		$all_conditional_fields = Field_Provider_Cluster::get_all_conditional_fields();
 
 		$missing_conditional_fields     = array_diff(
 			$all_conditional_fields,

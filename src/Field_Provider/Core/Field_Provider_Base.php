@@ -28,59 +28,6 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 		$this->field_types = $this->get_field_types();
 	}
 
-	/**
-	 * @return array<string,Markup_Field>
-	 */
-	abstract protected function get_field_types(): array;
-
-	protected function get_field_key( string $group_id, string $field_id, string $sub_field_id = '' ): string {
-		$source = ! $this->is_without_name_in_keys() ?
-			$this->get_name() :
-			'';
-
-		return Field_Settings::create_field_key( $group_id, $field_id, $sub_field_id, $source );
-	}
-
-	// for back compatibility only.
-	protected function is_without_name_in_keys(): bool {
-		return false;
-	}
-
-	/**
-	 * @return class-string|''
-	 */
-	protected function get_field_class( string $field_type ): string {
-		$instance = $this->get_markup_field_instance( $field_type );
-
-		return null !== $instance ?
-			get_class( $instance ) :
-			'';
-	}
-
-	/**
-	 * @return string[]
-	 */
-	protected function get_pro_stub_field_types(): array {
-		$pro_stub_field_types = array();
-
-		foreach ( $this->field_types as $field_type => $instance ) {
-			if ( false === ( $instance instanceof Pro_Stub_Field ) ) {
-				continue;
-			}
-
-			$pro_stub_field_types[] = $field_type;
-		}
-
-		return $pro_stub_field_types;
-	}
-
-	/**
-	 * @return  array<string,Markup_Field>
-	 */
-	protected function get_registered_field_types(): array {
-		return $this->field_types;
-	}
-
 	public function get_group_key( string $group_id ): string {
 		$source = false === $this->is_without_name_in_keys() ?
 			$this->get_name() :
@@ -141,10 +88,8 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 				$repeatable_instance = $this->get_markup_field_instance( $self_repeatable_meta->get_type() );
 
 				if ( null !== $repeatable_instance ) {
-					$conditional_instance_field_keys = array_merge(
-						$conditional_instance_field_keys,
-						$repeatable_instance->get_conditional_fields( $field_meta )
-					);
+					$repeatable_keys                 = $repeatable_instance->get_conditional_fields( $field_meta );
+					$conditional_instance_field_keys = array_merge( $conditional_instance_field_keys, $repeatable_keys );
 					$conditional_instance_field_keys = array_unique( $conditional_instance_field_keys );
 				}
 			}
@@ -169,7 +114,8 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 	 * @return string[]
 	 */
 	public function get_field_front_assets( Field_Settings $field_settings ): array {
-		$field_type     = $field_settings->get_field_meta()->get_type();
+		$field_meta     = $field_settings->get_field_meta();
+		$field_type     = $field_meta->get_type();
 		$field_instance = $this->field_types[ $field_type ] ?? null;
 
 		return null !== $field_instance ?
@@ -202,5 +148,63 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 	public function get_export_meta_data( array $groups_data ): array {
 		// by default, no special meta is needed (it's vendor specific only, e.g. for Pods).
 		return array();
+	}
+
+	/**
+	 * @return array<string,Markup_Field>
+	 */
+	abstract protected function get_field_types(): array;
+
+	protected function get_field_key( string $group_id, string $field_id, string $sub_field_id = '' ): string {
+		$source = ! $this->is_without_name_in_keys() ?
+			$this->get_name() :
+			'';
+
+		return Field_Settings::create_field_key(
+			$group_id,
+			$field_id,
+			$sub_field_id,
+			$source
+		);
+	}
+
+	// for back compatibility only.
+	protected function is_without_name_in_keys(): bool {
+		return false;
+	}
+
+	/**
+	 * @return class-string|''
+	 */
+	protected function get_field_class( string $field_type ): string {
+		$instance = $this->get_markup_field_instance( $field_type );
+
+		return null !== $instance ?
+			get_class( $instance ) :
+			'';
+	}
+
+	/**
+	 * @return string[]
+	 */
+	protected function get_pro_stub_field_types(): array {
+		$pro_stub_field_types = array();
+
+		foreach ( $this->field_types as $field_type => $instance ) {
+			if ( false === ( $instance instanceof Pro_Stub_Field ) ) {
+				continue;
+			}
+
+			$pro_stub_field_types[] = $field_type;
+		}
+
+		return $pro_stub_field_types;
+	}
+
+	/**
+	 * @return  array<string,Markup_Field>
+	 */
+	protected function get_registered_field_types(): array {
+		return $this->field_types;
 	}
 }

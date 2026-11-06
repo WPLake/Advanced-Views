@@ -113,8 +113,13 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 	public function get_field_choices( array $include_only_types = array() ): array {
 		$field_choices = $this->create_group_field_choices( $include_only_types );
 
-		if ( array() === $include_only_types ||
-			in_array( Taxonomy_Term_Fields::FIELD_TERMS, $include_only_types, true ) ) {
+		$is_terms_included = array() === $include_only_types || in_array(
+			Taxonomy_Term_Fields::FIELD_TERMS,
+			$include_only_types,
+			true
+		);
+
+		if ( $is_terms_included ) {
 			$taxonomy_choices = $this->create_taxonomy_choices();
 			$field_choices    = array_replace( $field_choices, $taxonomy_choices );
 		}
@@ -128,19 +133,23 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 	public function fill_field_meta( Field_Meta $field_meta, array $data = array() ): void {
 		$field_id = $field_meta->get_field_id();
 
-		if ( 0 === strpos( $field_id, Taxonomy_Term_Fields::PREFIX ) ) {
+		$is_taxonomy_field = 0 === strpos( $field_id, Taxonomy_Term_Fields::PREFIX );
+
+		if ( $is_taxonomy_field ) {
 			$term_name = str_replace( Taxonomy_Term_Fields::PREFIX, '', $field_id );
 
 			$taxonomy = get_taxonomy( $term_name );
 			// @phpstan-ignore-next-line for some reason label can be bool (e.g. post_multilingual, likely from Polylang).
-			$label = false !== $taxonomy ? (string) $taxonomy->label : $term_name;
+			$label = is_object( $taxonomy ) ? (string) $taxonomy->label : $term_name;
+
+			$field_class = $this->get_field_class( Taxonomy_Term_Fields::FIELD_TERMS );
 
 			$field_meta->set_type( Taxonomy_Term_Fields::FIELD_TERMS );
 			// name is necessary for the identifier and markup generation.
 			$field_meta->set_name( $term_name );
 			$field_meta->set_label( $label );
 			$field_meta->set_identifier( $label );
-			$field_meta->set_field_class( $this->get_field_class( $field_meta->get_type() ) );
+			$field_meta->set_field_class( $field_class );
 			// it's necessary to define, as the custom field will include the Taxonomy field,
 			// which waits for this setting.
 			$field_meta->set_is_multiple( true );
@@ -152,15 +161,23 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 
 		$supported_types = $this->get_supported_field_types();
 
-		if ( in_array( $field_id, $supported_types, true ) ) {
+		$is_supported = in_array(
+			$field_id,
+			$supported_types,
+			true
+		);
+
+		if ( $is_supported ) {
 			$field_meta->set_type( $field_id );
 			// name is necessary for the identifier and markup generation.
 			$field_meta->set_name( $field_id );
 
-			$field_names = $this->get_field_names( $field_id );
+			$field_names = self::get_field_names( $field_id );
+			$field_class = $this->get_field_class( $field_id );
+
 			$field_meta->set_label( $field_names['label'] );
 			$field_meta->set_identifier( $field_names['identifier'] );
-			$field_meta->set_field_class( $this->get_field_class( $field_id ) );
+			$field_meta->set_field_class( $field_class );
 
 			$field_meta->set_is_field_exist( true );
 		}
@@ -194,11 +211,13 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 		$is_comment_group = ! $is_comment_items_group &&
 							0 === strpos( $field_id, Comment_Fields::PREFIX );
 
-		if ( false === $source->is_options() &&
-			( $is_post_group ||
-				$is_taxonomy_terms_group ||
-				$is_menu_item_group ||
-				$is_comment_items_group ) ) {
+		$is_id_group = $is_post_group ||
+						$is_taxonomy_terms_group ||
+						$is_menu_item_group ||
+						$is_comment_items_group;
+		$is_id_used  = false === $source->is_options() && $is_id_group;
+
+		if ( $is_id_used ) {
 			return $source->get_id();
 		}
 
@@ -252,6 +271,7 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 		// the feature is not supported.
 		return null;
 	}
+
 	// for back compatibility only.
 	protected function is_without_name_in_keys(): bool {
 		return true;
@@ -326,15 +346,23 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 	 */
 	protected function create_group_field_choices( array $include_only_types ): array {
 		$field_choices = array();
+		$vendor_name   = $this->get_name();
+		$groups        = self::get_fields_with_labels_in_groups();
 
-		foreach ( self::get_fields_with_labels_in_groups() as $group_name => $group_choices ) {
-			foreach ( array_keys( $group_choices ) as $field_id ) {
-				$is_included = array() === $include_only_types || in_array( $field_id, $include_only_types, true );
+		foreach ( $groups as $group_name => $group_choices ) {
+			$field_ids = array_keys( $group_choices );
+
+			foreach ( $field_ids as $field_id ) {
+				$is_included = array() === $include_only_types || in_array(
+					$field_id,
+					$include_only_types,
+					true
+				);
 
 				if ( $is_included ) {
 					$field_key = $this->get_field_key( $group_name, $field_id );
 
-					$field_meta = new Field_Meta( $this->get_name(), $field_id );
+					$field_meta = new Field_Meta( $vendor_name, $field_id );
 					$this->fill_field_meta( $field_meta );
 
 					$field_choices[ $field_key ] = $field_meta;
@@ -350,13 +378,14 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 	 */
 	protected function create_taxonomy_choices(): array {
 		$taxonomy_choices = array();
+		$vendor_name      = $this->get_name();
 		$taxonomies       = get_taxonomies( array(), 'objects' );
 
 		foreach ( $taxonomies as $taxonomy ) {
 			$field_id     = Taxonomy_Term_Fields::PREFIX . $taxonomy->name;
 			$taxonomy_key = $this->get_field_key( Taxonomy_Term_Fields::GROUP_NAME, $field_id );
 
-			$field_meta = new Field_Meta( $this->get_name(), $field_id );
+			$field_meta = new Field_Meta( $vendor_name, $field_id );
 			$this->fill_field_meta( $field_meta );
 
 			$taxonomy_choices[ $taxonomy_key ] = $field_meta;
@@ -368,8 +397,10 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 	/**
 	 * @return array{label:string,identifier:string}
 	 */
-	protected function get_field_names( string $field_id ): array {
-		foreach ( self::get_fields_with_labels_in_groups() as $group_choices ) {
+	protected static function get_field_names( string $field_id ): array {
+		$groups = self::get_fields_with_labels_in_groups();
+
+		foreach ( $groups as $group_choices ) {
 			if ( key_exists( $field_id, $group_choices ) ) {
 				return $group_choices[ $field_id ];
 			}
