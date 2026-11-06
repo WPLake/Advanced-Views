@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Fields\List_Field_Type;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -22,7 +23,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-class Comment_Items_List_Field implements Markup_Field {
+class Comment_Items_List_Field extends List_Field_Type implements Markup_Field {
 	use Markup_Field_Base;
 
 	const AUTHOR_NAME = 'author_name';
