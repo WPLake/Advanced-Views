@@ -116,16 +116,18 @@ class Field_Meta {
 	/**
 	 * @param mixed $arg_value
 	 */
-	public function set_custom_arg( string $arg_name, $arg_value ): void {
+	public function set_custom_arg( string $arg_name, $arg_value ): self {
 		$this->custom_args[ $arg_name ] = $arg_value;
+
+		return $this;
 	}
 
-	public function unset_custom_arg( string $arg_name ): void {
-		if ( ! key_exists( $arg_name, $this->custom_args ) ) {
-			return;
+	public function unset_custom_arg( string $arg_name ): self {
+		if ( key_exists( $arg_name, $this->custom_args ) ) {
+			unset( $this->custom_args[ $arg_name ] );
 		}
 
-		unset( $this->custom_args[ $arg_name ] );
+		return $this;
 	}
 
 	public function get_return_format(): string {
@@ -192,52 +194,70 @@ class Field_Meta {
 
 	// setters.
 
-	public function set_is_field_exist( bool $is_field_exist ): void {
+	public function set_is_field_exist( bool $is_field_exist ): self {
 		$this->is_field_exist = $is_field_exist;
+
+		return $this;
 	}
 
-	public function set_name( string $name ): void {
+	public function set_name( string $name ): self {
 		$this->name = $name;
+
+		return $this;
 	}
 
-	public function set_label( string $label ): void {
+	public function set_label( string $label ): self {
 		$this->label = $label;
+
+		return $this;
 	}
 
 	/**
 	 * Vendor-native name, used instead of the label for the language-independent identifiers.
 	 */
-	public function set_identifier( string $identifier ): void {
+	public function set_identifier( string $identifier ): self {
 		$this->identifier = $identifier;
+
+		return $this;
 	}
 
 	/**
 	 * @param class-string|'' $field_class
 	 */
-	public function set_field_class( string $field_class ): void {
+	public function set_field_class( string $field_class ): self {
 		$this->field_class = $field_class;
+
+		return $this;
 	}
 
-	public function set_is_pro_only( bool $is_pro_only ): void {
+	public function set_is_pro_only( bool $is_pro_only ): self {
 		$this->is_pro_only = $is_pro_only;
+
+		return $this;
 	}
 
-	public function set_type( string $type ): void {
+	public function set_type( string $type ): self {
 		$this->type = $type;
+
+		return $this;
 	}
 
-	public function set_return_format( string $return_format ): void {
+	public function set_return_format( string $return_format ): self {
 		$this->return_format = $return_format;
+
+		return $this;
 	}
 
-	public function set_display_format( string $display_format ): void {
+	public function set_display_format( string $display_format ): self {
 		$this->display_format = $display_format;
+
+		return $this;
 	}
 
 	/**
 	 * @param mixed[] $choices
 	 */
-	public function set_choices( array $choices ): void {
+	public function set_choices( array $choices ): self {
 		foreach ( $choices as $key => $value ) {
 			$is_unsupported = false === is_string( $value ) && false === is_numeric( $value );
 
@@ -249,48 +269,70 @@ class Field_Meta {
 
 			$this->choices[ $choice_key ] = string( $value );
 		}
+
+		return $this;
 	}
 
-	public function set_is_multiple( bool $is_multiple ): void {
+	public function set_is_multiple( bool $is_multiple ): self {
 		$this->is_multiple = $is_multiple;
+
+		return $this;
 	}
 
-	public function set_is_repeater( bool $is_repeater ): void {
+	public function set_is_repeater( bool $is_repeater ): self {
 		$this->is_repeater = $is_repeater;
+
+		return $this;
 	}
 
-	public function set_is_group( bool $is_group ): void {
+	public function set_is_group( bool $is_group ): self {
 		$this->is_group = $is_group;
+
+		return $this;
 	}
 
-	public function set_self_repeatable_meta( ?Field_Meta $field_meta ): void {
+	public function set_self_repeatable_meta( ?Field_Meta $field_meta ): self {
 		$this->field_meta = $field_meta;
+
+		return $this;
 	}
 
 	/**
 	 * @param mixed $default_value
 	 */
-	public function set_default_value( $default_value ): void {
+	public function set_default_value( $default_value ): self {
 		$this->default_value = $default_value;
+
+		return $this;
 	}
 
-	public function set_zoom( int $zoom ): void {
+	public function set_zoom( int $zoom ): self {
 		$this->zoom = $zoom;
+
+		return $this;
 	}
 
-	public function set_center_lat( string $center_lat ): void {
+	public function set_center_lat( string $center_lat ): self {
 		$this->center_lat = $center_lat;
+
+		return $this;
 	}
 
-	public function set_center_lng( string $center_lng ): void {
+	public function set_center_lng( string $center_lng ): self {
 		$this->center_lng = $center_lng;
+
+		return $this;
 	}
 
-	public function set_is_ui_only( bool $is_ui_only ): void {
+	public function set_is_ui_only( bool $is_ui_only ): self {
 		$this->is_ui_only = $is_ui_only;
+
+		return $this;
 	}
 
-	public function set_is_native_type( bool $is_native_type ): void {
+	public function set_is_native_type( bool $is_native_type ): self {
 		$this->is_native_type = $is_native_type;
+
+		return $this;
 	}
 }

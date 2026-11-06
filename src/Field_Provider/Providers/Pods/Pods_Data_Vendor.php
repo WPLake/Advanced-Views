@@ -257,22 +257,24 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 		);
 		$is_repeatable_not_supported = $is_repeatable && ! key_exists( 'group', $registered );
 
-		$field_meta->set_is_native_type( true );
-		$field_meta->set_name( $name );
-		$field_meta->set_type( $field_type );
-		$field_meta->set_label( $label );
-		$field_meta->set_identifier( $name );
-		$field_meta->set_field_class( $field_class );
-		$field_meta->set_display_format( $display_format );
-		$field_meta->set_return_format( $return_format );
-		$field_meta->set_is_multiple( 'multi' === $format_type );
-		$field_meta->set_choices( $choices );
-		$field_meta->set_is_field_exist( true );
-		$field_meta->set_is_pro_only( $is_pro_stub || $is_repeatable_not_supported );
+		$field_meta
+			->set_is_native_type( true )
+			->set_name( $name )
+			->set_type( $field_type )
+			->set_label( $label )
+			->set_identifier( $name )
+			->set_field_class( $field_class )
+			->set_display_format( $display_format )
+			->set_return_format( $return_format )
+			->set_is_multiple( 'multi' === $format_type )
+			->set_choices( $choices )
+			->set_is_field_exist( true )
+			->set_is_pro_only( $is_pro_stub || $is_repeatable_not_supported );
 
 		if ( $is_repeatable ) {
-			$field_meta->set_self_repeatable_meta( clone $field_meta );
-			$field_meta->set_type( 'group' );
+			$field_meta
+				->set_self_repeatable_meta( clone $field_meta )
+				->set_type( 'group' );
 		}
 	}
 

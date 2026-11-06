@@ -225,22 +225,26 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			$name :
 			__( 'Hidden', 'acf-views' );
 
-		$is_pro_stub = in_array(
+		$is_pro_stub                 = in_array(
 			$field_type,
 			$pro_stub_types,
 			true
 		);
+		$is_repeatable_not_supported = $is_repeatable && $this->is_repeatable_not_supported();
 
-		$field_meta->set_is_native_type( true );
-		$field_meta->set_name( $name );
-		$field_meta->set_type( $field_type );
-		$field_meta->set_label( $label );
-		$field_meta->set_identifier( $identifier );
-		$field_meta->set_field_class( $field_class );
-		$field_meta->set_choices( $choices );
-		$field_meta->set_is_multiple( $is_multiple );
-		$field_meta->set_return_format( $save_format );
-		$field_meta->set_display_format( $save_format );
+		$field_meta
+			->set_is_native_type( true )
+			->set_name( $name )
+			->set_type( $field_type )
+			->set_label( $label )
+			->set_identifier( $identifier )
+			->set_field_class( $field_class )
+			->set_choices( $choices )
+			->set_is_multiple( $is_multiple )
+			->set_return_format( $save_format )
+			->set_display_format( $save_format )
+			->set_is_pro_only( $is_pro_stub || $is_repeatable_not_supported )
+			->set_is_field_exist( true );
 
 		if ( $timestamp ) {
 			$field_meta->set_return_format( 'U' );
@@ -274,12 +278,6 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			$field_meta->set_is_group( true );
 		}
 
-		$field_meta->set_is_field_exist( true );
-
-		$is_repeatable_not_supported = $is_repeatable && $this->is_repeatable_not_supported();
-
-		$field_meta->set_is_pro_only( $is_pro_stub || $is_repeatable_not_supported );
-
 		// some fields don't require the repeater trick, as they use the HTML field with the formatted value.
 		// so markup will already include all the content.
 		$field_types_without_self_repeatable = array(
@@ -298,11 +296,13 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 
 		if ( $is_self_repeatable ) {
 			if ( 'group' === $field_type ) {
-				$field_meta->set_is_group( false );
-				$field_meta->set_is_repeater( true );
+				$field_meta
+					->set_is_group( false )
+					->set_is_repeater( true );
 			} else {
-				$field_meta->set_self_repeatable_meta( clone $field_meta );
-				$field_meta->set_type( 'group' );
+				$field_meta
+					->set_self_repeatable_meta( clone $field_meta )
+					->set_type( 'group' );
 			}
 		}
 	}
@@ -951,8 +951,9 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		// set the default value (from MetaBox)
 		// if user changes the format using the jsOptions setting, we can't get it, so he must define 'save_format' in that case.
 		if ( '' === $return_format ) {
-			$field_meta->set_return_format( $format );
-			$field_meta->set_display_format( $format );
+			$field_meta
+				->set_return_format( $format )
+				->set_display_format( $format );
 		} elseif ( 'U' === $return_format ) {
 			$field_meta->set_display_format( $format );
 		}

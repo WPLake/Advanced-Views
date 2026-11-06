@@ -144,17 +144,17 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 
 			$field_class = $this->get_field_class( Taxonomy_Term_Fields::FIELD_TERMS );
 
-			$field_meta->set_type( Taxonomy_Term_Fields::FIELD_TERMS );
 			// name is necessary for the identifier and markup generation.
-			$field_meta->set_name( $term_name );
-			$field_meta->set_label( $label );
-			$field_meta->set_identifier( $label );
-			$field_meta->set_field_class( $field_class );
-			// it's necessary to define, as the custom field will include the Taxonomy field,
+			// multiple is necessary to define, as the custom field will include the Taxonomy field,
 			// which waits for this setting.
-			$field_meta->set_is_multiple( true );
-
-			$field_meta->set_is_field_exist( true );
+			$field_meta
+				->set_type( Taxonomy_Term_Fields::FIELD_TERMS )
+				->set_name( $term_name )
+				->set_label( $label )
+				->set_identifier( $label )
+				->set_field_class( $field_class )
+				->set_is_multiple( true )
+				->set_is_field_exist( true );
 
 			return;
 		}
@@ -168,18 +168,17 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 		);
 
 		if ( $is_supported ) {
-			$field_meta->set_type( $field_id );
-			// name is necessary for the identifier and markup generation.
-			$field_meta->set_name( $field_id );
-
 			$field_names = self::get_field_names( $field_id );
 			$field_class = $this->get_field_class( $field_id );
 
-			$field_meta->set_label( $field_names['label'] );
-			$field_meta->set_identifier( $field_names['identifier'] );
-			$field_meta->set_field_class( $field_class );
-
-			$field_meta->set_is_field_exist( true );
+			// name is necessary for the identifier and markup generation.
+			$field_meta
+				->set_type( $field_id )
+				->set_name( $field_id )
+				->set_label( $field_names['label'] )
+				->set_identifier( $field_names['identifier'] )
+				->set_field_class( $field_class )
+				->set_is_field_exist( true );
 		}
 	}
 

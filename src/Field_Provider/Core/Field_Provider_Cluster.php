@@ -739,8 +739,8 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	}
 
 	/**
-	 * Format is 'specific:common', e.g. 'file:list' for the vendor's 'file' type rendered by a List-based field class.
-	 * The specific part is skipped when it just repeats the field id (built-in fields like Woo's),
+	 * Format is 'common:specific', e.g. 'list:file' for the vendor's 'file' type rendered by a List-based field class.
+	 * The specific part is shown only for the vendor-native types (built-in fields like Woo's or WP's have internal ones),
 	 * the common part exists only for the Field_Type classes, and equal parts are shown once.
 	 */
 	protected static function resolve_type_label( Field_Meta $field_meta ): string {
@@ -748,7 +748,6 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		$self_repeatable_meta = $field_meta->get_self_repeatable_meta();
 		$type_meta            = $self_repeatable_meta ?? $field_meta;
 		$field_class          = $type_meta->get_field_class();
-		$meta_type            = $type_meta->get_type();
 
 		$is_field_type_class = is_a(
 			$field_class,
@@ -756,11 +755,11 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 			true
 		);
 
-		$specific = $meta_type !== $type_meta->get_field_id() ?
-			$meta_type :
-			'';
 		$common   = $is_field_type_class ?
 			$field_class::_TYPE_ :
+			'';
+		$specific = $type_meta->is_native_type() ?
+			$type_meta->get_type() :
 			'';
 
 		$candidates = array( $common, $specific );

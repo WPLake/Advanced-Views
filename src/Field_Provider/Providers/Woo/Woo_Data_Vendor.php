@@ -109,16 +109,16 @@ final class Woo_Data_Vendor extends Field_Provider_Base {
 			// it's necessary to have real meta names for WP_Query.
 			$real_field_name = self::get_real_field_name( $field_id );
 
-			$field_meta->set_type( $field_id );
-			$field_meta->set_name( $real_field_name );
-
 			$field_names = self::get_fields_with_labels()[ $field_id ] ?? array();
-			$field_meta->set_label( $field_names['label'] ?? '' );
-			$field_meta->set_identifier( $field_names['identifier'] ?? '' );
 			$field_class = $this->get_field_class( $field_id );
 
-			$field_meta->set_field_class( $field_class );
-			$field_meta->set_is_field_exist( true );
+			$field_meta
+				->set_type( $field_id )
+				->set_name( $real_field_name )
+				->set_label( $field_names['label'] ?? '' )
+				->set_identifier( $field_names['identifier'] ?? '' )
+				->set_field_class( $field_class )
+				->set_is_field_exist( true );
 
 			if ( Woo_Fields::FIELD_GALLERY === $field_id ) {
 				$field_meta->set_is_multiple( true );

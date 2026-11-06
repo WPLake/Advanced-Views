@@ -236,21 +236,22 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 		);
 		$is_filled      = strlen( $type ) > 0;
 
-		$field_meta->set_is_native_type( true );
-		$field_meta->set_name( $name );
-		$field_meta->set_type( $type );
-		$field_meta->set_label( $label );
-		$field_meta->set_identifier( $name );
-		$field_meta->set_field_class( $field_class );
-		$field_meta->set_is_pro_only( $is_pro_only );
-		$field_meta->set_return_format( $return_format );
-		$field_meta->set_choices( $choices );
-		$field_meta->set_display_format( $display_format );
-		$field_meta->set_is_multiple( $is_multiple );
-		$field_meta->set_zoom( $zoom );
-		$field_meta->set_center_lat( $center_lat );
-		$field_meta->set_center_lng( $center_lng );
-		$field_meta->set_is_field_exist( $is_filled );
+		$field_meta
+			->set_is_native_type( true )
+			->set_name( $name )
+			->set_type( $type )
+			->set_label( $label )
+			->set_identifier( $name )
+			->set_field_class( $field_class )
+			->set_is_pro_only( $is_pro_only )
+			->set_return_format( $return_format )
+			->set_choices( $choices )
+			->set_display_format( $display_format )
+			->set_is_multiple( $is_multiple )
+			->set_zoom( $zoom )
+			->set_center_lat( $center_lat )
+			->set_center_lng( $center_lng )
+			->set_is_field_exist( $is_filled );
 
 		if ( key_exists( 'default_value', $data ) ) {
 			if ( is_array( $data['default_value'] ) ) {
