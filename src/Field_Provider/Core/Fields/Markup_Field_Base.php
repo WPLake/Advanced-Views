@@ -17,13 +17,8 @@ defined( 'ABSPATH' ) || exit;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-abstract class Markup_Field_Base implements Markup_Field {
+trait Markup_Field_Base {
 	use Safe_Array_Arguments;
-
-	const VALUE     = 'value';
-	const VIEW_ID   = 'view_id';
-	const LAYOUT_ID = 'layout_id';
-	const LABEL     = 'label';
 
 	/**
 	 * @return Html_Node[]

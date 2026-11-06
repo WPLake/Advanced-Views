@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Map_Field_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Fields\Map_Field_Type;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
@@ -26,13 +26,13 @@ final class Map_Pattern implements Frontend_Pattern, Template_Pattern, CSS_Patte
 		$attributes = array(
 			'data-zoom'       => $field
 				->clone()
-				->add_item_path( Map_Field_Base::ZOOM ),
+				->add_item_path( Map_Field_Type::ZOOM ),
 			'data-center-lat' => $field
 				->clone()
-				->add_item_path( Map_Field_Base::CENTER_LAT ),
+				->add_item_path( Map_Field_Type::CENTER_LAT ),
 			'data-center-lng' => $field
 				->clone()
-				->add_item_path( Map_Field_Base::CENTER_LNG ),
+				->add_item_path( Map_Field_Type::CENTER_LNG ),
 		);
 
 		return array(
@@ -45,16 +45,16 @@ final class Map_Pattern implements Frontend_Pattern, Template_Pattern, CSS_Patte
 		$attributes = array(
 			'data-lat'   => $item
 				->clone()
-				->add_item_path( Map_Field_Base::LAT ),
+				->add_item_path( Map_Field_Type::LAT ),
 			'data-lng'   => $item
 				->clone()
-				->add_item_path( Map_Field_Base::LNG ),
+				->add_item_path( Map_Field_Type::LNG ),
 			'data-icon'  => $item
 				->clone()
-				->add_item_path( Map_Field_Base::ICON ),
+				->add_item_path( Map_Field_Type::ICON ),
 			'data-title' => $item
 				->clone()
-				->add_item_path( Map_Field_Base::TITLE ),
+				->add_item_path( Map_Field_Type::TITLE ),
 		);
 
 		return array(

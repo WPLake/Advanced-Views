@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Fields\Image_Field_Type;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
@@ -16,17 +17,15 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
-class Image_Field extends Markup_Field_Base {
-	const WIDTH       = 'width';
-	const HEIGHT      = 'height';
+class Image_Field extends Image_Field_Type implements Markup_Field {
+	use Markup_Field_Base;
+
 	const ALT         = 'alt';
-	const CAPTION     = 'caption';
 	const DESCRIPTION = 'description';
 	const SRCSET      = 'srcset';
 	const SIZES       = 'sizes';
 	const DECODING    = 'decoding';
 	const LOADING     = 'loading';
-	const FULL_SIZE   = 'full_size';
 	const SVG_CONTENT = 'svg_content';
 	const ID          = 'id';
 
@@ -214,7 +213,7 @@ class Image_Field extends Markup_Field_Base {
 			);
 		}
 
-		return array_merge( parent::get_conditional_fields( $field_meta ), $conditional_fields );
+		return $conditional_fields;
 	}
 
 	public function get_front_assets( Field_Settings $field_settings ): array {
@@ -229,7 +228,7 @@ class Image_Field extends Markup_Field_Base {
 				break;
 		}
 
-		return array_merge( parent::get_front_assets( $field_settings ), $front_assets );
+		return $front_assets;
 	}
 
 	/**

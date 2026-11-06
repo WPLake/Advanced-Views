@@ -1,0 +1,89 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\Post;
+
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\User_Field;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Raw_Field_Value;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+
+defined( 'ABSPATH' ) || exit;
+
+class Post_Author_Field extends User_Field {
+	use Custom_Field;
+
+	/**
+	 * @param mixed $post_id
+	 */
+	protected function get_post_author_id( $post_id ): ?int {
+		$post = $this->get_post( $post_id );
+
+		if ( null === $post ) {
+			return null;
+		}
+
+		$author_id = string( get_post_field( 'post_author', $post ) );
+		$author    = strlen( $author_id ) > 0 ?
+			get_user_by( 'ID', $author_id ) :
+			null;
+
+		return $author->ID ?? null;
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	protected function get_item_template_args( Raw_Field_Value $field_value ): array {
+		$field_value->set_value( $this->get_post_author_id( $field_value->get_value() ) );
+
+		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
+			return array(
+				self::VALUE => $field_value->get_value(),
+			);
+		}
+
+		return parent::get_item_template_args( $field_value );
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	protected function get_validation_item_template_args( Raw_Field_Value $field_value ): array {
+		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
+			return array(
+				self::VALUE => $field_value->get_value(),
+			);
+		}
+
+		return parent::get_validation_item_template_args( $field_value );
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function get_conditional_fields( Field_Meta $field_meta ): array {
+		return array_merge(
+			parent::get_conditional_fields( $field_meta ),
+			array(
+				Field_Settings::FIELD_ACF_VIEW_ID,
+			)
+		);
+	}
+
+	public function is_with_field_wrapper(
+		Layout_Settings $layout_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta
+	): bool {
+		if ( $field_settings->has_external_layout() ) {
+			return true;
+		}
+
+		return parent::is_with_field_wrapper( $layout_settings, $field_settings, $field_meta );
+	}
+}

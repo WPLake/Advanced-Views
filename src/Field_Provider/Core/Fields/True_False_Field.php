@@ -14,7 +14,9 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
-class True_False_Field extends Markup_Field_Base {
+class True_False_Field implements Markup_Field {
+	use Markup_Field_Base;
+
 	const STATE = 'state';
 
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {

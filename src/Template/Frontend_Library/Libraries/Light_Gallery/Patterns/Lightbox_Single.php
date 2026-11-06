@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\CSS_Patter
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\JS\JS_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Fields\Image_Field_Type;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
@@ -44,10 +44,10 @@ final class Lightbox_Single implements Frontend_Pattern, Template_Pattern, JS_Pa
 		return array(
 			'data-src'      => $item
 				->clone()
-				->add_item_path( Image_Field::FULL_SIZE ),
+				->add_item_path( Image_Field_Type::FULL_SIZE ),
 			'data-sub-html' => $item
 				->clone()
-				->add_item_path( Image_Field::CAPTION ),
+				->add_item_path( Image_Field_Type::CAPTION ),
 		);
 	}
 

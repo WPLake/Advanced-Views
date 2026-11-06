@@ -1,0 +1,110 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Fields;
+
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Link_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\List_Field;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Raw_Field_Value;
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
+class Page_Link_Field extends List_Field {
+	const LOOP_ITEM_NAME = 'link_item';
+
+	private Link_Field $link_field;
+
+	public function __construct( Link_Field $link_field ) {
+		$this->link_field = $link_field;
+	}
+
+	/**
+	 * @return array{url: string, title: string}
+	 */
+	protected function get_post_info( string $id_or_url ): array {
+		$post_info = array(
+			Link_Field::URL   => '',
+			Link_Field::TITLE => '',
+		);
+
+		if ( is_numeric( $id_or_url ) ) {
+			$post = get_post( (int) $id_or_url );
+		} else {
+			$post_slug = str_replace( get_site_url(), '', $id_or_url );
+			$post_slug = trim( $post_slug, '/' );
+			$post      = get_page_by_path(
+				$post_slug,
+				OBJECT,
+				array(
+					'post',
+					'page',
+				)
+			);
+		}
+
+		if ( null === $post ) {
+			return $post_info;
+		}
+
+		$title = get_the_title( $post );
+
+		return array(
+			Link_Field::URL   => (string) get_permalink( $post->ID ),
+			// avoid double encoding in Twig.
+			Link_Field::TITLE => html_entity_decode( $title, ENT_QUOTES ),
+		);
+	}
+
+	/**
+	 * @return array<string, string>
+	 */
+	protected function get_item_template_args( Raw_Field_Value $field_value ): array {
+		$value = is_string( $field_value->get_value() ) ||
+				is_numeric( $field_value->get_value() ) ?
+			(string) $field_value->get_value() :
+			'';
+		$field_value->set_value( $this->get_post_info( $value ) );
+
+		return $this->link_field->get_template_variables( $field_value );
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	protected function get_validation_item_template_args( Raw_Field_Value $field_value ): array {
+		return $this->link_field->get_validation_template_variables( $field_value );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_item_markup( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
+		$markup_field_data->set_is_with_field_wrapper(
+			$markup_field_data->get_context()->get_field_meta()->is_multiple() ||
+			$markup_field_data->is_with_field_wrapper()
+		);
+
+		return $this->link_field->compose_html( $item_id, $markup_field_data );
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function get_conditional_fields( Field_Meta $field_meta ): array {
+		return array_merge(
+			parent::get_conditional_fields( $field_meta ),
+			array(
+				Field_Settings::FIELD_LINK_LABEL,
+				Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
+			)
+		);
+	}
+}

@@ -1,0 +1,204 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Fields;
+
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Raw_Field_Value;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Conditional\Comparison_Token;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
+final class Icon_Picker_Field implements Markup_Field {
+	use Markup_Field_Base;
+
+	const TYPE = 'type';
+
+	use Safe_Array_Arguments;
+
+	private Image_Field $image_field;
+
+	public function __construct( Image_Field $image_field ) {
+		$this->image_field = $image_field;
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$dashicons_branch     = $this->dashicons_branch( $field_id, $markup_field_data );
+		$media_library_branch = $this->media_library_branch( $field_id, $markup_field_data );
+		$custom_image_branch  = $this->custom_image_branch( $field_id, $markup_field_data );
+
+		return array(
+			$token_factory
+				->if()
+				->set_if_branch( $dashicons_branch )
+				->set_elseif_branch( $media_library_branch )
+			->set_else_branch( $custom_image_branch ),
+		);
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$args = array(
+			self::TYPE  => '',
+			self::VALUE => '',
+		);
+
+		$value = $field_value->get_value();
+
+		if ( false === is_array( $value ) ) {
+			return $args;
+		}
+
+		$args[ self::TYPE ] = $this->get_string_arg( 'type', $value );
+
+		switch ( $args[ self::TYPE ] ) {
+			case 'dashicons':
+			case 'url':
+				$args[ self::VALUE ] = $this->get_string_arg( 'value', $value );
+				break;
+			case 'media_library':
+				$attachment_id = $this->get_string_arg( 'value', $value );
+
+				$field_value->set_value( $attachment_id );
+
+				$image_variables = $this->image_field->get_template_variables( $field_value );
+				$args            = array_merge( $args, $image_variables );
+				break;
+		}
+
+		return $args;
+	}
+
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
+		return array(
+			self::TYPE  => 'dashicons',
+			self::VALUE => 'dashicons-admin-generic',
+		);
+	}
+
+	public function is_with_field_wrapper(
+		Layout_Settings $layout_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta
+	): bool {
+		return false;
+	}
+
+	protected function dashicons_branch( string $field_id, Template_Field_Meta $markup_field_data ): IF_Branch {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$condition = self::type_comparison( 'dashicons', $field_id, $markup_field_data );
+		$body      = $this->compose_icon_markup( $field_id, $markup_field_data );
+
+		return $token_factory->if_branch()
+			->set_condition( $condition )
+			->set_body( $body );
+	}
+
+	protected function media_library_branch( string $field_id, Template_Field_Meta $markup_field_data ): IF_Branch {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$condition = self::type_comparison( 'media_library', $field_id, $markup_field_data );
+		$body      = $this->compose_icon_image_markup( $field_id, $markup_field_data );
+
+		return $token_factory->if_branch()
+			->set_condition( $condition )
+			->set_body( $body );
+	}
+
+	protected function custom_image_branch( string $field_id, Template_Field_Meta $markup_field_data ): IF_Branch {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$body = $this->compose_custom_image_markup( $field_id, $markup_field_data );
+
+		return $token_factory->if_branch()
+			->set_body( $body );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_icon_markup( string $field_id, Template_Field_Meta $markup_field_data ): array {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$icon_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
+
+		$icon_class = $this->get_field_class( 'icon', $markup_field_data );
+
+		$tag = tag( 'i' )
+			->attributes(
+				array(
+					'class' => array(
+						$icon_class,
+						'dashicons',
+						$icon_var,
+					),
+				)
+			);
+
+		return array( $tag );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_icon_image_markup( string $field_id, Template_Field_Meta $markup_field_data ): array {
+		return $this->image_field->compose_html( $field_id, $markup_field_data );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_custom_image_markup( string $field_id, Template_Field_Meta $markup_field_data ): array {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$src_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
+
+		$image_class = $this->get_field_class( 'icon', $markup_field_data );
+
+		$tag = tag( 'img' )
+			->attributes(
+				array(
+					'class'   => $image_class,
+					'src'     => $src_var,
+					'loading' => 'lazy',
+					'alt'     => 'icon',
+				)
+			);
+
+		return array( $tag );
+	}
+
+	protected static function type_comparison( string $type, string $field_id, Template_Field_Meta $markup_field_data ): Comparison_Token {
+		$token_factory = $markup_field_data->get_token_factory();
+		$type_var      = $token_factory->variable( $field_id )
+										->add_item_path( self::TYPE );
+		$type_literal  = $token_factory->literal( $type );
+
+		return $token_factory->comparison()
+			->set_left_operand( $type_var )
+			->set_comparison_equal()
+			->set_right_operand( $type_literal );
+	}
+}

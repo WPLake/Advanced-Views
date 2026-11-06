@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Wp\Fields\Post\Post_Fields;
+use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\Post\Post_Fields;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;

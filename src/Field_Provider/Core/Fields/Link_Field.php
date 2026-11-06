@@ -16,7 +16,9 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
-class Link_Field extends Markup_Field_Base {
+class Link_Field implements Markup_Field {
+	use Markup_Field_Base;
+
 	const TARGET     = 'target';
 	const TITLE      = 'title';
 	const LINK_LABEL = 'linkLabel';
@@ -111,12 +113,9 @@ class Link_Field extends Markup_Field_Base {
 	 * @return string[]
 	 */
 	public function get_conditional_fields( Field_Meta $field_meta ): array {
-		return array_merge(
-			parent::get_conditional_fields( $field_meta ),
-			array(
-				Field_Settings::FIELD_LINK_LABEL,
-				Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
-			)
+		return array(
+			Field_Settings::FIELD_LINK_LABEL,
+			Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
 		);
 	}
 }

@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Pagi
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Pagination_Field_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Fields\Pagination_Field_Type;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Patterns\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
@@ -26,13 +26,13 @@ final class Page_Numbers_Pattern implements Frontend_Pattern, Template_Pattern {
 			'class'                => 'avf-pagination',
 			'data-pagination-type' => $field
 				->clone()
-				->add_item_path( Pagination_Field_Base::TYPE ),
+				->add_item_path( Pagination_Field_Type::TYPE ),
 			'data-pages-amount'    => $field
 				->clone()
-				->add_item_path( Pagination_Field_Base::PAGES_AMOUNT ),
+				->add_item_path( Pagination_Field_Type::PAGES_AMOUNT ),
 			'data-card-id'         => $field
 				->clone()
-				->add_item_path( Pagination_Field_Base::CARD_ID ),
+				->add_item_path( Pagination_Field_Type::CARD_ID ),
 		);
 
 		return array(
@@ -50,7 +50,7 @@ final class Page_Numbers_Pattern implements Frontend_Pattern, Template_Pattern {
 			'class'            => 'avf-pagination__page',
 			'data-page-number' => $item
 				->clone()
-				->add_item_path( Pagination_Field_Base::PAGE_NUMBER ),
+				->add_item_path( Pagination_Field_Type::PAGE_NUMBER ),
 		);
 	}
 }

@@ -13,7 +13,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Raw_Field_Val
 
 defined( 'ABSPATH' ) || exit;
 
-class Date_Picker_Field extends Markup_Field_Base {
+class Date_Picker_Field implements Markup_Field {
+	use Markup_Field_Base;
+
 	const TIMESTAMP = 'timestamp';
 
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {

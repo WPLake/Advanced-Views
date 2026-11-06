@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Fields\Gallery_Field_Type;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
@@ -20,7 +21,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-class Gallery_Field extends Markup_Field_Base {
+class Gallery_Field extends Gallery_Field_Type implements Markup_Field {
+	use Markup_Field_Base;
+
 	protected Image_Field $image_field;
 
 	public function __construct( Image_Field $image_field ) {
@@ -118,7 +121,7 @@ class Gallery_Field extends Markup_Field_Base {
 			$conditional_fields[] = Field_Settings::FIELD_SLIDER_TYPE;
 		}
 
-		return array_merge( parent::get_conditional_fields( $field_meta ), $conditional_fields );
+		return $conditional_fields;
 	}
 
 	public function get_front_assets( Field_Settings $field_settings ): array {
@@ -140,6 +143,6 @@ class Gallery_Field extends Markup_Field_Base {
 			$front_assets[] = Splide_Pattern::NAME;
 		}
 
-		return array_merge( parent::get_front_assets( $field_settings ), $front_assets );
+		return $front_assets;
 	}
 }

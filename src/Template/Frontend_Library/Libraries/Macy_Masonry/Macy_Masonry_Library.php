@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\File_Context;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\JS_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Macy_Masonry\Patterns\Masonry_Pattern;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Gallery_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Fields\Gallery_Field_Type;
 
 final class Macy_Masonry_Library implements Frontend_Library, JS_Library {
 	public static function get_id(): string {
@@ -27,7 +27,7 @@ final class Macy_Masonry_Library implements Frontend_Library, JS_Library {
 
 	public static function get_patterns(): array {
 		return array(
-			Gallery_Field::class => array(
+			Gallery_Field_Type::class => array(
 				Masonry_Pattern::class,
 			),
 		);

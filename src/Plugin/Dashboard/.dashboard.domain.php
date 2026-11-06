@@ -5,7 +5,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Dashboard;
 use Architecture\Policy\Domain_Policy;
 use Org\Wplake\Advanced_Views\Assets\assets_domain;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\migration_domain;
-use Org\Wplake\Advanced_Views\Field_Provider\Wp\wp_provider_domain;
+use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\wp_provider_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\layouts_cpt_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\post_selections_cpt_domain;
 

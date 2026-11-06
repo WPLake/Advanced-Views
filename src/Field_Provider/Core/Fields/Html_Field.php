@@ -12,7 +12,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Raw_Field_Val
 
 defined( 'ABSPATH' ) || exit;
 
-class Html_Field extends Markup_Field_Base {
+class Html_Field implements Markup_Field {
+	use Markup_Field_Base;
+
 	const RAW_VALUE = 'raw_value';
 
 	private bool $is_formatted_value_in_use;

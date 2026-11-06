@@ -14,8 +14,8 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Insta
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\Meta_JS\Meta_JS_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Lightbox\Patterns\Gallery_Lightbox;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Lightbox\Patterns\Image_Lightbox;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Gallery_Field;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Fields\Gallery_Field_Type;
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Fields\Image_Field_Type;
 
 final class Avf_Lightbox_Library implements Frontend_Library, CSS_Library, Meta_JS_Library {
 	public static function get_id(): string {
@@ -32,10 +32,10 @@ final class Avf_Lightbox_Library implements Frontend_Library, CSS_Library, Meta_
 
 	public static function get_patterns(): array {
 		return array(
-			Image_Field::class   => array(
+			Image_Field_Type::class   => array(
 				Image_Lightbox::class,
 			),
-			Gallery_Field::class => array(
+			Gallery_Field_Type::class => array(
 				Gallery_Lightbox::class,
 			),
 		);
