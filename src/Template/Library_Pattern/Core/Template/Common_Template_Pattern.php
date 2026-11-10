@@ -11,6 +11,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -50,9 +52,9 @@ abstract class Common_Template_Pattern extends Template_Pattern_Base {
 	}
 
 	/**
-	 * @return Html_Wrapper[]
+	 * @return Html_Tag[]
 	 */
-	public function get_selection_item_outers( Post_Selection_Settings $post_selection_settings ): array {
+	public function get_selection_item_outers( Post_Selection_Settings $post_selection_settings, Token_Factory $token_factory ): array {
 		return array();
 	}
 

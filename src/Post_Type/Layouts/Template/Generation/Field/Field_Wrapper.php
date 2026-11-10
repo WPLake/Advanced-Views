@@ -34,11 +34,11 @@ final class Field_Wrapper {
 			$layout_settings,
 			$field_settings,
 			$field_id,
-			$row_type
+			$row_type,
+			$token_factory
 		);
 
 		return Outers_Builder::compose_outers(
-			$token_factory,
 			$field_outers,
 			$nodes
 		);

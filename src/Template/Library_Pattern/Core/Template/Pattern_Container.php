@@ -6,6 +6,8 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -81,13 +83,14 @@ final class Pattern_Container {
 	}
 
 	/**
-	 * @return Html_Wrapper[]
+	 * @return Html_Tag[]
 	 */
 	public function field_outers(
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
 		string $field_id,
-		string $row_type
+		string $row_type,
+		Token_Factory $token_factory
 	): array {
 		$patterns_outers = array();
 
@@ -96,21 +99,23 @@ final class Pattern_Container {
 				$layout_settings,
 				$field_settings,
 				$field_id,
-				$row_type
+				$row_type,
+				$token_factory
 			);
 		}
 
-		return self::merge_outers( $patterns_outers );
+		return Outers_Builder::merge_outers( $patterns_outers );
 	}
 
 	/**
-	 * @return Html_Wrapper[]
+	 * @return Html_Tag[]
 	 */
 	public function item_outers(
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
 		string $field_id,
-		string $item_id
+		string $item_id,
+		Token_Factory $token_factory
 	): array {
 		$patterns_outers = array();
 
@@ -119,11 +124,12 @@ final class Pattern_Container {
 				$layout_settings,
 				$field_settings,
 				$field_id,
-				$item_id
+				$item_id,
+				$token_factory
 			);
 		}
 
-		return self::merge_outers( $patterns_outers );
+		return Outers_Builder::merge_outers( $patterns_outers );
 	}
 
 	/**
@@ -140,35 +146,5 @@ final class Pattern_Container {
 		}
 
 		return '';
-	}
-
-	/**
-	 * Merges the outers of every pattern by depth: the n-th outers of all patterns form the n-th result item.
-	 *
-	 * @param Html_Wrapper[][] $patterns_outers
-	 *
-	 * @return Html_Wrapper[]
-	 */
-	protected static function merge_outers( array $patterns_outers ): array {
-		/**
-		 * @var Html_Wrapper[] $merged_outers
-		 */
-		$merged_outers = array();
-
-		foreach ( $patterns_outers as $pattern_outers ) {
-			$counter = 0;
-
-			foreach ( $pattern_outers as $pattern_outer ) {
-				$merged_outers[ $counter ] = key_exists( $counter, $merged_outers ) ?
-					$merged_outers[ $counter ] :
-					new Html_Wrapper( '', array() );
-
-				$merged_outers[ $counter ]->merge( $pattern_outer );
-
-				++$counter;
-			}
-		}
-
-		return $merged_outers;
 	}
 }

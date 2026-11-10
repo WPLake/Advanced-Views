@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selectio
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Composite_Attribute;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Outers_Builder;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
@@ -103,18 +103,6 @@ class Post_Selection_Markup {
 
 		return tag( 'div' )
 			->attributes( array( 'class' => $classes ) );
-	}
-
-	protected function item_outer_tag( Html_Wrapper $outer, Token_Factory $token_factory ): Html_Tag {
-		$attrs = $outer->attrs;
-
-		foreach ( $outer->variable_attrs as $attr => $variable_info ) {
-			$attrs[ $attr ] = $token_factory->variable( $variable_info['field_id'] )
-											->add_item_path( $variable_info['item_key'] );
-		}
-
-		return tag( $outer->tag )
-			->attributes( $attrs );
 	}
 
 	protected function shortcode_token( Post_Selection_Settings $post_selection_settings ): Shortcode_Token {
@@ -283,16 +271,9 @@ class Post_Selection_Markup {
 	}
 
 	protected function items_tag( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): Html_Tag {
-		$item_outers = $this->front_assets->get_card_item_outers( $post_selection_settings );
-		$content     = array( $this->loop_token( $token_factory, $post_selection_settings ) );
-
-		// the innermost outer goes first.
-		foreach ( array_reverse( $item_outers ) as $outer ) {
-			$content = array(
-				$this->item_outer_tag( $outer, $token_factory )
-					->content( ...$content ),
-			);
-		}
+		$item_outers = $this->front_assets->get_card_item_outers( $post_selection_settings, $token_factory );
+		$loop        = array( $this->loop_token( $token_factory, $post_selection_settings ) );
+		$content     = Outers_Builder::compose_outers( $item_outers, $loop );
 
 		return $this->items_wrapper_tag( $post_selection_settings )
 			->content( ...$content );

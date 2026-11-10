@@ -12,14 +12,16 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern_Base;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Common_Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Outers_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map_Pattern;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
@@ -539,24 +541,19 @@ class Front_Assets extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Html_Wrapper[]
+	 * @return Html_Tag[]
 	 */
-	public function get_card_item_outers( Post_Selection_Settings $post_selection_settings ): array {
-		/**
-		 * @var Html_Wrapper[] $outers
-		 */
-		$outers = array();
+	public function get_card_item_outers( Post_Selection_Settings $post_selection_settings, Token_Factory $token_factory ): array {
+		$patterns_outers = array();
 
 		foreach ( $this->patterns as $pattern ) {
 			if ( $pattern instanceof Common_Template_Pattern &&
 				$pattern->is_target_selection( $post_selection_settings ) ) {
-				$pattern_outers = $pattern->get_selection_item_outers( $post_selection_settings );
-
-				$outers = self::merge_outers( $outers, $pattern_outers );
+				$patterns_outers[] = $pattern->get_selection_item_outers( $post_selection_settings, $token_factory );
 			}
 		}
 
-		return $outers;
+		return Outers_Builder::merge_outers( $patterns_outers );
 	}
 
 	/**
@@ -611,28 +608,6 @@ class Front_Assets extends Actor_Base implements Actor {
 		}
 
 		return $src;
-	}
-
-	/**
-	 * @param Html_Wrapper[] $outers
-	 * @param Html_Wrapper[] $pattern_outers
-	 *
-	 * @return Html_Wrapper[]
-	 */
-	protected static function merge_outers( array $outers, array $pattern_outers ): array {
-		$counter = 0;
-
-		foreach ( $pattern_outers as $pattern_outer ) {
-			$outers[ $counter ] = key_exists( $counter, $outers ) ?
-				$outers[ $counter ] :
-				new Html_Wrapper( '', array() );
-
-			$outers[ $counter ]->merge( $pattern_outer );
-
-			++$counter;
-		}
-
-		return $outers;
 	}
 
 	/**

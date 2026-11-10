@@ -11,8 +11,10 @@ use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 class Light_Gallery_Pattern extends Template_Pattern_Base {
 	const NAME = 'light-gallery';
@@ -67,18 +69,19 @@ class Light_Gallery_Pattern extends Template_Pattern_Base {
 	}
 
 	/**
-	 * @return Html_Wrapper[]
+	 * @return Html_Tag[]
 	 */
 	public function get_item_outers(
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
 		string $field_id,
-		string $item_id
+		string $item_id,
+		Token_Factory $token_factory
 	): array {
 		$data_attrs = self::get_data_attrs( $item_id );
 
 		return array(
-			new Html_Wrapper( 'li', $data_attrs ),
+			tag( 'li' )->attributes( $data_attrs ),
 		);
 	}
 

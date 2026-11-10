@@ -7,7 +7,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context\Field_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Composer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Outers_Builder;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Html_Wrapper;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Pattern_Container;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
@@ -53,7 +52,7 @@ final class Template_Field_Meta {
 	}
 
 	/**
-	 * @return Html_Wrapper[]
+	 * @return Html_Tag[]
 	 */
 	public function get_item_outers( string $field_id, string $item_id ): array {
 		$layout_settings = $this->context->get_layout_settings();
@@ -63,12 +62,13 @@ final class Template_Field_Meta {
 			$layout_settings,
 			$field_settings,
 			$field_id,
-			$item_id
+			$item_id,
+			$this->token_factory
 		);
 	}
 
 	/**
-	 * @param Html_Wrapper[] $item_outers
+	 * @param Html_Tag[] $item_outers
 	 * @param Html_Node[] $nodes
 	 *
 	 * @return Html_Node[]
@@ -79,7 +79,6 @@ final class Template_Field_Meta {
 		$item_class      = $layout_settings->get_item_class( 'item', $field_settings );
 
 		return Outers_Builder::compose_outers(
-			$this->token_factory,
 			$item_outers,
 			$nodes,
 			$item_class

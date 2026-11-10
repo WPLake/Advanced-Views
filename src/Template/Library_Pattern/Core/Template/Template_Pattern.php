@@ -6,7 +6,9 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -23,23 +25,25 @@ interface Template_Pattern extends Library_Pattern {
 	public function get_field_wrapper_attrs( Field_Settings $field_settings, string $field_id ): array;
 
 	/**
-	 * @return Html_Wrapper[]
+	 * @return Html_Tag[]
 	 */
 	public function get_field_outers(
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
 		string $field_id,
-		string $row_type
+		string $row_type,
+		Token_Factory $token_factory
 	): array;
 
 	/**
-	 * @return Html_Wrapper[]
+	 * @return Html_Tag[]
 	 */
 	public function get_item_outers(
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
 		string $field_id,
-		string $item_id
+		string $item_id,
+		Token_Factory $token_factory
 	): array;
 
 	/**
