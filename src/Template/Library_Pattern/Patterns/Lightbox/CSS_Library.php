@@ -12,8 +12,6 @@ final class CSS_Library extends CSS_Library_Base {
 	private bool $is_active;
 
 	public function __construct() {
-		parent::__construct( array() );
-
 		$this->is_active = false;
 	}
 

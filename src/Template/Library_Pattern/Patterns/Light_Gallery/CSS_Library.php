@@ -10,23 +10,14 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\CSS_Library\CSS_Libr
 defined( 'ABSPATH' ) || exit;
 
 final class CSS_Library extends CSS_Library_Base {
-	protected const HANDLE = 'lightgallery';
-	protected const THUMBNAIL_HANDLE = 'lg-thumbnail';
-
-	public function __construct() {
-		parent::__construct(
+	public function enable(): void {
+		$this->enable_handles(
 			array(
-				self::HANDLE,
-				self::THUMBNAIL_HANDLE,
+				'lightgallery',
+				// this addon is always in use.
+				'lg-thumbnail',
 			)
 		);
-	}
-
-	public function enable(): void {
-		$this->enable_handle( self::HANDLE );
-
-		// this addon is always in use.
-		$this->enable_handle( self::THUMBNAIL_HANDLE );
 	}
 
 	public function get_css_patches( Asset_Resolver $resolver ): array {

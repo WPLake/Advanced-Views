@@ -10,21 +10,9 @@ defined( 'ABSPATH' ) || exit;
 
 abstract class JS_Library_Base implements JS_Library {
 	/**
-	 * @var array<string,bool>
+	 * @var string[]
 	 */
-	private array $js_handles;
-
-	/**
-	 * @param string[] $js_handles all the handles of the library, they are inactive until enabled
-	 */
-	public function __construct( array $js_handles ) {
-		$this->js_handles = array_fill_keys( $js_handles, false );
-	}
-
-	/**
-	 * Activates the handles of the library.
-	 */
-	abstract public function enable(): void;
+	private array $active_handles = array();
 
 	public function get_js_origin(): string {
 		return Asset_Resolver::ORIGIN_LITE;
@@ -33,13 +21,11 @@ abstract class JS_Library_Base implements JS_Library {
 	public function has_active_js(): bool {
 		$js_handles = $this->get_active_js_handles();
 
-		return array() !== $js_handles;
+		return count( $js_handles ) > 0;
 	}
 
 	public function get_active_js_handles(): array {
-		$active_handles = array_filter( $this->js_handles );
-
-		return array_keys( $active_handles );
+		return $this->active_handles;
 	}
 
 	public function get_external_scripts(): array {
@@ -50,7 +36,10 @@ abstract class JS_Library_Base implements JS_Library {
 		return array();
 	}
 
-	protected function enable_handle( string $js_handle ): void {
-		$this->js_handles[ $js_handle ] = true;
+	/**
+	 * @param string[] $handles
+	 */
+	protected function enable_handles( array $handles ): void {
+		$this->active_handles = $handles;
 	}
 }

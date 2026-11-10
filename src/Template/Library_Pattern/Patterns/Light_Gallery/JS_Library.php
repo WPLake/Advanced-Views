@@ -9,22 +9,13 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library\JS_Librar
 defined( 'ABSPATH' ) || exit;
 
 final class JS_Library extends JS_Library_Base {
-	protected const HANDLE = 'lightgallery';
-	protected const THUMBNAIL_HANDLE = 'lg-thumbnail';
-
-	public function __construct() {
-		parent::__construct(
+	public function enable(): void {
+		$this->enable_handles(
 			array(
-				self::HANDLE,
-				self::THUMBNAIL_HANDLE,
+				'lightgallery',
+				// this addon is always in use.
+				'lg-thumbnail',
 			)
 		);
-	}
-
-	public function enable(): void {
-		$this->enable_handle( self::HANDLE );
-
-		// this addon is always in use.
-		$this->enable_handle( self::THUMBNAIL_HANDLE );
 	}
 }

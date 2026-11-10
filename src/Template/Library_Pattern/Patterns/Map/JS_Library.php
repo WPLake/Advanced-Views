@@ -17,13 +17,11 @@ class JS_Library extends JS_Library_Base {
 	private array $maps;
 
 	public function __construct() {
-		parent::__construct( array( self::HANDLE ) );
-
 		$this->maps = array();
 	}
 
 	public function enable(): void {
-		$this->enable_handle( self::HANDLE );
+		$this->enable_handles( array( self::HANDLE ) );
 	}
 
 	/**

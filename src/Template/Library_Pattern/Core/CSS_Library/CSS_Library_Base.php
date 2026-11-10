@@ -10,21 +10,9 @@ defined( 'ABSPATH' ) || exit;
 
 abstract class CSS_Library_Base implements CSS_Library {
 	/**
-	 * @var array<string,bool>
+	 * @var string[]
 	 */
-	private array $css_handles;
-
-	/**
-	 * @param string[] $css_handles all the handles of the library, they are inactive until enabled
-	 */
-	public function __construct( array $css_handles ) {
-		$this->css_handles = array_fill_keys( $css_handles, false );
-	}
-
-	/**
-	 * Activates the handles of the library.
-	 */
-	abstract public function enable(): void;
+	private array $active_handles = array();
 
 	public function get_css_origin(): string {
 		return Asset_Resolver::ORIGIN_LITE;
@@ -39,9 +27,7 @@ abstract class CSS_Library_Base implements CSS_Library {
 	}
 
 	public function get_css_handles(): array {
-		$active_handles = array_filter( $this->css_handles );
-
-		return array_keys( $active_handles );
+		return $this->active_handles;
 	}
 
 	public function get_css_patches( Asset_Resolver $resolver ): array {
@@ -52,7 +38,10 @@ abstract class CSS_Library_Base implements CSS_Library {
 		return '';
 	}
 
-	protected function enable_handle( string $css_handle ): void {
-		$this->css_handles[ $css_handle ] = true;
+	/**
+	 * @param string[] $handles
+	 */
+	protected function enable_handles( array $handles ): void {
+		$this->active_handles = $handles;
 	}
 }
