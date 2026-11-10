@@ -9,6 +9,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Code_Builder;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern_Base;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Selection\Selection_Code_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Selection\Selection_Pattern;
@@ -26,12 +28,20 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 		$this->card_field_id = '';
 	}
 
-	abstract protected function print_common_js_code( string $var_name ): void;
+	/**
+	 * @return class-string<JS_Pattern>
+	 */
+	abstract protected function get_js_pattern(): string;
 
 	abstract protected function print_common_css_code( string $field_selector, Cpt_Settings $cpt_settings ): void;
 
 	protected function set_card_field_id( string $card_field_id ): void {
 		$this->card_field_id = $card_field_id;
+	}
+
+	protected function print_common_js_code( string $var_name ): void {
+		// @phpcs:ignore WordPress.Security.EscapeOutput
+		echo JS_Code_Builder::build( $this->get_js_pattern(), $var_name );
 	}
 
 	protected function print_js_code( string $var_name, Field_Settings $field_settings, Layout_Settings $layout_settings ): void {

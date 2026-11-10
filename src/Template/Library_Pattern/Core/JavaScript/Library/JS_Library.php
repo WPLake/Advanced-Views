@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library;
+namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Library;
 
 defined( 'ABSPATH' ) || exit;
 

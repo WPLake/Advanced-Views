@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\CSS_Library;
+namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 
