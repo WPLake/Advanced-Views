@@ -47,12 +47,8 @@ class Light_Gallery_Pattern extends Layout_Pattern_Base {
 		$target_fields = $this->get_target_fields( $layout_settings );
 
 		if ( array() !== $target_fields ) {
-			$this->js_library->enable_handle( 'lightgallery' );
-			$this->css_library->enable_handle( 'lightgallery' );
-
-			// this addon is always in use.
-			$this->js_library->enable_handle( 'lg-thumbnail' );
-			$this->css_library->enable_handle( 'lg-thumbnail' );
+			$this->js_library->enable();
+			$this->css_library->enable();
 		}
 	}
 

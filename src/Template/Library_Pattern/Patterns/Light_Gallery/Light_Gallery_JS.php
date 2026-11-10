@@ -17,4 +17,11 @@ final class Light_Gallery_JS extends JS_Pattern_Base {
 			)
 		);
 	}
+
+	public function enable(): void {
+		$this->enable_handle( 'lightgallery' );
+
+		// this addon is always in use.
+		$this->enable_handle( 'lg-thumbnail' );
+	}
 }

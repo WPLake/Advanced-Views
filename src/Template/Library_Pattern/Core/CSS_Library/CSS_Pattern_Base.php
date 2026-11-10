@@ -21,9 +21,10 @@ abstract class CSS_Pattern_Base implements CSS_Library {
 		$this->css_handles = array_fill_keys( $css_handles, false );
 	}
 
-	public function enable_handle( string $css_handle ): void {
-		$this->css_handles[ $css_handle ] = true;
-	}
+	/**
+	 * Activates the handles of the library.
+	 */
+	abstract public function enable(): void;
 
 	public function get_css_origin(): string {
 		return Asset_Resolver::ORIGIN_LITE;
@@ -49,5 +50,9 @@ abstract class CSS_Pattern_Base implements CSS_Library {
 
 	public function get_inline_css(): string {
 		return '';
+	}
+
+	protected function enable_handle( string $css_handle ): void {
+		$this->css_handles[ $css_handle ] = true;
 	}
 }

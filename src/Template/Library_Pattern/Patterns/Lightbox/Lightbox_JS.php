@@ -20,6 +20,10 @@ final class Lightbox_JS extends JS_Pattern_Base {
 		$this->light_boxes = array();
 	}
 
+	public function enable(): void {
+		$this->enable_handle( 'acf-views-lightbox' );
+	}
+
 	/**
 	 * @param array<int,array<string,mixed>> $light_boxes
 	 */

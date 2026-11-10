@@ -111,9 +111,9 @@ class Lightbox_Pattern extends Layout_Pattern_Base {
 
 			$light_boxes = array_values( $this->light_boxes );
 
-			$this->js_library->enable_handle( 'acf-views-lightbox' );
+			$this->js_library->enable();
 			$this->js_library->set_light_boxes( $light_boxes );
-			$this->css_library->set_active( true );
+			$this->css_library->enable();
 		}
 	}
 

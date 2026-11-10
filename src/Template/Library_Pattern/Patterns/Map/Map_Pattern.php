@@ -53,7 +53,7 @@ class Map_Pattern extends Layout_Pattern_Base {
 
 		// only google map requires it.
 		if ( $is_with_google_map ) {
-			$this->js_library->enable_handle( 'acf-views-maps' );
+			$this->js_library->enable();
 			$this->js_library->set_maps( $this->maps );
 		}
 	}

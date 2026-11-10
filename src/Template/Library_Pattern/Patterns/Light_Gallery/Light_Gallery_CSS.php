@@ -19,6 +19,13 @@ final class Light_Gallery_CSS extends CSS_Pattern_Base {
 		);
 	}
 
+	public function enable(): void {
+		$this->enable_handle( 'lightgallery' );
+
+		// this addon is always in use.
+		$this->enable_handle( 'lg-thumbnail' );
+	}
+
 	public function get_css_patches( Asset_Resolver $resolver ): array {
 		// font and image paths in CSS won't work, as CSS will be added right to the page,
 		// replacing with the related installation path avoids it.

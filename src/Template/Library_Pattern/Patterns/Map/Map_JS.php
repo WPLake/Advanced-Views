@@ -20,6 +20,10 @@ class Map_JS extends JS_Pattern_Base {
 		$this->maps = array();
 	}
 
+	public function enable(): void {
+		$this->enable_handle( 'acf-views-maps' );
+	}
+
 	/**
 	 * @param string[] $maps
 	 */

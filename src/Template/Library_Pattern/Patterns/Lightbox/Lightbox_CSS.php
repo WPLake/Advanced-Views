@@ -17,8 +17,8 @@ final class Lightbox_CSS extends CSS_Pattern_Base {
 		$this->is_active = false;
 	}
 
-	public function set_active( bool $is_active ): void {
-		$this->is_active = $is_active;
+	public function enable(): void {
+		$this->is_active = true;
 	}
 
 	public function get_inline_css(): string {

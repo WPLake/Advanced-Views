@@ -21,9 +21,10 @@ abstract class JS_Pattern_Base implements JS_Library {
 		$this->js_handles = array_fill_keys( $js_handles, false );
 	}
 
-	public function enable_handle( string $js_handle ): void {
-		$this->js_handles[ $js_handle ] = true;
-	}
+	/**
+	 * Activates the handles of the library.
+	 */
+	abstract public function enable(): void;
 
 	public function get_js_origin(): string {
 		return Asset_Resolver::ORIGIN_LITE;
@@ -47,5 +48,9 @@ abstract class JS_Pattern_Base implements JS_Library {
 
 	public function get_js_data(): array {
 		return array();
+	}
+
+	protected function enable_handle( string $js_handle ): void {
+		$this->js_handles[ $js_handle ] = true;
 	}
 }
