@@ -7,7 +7,6 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
 
 abstract class Library_Pattern_Base implements Library_Pattern {
@@ -58,16 +57,6 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 		);
 	}
 
-	protected static function get_wp_handle( string $handle ): string {
-		$cpt_name = Hard_Layout_Cpt::cpt_name();
-
-		return sprintf( '%s_%s', $cpt_name, $handle );
-	}
-
-	protected function get_asset_resolver(): Asset_Resolver {
-		return $this->asset_resolver;
-	}
-
 	/**
 	 * @param array<string, bool> $js_handles
 	 */
@@ -99,23 +88,23 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 		$this->auto_discover_name = $auto_discover_name;
 	}
 
-	public function enqueue_active(): string {
-		$script_args = array(
-			'in_footer' => true,
-			'strategy'  => 'defer',
-		);
-		$version     = $this->asset_resolver->get_version();
+	public function get_asset_origin(): string {
+		return self::ORIGIN_LITE;
+	}
 
-		foreach ( $this->js_handles as $js_handle => $is_active ) {
-			if ( $is_active ) {
-				$wp_handle   = self::get_wp_handle( $js_handle );
-				$script_file = sprintf( 'js/front/%s.min.js', $js_handle );
-				$script_url  = $this->get_asset_url( $script_file );
+	public function get_active_js_handles(): array {
+		return array_keys( array_filter( $this->js_handles ) );
+	}
 
-				wp_enqueue_script( $wp_handle, $script_url, array(), $version, $script_args );
-			}
-		}
+	public function get_external_scripts(): array {
+		return array();
+	}
 
+	public function get_js_data(): array {
+		return array();
+	}
+
+	public function get_active_css(): string {
 		$css = '';
 
 		$wp_filesystem = WP_Filesystem_Factory::get_wp_filesystem();

@@ -36,19 +36,23 @@ class Lightbox_Pattern extends Layout_Pattern_Base {
 		$this->light_boxes = array();
 	}
 
-	public function enqueue_active(): string {
-		$css_code = parent::enqueue_active();
-
+	public function get_js_data(): array {
 		if ( ! $this->is_enabled_js_handle( 'acf-views-lightbox' ) ) {
-			return $css_code;
+			return array();
 		}
 
-		$wp_handle   = self::get_wp_handle( 'acf-views-lightbox' );
-		$light_boxes = array_values( $this->light_boxes );
+		return array(
+			'acf-views-lightbox' => array(
+				'acfViewsLightBox' => array_values( $this->light_boxes ),
+			),
+		);
+	}
 
-		wp_localize_script( $wp_handle, 'acfViewsLightBox', $light_boxes );
+	public function get_active_css(): string {
+		$css_code = parent::get_active_css();
 
-		if ( array() === $this->light_boxes ) {
+		if ( ! $this->is_enabled_js_handle( 'acf-views-lightbox' ) ||
+			array() === $this->light_boxes ) {
 			return $css_code;
 		}
 

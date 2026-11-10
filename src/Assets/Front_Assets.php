@@ -9,6 +9,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -615,7 +616,10 @@ class Front_Assets extends Actor_Base implements Actor {
 		}
 
 		foreach ( $this->patterns as $pattern ) {
-			$css_code = $pattern->enqueue_active();
+			$this->enqueue_scripts( $pattern );
+			$this->localize_scripts( $pattern );
+
+			$css_code = $pattern->get_active_css();
 
 			if ( strlen( $css_code ) > 0 ) {
 				$asset_name = $pattern->get_name();
@@ -625,6 +629,43 @@ class Front_Assets extends Actor_Base implements Actor {
 				$this->assets_css_code .= sprintf( "/*%s*/\n%s\n", $asset_name, $css_code );
 			}
 		}
+	}
+
+	protected function enqueue_scripts( Library_Pattern $pattern ): void {
+		$script_args = array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		);
+		$version     = $this->asset_resolver->get_version();
+
+		foreach ( $pattern->get_active_js_handles() as $js_handle ) {
+			$script_file = sprintf( 'js/front/%s.min.js', $js_handle );
+			$script_url  = $this->resolve_script_url( $pattern, $script_file );
+
+			wp_enqueue_script( self::get_wp_handle( $js_handle ), $script_url, array(), $version, $script_args );
+		}
+
+		foreach ( $pattern->get_external_scripts() as $js_handle => $script ) {
+			$deps = array_map( array( self::class, 'get_wp_handle' ), $script['deps'] );
+
+			wp_enqueue_script( self::get_wp_handle( $js_handle ), $script['url'], $deps, $version, $script_args );
+		}
+	}
+
+	protected function localize_scripts( Library_Pattern $pattern ): void {
+		foreach ( $pattern->get_js_data() as $js_handle => $objects ) {
+			foreach ( $objects as $object_name => $value ) {
+				wp_localize_script( self::get_wp_handle( $js_handle ), $object_name, $value );
+			}
+		}
+	}
+
+	protected function resolve_script_url( Library_Pattern $pattern, string $file ): string {
+		return $this->asset_resolver->get_asset_url( $file );
+	}
+
+	protected static function get_wp_handle( string $handle ): string {
+		return sprintf( '%s_%s', Hard_Layout_Cpt::cpt_name(), $handle );
 	}
 
 	/**

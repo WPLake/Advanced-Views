@@ -36,11 +36,21 @@ class Map_Pattern extends Layout_Pattern_Base {
 		return false;
 	}
 
-	public function enqueue_active(): string {
-		$css_code = parent::enqueue_active();
+	public function get_js_data(): array {
+		if ( ! $this->is_enabled_js_handle( 'acf-views-maps' ) ) {
+			return array();
+		}
 
-		if ( false === $this->is_enabled_js_handle( 'acf-views-maps' ) ) {
-			return $css_code;
+		return array(
+			'acf-views-maps' => array(
+				'acfViewsMaps' => $this->maps,
+			),
+		);
+	}
+
+	public function get_external_scripts(): array {
+		if ( ! $this->is_enabled_js_handle( 'acf-views-maps' ) ) {
+			return array();
 		}
 
 		$api_data = apply_filters( 'acf/fields/google_map/api', array() );
@@ -50,21 +60,13 @@ class Map_Pattern extends Layout_Pattern_Base {
 			acf_get_setting( 'google_api_key' ) :
 			$key;
 
-		$maps_handle   = self::get_wp_handle( 'acf-views-maps' );
-		$google_handle = self::get_wp_handle( 'google-maps' );
-		$google_url    = sprintf( 'https://maps.googleapis.com/maps/api/js?key=%s&callback=acfViewsGoogleMaps', $key );
-		$version       = $this->get_asset_resolver()->get_version();
-		$script_args   = array(
-			'in_footer' => true,
-			'strategy'  => 'defer',
+		return array(
+			// the dependency makes sure it's loaded only after plugin's maps.min.js.
+			'google-maps' => array(
+				'url'  => sprintf( 'https://maps.googleapis.com/maps/api/js?key=%s&callback=acfViewsGoogleMaps', $key ),
+				'deps' => array( 'acf-views-maps' ),
+			),
 		);
-
-		wp_localize_script( $maps_handle, 'acfViewsMaps', $this->maps );
-
-		// setup deps, to make sure loaded only after plugin's maps.min.js.
-		wp_enqueue_script( $google_handle, $google_url, array( $maps_handle ), $version, $script_args );
-
-		return $css_code;
 	}
 
 	public function maybe_activate_layout( Layout_Settings $layout_settings ): void {

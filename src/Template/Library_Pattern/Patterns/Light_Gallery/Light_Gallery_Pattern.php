@@ -86,8 +86,8 @@ class Light_Gallery_Pattern extends Layout_Pattern_Base {
 		);
 	}
 
-	public function enqueue_active(): string {
-		$css_code = parent::enqueue_active();
+	public function get_active_css(): string {
+		$css_code = parent::get_active_css();
 
 		// font and image paths in CSS won't work, as CSS will be added right to the page,
 		// replacing with the related installation path avoids it.
