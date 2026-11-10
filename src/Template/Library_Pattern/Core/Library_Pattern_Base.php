@@ -8,8 +8,9 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library\JS_Library;
 
-abstract class Library_Pattern_Base implements Library_Pattern {
+abstract class Library_Pattern_Base implements Library_Pattern, JS_Library {
 	const NAME = '';
 
 	/**
@@ -88,8 +89,8 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 		$this->auto_discover_name = $auto_discover_name;
 	}
 
-	public function get_asset_origin(): string {
-		return self::ORIGIN_LITE;
+	public function get_js_origin(): string {
+		return Asset_Resolver::ORIGIN_LITE;
 	}
 
 	public function get_active_js_handles(): array {
