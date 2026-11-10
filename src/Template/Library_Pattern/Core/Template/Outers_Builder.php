@@ -29,14 +29,13 @@ final class Outers_Builder {
 		$merged_outers = array();
 
 		foreach ( $patterns_outers as $pattern_outers ) {
-			foreach ( array_values( $pattern_outers ) as $depth => $pattern_outer ) {
-				$merged_attrs = array_merge(
-					isset( $merged_outers[ $depth ] ) ? $merged_outers[ $depth ]->get_attributes() : array(),
-					$pattern_outer->get_attributes()
-				);
+			$depth_outers = array_values( $pattern_outers );
 
-				$merged_outers[ $depth ] = tag( $pattern_outer->get_name() )
-					->attributes( $merged_attrs );
+			foreach ( $depth_outers as $depth => $pattern_outer ) {
+				$merged_outers[ $depth ] = self::merge_outer(
+					$merged_outers[ $depth ] ?? null,
+					$pattern_outer
+				);
 			}
 		}
 
@@ -83,7 +82,22 @@ final class Outers_Builder {
 			$attrs       = array_merge( $class_attrs, $attrs );
 		}
 
-		return tag( $outer->get_name() )
+		$name = $outer->get_name();
+
+		return tag( $name )
+			->attributes( $attrs );
+	}
+
+	protected static function merge_outer( ?Html_Tag $merged, Html_Tag $outer ): Html_Tag {
+		$merged_attrs = $merged instanceof Html_Tag ?
+			$merged->get_attributes() :
+			array();
+		$outer_attrs  = $outer->get_attributes();
+
+		$name  = $outer->get_name();
+		$attrs = array_merge( $merged_attrs, $outer_attrs );
+
+		return tag( $name )
 			->attributes( $attrs );
 	}
 }

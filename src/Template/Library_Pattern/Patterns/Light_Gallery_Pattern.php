@@ -81,7 +81,8 @@ class Light_Gallery_Pattern extends Template_Pattern_Base {
 		$data_attrs = self::get_data_attrs( $item_id );
 
 		return array(
-			tag( 'li' )->attributes( $data_attrs ),
+			tag( 'li' )
+				->attributes( $data_attrs ),
 		);
 	}
 

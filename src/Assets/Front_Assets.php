@@ -547,9 +547,12 @@ class Front_Assets extends Actor_Base implements Actor {
 		$patterns_outers = array();
 
 		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof Common_Template_Pattern &&
-				$pattern->is_target_selection( $post_selection_settings ) ) {
-				$patterns_outers[] = $pattern->get_selection_item_outers( $post_selection_settings, $token_factory );
+			if ( $pattern instanceof Common_Template_Pattern ) {
+				$is_target = $pattern->is_target_selection( $post_selection_settings );
+
+				if ( $is_target ) {
+					$patterns_outers[] = $pattern->get_selection_item_outers( $post_selection_settings, $token_factory );
+				}
 			}
 		}
 
