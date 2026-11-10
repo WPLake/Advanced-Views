@@ -6,17 +6,16 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern_Base;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
-class Lightbox_Pattern extends Template_Pattern_Base {
+class Lightbox_Pattern extends Layout_Pattern_Base {
 	const NAME = 'acf-views-lightbox';
 
 	/**
@@ -121,17 +120,15 @@ class Lightbox_Pattern extends Template_Pattern_Base {
 		}
 	}
 
-	public function maybe_activate( Cpt_Settings $cpt_settings ): void {
-		if ( $cpt_settings instanceof Layout_Settings ) {
-			$target_fields = $this->get_target_fields( $cpt_settings );
+	public function maybe_activate_layout( Layout_Settings $layout_settings ): void {
+		$target_fields = $this->get_target_fields( $layout_settings );
 
-			if ( array() !== $target_fields ) {
-				foreach ( $target_fields as $target_field ) {
-					$this->add_light_box( $cpt_settings, $target_field );
-				}
-
-				$this->enable_js_handle( 'acf-views-lightbox' );
+		if ( array() !== $target_fields ) {
+			foreach ( $target_fields as $target_field ) {
+				$this->add_light_box( $layout_settings, $target_field );
 			}
+
+			$this->enable_js_handle( 'acf-views-lightbox' );
 		}
 	}
 

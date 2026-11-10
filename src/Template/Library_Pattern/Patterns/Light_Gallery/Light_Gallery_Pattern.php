@@ -6,17 +6,16 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gall
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern_Base;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
-class Light_Gallery_Pattern extends Template_Pattern_Base {
+class Light_Gallery_Pattern extends Layout_Pattern_Base {
 	const NAME = 'light-gallery';
 
 	public function __construct( Asset_Resolver $asset_resolver, Field_Provider_Cluster $provider_cluster ) {
@@ -37,19 +36,20 @@ class Light_Gallery_Pattern extends Template_Pattern_Base {
 		);
 	}
 
-	public function maybe_activate( Cpt_Settings $cpt_settings ): void {
-		if ( $cpt_settings instanceof Layout_Settings &&
-			! $this->is_enabled_js_handle( 'lightgallery' ) ) {
-			$target_fields = $this->get_target_fields( $cpt_settings );
+	public function maybe_activate_layout( Layout_Settings $layout_settings ): void {
+		if ( $this->is_enabled_js_handle( 'lightgallery' ) ) {
+			return;
+		}
 
-			if ( array() !== $target_fields ) {
-				$this->enable_js_handle( 'lightgallery' );
-				$this->enable_css_handle( 'lightgallery' );
+		$target_fields = $this->get_target_fields( $layout_settings );
 
-				// this addon is always in use.
-				$this->enable_js_handle( 'lg-thumbnail' );
-				$this->enable_css_handle( 'lg-thumbnail' );
-			}
+		if ( array() !== $target_fields ) {
+			$this->enable_js_handle( 'lightgallery' );
+			$this->enable_css_handle( 'lightgallery' );
+
+			// this addon is always in use.
+			$this->enable_js_handle( 'lg-thumbnail' );
+			$this->enable_css_handle( 'lg-thumbnail' );
 		}
 	}
 

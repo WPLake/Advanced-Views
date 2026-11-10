@@ -32,14 +32,7 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 	}
 
 	protected function print_code_piece( string $name, string $piece_safe ): void {
-		echo "\n\n";
-		printf( '/* %s : %s (auto-discover-begin) */', esc_html( $this->auto_discover_name ), esc_html( $name ) );
-		echo "\n\n";
-		// @phpcs:ignore WordPress.Security.EscapeOutput
-		echo $piece_safe;
-		echo "\n\n";
-		printf( '/* %s : %s (auto-discover-end) */', esc_html( $this->auto_discover_name ), esc_html( $name ) );
-		echo "\n\n";
+		Code_Piece_Printer::print_code_piece( $this->auto_discover_name, $name, $piece_safe );
 	}
 
 	protected function get_asset_url( string $file ): string {
@@ -56,24 +49,13 @@ abstract class Library_Pattern_Base implements Library_Pattern {
 		string $field_selector,
 		bool $is_multiple
 	): void {
-		ob_start();
-
-		if ( $is_multiple ) {
-			printf( "this.querySelectorAll('%s').forEach(item => {\n", esc_html( $field_selector ) );
-		} else {
-			printf( "var %s = this.querySelector('%s');\n", esc_html( $name ), esc_html( $field_selector ) );
-			printf( "if (%s) {\n", esc_html( $name ) );
-		}
-
-		// @phpcs:ignore WordPress.Security.EscapeOutput
-		echo $piece_safe;
-		echo $is_multiple ?
-			"\n});" :
-			"\n}";
-
-		$js_code_safe = (string) ob_get_clean();
-
-		$this->print_code_piece( $name, $js_code_safe );
+		Code_Piece_Printer::print_js_code_piece(
+			$this->auto_discover_name,
+			$name,
+			$piece_safe,
+			$field_selector,
+			$is_multiple
+		);
 	}
 
 	protected static function get_wp_handle( string $handle ): string {

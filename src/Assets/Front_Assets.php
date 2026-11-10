@@ -11,16 +11,17 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern_Base;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Common_Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Outers_Builder;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Outers_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery\Light_Gallery_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox\Lightbox_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map\Map_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Selection\Selection_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
@@ -36,7 +37,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	private ?int $buffer_level;
 	private bool $is_custom_interactivity_api_import_map_required;
 	/**
-	 * @var Library_Pattern_Base[]
+	 * @var Library_Pattern[]
 	 */
 	private array $patterns;
 	/**
@@ -94,7 +95,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Library_Pattern_Base[]
+	 * @return Library_Pattern[]
 	 */
 	protected function create_patterns(): array {
 		return array(
@@ -358,7 +359,15 @@ class Front_Assets extends Actor_Base implements Actor {
 		}
 
 		foreach ( $this->patterns as $pattern ) {
-			$pattern->maybe_activate( $cpt_settings );
+			if ( $pattern instanceof Layout_Pattern &&
+				$cpt_settings instanceof Layout_Settings ) {
+				$pattern->maybe_activate_layout( $cpt_settings );
+			}
+
+			if ( $pattern instanceof Selection_Pattern &&
+				$cpt_settings instanceof Post_Selection_Settings ) {
+				$pattern->maybe_activate_selection( $cpt_settings );
+			}
 		}
 	}
 
@@ -497,7 +506,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$code = array();
 
 		foreach ( $this->patterns as $pattern ) {
-			$asset_code = $pattern->generate_code( $cpt_settings );
+			$asset_code = $this->generate_pattern_code( $pattern, $cpt_settings );
 
 			if ( count( $asset_code['js'] ) > 0 ||
 				count( $asset_code['css'] ) > 0 ) {
@@ -509,9 +518,30 @@ class Front_Assets extends Actor_Base implements Actor {
 	}
 
 	/**
+	 * @return array{css:array<string,string>,js:array<string,string>}
+	 */
+	protected function generate_pattern_code( Library_Pattern $pattern, Cpt_Settings $cpt_settings ): array {
+		if ( $pattern instanceof Layout_Pattern &&
+			$cpt_settings instanceof Layout_Settings ) {
+			return $pattern->generate_layout_code( $cpt_settings );
+		}
+
+		if ( $pattern instanceof Selection_Pattern &&
+			$cpt_settings instanceof Post_Selection_Settings &&
+			$pattern->is_target_selection( $cpt_settings ) ) {
+			return $pattern->generate_selection_code( $cpt_settings );
+		}
+
+		return array(
+			'css' => array(),
+			'js'  => array(),
+		);
+	}
+
+	/**
 	 * @param string[] $names
 	 *
-	 * @return Template_Pattern[]
+	 * @return Layout_Pattern[]
 	 */
 	public function resolve_template_patterns( array $names ): array {
 		$names_keys       = array_flip( $names );
@@ -519,7 +549,7 @@ class Front_Assets extends Actor_Base implements Actor {
 
 		return array_filter(
 			$patterns_by_name,
-			fn( $pattern ) => $pattern instanceof Template_Pattern
+			fn( $pattern ) => $pattern instanceof Layout_Pattern
 		);
 	}
 
@@ -527,7 +557,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$classes = array();
 
 		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof Common_Template_Pattern &&
+			if ( $pattern instanceof Selection_Pattern &&
 				$pattern->is_target_selection( $post_selection_settings ) ) {
 				$class = $pattern->get_selection_items_wrapper_class( $post_selection_settings );
 
@@ -547,7 +577,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$patterns_outers = array();
 
 		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof Common_Template_Pattern ) {
+			if ( $pattern instanceof Selection_Pattern ) {
 				$is_target = $pattern->is_target_selection( $post_selection_settings );
 
 				if ( $is_target ) {
@@ -566,7 +596,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$attrs = array();
 
 		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof Common_Template_Pattern &&
+			if ( $pattern instanceof Selection_Pattern &&
 				$pattern->is_target_selection( $post_selection_settings ) ) {
 				$asset_attrs = $pattern->get_selection_shortcode_attrs( $post_selection_settings );
 

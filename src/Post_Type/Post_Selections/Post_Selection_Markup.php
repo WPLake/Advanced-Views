@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selectio
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Composite_Attribute;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Outers_Builder;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Outers_Builder;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;

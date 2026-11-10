@@ -2,9 +2,8 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template;
+namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
@@ -15,7 +14,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Facto
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Template_Pattern_Base extends Library_Pattern_Base implements Template_Pattern {
+abstract class Layout_Pattern_Base extends Library_Pattern_Base implements Layout_Pattern {
 	private Field_Provider_Cluster $provider_cluster;
 
 	public function __construct( Asset_Resolver $asset_resolver, Field_Provider_Cluster $provider_cluster ) {
@@ -76,20 +75,6 @@ abstract class Template_Pattern_Base extends Library_Pattern_Base implements Tem
 		return $item_selector;
 	}
 
-	/**
-	 * @return array{css:array<string,string>,js:array<string,string>}
-	 */
-	public function generate_code( Cpt_Settings $cpt_settings ): array {
-		if ( $cpt_settings instanceof Layout_Settings ) {
-			return $this->generate_layout_code( $cpt_settings );
-		}
-
-		return array(
-			'css' => array(),
-			'js'  => array(),
-		);
-	}
-
 	public function get_row_wrapper_class( string $row_type ): string {
 		return '';
 	}
@@ -146,7 +131,7 @@ abstract class Template_Pattern_Base extends Library_Pattern_Base implements Tem
 	/**
 	 * @return array{css:array<string,string>,js:array<string,string>}
 	 */
-	protected function generate_layout_code( Layout_Settings $layout_settings ): array {
+	public function generate_layout_code( Layout_Settings $layout_settings ): array {
 		$code = array(
 			'css' => array(),
 			'js'  => array(),

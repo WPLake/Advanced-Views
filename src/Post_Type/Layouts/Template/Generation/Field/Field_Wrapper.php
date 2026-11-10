@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Structure\Inner_Row_Policy;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Outers_Builder;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Outers_Builder;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;

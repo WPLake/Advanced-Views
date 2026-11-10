@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template;
+namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -13,19 +13,19 @@ defined( 'ABSPATH' ) || exit;
 
 final class Pattern_Container {
 	/**
-	 * @var Template_Pattern[]
+	 * @var Layout_Pattern[]
 	 */
 	private array $patterns;
 
 	/**
-	 * @param Template_Pattern[] $patterns
+	 * @param Layout_Pattern[] $patterns
 	 */
 	public function __construct( array $patterns ) {
 		$this->patterns = $patterns;
 	}
 
 	/**
-	 * @return Template_Pattern[]
+	 * @return Layout_Pattern[]
 	 */
 	public function get_patterns(): array {
 		return $this->patterns;
@@ -33,13 +33,13 @@ final class Pattern_Container {
 
 	public function resolve_row_wrapper_tag( Field_Settings $field_settings, string $row_type ): string {
 		return $this->first_non_empty(
-			static fn( Template_Pattern $pattern ): string => $pattern->get_row_wrapper_tag( $field_settings, $row_type )
+			static fn( Layout_Pattern $pattern ): string => $pattern->get_row_wrapper_tag( $field_settings, $row_type )
 		);
 	}
 
 	public function resolve_field_wrapper_tag( Field_Settings $field_settings, string $row_type ): string {
 		return $this->first_non_empty(
-			static fn( Template_Pattern $pattern ): string => $pattern->get_field_wrapper_tag( $field_settings, $row_type )
+			static fn( Layout_Pattern $pattern ): string => $pattern->get_field_wrapper_tag( $field_settings, $row_type )
 		);
 	}
 
@@ -133,7 +133,7 @@ final class Pattern_Container {
 	}
 
 	/**
-	 * @param callable(Template_Pattern):string $query
+	 * @param callable(Layout_Pattern):string $query
 	 */
 	protected function first_non_empty( callable $query ): string {
 		foreach ( $this->patterns as $pattern ) {

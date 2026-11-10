@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\Row_Context_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Structure\Inner_Row_Policy;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
 
 /**
@@ -86,7 +86,7 @@ class Row_Builder implements Row_Composer {
 	}
 
 	/**
-	 * @param Template_Pattern[] $field_assets
+	 * @param Layout_Pattern[] $field_assets
 	 *
 	 * @return Html_Node[]
 	 */

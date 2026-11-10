@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template;
+namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -12,7 +12,14 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Facto
 
 defined( 'ABSPATH' ) || exit;
 
-interface Template_Pattern extends Library_Pattern {
+interface Layout_Pattern extends Library_Pattern {
+	public function maybe_activate_layout( Layout_Settings $layout_settings ): void;
+
+	/**
+	 * @return array{css:array<string,string>,js:array<string,string>}
+	 */
+	public function generate_layout_code( Layout_Settings $layout_settings ): array;
+
 	public function get_row_wrapper_class( string $row_type ): string;
 
 	public function get_row_wrapper_tag( Field_Settings $field_settings, string $row_type ): string;

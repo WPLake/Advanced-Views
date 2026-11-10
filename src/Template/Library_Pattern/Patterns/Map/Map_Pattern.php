@@ -4,16 +4,15 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern_Base;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern_Base;
 
 defined( 'ABSPATH' ) || exit;
 
-class Map_Pattern extends Template_Pattern_Base {
+class Map_Pattern extends Layout_Pattern_Base {
 	const NAME = 'acf-views-maps';
 
 	/**
@@ -68,25 +67,23 @@ class Map_Pattern extends Template_Pattern_Base {
 		return $css_code;
 	}
 
-	public function maybe_activate( Cpt_Settings $cpt_settings ): void {
-		if ( $cpt_settings instanceof Layout_Settings ) {
-			$target_fields      = $this->get_target_fields( $cpt_settings );
-			$is_with_google_map = false;
+	public function maybe_activate_layout( Layout_Settings $layout_settings ): void {
+		$target_fields      = $this->get_target_fields( $layout_settings );
+		$is_with_google_map = false;
 
-			foreach ( $target_fields as $map_field ) {
-				$map_type = $map_field->get_field_meta()->get_type();
+		foreach ( $target_fields as $map_field ) {
+			$map_type = $map_field->get_field_meta()->get_type();
 
-				if ( 'open_street_map' !== $map_type ) {
-					$is_with_google_map = true;
-					$is_inner_target    = $this->is_google_map_selector_inner( $map_field );
-					$this->maps[]       = $cpt_settings->get_item_selector( $map_field, 'map', $is_inner_target );
-				}
+			if ( 'open_street_map' !== $map_type ) {
+				$is_with_google_map = true;
+				$is_inner_target    = $this->is_google_map_selector_inner( $map_field );
+				$this->maps[]       = $layout_settings->get_item_selector( $map_field, 'map', $is_inner_target );
 			}
+		}
 
-			// only google map requires it.
-			if ( $is_with_google_map ) {
-				$this->enable_js_handle( 'acf-views-maps' );
-			}
+		// only google map requires it.
+		if ( $is_with_google_map ) {
+			$this->enable_js_handle( 'acf-views-maps' );
 		}
 	}
 }
