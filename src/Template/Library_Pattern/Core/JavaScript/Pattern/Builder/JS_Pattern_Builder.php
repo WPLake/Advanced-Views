@@ -16,7 +16,7 @@ final class JS_Pattern_Builder {
 
 	public function __construct( JS_Object_Builder $object_builder, Text_Formatter $formatter ) {
 		$this->object_builder = $object_builder;
-		$this->formatter       = $formatter;
+		$this->formatter      = $formatter;
 	}
 
 	/**
@@ -62,10 +62,13 @@ final class JS_Pattern_Builder {
 			$statements[] = sprintf( '%s;', $line );
 		}
 
-		return $this->join_blocks( $statements );
+		$new_line = $this->formatter->new_line();
+		return join( $new_line, $statements );
 	}
 
 	/**
+	 * The blocks are separated by an empty line.
+	 *
 	 * @param string[] $blocks
 	 */
 	protected function join_blocks( array $blocks ): string {
@@ -73,8 +76,8 @@ final class JS_Pattern_Builder {
 			$blocks,
 			fn( string $block ) => strlen( $block ) > 0
 		);
-		$new_line      = $this->formatter->new_line();
 
-		return join( $new_line, $filled_blocks );
+		$new_lines = $this->formatter->new_line( 2 );
+		return join( $new_lines, $filled_blocks );
 	}
 }
