@@ -10,7 +10,7 @@ use Closure;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Text_Formatter;
 
-final class JS_Snippet_Builder {
+final class Snippet_Builder {
 	const MULTIPLE_ITEM_VARIABLE = 'item';
 
 	protected Html_Escaper $escaper;

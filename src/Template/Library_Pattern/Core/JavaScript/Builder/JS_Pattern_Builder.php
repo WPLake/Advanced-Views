@@ -7,16 +7,16 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Bui
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Text_Formatter;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\Object\JS_Object_Builder;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\Object\Object_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Variables;
 
 final class JS_Pattern_Builder {
-	protected JS_Object_Builder $object_builder;
-	protected JS_Snippet_Builder $snippet_builder;
+	protected Object_Builder $object_builder;
+	protected Snippet_Builder $snippet_builder;
 	protected Text_Formatter $formatter;
 
-	public function __construct( JS_Object_Builder $object_builder, JS_Snippet_Builder $snippet_builder, Text_Formatter $formatter ) {
+	public function __construct( Object_Builder $object_builder, Snippet_Builder $snippet_builder, Text_Formatter $formatter ) {
 		$this->object_builder = $object_builder;
 		$this->snippet_builder  = $snippet_builder;
 		$this->formatter      = $formatter;

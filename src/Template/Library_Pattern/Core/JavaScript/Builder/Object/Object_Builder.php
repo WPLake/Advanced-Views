@@ -9,14 +9,14 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Text_Formatter;
 
-final class JS_Object_Builder {
-	protected JS_Property_Builder $property_builder;
+final class Object_Builder {
+	protected Property_Builder $property_builder;
 	protected Html_Escaper $escaper;
 	protected Text_Formatter $formatter;
 	protected string $declaration_keyword;
 
 	public function __construct( Html_Escaper $escaper, Text_Formatter $formatter ) {
-		$this->property_builder    = new JS_Property_Builder( $escaper );
+		$this->property_builder    = new Property_Builder( $escaper );
 		$this->escaper             = $escaper;
 		$this->formatter           = $formatter;
 		$this->declaration_keyword = 'var';

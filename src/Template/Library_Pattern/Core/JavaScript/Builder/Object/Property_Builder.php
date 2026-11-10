@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
-final class JS_Property_Builder {
+final class Property_Builder {
 	protected Html_Escaper $escaper;
 
 	public function __construct( Html_Escaper $escaper ) {
