@@ -11,10 +11,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Raw_Field_Value;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Macy_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Masonry_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Splide_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery\Light_Gallery_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Macy\Macy_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Masonry\Masonry_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Splide\Splide_Pattern;
 
 defined( 'ABSPATH' ) || exit;
 

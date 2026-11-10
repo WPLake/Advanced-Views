@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns;
+namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery;
 
 defined( 'ABSPATH' ) || exit;
 

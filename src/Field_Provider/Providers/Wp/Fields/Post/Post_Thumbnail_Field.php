@@ -10,8 +10,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Raw_Field_Value;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery\Light_Gallery_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox\Lightbox_Pattern;
 
 class Post_Thumbnail_Field extends Image_Field {
 	use Custom_Field;

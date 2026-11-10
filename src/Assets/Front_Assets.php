@@ -18,9 +18,9 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern_Base
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Common_Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Outers_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Template\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery\Light_Gallery_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox\Lightbox_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map\Map_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
