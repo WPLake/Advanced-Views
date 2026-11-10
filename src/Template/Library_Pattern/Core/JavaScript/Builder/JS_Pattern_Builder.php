@@ -2,21 +2,47 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\Builder;
+namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Text_Formatter;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\Object\JS_Object_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Variables;
 
 final class JS_Pattern_Builder {
 	protected JS_Object_Builder $object_builder;
+	protected JS_Snippet_Builder $snippet_builder;
 	protected Text_Formatter $formatter;
 
-	public function __construct( JS_Object_Builder $object_builder, Text_Formatter $formatter ) {
+	public function __construct( JS_Object_Builder $object_builder, JS_Snippet_Builder $snippet_builder, Text_Formatter $formatter ) {
 		$this->object_builder = $object_builder;
+		$this->snippet_builder  = $snippet_builder;
 		$this->formatter      = $formatter;
+	}
+
+	/**
+	 * The code wrapped for the auto-discovery, with the field lookup.
+	 *
+	 * @param class-string<JS_Pattern> $js_pattern
+	 */
+	public function build_snippet(
+		string $js_pattern,
+		string $auto_discover_name,
+		string $name,
+		string $selector,
+		bool $is_multiple
+	): string {
+		$render_content = fn( string $outer_wrapper ) => $this->build( $js_pattern, $outer_wrapper );
+
+		return $this->snippet_builder->build(
+			$auto_discover_name,
+			$name,
+			$selector,
+			$is_multiple,
+			$render_content
+		);
 	}
 
 	/**
@@ -56,10 +82,11 @@ final class JS_Pattern_Builder {
 	 */
 	protected function compose_setup( string $js_pattern, JS_Variables $variables ): string {
 		$setup      = $js_pattern::get_js_setup( $variables );
+		$tabs       = $this->formatter->tabulate();
 		$statements = array();
 
 		foreach ( $setup as $line ) {
-			$statements[] = sprintf( '%s;', $line );
+			$statements[] = sprintf( '%s%s;', $tabs, $line );
 		}
 
 		$new_line = $this->formatter->new_line();

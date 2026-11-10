@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\Builder\JS_Pattern_Builder;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\JS_Pattern_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern_Base;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Selection\Selection_Code_Builder;
@@ -27,7 +27,7 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 		parent::__construct( $provider_cluster );
 
 		$this->js_pattern_builder = $js_pattern_builder;
-		$this->card_field_id   = '';
+		$this->card_field_id      = '';
 	}
 
 	/**
@@ -41,16 +41,20 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 		$this->card_field_id = $card_field_id;
 	}
 
-	protected function print_common_js_code( string $var_name ): void {
-		$js_pattern = $this->get_js_pattern();
-		$js_code    = $this->js_pattern_builder->build( $js_pattern, $var_name );
-
-		// @phpcs:ignore WordPress.Security.EscapeOutput
-		echo $js_code;
-	}
-
-	protected function print_js_code( string $var_name, Field_Settings $field_settings, Layout_Settings $layout_settings ): void {
-		$this->print_common_js_code( $var_name );
+	protected function create_js_snippet(
+		string $var_name,
+		Field_Settings $field_settings,
+		Layout_Settings $layout_settings,
+		string $js_field_selector,
+		bool $is_multiple
+	): string {
+		return $this->js_pattern_builder->build_snippet(
+			$this->get_js_pattern(),
+			$this->get_auto_discover_name(),
+			$var_name,
+			$js_field_selector,
+			$is_multiple
+		);
 	}
 
 	protected function print_css_code(
@@ -71,16 +75,21 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 		$this->print_common_css_code( $magic_selector, $post_selection_settings );
 		$css_code = (string) ob_get_clean();
 
-		ob_start();
-		$this->print_common_js_code( $this->card_field_id );
-		$js_code = (string) ob_get_clean();
+		$selector = Selection_Code_Builder::get_selector( $post_selection_settings, $this->card_field_id );
+		$js_snippet = $this->js_pattern_builder->build_snippet(
+			$this->get_js_pattern(),
+			$this->get_auto_discover_name(),
+			$this->card_field_id,
+			$selector,
+			false
+		);
 
 		return Selection_Code_Builder::build(
 			$post_selection_settings,
 			$this->get_auto_discover_name(),
 			$this->card_field_id,
 			$css_code,
-			$js_code
+			$js_snippet
 		);
 	}
 }

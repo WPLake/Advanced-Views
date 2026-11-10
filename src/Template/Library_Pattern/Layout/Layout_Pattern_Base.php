@@ -79,6 +79,34 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 	): void {
 	}
 
+	/**
+	 * The field's JS code with its wrapper, or an empty string when the pattern has no JS code.
+	 */
+	protected function create_js_snippet(
+		string $var_name,
+		Field_Settings $field_settings,
+		Layout_Settings $layout_settings,
+		string $js_field_selector,
+		bool $is_multiple
+	): string {
+		$outer_wrapper = $is_multiple ?
+			'item' :
+			$var_name;
+
+		ob_start();
+		$this->print_js_code( $outer_wrapper, $field_settings, $layout_settings );
+		$js_code_safe = (string) ob_get_clean();
+
+		if ( '' !== $js_code_safe ) {
+			ob_start();
+			$this->print_js_code_piece( $var_name, $js_code_safe, $js_field_selector, $is_multiple );
+
+			return (string) ob_get_clean();
+		}
+
+		return '';
+	}
+
 	protected function get_item_selector(
 		Layout_Settings $layout_settings,
 		Field_Settings $field_settings,
@@ -190,18 +218,14 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 
 			$var_name = $field->get_template_field_id();
 
-			ob_start();
-			$this->print_js_code( $var_name, $field, $layout_settings );
-			$js_code_safe = (string) ob_get_clean();
+			$js_snippet = $this->create_js_snippet( $var_name, $field, $layout_settings, $js_field_selector, false );
 
 			ob_start();
 			$this->print_css_code( $css_field_selector, $field, $layout_settings );
 			$css_code_safe = (string) ob_get_clean();
 
-			if ( '' !== $js_code_safe ) {
-				ob_start();
-				$this->print_js_code_piece( $var_name, $js_code_safe, $js_field_selector, false );
-				$code['js'][ $var_name ] = (string) ob_get_clean();
+			if ( '' !== $js_snippet ) {
+				$code['js'][ $var_name ] = $js_snippet;
 			}
 
 			if ( '' !== $css_code_safe ) {
@@ -215,20 +239,15 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 			$js_field_selector  = $this->get_item_selector( $layout_settings, $field, false, false );
 			$css_field_selector = $this->get_item_selector( $layout_settings, $field, false, true );
 
-			ob_start();
-			$this->print_js_code( 'item', $field, $layout_settings );
-			$js_code_safe = (string) ob_get_clean();
+			$var_name = $field->get_template_field_id();
+			$js_snippet = $this->create_js_snippet( $var_name, $field, $layout_settings, $js_field_selector, true );
 
 			ob_start();
 			$this->print_css_code( $css_field_selector, $field, $layout_settings );
 			$css_code_safe = (string) ob_get_clean();
 
-			$var_name = $field->get_template_field_id();
-
-			if ( '' !== $js_code_safe ) {
-				ob_start();
-				$this->print_js_code_piece( $var_name, $js_code_safe, $js_field_selector, true );
-				$code['js'][ $var_name ] = (string) ob_get_clean();
+			if ( '' !== $js_snippet ) {
+				$code['js'][ $var_name ] = $js_snippet;
 			}
 
 			if ( '' !== $css_code_safe ) {
