@@ -5,25 +5,28 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\CSS_Library\CSS_Pattern_Base;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\CSS_Library\CSS_Library_Base;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Light_Gallery_CSS extends CSS_Pattern_Base {
+final class CSS_Library extends CSS_Library_Base {
+	protected const HANDLE = 'lightgallery';
+	protected const THUMBNAIL_HANDLE = 'lg-thumbnail';
+
 	public function __construct() {
 		parent::__construct(
 			array(
-				'lightgallery',
-				'lg-thumbnail',
+				self::HANDLE,
+				self::THUMBNAIL_HANDLE,
 			)
 		);
 	}
 
 	public function enable(): void {
-		$this->enable_handle( 'lightgallery' );
+		$this->enable_handle( self::HANDLE );
 
 		// this addon is always in use.
-		$this->enable_handle( 'lg-thumbnail' );
+		$this->enable_handle( self::THUMBNAIL_HANDLE );
 	}
 
 	public function get_css_patches( Asset_Resolver $resolver ): array {

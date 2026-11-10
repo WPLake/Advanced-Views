@@ -8,7 +8,7 @@ use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class CSS_Pattern_Base implements CSS_Library {
+abstract class CSS_Library_Base implements CSS_Library {
 	/**
 	 * @var array<string,bool>
 	 */

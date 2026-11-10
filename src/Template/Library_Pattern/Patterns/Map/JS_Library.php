@@ -4,24 +4,26 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map;
 
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library\JS_Pattern_Base;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library\JS_Library_Base;
 
 defined( 'ABSPATH' ) || exit;
 
-class Map_JS extends JS_Pattern_Base {
+class JS_Library extends JS_Library_Base {
+	protected const HANDLE = 'acf-views-maps';
+
 	/**
 	 * @var string[]
 	 */
 	private array $maps;
 
 	public function __construct() {
-		parent::__construct( array( 'acf-views-maps' ) );
+		parent::__construct( array( self::HANDLE ) );
 
 		$this->maps = array();
 	}
 
 	public function enable(): void {
-		$this->enable_handle( 'acf-views-maps' );
+		$this->enable_handle( self::HANDLE );
 	}
 
 	/**
@@ -33,7 +35,7 @@ class Map_JS extends JS_Pattern_Base {
 
 	public function get_js_data(): array {
 		return array(
-			'acf-views-maps' => array(
+			self::HANDLE => array(
 				'acfViewsMaps' => $this->maps,
 			),
 		);
@@ -51,7 +53,7 @@ class Map_JS extends JS_Pattern_Base {
 			// the dependency makes sure it's loaded only after plugin's maps.min.js.
 			'google-maps' => array(
 				'url'  => sprintf( 'https://maps.googleapis.com/maps/api/js?key=%s&callback=acfViewsGoogleMaps', $key ),
-				'deps' => array( 'acf-views-maps' ),
+				'deps' => array( self::HANDLE ),
 			),
 		);
 	}

@@ -4,11 +4,11 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox;
 
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\CSS_Library\CSS_Pattern_Base;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\CSS_Library\CSS_Library_Base;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Lightbox_CSS extends CSS_Pattern_Base {
+final class CSS_Library extends CSS_Library_Base {
 	private bool $is_active;
 
 	public function __construct() {

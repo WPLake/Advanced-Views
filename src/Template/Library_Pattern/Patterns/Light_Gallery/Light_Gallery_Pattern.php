@@ -10,8 +10,6 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\CSS_Library\CSS_Library;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library\JS_Library;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
@@ -19,23 +17,23 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 class Light_Gallery_Pattern extends Layout_Pattern_Base {
 	const NAME = 'light-gallery';
 
-	private Light_Gallery_JS $js_library;
-	private Light_Gallery_CSS $css_library;
+	private JS_Library $js_library;
+	private CSS_Library $css_library;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster ) {
 		parent::__construct( $provider_cluster );
 
 		$this->set_auto_discover_name( 'light-gallery' );
 
-		$this->js_library  = new Light_Gallery_JS();
-		$this->css_library = new Light_Gallery_CSS();
+		$this->js_library  = new JS_Library();
+		$this->css_library = new CSS_Library();
 	}
 
-	public function get_js_library(): ?JS_Library {
+	public function get_js_library(): JS_Library {
 		return $this->js_library;
 	}
 
-	public function get_css_library(): ?CSS_Library {
+	public function get_css_library(): CSS_Library {
 		return $this->css_library;
 	}
 

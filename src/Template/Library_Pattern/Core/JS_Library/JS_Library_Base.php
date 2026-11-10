@@ -8,7 +8,7 @@ use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class JS_Pattern_Base implements JS_Library {
+abstract class JS_Library_Base implements JS_Library {
 	/**
 	 * @var array<string,bool>
 	 */

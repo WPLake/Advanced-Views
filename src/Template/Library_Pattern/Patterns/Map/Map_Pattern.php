@@ -7,7 +7,6 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library\JS_Library;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern_Base;
 
 defined( 'ABSPATH' ) || exit;
@@ -19,7 +18,7 @@ class Map_Pattern extends Layout_Pattern_Base {
 	 * @var string[]
 	 */
 	private array $maps;
-	private Map_JS $js_library;
+	private JS_Library $js_library;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster ) {
 		parent::__construct( $provider_cluster );
@@ -29,7 +28,7 @@ class Map_Pattern extends Layout_Pattern_Base {
 		$this->js_library = $this->create_js_library();
 	}
 
-	public function get_js_library(): ?JS_Library {
+	public function get_js_library(): JS_Library {
 		return $this->js_library;
 	}
 
@@ -58,7 +57,7 @@ class Map_Pattern extends Layout_Pattern_Base {
 		}
 	}
 
-	protected function create_js_library(): Map_JS {
-		return new Map_JS();
+	protected function create_js_library(): JS_Library {
+		return new JS_Library();
 	}
 }
