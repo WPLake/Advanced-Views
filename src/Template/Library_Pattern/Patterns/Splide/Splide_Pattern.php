@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Code_Builder;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\Builder\JS_Pattern_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern_Base;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Selection\Selection_Code_Builder;
@@ -21,12 +21,12 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 	const NAME = 'splide';
 
 	private string $card_field_id;
-	private JS_Code_Builder $js_code_builder;
+	private JS_Pattern_Builder $js_pattern_builder;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Code_Builder $js_code_builder ) {
+	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder ) {
 		parent::__construct( $provider_cluster );
 
-		$this->js_code_builder = $js_code_builder;
+		$this->js_pattern_builder = $js_pattern_builder;
 		$this->card_field_id   = '';
 	}
 
@@ -43,7 +43,7 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 
 	protected function print_common_js_code( string $var_name ): void {
 		$js_pattern = $this->get_js_pattern();
-		$js_code    = $this->js_code_builder->build( $js_pattern, $var_name );
+		$js_code    = $this->js_pattern_builder->build( $js_pattern, $var_name );
 
 		// @phpcs:ignore WordPress.Security.EscapeOutput
 		echo $js_code;
