@@ -631,7 +631,8 @@ class Front_Assets extends Actor_Base implements Actor {
 		}
 
 		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof JS_Library ) {
+			if ( $pattern instanceof JS_Library &&
+				$pattern->has_active_js() ) {
 				$this->js_library_loader->enqueue_pattern( $pattern );
 			}
 		}

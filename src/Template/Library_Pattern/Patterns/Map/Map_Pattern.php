@@ -37,10 +37,6 @@ class Map_Pattern extends Layout_Pattern_Base {
 	}
 
 	public function get_js_data(): array {
-		if ( ! $this->is_enabled_js_handle( 'acf-views-maps' ) ) {
-			return array();
-		}
-
 		return array(
 			'acf-views-maps' => array(
 				'acfViewsMaps' => $this->maps,
@@ -49,10 +45,6 @@ class Map_Pattern extends Layout_Pattern_Base {
 	}
 
 	public function get_external_scripts(): array {
-		if ( ! $this->is_enabled_js_handle( 'acf-views-maps' ) ) {
-			return array();
-		}
-
 		$api_data = apply_filters( 'acf/fields/google_map/api', array() );
 		$key      = $api_data['key'] ?? '';
 		$key      = ( '' === $key &&

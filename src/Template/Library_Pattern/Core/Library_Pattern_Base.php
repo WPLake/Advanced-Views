@@ -94,6 +94,12 @@ abstract class Library_Pattern_Base implements Library_Pattern, JS_Library, CSS_
 		return Asset_Resolver::ORIGIN_LITE;
 	}
 
+	public function has_active_js(): bool {
+		$js_handles = $this->get_active_js_handles();
+
+		return array() !== $js_handles;
+	}
+
 	public function get_active_js_handles(): array {
 		return array_keys( array_filter( $this->js_handles ) );
 	}

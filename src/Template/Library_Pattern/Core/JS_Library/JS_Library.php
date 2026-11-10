@@ -13,6 +13,11 @@ interface JS_Library {
 	public function get_js_origin(): string;
 
 	/**
+	 * The gate: the methods below are called only when it's true.
+	 */
+	public function has_active_js(): bool;
+
+	/**
 	 * @return string[] handles of the active front JS files (the file is js/front/{handle}.min.js)
 	 */
 	public function get_active_js_handles(): array;

@@ -37,10 +37,6 @@ class Lightbox_Pattern extends Layout_Pattern_Base {
 	}
 
 	public function get_js_data(): array {
-		if ( ! $this->is_enabled_js_handle( 'acf-views-lightbox' ) ) {
-			return array();
-		}
-
 		return array(
 			'acf-views-lightbox' => array(
 				'acfViewsLightBox' => array_values( $this->light_boxes ),
