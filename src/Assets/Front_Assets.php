@@ -15,6 +15,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\CSS_Library\CSS_Library;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\CSS_Library\CSS_Library_Loader;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library\JS_Library;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library\JS_Library_Loader;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern;
@@ -51,7 +53,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	 * @var array<string, string>
 	 */
 	private array $include_css_code;
-	private string $assets_css_code;
+	private CSS_Library_Loader $css_library_loader;
 	private Live_Reloader_Component $live_reloader_component;
 	/**
 	 * @var array<string,true>
@@ -72,7 +74,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$this->inline_js_code          = array();
 		$this->include_css_code        = array();
 		$this->live_reloader_component = $live_reloader_component;
-		$this->assets_css_code         = '';
+		$this->css_library_loader      = new CSS_Library_Loader();
 		$this->tailwind_css_rules      = array();
 		$this->html_renderer           = $html_renderer;
 
@@ -376,9 +378,19 @@ class Front_Assets extends Actor_Base implements Actor {
 	}
 
 	public function print_assets(): void {
+		foreach ( $this->patterns as $pattern ) {
+			if ( $pattern instanceof CSS_Library ) {
+				$name = $pattern->get_name();
+
+				$this->css_library_loader->load_pattern( $name, $pattern );
+			}
+		}
+
+		$assets_css_code    = $this->css_library_loader->get_css_code();
+		$has_assets_css     = strlen( $assets_css_code ) > 0;
 		$all_js_code        = '';
-		$all_css_code       = strlen( $this->assets_css_code ) > 0 ?
-			$this->make_code_tag( 'style', array( 'data-advanced-views-assets' => true ), $this->assets_css_code ) :
+		$all_css_code       = $has_assets_css ?
+			$this->make_code_tag( 'style', array( 'data-advanced-views-assets' => true ), $assets_css_code ) :
 		'';
 		$counter            = 0;
 		$is_tailwind_in_use = false;
@@ -621,16 +633,6 @@ class Front_Assets extends Actor_Base implements Actor {
 		foreach ( $this->patterns as $pattern ) {
 			if ( $pattern instanceof JS_Library ) {
 				$this->js_library_loader->enqueue_pattern( $pattern );
-			}
-
-			$css_code = $pattern->get_active_css();
-
-			if ( strlen( $css_code ) > 0 ) {
-				$asset_name = $pattern->get_name();
-
-				// 1. CSS, unlike JS to be enqueued later, along with the View's and Card's CSS.
-				// 2. no escaping, it's a CSS code, so e.g '.a > .b' shouldn't be escaped.
-				$this->assets_css_code .= sprintf( "/*%s*/\n%s\n", $asset_name, $css_code );
 			}
 		}
 	}

@@ -10,9 +10,4 @@ interface Library_Pattern {
 	public function get_name(): string;
 
 	public function get_auto_discover_name(): string;
-
-	/**
-	 * @return string the final CSS code
-	 */
-	public function get_active_css(): string;
 }

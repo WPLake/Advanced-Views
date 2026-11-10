@@ -8,9 +8,10 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\CSS_Library\CSS_Library;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library\JS_Library;
 
-abstract class Library_Pattern_Base implements Library_Pattern, JS_Library {
+abstract class Library_Pattern_Base implements Library_Pattern, JS_Library, CSS_Library {
 	const NAME = '';
 
 	/**

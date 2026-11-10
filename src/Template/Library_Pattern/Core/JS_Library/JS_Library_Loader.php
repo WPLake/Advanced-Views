@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 final class JS_Library_Loader {
 	private Asset_Resolver $asset_resolver;
 	/**
-	 * @var array<string,mixed>
+	 * @var array{strategy?: string, in_footer?: bool, fetchpriority?: string}
 	 */
 	private array $script_args;
 
@@ -25,7 +25,7 @@ final class JS_Library_Loader {
 	}
 
 	/**
-	 * @param array<string,mixed> $script_args
+	 * @param array{strategy?: string, in_footer?: bool, fetchpriority?: string} $script_args
 	 */
 	public function set_script_args( array $script_args ): self {
 		$this->script_args = $script_args;
