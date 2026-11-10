@@ -6,11 +6,12 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gall
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\CSS_Library\CSS_Library;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library\JS_Library;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
@@ -18,38 +19,40 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 class Light_Gallery_Pattern extends Layout_Pattern_Base {
 	const NAME = 'light-gallery';
 
+	private Light_Gallery_JS $js_library;
+	private Light_Gallery_CSS $css_library;
+
 	public function __construct( Field_Provider_Cluster $provider_cluster ) {
 		parent::__construct( $provider_cluster );
 
 		$this->set_auto_discover_name( 'light-gallery' );
-		$this->set_js_handles(
-			array(
-				'lightgallery' => false,
-				'lg-thumbnail' => false,
-			)
-		);
-		$this->set_css_handles(
-			array(
-				'lightgallery' => false,
-				'lg-thumbnail' => false,
-			)
-		);
+
+		$this->js_library  = new Light_Gallery_JS();
+		$this->css_library = new Light_Gallery_CSS();
+	}
+
+	public function get_js_library(): ?JS_Library {
+		return $this->js_library;
+	}
+
+	public function get_css_library(): ?CSS_Library {
+		return $this->css_library;
 	}
 
 	public function maybe_activate_layout( Layout_Settings $layout_settings ): void {
-		if ( $this->is_enabled_js_handle( 'lightgallery' ) ) {
+		if ( $this->js_library->has_active_js() ) {
 			return;
 		}
 
 		$target_fields = $this->get_target_fields( $layout_settings );
 
 		if ( array() !== $target_fields ) {
-			$this->enable_js_handle( 'lightgallery' );
-			$this->enable_css_handle( 'lightgallery' );
+			$this->js_library->enable_handle( 'lightgallery' );
+			$this->css_library->enable_handle( 'lightgallery' );
 
 			// this addon is always in use.
-			$this->enable_js_handle( 'lg-thumbnail' );
-			$this->enable_css_handle( 'lg-thumbnail' );
+			$this->js_library->enable_handle( 'lg-thumbnail' );
+			$this->css_library->enable_handle( 'lg-thumbnail' );
 		}
 	}
 
@@ -83,17 +86,6 @@ class Light_Gallery_Pattern extends Layout_Pattern_Base {
 		return array(
 			tag( 'li' )
 				->attributes( $data_attrs ),
-		);
-	}
-
-	public function get_css_patches( Asset_Resolver $resolver ): array {
-		// font and image paths in CSS won't work, as CSS will be added right to the page,
-		// replacing with the related installation path avoids it.
-		$asset_url_base          = $resolver->get_origin_url( $this->get_css_origin(), '' );
-		$relative_asset_url_base = Asset_Resolver::make_url_relative( $asset_url_base );
-
-		return array(
-			'url(../' => sprintf( 'url(%s', $relative_asset_url_base ),
 		);
 	}
 

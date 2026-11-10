@@ -8,18 +8,61 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern_Base;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Code_Piece_Printer;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\CSS_Library\CSS_Library;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library\JS_Library;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Layout_Pattern_Base extends Library_Pattern_Base implements Layout_Pattern {
+abstract class Layout_Pattern_Base implements Layout_Pattern {
+	const NAME = '';
+
 	private Field_Provider_Cluster $provider_cluster;
+	private string $auto_discover_name;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster ) {
-		parent::__construct();
+		$this->provider_cluster   = $provider_cluster;
+		$this->auto_discover_name = '';
+	}
 
-		$this->provider_cluster = $provider_cluster;
+	public function get_name(): string {
+		return static::NAME;
+	}
+
+	public function get_auto_discover_name(): string {
+		return $this->auto_discover_name;
+	}
+
+	public function get_js_library(): ?JS_Library {
+		return null;
+	}
+
+	public function get_css_library(): ?CSS_Library {
+		return null;
+	}
+
+	protected function set_auto_discover_name( string $auto_discover_name ): void {
+		$this->auto_discover_name = $auto_discover_name;
+	}
+
+	protected function print_code_piece( string $name, string $piece_safe ): void {
+		Code_Piece_Printer::print_code_piece( $this->auto_discover_name, $name, $piece_safe );
+	}
+
+	protected function print_js_code_piece(
+		string $name,
+		string $piece_safe,
+		string $field_selector,
+		bool $is_multiple
+	): void {
+		Code_Piece_Printer::print_js_code_piece(
+			$this->auto_discover_name,
+			$name,
+			$piece_safe,
+			$field_selector,
+			$is_multiple
+		);
 	}
 
 	protected function print_css_code(

@@ -19,7 +19,7 @@ final class CSS_Library_Loader {
 	}
 
 	public function load_pattern( string $name, CSS_Library $pattern ): void {
-		$files_css  = $this->get_files_css( $pattern );
+		$files_css  = $this->resolve_pattern_css( $pattern );
 		$inline_css = $pattern->get_inline_css();
 
 		$css_code  = $files_css . $inline_css;
@@ -39,11 +39,13 @@ final class CSS_Library_Loader {
 		return $this->css_code;
 	}
 
-	protected function get_files_css( CSS_Library $pattern ): string {
-		$files_css = $this->read_files( $pattern );
-		$patches   = $pattern->get_css_patches( $this->asset_resolver );
-		$subjects  = array_keys( $patches );
-		$replaces  = array_values( $patches );
+	protected function resolve_pattern_css( CSS_Library $pattern ): string {
+		$files_css = $this->read_pattern_files( $pattern );
+
+		$patches = $pattern->get_css_patches( $this->asset_resolver );
+
+		$subjects = array_keys( $patches );
+		$replaces = array_values( $patches );
 
 		return str_replace(
 			$subjects,
@@ -52,7 +54,7 @@ final class CSS_Library_Loader {
 		);
 	}
 
-	protected function read_files( CSS_Library $pattern ): string {
+	protected function read_pattern_files( CSS_Library $pattern ): string {
 		$wp_filesystem = WP_Filesystem_Factory::get_wp_filesystem();
 		$origin        = $pattern->get_css_origin();
 		$css_handles   = $pattern->get_css_handles();

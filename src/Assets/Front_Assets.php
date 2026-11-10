@@ -621,16 +621,19 @@ class Front_Assets extends Actor_Base implements Actor {
 		}
 
 		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof JS_Library &&
-				$pattern->has_active_js() ) {
-				$this->js_library_loader->enqueue_pattern( $pattern );
+			$js_library  = $pattern->get_js_library();
+			$css_library = $pattern->get_css_library();
+
+			if ( $js_library instanceof JS_Library &&
+				$js_library->has_active_js() ) {
+				$this->js_library_loader->enqueue_pattern( $js_library );
 			}
 
-			if ( $pattern instanceof CSS_Library &&
-				$pattern->has_active_css() ) {
+			if ( $css_library instanceof CSS_Library &&
+				$css_library->has_active_css() ) {
 				$name = $pattern->get_name();
 
-				$this->css_library_loader->load_pattern( $name, $pattern );
+				$this->css_library_loader->load_pattern( $name, $css_library );
 			}
 		}
 	}

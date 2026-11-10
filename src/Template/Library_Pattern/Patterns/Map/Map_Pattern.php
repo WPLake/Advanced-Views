@@ -7,6 +7,7 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library\JS_Library;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern_Base;
 
 defined( 'ABSPATH' ) || exit;
@@ -18,46 +19,22 @@ class Map_Pattern extends Layout_Pattern_Base {
 	 * @var string[]
 	 */
 	private array $maps;
+	private Map_JS $js_library;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster ) {
 		parent::__construct( $provider_cluster );
 
-		$this->set_js_handles(
-			array(
-				'acf-views-maps' => false,
-			)
-		);
 
-		$this->maps = array();
+		$this->maps       = array();
+		$this->js_library = $this->create_js_library();
+	}
+
+	public function get_js_library(): ?JS_Library {
+		return $this->js_library;
 	}
 
 	protected function is_google_map_selector_inner( Field_Settings $field_settings ): bool {
 		return false;
-	}
-
-	public function get_js_data(): array {
-		return array(
-			'acf-views-maps' => array(
-				'acfViewsMaps' => $this->maps,
-			),
-		);
-	}
-
-	public function get_external_scripts(): array {
-		$api_data = apply_filters( 'acf/fields/google_map/api', array() );
-		$key      = $api_data['key'] ?? '';
-		$key      = ( '' === $key &&
-						function_exists( 'acf_get_setting' ) ) ?
-			acf_get_setting( 'google_api_key' ) :
-			$key;
-
-		return array(
-			// the dependency makes sure it's loaded only after plugin's maps.min.js.
-			'google-maps' => array(
-				'url'  => sprintf( 'https://maps.googleapis.com/maps/api/js?key=%s&callback=acfViewsGoogleMaps', $key ),
-				'deps' => array( 'acf-views-maps' ),
-			),
-		);
 	}
 
 	public function maybe_activate_layout( Layout_Settings $layout_settings ): void {
@@ -76,7 +53,12 @@ class Map_Pattern extends Layout_Pattern_Base {
 
 		// only google map requires it.
 		if ( $is_with_google_map ) {
-			$this->enable_js_handle( 'acf-views-maps' );
+			$this->js_library->enable_handle( 'acf-views-maps' );
+			$this->js_library->set_maps( $this->maps );
 		}
+	}
+
+	protected function create_js_library(): Map_JS {
+		return new Map_JS();
 	}
 }

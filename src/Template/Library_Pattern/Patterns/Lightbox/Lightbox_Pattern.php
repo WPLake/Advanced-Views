@@ -10,6 +10,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\CSS_Library\CSS_Library;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library\JS_Library;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern_Base;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
@@ -21,45 +23,25 @@ class Lightbox_Pattern extends Layout_Pattern_Base {
 	 * @var array<string,array<string,mixed>>
 	 */
 	private array $light_boxes;
+	private Lightbox_JS $js_library;
+	private Lightbox_CSS $css_library;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster ) {
 		parent::__construct( $provider_cluster );
 
 		$this->set_auto_discover_name( 'acf-views-lightbox' );
-		$this->set_js_handles(
-			array(
-				'acf-views-lightbox' => false,
-			)
-		);
 
 		$this->light_boxes = array();
+		$this->js_library  = new Lightbox_JS();
+		$this->css_library = new Lightbox_CSS();
 	}
 
-	public function get_js_data(): array {
-		return array(
-			'acf-views-lightbox' => array(
-				'acfViewsLightBox' => array_values( $this->light_boxes ),
-			),
-		);
+	public function get_js_library(): ?JS_Library {
+		return $this->js_library;
 	}
 
-	public function get_inline_css(): string {
-		if ( ! $this->is_enabled_js_handle( 'acf-views-lightbox' ) ||
-			array() === $this->light_boxes ) {
-			return '';
-		}
-
-		$css_code = '';
-
-		$css_code .= '.acf-views-light-box{position:fixed;top:0;left:0;right:0;bottom:0;z-index:999999;display: flex;justify-content: center;align-items: center;background:rgba(0, 0, 0, 0.9);padding:5%;}';
-		$css_code .= '.acf-views-light-box__image{max-width:100%;max-height:100%;}';
-		$css_code .= '.acf-views-light-box__image:hover{cursor:zoom-out;}';
-		$css_code .= '.acf-views-light-box__icon{stroke: currentColor;stroke-linecap: square;stroke-width: 6px;fill:none;position: absolute;z-index: 9;bottom: 15px;left: 50%;transform: translateX(50%);color:white;opacity:.5;transition:all ease .3s;}';
-		$css_code .= '.acf-views-light-box__icon:hover{cursor:pointer;opacity:.7;}';
-		$css_code .= '.acf-views-light-box__icon-left{transform: scaleX(-1) translateX(150%);}';
-		$css_code .= '.acf-views-light-box__icon--inactive{opacity:.3;pointer-events:none;}';
-
-		return $css_code;
+	public function get_css_library(): ?CSS_Library {
+		return $this->css_library;
 	}
 
 	protected static function get_field_prefix( Layout_Settings $layout_settings, Field_Settings $field_settings ): string {
@@ -127,7 +109,11 @@ class Lightbox_Pattern extends Layout_Pattern_Base {
 				$this->add_light_box( $layout_settings, $target_field );
 			}
 
-			$this->enable_js_handle( 'acf-views-lightbox' );
+			$light_boxes = array_values( $this->light_boxes );
+
+			$this->js_library->enable_handle( 'acf-views-lightbox' );
+			$this->js_library->set_light_boxes( $light_boxes );
+			$this->css_library->set_active( true );
 		}
 	}
 
