@@ -30,13 +30,9 @@ final class JS_Code_Builder {
 
 		$is_filled    = count( $options ) > 0;
 		$options_code = $is_filled ?
-			$this->formatter->tab_shift(
-				fn() => $this->compose_options( $options, $variables->options )
-			) :
+			$this->compose_options( $options, $variables->options ) :
 			'';
-		$setup_code   = $this->formatter->tab_shift(
-			fn() => $this->compose_statements( $setup )
-		);
+		$setup_code   = $this->compose_statements( $setup );
 
 		$parts = $is_filled ?
 			array( $options_code, $setup_code ) :
@@ -122,11 +118,10 @@ final class JS_Code_Builder {
 	 * @param string[] $lines
 	 */
 	protected function compose_statements( array $lines ): string {
-		$tabs       = $this->formatter->tabulate();
 		$statements = array();
 
 		foreach ( $lines as $line ) {
-			$statements[] = sprintf( '%s%s;', $tabs, $line );
+			$statements[] = sprintf( '%s;', $line );
 		}
 
 		$new_line = $this->formatter->new_line();
