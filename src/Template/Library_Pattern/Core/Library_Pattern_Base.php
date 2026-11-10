@@ -7,7 +7,6 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\CSS_Library\CSS_Library;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JS_Library\JS_Library;
 
@@ -22,11 +21,9 @@ abstract class Library_Pattern_Base implements Library_Pattern, JS_Library, CSS_
 	 * @var array<string, bool>
 	 */
 	private array $css_handles;
-	private Asset_Resolver $asset_resolver;
 	private string $auto_discover_name;
 
-	public function __construct( Asset_Resolver $asset_resolver ) {
-		$this->asset_resolver     = $asset_resolver;
+	public function __construct() {
 		$this->js_handles         = array();
 		$this->css_handles        = array();
 		$this->auto_discover_name = '';
@@ -34,14 +31,6 @@ abstract class Library_Pattern_Base implements Library_Pattern, JS_Library, CSS_
 
 	protected function print_code_piece( string $name, string $piece_safe ): void {
 		Code_Piece_Printer::print_code_piece( $this->auto_discover_name, $name, $piece_safe );
-	}
-
-	protected function get_asset_url( string $file ): string {
-		return $this->asset_resolver->get_asset_url( $file );
-	}
-
-	protected function get_asset_path( string $file ): string {
-		return $this->asset_resolver->get_asset_path( $file );
 	}
 
 	protected function print_js_code_piece(
@@ -112,21 +101,28 @@ abstract class Library_Pattern_Base implements Library_Pattern, JS_Library, CSS_
 		return array();
 	}
 
-	public function get_active_css(): string {
-		$css = '';
+	public function has_active_css(): bool {
+		$css_handles = $this->get_css_handles();
+		$inline_css  = $this->get_inline_css();
 
-		$wp_filesystem = WP_Filesystem_Factory::get_wp_filesystem();
+		return array() !== $css_handles ||
+				strlen( $inline_css ) > 0;
+	}
 
-		foreach ( $this->css_handles as $css_handle => $is_active ) {
-			if ( $is_active ) {
-				$style_file   = sprintf( 'css/front/%s.min.css', $css_handle );
-				$path_to_file = $this->get_asset_path( $style_file );
+	public function get_css_origin(): string {
+		return $this->get_js_origin();
+	}
 
-				$css .= (string) $wp_filesystem->get_contents( $path_to_file );
-			}
-		}
+	public function get_css_handles(): array {
+		return array_keys( array_filter( $this->css_handles ) );
+	}
 
-		return $css;
+	public function get_css_patches( Asset_Resolver $resolver ): array {
+		return array();
+	}
+
+	public function get_inline_css(): string {
+		return '';
 	}
 
 	public function get_auto_discover_name(): string {

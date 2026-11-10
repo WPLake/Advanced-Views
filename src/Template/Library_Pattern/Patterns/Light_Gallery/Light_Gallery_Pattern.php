@@ -18,8 +18,8 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 class Light_Gallery_Pattern extends Layout_Pattern_Base {
 	const NAME = 'light-gallery';
 
-	public function __construct( Asset_Resolver $asset_resolver, Field_Provider_Cluster $provider_cluster ) {
-		parent::__construct( $asset_resolver, $provider_cluster );
+	public function __construct( Field_Provider_Cluster $provider_cluster ) {
+		parent::__construct( $provider_cluster );
 
 		$this->set_auto_discover_name( 'light-gallery' );
 		$this->set_js_handles(
@@ -86,16 +86,15 @@ class Light_Gallery_Pattern extends Layout_Pattern_Base {
 		);
 	}
 
-	public function get_active_css(): string {
-		$css_code = parent::get_active_css();
-
+	public function get_css_patches( Asset_Resolver $resolver ): array {
 		// font and image paths in CSS won't work, as CSS will be added right to the page,
 		// replacing with the related installation path avoids it.
-		$asset_url_base          = $this->get_asset_url( '' );
+		$asset_url_base          = $resolver->get_origin_url( $this->get_css_origin(), '' );
 		$relative_asset_url_base = Asset_Resolver::make_url_relative( $asset_url_base );
-		$relative_assets_url     = sprintf( 'url(%s', $relative_asset_url_base );
 
-		return str_replace( 'url(../', $relative_assets_url, $css_code );
+		return array(
+			'url(../' => sprintf( 'url(%s', $relative_asset_url_base ),
+		);
 	}
 
 	protected function print_js_code( string $var_name, Field_Settings $field_settings, Layout_Settings $layout_settings ): void {

@@ -36,7 +36,6 @@ class Front_Assets extends Actor_Base implements Actor {
 	const MINIFY_TYPE_CSS = 'css';
 	const MINIFY_TYPE_JS  = 'js';
 
-	private Asset_Resolver $asset_resolver;
 	private JS_Library_Loader $js_library_loader;
 	private Field_Provider_Cluster $provider_cluster;
 	private ?int $buffer_level;
@@ -63,7 +62,6 @@ class Front_Assets extends Actor_Base implements Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer ) {
-		$this->asset_resolver                                  = $asset_resolver;
 		$this->js_library_loader                                       = new JS_Library_Loader( $asset_resolver );
 		$this->provider_cluster                                = $provider_cluster;
 		$this->file_system                                     = $file_system;
@@ -74,7 +72,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$this->inline_js_code          = array();
 		$this->include_css_code        = array();
 		$this->live_reloader_component = $live_reloader_component;
-		$this->css_library_loader      = new CSS_Library_Loader();
+		$this->css_library_loader      = new CSS_Library_Loader( $asset_resolver );
 		$this->tailwind_css_rules      = array();
 		$this->html_renderer           = $html_renderer;
 
@@ -105,9 +103,9 @@ class Front_Assets extends Actor_Base implements Actor {
 	 */
 	protected function create_patterns(): array {
 		return array(
-			new Map_Pattern( $this->asset_resolver, $this->provider_cluster ),
-			new Light_Gallery_Pattern( $this->asset_resolver, $this->provider_cluster ),
-			new Lightbox_Pattern( $this->asset_resolver, $this->provider_cluster ),
+			new Map_Pattern( $this->provider_cluster ),
+			new Light_Gallery_Pattern( $this->provider_cluster ),
+			new Lightbox_Pattern( $this->provider_cluster ),
 		);
 	}
 
@@ -378,14 +376,6 @@ class Front_Assets extends Actor_Base implements Actor {
 	}
 
 	public function print_assets(): void {
-		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof CSS_Library ) {
-				$name = $pattern->get_name();
-
-				$this->css_library_loader->load_pattern( $name, $pattern );
-			}
-		}
-
 		$assets_css_code    = $this->css_library_loader->get_css_code();
 		$has_assets_css     = strlen( $assets_css_code ) > 0;
 		$all_js_code        = '';
@@ -634,6 +624,13 @@ class Front_Assets extends Actor_Base implements Actor {
 			if ( $pattern instanceof JS_Library &&
 				$pattern->has_active_js() ) {
 				$this->js_library_loader->enqueue_pattern( $pattern );
+			}
+
+			if ( $pattern instanceof CSS_Library &&
+				$pattern->has_active_css() ) {
+				$name = $pattern->get_name();
+
+				$this->css_library_loader->load_pattern( $name, $pattern );
 			}
 		}
 	}

@@ -4,7 +4,6 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout;
 
-use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -17,8 +16,8 @@ defined( 'ABSPATH' ) || exit;
 abstract class Layout_Pattern_Base extends Library_Pattern_Base implements Layout_Pattern {
 	private Field_Provider_Cluster $provider_cluster;
 
-	public function __construct( Asset_Resolver $asset_resolver, Field_Provider_Cluster $provider_cluster ) {
-		parent::__construct( $asset_resolver );
+	public function __construct( Field_Provider_Cluster $provider_cluster ) {
+		parent::__construct();
 
 		$this->provider_cluster = $provider_cluster;
 	}

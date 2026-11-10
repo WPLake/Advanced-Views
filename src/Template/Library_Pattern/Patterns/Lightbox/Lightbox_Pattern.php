@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
@@ -23,8 +22,8 @@ class Lightbox_Pattern extends Layout_Pattern_Base {
 	 */
 	private array $light_boxes;
 
-	public function __construct( Asset_Resolver $asset_resolver, Field_Provider_Cluster $provider_cluster ) {
-		parent::__construct( $asset_resolver, $provider_cluster );
+	public function __construct( Field_Provider_Cluster $provider_cluster ) {
+		parent::__construct( $provider_cluster );
 
 		$this->set_auto_discover_name( 'acf-views-lightbox' );
 		$this->set_js_handles(
@@ -44,13 +43,13 @@ class Lightbox_Pattern extends Layout_Pattern_Base {
 		);
 	}
 
-	public function get_active_css(): string {
-		$css_code = parent::get_active_css();
-
+	public function get_inline_css(): string {
 		if ( ! $this->is_enabled_js_handle( 'acf-views-lightbox' ) ||
 			array() === $this->light_boxes ) {
-			return $css_code;
+			return '';
 		}
+
+		$css_code = '';
 
 		$css_code .= '.acf-views-light-box{position:fixed;top:0;left:0;right:0;bottom:0;z-index:999999;display: flex;justify-content: center;align-items: center;background:rgba(0, 0, 0, 0.9);padding:5%;}';
 		$css_code .= '.acf-views-light-box__image{max-width:100%;max-height:100%;}';
