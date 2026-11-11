@@ -2,20 +2,20 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Library;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider;
 
 defined( 'ABSPATH' ) || exit;
 
-interface JS_Library {
+interface JS_Provider {
 	/**
 	 * Where the JS files live: the assets root, relative to the plugin root (e.g. 'src/Assets/').
 	 */
-	public function get_js_origin(): string;
+	public function get_script_origin(): string;
 
 	/**
 	 * The gate: the methods below are called only when it's true.
 	 */
-	public function has_active_js(): bool;
+	public function has_active_scripts(): bool;
 
 	/**
 	 * @return string[] handles of the active front JS files (the file is js/front/{handle}.min.js)
@@ -30,5 +30,5 @@ interface JS_Library {
 	/**
 	 * @return array<string, array<string, mixed[]>> handle => [ JS object name => value ]
 	 */
-	public function get_js_data(): array;
+	public function get_script_variables(): array;
 }

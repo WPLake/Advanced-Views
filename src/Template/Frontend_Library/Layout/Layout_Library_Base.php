@@ -8,11 +8,11 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Library\CSS_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Provider\CSS_Provider;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Pattern\CSS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder\JS_Pattern_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Builder\CSS_Pattern_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Library\JS_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Builder\CSS_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider\JS_Provider;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Pattern\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 
@@ -24,12 +24,12 @@ abstract class Layout_Library_Base implements Layout_Library {
 	private Field_Provider_Cluster $provider_cluster;
 	private string $auto_discover_name;
 	protected JS_Pattern_Builder $js_pattern_builder;
-	protected CSS_Pattern_Builder $css_pattern_builder;
+	protected CSS_Builder $css_builder;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder, CSS_Pattern_Builder $css_pattern_builder ) {
+	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder, CSS_Builder $css_builder ) {
 		$this->provider_cluster    = $provider_cluster;
 		$this->js_pattern_builder  = $js_pattern_builder;
-		$this->css_pattern_builder = $css_pattern_builder;
+		$this->css_builder = $css_builder;
 		$this->auto_discover_name  = '';
 	}
 
@@ -41,11 +41,11 @@ abstract class Layout_Library_Base implements Layout_Library {
 		return $this->auto_discover_name;
 	}
 
-	public function get_js_library(): ?JS_Library {
+	public function get_js_library(): ?JS_Provider {
 		return null;
 	}
 
-	public function get_css_library(): ?CSS_Library {
+	public function get_css_library(): ?CSS_Provider {
 		return null;
 	}
 
@@ -198,7 +198,7 @@ abstract class Layout_Library_Base implements Layout_Library {
 			$css_pattern    = $this->resolve_css_pattern( $field, $layout_settings );
 
 			if ( is_string( $css_pattern ) ) {
-				$css_pieces[ $var_name ] = $this->css_pattern_builder->build( $css_pattern, $field_selector );
+				$css_pieces[ $var_name ] = $this->css_builder->build( $css_pattern::get_css_rules(), $field_selector );
 			}
 		}
 

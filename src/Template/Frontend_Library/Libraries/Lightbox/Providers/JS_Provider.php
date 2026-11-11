@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox\Providers;
 
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Library\JS_Library_Base;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider\JS_Provider_Base;
 
 defined( 'ABSPATH' ) || exit;
 
-final class JS_Library extends JS_Library_Base {
+final class JS_Provider extends JS_Provider_Base {
 	protected const HANDLE = 'acf-views-lightbox';
 
 	/**
@@ -31,7 +31,7 @@ final class JS_Library extends JS_Library_Base {
 		$this->light_boxes = $light_boxes;
 	}
 
-	public function get_js_data(): array {
+	public function get_script_variables(): array {
 		return array(
 			self::HANDLE => array(
 				'acfViewsLightBox' => $this->light_boxes,

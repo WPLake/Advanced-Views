@@ -19,7 +19,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Sto
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder\JS_Pattern_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Builder\CSS_Pattern_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Builder\CSS_Builder;
 
 class Assets_Factory extends Factory_Base {
 	public function front_assets(): Front_Assets {
@@ -31,7 +31,7 @@ class Assets_Factory extends Factory_Base {
 			$this->resolve( Html_Renderer::class ),
 			$this->resolve( Code_Marker::class ),
 			$this->resolve( JS_Pattern_Builder::class ),
-			$this->resolve( CSS_Pattern_Builder::class )
+			$this->resolve( CSS_Builder::class )
 		);
 	}
 

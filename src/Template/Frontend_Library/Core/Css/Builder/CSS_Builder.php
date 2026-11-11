@@ -8,13 +8,13 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Text_Formatter;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Pattern\CSS_Pattern;
 
 /**
- * The only place that turns the pattern's rules into the CSS code.
+ * The only place that turns CSS rules ([property => value] OR [innerSelector => [property => value]]) into the code.
  * Only the given field selector is escaped, as the rules are the developer's constants.
+ * Without a field selector (e.g. the provider's inline styles) the rules must be selector-keyed only.
  */
-final class CSS_Pattern_Builder {
+final class CSS_Builder {
 	protected Html_Escaper $escaper;
 	protected Text_Formatter $formatter;
 
@@ -24,16 +24,16 @@ final class CSS_Pattern_Builder {
 	}
 
 	/**
-	 * @param class-string<CSS_Pattern> $css_pattern
+	 * @param array<string, string|array<string, string>> $rules
 	 */
-	public function build( string $css_pattern, string $field_selector ): string {
+	public function build( array $rules, string $field_selector = '' ): string {
 		$selector_safe = $this->escaper->esc_html( $field_selector );
-		$rules         = $css_pattern::get_css_rules();
 		$blocks        = array();
 
 		$own_declarations = array_filter( $rules, 'is_string' );
 
-		if ( array() !== $own_declarations ) {
+		if ( '' !== $field_selector &&
+			array() !== $own_declarations ) {
 			$blocks[] = $this->compose_block( $selector_safe, $own_declarations );
 		}
 
@@ -48,6 +48,10 @@ final class CSS_Pattern_Builder {
 	}
 
 	protected function join_selector( string $field_selector, string $inner_selector ): string {
+		if ( '' === $field_selector ) {
+			return $inner_selector;
+		}
+
 		$separator = 0 === strpos( $inner_selector, ':' ) ?
 			'' :
 			' ';

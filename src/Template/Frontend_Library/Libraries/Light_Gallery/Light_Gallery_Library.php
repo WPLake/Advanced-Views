@@ -6,43 +6,45 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Ga
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Gallery_Pattern;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Lightbox_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Providers\CSS_Provider;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Providers\JS_Provider;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder\JS_Pattern_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Builder\CSS_Pattern_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Builder\CSS_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder\JS_Pattern_Builder;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library_Base;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Gallery_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Lightbox_Pattern;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 class Light_Gallery_Library extends Layout_Library_Base {
 	const NAME = 'light-gallery';
 
-	private JS_Library $js_library;
-	private CSS_Library $css_library;
+	private JS_Provider $js_library;
+	private CSS_Provider $css_library;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder, CSS_Pattern_Builder $css_pattern_builder ) {
-		parent::__construct( $provider_cluster, $js_pattern_builder, $css_pattern_builder );
+	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder, CSS_Builder $css_builder ) {
+		parent::__construct( $provider_cluster, $js_pattern_builder, $css_builder );
 
 		$this->set_auto_discover_name( 'light-gallery' );
 
-		$this->js_library  = new JS_Library();
-		$this->css_library = new CSS_Library();
+		$this->js_library  = new JS_Provider();
+		$this->css_library = new CSS_Provider();
 	}
 
-	public function get_js_library(): JS_Library {
+	public function get_js_library(): JS_Provider {
 		return $this->js_library;
 	}
 
-	public function get_css_library(): CSS_Library {
+	public function get_css_library(): CSS_Provider {
 		return $this->css_library;
 	}
 
 	public function maybe_activate_layout( Layout_Settings $layout_settings ): void {
-		if ( $this->js_library->has_active_js() ) {
+		if ( $this->js_library->has_active_scripts() ) {
 			return;
 		}
 

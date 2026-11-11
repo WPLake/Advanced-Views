@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Providers;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Library\CSS_Library_Base;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Provider\CSS_Provider_Base;
 
 defined( 'ABSPATH' ) || exit;
 
-final class CSS_Library extends CSS_Library_Base {
+final class CSS_Provider extends CSS_Provider_Base {
 	public function enable(): void {
 		$this->enable_handles(
 			array(
@@ -20,10 +20,10 @@ final class CSS_Library extends CSS_Library_Base {
 		);
 	}
 
-	public function get_css_patches( Asset_Resolver $resolver ): array {
+	public function get_style_patches( Asset_Resolver $resolver ): array {
 		// font and image paths in CSS won't work, as CSS will be added right to the page,
 		// replacing with the related installation path avoids it.
-		$asset_url_base          = $resolver->get_origin_url( $this->get_css_origin(), '' );
+		$asset_url_base          = $resolver->get_origin_url( $this->get_style_origin(), '' );
 		$relative_asset_url_base = Asset_Resolver::make_url_relative( $asset_url_base );
 
 		return array(

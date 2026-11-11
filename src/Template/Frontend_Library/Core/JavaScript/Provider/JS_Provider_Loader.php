@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Library;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
-final class JS_Library_Loader {
+final class JS_Provider_Loader {
 	private Asset_Resolver $asset_resolver;
 	/**
 	 * @var array{strategy?: string, in_footer?: bool, fetchpriority?: string}
@@ -33,16 +33,16 @@ final class JS_Library_Loader {
 		return $this;
 	}
 
-	public function enqueue_pattern( JS_Library $pattern ): void {
+	public function enqueue_pattern( JS_Provider $pattern ): void {
 		$this->enqueue_local_scripts( $pattern );
 		$this->enqueue_external_scripts( $pattern );
 
 		self::localize_scripts( $pattern );
 	}
 
-	protected function enqueue_local_scripts( JS_Library $pattern ): void {
+	protected function enqueue_local_scripts( JS_Provider $pattern ): void {
 		$version = $this->asset_resolver->get_version();
-		$origin  = $pattern->get_js_origin();
+		$origin  = $pattern->get_script_origin();
 
 		$js_handles = $pattern->get_active_js_handles();
 
@@ -61,7 +61,7 @@ final class JS_Library_Loader {
 		}
 	}
 
-	protected function enqueue_external_scripts( JS_Library $pattern ): void {
+	protected function enqueue_external_scripts( JS_Provider $pattern ): void {
 		$version = $this->asset_resolver->get_version();
 
 		$external_scripts = $pattern->get_external_scripts();
@@ -80,8 +80,8 @@ final class JS_Library_Loader {
 		}
 	}
 
-	protected static function localize_scripts( JS_Library $pattern ): void {
-		$js_data = $pattern->get_js_data();
+	protected static function localize_scripts( JS_Provider $pattern ): void {
+		$js_data = $pattern->get_script_variables();
 
 		foreach ( $js_data as $js_handle => $objects ) {
 			$wp_handle = self::get_wp_handle( $js_handle );
