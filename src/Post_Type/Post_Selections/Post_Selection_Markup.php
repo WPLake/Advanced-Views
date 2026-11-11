@@ -23,6 +23,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Functional\Shortcode_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\compose_attribute;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
@@ -85,7 +86,10 @@ class Post_Selection_Markup {
 
 	protected function items_wrapper_tag( Post_Selection_Settings $post_selection_settings, string $class_name = '' ): Html_Tag {
 		$classes  = '';
-		$external = $this->front_assets->get_card_items_wrapper_class( $post_selection_settings );
+		$wrapper  = $this->front_assets->get_card_items_wrapper( $post_selection_settings );
+		$external = $wrapper instanceof Html_Tag ?
+			string( $wrapper->get_attributes(), 'class' ) :
+			'';
 
 		if ( Post_Selection_Settings::CLASS_GENERATION_NONE !== $post_selection_settings->classes_generation ) {
 			$classes .= $post_selection_settings->get_bem_name() . '__items';

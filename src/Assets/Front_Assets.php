@@ -605,10 +605,10 @@ class Front_Assets extends Actor_Base implements Actor {
 		);
 	}
 
-	public function get_card_items_wrapper_class( Post_Selection_Settings $post_selection_settings ): string {
+	public function get_card_items_wrapper( Post_Selection_Settings $post_selection_settings ): ?Html_Tag {
 		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
 
-		return Template_Builder::items_wrapper_class( $patterns );
+		return Template_Builder::row_wrapper( $patterns );
 	}
 
 	/**

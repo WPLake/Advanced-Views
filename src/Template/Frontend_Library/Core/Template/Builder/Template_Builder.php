@@ -74,18 +74,6 @@ final class Template_Builder {
 
 	/**
 	 * @param class-string<Template_Pattern>[] $patterns
-	 */
-	public static function items_wrapper_class( array $patterns ): string {
-		$classes = array_map(
-			static fn( string $pattern ): string => $pattern::get_items_wrapper_class(),
-			$patterns
-		);
-
-		return self::join_classes( $classes );
-	}
-
-	/**
-	 * @param class-string<Template_Pattern>[] $patterns
 	 *
 	 * @return array<string,string>
 	 */

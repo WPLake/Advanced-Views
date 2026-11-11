@@ -87,10 +87,6 @@ final class Lightbox_Pattern implements Script_Pattern, Style_Pattern, Template_
 		return array();
 	}
 
-	public static function get_items_wrapper_class(): string {
-		return '';
-	}
-
 	/**
 	 * @return array<string,string>
 	 */

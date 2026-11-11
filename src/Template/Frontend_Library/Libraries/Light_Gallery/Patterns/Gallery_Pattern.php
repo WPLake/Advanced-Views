@@ -75,10 +75,6 @@ final class Gallery_Pattern implements Script_Pattern, Style_Pattern, Template_P
 		return array();
 	}
 
-	public static function get_items_wrapper_class(): string {
-		return '';
-	}
-
 	/**
 	 * @return array<string,string>
 	 */

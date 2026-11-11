@@ -45,10 +45,6 @@ final class Gallery_Pattern implements Style_Pattern, Template_Pattern {
 		return null;
 	}
 
-	public static function get_items_wrapper_class(): string {
-		return '';
-	}
-
 	/**
 	 * @return array<string,string>
 	 */

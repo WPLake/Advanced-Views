@@ -70,11 +70,6 @@ interface Template_Pattern {
 	public static function get_item_attributes( Variable_Token $item ): array;
 
 	/**
-	 * A class for the items wrapper of a Post Selection. Empty string for none.
-	 */
-	public static function get_items_wrapper_class(): string;
-
-	/**
 	 * [ attributeName => value ]
 	 *
 	 * Added to the shortcode of a Post Selection.
