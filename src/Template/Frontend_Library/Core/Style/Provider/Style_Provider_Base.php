@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Provider;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Styles_Provider_Base implements Styles_Provider {
+abstract class Style_Provider_Base implements Style_Provider {
 	/**
 	 * @var string[]
 	 */

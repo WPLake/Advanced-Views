@@ -2,26 +2,26 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Provider;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Builder\CSS_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style_Builder;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Styles_Provider_Loader {
+final class Style_Loader {
 	private Asset_Resolver $asset_resolver;
-	private CSS_Builder $css_builder;
+	private Style_Builder $css_builder;
 	private string $css_code;
 
-	public function __construct( Asset_Resolver $asset_resolver, CSS_Builder $css_builder ) {
+	public function __construct( Asset_Resolver $asset_resolver, Style_Builder $css_builder ) {
 		$this->asset_resolver = $asset_resolver;
 		$this->css_builder    = $css_builder;
 		$this->css_code       = '';
 	}
 
-	public function load_pattern( string $name, Styles_Provider $pattern ): void {
+	public function enqueue_styles( string $name, Style_Provider $pattern ): void {
 		$files_css  = $this->resolve_pattern_css( $pattern );
 		$inline_css = $this->css_builder->build( $pattern->get_inline_styles() );
 
@@ -42,7 +42,7 @@ final class Styles_Provider_Loader {
 		return $this->css_code;
 	}
 
-	protected function resolve_pattern_css( Styles_Provider $pattern ): string {
+	protected function resolve_pattern_css( Style_Provider $pattern ): string {
 		$files_css = $this->read_pattern_files( $pattern );
 
 		$patches = $pattern->get_style_patches( $this->asset_resolver );
@@ -57,7 +57,7 @@ final class Styles_Provider_Loader {
 		);
 	}
 
-	protected function read_pattern_files( Styles_Provider $pattern ): string {
+	protected function read_pattern_files( Style_Provider $pattern ): string {
 		$wp_filesystem = WP_Filesystem_Factory::get_wp_filesystem();
 		$origin        = $pattern->get_style_origin();
 		$css_handles   = $pattern->get_style_handles();

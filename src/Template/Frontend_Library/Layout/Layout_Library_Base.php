@@ -8,12 +8,12 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Provider\Styles_Provider;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Pattern\CSS_Pattern;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder\JS_Pattern_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Builder\CSS_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider\Scripts_Provider;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Pattern\JS_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Provider;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Pattern\Style_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Builder\Script_Pattern_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Provider;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 
 defined( 'ABSPATH' ) || exit;
@@ -23,12 +23,12 @@ abstract class Layout_Library_Base implements Layout_Library {
 
 	private Field_Provider_Cluster $provider_cluster;
 	private string $auto_discover_name;
-	protected JS_Pattern_Builder $js_pattern_builder;
-	protected CSS_Builder $css_builder;
+	protected Script_Pattern_Builder $script_pattern_builder;
+	protected Style_Builder $css_builder;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder, CSS_Builder $css_builder ) {
+	public function __construct( Field_Provider_Cluster $provider_cluster, Script_Pattern_Builder $script_pattern_builder, Style_Builder $css_builder ) {
 		$this->provider_cluster    = $provider_cluster;
-		$this->js_pattern_builder  = $js_pattern_builder;
+		$this->script_pattern_builder  = $script_pattern_builder;
 		$this->css_builder = $css_builder;
 		$this->auto_discover_name  = '';
 	}
@@ -41,11 +41,11 @@ abstract class Layout_Library_Base implements Layout_Library {
 		return $this->auto_discover_name;
 	}
 
-	public function get_js_library(): ?Scripts_Provider {
+	public function get_js_library(): ?Script_Provider {
 		return null;
 	}
 
-	public function get_css_library(): ?Styles_Provider {
+	public function get_css_library(): ?Style_Provider {
 		return null;
 	}
 
@@ -56,7 +56,7 @@ abstract class Layout_Library_Base implements Layout_Library {
 	/**
 	 * The CSS declaration of the field, or null when the pattern has no CSS code for it.
 	 *
-	 * @return class-string<CSS_Pattern>|null
+	 * @return class-string<Style_Pattern>|null
 	 */
 	protected function resolve_css_pattern( Field_Settings $field_settings, Layout_Settings $layout_settings ): ?string {
 		return null;
@@ -65,7 +65,7 @@ abstract class Layout_Library_Base implements Layout_Library {
 	/**
 	 * The JS declaration of the field, or null when the pattern has no JS code for it.
 	 *
-	 * @return class-string<JS_Pattern>|null
+	 * @return class-string<Script_Pattern>|null
 	 */
 	protected function resolve_js_pattern( Field_Settings $field_settings, Layout_Settings $layout_settings ): ?string {
 		return null;
@@ -85,10 +85,10 @@ abstract class Layout_Library_Base implements Layout_Library {
 
 		if ( is_string( $js_pattern ) ) {
 			if ( $is_multiple ) {
-				return $this->js_pattern_builder->build_multiple_items( $js_pattern, $js_field_selector );
+				return $this->script_pattern_builder->build_multiple_items( $js_pattern, $js_field_selector );
 			}
 
-			return $this->js_pattern_builder->build_single_item( $js_pattern, $var_name, $js_field_selector );
+			return $this->script_pattern_builder->build_single_item( $js_pattern, $var_name, $js_field_selector );
 		}
 
 		return '';

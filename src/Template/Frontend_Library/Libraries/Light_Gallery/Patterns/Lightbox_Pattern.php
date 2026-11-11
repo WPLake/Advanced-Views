@@ -6,11 +6,11 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Ga
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Pattern\CSS_Pattern;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Pattern\JS_Pattern;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Pattern\JS_Variables;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Pattern\Style_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Variables;
 
-final class Lightbox_Pattern implements JS_Pattern, CSS_Pattern {
+final class Lightbox_Pattern implements Script_Pattern, Style_Pattern {
 	public static function get_docs_url(): string {
 		return 'https://www.lightgalleryjs.com/docs/settings/#lightgallery-core';
 	}
@@ -26,7 +26,7 @@ final class Lightbox_Pattern implements JS_Pattern, CSS_Pattern {
 		);
 	}
 
-	public static function get_js_setup( JS_Variables $variables ): array {
+	public static function get_js_setup( Script_Variables $variables ): array {
 		return array(
 			sprintf(
 				'new lightGallery(%s, %s)',

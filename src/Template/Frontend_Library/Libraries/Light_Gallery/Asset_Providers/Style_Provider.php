@@ -5,11 +5,11 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Asset_Providers;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Provider\Styles_Provider_Base;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Provider_Base;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Styles_Provider extends Styles_Provider_Base {
+final class Style_Provider extends Style_Provider_Base {
 	public function enable(): void {
 		$this->enable_handles(
 			array(

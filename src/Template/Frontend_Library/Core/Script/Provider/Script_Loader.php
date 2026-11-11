@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Scripts_Provider_Loader {
+final class Script_Loader {
 	private Asset_Resolver $asset_resolver;
 	/**
 	 * @var array{strategy?: string, in_footer?: bool, fetchpriority?: string}
@@ -33,14 +33,14 @@ final class Scripts_Provider_Loader {
 		return $this;
 	}
 
-	public function enqueue_pattern( Scripts_Provider $pattern ): void {
+	public function enqueue_scripts( Script_Provider $pattern ): void {
 		$this->enqueue_local_scripts( $pattern );
 		$this->enqueue_external_scripts( $pattern );
 
 		self::localize_scripts( $pattern );
 	}
 
-	protected function enqueue_local_scripts( Scripts_Provider $pattern ): void {
+	protected function enqueue_local_scripts( Script_Provider $pattern ): void {
 		$version = $this->asset_resolver->get_version();
 		$origin  = $pattern->get_script_origin();
 
@@ -61,7 +61,7 @@ final class Scripts_Provider_Loader {
 		}
 	}
 
-	protected function enqueue_external_scripts( Scripts_Provider $pattern ): void {
+	protected function enqueue_external_scripts( Script_Provider $pattern ): void {
 		$version = $this->asset_resolver->get_version();
 
 		$external_scripts = $pattern->get_external_scripts();
@@ -80,7 +80,7 @@ final class Scripts_Provider_Loader {
 		}
 	}
 
-	protected static function localize_scripts( Scripts_Provider $pattern ): void {
+	protected static function localize_scripts( Script_Provider $pattern ): void {
 		$js_data = $pattern->get_script_variables();
 
 		foreach ( $js_data as $js_handle => $objects ) {

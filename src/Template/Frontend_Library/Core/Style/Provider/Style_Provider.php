@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Provider;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 
 defined( 'ABSPATH' ) || exit;
 
-interface Styles_Provider {
+interface Style_Provider {
 	/**
 	 * The gate: the methods below are called only when it's true.
 	 */
@@ -33,7 +33,7 @@ interface Styles_Provider {
 	public function get_style_patches( Asset_Resolver $resolver ): array;
 
 	/**
-	 * The same rules format as CSS_Pattern::get_css_rules(), but with the selector-keyed rules only:
+	 * The same rules format as Style_Pattern::get_css_rules(), but with the selector-keyed rules only:
 	 * [selector => [property => value]]
 	 *
 	 * @return array<string, array<string, string>>

@@ -18,8 +18,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder\JS_Pattern_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Builder\CSS_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Builder\Script_Pattern_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style_Builder;
 
 class Assets_Factory extends Factory_Base {
 	public function front_assets(): Front_Assets {
@@ -30,8 +30,8 @@ class Assets_Factory extends Factory_Base {
 			$this->resolve( Live_Reloader_Component::class ),
 			$this->resolve( Html_Renderer::class ),
 			$this->resolve( Code_Marker::class ),
-			$this->resolve( JS_Pattern_Builder::class ),
-			$this->resolve( CSS_Builder::class )
+			$this->resolve( Script_Pattern_Builder::class ),
+			$this->resolve( Style_Builder::class )
 		);
 	}
 

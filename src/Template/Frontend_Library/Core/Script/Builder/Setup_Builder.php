@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Builder;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Text_Formatter;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder\Variable\Variable_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Pattern\JS_Pattern;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Pattern\JS_Variables;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Builder\Variable\Variable_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Variables;
 
 final class Setup_Builder {
 	protected Text_Formatter $formatter;
@@ -23,10 +23,10 @@ final class Setup_Builder {
 	/**
 	 * The docs link comment right above the code: the options, then the setup, separated by an empty line.
 	 *
-	 * @param class-string<JS_Pattern> $js_pattern
+	 * @param class-string<Script_Pattern> $js_pattern
 	 */
 	public function build_setup( string $js_pattern, string $outer_wrapper ): string {
-		$variables                = new JS_Variables();
+		$variables                = new Script_Variables();
 		$variables->outer_wrapper = $outer_wrapper;
 
 		$docs_code    = $this->compose_docs( $js_pattern );
@@ -43,7 +43,7 @@ final class Setup_Builder {
 	}
 
 	/**
-	 * @param class-string<JS_Pattern> $js_pattern
+	 * @param class-string<Script_Pattern> $js_pattern
 	 */
 	protected function compose_docs( string $js_pattern ): string {
 		$docs_url  = $js_pattern::get_docs_url();
@@ -59,9 +59,9 @@ final class Setup_Builder {
 	}
 
 	/**
-	 * @param class-string<JS_Pattern> $js_pattern
+	 * @param class-string<Script_Pattern> $js_pattern
 	 */
-	protected function compose_options( string $js_pattern, JS_Variables $variables ): string {
+	protected function compose_options( string $js_pattern, Script_Variables $variables ): string {
 		$options   = $js_pattern::get_js_options();
 		$is_filled = count( $options ) > 0;
 
@@ -73,9 +73,9 @@ final class Setup_Builder {
 	}
 
 	/**
-	 * @param class-string<JS_Pattern> $js_pattern
+	 * @param class-string<Script_Pattern> $js_pattern
 	 */
-	protected function compose_setup( string $js_pattern, JS_Variables $variables ): string {
+	protected function compose_setup( string $js_pattern, Script_Variables $variables ): string {
 		$setup      = $js_pattern::get_js_setup( $variables );
 		$tabs       = $this->formatter->tabulate();
 		$statements = array();

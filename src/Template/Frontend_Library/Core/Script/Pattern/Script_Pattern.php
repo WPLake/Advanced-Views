@@ -2,11 +2,11 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Pattern;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern;
 
 defined( 'ABSPATH' ) || exit;
 
-interface JS_Pattern {
+interface Script_Pattern {
 	/**
 	 * The library docs link, printed as a comment above the code. Empty string for none.
 	 */
@@ -24,5 +24,5 @@ interface JS_Pattern {
 	/**
 	 * @return string[] code lines
 	 */
-	public static function get_js_setup( JS_Variables $variables ): array;
+	public static function get_js_setup( Script_Variables $variables ): array;
 }

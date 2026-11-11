@@ -14,21 +14,21 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Compo
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Provider\Styles_Provider;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Provider\Styles_Provider_Loader;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder\JS_Pattern_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Builder\CSS_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider\Scripts_Provider;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider\Scripts_Provider_Loader;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Builder\Script_Pattern_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Loader;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Provider;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Provider;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Loader;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Outers_Builder;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Light_Gallery_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox\Lightbox_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Map\Map_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Selection\Selection_Library;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
@@ -39,7 +39,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	const MINIFY_TYPE_CSS = 'css';
 	const MINIFY_TYPE_JS  = 'js';
 
-	private Scripts_Provider_Loader $js_library_loader;
+	private Script_Loader $js_library_loader;
 	private Field_Provider_Cluster $provider_cluster;
 	private ?int $buffer_level;
 	private bool $is_custom_interactivity_api_import_map_required;
@@ -55,7 +55,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	 * @var array<string, string>
 	 */
 	private array $include_css_code;
-	private Styles_Provider_Loader $css_library_loader;
+	private Style_Loader $css_library_loader;
 	private Live_Reloader_Component $live_reloader_component;
 	/**
 	 * @var array<string,true>
@@ -64,11 +64,11 @@ class Front_Assets extends Actor_Base implements Actor {
 	private File_System $file_system;
 	protected Html_Renderer $html_renderer;
 	private Code_Marker $code_marker;
-	protected JS_Pattern_Builder $js_pattern_builder;
-	protected CSS_Builder $css_builder;
+	protected Script_Pattern_Builder $script_pattern_builder;
+	protected Style_Builder $css_builder;
 
-	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Code_Marker $code_marker, JS_Pattern_Builder $js_pattern_builder, CSS_Builder $css_builder ) {
-		$this->js_library_loader                               = new Scripts_Provider_Loader( $asset_resolver );
+	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Code_Marker $code_marker, Script_Pattern_Builder $script_pattern_builder, Style_Builder $css_builder ) {
+		$this->js_library_loader                               = new Script_Loader( $asset_resolver );
 		$this->provider_cluster                                = $provider_cluster;
 		$this->file_system                                     = $file_system;
 		$this->buffer_level                                    = null;
@@ -78,12 +78,12 @@ class Front_Assets extends Actor_Base implements Actor {
 		$this->inline_js_code          = array();
 		$this->include_css_code        = array();
 		$this->live_reloader_component = $live_reloader_component;
-		$this->css_library_loader      = new Styles_Provider_Loader( $asset_resolver, $css_builder );
+		$this->css_library_loader      = new Style_Loader( $asset_resolver, $css_builder );
 		$this->tailwind_css_rules      = array();
 		$this->html_renderer           = $html_renderer;
 		$this->code_marker             = $code_marker;
-		$this->js_pattern_builder      = $js_pattern_builder;
-		$this->css_builder     = $css_builder;
+		$this->script_pattern_builder  = $script_pattern_builder;
+		$this->css_builder             = $css_builder;
 
 		$this->register_patterns();
 	}
@@ -112,9 +112,9 @@ class Front_Assets extends Actor_Base implements Actor {
 	 */
 	protected function create_patterns(): array {
 		return array(
-			new Map_Library( $this->provider_cluster, $this->js_pattern_builder, $this->css_builder ),
-			new Light_Gallery_Library( $this->provider_cluster, $this->js_pattern_builder, $this->css_builder ),
-			new Lightbox_Library( $this->provider_cluster, $this->js_pattern_builder, $this->css_builder ),
+			new Map_Library( $this->provider_cluster, $this->script_pattern_builder, $this->css_builder ),
+			new Light_Gallery_Library( $this->provider_cluster, $this->script_pattern_builder, $this->css_builder ),
+			new Lightbox_Library( $this->provider_cluster, $this->script_pattern_builder, $this->css_builder ),
 		);
 	}
 
@@ -669,16 +669,16 @@ class Front_Assets extends Actor_Base implements Actor {
 			$js_library  = $pattern->get_js_library();
 			$css_library = $pattern->get_css_library();
 
-			if ( $js_library instanceof Scripts_Provider &&
+			if ( $js_library instanceof Script_Provider &&
 				$js_library->has_active_scripts() ) {
-				$this->js_library_loader->enqueue_pattern( $js_library );
+				$this->js_library_loader->enqueue_scripts( $js_library );
 			}
 
-			if ( $css_library instanceof Styles_Provider &&
+			if ( $css_library instanceof Style_Provider &&
 				$css_library->has_active_styles() ) {
 				$name = $pattern->get_name();
 
-				$this->css_library_loader->load_pattern( $name, $css_library );
+				$this->css_library_loader->enqueue_styles( $name, $css_library );
 			}
 		}
 	}

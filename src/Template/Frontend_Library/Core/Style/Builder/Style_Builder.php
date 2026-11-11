@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Builder;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Text_Formatter
  * Only the given field selector is escaped, as the rules are the developer's constants.
  * Without a field selector (e.g. the provider's inline styles) the rules must be selector-keyed only.
  */
-final class CSS_Builder {
+final class Style_Builder {
 	protected Html_Escaper $escaper;
 	protected Text_Formatter $formatter;
 

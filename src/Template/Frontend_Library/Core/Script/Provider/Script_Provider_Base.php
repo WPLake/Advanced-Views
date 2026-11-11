@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class Scripts_Provider_Base implements Scripts_Provider {
+abstract class Script_Provider_Base implements Script_Provider {
 	/**
 	 * @var string[]
 	 */

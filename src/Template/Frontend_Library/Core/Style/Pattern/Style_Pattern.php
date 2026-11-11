@@ -2,11 +2,11 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Pattern;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Pattern;
 
 defined( 'ABSPATH' ) || exit;
 
-interface CSS_Pattern {
+interface Style_Pattern {
 	/**
 	 * [property => value] OR
 	 * [innerSelector => [property => value]]

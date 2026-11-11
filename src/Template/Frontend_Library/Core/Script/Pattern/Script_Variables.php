@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Pattern;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Variable names.
  */
-final class JS_Variables {
+final class Script_Variables {
 	/**
 	 * Web component root (this/this.shadowRoot).
 	 */

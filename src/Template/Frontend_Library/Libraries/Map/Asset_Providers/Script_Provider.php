@@ -4,12 +4,12 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Map\Asset_Providers;
 
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider\Scripts_Provider_Base;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Provider_Base;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
-class Scripts_Provider extends Scripts_Provider_Base {
+class Script_Provider extends Script_Provider_Base {
 	protected const HANDLE = 'acf-views-maps';
 
 	/**

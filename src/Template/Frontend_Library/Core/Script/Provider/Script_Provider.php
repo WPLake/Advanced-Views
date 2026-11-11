@@ -2,11 +2,11 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider;
 
 defined( 'ABSPATH' ) || exit;
 
-interface Scripts_Provider {
+interface Script_Provider {
 	/**
 	 * Where the JS files live: the assets root, relative to the plugin root (e.g. 'src/Assets/').
 	 */

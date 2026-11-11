@@ -2,19 +2,19 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Builder;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Text_Formatter;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Pattern\JS_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Pattern;
 
 /**
  * The pattern's code is rendered one level deeper than the field lookup wrapping it.
  * It requires the same Text_Formatter instance in all the builders, as the depth is its state.
  */
-final class JS_Pattern_Builder {
+final class Script_Pattern_Builder {
 	protected Html_Escaper $escaper;
 	protected Text_Formatter $formatter;
 	protected Setup_Builder $setup_builder;
@@ -39,7 +39,7 @@ final class JS_Pattern_Builder {
 	}
 
 	/**
-	 * @param class-string<JS_Pattern> $js_pattern
+	 * @param class-string<Script_Pattern> $js_pattern
 	 */
 	public function build_single_item( string $js_pattern, string $name, string $selector ): string {
 		$selector_safe = $this->escaper->esc_html( $selector );
@@ -64,7 +64,7 @@ final class JS_Pattern_Builder {
 	}
 
 	/**
-	 * @param class-string<JS_Pattern> $js_pattern
+	 * @param class-string<Script_Pattern> $js_pattern
 	 */
 	public function build_multiple_items( string $js_pattern, string $selector ): string {
 		$selector_safe = $this->escaper->esc_html( $selector );
@@ -79,7 +79,7 @@ final class JS_Pattern_Builder {
 	}
 
 	/**
-	 * @param class-string<JS_Pattern> $js_pattern
+	 * @param class-string<Script_Pattern> $js_pattern
 	 */
 	protected function wrap( string $js_pattern, string $opening, string $closing, string $outer_wrapper ): string {
 		$content  = $this->formatter->tab_shift(
