@@ -81,9 +81,9 @@ final class Script_Pattern_Builder {
 	/**
 	 * @param class-string<Script_Pattern> $js_pattern
 	 */
-	protected function wrap( string $js_pattern, string $opening, string $closing, string $outer_wrapper ): string {
+	protected function wrap( string $js_pattern, string $opening, string $closing, string $root ): string {
 		$content  = $this->formatter->tab_shift(
-			fn() => $this->setup_builder->build_setup( $js_pattern, $outer_wrapper )
+			fn() => $this->setup_builder->build_setup( $js_pattern, $root )
 		);
 		$new_line = $this->formatter->new_line();
 		$lines    = array(

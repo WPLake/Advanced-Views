@@ -6,10 +6,10 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Builde
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Text_Formatter;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Builder\Variable\Variable_Builder;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Variables;
+use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Text_Formatter;
 
 final class Setup_Builder {
 	protected Text_Formatter $formatter;
@@ -25,9 +25,9 @@ final class Setup_Builder {
 	 *
 	 * @param class-string<Script_Pattern> $js_pattern
 	 */
-	public function build_setup( string $js_pattern, string $outer_wrapper ): string {
-		$variables                = new Script_Variables();
-		$variables->outer_wrapper = $outer_wrapper;
+	public function build_setup( string $js_pattern, string $root ): string {
+		$variables          = new Script_Variables();
+		$variables->element = $root;
 
 		$docs_code    = $this->compose_docs( $js_pattern );
 		$options_code = $this->compose_options( $js_pattern, $variables );

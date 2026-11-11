@@ -57,7 +57,7 @@ final class Gallery_Pattern implements Template_Pattern, Script_Pattern, Style_P
 		return array(
 			sprintf(
 				'new lightGallery(%s, %s)',
-				esc_html( $variables->outer_wrapper ),
+				esc_html( $variables->element ),
 				esc_html( $variables->options )
 			),
 		);
