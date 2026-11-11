@@ -16,12 +16,12 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Provider\CSS_Provider;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Provider\CSS_Provider_Loader;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Provider\Styles_Provider;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Provider\Styles_Provider_Loader;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder\JS_Pattern_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Builder\CSS_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider\JS_Provider;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider\JS_Provider_Loader;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Builder\CSS_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider\Scripts_Provider;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider\Scripts_Provider_Loader;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Outers_Builder;
@@ -39,7 +39,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	const MINIFY_TYPE_CSS = 'css';
 	const MINIFY_TYPE_JS  = 'js';
 
-	private JS_Provider_Loader $js_library_loader;
+	private Scripts_Provider_Loader $js_library_loader;
 	private Field_Provider_Cluster $provider_cluster;
 	private ?int $buffer_level;
 	private bool $is_custom_interactivity_api_import_map_required;
@@ -55,7 +55,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	 * @var array<string, string>
 	 */
 	private array $include_css_code;
-	private CSS_Provider_Loader $css_library_loader;
+	private Styles_Provider_Loader $css_library_loader;
 	private Live_Reloader_Component $live_reloader_component;
 	/**
 	 * @var array<string,true>
@@ -68,7 +68,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	protected CSS_Builder $css_builder;
 
 	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Code_Marker $code_marker, JS_Pattern_Builder $js_pattern_builder, CSS_Builder $css_builder ) {
-		$this->js_library_loader                               = new JS_Provider_Loader( $asset_resolver );
+		$this->js_library_loader                               = new Scripts_Provider_Loader( $asset_resolver );
 		$this->provider_cluster                                = $provider_cluster;
 		$this->file_system                                     = $file_system;
 		$this->buffer_level                                    = null;
@@ -78,7 +78,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$this->inline_js_code          = array();
 		$this->include_css_code        = array();
 		$this->live_reloader_component = $live_reloader_component;
-		$this->css_library_loader      = new CSS_Provider_Loader( $asset_resolver, $css_builder );
+		$this->css_library_loader      = new Styles_Provider_Loader( $asset_resolver, $css_builder );
 		$this->tailwind_css_rules      = array();
 		$this->html_renderer           = $html_renderer;
 		$this->code_marker             = $code_marker;
@@ -669,12 +669,12 @@ class Front_Assets extends Actor_Base implements Actor {
 			$js_library  = $pattern->get_js_library();
 			$css_library = $pattern->get_css_library();
 
-			if ( $js_library instanceof JS_Provider &&
+			if ( $js_library instanceof Scripts_Provider &&
 				$js_library->has_active_scripts() ) {
 				$this->js_library_loader->enqueue_pattern( $js_library );
 			}
 
-			if ( $css_library instanceof CSS_Provider &&
+			if ( $css_library instanceof Styles_Provider &&
 				$css_library->has_active_styles() ) {
 				$name = $pattern->get_name();
 

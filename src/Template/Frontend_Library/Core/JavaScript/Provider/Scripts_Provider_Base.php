@@ -8,7 +8,7 @@ use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 
 defined( 'ABSPATH' ) || exit;
 
-abstract class JS_Provider_Base implements JS_Provider {
+abstract class Scripts_Provider_Base implements Scripts_Provider {
 	/**
 	 * @var string[]
 	 */

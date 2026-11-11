@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Provider;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Provider;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 
 defined( 'ABSPATH' ) || exit;
 
-interface CSS_Provider {
+interface Styles_Provider {
 	/**
 	 * The gate: the methods below are called only when it's true.
 	 */

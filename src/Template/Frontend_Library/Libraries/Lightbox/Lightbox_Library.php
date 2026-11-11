@@ -6,13 +6,13 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox\Providers\CSS_Provider;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox\Providers\JS_Provider;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox\Asset_Providers\Styles_Provider;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox\Asset_Providers\Scripts_Provider;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox\Patterns\Gallery_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox\Patterns\Lightbox_Pattern;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder\JS_Pattern_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Builder\CSS_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Builder\CSS_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
@@ -27,8 +27,8 @@ class Lightbox_Library extends Layout_Library_Base {
 	 * @var array<string,array<string,mixed>>
 	 */
 	private array $light_boxes;
-	private JS_Provider $js_library;
-	private CSS_Provider $css_library;
+	private Scripts_Provider $js_library;
+	private Styles_Provider $css_library;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder, CSS_Builder $css_builder ) {
 		parent::__construct( $provider_cluster, $js_pattern_builder, $css_builder );
@@ -36,15 +36,15 @@ class Lightbox_Library extends Layout_Library_Base {
 		$this->set_auto_discover_name( 'acf-views-lightbox' );
 
 		$this->light_boxes = array();
-		$this->js_library  = new JS_Provider();
-		$this->css_library = new CSS_Provider();
+		$this->js_library  = new Scripts_Provider();
+		$this->css_library = new Styles_Provider();
 	}
 
-	public function get_js_library(): JS_Provider {
+	public function get_js_library(): Scripts_Provider {
 		return $this->js_library;
 	}
 
-	public function get_css_library(): CSS_Provider {
+	public function get_css_library(): Styles_Provider {
 		return $this->css_library;
 	}
 

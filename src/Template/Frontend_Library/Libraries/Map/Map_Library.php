@@ -4,10 +4,10 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Map;
 
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Map\Providers\JS_Provider;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Map\Asset_Providers\Scripts_Provider;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder\JS_Pattern_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Builder\CSS_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Builder\CSS_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library_Base;
@@ -21,7 +21,7 @@ class Map_Library extends Layout_Library_Base {
 	 * @var string[]
 	 */
 	private array $maps;
-	private JS_Provider $js_library;
+	private Scripts_Provider $js_library;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder, CSS_Builder $css_builder ) {
 		parent::__construct( $provider_cluster, $js_pattern_builder, $css_builder );
@@ -31,7 +31,7 @@ class Map_Library extends Layout_Library_Base {
 		$this->js_library = $this->create_js_library();
 	}
 
-	public function get_js_library(): JS_Provider {
+	public function get_js_library(): Scripts_Provider {
 		return $this->js_library;
 	}
 
@@ -60,7 +60,7 @@ class Map_Library extends Layout_Library_Base {
 		}
 	}
 
-	protected function create_js_library(): JS_Provider {
-		return new JS_Provider();
+	protected function create_js_library(): Scripts_Provider {
+		return new Scripts_Provider();
 	}
 }

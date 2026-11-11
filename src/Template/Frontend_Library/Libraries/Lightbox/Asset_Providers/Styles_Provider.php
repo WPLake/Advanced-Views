@@ -2,13 +2,13 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox\Providers;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox\Asset_Providers;
 
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Provider\CSS_Provider_Base;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Provider\Styles_Provider_Base;
 
 defined( 'ABSPATH' ) || exit;
 
-final class CSS_Provider extends CSS_Provider_Base {
+final class Styles_Provider extends Styles_Provider_Base {
 	private bool $is_active;
 
 	public function __construct() {
@@ -19,11 +19,11 @@ final class CSS_Provider extends CSS_Provider_Base {
 		$this->is_active = true;
 	}
 
-	public function get_inline_styles(): array {
-		if ( ! $this->is_active ) {
-			return array();
-		}
+	public function has_active_styles(): bool {
+		return $this->is_active;
+	}
 
+	public function get_inline_styles(): array {
 		return array(
 			'.acf-views-light-box'                       => array(
 				'position'        => 'fixed',

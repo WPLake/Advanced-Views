@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Pattern\CSS_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Pattern\CSS_Pattern;
 
 final class Gallery_Pattern implements CSS_Pattern {
 	public static function get_css_rules(): array {

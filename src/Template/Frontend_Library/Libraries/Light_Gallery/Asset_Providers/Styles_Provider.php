@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Providers;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Asset_Providers;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Provider\CSS_Provider_Base;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Provider\Styles_Provider_Base;
 
 defined( 'ABSPATH' ) || exit;
 
-final class CSS_Provider extends CSS_Provider_Base {
+final class Styles_Provider extends Styles_Provider_Base {
 	public function enable(): void {
 		$this->enable_handles(
 			array(

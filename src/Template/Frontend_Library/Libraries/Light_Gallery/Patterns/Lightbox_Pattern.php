@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Ga
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Pattern\CSS_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Pattern\CSS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Pattern\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Pattern\JS_Variables;
 

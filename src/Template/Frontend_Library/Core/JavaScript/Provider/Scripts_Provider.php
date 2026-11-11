@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Pr
 
 defined( 'ABSPATH' ) || exit;
 
-interface JS_Provider {
+interface Scripts_Provider {
 	/**
 	 * Where the JS files live: the assets root, relative to the plugin root (e.g. 'src/Assets/').
 	 */

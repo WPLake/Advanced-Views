@@ -2,13 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Map\Providers;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Map\Asset_Providers;
 
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider\JS_Provider_Base;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Provider\Scripts_Provider_Base;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
-class JS_Provider extends JS_Provider_Base {
+class Scripts_Provider extends Scripts_Provider_Base {
 	protected const HANDLE = 'acf-views-maps';
 
 	/**
@@ -41,10 +42,10 @@ class JS_Provider extends JS_Provider_Base {
 
 	public function get_external_scripts(): array {
 		$api_data = apply_filters( 'acf/fields/google_map/api', array() );
-		$key      = $api_data['key'] ?? '';
+		$key      = string( $api_data, 'key' );
 		$key      = ( '' === $key &&
 						function_exists( 'acf_get_setting' ) ) ?
-			acf_get_setting( 'google_api_key' ) :
+			string( acf_get_setting( 'google_api_key' ) ) :
 			$key;
 
 		return array(

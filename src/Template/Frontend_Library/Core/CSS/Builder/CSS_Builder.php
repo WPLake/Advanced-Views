@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Builder;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\CSS\Builder;
 
 defined( 'ABSPATH' ) || exit;
 
