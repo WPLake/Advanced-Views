@@ -22,7 +22,7 @@ final class Template_Builder {
 	 */
 	public static function row_wrapper( array $patterns ): ?Html_Tag {
 		$tags = array_map(
-			static fn( string $pattern ): ?Html_Tag => $pattern::get_row_wrapper(),
+			static fn( string $pattern ): ?Html_Tag => $pattern::get_wrapper(),
 			$patterns
 		);
 
@@ -36,7 +36,7 @@ final class Template_Builder {
 	 */
 	public static function field_wrappers( array $patterns, Variable_Token $field ): array {
 		$patterns_wrappers = array_map(
-			static fn( string $pattern ): array => $pattern::get_field_wrappers( $field ),
+			static fn( string $pattern ): array => $pattern::get_outers( $field ),
 			$patterns
 		);
 
@@ -67,21 +67,6 @@ final class Template_Builder {
 
 		foreach ( $patterns as $pattern ) {
 			$attributes = array_merge( $attributes, $pattern::get_item_attributes( $item ) );
-		}
-
-		return $attributes;
-	}
-
-	/**
-	 * @param class-string<Template_Pattern>[] $patterns
-	 *
-	 * @return array<string,string>
-	 */
-	public static function shortcode_attributes( array $patterns ): array {
-		$attributes = array();
-
-		foreach ( $patterns as $pattern ) {
-			$attributes = array_merge( $attributes, $pattern::get_shortcode_attributes() );
 		}
 
 		return $attributes;

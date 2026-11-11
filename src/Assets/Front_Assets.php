@@ -31,6 +31,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Selection\Selection_Libr
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
@@ -633,12 +634,12 @@ class Front_Assets extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return array<string,string>
+	 * @return array<string,string|Variable_Token>
 	 */
-	public function get_card_shortcode_attrs( Post_Selection_Settings $post_selection_settings ): array {
+	public function get_card_item_attributes( Post_Selection_Settings $post_selection_settings, Variable_Token $item ): array {
 		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
 
-		return Template_Builder::shortcode_attributes( $patterns );
+		return Template_Builder::item_attributes( $patterns, $item );
 	}
 
 	public function enqueue_assets(): void {

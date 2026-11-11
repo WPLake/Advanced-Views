@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Pattern\Style_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class Lightbox_Pattern implements Style_Pattern, Template_Pattern {
@@ -22,7 +22,7 @@ final class Lightbox_Pattern implements Style_Pattern, Template_Pattern {
 		);
 	}
 
-	public static function get_field_wrappers( Variable_Token $field ): array {
+	public static function get_outers( Variable_Token $field ): array {
 		return array(
 			tag( 'div' ),
 		);
@@ -35,7 +35,7 @@ final class Lightbox_Pattern implements Style_Pattern, Template_Pattern {
 		);
 	}
 
-	public static function get_row_wrapper(): ?Html_Tag {
+	public static function get_wrapper(): ?Html_Tag {
 		return null;
 	}
 
@@ -43,13 +43,6 @@ final class Lightbox_Pattern implements Style_Pattern, Template_Pattern {
 	 * @return Html_Tag[]
 	 */
 	public static function get_item_wrappers( Variable_Token $item ): array {
-		return array();
-	}
-
-	/**
-	 * @return array<string,string>
-	 */
-	public static function get_shortcode_attributes(): array {
 		return array();
 	}
 }

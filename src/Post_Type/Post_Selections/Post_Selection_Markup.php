@@ -116,7 +116,7 @@ class Post_Selection_Markup {
 											->add_item_path( 'layout_id' );
 		$post_id_var = $token_factory->variable( 'post_id' );
 
-		$asset_attrs = $this->front_assets->get_card_shortcode_attrs( $post_selection_settings );
+		$asset_attrs = $this->front_assets->get_card_item_attributes( $post_selection_settings, $post_id_var );
 
 		return $token_factory->shortcode( $this->layout_cpt->shortcode() )
 			->set_attributes(
