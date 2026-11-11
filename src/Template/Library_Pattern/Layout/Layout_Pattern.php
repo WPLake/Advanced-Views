@@ -16,9 +16,14 @@ interface Layout_Pattern extends Library_Pattern {
 	public function maybe_activate_layout( Layout_Settings $layout_settings ): void;
 
 	/**
-	 * @return array{css:array<string,string>,js:array<string,string>}
+	 * @return array<string,string>
 	 */
-	public function generate_layout_code( Layout_Settings $layout_settings ): array;
+	public function generate_layout_css( Layout_Settings $layout_settings ): array;
+
+	/**
+	 * @return array<string,string>
+	 */
+	public function generate_layout_js( Layout_Settings $layout_settings ): array;
 
 	public function get_row_wrapper_class( string $row_type ): string;
 

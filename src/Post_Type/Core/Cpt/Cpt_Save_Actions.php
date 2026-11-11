@@ -158,10 +158,8 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 			$cpt_data->css_code = sprintf( "#%s {\n\tdisplay: block;\n}\n", $id );
 		}
 
-		$code = $this->front_assets->generate_code( $cpt_data );
-
-		$cpt_data->js_code  = $code['js'];
-		$cpt_data->css_code = $code['css'];
+		$cpt_data->js_code  = $this->front_assets->generate_js_code( $cpt_data );
+		$cpt_data->css_code = $this->front_assets->generate_css_code( $cpt_data );
 
 		// new title is already in the place, we compare with "post_title" just to detect the change.
 		if ( $post_title !== $cpt_data->title ) {

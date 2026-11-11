@@ -17,9 +17,16 @@ interface Selection_Pattern extends Library_Pattern {
 	/**
 	 * Called only when is_target_selection() is true.
 	 *
-	 * @return array{css:array<string,string>,js:array<string,string>}
+	 * @return array<string,string>
 	 */
-	public function generate_selection_code( Post_Selection_Settings $post_selection_settings ): array;
+	public function generate_selection_css( Post_Selection_Settings $post_selection_settings ): array;
+
+	/**
+	 * Called only when is_target_selection() is true.
+	 *
+	 * @return array<string,string>
+	 */
+	public function generate_selection_js( Post_Selection_Settings $post_selection_settings ): array;
 
 	/**
 	 * Gates the markup hooks and the code generation below.

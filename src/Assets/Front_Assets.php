@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Assets;
 
+use Closure;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
@@ -63,7 +64,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	private Code_Marker $code_marker;
 
 	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Code_Marker $code_marker ) {
-		$this->js_library_loader                                       = new JS_Library_Loader( $asset_resolver );
+		$this->js_library_loader                               = new JS_Library_Loader( $asset_resolver );
 		$this->provider_cluster                                = $provider_cluster;
 		$this->file_system                                     = $file_system;
 		$this->buffer_level                                    = null;
@@ -508,71 +509,78 @@ class Front_Assets extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * The Cpt's JS and CSS code, with the pieces of the patterns wrapped by markers and synced with the current code.
-	 *
-	 * @return array{css:string,js:string}
+	 * The Cpt's CSS code, with the patterns' pieces wrapped by markers and synced with the current code.
 	 */
-	public function generate_code( Cpt_Settings $cpt_settings ): array {
-		$js_pieces  = array();
-		$css_pieces = array();
+	public function generate_css_code( Cpt_Settings $cpt_settings ): string {
+		$generate_pieces = fn( Library_Pattern $pattern ) => $this->generate_pattern_css( $pattern, $cpt_settings );
+		$pieces          = $this->collect_marked_pieces( $generate_pieces );
 
-		foreach ( $this->patterns as $pattern ) {
-			$auto_discover_name = $pattern->get_auto_discover_name();
-			$asset_code         = $this->generate_pattern_code( $pattern, $cpt_settings );
-
-			$marked_js  = $this->mark_pieces( $auto_discover_name, $asset_code['js'] );
-			$marked_css = $this->mark_pieces( $auto_discover_name, $asset_code['css'] );
-
-			$js_pieces  = array_merge( $js_pieces, $marked_js );
-			$css_pieces = array_merge( $css_pieces, $marked_css );
-		}
-
-		return array(
-			'css' => $this->code_marker->sync_code( $cpt_settings->css_code, $css_pieces ),
-			'js'  => $this->code_marker->sync_code( $cpt_settings->js_code, $js_pieces ),
-		);
+		return $this->code_marker->sync_code( $cpt_settings->css_code, $pieces );
 	}
 
 	/**
-	 * @param array<string,string> $pieces
+	 * The Cpt's JS code, with the patterns' pieces wrapped by markers and synced with the current code.
+	 */
+	public function generate_js_code( Cpt_Settings $cpt_settings ): string {
+		$generate_pieces = fn( Library_Pattern $pattern ) => $this->generate_pattern_js( $pattern, $cpt_settings );
+		$pieces          = $this->collect_marked_pieces( $generate_pieces );
+
+		return $this->code_marker->sync_code( $cpt_settings->js_code, $pieces );
+	}
+
+	/**
+	 * @param Closure(Library_Pattern):array<string,string> $generate_pieces
 	 *
 	 * @return array<string,string>
 	 */
-	protected function mark_pieces( string $auto_discover_name, array $pieces ): array {
+	protected function collect_marked_pieces( Closure $generate_pieces ): array {
 		$marked_pieces = array();
 
-		foreach ( $pieces as $name => $piece ) {
-			$piece_id = sprintf( '%s:%s', $auto_discover_name, $name );
+		foreach ( $this->patterns as $pattern ) {
+			$auto_discover_name = $pattern->get_auto_discover_name();
+			$pieces             = $generate_pieces( $pattern );
 
-			$marked_pieces[ $piece_id ] = $this->code_marker->wrap_code(
-				$auto_discover_name,
-				(string) $name,
-				$piece
-			);
+			$pattern_pieces = $this->code_marker->mark_pieces( $auto_discover_name, $pieces );
+			$marked_pieces  = array_merge( $marked_pieces, $pattern_pieces );
 		}
 
 		return $marked_pieces;
 	}
 
 	/**
-	 * @return array{css:array<string,string>,js:array<string,string>}
+	 * @return array<string,string>
 	 */
-	protected function generate_pattern_code( Library_Pattern $pattern, Cpt_Settings $cpt_settings ): array {
+	protected function generate_pattern_css( Library_Pattern $pattern, Cpt_Settings $cpt_settings ): array {
 		if ( $pattern instanceof Layout_Pattern &&
 			$cpt_settings instanceof Layout_Settings ) {
-			return $pattern->generate_layout_code( $cpt_settings );
+			return $pattern->generate_layout_css( $cpt_settings );
 		}
 
 		if ( $pattern instanceof Selection_Pattern &&
 			$cpt_settings instanceof Post_Selection_Settings &&
 			$pattern->is_target_selection( $cpt_settings ) ) {
-			return $pattern->generate_selection_code( $cpt_settings );
+			return $pattern->generate_selection_css( $cpt_settings );
 		}
 
-		return array(
-			'css' => array(),
-			'js'  => array(),
-		);
+		return array();
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	protected function generate_pattern_js( Library_Pattern $pattern, Cpt_Settings $cpt_settings ): array {
+		if ( $pattern instanceof Layout_Pattern &&
+			$cpt_settings instanceof Layout_Settings ) {
+			return $pattern->generate_layout_js( $cpt_settings );
+		}
+
+		if ( $pattern instanceof Selection_Pattern &&
+			$cpt_settings instanceof Post_Selection_Settings &&
+			$pattern->is_target_selection( $cpt_settings ) ) {
+			return $pattern->generate_selection_js( $cpt_settings );
+		}
+
+		return array();
 	}
 
 	/**

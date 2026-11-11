@@ -65,16 +65,29 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 	}
 
 	/**
-	 * @return array{css:array<string,string>,js:array<string,string>}
+	 * @return array<string,string>
 	 */
-	public function generate_selection_code( Post_Selection_Settings $post_selection_settings ): array {
+	public function generate_selection_css( Post_Selection_Settings $post_selection_settings ): array {
 		$magic_selector = sprintf( '#%s', Post_Selection_Settings::MAGIC_CSS_SELECTOR );
 
 		ob_start();
 		$this->print_common_css_code( $magic_selector, $post_selection_settings );
 		$css_code = (string) ob_get_clean();
 
-		$selector = Selection_Code_Builder::get_selector( $post_selection_settings, $this->card_field_id );
+		if ( '' !== $css_code ) {
+			return array(
+				$this->card_field_id => $css_code,
+			);
+		}
+
+		return array();
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	public function generate_selection_js( Post_Selection_Settings $post_selection_settings ): array {
+		$selector   = Selection_Code_Builder::get_selector( $post_selection_settings, $this->card_field_id );
 		$js_snippet = $this->js_pattern_builder->build_snippet(
 			$this->get_js_pattern(),
 			$this->card_field_id,
@@ -82,11 +95,12 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 			false
 		);
 
-		return Selection_Code_Builder::build(
-			$post_selection_settings,
-			$this->card_field_id,
-			$css_code,
-			$js_snippet
-		);
+		if ( '' !== $js_snippet ) {
+			return array(
+				$this->card_field_id => $js_snippet,
+			);
+		}
+
+		return array();
 	}
 }

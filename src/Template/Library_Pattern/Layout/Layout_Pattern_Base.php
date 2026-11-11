@@ -194,61 +194,38 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 	}
 
 	/**
-	 * @return array{css:array<string,string>,js:array<string,string>}
+	 * @return array<string,string>
 	 */
-	public function generate_layout_code( Layout_Settings $layout_settings ): array {
-		$code = array(
-			'css' => array(),
-			'js'  => array(),
-		);
+	public function generate_layout_css( Layout_Settings $layout_settings ): array {
+		$css_pieces = array();
+		$fields     = $this->get_target_fields( $layout_settings );
 
+		foreach ( $fields as $field ) {
+			$field_selector = $this->get_item_selector( $layout_settings, $field, false, true );
+			$var_name       = $field->get_template_field_id();
+			$css_code       = $this->create_css_code( $field_selector, $field, $layout_settings );
+
+			if ( '' !== $css_code ) {
+				$css_pieces[ $var_name ] = $css_code;
+			}
+		}
+
+		return $css_pieces;
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	public function generate_layout_js( Layout_Settings $layout_settings ): array {
 		[$target_fields, $target_sub_fields] = $this->provider_cluster->get_fields_with_pattern(
 			static::NAME,
 			$layout_settings
 		);
 
-		foreach ( $target_fields as $field ) {
-			$js_field_selector  = $this->get_item_selector( $layout_settings, $field, false, false );
-			$css_field_selector = $this->get_item_selector( $layout_settings, $field, false, true );
+		$field_pieces     = $this->create_js_snippets( $layout_settings, $target_fields, false );
+		$sub_field_pieces = $this->create_js_snippets( $layout_settings, $target_sub_fields, true );
 
-			$var_name = $field->get_template_field_id();
-
-			$js_snippet = $this->create_js_snippet( $var_name, $field, $layout_settings, $js_field_selector, false );
-
-			ob_start();
-			$this->print_css_code( $css_field_selector, $field, $layout_settings );
-			$css_code_safe = (string) ob_get_clean();
-
-			if ( '' !== $js_snippet ) {
-				$code['js'][ $var_name ] = $js_snippet;
-			}
-
-			if ( '' !== $css_code_safe ) {
-				$code['css'][ $var_name ] = $css_code_safe;
-			}
-		}
-
-		foreach ( $target_sub_fields as $field ) {
-			$js_field_selector  = $this->get_item_selector( $layout_settings, $field, false, false );
-			$css_field_selector = $this->get_item_selector( $layout_settings, $field, false, true );
-
-			$var_name = $field->get_template_field_id();
-			$js_snippet = $this->create_js_snippet( $var_name, $field, $layout_settings, $js_field_selector, true );
-
-			ob_start();
-			$this->print_css_code( $css_field_selector, $field, $layout_settings );
-			$css_code_safe = (string) ob_get_clean();
-
-			if ( '' !== $js_snippet ) {
-				$code['js'][ $var_name ] = $js_snippet;
-			}
-
-			if ( '' !== $css_code_safe ) {
-				$code['css'][ $var_name ] = $css_code_safe;
-			}
-		}
-
-		return $code;
+		return array_merge( $field_pieces, $sub_field_pieces );
 	}
 
 	/**
@@ -261,5 +238,43 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 		);
 
 		return array_merge( $target_fields, $target_sub_fields );
+	}
+
+	protected function create_css_code(
+		string $field_selector,
+		Field_Settings $field_settings,
+		Layout_Settings $layout_settings
+	): string {
+		ob_start();
+		$this->print_css_code( $field_selector, $field_settings, $layout_settings );
+
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * @param Field_Settings[] $fields
+	 *
+	 * @return array<string,string>
+	 */
+	protected function create_js_snippets( Layout_Settings $layout_settings, array $fields, bool $is_multiple ): array {
+		$js_snippets = array();
+
+		foreach ( $fields as $field ) {
+			$field_selector = $this->get_item_selector( $layout_settings, $field, false, false );
+			$var_name       = $field->get_template_field_id();
+			$js_snippet     = $this->create_js_snippet(
+				$var_name,
+				$field,
+				$layout_settings,
+				$field_selector,
+				$is_multiple
+			);
+
+			if ( '' !== $js_snippet ) {
+				$js_snippets[ $var_name ] = $js_snippet;
+			}
+		}
+
+		return $js_snippets;
 	}
 }
