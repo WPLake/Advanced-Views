@@ -9,8 +9,15 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Pattern\Style_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Variables;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern_Defaults;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
-final class Gallery_Pattern implements Script_Pattern, Style_Pattern {
+final class Gallery_Pattern implements Script_Pattern, Style_Pattern, Template_Pattern {
+	use Template_Pattern_Defaults;
+
 	public static function get_docs_url(): string {
 		return 'https://www.lightgalleryjs.com/docs/settings/#lightgallery-core';
 	}
@@ -42,6 +49,19 @@ final class Gallery_Pattern implements Script_Pattern, Style_Pattern {
 			'img:hover'  => array(
 				'cursor' => 'zoom-in',
 			),
+		);
+	}
+
+	public static function get_field_wrapper( Variable_Token $field ): Html_Tag {
+		return tag( 'ul' );
+	}
+
+	public static function get_inner_wrappers( Variable_Token $item ): array {
+		$data_attributes = Lightbox_Pattern::data_attributes( $item );
+
+		return array(
+			tag( 'li' )
+				->attributes( $data_attributes ),
 		);
 	}
 }

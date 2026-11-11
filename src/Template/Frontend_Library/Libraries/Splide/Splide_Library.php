@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Builder\Scri
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style_Builder;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Pattern\Style_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library_Base;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Selection\Selection_Code_Builder;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Selection\Selection_Library;
@@ -30,12 +31,25 @@ abstract class Splide_Library extends Layout_Library_Base implements Selection_L
 	}
 
 	/**
-	 * @return class-string<Script_Pattern&Style_Pattern>
+	 * @return class-string<Script_Pattern&Style_Pattern&Template_Pattern>
 	 */
 	abstract protected function get_pattern(): string;
 
+	/**
+	 * @return class-string<Template_Pattern>
+	 */
+	abstract protected function get_selection_pattern(): string;
+
 	protected function set_card_field_id( string $card_field_id ): void {
 		$this->card_field_id = $card_field_id;
+	}
+
+	public function get_template_pattern( Field_Settings $field_settings, Layout_Settings $layout_settings ): ?string {
+		return $this->get_pattern();
+	}
+
+	public function get_selection_template_pattern( Post_Selection_Settings $post_selection_settings ): ?string {
+		return $this->get_selection_pattern();
 	}
 
 	protected function resolve_js_pattern( Field_Settings $field_settings, Layout_Settings $layout_settings ): ?string {

@@ -6,145 +6,110 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Builder\Template_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * The Template_Pattern declarations of a field's libraries, resolved for the Layout generation.
+ */
 final class Pattern_Container {
+	const ROW_TYPE_REPEATER_ITEM = 'repeater-item';
+
+	/**
+	 * @var class-string<Template_Pattern>[]
+	 */
+	private array $patterns;
 	/**
 	 * @var Layout_Library[]
 	 */
-	private array $patterns;
+	private array $libraries;
+	private Layout_Settings $layout_settings;
+	private Field_Settings $field_settings;
 
 	/**
-	 * @param Layout_Library[] $patterns
+	 * @param Layout_Library[] $libraries
 	 */
-	public function __construct( array $patterns ) {
-		$this->patterns = $patterns;
+	public function __construct( array $libraries, Layout_Settings $layout_settings, Field_Settings $field_settings ) {
+		$this->layout_settings = $layout_settings;
+		$this->field_settings  = $field_settings;
+		$this->libraries       = $libraries;
+		$this->patterns        = array();
+
+		foreach ( $libraries as $library ) {
+			$pattern = $library->get_template_pattern( $field_settings, $layout_settings );
+
+			if ( is_string( $pattern ) ) {
+				$this->patterns[] = $pattern;
+			}
+		}
 	}
 
 	/**
 	 * @return Layout_Library[]
 	 */
-	public function get_patterns(): array {
-		return $this->patterns;
-	}
-
-	public function resolve_row_wrapper_tag( Field_Settings $field_settings, string $row_type ): string {
-		return $this->first_non_empty(
-			static fn( Layout_Library $pattern ): string => $pattern->get_row_wrapper_tag( $field_settings, $row_type )
-		);
-	}
-
-	public function resolve_field_wrapper_tag( Field_Settings $field_settings, string $row_type ): string {
-		return $this->first_non_empty(
-			static fn( Layout_Library $pattern ): string => $pattern->get_field_wrapper_tag( $field_settings, $row_type )
-		);
-	}
-
-	public function row_wrapper_class( string $row_type ): string {
-		$classes = array();
-
-		foreach ( $this->patterns as $pattern ) {
-			$class     = $pattern->get_row_wrapper_class( $row_type );
-			$is_filled = strlen( $class ) > 0;
-
-			if ( $is_filled ) {
-				$classes[] = $class;
-			}
-		}
-
-		return implode( ' ', $classes );
+	public function get_libraries(): array {
+		return $this->libraries;
 	}
 
 	/**
-	 * @return array<string,string>
+	 * A repeater item is wrapped with the inner wrapper of the patterns.
 	 */
-	public function field_wrapper_attrs( Field_Settings $field_settings, string $field_id ): array {
-		$attrs = array();
+	public function row_wrapper( string $row_type, Token_Factory $token_factory, string $field_id ): ?Html_Tag {
+		if ( self::ROW_TYPE_REPEATER_ITEM === $row_type ) {
+			$item   = $token_factory->variable( $field_id );
+			$inners = Template_Builder::inner_wrappers( $this->patterns, $item );
 
-		foreach ( $this->patterns as $pattern ) {
-			$pattern_attrs = $pattern->get_field_wrapper_attrs( $field_settings, $field_id );
-			$attrs         = array_merge( $attrs, $pattern_attrs );
+			return $inners[0] ?? null;
 		}
 
-		return $attrs;
+		return Template_Builder::row_wrapper( $this->patterns );
+	}
+
+	public function field_wrapper( string $row_type, Token_Factory $token_factory, string $field_id ): ?Html_Tag {
+		if ( self::ROW_TYPE_REPEATER_ITEM === $row_type ) {
+			return null;
+		}
+
+		return Template_Builder::field_wrapper( $this->patterns, $token_factory->variable( $field_id ) );
 	}
 
 	public function is_label_out_of_row(): bool {
-		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern->is_label_out_of_row() ) {
-				return true;
-			}
-		}
-
-		return false;
+		return Template_Builder::is_label_out_of_row( $this->patterns );
 	}
 
 	/**
 	 * @return Html_Tag[]
 	 */
-	public function field_outers(
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		string $field_id,
-		string $row_type,
-		Token_Factory $token_factory
-	): array {
-		$patterns_outers = array();
-
-		foreach ( $this->patterns as $pattern ) {
-			$patterns_outers[] = $pattern->get_field_outers(
-				$layout_settings,
-				$field_settings,
-				$field_id,
-				$row_type,
-				$token_factory
-			);
+	public function field_outers( string $row_type, Token_Factory $token_factory, string $field_id ): array {
+		if ( self::ROW_TYPE_REPEATER_ITEM === $row_type ) {
+			return array();
 		}
 
-		return Outers_Builder::merge_outers( $patterns_outers );
+		$outers     = Template_Builder::outer_wrappers( $this->patterns, $token_factory->variable( $field_id ) );
+		$list_class = $this->layout_settings->get_item_class( 'list', $this->field_settings );
+
+		return Template_Builder::prefix_list_class( $outers, $list_class );
 	}
 
 	/**
 	 * @return Html_Tag[]
 	 */
-	public function item_outers(
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		string $field_id,
-		string $item_id,
-		Token_Factory $token_factory
-	): array {
-		$patterns_outers = array();
+	public function item_outers( Token_Factory $token_factory, string $item_id ): array {
+		$inners     = Template_Builder::inner_wrappers( $this->patterns, $token_factory->variable( $item_id ) );
+		$item_class = $this->layout_settings->get_item_class( 'item', $this->field_settings );
 
-		foreach ( $this->patterns as $pattern ) {
-			$patterns_outers[] = $pattern->get_item_outers(
-				$layout_settings,
-				$field_settings,
-				$field_id,
-				$item_id,
-				$token_factory
-			);
-		}
-
-		return Outers_Builder::merge_outers( $patterns_outers );
+		return Template_Builder::prefix_item_class( $inners, $item_class );
 	}
 
 	/**
-	 * @param callable(Layout_Library):string $query
+	 * @return array<string,string|Variable_Token>
 	 */
-	protected function first_non_empty( callable $query ): string {
-		foreach ( $this->patterns as $pattern ) {
-			$value     = $query( $pattern );
-			$is_filled = strlen( $value ) > 0;
-
-			if ( $is_filled ) {
-				return $value;
-			}
-		}
-
-		return '';
+	public function item_attributes( Token_Factory $token_factory, string $item_id ): array {
+		return Template_Builder::item_attributes( $this->patterns, $token_factory->variable( $item_id ) );
 	}
 }

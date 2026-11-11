@@ -7,14 +7,12 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Provider;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Pattern\Style_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Builder\Script_Pattern_Builder;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style_Builder;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Provider;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Pattern;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -51,6 +49,10 @@ abstract class Layout_Library_Base implements Layout_Library {
 
 	protected function set_auto_discover_name( string $auto_discover_name ): void {
 		$this->auto_discover_name = $auto_discover_name;
+	}
+
+	public function get_template_pattern( Field_Settings $field_settings, Layout_Settings $layout_settings ): ?string {
+		return null;
 	}
 
 	/**
@@ -101,7 +103,10 @@ abstract class Layout_Library_Base implements Layout_Library {
 		bool $is_with_magic_selector,
 		string $target = 'field'
 	): string {
-		if ( $this->is_label_out_of_row() ) {
+		$template_pattern = $this->get_template_pattern( $field_settings, $layout_settings );
+
+		if ( is_string( $template_pattern ) &&
+			$template_pattern::is_label_out_of_row() ) {
 			$target = '';
 		}
 
@@ -130,59 +135,6 @@ abstract class Layout_Library_Base implements Layout_Library {
 		}
 
 		return $item_selector;
-	}
-
-	public function get_row_wrapper_class( string $row_type ): string {
-		return '';
-	}
-
-	public function get_row_wrapper_tag( Field_Settings $field_settings, string $row_type ): string {
-		return '';
-	}
-
-	public function get_field_wrapper_tag( Field_Settings $field_settings, string $row_type ): string {
-		return '';
-	}
-
-	/**
-	 * @return array<string,string>
-	 */
-	public function get_field_wrapper_attrs( Field_Settings $field_settings, string $field_id ): array {
-		return array();
-	}
-
-	/**
-	 * @return Html_Tag[]
-	 */
-	public function get_field_outers(
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		string $field_id,
-		string $row_type,
-		Token_Factory $token_factory
-	): array {
-		return array();
-	}
-
-	/**
-	 * @return Html_Tag[]
-	 */
-	public function get_item_outers(
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		string $field_id,
-		string $item_id,
-		Token_Factory $token_factory
-	): array {
-		return array();
-	}
-
-	public function get_inner_variable_attributes( Field_Settings $field_settings, string $field_id ): array {
-		return array();
-	}
-
-	public function is_label_out_of_row(): bool {
-		return false;
 	}
 
 	/**

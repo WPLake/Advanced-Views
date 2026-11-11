@@ -22,7 +22,8 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Provider;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Loader;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Outers_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Builder\Template_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Light_Gallery_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox\Lightbox_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Map\Map_Library;
@@ -605,57 +606,39 @@ class Front_Assets extends Actor_Base implements Actor {
 	}
 
 	public function get_card_items_wrapper_class( Post_Selection_Settings $post_selection_settings ): string {
-		$classes = array();
+		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
 
-		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof Selection_Library &&
-				$pattern->is_target_selection( $post_selection_settings ) ) {
-				$class = $pattern->get_selection_items_wrapper_class( $post_selection_settings );
-
-				if ( strlen( $class ) > 0 ) {
-					$classes[] = $class;
-				}
-			}
-		}
-
-		return implode( ' ', $classes );
+		return Template_Builder::items_wrapper_class( $patterns );
 	}
 
 	/**
 	 * @return Html_Tag[]
 	 */
 	public function get_card_item_outers( Post_Selection_Settings $post_selection_settings, Token_Factory $token_factory ): array {
-		$patterns_outers = array();
+		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
+		$items    = $token_factory->variable( 'items' );
+		$outers   = Template_Builder::outer_wrappers( $patterns, $items );
 
-		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof Selection_Library ) {
-				$is_target = $pattern->is_target_selection( $post_selection_settings );
-
-				if ( $is_target ) {
-					$patterns_outers[] = $pattern->get_selection_item_outers( $post_selection_settings, $token_factory );
-				}
-			}
+		if ( Post_Selection_Settings::CLASS_GENERATION_NONE === $post_selection_settings->classes_generation ) {
+			return $outers;
 		}
 
-		return Outers_Builder::merge_outers( $patterns_outers );
+		$bem_name = $post_selection_settings->get_bem_name();
+
+		return Template_Builder::prefix_selection_classes(
+			$outers,
+			sprintf( '%s__list', $bem_name ),
+			sprintf( '%s__track', $bem_name )
+		);
 	}
 
 	/**
 	 * @return array<string,string>
 	 */
 	public function get_card_shortcode_attrs( Post_Selection_Settings $post_selection_settings ): array {
-		$attrs = array();
+		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
 
-		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof Selection_Library &&
-				$pattern->is_target_selection( $post_selection_settings ) ) {
-				$asset_attrs = $pattern->get_selection_shortcode_attrs( $post_selection_settings );
-
-				$attrs = array_merge( $attrs, $asset_attrs );
-			}
-		}
-
-		return $attrs;
+		return Template_Builder::shortcode_attributes( $patterns );
 	}
 
 	public function enqueue_assets(): void {
@@ -712,5 +695,25 @@ class Front_Assets extends Actor_Base implements Actor {
 		$code_html = $this->html_renderer->render_html( $tags );
 
 		return sprintf( "%s\n", $code_html );
+	}
+
+	/**
+	 * @return class-string<Template_Pattern>[]
+	 */
+	protected function resolve_selection_template_patterns( Post_Selection_Settings $post_selection_settings ): array {
+		$template_patterns = array();
+
+		foreach ( $this->patterns as $pattern ) {
+			if ( $pattern instanceof Selection_Library &&
+				$pattern->is_target_selection( $post_selection_settings ) ) {
+				$template_pattern = $pattern->get_selection_template_pattern( $post_selection_settings );
+
+				if ( is_string( $template_pattern ) ) {
+					$template_patterns[] = $template_pattern;
+				}
+			}
+		}
+
+		return $template_patterns;
 	}
 }

@@ -47,7 +47,7 @@ trait Markup_Field_Base {
 	 * @return Html_Node[]
 	 */
 	protected function compose_item( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
-		$item_outers = $markup_field_data->get_item_outers( $field_id, $item_id );
+		$item_outers = $markup_field_data->get_item_outers( $item_id );
 		$item_nodes  = $this->compose_item_markup( $field_id, $item_id, $markup_field_data );
 
 		return $markup_field_data->wrap_with_item_outers( $item_outers, $item_nodes );

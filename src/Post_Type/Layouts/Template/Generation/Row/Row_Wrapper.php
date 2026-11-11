@@ -11,6 +11,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Context\
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Structure\Inner_Row_Policy;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
@@ -44,8 +45,15 @@ final class Row_Wrapper {
 		$layout_settings = $context->get_layout_settings();
 		$patterns        = $context->get_pattern_container();
 
-		$row_type       = $context->get_row_type();
-		$external_class = $patterns->row_wrapper_class( $row_type );
+		$row_wrapper    = $patterns->row_wrapper(
+			$context->get_row_type(),
+			$context->get_token_factory(),
+			$context->get_field_id()
+		);
+		$wrapper_attrs  = $row_wrapper instanceof Html_Tag ?
+			$row_wrapper->get_attributes() :
+			array();
+		$external_class = string( $wrapper_attrs, 'class' );
 		$classes        = $layout_settings->is_classes_generation_enabled() ?
 			self::resolve_classes( $context ) :
 			array();

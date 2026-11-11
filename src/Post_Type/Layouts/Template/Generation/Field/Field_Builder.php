@@ -92,7 +92,7 @@ final class Field_Builder {
 			$token_factory
 		);
 
-		$field_assets      = $patterns->get_patterns();
+		$field_assets      = $patterns->get_libraries();
 		$has_field_wrapper = Inner_Row_Policy::has_field_wrapper( $context );
 		$has_row_wrapper   = $this->policy->is_row_wrapper_required( $context );
 

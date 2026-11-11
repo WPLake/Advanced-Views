@@ -15,10 +15,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Builder\Scri
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library_Base;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
-use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 class Lightbox_Library extends Layout_Library_Base {
 	const NAME = 'acf-views-lightbox';
@@ -102,33 +99,9 @@ class Lightbox_Library extends Layout_Library_Base {
 		}
 	}
 
-	public function get_field_wrapper_tag( Field_Settings $field_settings, string $row_type ): string {
+	public function get_template_pattern( Field_Settings $field_settings, Layout_Settings $layout_settings ): ?string {
 		return $field_settings->get_field_meta()->is_multiple() ?
-			'ul' :
-			'div';
-	}
-
-	/**
-	 * @return Html_Tag[]
-	 */
-	public function get_item_outers(
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		string $field_id,
-		string $item_id,
-		Token_Factory $token_factory
-	): array {
-		return array(
-			tag( 'li' ),
-		);
-	}
-
-	public function get_inner_variable_attributes( Field_Settings $field_settings, string $field_id ): array {
-		return array(
-			'data-full-size' => array(
-				'field_id' => $field_id,
-				'item_key' => 'full_size',
-			),
-		);
+			Gallery_Pattern::class :
+			Lightbox_Pattern::class;
 	}
 }

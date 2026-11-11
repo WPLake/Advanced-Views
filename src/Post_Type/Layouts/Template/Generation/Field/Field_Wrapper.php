@@ -23,20 +23,12 @@ final class Field_Wrapper {
 	 * @return Html_Node[]
 	 */
 	public static function wrap_inners( Row_Context $context, array $nodes ): array {
-		$patterns        = $context->get_pattern_container();
-		$layout_settings = $context->get_layout_settings();
-		$field_settings  = $context->get_field_settings();
-		$field_id        = $context->get_field_id();
-		$row_type        = $context->get_row_type();
-		$token_factory   = $context->get_token_factory();
+		$patterns      = $context->get_pattern_container();
+		$field_id      = $context->get_field_id();
+		$row_type      = $context->get_row_type();
+		$token_factory = $context->get_token_factory();
 
-		$field_outers = $patterns->field_outers(
-			$layout_settings,
-			$field_settings,
-			$field_id,
-			$row_type,
-			$token_factory
-		);
+		$field_outers = $patterns->field_outers( $row_type, $token_factory, $field_id );
 
 		return Outers_Builder::compose_outers(
 			$field_outers,
@@ -83,13 +75,8 @@ final class Field_Wrapper {
 	}
 
 	protected static function compose_wrapper( Row_Context $context, bool $is_inside_row_wrapper ): Html_Tag {
-		$field_settings = $context->get_field_settings();
-		$field_id       = $context->get_field_id();
-		$patterns       = $context->get_pattern_container();
-
-		$tag = Inner_Row_Policy::resolve_field_wrapper_tag( $context );
-
-		$attrs = $patterns->field_wrapper_attrs( $field_settings, $field_id );
+		$tag   = Inner_Row_Policy::resolve_field_wrapper_tag( $context );
+		$attrs = self::resolve_pattern_attributes( $context );
 		unset( $attrs['class'] );
 
 		$classes     = self::generate_class( $context, $is_inside_row_wrapper );
@@ -101,15 +88,28 @@ final class Field_Wrapper {
 	}
 
 	/**
+	 * @return array<string,mixed>
+	 */
+	protected static function resolve_pattern_attributes( Row_Context $context ): array {
+		$patterns = $context->get_pattern_container();
+		$wrapper  = $patterns->field_wrapper(
+			$context->get_row_type(),
+			$context->get_token_factory(),
+			$context->get_field_id()
+		);
+
+		return $wrapper instanceof Html_Tag ?
+			$wrapper->get_attributes() :
+			array();
+	}
+
+	/**
 	 * The class from a pattern, e.g. 'splide', is kept even if the generation is off, as JS requires it
 	 */
 	protected static function generate_class( Row_Context $context, bool $is_inside_row_wrapper ): string {
 		$layout_settings = $context->get_layout_settings();
-		$field_settings  = $context->get_field_settings();
-		$patterns        = $context->get_pattern_container();
 
-		$field_id       = $context->get_field_id();
-		$pattern_attrs  = $patterns->field_wrapper_attrs( $field_settings, $field_id );
+		$pattern_attrs  = self::resolve_pattern_attributes( $context );
 		$external_class = string( $pattern_attrs, 'class' );
 		$is_enabled     = $layout_settings->is_classes_generation_enabled();
 		$classes        = $is_enabled ?

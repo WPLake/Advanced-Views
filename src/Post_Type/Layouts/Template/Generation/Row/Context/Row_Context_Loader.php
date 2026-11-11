@@ -47,7 +47,7 @@ final class Row_Context_Loader {
 		$markup_field = $this->provider_cluster->get_markup_field_instance( $vendor_name, $field_type );
 
 		$patterns          = $patterns ?? $this->resolve_field_patterns( $field_settings );
-		$pattern_container = new Pattern_Container( $patterns );
+		$pattern_container = new Pattern_Container( $patterns, $layout_settings, $field_settings );
 
 		return new Row_Context(
 			$layout_settings,

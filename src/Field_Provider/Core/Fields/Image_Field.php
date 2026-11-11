@@ -232,23 +232,9 @@ class Image_Field extends Image_Field_Type implements Markup_Field {
 	}
 
 	/**
-	 * @return array<string,Variable_Token>
+	 * @return array<string,string|Variable_Token>
 	 */
 	protected function inner_attributes( string $field_id, Template_Field_Meta $markup_field_data ): array {
-		$token_factory    = $markup_field_data->get_token_factory();
-		$inner_attributes = array();
-
-		foreach ( $markup_field_data->get_field_assets() as $field_asset ) {
-			$inner_attributes = array_merge(
-				$inner_attributes,
-				$field_asset->get_inner_variable_attributes( $markup_field_data->get_context()->get_field_settings(), $field_id )
-			);
-		}
-
-		return array_map(
-			fn( array $variable_info ) => $token_factory->variable( $variable_info['field_id'] )
-														->add_item_path( $variable_info['item_key'] ),
-			$inner_attributes
-		);
+		return $markup_field_data->get_item_attributes( $field_id );
 	}
 }
