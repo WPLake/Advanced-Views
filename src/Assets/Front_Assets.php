@@ -617,7 +617,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	public function get_card_item_outers( Post_Selection_Settings $post_selection_settings, Token_Factory $token_factory ): array {
 		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
 		$items    = $token_factory->variable( 'items' );
-		$outers   = Template_Builder::outer_wrappers( $patterns, $items );
+		$outers   = Template_Builder::field_wrappers( $patterns, $items );
 
 		if ( Post_Selection_Settings::CLASS_GENERATION_NONE === $post_selection_settings->classes_generation ) {
 			return $outers;

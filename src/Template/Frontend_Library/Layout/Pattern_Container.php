@@ -62,7 +62,7 @@ final class Pattern_Container {
 	public function row_wrapper( string $row_type, Token_Factory $token_factory, string $field_id ): ?Html_Tag {
 		if ( self::ROW_TYPE_REPEATER_ITEM === $row_type ) {
 			$item   = $token_factory->variable( $field_id );
-			$inners = Template_Builder::inner_wrappers( $this->patterns, $item );
+			$inners = Template_Builder::item_wrappers( $this->patterns, $item );
 
 			return $inners[0] ?? null;
 		}
@@ -75,7 +75,9 @@ final class Pattern_Container {
 			return null;
 		}
 
-		return Template_Builder::field_wrapper( $this->patterns, $token_factory->variable( $field_id ) );
+		$wrappers = Template_Builder::field_wrappers( $this->patterns, $token_factory->variable( $field_id ) );
+
+		return $wrappers[0] ?? null;
 	}
 
 	public function has_root_wrapper(): bool {
@@ -90,7 +92,8 @@ final class Pattern_Container {
 			return array();
 		}
 
-		$outers     = Template_Builder::outer_wrappers( $this->patterns, $token_factory->variable( $field_id ) );
+		$wrappers   = Template_Builder::field_wrappers( $this->patterns, $token_factory->variable( $field_id ) );
+		$outers     = array_slice( $wrappers, 1 );
 		$list_class = $this->layout_settings->get_item_class( 'list', $this->field_settings );
 
 		return Template_Builder::prefix_list_class( $outers, $list_class );
@@ -100,7 +103,7 @@ final class Pattern_Container {
 	 * @return Html_Tag[]
 	 */
 	public function item_outers( Token_Factory $token_factory, string $item_id ): array {
-		$inners     = Template_Builder::inner_wrappers( $this->patterns, $token_factory->variable( $item_id ) );
+		$inners     = Template_Builder::item_wrappers( $this->patterns, $token_factory->variable( $item_id ) );
 		$item_class = $this->layout_settings->get_item_class( 'item', $this->field_settings );
 
 		return Template_Builder::prefix_item_class( $inners, $item_class );

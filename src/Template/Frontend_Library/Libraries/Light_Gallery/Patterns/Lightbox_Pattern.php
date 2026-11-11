@@ -10,14 +10,11 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Pattern\Style
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern_Defaults;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class Lightbox_Pattern implements Script_Pattern, Style_Pattern, Template_Pattern {
-	use Template_Pattern_Defaults;
-
 	public static function get_docs_url(): string {
 		return 'https://www.lightgalleryjs.com/docs/settings/#lightgallery-core';
 	}
@@ -51,11 +48,13 @@ final class Lightbox_Pattern implements Script_Pattern, Style_Pattern, Template_
 		);
 	}
 
-	public static function get_field_wrapper( Variable_Token $field ): Html_Tag {
+	public static function get_field_wrappers( Variable_Token $field ): array {
 		$data_attributes = self::data_attributes( $field );
 
-		return tag( 'div' )
-			->attributes( $data_attributes );
+		return array(
+			tag( 'div' )
+				->attributes( $data_attributes ),
+		);
 	}
 
 	/**
@@ -68,5 +67,34 @@ final class Lightbox_Pattern implements Script_Pattern, Style_Pattern, Template_
 			'data-sub-html' => $target->clone()
 				->add_item_path( 'caption' ),
 		);
+	}
+
+	public static function get_row_wrapper(): ?Html_Tag {
+		return null;
+	}
+
+	/**
+	 * @return Html_Tag[]
+	 */
+	public static function get_item_wrappers( Variable_Token $item ): array {
+		return array();
+	}
+
+	/**
+	 * @return array<string,string|Variable_Token>
+	 */
+	public static function get_item_attributes( Variable_Token $item ): array {
+		return array();
+	}
+
+	public static function get_items_wrapper_class(): string {
+		return '';
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	public static function get_shortcode_attributes(): array {
+		return array();
 	}
 }
