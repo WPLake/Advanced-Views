@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library;
 
 /**
  * What the markup fields (e.g. a repeater) need to compose their nested rows.
@@ -20,7 +20,7 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern;
  */
 interface Row_Composer {
 	/**
-	 * @param Layout_Pattern[] $field_assets
+	 * @param Layout_Library[] $field_assets
 	 *
 	 * @return Html_Node[]
 	 */

@@ -4,17 +4,17 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core;
 
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Library\CSS_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Library\JS_Library;
+
 defined( 'ABSPATH' ) || exit;
 
 interface Frontend_Library {
-	public static function get_id(): string;
+	public function get_name(): string;
 
-	public static function get_label(): string;
+	public function get_auto_discover_name(): string;
 
-	public static function get_docs_url(): string;
+	public function get_js_library(): ?JS_Library;
 
-	/**
-	 * @return array<class-string, class-string<Frontend_Pattern>[]>
-	 */
-	public static function get_patterns(): array;
+	public function get_css_library(): ?CSS_Library;
 }

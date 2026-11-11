@@ -6,64 +6,108 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Ga
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\CSS_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\File_Context;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Types\JS\JS_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Inline_Gallery;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Lightbox_Multi;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Lightbox_Single;
-use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Fields\Gallery_Field_Type;
-use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Fields\Image_Field_Type;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Gallery_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Patterns\Lightbox_Pattern;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder\JS_Pattern_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Builder\CSS_Pattern_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library_Base;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
-final class Light_Gallery_Library implements Frontend_Library, CSS_Library, JS_Library {
-	public static function get_id(): string {
-		return 'light-gallery';
+class Light_Gallery_Library extends Layout_Library_Base {
+	const NAME = 'light-gallery';
+
+	private JS_Library $js_library;
+	private CSS_Library $css_library;
+
+	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder, CSS_Pattern_Builder $css_pattern_builder ) {
+		parent::__construct( $provider_cluster, $js_pattern_builder, $css_pattern_builder );
+
+		$this->set_auto_discover_name( 'light-gallery' );
+
+		$this->js_library  = new JS_Library();
+		$this->css_library = new CSS_Library();
 	}
 
-	public static function get_label(): string {
-		return __( 'LightGallery', 'acf-views' );
+	public function get_js_library(): JS_Library {
+		return $this->js_library;
 	}
 
-	public static function get_docs_url(): string {
-		return 'https://www.lightgalleryjs.com/docs/settings/#lightgallery-core';
+	public function get_css_library(): CSS_Library {
+		return $this->css_library;
 	}
 
-	public static function get_patterns(): array {
+	public function maybe_activate_layout( Layout_Settings $layout_settings ): void {
+		if ( $this->js_library->has_active_js() ) {
+			return;
+		}
+
+		$target_fields = $this->get_target_fields( $layout_settings );
+
+		if ( array() !== $target_fields ) {
+			$this->js_library->enable();
+			$this->css_library->enable();
+		}
+	}
+
+	public function get_field_wrapper_tag( Field_Settings $field_settings, string $row_type ): string {
+		return $field_settings->get_field_meta()->is_multiple() ?
+			'ul' :
+			'div';
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	public function get_field_wrapper_attrs( Field_Settings $field_settings, string $field_id ): array {
+		return ! $field_settings->get_field_meta()->is_multiple() ?
+			self::get_data_attrs( $field_id ) :
+			array();
+	}
+
+	/**
+	 * @return Html_Tag[]
+	 */
+	public function get_item_outers(
+		Layout_Settings $layout_settings,
+		Field_Settings $field_settings,
+		string $field_id,
+		string $item_id,
+		Token_Factory $token_factory
+	): array {
+		$data_attrs = self::get_data_attrs( $item_id );
+
 		return array(
-			Image_Field_Type::class   => array(
-				Lightbox_Single::class,
-			),
-			Gallery_Field_Type::class => array(
-				Inline_Gallery::class,
-				Lightbox_Multi::class,
-			),
+			tag( 'li' )
+				->attributes( $data_attrs ),
 		);
 	}
 
-	public static function get_css_file_names(): array {
-		return array(
-			'lightgallery',
-			'lg-thumbnail',
-		);
+	protected function resolve_js_pattern( Field_Settings $field_settings, Layout_Settings $layout_settings ): ?string {
+		return $field_settings->get_field_meta()->is_multiple() ?
+			Gallery_Pattern::class :
+			Lightbox_Pattern::class;
 	}
 
-	public static function get_css_patches( Asset_Resolver $resolver ): array {
-		$base_url     = $resolver->get_asset_url( '' );
-		$relative_url = Asset_Resolver::make_url_relative( $base_url );
-
-		$patched_url = sprintf( 'url(%s', $relative_url );
-
-		return array(
-			'url(../' => $patched_url,
-		);
+	protected function resolve_css_pattern( Field_Settings $field_settings, Layout_Settings $layout_settings ): ?string {
+		return $field_settings->get_field_meta()->is_multiple() ?
+			Gallery_Pattern::class :
+			Lightbox_Pattern::class;
 	}
 
-	public static function get_js_files( File_Context $context ): array {
+	/**
+	 * @param string $field_id
+	 *
+	 * @return array<string,string>
+	 */
+	protected static function get_data_attrs( string $field_id ): array {
 		return array(
-			'lightgallery',
-			'lg-thumbnail',
+			'data-src'      => sprintf( '{{ %s.full_size }}', $field_id ),
+			'data-sub-html' => sprintf( '{{ %s.caption }}', $field_id ),
 		);
 	}
 }

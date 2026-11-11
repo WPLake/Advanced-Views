@@ -1,0 +1,93 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Template\Library_Concept\Libraries\Avf\Masonry\Patterns;
+
+defined( 'ABSPATH' ) || exit;
+
+use Org\Wplake\Advanced_Views\Template\Library_Concept\Core\Frontend_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Concept\Core\Patterns\CSS_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Concept\Core\Patterns\JS\JS_Pattern;
+use Org\Wplake\Advanced_Views\Template\Library_Concept\Core\Patterns\JS\JS_Variables;
+use Org\Wplake\Advanced_Views\Template\Library_Concept\Core\Patterns\Template_Pattern;
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Fields\Image_Field_Type;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+
+final class Masonry_Pattern implements Frontend_Pattern, Template_Pattern, JS_Pattern, CSS_Pattern {
+	public static function get_id(): string {
+		return 'masonry';
+	}
+
+	public static function get_label(): string {
+		return __( 'Masonry', 'acf-views' );
+	}
+
+	public static function get_outer_wrappers( Variable_Token $field ): array {
+		return array(
+			tag( 'ul' ),
+		);
+	}
+
+	public static function get_inner_wrappers( Variable_Token $item ): array {
+		$attributes = array(
+			'data-width'  => $item
+				->clone()
+				->add_item_path( Image_Field_Type::WIDTH ),
+			'data-height' => $item
+				->clone()
+				->add_item_path( Image_Field_Type::HEIGHT ),
+		);
+
+		return array(
+			tag( 'li' )
+				->attributes( $attributes ),
+		);
+	}
+
+	public static function get_item_attributes( Variable_Token $item ): array {
+		return array();
+	}
+
+	public static function get_js_options(): array {
+		return array(
+			'ROW_MIN_HEIGHT' => 180,
+			'GUTTER'         => 20,
+			'MOBILE_GUTTER'  => 10,
+			'MOBILE_WIDTH'   => 992,
+		);
+	}
+
+	public static function get_js_setup( JS_Variables $variables ): array {
+		return array(
+			sprintf(
+				'new AcfViewsMasonry(%s, %s)',
+				esc_html( $variables->outer_wrapper ),
+				esc_html( $variables->options )
+			),
+		);
+	}
+
+	public static function get_css_rules(): array {
+		return array(
+			'list-style'           => 'none',
+			'transition'           => 'opacity ease .1s',
+			'::after'              => array(
+				'content' => "''",
+				'display' => 'block',
+				'clear'   => 'both',
+			),
+			// hidden until the JS has laid the items out.
+			':not([data-masonry])' => array(
+				'opacity' => '0',
+			),
+			'img'                  => array(
+				'display'    => 'block',
+				'width'      => '100%',
+				'height'     => '100%',
+				'object-fit' => 'cover',
+			),
+		);
+	}
+}

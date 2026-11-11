@@ -12,8 +12,8 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Pattern_Container;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Pattern_Container;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
 
 final class Row_Context_Loader {
@@ -28,7 +28,7 @@ final class Row_Context_Loader {
 	}
 
 	/**
-	 * @param Layout_Pattern[]|null $patterns Null means the field's own patterns
+	 * @param Layout_Library[]|null $patterns Null means the field's own patterns
 	 */
 	public function load(
 		Layout_Settings $layout_settings,
@@ -64,7 +64,7 @@ final class Row_Context_Loader {
 	}
 
 	/**
-	 * @return Layout_Pattern[]
+	 * @return Layout_Library[]
 	 */
 	protected function resolve_field_patterns( Field_Settings $field_settings ): array {
 		$vendor_name  = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );

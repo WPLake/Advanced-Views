@@ -16,19 +16,19 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\Library\CSS_Library;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\Library\CSS_Library_Loader;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\JS_Pattern_Builder;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\Builder\CSS_Pattern_Builder;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Library\JS_Library;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Library\JS_Library_Loader;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Outers_Builder;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery\Light_Gallery_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Lightbox\Lightbox_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map\Map_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Selection\Selection_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Library\CSS_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Library\CSS_Library_Loader;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Builder\JS_Pattern_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Css\Builder\CSS_Pattern_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Library\JS_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\JavaScript\Library\JS_Library_Loader;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Outers_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Light_Gallery_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox\Lightbox_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Map\Map_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Selection\Selection_Library;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
@@ -44,7 +44,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	private ?int $buffer_level;
 	private bool $is_custom_interactivity_api_import_map_required;
 	/**
-	 * @var Library_Pattern[]
+	 * @var Frontend_Library[]
 	 */
 	private array $patterns;
 	/**
@@ -108,13 +108,13 @@ class Front_Assets extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return Library_Pattern[]
+	 * @return Frontend_Library[]
 	 */
 	protected function create_patterns(): array {
 		return array(
-			new Map_Pattern( $this->provider_cluster, $this->js_pattern_builder, $this->css_pattern_builder ),
-			new Light_Gallery_Pattern( $this->provider_cluster, $this->js_pattern_builder, $this->css_pattern_builder ),
-			new Lightbox_Pattern( $this->provider_cluster, $this->js_pattern_builder, $this->css_pattern_builder ),
+			new Map_Library( $this->provider_cluster, $this->js_pattern_builder, $this->css_pattern_builder ),
+			new Light_Gallery_Library( $this->provider_cluster, $this->js_pattern_builder, $this->css_pattern_builder ),
+			new Lightbox_Library( $this->provider_cluster, $this->js_pattern_builder, $this->css_pattern_builder ),
 		);
 	}
 
@@ -372,12 +372,12 @@ class Front_Assets extends Actor_Base implements Actor {
 		}
 
 		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof Layout_Pattern &&
+			if ( $pattern instanceof Layout_Library &&
 				$cpt_settings instanceof Layout_Settings ) {
 				$pattern->maybe_activate_layout( $cpt_settings );
 			}
 
-			if ( $pattern instanceof Selection_Pattern &&
+			if ( $pattern instanceof Selection_Library &&
 				$cpt_settings instanceof Post_Selection_Settings ) {
 				$pattern->maybe_activate_selection( $cpt_settings );
 			}
@@ -518,7 +518,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	 * The Cpt's CSS code, with the patterns' pieces wrapped by markers and synced with the current code.
 	 */
 	public function generate_css_code( Cpt_Settings $cpt_settings ): string {
-		$generate_pieces = fn( Library_Pattern $pattern ) => $this->generate_pattern_css( $pattern, $cpt_settings );
+		$generate_pieces = fn( Frontend_Library $pattern ) => $this->generate_pattern_css( $pattern, $cpt_settings );
 		$pieces          = $this->collect_marked_pieces( $generate_pieces );
 
 		return $this->code_marker->sync_code( $cpt_settings->css_code, $pieces );
@@ -528,14 +528,14 @@ class Front_Assets extends Actor_Base implements Actor {
 	 * The Cpt's JS code, with the patterns' pieces wrapped by markers and synced with the current code.
 	 */
 	public function generate_js_code( Cpt_Settings $cpt_settings ): string {
-		$generate_pieces = fn( Library_Pattern $pattern ) => $this->generate_pattern_js( $pattern, $cpt_settings );
+		$generate_pieces = fn( Frontend_Library $pattern ) => $this->generate_pattern_js( $pattern, $cpt_settings );
 		$pieces          = $this->collect_marked_pieces( $generate_pieces );
 
 		return $this->code_marker->sync_code( $cpt_settings->js_code, $pieces );
 	}
 
 	/**
-	 * @param Closure(Library_Pattern):array<string,string> $generate_pieces
+	 * @param Closure(Frontend_Library):array<string,string> $generate_pieces
 	 *
 	 * @return array<string,string>
 	 */
@@ -556,13 +556,13 @@ class Front_Assets extends Actor_Base implements Actor {
 	/**
 	 * @return array<string,string>
 	 */
-	protected function generate_pattern_css( Library_Pattern $pattern, Cpt_Settings $cpt_settings ): array {
-		if ( $pattern instanceof Layout_Pattern &&
+	protected function generate_pattern_css( Frontend_Library $pattern, Cpt_Settings $cpt_settings ): array {
+		if ( $pattern instanceof Layout_Library &&
 			$cpt_settings instanceof Layout_Settings ) {
 			return $pattern->generate_layout_css( $cpt_settings );
 		}
 
-		if ( $pattern instanceof Selection_Pattern &&
+		if ( $pattern instanceof Selection_Library &&
 			$cpt_settings instanceof Post_Selection_Settings &&
 			$pattern->is_target_selection( $cpt_settings ) ) {
 			return $pattern->generate_selection_css( $cpt_settings );
@@ -574,13 +574,13 @@ class Front_Assets extends Actor_Base implements Actor {
 	/**
 	 * @return array<string,string>
 	 */
-	protected function generate_pattern_js( Library_Pattern $pattern, Cpt_Settings $cpt_settings ): array {
-		if ( $pattern instanceof Layout_Pattern &&
+	protected function generate_pattern_js( Frontend_Library $pattern, Cpt_Settings $cpt_settings ): array {
+		if ( $pattern instanceof Layout_Library &&
 			$cpt_settings instanceof Layout_Settings ) {
 			return $pattern->generate_layout_js( $cpt_settings );
 		}
 
-		if ( $pattern instanceof Selection_Pattern &&
+		if ( $pattern instanceof Selection_Library &&
 			$cpt_settings instanceof Post_Selection_Settings &&
 			$pattern->is_target_selection( $cpt_settings ) ) {
 			return $pattern->generate_selection_js( $cpt_settings );
@@ -592,7 +592,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	/**
 	 * @param string[] $names
 	 *
-	 * @return Layout_Pattern[]
+	 * @return Layout_Library[]
 	 */
 	public function resolve_template_patterns( array $names ): array {
 		$names_keys       = array_flip( $names );
@@ -600,7 +600,7 @@ class Front_Assets extends Actor_Base implements Actor {
 
 		return array_filter(
 			$patterns_by_name,
-			fn( $pattern ) => $pattern instanceof Layout_Pattern
+			fn( $pattern ) => $pattern instanceof Layout_Library
 		);
 	}
 
@@ -608,7 +608,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$classes = array();
 
 		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof Selection_Pattern &&
+			if ( $pattern instanceof Selection_Library &&
 				$pattern->is_target_selection( $post_selection_settings ) ) {
 				$class = $pattern->get_selection_items_wrapper_class( $post_selection_settings );
 
@@ -628,7 +628,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$patterns_outers = array();
 
 		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof Selection_Pattern ) {
+			if ( $pattern instanceof Selection_Library ) {
 				$is_target = $pattern->is_target_selection( $post_selection_settings );
 
 				if ( $is_target ) {
@@ -647,7 +647,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$attrs = array();
 
 		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof Selection_Pattern &&
+			if ( $pattern instanceof Selection_Library &&
 				$pattern->is_target_selection( $post_selection_settings ) ) {
 				$asset_attrs = $pattern->get_selection_shortcode_attrs( $post_selection_settings );
 

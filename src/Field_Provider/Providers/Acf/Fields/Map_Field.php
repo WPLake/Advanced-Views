@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Raw_Field_Value;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map\Map_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Map\Map_Library;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Token;
@@ -360,7 +360,7 @@ class Map_Field extends Map_Field_Base {
 		$front_assets = array();
 
 		if ( false === $field_settings->is_map_without_google_map ) {
-			$front_assets[] = Map_Pattern::NAME;
+			$front_assets[] = Map_Library::NAME;
 		}
 
 		return array_merge( parent::get_front_assets( $field_settings ), $front_assets );

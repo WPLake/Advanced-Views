@@ -11,10 +11,10 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Raw_Field_Value;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery\Light_Gallery_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Macy\Macy_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Masonry\Masonry_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Splide\Splide_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Light_Gallery_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Macy\Macy_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Masonry\Masonry_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Splide\Splide_Library;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -129,18 +129,18 @@ class Gallery_Field extends Gallery_Field_Type implements Markup_Field {
 
 		switch ( $field_settings->gallery_type ) {
 			case 'masonry':
-				$front_assets[] = Masonry_Pattern::NAME;
+				$front_assets[] = Masonry_Library::NAME;
 				break;
 			case 'lightgallery_v2':
-				$front_assets[] = Light_Gallery_Pattern::NAME;
+				$front_assets[] = Light_Gallery_Library::NAME;
 				break;
 			case 'macy_v2':
-				$front_assets[] = Macy_Pattern::NAME;
+				$front_assets[] = Macy_Library::NAME;
 				break;
 		}
 
 		if ( 'splide_v4' === $field_settings->slider_type ) {
-			$front_assets[] = Splide_Pattern::NAME;
+			$front_assets[] = Splide_Library::NAME;
 		}
 
 		return $front_assets;

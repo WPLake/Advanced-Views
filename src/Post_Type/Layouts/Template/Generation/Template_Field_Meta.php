@@ -6,9 +6,9 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context\Field_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Composer;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Outers_Builder;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Pattern_Container;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Outers_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Pattern_Container;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit;
 final class Template_Field_Meta {
 	private Field_Context $context;
 	/**
-	 * @var Layout_Pattern[]
+	 * @var Layout_Library[]
 	 */
 	private array $field_assets;
 	private Pattern_Container $patterns;
@@ -86,14 +86,14 @@ final class Template_Field_Meta {
 	}
 
 	/**
-	 * @return  Layout_Pattern[]
+	 * @return  Layout_Library[]
 	 */
 	public function get_field_assets(): array {
 		return $this->field_assets;
 	}
 
 	/**
-	 * @param Layout_Pattern[] $field_assets
+	 * @param Layout_Library[] $field_assets
 	 */
 	public function set_field_assets( array $field_assets ): void {
 		$this->field_assets = $field_assets;
