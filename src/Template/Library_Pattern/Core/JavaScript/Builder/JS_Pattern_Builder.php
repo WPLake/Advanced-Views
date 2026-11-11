@@ -13,34 +13,11 @@ use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\J
 
 final class JS_Pattern_Builder {
 	protected Object_Builder $object_builder;
-	protected Snippet_Builder $snippet_builder;
 	protected Text_Formatter $formatter;
 
-	public function __construct( Object_Builder $object_builder, Snippet_Builder $snippet_builder, Text_Formatter $formatter ) {
+	public function __construct( Object_Builder $object_builder, Text_Formatter $formatter ) {
 		$this->object_builder = $object_builder;
-		$this->snippet_builder  = $snippet_builder;
 		$this->formatter      = $formatter;
-	}
-
-	/**
-	 * The code with the field lookup.
-	 *
-	 * @param class-string<JS_Pattern> $js_pattern
-	 */
-	public function build_snippet(
-		string $js_pattern,
-		string $name,
-		string $selector,
-		bool $is_multiple
-	): string {
-		$render_content = fn( string $outer_wrapper ) => $this->build( $js_pattern, $outer_wrapper );
-
-		return $this->snippet_builder->build(
-			$name,
-			$selector,
-			$is_multiple,
-			$render_content
-		);
 	}
 
 	/**
