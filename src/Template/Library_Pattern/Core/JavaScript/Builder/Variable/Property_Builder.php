@@ -2,32 +2,36 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\Object;
+namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\Variable;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Text_Formatter;
 
 final class Property_Builder {
 	protected Html_Escaper $escaper;
+	protected Text_Formatter $formatter;
 
-	public function __construct( Html_Escaper $escaper ) {
-		$this->escaper = $escaper;
+	public function __construct( Html_Escaper $escaper, Text_Formatter $formatter ) {
+		$this->escaper   = $escaper;
+		$this->formatter = $formatter;
 	}
 
 	/**
+	 * The property line at the current depth.
 	 * Hash prefix in #name means the value is a JS literal, otherwise it's JSON-encoded.
 	 *
 	 * @param mixed $value
 	 */
-	public function build( string $name, $value ): string {
+	public function build_property( string $name, $value ): string {
+		$tabs       = $this->formatter->tabulate();
 		$is_literal = str_starts_with( $name, '#' );
+		$property   = $is_literal ?
+			$this->compose_literal_property( $name, $value ) :
+			$this->compose_json_property( $name, $value );
 
-		if ( $is_literal ) {
-			return $this->compose_literal_property( $name, $value );
-		}
-
-		return $this->compose_json_property( $name, $value );
+		return sprintf( '%s%s', $tabs, $property );
 	}
 
 	/**

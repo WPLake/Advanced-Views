@@ -6,80 +6,92 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Bui
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 use Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters\Text_Formatter;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\Object\Object_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Variables;
 
+/**
+ * The pattern's code is rendered one level deeper than the field lookup wrapping it.
+ * It requires the same Text_Formatter instance in all the builders, as the depth is its state.
+ */
 final class JS_Pattern_Builder {
-	protected Object_Builder $object_builder;
+	protected Html_Escaper $escaper;
 	protected Text_Formatter $formatter;
+	protected Setup_Builder $setup_builder;
+	protected string $multiple_item_variable;
 
-	public function __construct( Object_Builder $object_builder, Text_Formatter $formatter ) {
-		$this->object_builder = $object_builder;
-		$this->formatter      = $formatter;
+	public function __construct(
+		Html_Escaper $escaper,
+		Text_Formatter $formatter,
+		Setup_Builder $setup_builder
+	) {
+		$this->escaper       = $escaper;
+		$this->formatter     = $formatter;
+		$this->setup_builder = $setup_builder;
+
+		$this->multiple_item_variable = 'item';
+	}
+
+	public function set_multiple_item_variable( string $multiple_item_variable ): self {
+		$this->multiple_item_variable = $multiple_item_variable;
+
+		return $this;
 	}
 
 	/**
 	 * @param class-string<JS_Pattern> $js_pattern
 	 */
-	public function build( string $js_pattern, string $outer_wrapper ): string {
-		$variables                = new JS_Variables();
-		$variables->outer_wrapper = $outer_wrapper;
-
-		$options_code = $this->compose_options( $js_pattern, $variables );
-		$setup_code   = $this->compose_setup( $js_pattern, $variables );
-
-		$blocks = array(
-			$options_code,
-			$setup_code,
+	public function build_single_item( string $js_pattern, string $name, string $selector ): string {
+		$selector_safe = $this->escaper->esc_html( $selector );
+		$name_safe     = $this->escaper->esc_html( $name );
+		$new_line      = $this->formatter->new_line();
+		$opening_lines = array(
+			sprintf(
+				"var %s = this.querySelector('%s');",
+				$name_safe,
+				$selector_safe
+			),
+			sprintf( 'if (%s) {', $name_safe ),
 		);
+		$opening       = join( $new_line, $opening_lines );
 
-		return $this->join_blocks( $blocks );
+		return $this->wrap(
+			$js_pattern,
+			$opening,
+			'}',
+			$name
+		);
 	}
 
 	/**
 	 * @param class-string<JS_Pattern> $js_pattern
 	 */
-	protected function compose_options( string $js_pattern, JS_Variables $variables ): string {
-		$options   = $js_pattern::get_js_options();
-		$is_filled = count( $options ) > 0;
+	public function build_multiple_items( string $js_pattern, string $selector ): string {
+		$selector_safe = $this->escaper->esc_html( $selector );
+		$opening       = sprintf( "this.querySelectorAll('%s').forEach(item => {", $selector_safe );
 
-		if ( $is_filled ) {
-			return $this->object_builder->build( $options, $variables->options );
-		}
-
-		return '';
+		return $this->wrap(
+			$js_pattern,
+			$opening,
+			'});',
+			$this->multiple_item_variable
+		);
 	}
 
 	/**
 	 * @param class-string<JS_Pattern> $js_pattern
 	 */
-	protected function compose_setup( string $js_pattern, JS_Variables $variables ): string {
-		$setup      = $js_pattern::get_js_setup( $variables );
-		$tabs       = $this->formatter->tabulate();
-		$statements = array();
-
-		foreach ( $setup as $line ) {
-			$statements[] = sprintf( '%s%s;', $tabs, $line );
-		}
-
+	protected function wrap( string $js_pattern, string $opening, string $closing, string $outer_wrapper ): string {
+		$content  = $this->formatter->tab_shift(
+			fn() => $this->setup_builder->build_setup( $js_pattern, $outer_wrapper )
+		);
 		$new_line = $this->formatter->new_line();
-		return join( $new_line, $statements );
-	}
-
-	/**
-	 * The blocks are separated by an empty line.
-	 *
-	 * @param string[] $blocks
-	 */
-	protected function join_blocks( array $blocks ): string {
-		$filled_blocks = array_filter(
-			$blocks,
-			fn( string $block ) => strlen( $block ) > 0
+		$lines    = array(
+			$opening,
+			$content,
+			$closing,
 		);
 
-		$new_lines = $this->formatter->new_line( 2 );
-		return join( $new_lines, $filled_blocks );
+		return join( $new_line, $lines );
 	}
 }

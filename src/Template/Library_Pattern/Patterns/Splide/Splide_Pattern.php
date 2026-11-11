@@ -7,11 +7,9 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Splide;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Closure;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\JS_Pattern_Builder;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\Snippet_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern_Base;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Selection\Selection_Code_Builder;
@@ -24,17 +22,11 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 
 	private string $card_field_id;
 	private JS_Pattern_Builder $js_pattern_builder;
-	private Snippet_Builder $snippet_builder;
 
-	public function __construct(
-		Field_Provider_Cluster $provider_cluster,
-		JS_Pattern_Builder $js_pattern_builder,
-		Snippet_Builder $snippet_builder
-	) {
+	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder ) {
 		parent::__construct( $provider_cluster );
 
 		$this->js_pattern_builder = $js_pattern_builder;
-		$this->snippet_builder    = $snippet_builder;
 		$this->card_field_id      = '';
 	}
 
@@ -56,20 +48,17 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 		string $js_field_selector,
 		bool $is_multiple
 	): string {
-		$render_content = $this->create_content_renderer();
+		$js_pattern = $this->get_js_pattern();
 
 		if ( $is_multiple ) {
-			return $this->snippet_builder->build_multiple( $js_field_selector, $render_content );
+			return $this->js_pattern_builder->build_multiple_items( $js_pattern, $js_field_selector );
 		}
 
-		return $this->snippet_builder->build_single( $var_name, $js_field_selector, $render_content );
-	}
-
-	/**
-	 * @return Closure(string):string
-	 */
-	protected function create_content_renderer(): Closure {
-		return fn( string $outer_wrapper ) => $this->js_pattern_builder->build( $this->get_js_pattern(), $outer_wrapper );
+		return $this->js_pattern_builder->build_single_item(
+			$js_pattern,
+			$var_name,
+			$js_field_selector
+		);
 	}
 
 	protected function print_css_code(
@@ -104,8 +93,12 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 	 */
 	public function generate_selection_js( Post_Selection_Settings $post_selection_settings ): array {
 		$selector   = Selection_Code_Builder::get_selector( $post_selection_settings, $this->card_field_id );
-		$render_content = $this->create_content_renderer();
-		$js_snippet     = $this->snippet_builder->build_single( $this->card_field_id, $selector, $render_content );
+		$js_pattern = $this->get_js_pattern();
+		$js_snippet = $this->js_pattern_builder->build_single_item(
+			$js_pattern,
+			$this->card_field_id,
+			$selector
+		);
 
 		if ( '' !== $js_snippet ) {
 			return array(
