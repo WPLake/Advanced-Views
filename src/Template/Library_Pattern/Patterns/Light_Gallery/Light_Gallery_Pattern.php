@@ -7,6 +7,7 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gall
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\JS_Pattern_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
@@ -20,8 +21,8 @@ class Light_Gallery_Pattern extends Layout_Pattern_Base {
 	private JS_Library $js_library;
 	private CSS_Library $css_library;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster ) {
-		parent::__construct( $provider_cluster );
+	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder ) {
+		parent::__construct( $provider_cluster, $js_pattern_builder );
 
 		$this->set_auto_discover_name( 'light-gallery' );
 
@@ -83,8 +84,10 @@ class Light_Gallery_Pattern extends Layout_Pattern_Base {
 		);
 	}
 
-	protected function print_js_code( string $var_name, Field_Settings $field_settings, Layout_Settings $layout_settings ): void {
-		self::print_lightbox_js_code( $var_name, $field_settings, $layout_settings );
+	protected function resolve_js_pattern( Field_Settings $field_settings, Layout_Settings $layout_settings ): ?string {
+		return $field_settings->get_field_meta()->is_multiple() ?
+			Lightbox_Multi_JS::class :
+			Lightbox_Single_JS::class;
 	}
 
 	protected function print_css_code(
@@ -93,31 +96,6 @@ class Light_Gallery_Pattern extends Layout_Pattern_Base {
 		Layout_Settings $layout_settings
 	): void {
 		self::print_light_box_css_code( $field_selector, $field_settings, $layout_settings );
-	}
-
-	protected static function print_lightbox_js_code(
-		string $var_name,
-		Field_Settings $field_settings,
-		Layout_Settings $layout_settings
-	): void {
-		$is_image = ! $field_settings->get_field_meta()->is_multiple();
-
-		echo "\t/* https://www.lightgalleryjs.com/docs/settings/#lightgallery-core */\n";
-		printf( "\tnew lightGallery(%s, {\n", esc_html( $var_name ) );
-		if ( $is_image ) {
-			echo "\t\tselector: 'this',\n";
-		}
-		echo "\t\tcloseOnTap: true,\n";
-		printf( "\t\tcounter: %s,\n", esc_html( $is_image ? 'false' : 'true' ) );
-		echo "\t\tdownload: false,\n";
-		echo "\t\tallowMediaOverlap: false,\n";
-		echo "\t\tenableDrag: false,\n";
-
-		if ( ! $is_image ) {
-			echo "\t\tplugins: [window.lgThumbnail,],\n";
-		}
-
-		echo "\t});";
 	}
 
 	protected static function print_light_box_css_code(

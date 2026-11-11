@@ -8,9 +8,10 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Code_Piece_Printer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\CSS_Library;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\JS_Pattern_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Library\JS_Library;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 
 defined( 'ABSPATH' ) || exit;
@@ -20,10 +21,12 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 
 	private Field_Provider_Cluster $provider_cluster;
 	private string $auto_discover_name;
+	protected JS_Pattern_Builder $js_pattern_builder;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster ) {
-		$this->provider_cluster   = $provider_cluster;
-		$this->auto_discover_name = '';
+	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder ) {
+		$this->provider_cluster    = $provider_cluster;
+		$this->js_pattern_builder  = $js_pattern_builder;
+		$this->auto_discover_name  = '';
 	}
 
 	public function get_name(): string {
@@ -46,20 +49,6 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 		$this->auto_discover_name = $auto_discover_name;
 	}
 
-	protected function print_js_code_piece(
-		string $name,
-		string $piece_safe,
-		string $field_selector,
-		bool $is_multiple
-	): void {
-		Code_Piece_Printer::print_js_code_piece(
-			$name,
-			$piece_safe,
-			$field_selector,
-			$is_multiple
-		);
-	}
-
 	protected function print_css_code(
 		string $field_selector,
 		Field_Settings $field_settings,
@@ -67,15 +56,17 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 	): void {
 	}
 
-	protected function print_js_code(
-		string $var_name,
-		Field_Settings $field_settings,
-		Layout_Settings $layout_settings
-	): void {
+	/**
+	 * The JS declaration of the field, or null when the pattern has no JS code for it.
+	 *
+	 * @return class-string<JS_Pattern>|null
+	 */
+	protected function resolve_js_pattern( Field_Settings $field_settings, Layout_Settings $layout_settings ): ?string {
+		return null;
 	}
 
 	/**
-	 * The field's JS code with its wrapper, or an empty string when the pattern has no JS code.
+	 * The field's JS code with its wrapper, or an empty string when the pattern has no JS code for it.
 	 */
 	protected function create_js_snippet(
 		string $var_name,
@@ -84,19 +75,14 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 		string $js_field_selector,
 		bool $is_multiple
 	): string {
-		$outer_wrapper = $is_multiple ?
-			'item' :
-			$var_name;
+		$js_pattern = $this->resolve_js_pattern( $field_settings, $layout_settings );
 
-		ob_start();
-		$this->print_js_code( $outer_wrapper, $field_settings, $layout_settings );
-		$js_code_safe = (string) ob_get_clean();
+		if ( is_string( $js_pattern ) ) {
+			if ( $is_multiple ) {
+				return $this->js_pattern_builder->build_multiple_items( $js_pattern, $js_field_selector );
+			}
 
-		if ( '' !== $js_code_safe ) {
-			ob_start();
-			$this->print_js_code_piece( $var_name, $js_code_safe, $js_field_selector, $is_multiple );
-
-			return (string) ob_get_clean();
+			return $this->js_pattern_builder->build_single_item( $js_pattern, $var_name, $js_field_selector );
 		}
 
 		return '';

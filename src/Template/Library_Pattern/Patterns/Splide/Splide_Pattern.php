@@ -21,13 +21,11 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 	const NAME = 'splide';
 
 	private string $card_field_id;
-	private JS_Pattern_Builder $js_pattern_builder;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder ) {
-		parent::__construct( $provider_cluster );
+		parent::__construct( $provider_cluster, $js_pattern_builder );
 
-		$this->js_pattern_builder = $js_pattern_builder;
-		$this->card_field_id      = '';
+		$this->card_field_id = '';
 	}
 
 	/**
@@ -41,24 +39,8 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 		$this->card_field_id = $card_field_id;
 	}
 
-	protected function create_js_snippet(
-		string $var_name,
-		Field_Settings $field_settings,
-		Layout_Settings $layout_settings,
-		string $js_field_selector,
-		bool $is_multiple
-	): string {
-		$js_pattern = $this->get_js_pattern();
-
-		if ( $is_multiple ) {
-			return $this->js_pattern_builder->build_multiple_items( $js_pattern, $js_field_selector );
-		}
-
-		return $this->js_pattern_builder->build_single_item(
-			$js_pattern,
-			$var_name,
-			$js_field_selector
-		);
+	protected function resolve_js_pattern( Field_Settings $field_settings, Layout_Settings $layout_settings ): ?string {
+		return $this->get_js_pattern();
 	}
 
 	protected function print_css_code(

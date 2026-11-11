@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Map;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\JS_Pattern_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern_Base;
@@ -20,8 +21,8 @@ class Map_Pattern extends Layout_Pattern_Base {
 	private array $maps;
 	private JS_Library $js_library;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster ) {
-		parent::__construct( $provider_cluster );
+	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder ) {
+		parent::__construct( $provider_cluster, $js_pattern_builder );
 
 
 		$this->maps       = array();

@@ -18,6 +18,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\CSS_Library;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\CSS_Library_Loader;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\JS_Pattern_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Library\JS_Library;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Library\JS_Library_Loader;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Library_Pattern;
@@ -62,8 +63,9 @@ class Front_Assets extends Actor_Base implements Actor {
 	private File_System $file_system;
 	protected Html_Renderer $html_renderer;
 	private Code_Marker $code_marker;
+	protected JS_Pattern_Builder $js_pattern_builder;
 
-	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Code_Marker $code_marker ) {
+	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Code_Marker $code_marker, JS_Pattern_Builder $js_pattern_builder ) {
 		$this->js_library_loader                               = new JS_Library_Loader( $asset_resolver );
 		$this->provider_cluster                                = $provider_cluster;
 		$this->file_system                                     = $file_system;
@@ -78,6 +80,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$this->tailwind_css_rules      = array();
 		$this->html_renderer           = $html_renderer;
 		$this->code_marker             = $code_marker;
+		$this->js_pattern_builder      = $js_pattern_builder;
 
 		$this->register_patterns();
 	}
@@ -106,9 +109,9 @@ class Front_Assets extends Actor_Base implements Actor {
 	 */
 	protected function create_patterns(): array {
 		return array(
-			new Map_Pattern( $this->provider_cluster ),
-			new Light_Gallery_Pattern( $this->provider_cluster ),
-			new Lightbox_Pattern( $this->provider_cluster ),
+			new Map_Pattern( $this->provider_cluster, $this->js_pattern_builder ),
+			new Light_Gallery_Pattern( $this->provider_cluster, $this->js_pattern_builder ),
+			new Lightbox_Pattern( $this->provider_cluster, $this->js_pattern_builder ),
 		);
 	}
 
