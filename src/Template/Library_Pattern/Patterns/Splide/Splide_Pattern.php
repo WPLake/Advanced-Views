@@ -7,9 +7,10 @@ namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Splide;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\JS_Pattern_Builder;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\Builder\CSS_Pattern_Builder;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\Pattern\CSS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Layout\Layout_Pattern_Base;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Selection\Selection_Code_Builder;
@@ -22,8 +23,8 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 
 	private string $card_field_id;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder ) {
-		parent::__construct( $provider_cluster, $js_pattern_builder );
+	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder, CSS_Pattern_Builder $css_pattern_builder ) {
+		parent::__construct( $provider_cluster, $js_pattern_builder, $css_pattern_builder );
 
 		$this->card_field_id = '';
 	}
@@ -33,7 +34,10 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 	 */
 	abstract protected function get_js_pattern(): string;
 
-	abstract protected function print_common_css_code( string $field_selector, Cpt_Settings $cpt_settings ): void;
+	/**
+	 * @return class-string<CSS_Pattern>
+	 */
+	abstract protected function get_css_pattern(): string;
 
 	protected function set_card_field_id( string $card_field_id ): void {
 		$this->card_field_id = $card_field_id;
@@ -43,30 +47,15 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 		return $this->get_js_pattern();
 	}
 
-	protected function print_css_code(
-		string $field_selector,
-		Field_Settings $field_settings,
-		Layout_Settings $layout_settings
-	): void {
-		$this->print_common_css_code( $field_selector, $layout_settings );
+	protected function resolve_css_pattern( Field_Settings $field_settings, Layout_Settings $layout_settings ): ?string {
+		return $this->get_css_pattern();
 	}
 
 	/**
 	 * @return array<string,string>
 	 */
 	public function generate_selection_css( Post_Selection_Settings $post_selection_settings ): array {
-		$magic_selector = sprintf( '#%s', Post_Selection_Settings::MAGIC_CSS_SELECTOR );
-
-		ob_start();
-		$this->print_common_css_code( $magic_selector, $post_selection_settings );
-		$css_code = (string) ob_get_clean();
-
-		if ( '' !== $css_code ) {
-			return array(
-				$this->card_field_id => $css_code,
-			);
-		}
-
+		// Card doesn't have 'ul'.
 		return array();
 	}
 

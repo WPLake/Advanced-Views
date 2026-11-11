@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\CSS_Library_Base;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\Library\CSS_Library_Base;
 
 defined( 'ABSPATH' ) || exit;
 

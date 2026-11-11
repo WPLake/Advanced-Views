@@ -8,8 +8,10 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\CSS_Library;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\Library\CSS_Library;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\Pattern\CSS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\JS_Pattern_Builder;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\Builder\CSS_Pattern_Builder;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Library\JS_Library;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
@@ -22,10 +24,12 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 	private Field_Provider_Cluster $provider_cluster;
 	private string $auto_discover_name;
 	protected JS_Pattern_Builder $js_pattern_builder;
+	protected CSS_Pattern_Builder $css_pattern_builder;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder ) {
+	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder, CSS_Pattern_Builder $css_pattern_builder ) {
 		$this->provider_cluster    = $provider_cluster;
 		$this->js_pattern_builder  = $js_pattern_builder;
+		$this->css_pattern_builder = $css_pattern_builder;
 		$this->auto_discover_name  = '';
 	}
 
@@ -49,11 +53,13 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 		$this->auto_discover_name = $auto_discover_name;
 	}
 
-	protected function print_css_code(
-		string $field_selector,
-		Field_Settings $field_settings,
-		Layout_Settings $layout_settings
-	): void {
+	/**
+	 * The CSS declaration of the field, or null when the pattern has no CSS code for it.
+	 *
+	 * @return class-string<CSS_Pattern>|null
+	 */
+	protected function resolve_css_pattern( Field_Settings $field_settings, Layout_Settings $layout_settings ): ?string {
+		return null;
 	}
 
 	/**
@@ -189,10 +195,10 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 		foreach ( $fields as $field ) {
 			$field_selector = $this->get_item_selector( $layout_settings, $field, false, true );
 			$var_name       = $field->get_template_field_id();
-			$css_code       = $this->create_css_code( $field_selector, $field, $layout_settings );
+			$css_pattern    = $this->resolve_css_pattern( $field, $layout_settings );
 
-			if ( '' !== $css_code ) {
-				$css_pieces[ $var_name ] = $css_code;
+			if ( is_string( $css_pattern ) ) {
+				$css_pieces[ $var_name ] = $this->css_pattern_builder->build( $css_pattern, $field_selector );
 			}
 		}
 
@@ -224,17 +230,6 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 		);
 
 		return array_merge( $target_fields, $target_sub_fields );
-	}
-
-	protected function create_css_code(
-		string $field_selector,
-		Field_Settings $field_settings,
-		Layout_Settings $layout_settings
-	): string {
-		ob_start();
-		$this->print_css_code( $field_selector, $field_settings, $layout_settings );
-
-		return (string) ob_get_clean();
 	}
 
 	/**

@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Library_Pattern\Core;
 
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\CSS_Library;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\Library\CSS_Library;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Library\JS_Library;
 
 defined( 'ABSPATH' ) || exit;

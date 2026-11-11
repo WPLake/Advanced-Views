@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Builder\JS_Pattern_Builder;
+use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\Css\Builder\CSS_Pattern_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
@@ -21,8 +22,8 @@ class Light_Gallery_Pattern extends Layout_Pattern_Base {
 	private JS_Library $js_library;
 	private CSS_Library $css_library;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder ) {
-		parent::__construct( $provider_cluster, $js_pattern_builder );
+	public function __construct( Field_Provider_Cluster $provider_cluster, JS_Pattern_Builder $js_pattern_builder, CSS_Pattern_Builder $css_pattern_builder ) {
+		parent::__construct( $provider_cluster, $js_pattern_builder, $css_pattern_builder );
 
 		$this->set_auto_discover_name( 'light-gallery' );
 
@@ -90,30 +91,10 @@ class Light_Gallery_Pattern extends Layout_Pattern_Base {
 			Lightbox_Single_JS::class;
 	}
 
-	protected function print_css_code(
-		string $field_selector,
-		Field_Settings $field_settings,
-		Layout_Settings $layout_settings
-	): void {
-		self::print_light_box_css_code( $field_selector, $field_settings, $layout_settings );
-	}
-
-	protected static function print_light_box_css_code(
-		string $field_selector,
-		Field_Settings $field_settings,
-		Layout_Settings $layout_settings
-	): void {
-		if ( $field_settings->get_field_meta()->is_multiple() ) {
-			printf(
-				"%s {\n\tlist-style: none;\n}\n\n",
-				esc_html( $field_selector )
-			);
-		}
-
-		printf(
-			"%s img:hover {\n\tcursor: zoom-in;\n}",
-			esc_html( $field_selector )
-		);
+	protected function resolve_css_pattern( Field_Settings $field_settings, Layout_Settings $layout_settings ): ?string {
+		return $field_settings->get_field_meta()->is_multiple() ?
+			Lightbox_Multi_CSS::class :
+			Lightbox_Single_CSS::class;
 	}
 
 	/**

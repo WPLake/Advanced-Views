@@ -16,11 +16,11 @@ final class Code_Marker {
 		$marked_pieces = array();
 
 		foreach ( $pieces as $name => $piece ) {
-			$piece_id = $this->create_piece_id( $auto_discover_name, (string) $name );
+			$piece_id = $this->create_piece_id( $auto_discover_name, $name );
 
 			$marked_pieces[ $piece_id ] = $this->wrap_code(
 				$auto_discover_name,
-				(string) $name,
+				$name,
 				$piece
 			);
 		}

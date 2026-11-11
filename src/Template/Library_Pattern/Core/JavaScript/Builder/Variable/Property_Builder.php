@@ -26,7 +26,7 @@ final class Property_Builder {
 	 */
 	public function build_property( string $name, $value ): string {
 		$tabs       = $this->formatter->tabulate();
-		$is_literal = str_starts_with( $name, '#' );
+		$is_literal = 0 === strpos( $name, '#' );
 		$property   = $is_literal ?
 			$this->compose_literal_property( $name, $value ) :
 			$this->compose_json_property( $name, $value );
