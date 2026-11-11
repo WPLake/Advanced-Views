@@ -23,13 +23,12 @@ final class JS_Pattern_Builder {
 	}
 
 	/**
-	 * The code wrapped for the auto-discovery, with the field lookup.
+	 * The code with the field lookup.
 	 *
 	 * @param class-string<JS_Pattern> $js_pattern
 	 */
 	public function build_snippet(
 		string $js_pattern,
-		string $auto_discover_name,
 		string $name,
 		string $selector,
 		bool $is_multiple
@@ -37,7 +36,6 @@ final class JS_Pattern_Builder {
 		$render_content = fn( string $outer_wrapper ) => $this->build( $js_pattern, $outer_wrapper );
 
 		return $this->snippet_builder->build(
-			$auto_discover_name,
 			$name,
 			$selector,
 			$is_multiple,

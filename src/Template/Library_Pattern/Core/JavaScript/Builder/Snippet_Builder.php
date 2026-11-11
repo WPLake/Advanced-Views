@@ -28,7 +28,6 @@ final class Snippet_Builder {
 	 * @param Closure(string):string $render_content
 	 */
 	public function build(
-		string $auto_discover_name,
 		string $name,
 		string $selector,
 		bool $is_multiple,
@@ -52,9 +51,8 @@ final class Snippet_Builder {
 			$closing,
 		);
 		$new_line = $this->formatter->new_line();
-		$code     = join( $new_line, $lines );
 
-		return $this->wrap_with_markers( $auto_discover_name, $name, $code );
+		return join( $new_line, $lines );
 	}
 
 	protected function compose_opening( string $name, string $selector, bool $is_multiple ): string {
@@ -72,23 +70,5 @@ final class Snippet_Builder {
 		);
 
 		return join( $new_line, $lines );
-	}
-
-	protected function wrap_with_markers( string $auto_discover_name, string $name, string $code ): string {
-		$discover_safe = $this->escaper->esc_html( $auto_discover_name );
-		$name_safe     = $this->escaper->esc_html( $name );
-		$new_lines     = $this->formatter->new_line( 2 );
-
-		$parts = array(
-			$new_lines,
-			sprintf( '/* %s : %s (auto-discover-begin) */', $discover_safe, $name_safe ),
-			$new_lines,
-			$code,
-			$new_lines,
-			sprintf( '/* %s : %s (auto-discover-end) */', $discover_safe, $name_safe ),
-			$new_lines,
-		);
-
-		return join( '', $parts );
 	}
 }

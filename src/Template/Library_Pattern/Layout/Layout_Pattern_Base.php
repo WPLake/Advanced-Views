@@ -46,10 +46,6 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 		$this->auto_discover_name = $auto_discover_name;
 	}
 
-	protected function print_code_piece( string $name, string $piece_safe ): void {
-		Code_Piece_Printer::print_code_piece( $this->auto_discover_name, $name, $piece_safe );
-	}
-
 	protected function print_js_code_piece(
 		string $name,
 		string $piece_safe,
@@ -57,7 +53,6 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 		bool $is_multiple
 	): void {
 		Code_Piece_Printer::print_js_code_piece(
-			$this->auto_discover_name,
 			$name,
 			$piece_safe,
 			$field_selector,
@@ -229,9 +224,7 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 			}
 
 			if ( '' !== $css_code_safe ) {
-				ob_start();
-				$this->print_code_piece( $var_name, $css_code_safe );
-				$code['css'][ $var_name ] = (string) ob_get_clean();
+				$code['css'][ $var_name ] = $css_code_safe;
 			}
 		}
 
@@ -251,9 +244,7 @@ abstract class Layout_Pattern_Base implements Layout_Pattern {
 			}
 
 			if ( '' !== $css_code_safe ) {
-				ob_start();
-				$this->print_code_piece( $var_name, $css_code_safe );
-				$code['css'][ $var_name ] = (string) ob_get_clean();
+				$code['css'][ $var_name ] = $css_code_safe;
 			}
 		}
 

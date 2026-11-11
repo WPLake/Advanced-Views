@@ -50,7 +50,6 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 	): string {
 		return $this->js_pattern_builder->build_snippet(
 			$this->get_js_pattern(),
-			$this->get_auto_discover_name(),
 			$var_name,
 			$js_field_selector,
 			$is_multiple
@@ -78,7 +77,6 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 		$selector = Selection_Code_Builder::get_selector( $post_selection_settings, $this->card_field_id );
 		$js_snippet = $this->js_pattern_builder->build_snippet(
 			$this->get_js_pattern(),
-			$this->get_auto_discover_name(),
 			$this->card_field_id,
 			$selector,
 			false
@@ -86,7 +84,6 @@ abstract class Splide_Pattern extends Layout_Pattern_Base implements Selection_P
 
 		return Selection_Code_Builder::build(
 			$post_selection_settings,
-			$this->get_auto_discover_name(),
 			$this->card_field_id,
 			$css_code,
 			$js_snippet

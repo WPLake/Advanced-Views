@@ -132,48 +132,6 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 	}
 
 	/**
-	 * @param array<string,string> $actual_pieces
-	 */
-	protected function sync_code( string $code, array $actual_pieces ): string {
-		// ungreedy, so that we can grep all the pieces.
-		preg_match_all(
-			'/\/\*([^*]*):([^*]+)\(auto-discover-begin\)[^*]+\*\/[\d\D]+\/\*[^*]*\(auto-discover-end\)[^*]+\*\//U',
-			$code,
-			$current_pieces,
-			PREG_SET_ORDER
-		);
-
-		// 1. remove present pieces from the actual list (to avoid override)
-		// 2. remove absent pieces from the code
-		foreach ( $current_pieces as $current_piece ) {
-			$type     = trim( $current_piece[1] );
-			$name     = trim( $current_piece[2] );
-			$piece_id = $type . ':' . $name;
-
-			if ( key_exists( $piece_id, $actual_pieces ) ) {
-				unset( $actual_pieces[ $piece_id ] );
-
-				continue;
-			}
-
-			$code = str_replace( $current_piece[0], '', $code );
-		}
-
-		// remove empty lines (after removals).
-		$code = trim( $code );
-
-		// 3. add new pieces
-		foreach ( $actual_pieces as $actual_piece ) {
-			$code .= $actual_piece;
-		}
-
-		// remove empty lines (after additions).
-		$code = trim( $code );
-
-		return $code;
-	}
-
-	/**
 	 * @param int|string $post_id
 	 *
 	 * @throws Exception
@@ -202,20 +160,8 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 
 		$code = $this->front_assets->generate_code( $cpt_data );
 
-		$js_code  = array();
-		$css_code = array();
-
-		foreach ( $code as $auto_discover_name => $codes ) {
-			foreach ( $codes['js'] as $field_id => $field_js_code ) {
-				$js_code[ $auto_discover_name . ':' . $field_id ] = $field_js_code;
-			}
-			foreach ( $codes['css'] as $field_id => $field_css_code ) {
-				$css_code[ $auto_discover_name . ':' . $field_id ] = $field_css_code;
-			}
-		}
-
-		$cpt_data->js_code  = $this->sync_code( $cpt_data->js_code, $js_code );
-		$cpt_data->css_code = $this->sync_code( $cpt_data->css_code, $css_code );
+		$cpt_data->js_code  = $code['js'];
+		$cpt_data->css_code = $code['css'];
 
 		// new title is already in the place, we compare with "post_title" just to detect the change.
 		if ( $post_title !== $cpt_data->title ) {

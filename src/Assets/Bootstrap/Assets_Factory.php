@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
+use Org\Wplake\Advanced_Views\Assets\Code_Marker;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
@@ -25,7 +26,8 @@ class Assets_Factory extends Factory_Base {
 			$this->resolve( Layout_Settings_Storage::class )->get_file_system(),
 			$this->resolve( Field_Provider_Cluster::class ),
 			$this->resolve( Live_Reloader_Component::class ),
-			$this->resolve( Html_Renderer::class )
+			$this->resolve( Html_Renderer::class ),
+			$this->resolve( Code_Marker::class )
 		);
 	}
 

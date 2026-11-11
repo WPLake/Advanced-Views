@@ -60,8 +60,9 @@ class Front_Assets extends Actor_Base implements Actor {
 	private array $tailwind_css_rules;
 	private File_System $file_system;
 	protected Html_Renderer $html_renderer;
+	private Code_Marker $code_marker;
 
-	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer ) {
+	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Code_Marker $code_marker ) {
 		$this->js_library_loader                                       = new JS_Library_Loader( $asset_resolver );
 		$this->provider_cluster                                = $provider_cluster;
 		$this->file_system                                     = $file_system;
@@ -75,6 +76,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$this->css_library_loader      = new CSS_Library_Loader( $asset_resolver );
 		$this->tailwind_css_rules      = array();
 		$this->html_renderer           = $html_renderer;
+		$this->code_marker             = $code_marker;
 
 		$this->register_patterns();
 	}
@@ -506,21 +508,50 @@ class Front_Assets extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @return array<string,array{css:array<string,string>,js:array<string,string>}>
+	 * The Cpt's JS and CSS code, with the pieces of the patterns wrapped by markers and synced with the current code.
+	 *
+	 * @return array{css:string,js:string}
 	 */
 	public function generate_code( Cpt_Settings $cpt_settings ): array {
-		$code = array();
+		$js_pieces  = array();
+		$css_pieces = array();
 
 		foreach ( $this->patterns as $pattern ) {
-			$asset_code = $this->generate_pattern_code( $pattern, $cpt_settings );
+			$auto_discover_name = $pattern->get_auto_discover_name();
+			$asset_code         = $this->generate_pattern_code( $pattern, $cpt_settings );
 
-			if ( count( $asset_code['js'] ) > 0 ||
-				count( $asset_code['css'] ) > 0 ) {
-				$code[ $pattern->get_auto_discover_name() ] = $asset_code;
-			}
+			$marked_js  = $this->mark_pieces( $auto_discover_name, $asset_code['js'] );
+			$marked_css = $this->mark_pieces( $auto_discover_name, $asset_code['css'] );
+
+			$js_pieces  = array_merge( $js_pieces, $marked_js );
+			$css_pieces = array_merge( $css_pieces, $marked_css );
 		}
 
-		return $code;
+		return array(
+			'css' => $this->code_marker->sync_code( $cpt_settings->css_code, $css_pieces ),
+			'js'  => $this->code_marker->sync_code( $cpt_settings->js_code, $js_pieces ),
+		);
+	}
+
+	/**
+	 * @param array<string,string> $pieces
+	 *
+	 * @return array<string,string>
+	 */
+	protected function mark_pieces( string $auto_discover_name, array $pieces ): array {
+		$marked_pieces = array();
+
+		foreach ( $pieces as $name => $piece ) {
+			$piece_id = sprintf( '%s:%s', $auto_discover_name, $name );
+
+			$marked_pieces[ $piece_id ] = $this->code_marker->wrap_code(
+				$auto_discover_name,
+				(string) $name,
+				$piece
+			);
+		}
+
+		return $marked_pieces;
 	}
 
 	/**
