@@ -9,10 +9,11 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Pattern;
 use Org\Wplake\Advanced_Views\Template\Library_Pattern\Core\JavaScript\Pattern\JS_Variables;
 
-/**
- * https://www.lightgalleryjs.com/docs/settings/#lightgallery-core
- */
 final class Lightbox_Single_JS implements JS_Pattern {
+	public static function get_docs_url(): string {
+		return 'https://www.lightgalleryjs.com/docs/settings/#lightgallery-core';
+	}
+
 	public static function get_js_options(): array {
 		return array(
 			'selector'          => 'this',

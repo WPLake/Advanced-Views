@@ -21,7 +21,7 @@ final class Setup_Builder {
 	}
 
 	/**
-	 * The pattern's options, then its setup, separated by an empty line.
+	 * The docs link comment right above the code: the options, then the setup, separated by an empty line.
 	 *
 	 * @param class-string<JS_Pattern> $js_pattern
 	 */
@@ -29,6 +29,7 @@ final class Setup_Builder {
 		$variables                = new JS_Variables();
 		$variables->outer_wrapper = $outer_wrapper;
 
+		$docs_code    = $this->compose_docs( $js_pattern );
 		$options_code = $this->compose_options( $js_pattern, $variables );
 		$setup_code   = $this->compose_setup( $js_pattern, $variables );
 
@@ -36,8 +37,25 @@ final class Setup_Builder {
 			$options_code,
 			$setup_code,
 		);
+		$code   = $this->join_blocks( $blocks );
 
-		return $this->join_blocks( $blocks );
+		return $this->prepend_docs( $docs_code, $code );
+	}
+
+	/**
+	 * @param class-string<JS_Pattern> $js_pattern
+	 */
+	protected function compose_docs( string $js_pattern ): string {
+		$docs_url  = $js_pattern::get_docs_url();
+		$is_filled = strlen( $docs_url ) > 0;
+
+		if ( $is_filled ) {
+			$tabs = $this->formatter->tabulate();
+
+			return sprintf( '%s/* %s */', $tabs, $docs_url );
+		}
+
+		return '';
 	}
 
 	/**
@@ -71,6 +89,22 @@ final class Setup_Builder {
 		$new_line = $this->formatter->new_line();
 
 		return join( $new_line, $statements );
+	}
+
+	protected function prepend_docs( string $docs_code, string $code ): string {
+		$is_filled = strlen( $docs_code ) > 0;
+
+		if ( $is_filled ) {
+			$new_line = $this->formatter->new_line();
+			$lines    = array(
+				$docs_code,
+				$code,
+			);
+
+			return join( $new_line, $lines );
+		}
+
+		return $code;
 	}
 
 	/**

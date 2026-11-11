@@ -8,6 +8,11 @@ defined( 'ABSPATH' ) || exit;
 
 interface JS_Pattern {
 	/**
+	 * The library docs link, printed as a comment above the code. Empty string for none.
+	 */
+	public static function get_docs_url(): string;
+
+	/**
 	 * [propertyName=> value]
 	 *
 	 * Hash prefix in #propertyName means value is a JS literal.
