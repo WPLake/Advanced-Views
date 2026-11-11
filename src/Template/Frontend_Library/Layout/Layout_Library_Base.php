@@ -107,7 +107,7 @@ abstract class Layout_Library_Base implements Layout_Library {
 		$template_pattern = $this->get_template_pattern( $field_settings, $layout_settings );
 
 		if ( is_string( $template_pattern ) &&
-			$template_pattern::get_row_wrapper() instanceof Html_Tag ) {
+			$template_pattern::get_wrapper() instanceof Html_Tag ) {
 			$target = '';
 		}
 

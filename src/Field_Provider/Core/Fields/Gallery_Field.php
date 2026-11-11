@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Raw_Field_Val
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Light_Gallery_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Macy\Macy_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Masonry\Masonry_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Masonry\Masonry_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Splide\Splide_Library;
 
 defined( 'ABSPATH' ) || exit;

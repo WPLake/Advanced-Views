@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Rendering\Raw_Field_Value;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Light_Gallery_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Lightbox\Lightbox_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Lightbox\Lightbox_Library;
 
 class Post_Thumbnail_Field extends Image_Field {
 	use Custom_Field;
