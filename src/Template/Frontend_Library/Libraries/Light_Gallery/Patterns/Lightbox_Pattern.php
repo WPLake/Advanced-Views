@@ -14,7 +14,40 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
-final class Lightbox_Pattern implements Script_Pattern, Style_Pattern, Template_Pattern {
+final class Lightbox_Pattern implements Template_Pattern, Script_Pattern, Style_Pattern {
+	public static function get_wrapper(): ?Html_Tag {
+		return null;
+	}
+
+	public static function get_outers( Variable_Token $field ): array {
+		$data_attributes = self::data_attributes( $field );
+
+		return array(
+			tag( 'div' )
+				->attributes( $data_attributes ),
+		);
+	}
+
+	public static function get_item_wrappers( Variable_Token $item ): array {
+		return array();
+	}
+
+	public static function get_item_attributes( Variable_Token $item ): array {
+		return array();
+	}
+
+	/**
+	 * @return array<string,Variable_Token>
+	 */
+	public static function data_attributes( Variable_Token $target ): array {
+		return array(
+			'data-src'      => $target->clone()
+				->add_item_path( 'full_size' ),
+			'data-sub-html' => $target->clone()
+				->add_item_path( 'caption' ),
+		);
+	}
+
 	public static function get_docs_url(): string {
 		return 'https://www.lightgalleryjs.com/docs/settings/#lightgallery-core';
 	}
@@ -46,44 +79,5 @@ final class Lightbox_Pattern implements Script_Pattern, Style_Pattern, Template_
 				'cursor' => 'zoom-in',
 			),
 		);
-	}
-
-	public static function get_outers( Variable_Token $field ): array {
-		$data_attributes = self::data_attributes( $field );
-
-		return array(
-			tag( 'div' )
-				->attributes( $data_attributes ),
-		);
-	}
-
-	/**
-	 * @return array<string,Variable_Token>
-	 */
-	public static function data_attributes( Variable_Token $target ): array {
-		return array(
-			'data-src'      => $target->clone()
-				->add_item_path( 'full_size' ),
-			'data-sub-html' => $target->clone()
-				->add_item_path( 'caption' ),
-		);
-	}
-
-	public static function get_wrapper(): ?Html_Tag {
-		return null;
-	}
-
-	/**
-	 * @return Html_Tag[]
-	 */
-	public static function get_item_wrappers( Variable_Token $item ): array {
-		return array();
-	}
-
-	/**
-	 * @return array<string,string|Variable_Token>
-	 */
-	public static function get_item_attributes( Variable_Token $item ): array {
-		return array();
 	}
 }

@@ -12,14 +12,9 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
-final class Gallery_Pattern implements Style_Pattern, Template_Pattern {
-	public static function get_css_rules(): array {
-		return array(
-			'list-style' => 'none',
-			'img:hover'  => array(
-				'cursor' => 'zoom-in',
-			),
-		);
+final class Gallery_Pattern implements Template_Pattern, Style_Pattern {
+	public static function get_wrapper(): ?Html_Tag {
+		return null;
 	}
 
 	public static function get_outers( Variable_Token $field ): array {
@@ -41,7 +36,12 @@ final class Gallery_Pattern implements Style_Pattern, Template_Pattern {
 		);
 	}
 
-	public static function get_wrapper(): ?Html_Tag {
-		return null;
+	public static function get_css_rules(): array {
+		return array(
+			'list-style' => 'none',
+			'img:hover'  => array(
+				'cursor' => 'zoom-in',
+			),
+		);
 	}
 }
