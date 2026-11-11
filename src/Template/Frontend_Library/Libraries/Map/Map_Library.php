@@ -21,18 +21,18 @@ class Map_Library extends Layout_Library_Base {
 	 * @var string[]
 	 */
 	private array $maps;
-	private Script_Provider $js_library;
+	private Script_Provider $script_provider;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, Script_Pattern_Builder $script_pattern_builder, Style_Builder $css_builder ) {
-		parent::__construct( $provider_cluster, $script_pattern_builder, $css_builder );
+	public function __construct( Field_Provider_Cluster $provider_cluster, Script_Pattern_Builder $script_pattern_builder, Style_Builder $style_builder ) {
+		parent::__construct( $provider_cluster, $script_pattern_builder, $style_builder );
 
 
 		$this->maps       = array();
-		$this->js_library = $this->create_js_library();
+		$this->script_provider = $this->create_js_library();
 	}
 
 	public function get_js_library(): Script_Provider {
-		return $this->js_library;
+		return $this->script_provider;
 	}
 
 	protected function is_google_map_selector_inner( Field_Settings $field_settings ): bool {
@@ -55,8 +55,8 @@ class Map_Library extends Layout_Library_Base {
 
 		// only google map requires it.
 		if ( $is_with_google_map ) {
-			$this->js_library->enable();
-			$this->js_library->set_maps( $this->maps );
+			$this->script_provider->enable();
+			$this->script_provider->set_maps( $this->maps );
 		}
 	}
 

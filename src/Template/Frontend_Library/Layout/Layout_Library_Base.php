@@ -24,12 +24,12 @@ abstract class Layout_Library_Base implements Layout_Library {
 	private Field_Provider_Cluster $provider_cluster;
 	private string $auto_discover_name;
 	protected Script_Pattern_Builder $script_pattern_builder;
-	protected Style_Builder $css_builder;
+	protected Style_Builder $style_builder;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, Script_Pattern_Builder $script_pattern_builder, Style_Builder $css_builder ) {
+	public function __construct( Field_Provider_Cluster $provider_cluster, Script_Pattern_Builder $script_pattern_builder, Style_Builder $style_builder ) {
 		$this->provider_cluster    = $provider_cluster;
 		$this->script_pattern_builder  = $script_pattern_builder;
-		$this->css_builder = $css_builder;
+		$this->style_builder = $style_builder;
 		$this->auto_discover_name  = '';
 	}
 
@@ -198,7 +198,7 @@ abstract class Layout_Library_Base implements Layout_Library {
 			$css_pattern    = $this->resolve_css_pattern( $field, $layout_settings );
 
 			if ( is_string( $css_pattern ) ) {
-				$css_pieces[ $var_name ] = $this->css_builder->build( $css_pattern::get_css_rules(), $field_selector );
+				$css_pieces[ $var_name ] = $this->style_builder->build( $css_pattern::get_css_rules(), $field_selector );
 			}
 		}
 

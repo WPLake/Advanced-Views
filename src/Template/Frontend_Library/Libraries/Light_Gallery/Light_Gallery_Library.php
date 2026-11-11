@@ -23,36 +23,36 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 class Light_Gallery_Library extends Layout_Library_Base {
 	const NAME = 'light-gallery';
 
-	private Script_Provider $js_library;
-	private Style_Provider $css_library;
+	private Script_Provider $script_provider;
+	private Style_Provider $style_provider;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, Script_Pattern_Builder $script_pattern_builder, Style_Builder $css_builder ) {
-		parent::__construct( $provider_cluster, $script_pattern_builder, $css_builder );
+	public function __construct( Field_Provider_Cluster $provider_cluster, Script_Pattern_Builder $script_pattern_builder, Style_Builder $style_builder ) {
+		parent::__construct( $provider_cluster, $script_pattern_builder, $style_builder );
 
 		$this->set_auto_discover_name( 'light-gallery' );
 
-		$this->js_library  = new Script_Provider();
-		$this->css_library = new Style_Provider();
+		$this->script_provider  = new Script_Provider();
+		$this->style_provider = new Style_Provider();
 	}
 
 	public function get_js_library(): Script_Provider {
-		return $this->js_library;
+		return $this->script_provider;
 	}
 
 	public function get_css_library(): Style_Provider {
-		return $this->css_library;
+		return $this->style_provider;
 	}
 
 	public function maybe_activate_layout( Layout_Settings $layout_settings ): void {
-		if ( $this->js_library->has_active_scripts() ) {
+		if ( $this->script_provider->has_active_scripts() ) {
 			return;
 		}
 
 		$target_fields = $this->get_target_fields( $layout_settings );
 
 		if ( array() !== $target_fields ) {
-			$this->js_library->enable();
-			$this->css_library->enable();
+			$this->script_provider->enable();
+			$this->style_provider->enable();
 		}
 	}
 

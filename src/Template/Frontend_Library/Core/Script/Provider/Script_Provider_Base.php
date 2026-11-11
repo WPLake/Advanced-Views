@@ -19,9 +19,9 @@ abstract class Script_Provider_Base implements Script_Provider {
 	}
 
 	public function has_active_scripts(): bool {
-		$js_handles = $this->get_active_js_handles();
+		$handles = $this->get_active_js_handles();
 
-		return count( $js_handles ) > 0;
+		return count( $handles ) > 0;
 	}
 
 	public function get_active_js_handles(): array {

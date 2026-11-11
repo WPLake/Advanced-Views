@@ -39,7 +39,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	const MINIFY_TYPE_CSS = 'css';
 	const MINIFY_TYPE_JS  = 'js';
 
-	private Script_Loader $js_library_loader;
+	private Script_Loader $script_loader;
 	private Field_Provider_Cluster $provider_cluster;
 	private ?int $buffer_level;
 	private bool $is_custom_interactivity_api_import_map_required;
@@ -55,7 +55,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	 * @var array<string, string>
 	 */
 	private array $include_css_code;
-	private Style_Loader $css_library_loader;
+	private Style_Loader $style_loader;
 	private Live_Reloader_Component $live_reloader_component;
 	/**
 	 * @var array<string,true>
@@ -65,10 +65,10 @@ class Front_Assets extends Actor_Base implements Actor {
 	protected Html_Renderer $html_renderer;
 	private Code_Marker $code_marker;
 	protected Script_Pattern_Builder $script_pattern_builder;
-	protected Style_Builder $css_builder;
+	protected Style_Builder $style_builder;
 
-	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Code_Marker $code_marker, Script_Pattern_Builder $script_pattern_builder, Style_Builder $css_builder ) {
-		$this->js_library_loader                               = new Script_Loader( $asset_resolver );
+	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Code_Marker $code_marker, Script_Pattern_Builder $script_pattern_builder, Style_Builder $style_builder ) {
+		$this->script_loader                               = new Script_Loader( $asset_resolver );
 		$this->provider_cluster                                = $provider_cluster;
 		$this->file_system                                     = $file_system;
 		$this->buffer_level                                    = null;
@@ -78,12 +78,12 @@ class Front_Assets extends Actor_Base implements Actor {
 		$this->inline_js_code          = array();
 		$this->include_css_code        = array();
 		$this->live_reloader_component = $live_reloader_component;
-		$this->css_library_loader      = new Style_Loader( $asset_resolver, $css_builder );
+		$this->style_loader      = new Style_Loader( $asset_resolver, $style_builder );
 		$this->tailwind_css_rules      = array();
 		$this->html_renderer           = $html_renderer;
 		$this->code_marker             = $code_marker;
 		$this->script_pattern_builder  = $script_pattern_builder;
-		$this->css_builder             = $css_builder;
+		$this->style_builder             = $style_builder;
 
 		$this->register_patterns();
 	}
@@ -112,9 +112,9 @@ class Front_Assets extends Actor_Base implements Actor {
 	 */
 	protected function create_patterns(): array {
 		return array(
-			new Map_Library( $this->provider_cluster, $this->script_pattern_builder, $this->css_builder ),
-			new Light_Gallery_Library( $this->provider_cluster, $this->script_pattern_builder, $this->css_builder ),
-			new Lightbox_Library( $this->provider_cluster, $this->script_pattern_builder, $this->css_builder ),
+			new Map_Library( $this->provider_cluster, $this->script_pattern_builder, $this->style_builder ),
+			new Light_Gallery_Library( $this->provider_cluster, $this->script_pattern_builder, $this->style_builder ),
+			new Lightbox_Library( $this->provider_cluster, $this->script_pattern_builder, $this->style_builder ),
 		);
 	}
 
@@ -385,7 +385,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	}
 
 	public function print_assets(): void {
-		$assets_css_code    = $this->css_library_loader->get_css_code();
+		$assets_css_code    = $this->style_loader->get_css_code();
 		$has_assets_css     = strlen( $assets_css_code ) > 0;
 		$all_js_code        = '';
 		$all_css_code       = $has_assets_css ?
@@ -666,19 +666,19 @@ class Front_Assets extends Actor_Base implements Actor {
 		}
 
 		foreach ( $this->patterns as $pattern ) {
-			$js_library  = $pattern->get_js_library();
-			$css_library = $pattern->get_css_library();
+			$script_provider  = $pattern->get_js_library();
+			$style_provider = $pattern->get_css_library();
 
-			if ( $js_library instanceof Script_Provider &&
-				$js_library->has_active_scripts() ) {
-				$this->js_library_loader->enqueue_scripts( $js_library );
+			if ( $script_provider instanceof Script_Provider &&
+				$script_provider->has_active_scripts() ) {
+				$this->script_loader->enqueue_scripts( $script_provider );
 			}
 
-			if ( $css_library instanceof Style_Provider &&
-				$css_library->has_active_styles() ) {
+			if ( $style_provider instanceof Style_Provider &&
+				$style_provider->has_active_styles() ) {
 				$name = $pattern->get_name();
 
-				$this->css_library_loader->enqueue_styles( $name, $css_library );
+				$this->style_loader->enqueue_styles( $name, $style_provider );
 			}
 		}
 	}

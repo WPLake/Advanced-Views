@@ -27,25 +27,25 @@ class Lightbox_Library extends Layout_Library_Base {
 	 * @var array<string,array<string,mixed>>
 	 */
 	private array $light_boxes;
-	private Script_Provider $js_library;
-	private Style_Provider $css_library;
+	private Script_Provider $script_provider;
+	private Style_Provider $style_provider;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, Script_Pattern_Builder $script_pattern_builder, Style_Builder $css_builder ) {
-		parent::__construct( $provider_cluster, $script_pattern_builder, $css_builder );
+	public function __construct( Field_Provider_Cluster $provider_cluster, Script_Pattern_Builder $script_pattern_builder, Style_Builder $style_builder ) {
+		parent::__construct( $provider_cluster, $script_pattern_builder, $style_builder );
 
 		$this->set_auto_discover_name( 'acf-views-lightbox' );
 
 		$this->light_boxes = array();
-		$this->js_library  = new Script_Provider();
-		$this->css_library = new Style_Provider();
+		$this->script_provider  = new Script_Provider();
+		$this->style_provider = new Style_Provider();
 	}
 
 	public function get_js_library(): Script_Provider {
-		return $this->js_library;
+		return $this->script_provider;
 	}
 
 	public function get_css_library(): Style_Provider {
-		return $this->css_library;
+		return $this->style_provider;
 	}
 
 	protected static function get_field_prefix( Layout_Settings $layout_settings, Field_Settings $field_settings ): string {
@@ -96,9 +96,9 @@ class Lightbox_Library extends Layout_Library_Base {
 
 			$light_boxes = array_values( $this->light_boxes );
 
-			$this->js_library->enable();
-			$this->js_library->set_light_boxes( $light_boxes );
-			$this->css_library->enable();
+			$this->script_provider->enable();
+			$this->script_provider->set_light_boxes( $light_boxes );
+			$this->style_provider->enable();
 		}
 	}
 

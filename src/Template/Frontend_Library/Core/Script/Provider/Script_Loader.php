@@ -33,23 +33,23 @@ final class Script_Loader {
 		return $this;
 	}
 
-	public function enqueue_scripts( Script_Provider $pattern ): void {
-		$this->enqueue_local_scripts( $pattern );
-		$this->enqueue_external_scripts( $pattern );
+	public function enqueue_scripts( Script_Provider $provider ): void {
+		$this->enqueue_local_scripts( $provider );
+		$this->enqueue_external_scripts( $provider );
 
-		self::localize_scripts( $pattern );
+		self::localize_scripts( $provider );
 	}
 
-	protected function enqueue_local_scripts( Script_Provider $pattern ): void {
+	protected function enqueue_local_scripts( Script_Provider $provider ): void {
 		$version = $this->asset_resolver->get_version();
-		$origin  = $pattern->get_script_origin();
+		$origin  = $provider->get_script_origin();
 
-		$js_handles = $pattern->get_active_js_handles();
+		$handles = $provider->get_active_js_handles();
 
-		foreach ( $js_handles as $js_handle ) {
-			$script_file = sprintf( 'js/front/%s.min.js', $js_handle );
+		foreach ( $handles as $handle ) {
+			$script_file = sprintf( 'js/front/%s.min.js', $handle );
 			$script_url  = $this->asset_resolver->get_origin_url( $origin, $script_file );
-			$wp_handle   = self::get_wp_handle( $js_handle );
+			$wp_handle   = self::get_wp_handle( $handle );
 
 			wp_enqueue_script(
 				$wp_handle,
@@ -61,14 +61,14 @@ final class Script_Loader {
 		}
 	}
 
-	protected function enqueue_external_scripts( Script_Provider $pattern ): void {
+	protected function enqueue_external_scripts( Script_Provider $provider ): void {
 		$version = $this->asset_resolver->get_version();
 
-		$external_scripts = $pattern->get_external_scripts();
+		$external_scripts = $provider->get_external_scripts();
 
-		foreach ( $external_scripts as $js_handle => $script ) {
+		foreach ( $external_scripts as $handle => $script ) {
 			$deps      = array_map( array( self::class, 'get_wp_handle' ), $script['deps'] );
-			$wp_handle = self::get_wp_handle( $js_handle );
+			$wp_handle = self::get_wp_handle( $handle );
 
 			wp_enqueue_script(
 				$wp_handle,
@@ -80,11 +80,11 @@ final class Script_Loader {
 		}
 	}
 
-	protected static function localize_scripts( Script_Provider $pattern ): void {
-		$js_data = $pattern->get_script_variables();
+	protected static function localize_scripts( Script_Provider $provider ): void {
+		$data = $provider->get_script_variables();
 
-		foreach ( $js_data as $js_handle => $objects ) {
-			$wp_handle = self::get_wp_handle( $js_handle );
+		foreach ( $data as $handle => $objects ) {
+			$wp_handle = self::get_wp_handle( $handle );
 
 			foreach ( $objects as $object_name => $value ) {
 				wp_localize_script(

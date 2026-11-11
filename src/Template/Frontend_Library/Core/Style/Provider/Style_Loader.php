@@ -12,40 +12,40 @@ defined( 'ABSPATH' ) || exit;
 
 final class Style_Loader {
 	private Asset_Resolver $asset_resolver;
-	private Style_Builder $css_builder;
-	private string $css_code;
+	private Style_Builder $style_builder;
+	private string $code;
 
-	public function __construct( Asset_Resolver $asset_resolver, Style_Builder $css_builder ) {
+	public function __construct( Asset_Resolver $asset_resolver, Style_Builder $style_builder ) {
 		$this->asset_resolver = $asset_resolver;
-		$this->css_builder    = $css_builder;
-		$this->css_code       = '';
+		$this->style_builder  = $style_builder;
+		$this->code           = '';
 	}
 
-	public function enqueue_styles( string $name, Style_Provider $pattern ): void {
-		$files_css  = $this->resolve_pattern_css( $pattern );
-		$inline_css = $this->css_builder->build( $pattern->get_inline_styles() );
+	public function enqueue_styles( string $name, Style_Provider $provider ): void {
+		$files_code  = $this->resolve_styles( $provider );
+		$inline_code = $this->style_builder->build( $provider->get_inline_styles() );
 
-		$css_code  = $files_css . $inline_css;
-		$is_filled = strlen( $css_code ) > 0;
+		$code      = $files_code . $inline_code;
+		$is_filled = strlen( $code ) > 0;
 
 		if ( $is_filled ) {
 			// no escaping, it's a CSS code, so e.g '.a > .b' shouldn't be escaped.
-			$this->css_code .= sprintf(
+			$this->code .= sprintf(
 				"/*%s*/\n%s\n",
 				$name,
-				$css_code
+				$code
 			);
 		}
 	}
 
 	public function get_css_code(): string {
-		return $this->css_code;
+		return $this->code;
 	}
 
-	protected function resolve_pattern_css( Style_Provider $pattern ): string {
-		$files_css = $this->read_pattern_files( $pattern );
+	protected function resolve_styles( Style_Provider $provider ): string {
+		$files_code = $this->read_files( $provider );
 
-		$patches = $pattern->get_style_patches( $this->asset_resolver );
+		$patches = $provider->get_style_patches( $this->asset_resolver );
 
 		$subjects = array_keys( $patches );
 		$replaces = array_values( $patches );
@@ -53,23 +53,23 @@ final class Style_Loader {
 		return str_replace(
 			$subjects,
 			$replaces,
-			$files_css
+			$files_code
 		);
 	}
 
-	protected function read_pattern_files( Style_Provider $pattern ): string {
+	protected function read_files( Style_Provider $provider ): string {
 		$wp_filesystem = WP_Filesystem_Factory::get_wp_filesystem();
-		$origin        = $pattern->get_style_origin();
-		$css_handles   = $pattern->get_style_handles();
-		$css           = '';
+		$origin        = $provider->get_style_origin();
+		$handles   = $provider->get_style_handles();
+		$code           = '';
 
-		foreach ( $css_handles as $css_handle ) {
-			$style_file   = sprintf( 'css/front/%s.min.css', $css_handle );
+		foreach ( $handles as $handle ) {
+			$style_file   = sprintf( 'css/front/%s.min.css', $handle );
 			$path_to_file = $this->asset_resolver->get_origin_path( $origin, $style_file );
 
-			$css .= (string) $wp_filesystem->get_contents( $path_to_file );
+			$code .= (string) $wp_filesystem->get_contents( $path_to_file );
 		}
 
-		return $css;
+		return $code;
 	}
 }

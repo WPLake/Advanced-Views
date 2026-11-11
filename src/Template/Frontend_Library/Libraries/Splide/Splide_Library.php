@@ -23,8 +23,8 @@ abstract class Splide_Library extends Layout_Library_Base implements Selection_L
 
 	private string $card_field_id;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, Script_Pattern_Builder $script_pattern_builder, Style_Builder $css_builder ) {
-		parent::__construct( $provider_cluster, $script_pattern_builder, $css_builder );
+	public function __construct( Field_Provider_Cluster $provider_cluster, Script_Pattern_Builder $script_pattern_builder, Style_Builder $style_builder ) {
+		parent::__construct( $provider_cluster, $script_pattern_builder, $style_builder );
 
 		$this->card_field_id = '';
 	}

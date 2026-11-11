@@ -19,11 +19,11 @@ abstract class Style_Provider_Base implements Style_Provider {
 	}
 
 	public function has_active_styles(): bool {
-		$css_handles = $this->get_style_handles();
-		$inline_css  = $this->get_inline_styles();
+		$handles = $this->get_style_handles();
+		$inline_styles  = $this->get_inline_styles();
 
-		return array() !== $css_handles ||
-				array() !== $inline_css;
+		return array() !== $handles ||
+				array() !== $inline_styles;
 	}
 
 	public function get_style_handles(): array {
