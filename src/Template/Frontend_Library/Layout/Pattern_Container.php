@@ -78,8 +78,8 @@ final class Pattern_Container {
 		return Template_Builder::field_wrapper( $this->patterns, $token_factory->variable( $field_id ) );
 	}
 
-	public function is_label_out_of_row(): bool {
-		return Template_Builder::is_label_out_of_row( $this->patterns );
+	public function has_root_wrapper(): bool {
+		return Template_Builder::row_wrapper( $this->patterns ) instanceof Html_Tag;
 	}
 
 	/**

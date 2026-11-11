@@ -49,10 +49,13 @@ final class Inner_Row_Policy {
 		return strlen( $field_settings->label ) > 0;
 	}
 
+	/**
+	 * A label inside the pattern's root wrapper (e.g. '.splide') breaks the library's work.
+	 */
 	public static function is_label_out_of_row( Row_Context $context ): bool {
 		$patterns = $context->get_pattern_container();
 
-		return $patterns->is_label_out_of_row();
+		return $patterns->has_root_wrapper();
 	}
 
 	public static function resolve_row_wrapper_tag( Row_Context $context ): string {

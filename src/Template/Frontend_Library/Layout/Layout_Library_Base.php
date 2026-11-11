@@ -13,6 +13,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Builder\Scri
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style_Builder;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Provider;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Pattern;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -106,7 +107,7 @@ abstract class Layout_Library_Base implements Layout_Library {
 		$template_pattern = $this->get_template_pattern( $field_settings, $layout_settings );
 
 		if ( is_string( $template_pattern ) &&
-			$template_pattern::is_label_out_of_row() ) {
+			$template_pattern::get_row_wrapper() instanceof Html_Tag ) {
 			$target = '';
 		}
 

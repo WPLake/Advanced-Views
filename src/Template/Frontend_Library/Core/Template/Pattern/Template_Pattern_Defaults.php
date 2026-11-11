@@ -33,10 +33,6 @@ trait Template_Pattern_Defaults {
 		return array();
 	}
 
-	public static function is_label_out_of_row(): bool {
-		return false;
-	}
-
 	public static function get_items_wrapper_class(): string {
 		return '';
 	}
