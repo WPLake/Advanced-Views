@@ -6,8 +6,8 @@ use Architecture\Policy\Domain_Policy;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\field_provider_domain;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\dashboard_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Core\post_type_domain;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\layouts_cpt_domain;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\post_selections_cpt_domain;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\layout_cpt_domain;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\post_selection_cpt_domain;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\layout_library_adapter_domain;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection\selection_library_adapter_domain;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\frontend_library_domain;
@@ -22,9 +22,9 @@ class assets_domain extends Domain_Policy {
 		// todo break cycle-dependency (post_type <-> assets)
 		post_type_domain::class,
 		// todo break cycle-dependency (layouts <-> assets)
-		layouts_cpt_domain::class,
+		layout_cpt_domain::class,
 		// todo break cycle-dependency (selections <-> assets)
-		post_selections_cpt_domain::class,
+		post_selection_cpt_domain::class,
 		// todo break cycle-dependency (library_pattern <-> assets)
 		frontend_library_domain::class,
 		layout_library_adapter_domain::class,

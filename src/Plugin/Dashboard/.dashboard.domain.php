@@ -6,8 +6,8 @@ use Architecture\Policy\Domain_Policy;
 use Org\Wplake\Advanced_Views\Assets\assets_domain;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\migration_domain;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\wp_provider_domain;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\layouts_cpt_domain;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\post_selections_cpt_domain;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\layout_cpt_domain;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\post_selection_cpt_domain;
 
 class dashboard_domain extends Domain_Policy {
 	const WHITELIST_DOMAINS = [
@@ -16,9 +16,9 @@ class dashboard_domain extends Domain_Policy {
 		migration_domain::class,
 		wp_provider_domain::class,
 		// todo break cycle-dependency (layouts <-> dashboard)
-		layouts_cpt_domain::class,
+		layout_cpt_domain::class,
 		// todo break cycle-dependency (selections <-> dashboard)
-		post_selections_cpt_domain::class,
+		post_selection_cpt_domain::class,
 	];
 	const WHITELIST_GLOBALS = [
 		'WP_Admin_Bar',

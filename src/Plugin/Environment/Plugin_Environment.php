@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre_Built_Tab;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Tabs\Post_Selection_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
 
 final class Plugin_Environment implements Actor {
@@ -30,7 +30,7 @@ final class Plugin_Environment implements Actor {
 	private Usage_Report $usage_report;
 	private Settings_Storage $settings;
 	private Plugin_Meta $plugin_meta;
-	private Post_Selections_Pre_Built_Tab $selections_pre_built_tab;
+	private Post_Selection_Pre_Built_Tab $selections_pre_built_tab;
 	/**
 	 * @var File_System[]
 	 */
@@ -50,7 +50,7 @@ final class Plugin_Environment implements Actor {
 		Usage_Report $usage_report,
 		Settings_Storage $settings,
 		Plugin_Meta $plugin_meta,
-		Post_Selections_Pre_Built_Tab $selections_pre_built_tab,
+		Post_Selection_Pre_Built_Tab $selections_pre_built_tab,
 		array $file_systems,
 		array $storages
 	) {

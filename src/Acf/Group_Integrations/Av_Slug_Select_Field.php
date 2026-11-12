@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use acf_field_select;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 
 use function Org\Wplake\Advanced_Views\Utils\paginate_array;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;

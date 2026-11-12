@@ -7,8 +7,8 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp;
 defined( 'ABSPATH' ) || exit;
 
 use DateTime;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Base;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Integration;
@@ -56,7 +56,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\User\User_Field
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\User\User_First_Name_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\User\User_Last_Name_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\User\User_Website_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 
 class Wp_Data_Vendor extends Field_Provider_Base {

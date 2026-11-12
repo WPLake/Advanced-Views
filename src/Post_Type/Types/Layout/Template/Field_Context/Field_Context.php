@@ -1,0 +1,62 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Field_Context;
+
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+
+defined( 'ABSPATH' ) || exit;
+
+final class Field_Context {
+	private Layout_Settings $layout_settings;
+	// item can be null (in case of repeater sub-field).
+	private ?Item_Settings $item_settings;
+	private Field_Settings $field_settings;
+	private Field_Meta $field_meta;
+	private Markup_Field $markup_field;
+
+	public function __construct(
+		Layout_Settings $layout_settings,
+		?Item_Settings $item_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta,
+		Markup_Field $markup_field
+	) {
+		$this->layout_settings = $layout_settings;
+		$this->item_settings   = $item_settings;
+		$this->field_settings  = $field_settings;
+		$this->field_meta      = $field_meta;
+		$this->markup_field    = $markup_field;
+	}
+
+	public function get_layout_settings(): Layout_Settings {
+		return $this->layout_settings;
+	}
+
+	public function get_item_settings(): ?Item_Settings {
+		return $this->item_settings;
+	}
+
+	public function get_field_settings(): Field_Settings {
+		return $this->field_settings;
+	}
+
+	public function get_field_meta(): Field_Meta {
+		return $this->field_meta;
+	}
+
+	public function set_field_meta( Field_Meta $field_meta ): self {
+		$this->field_meta = $field_meta;
+
+		return $this;
+	}
+
+	public function get_markup_field(): Markup_Field {
+		return $this->markup_field;
+	}
+}

@@ -29,14 +29,14 @@ use Org\Wplake\Advanced_Views\Field_Provider\Providers\Pods\Fields\Pods_Upload_F
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Layout_Save_Actions;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Pods_Migrate_Packages;
 
@@ -102,7 +102,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			$this,
 			$container->resolve( Layout_Shortcode::class ),
 			$container->resolve( Settings_Storage::class ),
-			$container->resolve( Layouts_Cpt::class ),
+			$container->resolve( Layout_Cpt::class ),
 			$container->resolve( Html_Renderer::class )
 		);
 	}

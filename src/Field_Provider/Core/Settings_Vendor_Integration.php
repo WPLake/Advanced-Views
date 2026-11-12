@@ -10,14 +10,14 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Settings_Creator;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Save_Actions;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Layout_Shortcode;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layout_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Layout_Save_Actions;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
@@ -41,7 +41,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	private Layout_Factory $layout_factory;
 	private Field_Provider $data_vendor;
 	private Layout_Shortcode $layout_shortcode;
-	private Layouts_Cpt $layouts_cpt;
+	private Layout_Cpt $layouts_cpt;
 	protected Html_Renderer $html_renderer;
 
 	public function __construct(
@@ -53,7 +53,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		Field_Provider $data_vendor,
 		Layout_Shortcode $layout_shortcode,
 		Cpt_Theme_Settings $settings,
-		Layouts_Cpt $layouts_cpt,
+		Layout_Cpt $layouts_cpt,
 		Html_Renderer $html_renderer
 	) {
 		parent::__construct( $settings );

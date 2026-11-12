@@ -12,10 +12,10 @@ use Org\Wplake\Advanced_Views\Compatibility\Migration\Use_Case\Migration_Post_Ty
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt_Base;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 
 final class Migration_3_8_0 extends Version_Migration_Base {
 	const INTRODUCED_VERSION = '3.8.0';
@@ -25,8 +25,8 @@ final class Migration_3_8_0 extends Version_Migration_Base {
 		Logger $logger,
 		Layout_Settings_Storage $view_cpt_settings_storage,
 		Selection_Settings_Storage $card_cpt_settings_storage,
-		Layouts_Cpt $layouts_cpt,
-		Selections_Cpt $selections_cpt
+		Layout_Cpt $layouts_cpt,
+		Selection_Cpt $selections_cpt
 	) {
 		parent::__construct( $logger );
 

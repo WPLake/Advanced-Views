@@ -1,0 +1,89 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Tabs\Bootstrap;
+
+defined( 'ABSPATH' ) || exit;
+
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
+use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
+use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Fs_Only_Tab;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Row_Title_Printer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Db_Management;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Table\Layout_Cpt_Table;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Fs_Fields;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Tabs\Layout_Bulk_Validation_Tab;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Tabs\Layout_Pre_Built_Tab;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
+
+class Layout_Tabs_Factory extends Factory_Base {
+	public function fs_only_tab(): Fs_Only_Tab {
+		$cpt_table        = $this->resolve( Layout_Cpt_Table::class );
+		$settings_storage = $this->resolve( Layout_Settings_Storage::class );
+
+		return new Fs_Only_Tab(
+			$cpt_table,
+			$settings_storage,
+			$this->resolve( Html_Renderer::class ),
+			$this->resolve( Row_Title_Printer::class )
+		);
+	}
+
+	public function bulk_validation_tab(): Layout_Bulk_Validation_Tab {
+		$cpt_table        = $this->resolve( Layout_Cpt_Table::class );
+		$settings_storage = $this->resolve( Layout_Settings_Storage::class );
+		$fs_only_tab      = $this->fs_only_tab();
+		$layout_factory   = $this->resolve( Layout_Factory::class );
+
+		return new Layout_Bulk_Validation_Tab( $cpt_table, $settings_storage, $fs_only_tab, $layout_factory, $this->resolve( Row_Title_Printer::class ) );
+	}
+
+	public function pre_built_tab(): Layout_Pre_Built_Tab {
+		$logger           = $this->resolve( Logger::class );
+		$html_renderer    = $this->resolve( Html_Renderer::class );
+		$layout_cpt       = $this->resolve( Layout_Cpt::class );
+		$plugin_meta      = $this->resolve( Plugin_Meta::class );
+		$engines_storage  = $this->resolve( Engines_Storage::class );
+		$layout_settings  = $this->resolve( Layout_Settings::class );
+		$provider_cluster = $this->resolve( Field_Provider_Cluster::class );
+
+		$folder_name    = $layout_cpt->folder_name();
+		$pre_built_path = $plugin_meta->get_root_path( 'pre_built' );
+		$file_system    = new File_System( $logger, $folder_name, $html_renderer, $pre_built_path );
+		$fs_fields      = new Layout_Fs_Fields( $engines_storage );
+		$db_management  = new Db_Management( $logger, $file_system, $layout_cpt, true );
+
+		$pre_built_settings_storage = new Layout_Settings_Storage(
+			$logger,
+			$file_system,
+			$fs_fields,
+			$db_management,
+			$layout_settings
+		);
+
+		$cpt_table        = $this->resolve( Layout_Cpt_Table::class );
+		$settings_storage = $this->resolve( Layout_Settings_Storage::class );
+		$migrator         = $this->resolve( Cpt_Settings_Migrator::class );
+
+		return new Layout_Pre_Built_Tab(
+			$cpt_table,
+			$settings_storage,
+			$pre_built_settings_storage,
+			$provider_cluster,
+			$migrator,
+			$logger,
+			$html_renderer,
+			$this->resolve( Row_Title_Printer::class )
+		);
+	}
+}

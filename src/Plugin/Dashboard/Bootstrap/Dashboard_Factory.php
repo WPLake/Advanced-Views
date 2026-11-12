@@ -14,8 +14,8 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Toolbar_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 
 class Dashboard_Factory extends Factory_Base {
@@ -36,8 +36,8 @@ class Dashboard_Factory extends Factory_Base {
 	 */
 	protected function plugin_cpts(): array {
 		return array(
-			$this->resolve( Layouts_Cpt::class ),
-			$this->resolve( Selections_Cpt::class ),
+			$this->resolve( Layout_Cpt::class ),
+			$this->resolve( Selection_Cpt::class ),
 		);
 	}
 }

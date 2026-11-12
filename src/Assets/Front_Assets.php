@@ -4,7 +4,6 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Assets;
 
-use Closure;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
@@ -12,9 +11,8 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Loader;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Provider;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style_Builder;
@@ -51,10 +49,9 @@ class Front_Assets extends Actor_Base implements Actor {
 	private array $tailwind_css_rules;
 	private File_System $file_system;
 	protected Html_Renderer $html_renderer;
-	private Code_Marker $code_marker;
 	private Library_Container $library_container;
 
-	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Code_Marker $code_marker, Style_Builder $style_builder, Library_Container $library_container ) {
+	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Style_Builder $style_builder, Library_Container $library_container ) {
 		$this->script_loader                               = new Script_Loader( $asset_resolver );
 		$this->file_system                                     = $file_system;
 		$this->buffer_level                                    = null;
@@ -66,7 +63,6 @@ class Front_Assets extends Actor_Base implements Actor {
 		$this->style_loader      = new Style_Loader( $asset_resolver, $style_builder );
 		$this->tailwind_css_rules      = array();
 		$this->html_renderer           = $html_renderer;
-		$this->code_marker             = $code_marker;
 		$this->library_container       = $library_container;
 	}
 
@@ -475,81 +471,6 @@ class Front_Assets extends Actor_Base implements Actor {
 			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $all_js_code;
 		}
-	}
-
-	/**
-	 * The Cpt's CSS code, with the patterns' pieces wrapped by markers and synced with the current code.
-	 */
-	public function generate_css_code( Cpt_Settings $cpt_settings ): string {
-		$generate_pieces = fn( Frontend_Library $pattern ) => $this->generate_pattern_css( $pattern, $cpt_settings );
-		$pieces          = $this->collect_marked_pieces( $generate_pieces );
-
-		return $this->code_marker->sync_code( $cpt_settings->css_code, $pieces );
-	}
-
-	/**
-	 * The Cpt's JS code, with the patterns' pieces wrapped by markers and synced with the current code.
-	 */
-	public function generate_js_code( Cpt_Settings $cpt_settings ): string {
-		$generate_pieces = fn( Frontend_Library $pattern ) => $this->generate_pattern_js( $pattern, $cpt_settings );
-		$pieces          = $this->collect_marked_pieces( $generate_pieces );
-
-		return $this->code_marker->sync_code( $cpt_settings->js_code, $pieces );
-	}
-
-	/**
-	 * @param Closure(Frontend_Library):array<string,string> $generate_pieces
-	 *
-	 * @return array<string,string>
-	 */
-	protected function collect_marked_pieces( Closure $generate_pieces ): array {
-		$marked_pieces = array();
-
-		foreach ( $this->library_container->get_all() as $pattern ) {
-			$auto_discover_name = $pattern->get_auto_discover_name();
-			$pieces             = $generate_pieces( $pattern );
-
-			$pattern_pieces = $this->code_marker->mark_pieces( $auto_discover_name, $pieces );
-			$marked_pieces  = array_merge( $marked_pieces, $pattern_pieces );
-		}
-
-		return $marked_pieces;
-	}
-
-	/**
-	 * @return array<string,string>
-	 */
-	protected function generate_pattern_css( Frontend_Library $pattern, Cpt_Settings $cpt_settings ): array {
-		if ( $pattern instanceof Layout_Library &&
-			$cpt_settings instanceof Layout_Settings ) {
-			return $pattern->generate_layout_css( $cpt_settings );
-		}
-
-		if ( $pattern instanceof Selection_Library &&
-			$cpt_settings instanceof Post_Selection_Settings &&
-			$pattern->is_target_selection( $cpt_settings ) ) {
-			return $pattern->generate_selection_css( $cpt_settings );
-		}
-
-		return array();
-	}
-
-	/**
-	 * @return array<string,string>
-	 */
-	protected function generate_pattern_js( Frontend_Library $pattern, Cpt_Settings $cpt_settings ): array {
-		if ( $pattern instanceof Layout_Library &&
-			$cpt_settings instanceof Layout_Settings ) {
-			return $pattern->generate_layout_js( $cpt_settings );
-		}
-
-		if ( $pattern instanceof Selection_Library &&
-			$cpt_settings instanceof Post_Selection_Settings &&
-			$pattern->is_target_selection( $cpt_settings ) ) {
-			return $pattern->generate_selection_js( $cpt_settings );
-		}
-
-		return array();
 	}
 
 	public function enqueue_assets(): void {

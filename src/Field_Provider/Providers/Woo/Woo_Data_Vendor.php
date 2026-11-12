@@ -24,9 +24,9 @@ use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Fields\Woo_Stock_Stat
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Fields\Woo_Weight_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Fields\Woo_Width_Field;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 
 defined( 'ABSPATH' ) || exit;
 

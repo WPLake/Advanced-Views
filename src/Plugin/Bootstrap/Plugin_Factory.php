@@ -17,9 +17,9 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Post_Selections_Pre_Built_Tab;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Tabs\Post_Selection_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
 
@@ -72,7 +72,7 @@ class Plugin_Factory extends Factory_Base {
 			$this->resolve( Usage_Report::class ),
 			$this->resolve( Settings_Storage::class ),
 			$this->resolve( Plugin_Meta::class ),
-			$this->resolve( Post_Selections_Pre_Built_Tab::class ),
+			$this->resolve( Post_Selection_Pre_Built_Tab::class ),
 			$file_systems,
 			$storages
 		);

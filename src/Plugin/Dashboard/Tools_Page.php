@@ -20,12 +20,12 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Filesystem_Base;
@@ -60,8 +60,8 @@ final class Tools_Page extends Actor_Base implements Actor {
 	private bool $is_import_successful;
 	private string $import_result_message;
 	private ?WP_Filesystem_Base $wp_filesystem_base;
-	private Layouts_Cpt $layouts_cpt;
-	private Selections_Cpt $post_selections_cpt;
+	private Layout_Cpt $layouts_cpt;
+	private Selection_Cpt $post_selections_cpt;
 	private Settings_Storage $settings;
 	private Cache_Flusher $cache_flusher;
 	protected Html_Renderer $html_renderer;
@@ -73,8 +73,8 @@ final class Tools_Page extends Actor_Base implements Actor {
 		Plugin_Meta $plugin_meta,
 		Logger $logger,
 		Debug_Dump_Creator $debug_dump_creator,
-		Layouts_Cpt $layouts_cpt,
-		Selections_Cpt $post_selections_cpt,
+		Layout_Cpt $layouts_cpt,
+		Selection_Cpt $post_selections_cpt,
 		Settings_Storage $settings,
 		Cache_Flusher $cache_flusher,
 		Html_Renderer $html_renderer

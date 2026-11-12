@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Post_Type\Frontend_Library\Library_Cpt_Integrator;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
@@ -41,7 +41,7 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 	 * @var array<string,string>
 	 */
 	private array $validated_input_names;
-	private Front_Assets $front_assets;
+	private Library_Cpt_Integrator $cpt_integrator;
 	protected Template_Integration_Storage $template_integration_storage;
 	protected Instance_Factory $instance_factory;
 
@@ -50,7 +50,7 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Plugin $plugin,
 		Cpt_Settings $cpt_settings,
-		Front_Assets $front_assets,
+		Library_Cpt_Integrator $cpt_integrator,
 		Template_Integration_Storage $template_integration_storage,
 		Instance_Factory $instance_factory
 	) {
@@ -61,7 +61,7 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 		// don't make a clone, as otherwise $viewValidationData in inheritors won't be actual anymore
 		// (there is a clone at the child class level).
 		$this->cpt_settings                 = $cpt_settings;
-		$this->front_assets                 = $front_assets;
+		$this->cpt_integrator               = $cpt_integrator;
 		$this->available_acf_fields         = array_keys( $this->cpt_settings->getFieldValues() );
 		$this->field_values                 = array();
 		$this->validated_input_names        = array();
@@ -148,7 +148,7 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 
 		$cpt_data = $this->cpt_settings_storage->get( $unique_id );
 
-		// it must be before the frontAssets generation, otherwise CSS may already be not empty even for the first save.
+		// it must be before the libraries' code integration, otherwise CSS may already be not empty even for the first save.
 		if ( '' === $cpt_data->css_code &&
 			Cpt_Settings::WEB_COMPONENT_NONE !== $cpt_data->web_component ) {
 			// by default, Web component is inline, which is wrong, we expect it to be block.
@@ -158,8 +158,8 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 			$cpt_data->css_code = sprintf( "#%s {\n\tdisplay: block;\n}\n", $id );
 		}
 
-		$cpt_data->js_code  = $this->front_assets->generate_js_code( $cpt_data );
-		$cpt_data->css_code = $this->front_assets->generate_css_code( $cpt_data );
+		$this->cpt_integrator->integrate_js_code( $cpt_data );
+		$this->cpt_integrator->integrate_css_code( $cpt_data );
 
 		// new title is already in the place, we compare with "post_title" just to detect the change.
 		if ( $post_title !== $cpt_data->title ) {
