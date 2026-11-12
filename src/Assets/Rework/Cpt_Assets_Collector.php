@@ -5,6 +5,8 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Assets\Rework;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Script\Interactivity_Loader;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind_Integrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Cpt_Component_Composer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
@@ -40,18 +42,15 @@ class Cpt_Assets_Collector {
 	}
 
 	public function add_asset( Cpt_Settings $cpt_settings ): void {
-		$unique_id  = $cpt_settings->get_unique_id();
-		$css_source = $cpt_settings->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
-		$js_source  = $cpt_settings->get_js_code();
-
-		$css_code = Code_Minifier::minify_css( $css_source );
-		$js_code  = Code_Minifier::minify_js( $js_source );
+		$unique_id = $cpt_settings->get_unique_id();
+		$css_code  = Cpt_Component_Composer::compose_css( $cpt_settings );
+		$js_code   = Cpt_Component_Composer::compose_js( $cpt_settings );
 
 		if ( strlen( $css_code ) > 0 &&
 			false === $cpt_settings->is_css_internal() ) {
 			$this->css_code[ $unique_id ] = $css_code;
 
-			$this->tailwind_integrator->register_asset( $unique_id, $css_source );
+			$this->tailwind_integrator->register_asset( $unique_id, $cpt_settings->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY ) );
 		}
 
 		if ( strlen( $js_code ) > 0 ) {
@@ -59,7 +58,7 @@ class Cpt_Assets_Collector {
 				$this->interactivity_loader->require_interactivity();
 			}
 
-			$this->js_code[ $unique_id ] = Cpt_Component_Composer::compose_js( $cpt_settings, $js_code );
+			$this->js_code[ $unique_id ] = $js_code;
 		}
 
 		$this->activate_libraries( $cpt_settings );

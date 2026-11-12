@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Assets\Runtime;
 
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Inline_Style_Injector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -12,17 +13,17 @@ use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
-class Inline_Assets_Injector extends Actor_Base implements Actor {
-	private Inline_Assets_Builder $assets_builder;
+class Inline_Asset_Injector extends Actor_Base implements Actor {
+	private Inline_Asset_Composer $asset_composer;
 	private Inline_Style_Injector $style_injector;
 	private Html_Renderer $html_renderer;
 
 	public function __construct(
-		Inline_Assets_Builder $assets_builder,
+		Inline_Asset_Composer $assets_builder,
 		Inline_Style_Injector $style_injector,
 		Html_Renderer $html_renderer
 	) {
-		$this->assets_builder = $assets_builder;
+		$this->asset_composer = $assets_builder;
 		$this->style_injector = $style_injector;
 		$this->html_renderer  = $html_renderer;
 	}
@@ -37,10 +38,10 @@ class Inline_Assets_Injector extends Actor_Base implements Actor {
 	}
 
 	public function print_assets(): void {
-		$all_css_code = $this->render_tags( $this->assets_builder->compose_css() );
-		$all_js_code  = $this->render_tags( $this->assets_builder->compose_js() );
+		$all_css_code = $this->render_tags( $this->asset_composer->compose_css() );
+		$all_js_code  = $this->render_tags( $this->asset_composer->compose_js() );
 
-		$this->assets_builder->reset();
+		$this->asset_composer->reset();
 
 		if ( 0 === strlen( $all_css_code ) &&
 			0 === strlen( $all_js_code ) ) {

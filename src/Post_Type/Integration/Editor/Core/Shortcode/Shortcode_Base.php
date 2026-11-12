@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Shortcode;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Assets\Rework\Code_Minifier;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Code_Minifier;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;

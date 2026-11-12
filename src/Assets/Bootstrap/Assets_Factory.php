@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Assets\Rework\Tailwind_Integrator;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind_Integrator;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;

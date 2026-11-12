@@ -5,12 +5,25 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Code_Minifier;
 use Org\Wplake\Advanced_Views\Template\Web_Component\JS_Component_Composer;
 
 defined( 'ABSPATH' ) || exit;
 
 final class Cpt_Component_Composer {
-	public static function compose_js( Cpt_Settings $cpt_settings, string $js_code ): string {
+	public static function compose_css( Cpt_Settings $cpt_settings ): string {
+		$css_source = $cpt_settings->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
+
+		return Code_Minifier::minify_css( $css_source );
+	}
+
+	public static function compose_js( Cpt_Settings $cpt_settings ): string {
+		$js_code = Code_Minifier::minify_js( $cpt_settings->get_js_code() );
+
+		if ( '' === $js_code ) {
+			return '';
+		}
+
 		$tag_name = $cpt_settings->get_tag_name();
 
 		$builders = array(

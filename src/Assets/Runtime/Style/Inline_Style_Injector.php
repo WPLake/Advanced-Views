@@ -2,9 +2,8 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Assets\Runtime;
+namespace Org\Wplake\Advanced_Views\Assets\Runtime\Style;
 
-use Org\Wplake\Advanced_Views\Assets\Rework\Page_Buffer;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -16,10 +15,10 @@ class Inline_Style_Injector extends Actor_Base implements Actor {
 	const STUB            = '<!--advanced-views:styles-->';
 	const CUSTOM_LOCATION = '<!--advanced-views:styles/custom-location-->';
 
-	private Page_Buffer $page_buffer;
+	private Front_Page_Buffer $page_buffer;
 	private Reloader_Root_Marker $reloader_root_marker;
 
-	public function __construct( Page_Buffer $page_buffer, Reloader_Root_Marker $reloader_root_marker ) {
+	public function __construct( Front_Page_Buffer $page_buffer, Reloader_Root_Marker $reloader_root_marker ) {
 		$this->page_buffer          = $page_buffer;
 		$this->reloader_root_marker = $reloader_root_marker;
 	}
