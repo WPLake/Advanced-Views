@@ -25,7 +25,6 @@ class Interactivity_Loader extends Actor_Base implements Actor {
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {
 		self::add_filter( 'script_module_loader_src', array( $this, 'catch_script_url' ), 10, 2 );
-		self::add_action( 'wp_footer', array( $this, 'enqueue_module' ) );
 	}
 
 	public function require_interactivity(): void {

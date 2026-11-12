@@ -6,13 +6,12 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Assets\Rework\Cpt_Assets_Collector;
 use WP_REST_Request;
 
 abstract class Instance_Factory {
-	private Cpt_Assets_Collector $assets_collector;
+	protected Cpt_Assets_Collector $assets_collector;
 
 	public function __construct( Cpt_Assets_Collector $assets_collector ) {
 		$this->assets_collector = $assets_collector;
@@ -37,10 +36,6 @@ abstract class Instance_Factory {
 	 * @return array<string,mixed>
 	 */
 	abstract protected function get_template_variables_for_validation( string $unique_id ): array;
-
-	protected function add_used_cpt_data( Cpt_Settings $cpt_settings ): void {
-		$this->assets_collector->add_asset( $cpt_settings );
-	}
 
 	/**
 	 * @param mixed[]|null $variables

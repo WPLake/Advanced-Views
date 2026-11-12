@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Assets\Runtime;
+namespace Org\Wplake\Advanced_Views\Assets\Runtime\Inline_Asset;
 
 use Org\Wplake\Advanced_Views\Assets\Rework\Cpt_Assets_Collector;
 use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind_Integrator;

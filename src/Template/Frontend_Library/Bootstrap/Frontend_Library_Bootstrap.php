@@ -8,7 +8,6 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Asset_Loader;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Container;
 
 class Frontend_Library_Bootstrap extends Bootstrap_Base {
@@ -16,12 +15,6 @@ class Frontend_Library_Bootstrap extends Bootstrap_Base {
 		return array(
 			Library_Container::class => fn() => $container->resolve( Frontend_Library_Factory::class )
 				->library_container(),
-		);
-	}
-
-	public static function get_actor_classes(): array {
-		return array(
-			Library_Asset_Loader::class,
 		);
 	}
 }

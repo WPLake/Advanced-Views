@@ -63,7 +63,7 @@ class Post_Selection_Factory extends Instance_Factory {
 
 		$post_selection_settings = $card->getCardData();
 
-		$this->add_used_cpt_data( $post_selection_settings );
+		$this->assets_collector->add_asset( $post_selection_settings );
 	}
 
 	/**

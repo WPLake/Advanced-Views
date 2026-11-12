@@ -94,7 +94,7 @@ class Layout_Factory extends Instance_Factory {
 		// mark as rendered, only if is not empty
 		// 'makeAndGetHtml' used as the primary. 'make' used for the specific cases, like validationInstance.
 		if ( $is_not_empty ) {
-			$this->add_used_cpt_data( $view->get_view_data() );
+			$this->assets_collector->add_asset( $view->get_view_data() );
 		}
 	}
 
