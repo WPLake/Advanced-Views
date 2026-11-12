@@ -8,6 +8,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\post_type_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\cpt_editor_integration_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\layout_cpt_domain;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\layout_library_adapter_domain;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection\selection_library_adapter_domain;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\frontend_library_domain;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\template_token_domain;
 
@@ -20,6 +21,8 @@ class post_selection_cpt_domain extends post_type_domain {
 		selection_query_domain::class,
 		frontend_library_domain::class,
 		layout_library_adapter_domain::class,
+		// todo break cycle-dependency (selection_library_adapter <-> selections)
+		selection_library_adapter_domain::class,
 		template_token_domain::class,
 		cpt_editor_integration_domain::class,
 	];

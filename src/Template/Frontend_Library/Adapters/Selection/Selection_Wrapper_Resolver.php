@@ -2,10 +2,9 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Assets\Rework;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection;
 
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection\Selection_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Container;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Builder\Template_Builder;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern;
@@ -15,14 +14,14 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Var
 
 defined( 'ABSPATH' ) || exit;
 
-class Selection_Card_Composer {
+class Selection_Wrapper_Resolver {
 	private Library_Container $library_container;
 
 	public function __construct( Library_Container $library_container ) {
 		$this->library_container = $library_container;
 	}
 
-	public function get_card_items_wrapper( Post_Selection_Settings $post_selection_settings ): ?Html_Tag {
+	public function resolve_items_wrapper( Post_Selection_Settings $post_selection_settings ): ?Html_Tag {
 		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
 
 		return Template_Builder::row_wrapper( $patterns );
@@ -31,7 +30,7 @@ class Selection_Card_Composer {
 	/**
 	 * @return Html_Tag[]
 	 */
-	public function get_card_item_outers( Post_Selection_Settings $post_selection_settings, Token_Factory $token_factory ): array {
+	public function resolve_item_outers( Post_Selection_Settings $post_selection_settings, Token_Factory $token_factory ): array {
 		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
 		$items    = $token_factory->variable( 'items' );
 		$outers   = Template_Builder::field_wrappers( $patterns, $items );
@@ -52,7 +51,7 @@ class Selection_Card_Composer {
 	/**
 	 * @return array<string,string|Variable_Token>
 	 */
-	public function get_card_item_attributes( Post_Selection_Settings $post_selection_settings, Variable_Token $item ): array {
+	public function resolve_item_attributes( Post_Selection_Settings $post_selection_settings, Variable_Token $item ): array {
 		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
 
 		return Template_Builder::item_attributes( $patterns, $item );

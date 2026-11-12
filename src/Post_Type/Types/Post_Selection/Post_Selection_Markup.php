@@ -6,16 +6,16 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
-use Org\Wplake\Advanced_Views\Assets\Rework\Selection_Card_Composer;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
-use Org\Wplake\Advanced_Views\Template\Html\Composite_Attribute;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\Outers_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection\Selection_Wrapper_Resolver;
+use Org\Wplake\Advanced_Views\Template\Html\Composite_Attribute;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
@@ -29,17 +29,17 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
  * @phpstan-import-type Html_Node from Html_Tag
  */
 class Post_Selection_Markup {
-	private Selection_Card_Composer $card_composer;
+	private Selection_Wrapper_Resolver $card_composer;
 	protected Token_Factory_Storage $token_factory_storage;
 	private Layout_Cpt $layout_cpt;
 	protected Web_Component_Renderer $renderer;
 	protected Web_Component_Factory $web_component_factory;
 
-	public function __construct( Selection_Card_Composer $card_composer, Token_Factory_Storage $token_factory_storage, Layout_Cpt $layout_cpt, Web_Component_Renderer $renderer, Web_Component_Factory $web_component_factory ) {
+	public function __construct( Selection_Wrapper_Resolver $card_composer, Token_Factory_Storage $token_factory_storage, Layout_Cpt $layout_cpt, Web_Component_Renderer $renderer, Web_Component_Factory $web_component_factory ) {
 		$this->card_composer         = $card_composer;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->layout_cpt            = $layout_cpt;
-		$this->renderer               = $renderer;
+		$this->renderer              = $renderer;
 		$this->web_component_factory = $web_component_factory;
 	}
 
@@ -86,7 +86,7 @@ class Post_Selection_Markup {
 
 	protected function items_wrapper_tag( Post_Selection_Settings $post_selection_settings, string $class_name = '' ): Html_Tag {
 		$classes  = '';
-		$wrapper  = $this->card_composer->get_card_items_wrapper( $post_selection_settings );
+		$wrapper  = $this->card_composer->resolve_items_wrapper( $post_selection_settings );
 		$external = $wrapper instanceof Html_Tag ?
 			string( $wrapper->get_attributes(), 'class' ) :
 			'';
@@ -116,7 +116,7 @@ class Post_Selection_Markup {
 											->add_item_path( 'layout_id' );
 		$post_id_var = $token_factory->variable( 'post_id' );
 
-		$asset_attrs = $this->card_composer->get_card_item_attributes( $post_selection_settings, $post_id_var );
+		$asset_attrs = $this->card_composer->resolve_item_attributes( $post_selection_settings, $post_id_var );
 
 		return $token_factory->shortcode( $this->layout_cpt->shortcode() )
 			->set_attributes(
@@ -275,7 +275,7 @@ class Post_Selection_Markup {
 	}
 
 	protected function items_tag( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): Html_Tag {
-		$item_outers = $this->card_composer->get_card_item_outers( $post_selection_settings, $token_factory );
+		$item_outers = $this->card_composer->resolve_item_outers( $post_selection_settings, $token_factory );
 		$loop        = array( $this->loop_token( $token_factory, $post_selection_settings ) );
 		$content     = Outers_Builder::compose_outers( $item_outers, $loop );
 
