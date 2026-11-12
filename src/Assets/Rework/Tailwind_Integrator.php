@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 
 defined( 'ABSPATH' ) || exit;
 
-class Tailwind_Merger {
+class Tailwind_Integrator {
 	const MARKER = 'advanced-views:tailwind';
 
 	private File_System $file_system;

@@ -6,21 +6,22 @@ namespace Org\Wplake\Advanced_Views\Assets;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Assets\Rework\Code_Minifier;
-use Org\Wplake\Advanced_Views\Assets\Rework\Tailwind_Merger;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Container;
+use Org\Wplake\Advanced_Views\Assets\Rework\Tailwind_Integrator;
+use Org\Wplake\Advanced_Views\Assets\Rework\Web_Component_Builder;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\Layout_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection\Selection_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Container;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Loader;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Provider;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Provider;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Loader;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\Layout_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection\Selection_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Provider;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
@@ -45,19 +46,19 @@ class Front_Assets extends Actor_Base implements Actor {
 	 * @var array<string,true>
 	 */
 	private array $tailwind_asset_ids;
-	private Tailwind_Merger $tailwind_merger;
+	private Tailwind_Integrator $tailwind_merger;
 	protected Html_Renderer $html_renderer;
 	private Library_Container $library_container;
 
-	public function __construct( Asset_Resolver $asset_resolver, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Style_Builder $style_builder, Library_Container $library_container, Tailwind_Merger $tailwind_merger ) {
-		$this->script_loader                               = new Script_Loader( $asset_resolver );
+	public function __construct( Asset_Resolver $asset_resolver, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Style_Builder $style_builder, Library_Container $library_container, Tailwind_Integrator $tailwind_merger ) {
+		$this->script_loader                                   = new Script_Loader( $asset_resolver );
 		$this->buffer_level                                    = null;
 		$this->is_custom_interactivity_api_import_map_required = false;
 
 		$this->inline_js_code          = array();
 		$this->include_css_code        = array();
 		$this->live_reloader_component = $live_reloader_component;
-		$this->style_loader      = new Style_Loader( $asset_resolver, $style_builder );
+		$this->style_loader            = new Style_Loader( $asset_resolver, $style_builder );
 		$this->tailwind_asset_ids      = array();
 		$this->tailwind_merger         = $tailwind_merger;
 		$this->html_renderer           = $html_renderer;
@@ -81,62 +82,6 @@ class Front_Assets extends Actor_Base implements Actor {
 		self::add_action( 'wp_head', array( $this, 'print_styles_stub' ) );
 		// don't use 'get_header', as it doesn't work in blocks theme.
 		self::add_action( 'template_redirect', array( $this, 'start_buffering' ) );
-	}
-
-	protected static function extract_imports_from_js_code( string &$js_code ): string {
-		$imports = '';
-
-		preg_match_all( '/import [^;]+;/', $js_code, $matches, PREG_SET_ORDER );
-
-		foreach ( $matches as $match ) {
-			$imports .= $match[0];
-			$js_code  = str_replace( $match[0], '', $js_code );
-		}
-
-		return $imports;
-	}
-
-	protected function print_component_js( Cpt_Settings $cpt_settings, string $js_code ): void {
-		$tag_name                   = $cpt_settings->get_tag_name();
-		$is_wp_interactivity_in_use = $cpt_settings->is_wp_interactivity_in_use();
-
-		if ( $is_wp_interactivity_in_use ) {
-			$this->is_custom_interactivity_api_import_map_required = true;
-		}
-
-		// dashes to camelCase.
-		$component_name = $cpt_settings->is_web_component() ?
-			preg_replace_callback(
-				'/-([a-z0-9])/',
-				fn( $matches ) => strtoupper( $matches[1] ),
-				$tag_name
-			) :
-			null;
-
-		if ( is_string( $component_name ) ) {
-			$is_with_shadow_dom = Cpt_Settings::WEB_COMPONENT_SHADOW_DOM === $cpt_settings->web_component;
-			$box_shadow_js      = $is_with_shadow_dom ?
-				'var html=this.innerHTML;this.attachShadow({mode:"open"});this.shadowRoot.innerHTML=html;' :
-				'';
-
-			$imports = self::extract_imports_from_js_code( $js_code );
-
-			printf(
-				'%sclass %s extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){%s}}customElements.define("%s", %s);',
-				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				$imports,
-				esc_html( $component_name ),
-				// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				$box_shadow_js . $js_code,
-				esc_html( $tag_name ),
-				esc_html( $component_name ),
-			);
-
-			return;
-		}
-
-		// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $js_code;
 	}
 
 	protected static function print_interactivity_api_import_map( string $interactivity_api_script_url ): void {
@@ -184,11 +129,11 @@ class Front_Assets extends Actor_Base implements Actor {
 		}
 
 		if ( strlen( $js_code ) > 0 ) {
-			ob_start();
-			$this->print_component_js( $cpt_settings, $js_code );
-			$inline_js_code = (string) ob_get_clean();
+			if ( $cpt_settings->is_wp_interactivity_in_use() ) {
+				$this->is_custom_interactivity_api_import_map_required = true;
+			}
 
-			$this->inline_js_code[ $unique_id ] = $inline_js_code;
+			$this->inline_js_code[ $unique_id ] = Web_Component_Builder::build_component_js( $cpt_settings, $js_code );
 		}
 
 		foreach ( $this->library_container->get_all() as $pattern ) {
@@ -340,8 +285,8 @@ class Front_Assets extends Actor_Base implements Actor {
 		}
 
 		foreach ( $this->library_container->get_all() as $pattern ) {
-			$script_provider  = $pattern->get_js_library();
-			$style_provider = $pattern->get_css_library();
+			$script_provider = $pattern->get_js_library();
+			$style_provider  = $pattern->get_css_library();
 
 			if ( $script_provider instanceof Script_Provider &&
 				$script_provider->has_active_scripts() ) {
