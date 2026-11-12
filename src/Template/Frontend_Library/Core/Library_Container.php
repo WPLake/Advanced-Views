@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 
 defined( 'ABSPATH' ) || exit;
 
-class Library_Container extends Factory_Base {
+final class Library_Container extends Factory_Base {
 	/**
 	 * @var array<string,Frontend_Library>|null
 	 */
@@ -42,7 +42,10 @@ class Library_Container extends Factory_Base {
 	 * @return array<string,Frontend_Library>
 	 */
 	public function get_by_names( array $names ): array {
-		return array_intersect_key( $this->get_libraries(), array_flip( $names ) );
+		$libraries  = $this->get_libraries();
+		$names_keys = array_flip( $names );
+
+		return array_intersect_key( $libraries, $names_keys );
 	}
 
 	/**

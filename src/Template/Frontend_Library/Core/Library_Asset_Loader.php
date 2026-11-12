@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Styl
 
 defined( 'ABSPATH' ) || exit;
 
-class Library_Asset_Loader {
+final class Library_Asset_Loader {
 	private Library_Container $library_container;
 	private Library_Script_Loader $script_loader;
 	private Library_Style_Collector $style_collector;
@@ -27,17 +27,22 @@ class Library_Asset_Loader {
 	}
 
 	public function enqueue_assets(): void {
-		foreach ( $this->library_container->get_all() as $library ) {
+		$libraries = $this->library_container->get_all();
+
+		foreach ( $libraries as $library ) {
 			$script_provider = $library->get_js_library();
 			$style_provider  = $library->get_css_library();
 
-			if ( $script_provider instanceof Script_Provider &&
-				$script_provider->has_active_scripts() ) {
+			$is_scripts_active = $script_provider instanceof Script_Provider &&
+								$script_provider->has_active_scripts();
+			$is_styles_active  = $style_provider instanceof Style_Provider &&
+								$style_provider->has_active_styles();
+
+			if ( $is_scripts_active ) {
 				$this->script_loader->enqueue_scripts( $script_provider );
 			}
 
-			if ( $style_provider instanceof Style_Provider &&
-				$style_provider->has_active_styles() ) {
+			if ( $is_styles_active ) {
 				$name = $library->get_name();
 
 				$this->style_collector->enqueue_styles( $name, $style_provider );

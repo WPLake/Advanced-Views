@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Reloader_Root_Marke
 
 defined( 'ABSPATH' ) || exit;
 
-class Style_Injector extends Actor_Base implements Actor {
+final class Style_Injector extends Actor_Base implements Actor {
 	const STUB            = '<!--advanced-views:styles-->';
 	const CUSTOM_LOCATION = '<!--advanced-views:styles/custom-location-->';
 
@@ -66,7 +66,10 @@ class Style_Injector extends Actor_Base implements Actor {
 	 * The styles go to the custom location, if the page has one, otherwise to the stub (in the head).
 	 */
 	protected function place( string $page, string $css ): string {
-		if ( false !== strpos( $page, self::CUSTOM_LOCATION ) ) {
+		$location_position   = strpos( $page, self::CUSTOM_LOCATION );
+		$has_custom_location = is_int( $location_position );
+
+		if ( $has_custom_location ) {
 			$marked_css = $this->reloader_root_marker->mark( $css );
 			$page       = str_replace( self::CUSTOM_LOCATION, $marked_css, $page );
 			$css        = '';

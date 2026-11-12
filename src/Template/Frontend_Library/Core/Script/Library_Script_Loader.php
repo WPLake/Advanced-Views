@@ -44,7 +44,6 @@ final class Library_Script_Loader {
 	protected function enqueue_local_scripts( Script_Provider $provider ): void {
 		$version = $this->asset_resolver->get_version();
 		$origin  = $provider->get_script_origin();
-
 		$handles = $provider->get_active_js_handles();
 
 		foreach ( $handles as $handle ) {

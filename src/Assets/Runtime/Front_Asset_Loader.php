@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Asset_Loade
 
 defined( 'ABSPATH' ) || exit;
 
-class Front_Asset_Loader extends Actor_Base implements Actor {
+final class Front_Asset_Loader extends Actor_Base implements Actor {
 	private Library_Asset_Loader $library_asset_loader;
 	private Interactivity_Loader $interactivity_loader;
 	private Cpt_Asset_Collector $assets_collector;

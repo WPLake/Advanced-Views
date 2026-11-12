@@ -18,7 +18,9 @@ final class JS_Component_Composer {
 			'this.shadowRoot.innerHTML=html;',
 		);
 
-		return self::compose_component( $tag_name, $js_code, implode( '', $shadow_js_lines ) );
+		$box_shadow_js = implode( '', $shadow_js_lines );
+
+		return self::compose_component( $tag_name, $js_code, $box_shadow_js );
 	}
 
 	protected static function compose_component( string $tag_name, string $js_code, string $box_shadow_js ): string {
@@ -29,10 +31,14 @@ final class JS_Component_Composer {
 			$tag_name
 		);
 
-		if ( ! is_string( $component_name ) ) {
-			return $js_code;
+		if ( is_string( $component_name ) ) {
+			return self::compose_class( $component_name, $tag_name, $js_code, $box_shadow_js );
 		}
 
+		return $js_code;
+	}
+
+	protected static function compose_class( string $component_name, string $tag_name, string $js_code, string $box_shadow_js ): string {
 		$imports = self::extract_imports( $js_code );
 
 		$escaped_name = esc_html( $component_name );
@@ -44,7 +50,11 @@ final class JS_Component_Composer {
 			'}',
 			sprintf( 'setup(){%s}', $box_shadow_js . $js_code ),
 			'}',
-			sprintf( 'customElements.define("%s", %s);', esc_html( $tag_name ), $escaped_name ),
+			sprintf(
+				'customElements.define("%s", %s);',
+				esc_html( $tag_name ),
+				$escaped_name
+			),
 		);
 
 		return implode( '', $js_lines );
@@ -56,11 +66,20 @@ final class JS_Component_Composer {
 	protected static function extract_imports( string &$js_code ): string {
 		$imports = '';
 
-		preg_match_all( '/import [^;]+;/', $js_code, $matches, PREG_SET_ORDER );
+		preg_match_all(
+			'/import [^;]+;/',
+			$js_code,
+			$matches,
+			PREG_SET_ORDER
+		);
 
 		foreach ( $matches as $match ) {
 			$imports .= $match[0];
-			$js_code  = str_replace( $match[0], '', $js_code );
+			$js_code  = str_replace(
+				$match[0],
+				'',
+				$js_code
+			);
 		}
 
 		return $imports;

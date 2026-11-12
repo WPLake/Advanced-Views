@@ -19,8 +19,8 @@ abstract class Style_Provider_Base implements Style_Provider {
 	}
 
 	public function has_active_styles(): bool {
-		$handles = $this->get_style_handles();
-		$inline_styles  = $this->get_inline_styles();
+		$handles       = $this->get_style_handles();
+		$inline_styles = $this->get_inline_styles();
 
 		return array() !== $handles ||
 				array() !== $inline_styles;

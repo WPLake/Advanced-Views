@@ -31,9 +31,10 @@ final class Style_Builder {
 		$blocks        = array();
 
 		$own_declarations = array_filter( $rules, 'is_string' );
+		$has_selector     = strlen( $field_selector ) > 0;
+		$has_own          = array() !== $own_declarations;
 
-		if ( '' !== $field_selector &&
-			array() !== $own_declarations ) {
+		if ( $has_selector && $has_own ) {
 			$blocks[] = $this->compose_block( $selector_safe, $own_declarations );
 		}
 
@@ -44,39 +45,56 @@ final class Style_Builder {
 			}
 		}
 
-		return join( $this->formatter->new_line( 2 ), $blocks );
+		$block_separator = $this->formatter->new_line( 2 );
+
+		return join( $block_separator, $blocks );
 	}
 
 	protected function join_selector( string $field_selector, string $inner_selector ): string {
-		if ( '' === $field_selector ) {
-			return $inner_selector;
+		$has_selector = strlen( $field_selector ) > 0;
+
+		if ( $has_selector ) {
+			$separator = 0 === strpos( $inner_selector, ':' ) ?
+				'' :
+				' ';
+
+			return $field_selector . $separator . $inner_selector;
 		}
 
-		$separator = 0 === strpos( $inner_selector, ':' ) ?
-			'' :
-			' ';
-
-		return $field_selector . $separator . $inner_selector;
+		return $inner_selector;
 	}
 
 	/**
 	 * @param array<string,string> $declarations
 	 */
 	protected function compose_block( string $selector, array $declarations ): string {
-		$new_line = $this->formatter->new_line();
-		$lines    = $this->formatter->tab_shift(
-			function () use ( $declarations, $new_line ): string {
-				$tabs  = $this->formatter->tabulate();
-				$lines = array();
-
-				foreach ( $declarations as $property => $value ) {
-					$lines[] = sprintf( '%s%s: %s;', $tabs, $property, $value );
-				}
-
-				return join( $new_line, $lines );
-			}
+		$new_line     = $this->formatter->new_line();
+		$lines        = $this->formatter->tab_shift(
+			fn() => $this->compose_declarations( $declarations )
 		);
+		$opening_line = sprintf( '%s {', $selector );
+		$block_lines  = array( $opening_line, $lines, '}' );
 
-		return join( $new_line, array( $selector . ' {', $lines, '}' ) );
+		return join( $new_line, $block_lines );
+	}
+
+	/**
+	 * @param array<string,string> $declarations
+	 */
+	protected function compose_declarations( array $declarations ): string {
+		$new_line = $this->formatter->new_line();
+		$tabs     = $this->formatter->tabulate();
+		$lines    = array();
+
+		foreach ( $declarations as $property => $value ) {
+			$lines[] = sprintf(
+				'%s%s: %s;',
+				$tabs,
+				$property,
+				$value
+			);
+		}
+
+		return join( $new_line, $lines );
 	}
 }

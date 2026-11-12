@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 
 defined( 'ABSPATH' ) || exit;
 
-class Interactivity_Loader extends Actor_Base implements Actor {
+final class Interactivity_Loader extends Actor_Base implements Actor {
 	const MODULE_ID = '@wordpress/interactivity';
 
 	private bool $is_enqueued;

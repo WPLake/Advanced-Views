@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 
 defined( 'ABSPATH' ) || exit;
 
-class Front_Page_Buffer extends Actor_Base implements Actor {
+final class Front_Page_Buffer extends Actor_Base implements Actor {
 	private ?int $level;
 
 	public function __construct() {
@@ -41,8 +41,13 @@ class Front_Page_Buffer extends Actor_Base implements Actor {
 	public function take_content(): string {
 		// close previous buffers. Some plugins may not close, if detect that ob_get_level() is another than was
 		// e.g. 'lightbox-photoswipe'.
-		while ( ob_get_level() > (int) $this->level ) {
+		$own_level     = (int) $this->level;
+		$current_level = ob_get_level();
+
+		while ( $current_level > $own_level ) {
 			ob_end_flush();
+
+			$current_level = ob_get_level();
 		}
 
 		return (string) ob_get_clean();
@@ -51,8 +56,10 @@ class Front_Page_Buffer extends Actor_Base implements Actor {
 	public function flush_own(): void {
 		// do not close the buffer, if it's not ours
 		// (then ours will be closed automatically with the end of script execution).
-		if ( $this->is_started() &&
-			ob_get_level() === $this->level ) {
+		$is_own_buffer_active = $this->is_started() &&
+								ob_get_level() === $this->level;
+
+		if ( $is_own_buffer_active ) {
 			ob_end_flush();
 		}
 	}

@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 
 defined( 'ABSPATH' ) || exit;
 
-class Script_Renderer {
+final class Script_Renderer {
 	private Script_Tag_Composer $script_composer;
 	private Html_Renderer $html_renderer;
 
@@ -19,9 +19,11 @@ class Script_Renderer {
 	}
 
 	public function print_scripts(): void {
-		$js_code = $this->render_tags( $this->script_composer->compose_tags() );
+		$tags      = $this->script_composer->compose_tags();
+		$js_code   = $this->render_tags( $tags );
+		$is_filled = strlen( $js_code ) > 0;
 
-		if ( strlen( $js_code ) > 0 ) {
+		if ( $is_filled ) {
 			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $js_code;
 		}
@@ -31,15 +33,18 @@ class Script_Renderer {
 	 * @param Html_Tag[] $tags
 	 */
 	protected function render_tags( array $tags ): string {
-		if ( array() === $tags ) {
-			return '';
+		$is_filled = array() !== $tags;
+
+		if ( $is_filled ) {
+			$rendered_tags = array_map(
+				fn( Html_Tag $tag ) => $this->html_renderer->render_html( $tag ),
+				$tags
+			);
+			$joined_tags   = implode( "\n", $rendered_tags );
+
+			return sprintf( "\n%s\n", $joined_tags );
 		}
 
-		$rendered_tags = array_map(
-			fn( Html_Tag $tag ) => $this->html_renderer->render_html( $tag ),
-			$tags
-		);
-
-		return sprintf( "\n%s\n", implode( "\n", $rendered_tags ) );
+		return '';
 	}
 }

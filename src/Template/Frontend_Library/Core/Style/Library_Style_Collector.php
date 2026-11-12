@@ -23,8 +23,9 @@ final class Library_Style_Collector {
 	}
 
 	public function enqueue_styles( string $name, Style_Provider $provider ): void {
-		$files_code  = $this->resolve_styles( $provider );
-		$inline_code = $this->style_builder->build( $provider->get_inline_styles() );
+		$files_code    = $this->resolve_styles( $provider );
+		$inline_styles = $provider->get_inline_styles();
+		$inline_code   = $this->style_builder->build( $inline_styles );
 
 		$code      = $files_code . $inline_code;
 		$is_filled = strlen( $code ) > 0;
@@ -46,8 +47,7 @@ final class Library_Style_Collector {
 	protected function resolve_styles( Style_Provider $provider ): string {
 		$files_code = $this->read_files( $provider );
 
-		$patches = $provider->get_style_patches( $this->asset_resolver );
-
+		$patches  = $provider->get_style_patches( $this->asset_resolver );
 		$subjects = array_keys( $patches );
 		$replaces = array_values( $patches );
 
