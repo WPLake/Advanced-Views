@@ -21,12 +21,10 @@ final class Tailwind_Merger {
 	}
 
 	/**
-	 * Empties the potentially large list of the already printed rules, as it's not needed anymore.
+	 * Whether any Tailwind rule was merged into the page.
 	 */
-	public function reset(): self {
-		$this->css_rules = array();
-
-		return $this;
+	public function is_used(): bool {
+		return array() !== $this->css_rules;
 	}
 
 	/**
