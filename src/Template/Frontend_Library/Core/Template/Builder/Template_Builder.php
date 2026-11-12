@@ -18,7 +18,7 @@ final class Template_Builder {
 	/**
 	 * @param class-string<Template_Pattern>[] $patterns
 	 */
-	public static function row_wrapper( array $patterns ): ?Html_Tag {
+	public static function merge_row_wrapper( array $patterns ): ?Html_Tag {
 		$tags = array_map(
 			static fn( string $pattern ): ?Html_Tag => $pattern::get_wrapper(),
 			$patterns
@@ -32,7 +32,7 @@ final class Template_Builder {
 	 *
 	 * @return Html_Tag[]
 	 */
-	public static function field_wrappers( array $patterns, Variable_Token $field ): array {
+	public static function merge_field_wrappers( array $patterns, Variable_Token $field ): array {
 		$patterns_wrappers = array_map(
 			static fn( string $pattern ): array => $pattern::get_outers( $field ),
 			$patterns
@@ -46,7 +46,7 @@ final class Template_Builder {
 	 *
 	 * @return Html_Tag[]
 	 */
-	public static function item_wrappers( array $patterns, Variable_Token $item ): array {
+	public static function merge_item_wrappers( array $patterns, Variable_Token $item ): array {
 		$patterns_wrappers = array_map(
 			static fn( string $pattern ): array => $pattern::get_item_wrappers( $item ),
 			$patterns
@@ -60,7 +60,7 @@ final class Template_Builder {
 	 *
 	 * @return array<string,string|Variable_Token>
 	 */
-	public static function item_attributes( array $patterns, Variable_Token $item ): array {
+	public static function merge_item_attributes( array $patterns, Variable_Token $item ): array {
 		$attributes = array();
 
 		foreach ( $patterns as $pattern ) {

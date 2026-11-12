@@ -63,12 +63,12 @@ final class Pattern_Container {
 	public function row_wrapper( string $row_type, Token_Factory $token_factory, string $field_id ): ?Html_Tag {
 		if ( self::ROW_TYPE_REPEATER_ITEM === $row_type ) {
 			$item   = $token_factory->variable( $field_id );
-			$inners = Template_Builder::item_wrappers( $this->patterns, $item );
+			$inners = Template_Builder::merge_item_wrappers( $this->patterns, $item );
 
 			return $inners[0] ?? null;
 		}
 
-		return Template_Builder::row_wrapper( $this->patterns );
+		return Template_Builder::merge_row_wrapper( $this->patterns );
 	}
 
 	public function field_wrapper( string $row_type, Token_Factory $token_factory, string $field_id ): ?Html_Tag {
@@ -76,13 +76,13 @@ final class Pattern_Container {
 			return null;
 		}
 
-		$wrappers = Template_Builder::field_wrappers( $this->patterns, $token_factory->variable( $field_id ) );
+		$wrappers = Template_Builder::merge_field_wrappers( $this->patterns, $token_factory->variable( $field_id ) );
 
 		return $wrappers[0] ?? null;
 	}
 
 	public function has_root_wrapper(): bool {
-		return Template_Builder::row_wrapper( $this->patterns ) instanceof Html_Tag;
+		return Template_Builder::merge_row_wrapper( $this->patterns ) instanceof Html_Tag;
 	}
 
 	/**
@@ -93,7 +93,7 @@ final class Pattern_Container {
 			return array();
 		}
 
-		$wrappers   = Template_Builder::field_wrappers( $this->patterns, $token_factory->variable( $field_id ) );
+		$wrappers   = Template_Builder::merge_field_wrappers( $this->patterns, $token_factory->variable( $field_id ) );
 		$outers     = array_slice( $wrappers, 1 );
 		$list_class = $this->layout_settings->get_item_class( 'list', $this->field_settings );
 
@@ -104,7 +104,7 @@ final class Pattern_Container {
 	 * @return Html_Tag[]
 	 */
 	public function item_outers( Token_Factory $token_factory, string $item_id ): array {
-		$inners     = Template_Builder::item_wrappers( $this->patterns, $token_factory->variable( $item_id ) );
+		$inners     = Template_Builder::merge_item_wrappers( $this->patterns, $token_factory->variable( $item_id ) );
 		$item_class = $this->layout_settings->get_item_class( 'item', $this->field_settings );
 
 		return Template_Class_Prefixer::prefix_item_class( $inners, $item_class );
@@ -114,6 +114,6 @@ final class Pattern_Container {
 	 * @return array<string,string|Variable_Token>
 	 */
 	public function item_attributes( Token_Factory $token_factory, string $item_id ): array {
-		return Template_Builder::item_attributes( $this->patterns, $token_factory->variable( $item_id ) );
+		return Template_Builder::merge_item_attributes( $this->patterns, $token_factory->variable( $item_id ) );
 	}
 }

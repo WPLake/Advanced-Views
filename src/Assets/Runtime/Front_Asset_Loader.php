@@ -19,21 +19,21 @@ final class Front_Asset_Loader extends Actor_Base implements Actor {
 	private Library_Asset_Loader $library_asset_loader;
 	private Interactivity_Loader $interactivity_loader;
 	private Cpt_Asset_Collector $assets_collector;
-	private Style_Renderer $style_printer;
-	private Script_Renderer $script_printer;
+	private Style_Renderer $style_renderer;
+	private Script_Renderer $script_renderer;
 
 	public function __construct(
 		Library_Asset_Loader $library_asset_loader,
 		Interactivity_Loader $interactivity_loader,
 		Cpt_Asset_Collector $assets_collector,
-		Style_Renderer $style_printer,
-		Script_Renderer $script_printer
+		Style_Renderer $style_renderer,
+		Script_Renderer $script_renderer
 	) {
 		$this->library_asset_loader = $library_asset_loader;
 		$this->interactivity_loader = $interactivity_loader;
 		$this->assets_collector     = $assets_collector;
-		$this->style_printer        = $style_printer;
-		$this->script_printer       = $script_printer;
+		$this->style_renderer        = $style_renderer;
+		$this->script_renderer       = $script_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -57,7 +57,7 @@ final class Front_Asset_Loader extends Actor_Base implements Actor {
 
 	public function print_inline_assets(): void {
 		// the page is released by the styles, so they go first.
-		$this->style_printer->print_styles();
-		$this->script_printer->print_scripts();
+		$this->style_renderer->print_styles();
+		$this->script_renderer->print_scripts();
 	}
 }

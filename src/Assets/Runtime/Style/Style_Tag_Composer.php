@@ -37,39 +37,17 @@ final class Style_Tag_Composer {
 	 * @return Html_Tag[]
 	 */
 	public function compose_tags(): array {
-		$tags            = array();
-		$assets_css_code = $this->style_collector->get_css_code();
-		$is_assets_css   = strlen( $assets_css_code ) > 0;
+		$css_codes = $this->assets_collector->get_css_code();
 
-		if ( $is_assets_css ) {
-			$tags[] = self::compose_code_tag( array( 'data-advanced-views-assets' => true ), $assets_css_code );
-		}
+		$library_tags = $this->compose_library_tags();
+		$asset_tags   = $this->compose_asset_tags( $css_codes );
+		$global_tags  = $this->compose_global_tags( $css_codes );
 
-		$is_tailwind_in_use = false;
-		$asset_css_codes    = $this->assets_collector->get_css_code();
-
-		foreach ( $asset_css_codes as $name => $css_code ) {
-			// the marker is a comment, so the check must precede the minification.
-			$is_tailwind_asset = $this->tailwind_integrator->is_tailwind( $css_code );
-			$asset_tag         = $this->compose_asset_tag( $name, $css_code, $is_tailwind_asset );
-
-			$is_tailwind_in_use = $is_tailwind_in_use || $is_tailwind_asset;
-
-			if ( $asset_tag instanceof Html_Tag ) {
-				$tags[] = $asset_tag;
-			}
-		}
-
-		$global_tailwind_styles = $is_tailwind_in_use ?
-			$this->get_global_tailwind_styles() :
-			'';
-		$is_global_filled       = strlen( $global_tailwind_styles ) > 0;
-
-		if ( $is_global_filled ) {
-			$tags[] = self::compose_code_tag( array( 'data-advanced-views-tailwind-global' => true ), $global_tailwind_styles );
-		}
-
-		return $tags;
+		return array_merge(
+			$library_tags,
+			$asset_tags,
+			$global_tags
+		);
 	}
 
 	/**
@@ -79,7 +57,81 @@ final class Style_Tag_Composer {
 		$this->tailwind_integrator->reset();
 	}
 
-	protected function compose_asset_tag( string $name, string $css_code, bool $is_tailwind_asset ): ?Html_Tag {
+	/**
+	 * @return Html_Tag[]
+	 */
+	protected function compose_library_tags(): array {
+		$css_code  = $this->style_collector->get_css_code();
+		$is_filled = strlen( $css_code ) > 0;
+
+		if ( $is_filled ) {
+			$tag = self::compose_code_tag( array( 'data-advanced-views-assets' => true ), $css_code );
+
+			return array( $tag );
+		}
+
+		return array();
+	}
+
+	/**
+	 * @param array<string,string> $css_codes
+	 *
+	 * @return Html_Tag[]
+	 */
+	protected function compose_asset_tags( array $css_codes ): array {
+		$tags = array();
+
+		foreach ( $css_codes as $name => $css_code ) {
+			// the marker is a comment, so the check must precede the minification.
+			$is_tailwind_asset = $this->tailwind_integrator->is_tailwind( $css_code );
+			$asset_tag         = $this->compose_asset_tag(
+				$name,
+				$css_code,
+				$is_tailwind_asset
+			);
+
+			if ( $asset_tag instanceof Html_Tag ) {
+				$tags[] = $asset_tag;
+			}
+		}
+
+		return $tags;
+	}
+
+	/**
+	 * @param array<string,string> $css_codes
+	 *
+	 * @return Html_Tag[]
+	 */
+	protected function compose_global_tags( array $css_codes ): array {
+		$global_styles = $this->is_tailwind_in_use( $css_codes ) ?
+			$this->get_global_tailwind_styles() :
+			'';
+		$is_filled     = strlen( $global_styles ) > 0;
+
+		if ( $is_filled ) {
+			$tag = self::compose_code_tag( array( 'data-advanced-views-tailwind-global' => true ), $global_styles );
+
+			return array( $tag );
+		}
+
+		return array();
+	}
+
+	/**
+	 * @param array<string,string> $css_codes
+	 */
+	protected function is_tailwind_in_use( array $css_codes ): bool {
+		foreach ( $css_codes as $css_code ) {
+			if ( $this->tailwind_integrator->is_tailwind( $css_code ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	protected function compose_asset_tag(string $name, string $css_code, bool $is_tailwind_asset ): ?Html_Tag {
 		$css_code = Code_Minifier::minify_css( $css_code );
 		$css_code = $is_tailwind_asset ?
 			$this->tailwind_integrator->merge( $css_code ) :

@@ -25,7 +25,7 @@ class Selection_Wrapper_Resolver {
 	public function resolve_items_wrapper( Post_Selection_Settings $post_selection_settings ): ?Html_Tag {
 		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
 
-		return Template_Builder::row_wrapper( $patterns );
+		return Template_Builder::merge_row_wrapper( $patterns );
 	}
 
 	/**
@@ -34,7 +34,7 @@ class Selection_Wrapper_Resolver {
 	public function resolve_item_outers( Post_Selection_Settings $post_selection_settings, Token_Factory $token_factory ): array {
 		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
 		$items    = $token_factory->variable( 'items' );
-		$outers   = Template_Builder::field_wrappers( $patterns, $items );
+		$outers   = Template_Builder::merge_field_wrappers( $patterns, $items );
 
 		if ( Post_Selection_Settings::CLASS_GENERATION_NONE === $post_selection_settings->classes_generation ) {
 			return $outers;
@@ -55,7 +55,7 @@ class Selection_Wrapper_Resolver {
 	public function resolve_item_attributes( Post_Selection_Settings $post_selection_settings, Variable_Token $item ): array {
 		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
 
-		return Template_Builder::item_attributes( $patterns, $item );
+		return Template_Builder::merge_item_attributes( $patterns, $item );
 	}
 
 	/**

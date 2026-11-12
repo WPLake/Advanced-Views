@@ -34,27 +34,8 @@ final class Cpt_Asset_Collector {
 	}
 
 	public function add_asset( Cpt_Settings $cpt_settings ): void {
-		$unique_id = $cpt_settings->get_unique_id();
-		$css_code  = $cpt_settings->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
-		$js_code   = Cpt_Component_Composer::compose_js( $cpt_settings );
-
-		$trimmed_css_code = trim( $css_code );
-		$is_css_filled    = strlen( $trimmed_css_code ) > 0;
-		$is_css_external  = false === $cpt_settings->is_css_internal();
-		$is_js_filled     = strlen( $js_code ) > 0;
-
-		if ( $is_css_filled && $is_css_external ) {
-			$this->css_code[ $unique_id ] = $css_code;
-		}
-
-		if ( $is_js_filled ) {
-			if ( $cpt_settings->is_wp_interactivity_in_use() ) {
-				$this->is_interactivity_required = true;
-			}
-
-			$this->js_code[ $unique_id ] = $js_code;
-		}
-
+		$this->add_css( $cpt_settings );
+		$this->add_js( $cpt_settings );
 		$this->activate_libraries( $cpt_settings );
 	}
 
@@ -76,7 +57,35 @@ final class Cpt_Asset_Collector {
 		return $this->js_code;
 	}
 
-	protected function activate_libraries( Cpt_Settings $cpt_settings ): void {
+	protected function add_css( Cpt_Settings $cpt_settings ): void {
+		$css_code         = $cpt_settings->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
+		$trimmed_css_code = trim( $css_code );
+		$is_filled        = strlen( $trimmed_css_code ) > 0;
+		$is_external      = false === $cpt_settings->is_css_internal();
+
+		if ( $is_filled && $is_external ) {
+			$unique_id = $cpt_settings->get_unique_id();
+
+			$this->css_code[ $unique_id ] = $css_code;
+		}
+	}
+
+	protected function add_js( Cpt_Settings $cpt_settings ): void {
+		$js_code   = Cpt_Component_Composer::compose_js( $cpt_settings );
+		$is_filled = strlen( $js_code ) > 0;
+
+		if ( $is_filled ) {
+			$unique_id = $cpt_settings->get_unique_id();
+
+			if ( $cpt_settings->is_wp_interactivity_in_use() ) {
+				$this->is_interactivity_required = true;
+			}
+
+			$this->js_code[ $unique_id ] = $js_code;
+		}
+	}
+
+	protected function activate_libraries(Cpt_Settings $cpt_settings ): void {
 		$libraries = $this->library_container->get_all();
 
 		foreach ( $libraries as $library ) {
