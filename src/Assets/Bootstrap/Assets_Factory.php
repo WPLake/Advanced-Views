@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Globals_Reader;
-use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Integrator;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Rule_Merger;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
@@ -25,8 +25,8 @@ class Assets_Factory extends Factory_Base {
 		);
 	}
 
-	public function tailwind_integrator(): Tailwind_Integrator {
-		return new Tailwind_Integrator(
+	public function tailwind_rule_merger(): Tailwind_Rule_Merger {
+		return new Tailwind_Rule_Merger(
 			$this->resolve( Live_Reloader_Component::class )
 		);
 	}

@@ -8,9 +8,7 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Compo
 
 defined( 'ABSPATH' ) || exit;
 
-final class Tailwind_Integrator {
-	const MARKER = 'advanced-views:tailwind';
-
+final class Tailwind_Rule_Merger {
 	private Live_Reloader_Component $live_reloader_component;
 	/**
 	 * @var array<string,true>
@@ -20,12 +18,6 @@ final class Tailwind_Integrator {
 	public function __construct( Live_Reloader_Component $live_reloader_component ) {
 		$this->live_reloader_component = $live_reloader_component;
 		$this->css_rules               = array();
-	}
-
-	public function is_tailwind( string $css ): bool {
-		$marker_position = strpos( $css, self::MARKER );
-
-		return is_int( $marker_position );
 	}
 
 	/**
@@ -38,11 +30,11 @@ final class Tailwind_Integrator {
 	}
 
 	/**
-	 * @param string $tailwind_css must be minified, the parsing relies on it.
+	 * @param string $tailwind_css must be minified, the parser relies on it.
 	 */
 	public function merge( string $tailwind_css ): string {
-		$media_rules   = self::extract_media_rules( $tailwind_css );
-		$primary_css   = self::strip_media_queries( $tailwind_css );
+		$media_rules   = Tailwind_Css_Parser::parse_media_rules( $tailwind_css );
+		$primary_css   = Tailwind_Css_Parser::strip_media_queries( $tailwind_css );
 		$condition_css = $this->merge_media_rules( $media_rules );
 		$unique_css    = $this->get_unique_rules( $primary_css );
 
@@ -92,70 +84,21 @@ final class Tailwind_Integrator {
 	 * @return array<string,string> selector => rules
 	 */
 	protected function register_new_rules( string $css, string $prefix ): array {
-		/**
-		 * Covers the following cases:
-		 * 1. '.class{}',
-		 * 2. 'h1{}',
-		 * 3. '.class,h1{}',
-		 * 4. ':host .class'.
-		 */
-		preg_match_all(
-			'/([:.a-z]+[^{]*){([^}]+)}/',
-			$css,
-			$matches,
-			PREG_SET_ORDER
-		);
+		$parsed_rules = Tailwind_Css_Parser::parse_rules( $css );
+		$new_rules    = array();
 
-		$css_rules = array();
-
-		foreach ( $matches as $match ) {
-			$selector = trim( $match[1] );
-			$rules    = trim( $match[2] );
-
+		foreach ( $parsed_rules as $selector => $rules ) {
 			$global_selector = $prefix . $selector;
-
-			$is_new_rule = false === key_exists( $global_selector, $this->css_rules );
+			$is_new_rule     = false === key_exists( $global_selector, $this->css_rules );
 
 			if ( $is_new_rule ) {
 				$this->css_rules[ $global_selector ] = true;
 
-				$css_rules[ $selector ] = $rules;
+				$new_rules[ $selector ] = $rules;
 			}
 		}
 
-		return $css_rules;
-	}
-
-	/**
-	 * @return array<string,string> media condition => its rules
-	 */
-	protected static function extract_media_rules( string $tailwind_css ): array {
-		preg_match_all(
-			'/(@media[^{]*)\{((?:[^{}]*\{[^{}]*\})*[^{}]*)\}/',
-			$tailwind_css,
-			$media_queries,
-			PREG_SET_ORDER
-		);
-
-		$media_rules = array();
-
-		foreach ( $media_queries as $media_query ) {
-			$media_condition = trim( $media_query[1] );
-			$media_content   = trim( $media_query[2] );
-
-			$media_rules[ $media_condition ] ??= '';
-			$media_rules[ $media_condition ]  .= $media_content;
-		}
-
-		return $media_rules;
-	}
-
-	protected static function strip_media_queries( string $tailwind_css ): string {
-		return (string) preg_replace(
-			'/@media[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/',
-			'',
-			$tailwind_css
-		);
+		return $new_rules;
 	}
 
 	/**
