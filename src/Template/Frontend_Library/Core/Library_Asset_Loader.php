@@ -4,22 +4,22 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core;
 
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Loader;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Library_Script_Loader;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Provider;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Collector;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Library_Style_Collector;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Provider;
 
 defined( 'ABSPATH' ) || exit;
 
 class Library_Asset_Loader {
 	private Library_Container $library_container;
-	private Script_Loader $script_loader;
-	private Style_Collector $style_collector;
+	private Library_Script_Loader $script_loader;
+	private Library_Style_Collector $style_collector;
 
 	public function __construct(
 		Library_Container $library_container,
-		Script_Loader $script_loader,
-		Style_Collector $style_collector
+		Library_Script_Loader $script_loader,
+		Library_Style_Collector $style_collector
 	) {
 		$this->library_container = $library_container;
 		$this->script_loader     = $script_loader;

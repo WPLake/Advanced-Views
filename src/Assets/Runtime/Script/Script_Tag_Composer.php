@@ -12,7 +12,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
-class Script_Composer {
+class Script_Tag_Composer {
 	private Cpt_Assets_Collector $assets_collector;
 
 	public function __construct( Cpt_Assets_Collector $assets_collector ) {
@@ -22,7 +22,7 @@ class Script_Composer {
 	/**
 	 * @return Html_Tag[]
 	 */
-	public function compose(): array {
+	public function compose_tags(): array {
 		$tags = array();
 
 		foreach ( $this->assets_collector->get_js_code() as $name => $js_code ) {

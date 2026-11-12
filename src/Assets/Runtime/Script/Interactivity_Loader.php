@@ -13,10 +13,10 @@ defined( 'ABSPATH' ) || exit;
 class Interactivity_Loader extends Actor_Base implements Actor {
 	const MODULE_ID = '@wordpress/interactivity';
 
-	private bool $is_required;
+	private bool $is_enqueued;
 
 	public function __construct() {
-		$this->is_required = false;
+		$this->is_enqueued = false;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -27,16 +27,13 @@ class Interactivity_Loader extends Actor_Base implements Actor {
 		self::add_filter( 'script_module_loader_src', array( $this, 'catch_script_url' ), 10, 2 );
 	}
 
-	public function require_interactivity(): void {
-		$this->is_required = true;
-	}
-
 	/**
 	 * Enqueues the module, as in non-block themes it isn't enqueued by default.
 	 */
 	public function enqueue_module(): void {
-		if ( $this->is_required &&
-			function_exists( 'wp_enqueue_script_module' ) ) {
+		if ( function_exists( 'wp_enqueue_script_module' ) ) {
+			$this->is_enqueued = true;
+
 			wp_enqueue_script_module( self::MODULE_ID );
 		}
 	}
@@ -48,8 +45,8 @@ class Interactivity_Loader extends Actor_Base implements Actor {
 	 */
 	public function catch_script_url( string $src, string $id ): string {
 		if ( self::MODULE_ID === $id &&
-			$this->is_required ) {
-			$this->is_required = false;
+			$this->is_enqueued ) {
+			$this->is_enqueued = false;
 
 			self::print_import_map( $src );
 		}

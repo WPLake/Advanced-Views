@@ -2,15 +2,16 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Provider;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Style_Collector {
+final class Library_Style_Collector {
 	private Asset_Resolver $asset_resolver;
 	private Style_Builder $style_builder;
 	private string $code;
@@ -60,8 +61,8 @@ final class Style_Collector {
 	protected function read_files( Style_Provider $provider ): string {
 		$wp_filesystem = WP_Filesystem_Factory::get_wp_filesystem();
 		$origin        = $provider->get_style_origin();
-		$handles   = $provider->get_style_handles();
-		$code           = '';
+		$handles       = $provider->get_style_handles();
+		$code          = '';
 
 		foreach ( $handles as $handle ) {
 			$style_file   = sprintf( 'css/front/%s.min.css', $handle );

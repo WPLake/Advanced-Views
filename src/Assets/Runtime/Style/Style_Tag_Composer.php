@@ -6,22 +6,22 @@ namespace Org\Wplake\Advanced_Views\Assets\Runtime\Style;
 
 use Org\Wplake\Advanced_Views\Plugin\Utils\Code_Minifier;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Asset\Cpt_Assets_Collector;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Collector;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Library_Style_Collector;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
-class Style_Composer {
+class Style_Tag_Composer {
 	private Cpt_Assets_Collector $assets_collector;
 	private Tailwind_Integrator $tailwind_integrator;
-	private Style_Collector $style_collector;
+	private Library_Style_Collector $style_collector;
 
 	public function __construct(
 		Cpt_Assets_Collector $assets_collector,
 		Tailwind_Integrator $tailwind_integrator,
-		Style_Collector $style_collector
+		Library_Style_Collector $style_collector
 	) {
 		$this->assets_collector    = $assets_collector;
 		$this->tailwind_integrator = $tailwind_integrator;
@@ -31,7 +31,7 @@ class Style_Composer {
 	/**
 	 * @return Html_Tag[]
 	 */
-	public function compose(): array {
+	public function compose_tags(): array {
 		$tags            = array();
 		$assets_css_code = $this->style_collector->get_css_code();
 

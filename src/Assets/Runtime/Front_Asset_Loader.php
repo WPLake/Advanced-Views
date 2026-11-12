@@ -4,9 +4,9 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Assets\Runtime;
 
-use Org\Wplake\Advanced_Views\Assets\Runtime\Script\Script_Printer;
 use Org\Wplake\Advanced_Views\Assets\Runtime\Script\Interactivity_Loader;
-use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Style_Printer;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Script\Script_Renderer;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Style_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -19,15 +19,15 @@ class Front_Asset_Loader extends Actor_Base implements Actor {
 	private Library_Asset_Loader $library_asset_loader;
 	private Interactivity_Loader $interactivity_loader;
 	private Cpt_Assets_Collector $assets_collector;
-	private Style_Printer $style_printer;
-	private Script_Printer $script_printer;
+	private Style_Renderer $style_printer;
+	private Script_Renderer $script_printer;
 
 	public function __construct(
 		Library_Asset_Loader $library_asset_loader,
 		Interactivity_Loader $interactivity_loader,
 		Cpt_Assets_Collector $assets_collector,
-		Style_Printer $style_printer,
-		Script_Printer $script_printer
+		Style_Renderer $style_printer,
+		Script_Renderer $script_printer
 	) {
 		$this->library_asset_loader = $library_asset_loader;
 		$this->interactivity_loader = $interactivity_loader;
@@ -51,10 +51,8 @@ class Front_Asset_Loader extends Actor_Base implements Actor {
 		$this->library_asset_loader->enqueue_assets();
 
 		if ( $this->assets_collector->is_interactivity_required() ) {
-			$this->interactivity_loader->require_interactivity();
+			$this->interactivity_loader->enqueue_module();
 		}
-
-		$this->interactivity_loader->enqueue_module();
 	}
 
 	public function print_inline_assets(): void {

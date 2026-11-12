@@ -2,14 +2,15 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Provider;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Script_Loader {
+final class Library_Script_Loader {
 	private Asset_Resolver $asset_resolver;
 	/**
 	 * @var array{strategy?: string, in_footer?: bool, fetchpriority?: string}
