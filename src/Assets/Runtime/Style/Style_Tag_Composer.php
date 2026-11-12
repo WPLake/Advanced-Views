@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Assets\Runtime\Style;
 
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Globals_Reader;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Integrator;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Code_Minifier;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Asset_Collector;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Library_Style_Collector;
@@ -16,15 +18,18 @@ defined( 'ABSPATH' ) || exit;
 final class Style_Tag_Composer {
 	private Cpt_Asset_Collector $assets_collector;
 	private Tailwind_Integrator $tailwind_integrator;
+	private Tailwind_Globals_Reader $globals_reader;
 	private Library_Style_Collector $style_collector;
 
 	public function __construct(
 		Cpt_Asset_Collector $assets_collector,
 		Tailwind_Integrator $tailwind_integrator,
+		Tailwind_Globals_Reader $globals_reader,
 		Library_Style_Collector $style_collector
 	) {
 		$this->assets_collector    = $assets_collector;
 		$this->tailwind_integrator = $tailwind_integrator;
+		$this->globals_reader      = $globals_reader;
 		$this->style_collector     = $style_collector;
 	}
 
@@ -91,7 +96,7 @@ final class Style_Tag_Composer {
 	}
 
 	protected function get_global_tailwind_styles(): string {
-		$global_styles = $this->tailwind_integrator->get_global_styles();
+		$global_styles = $this->globals_reader->get_global_styles();
 
 		return Code_Minifier::minify_css( $global_styles );
 	}

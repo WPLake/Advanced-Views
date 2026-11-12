@@ -11,16 +11,19 @@ use Org\Wplake\Advanced_Views\Assets\Runtime\Front_Asset_Loader;
 use Org\Wplake\Advanced_Views\Assets\Runtime\Script\Interactivity_Loader;
 use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Injector\Front_Page_Buffer;
 use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Injector\Style_Injector;
-use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind_Integrator;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Globals_Reader;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Integrator;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 
 class Assets_Bootstrap extends Bootstrap_Base {
 	public static function get_instance_factories( Instance_Container $container ): array {
 		return array(
-			Tailwind_Integrator::class => fn() => $container->resolve( Assets_Factory::class )
+			Tailwind_Integrator::class     => fn() => $container->resolve( Assets_Factory::class )
 				->tailwind_integrator(),
-			Admin_Assets::class        => fn() => $container->resolve( Assets_Factory::class )
+			Tailwind_Globals_Reader::class => fn() => $container->resolve( Assets_Factory::class )
+				->tailwind_globals_reader(),
+			Admin_Assets::class            => fn() => $container->resolve( Assets_Factory::class )
 				->admin_assets(),
 		);
 	}

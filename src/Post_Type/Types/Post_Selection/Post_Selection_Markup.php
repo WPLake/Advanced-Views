@@ -33,14 +33,12 @@ class Post_Selection_Markup {
 	protected Token_Factory_Storage $token_factory_storage;
 	private Layout_Cpt $layout_cpt;
 	protected Cpt_Component_Renderer $renderer;
-	protected Cpt_Component_Factory $web_component_factory;
 
-	public function __construct( Selection_Wrapper_Resolver $card_composer, Token_Factory_Storage $token_factory_storage, Layout_Cpt $layout_cpt, Cpt_Component_Renderer $renderer, Cpt_Component_Factory $web_component_factory ) {
+	public function __construct( Selection_Wrapper_Resolver $card_composer, Token_Factory_Storage $token_factory_storage, Layout_Cpt $layout_cpt, Cpt_Component_Renderer $renderer ) {
 		$this->card_composer         = $card_composer;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->layout_cpt            = $layout_cpt;
 		$this->renderer              = $renderer;
-		$this->web_component_factory = $web_component_factory;
 	}
 
 	public function render_extra_markup( Post_Selection_Settings $post_selection_settings ): string {
@@ -247,7 +245,7 @@ class Post_Selection_Markup {
 		$content    = array( $if, ...$this->extra_nodes( $post_selection_settings ) );
 		$root_class = $this->root_class( $token_factory, $post_selection_settings );
 
-		$root = $this->web_component_factory->create_web_component( $post_selection_settings, $content )
+		$root = Cpt_Component_Factory::create_web_component( $post_selection_settings, $content )
 			->attributes( array( 'class' => $root_class ) );
 
 		$html = $this->renderer->render_component( $root );

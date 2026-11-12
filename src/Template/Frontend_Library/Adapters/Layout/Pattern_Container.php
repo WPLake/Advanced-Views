@@ -7,6 +7,7 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Builder\Template_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Builder\Template_Class_Prefixer;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
@@ -96,7 +97,7 @@ final class Pattern_Container {
 		$outers     = array_slice( $wrappers, 1 );
 		$list_class = $this->layout_settings->get_item_class( 'list', $this->field_settings );
 
-		return Template_Builder::prefix_list_class( $outers, $list_class );
+		return Template_Class_Prefixer::prefix_list_class( $outers, $list_class );
 	}
 
 	/**
@@ -106,7 +107,7 @@ final class Pattern_Container {
 		$inners     = Template_Builder::item_wrappers( $this->patterns, $token_factory->variable( $item_id ) );
 		$item_class = $this->layout_settings->get_item_class( 'item', $this->field_settings );
 
-		return Template_Builder::prefix_item_class( $inners, $item_class );
+		return Template_Class_Prefixer::prefix_item_class( $inners, $item_class );
 	}
 
 	/**

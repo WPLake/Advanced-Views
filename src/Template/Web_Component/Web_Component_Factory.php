@@ -16,7 +16,7 @@ final class Web_Component_Factory {
 	/**
 	 * @param Html_Node[] $content
 	 */
-	public function create_component( string $tag_name, array $content ): Html_Tag {
+	public static function create_component( string $tag_name, array $content ): Html_Tag {
 		return tag( $tag_name )
 			->content( ...$content );
 	}
@@ -24,11 +24,11 @@ final class Web_Component_Factory {
 	/**
 	 * @param Html_Node[] $content
 	 */
-	public function create_shadow_component( string $tag_name, array $content ): Html_Tag {
+	public static function create_shadow_component( string $tag_name, array $content ): Html_Tag {
 		$template = tag( 'template' )
 			->attributes( array( 'shadowrootmode' => 'open' ) )
 			->content( ...$content );
 
-		return $this->create_component( $tag_name, array( $template ) );
+		return self::create_component( $tag_name, array( $template ) );
 	}
 }

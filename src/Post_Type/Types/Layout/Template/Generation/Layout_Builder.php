@@ -25,13 +25,11 @@ final class Layout_Builder {
 	private Row_Builder $row_builder;
 	private Row_Policy $row_policy;
 	private Token_Factory_Storage $token_factory_storage;
-	private Cpt_Component_Factory $web_component_factory;
 
-	public function __construct( Row_Builder $row_builder, Row_Policy $row_policy, Token_Factory_Storage $token_factory_storage, Cpt_Component_Factory $web_component_factory ) {
+	public function __construct( Row_Builder $row_builder, Row_Policy $row_policy, Token_Factory_Storage $token_factory_storage ) {
 		$this->row_builder           = $row_builder;
 		$this->row_policy            = $row_policy;
 		$this->token_factory_storage = $token_factory_storage;
-		$this->web_component_factory = $web_component_factory;
 	}
 
 	public function compose_layout( Layout_Settings $layout_settings ): Html_Tag {
@@ -40,8 +38,7 @@ final class Layout_Builder {
 		$root_class = $this->generate_root_class( $token_factory, $layout_settings );
 		$rows       = $this->compose_rows( $layout_settings );
 
-		return $this->web_component_factory
-			->create_web_component( $layout_settings, $rows )
+		return Cpt_Component_Factory::create_web_component( $layout_settings, $rows )
 			->attributes( array( 'class' => $root_class ) );
 	}
 

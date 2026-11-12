@@ -7,6 +7,7 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Container;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Builder\Template_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Builder\Template_Class_Prefixer;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
@@ -41,7 +42,7 @@ class Selection_Wrapper_Resolver {
 
 		$bem_name = $post_selection_settings->get_bem_name();
 
-		return Template_Builder::prefix_selection_classes(
+		return Template_Class_Prefixer::prefix_selection_classes(
 			$outers,
 			sprintf( '%s__list', $bem_name ),
 			sprintf( '%s__track', $bem_name )

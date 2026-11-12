@@ -2,25 +2,22 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Assets\Runtime\Style;
+namespace Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind;
 
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 
 defined( 'ABSPATH' ) || exit;
 
 final class Tailwind_Integrator {
 	const MARKER = 'advanced-views:tailwind';
 
-	private File_System $file_system;
 	private Live_Reloader_Component $live_reloader_component;
 	/**
 	 * @var array<string,true>
 	 */
 	private array $css_rules;
 
-	public function __construct( File_System $file_system, Live_Reloader_Component $live_reloader_component ) {
-		$this->file_system             = $file_system;
+	public function __construct( Live_Reloader_Component $live_reloader_component ) {
 		$this->live_reloader_component = $live_reloader_component;
 		$this->css_rules               = array();
 	}
@@ -44,31 +41,18 @@ final class Tailwind_Integrator {
 	 * @param string $tailwind_css must be minified, the parsing relies on it.
 	 */
 	public function merge( string $tailwind_css ): string {
-		// 1. get all the media queries.
-		preg_match_all(
-			'/(@media[^{]*)\{((?:[^{}]*\{[^{}]*\})*[^{}]*)\}/',
-			$tailwind_css,
-			$media_queries,
-			PREG_SET_ORDER
-		);
+		$media_rules   = self::extract_media_rules( $tailwind_css );
+		$primary_css   = self::strip_media_queries( $tailwind_css );
+		$condition_css = $this->merge_media_rules( $media_rules );
+		$unique_css    = $this->get_unique_rules( $primary_css );
 
-		$media_rules = array();
-		foreach ( $media_queries as $media_query ) {
-			$media_condition = trim( $media_query[1] );
-			$media_content   = trim( $media_query[2] );
+		return $unique_css . $condition_css;
+	}
 
-			$media_rules[ $media_condition ] ??= '';
-			$media_rules[ $media_condition ]  .= $media_content;
-		}
-
-		// 2. remove all the media queries from the primary css.
-		$tailwind_css = (string) preg_replace(
-			'/@media[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/',
-			'',
-			$tailwind_css
-		);
-
-		// 3. merge all the media queries.
+	/**
+	 * @param array<string,string> $media_rules
+	 */
+	protected function merge_media_rules( array $media_rules ): string {
 		$condition_css = '';
 
 		foreach ( $media_rules as $media_condition => $media_content ) {
@@ -80,36 +64,7 @@ final class Tailwind_Integrator {
 				'';
 		}
 
-		$primary_css = $this->get_unique_rules( $tailwind_css );
-
-		return $primary_css . $condition_css;
-	}
-
-	public function get_global_styles(): string {
-		$globals_file = $this->find_globals_file();
-		$is_found     = strlen( $globals_file ) > 0;
-
-		if ( $is_found ) {
-			$wp_filesystem = $this->file_system->get_wp_filesystem();
-
-			return (string) $wp_filesystem->get_contents( $globals_file );
-		}
-
-		return '';
-	}
-
-	protected function find_globals_file(): string {
-		if ( $this->file_system->is_active() ) {
-			$base_folder           = $this->file_system->get_target_base_folder();
-			$tailwind_globals_file = sprintf( '%s/tailwind.css', $base_folder );
-			$wp_filesystem         = $this->file_system->get_wp_filesystem();
-
-			if ( $wp_filesystem->exists( $tailwind_globals_file ) ) {
-				return $tailwind_globals_file;
-			}
-		}
-
-		return '';
+		return $condition_css;
 	}
 
 	protected function get_unique_rules( string $css, string $prefix = '' ): string {
@@ -165,5 +120,37 @@ final class Tailwind_Integrator {
 		}
 
 		return $merged_css;
+	}
+
+	/**
+	 * @return array<string,string> media condition => its rules
+	 */
+	protected static function extract_media_rules( string $tailwind_css ): array {
+		preg_match_all(
+			'/(@media[^{]*)\{((?:[^{}]*\{[^{}]*\})*[^{}]*)\}/',
+			$tailwind_css,
+			$media_queries,
+			PREG_SET_ORDER
+		);
+
+		$media_rules = array();
+
+		foreach ( $media_queries as $media_query ) {
+			$media_condition = trim( $media_query[1] );
+			$media_content   = trim( $media_query[2] );
+
+			$media_rules[ $media_condition ] ??= '';
+			$media_rules[ $media_condition ]  .= $media_content;
+		}
+
+		return $media_rules;
+	}
+
+	protected static function strip_media_queries( string $tailwind_css ): string {
+		return (string) preg_replace(
+			'/@media[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/',
+			'',
+			$tailwind_css
+		);
 	}
 }
