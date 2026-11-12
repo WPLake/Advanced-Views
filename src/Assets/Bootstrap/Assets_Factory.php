@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Assets\Rework\Interactivity_Loader;
 use Org\Wplake\Advanced_Views\Assets\Rework\Tailwind_Integrator;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
@@ -28,7 +29,8 @@ class Assets_Factory extends Factory_Base {
 			$this->resolve( Html_Renderer::class ),
 			$this->resolve( Style_Builder::class ),
 			$this->resolve( Library_Container::class ),
-			$this->tailwind_merger()
+			$this->tailwind_merger(),
+			$this->resolve( Interactivity_Loader::class )
 		);
 	}
 

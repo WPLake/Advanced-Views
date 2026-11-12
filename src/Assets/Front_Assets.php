@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Assets;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Assets\Rework\Code_Minifier;
+use Org\Wplake\Advanced_Views\Assets\Rework\Interactivity_Loader;
 use Org\Wplake\Advanced_Views\Assets\Rework\Tailwind_Integrator;
 use Org\Wplake\Advanced_Views\Assets\Rework\Web_Component_Builder;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
@@ -31,7 +32,7 @@ defined( 'ABSPATH' ) || exit;
 class Front_Assets extends Actor_Base implements Actor {
 	private Script_Loader $script_loader;
 	private ?int $buffer_level;
-	private bool $is_custom_interactivity_api_import_map_required;
+	private Interactivity_Loader $interactivity_loader;
 	/**
 	 * @var array<string, string>
 	 */
@@ -50,10 +51,9 @@ class Front_Assets extends Actor_Base implements Actor {
 	protected Html_Renderer $html_renderer;
 	private Library_Container $library_container;
 
-	public function __construct( Asset_Resolver $asset_resolver, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Style_Builder $style_builder, Library_Container $library_container, Tailwind_Integrator $tailwind_merger ) {
+	public function __construct( Asset_Resolver $asset_resolver, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Style_Builder $style_builder, Library_Container $library_container, Tailwind_Integrator $tailwind_merger, Interactivity_Loader $interactivity_loader ) {
 		$this->script_loader                                   = new Script_Loader( $asset_resolver );
 		$this->buffer_level                                    = null;
-		$this->is_custom_interactivity_api_import_map_required = false;
 
 		$this->inline_js_code          = array();
 		$this->include_css_code        = array();
@@ -61,6 +61,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$this->style_loader            = new Style_Loader( $asset_resolver, $style_builder );
 		$this->tailwind_asset_ids      = array();
 		$this->tailwind_merger         = $tailwind_merger;
+		$this->interactivity_loader    = $interactivity_loader;
 		$this->html_renderer           = $html_renderer;
 		$this->library_container       = $library_container;
 	}
@@ -70,38 +71,12 @@ class Front_Assets extends Actor_Base implements Actor {
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {
-		self::add_filter(
-			'script_module_loader_src',
-			array( $this, 'catch_interactivity_api_script_url' ),
-			10,
-			2
-		);
 		self::add_action( 'wp_footer', array( $this, 'enqueue_assets' ) );
 		// printCustomAssets() contains ob_get_clean, so must be executed after all other scripts.
 		self::add_action( 'wp_footer', array( $this, 'print_assets' ), 9999 );
 		self::add_action( 'wp_head', array( $this, 'print_styles_stub' ) );
 		// don't use 'get_header', as it doesn't work in blocks theme.
 		self::add_action( 'template_redirect', array( $this, 'start_buffering' ) );
-	}
-
-	protected static function print_interactivity_api_import_map( string $interactivity_api_script_url ): void {
-		$imports   = array(
-			'@wordpress/interactivity' => $interactivity_api_script_url,
-		);
-		$data      = array(
-			'imports' => $imports,
-		);
-		$json_data = (string) wp_json_encode(
-			$data,
-			JSON_HEX_TAG | JSON_HEX_AMP
-		);
-
-		$attributes = array(
-			'type' => 'importmap',
-			'id'   => 'avf-importmap',
-		);
-
-		wp_print_inline_script_tag( $json_data, $attributes );
 	}
 
 	public function start_buffering(): void {
@@ -130,7 +105,7 @@ class Front_Assets extends Actor_Base implements Actor {
 
 		if ( strlen( $js_code ) > 0 ) {
 			if ( $cpt_settings->is_wp_interactivity_in_use() ) {
-				$this->is_custom_interactivity_api_import_map_required = true;
+				$this->interactivity_loader->require_interactivity();
 			}
 
 			$this->inline_js_code[ $unique_id ] = Web_Component_Builder::build_component_js( $cpt_settings, $js_code );
@@ -278,12 +253,6 @@ class Front_Assets extends Actor_Base implements Actor {
 	}
 
 	public function enqueue_assets(): void {
-		// enqueue wp interactivity, as in non-block themes it isn't enqueued by default.
-		if ( $this->is_custom_interactivity_api_import_map_required &&
-			function_exists( 'wp_enqueue_script_module' ) ) {
-			wp_enqueue_script_module( '@wordpress/interactivity' );
-		}
-
 		foreach ( $this->library_container->get_all() as $pattern ) {
 			$script_provider = $pattern->get_js_library();
 			$style_provider  = $pattern->get_css_library();
@@ -300,22 +269,6 @@ class Front_Assets extends Actor_Base implements Actor {
 				$this->style_loader->enqueue_styles( $name, $style_provider );
 			}
 		}
-	}
-
-	/**
-	 * Classic themes (WP 6.7+) have no way to enqueue the iApi script and get its import map printed,
-	 * and a fixed url can't be used, as iApi script urls are versioned
-	 * (see wp-includes/assets/script-modules-packages.min.php).
-	 */
-	public function catch_interactivity_api_script_url( string $src, string $id ): string {
-		if ( '@wordpress/interactivity' === $id &&
-			$this->is_custom_interactivity_api_import_map_required ) {
-			$this->is_custom_interactivity_api_import_map_required = false;
-
-			self::print_interactivity_api_import_map( $src );
-		}
-
-		return $src;
 	}
 
 	protected function mark_tailwind_asset( string $unique_id, string $css_source ): void {

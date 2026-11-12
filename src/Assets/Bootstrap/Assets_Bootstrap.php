@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Assets\Rework\Interactivity_Loader;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 
@@ -25,6 +26,7 @@ class Assets_Bootstrap extends Bootstrap_Base {
 		return array(
 			Front_Assets::class,
 			Admin_Assets::class,
+			Interactivity_Loader::class,
 		);
 	}
 }
