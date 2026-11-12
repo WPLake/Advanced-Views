@@ -4,6 +4,9 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Assets\Rework;
 
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
@@ -11,7 +14,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
-class Assets_Output_Injector {
+class Assets_Output_Injector extends Actor_Base implements Actor {
 	private Inline_Assets_Renderer $assets_renderer;
 	private Live_Reloader_Component $live_reloader_component;
 	private Html_Renderer $html_renderer;
@@ -22,6 +25,18 @@ class Assets_Output_Injector {
 		$this->live_reloader_component = $live_reloader_component;
 		$this->html_renderer           = $html_renderer;
 		$this->buffer_level            = null;
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return ! $route_detector->is_admin_route();
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		// print_assets() contains ob_get_clean, so must be executed after all other scripts.
+		self::add_action( 'wp_footer', array( $this, 'print_assets' ), 9999 );
+		self::add_action( 'wp_head', array( $this, 'print_styles_stub' ) );
+		// don't use 'get_header', as it doesn't work in blocks theme.
+		self::add_action( 'template_redirect', array( $this, 'start_buffering' ) );
 	}
 
 	public function start_buffering(): void {
