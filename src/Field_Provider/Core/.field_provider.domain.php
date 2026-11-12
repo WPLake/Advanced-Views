@@ -3,7 +3,7 @@
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core;
 
 use Architecture\Policy\Domain_Policy;
-use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\field_type_domain;
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Types\field_types_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Core\post_type_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\layouts_cpt_domain;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\frontend_libraries_domain;
@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\template_token_doma
 
 class field_provider_domain extends Domain_Policy {
 	const WHITELIST_DOMAINS = [
-		field_type_domain::class,
+		field_types_domain::class,
 		template_token_domain::class,
 		// todo break cycle-dependency
 		post_type_domain::class,

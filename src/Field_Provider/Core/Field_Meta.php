@@ -14,10 +14,6 @@ class Field_Meta {
 	private string $name;
 	private string $label;
 	private string $identifier;
-	/**
-	 * @var class-string|''
-	 */
-	private string $field_class;
 	private bool $is_pro_only;
 	private string $type;
 	private string $return_format;
@@ -51,7 +47,6 @@ class Field_Meta {
 		$this->name           = '';
 		$this->label          = '';
 		$this->identifier     = '';
-		$this->field_class    = '';
 		$this->is_pro_only    = false;
 		$this->type           = '';
 		$this->return_format  = '';
@@ -85,13 +80,6 @@ class Field_Meta {
 
 	public function get_identifier(): string {
 		return $this->identifier;
-	}
-
-	/**
-	 * @return class-string|''
-	 */
-	public function get_field_class(): string {
-		return $this->field_class;
 	}
 
 	public function is_pro_only(): bool {
@@ -217,15 +205,6 @@ class Field_Meta {
 	 */
 	public function set_identifier( string $identifier ): self {
 		$this->identifier = $identifier;
-
-		return $this;
-	}
-
-	/**
-	 * @param class-string|'' $field_class
-	 */
-	public function set_field_class( string $field_class ): self {
-		$this->field_class = $field_class;
 
 		return $this;
 	}

@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Ligh
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Types\Image_Field_Type;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Pattern\Style_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
@@ -30,7 +31,7 @@ final class Lightbox_Pattern implements Template_Pattern, Style_Pattern {
 	public static function get_item_attributes( Variable_Token $item ): array {
 		return array(
 			'data-full-size' => $item->clone()
-				->add_item_path( 'full_size' ),
+				->add_item_path( Image_Field_Type::FULL_SIZE ),
 		);
 	}
 

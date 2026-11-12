@@ -7,7 +7,6 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Fields\List_Field_Type;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Template_Field_Meta;
@@ -21,7 +20,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-abstract class List_Field extends List_Field_Type implements Markup_Field {
+abstract class List_Field implements Markup_Field {
 	use Markup_Field_Base;
 
 	const LOOP_ITEM_NAME    = 'item';

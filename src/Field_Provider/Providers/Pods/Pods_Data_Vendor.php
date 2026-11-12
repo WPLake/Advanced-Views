@@ -236,7 +236,6 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 
 		$name           = string( $data, 'name' );
 		$label          = string( $data, 'label' );
-		$field_class    = $this->get_field_class( $field_type );
 		$display_format = $this->get_display_format( $data );
 		$choices        = $this->get_choices( $data );
 		$is_repeatable  = boolExtended( $data, 'repeatable' );
@@ -268,7 +267,6 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			->set_type( $field_type )
 			->set_label( $label )
 			->set_identifier( $name )
-			->set_field_class( $field_class )
 			->set_display_format( $display_format )
 			->set_return_format( $return_format )
 			->set_is_multiple( 'multi' === $format_type )

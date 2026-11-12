@@ -225,7 +225,6 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 		$name           = string( $data, 'name' );
 		$type           = string( $data, 'type' );
 		$label          = string( $data, 'label' );
-		$field_class    = $this->get_field_class( $type );
 		$pro_stub_types = $this->get_pro_stub_field_types();
 		$return_format  = string( $data, 'return_format' );
 		$choices        = arr( $data, 'choices' );
@@ -247,7 +246,6 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 			->set_type( $type )
 			->set_label( $label )
 			->set_identifier( $name )
-			->set_field_class( $field_class )
 			->set_is_pro_only( $is_pro_only )
 			->set_return_format( $return_format )
 			->set_choices( $choices )

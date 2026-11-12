@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Masonry;
 
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library_Base;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\Layout_Library_Base;
 
 defined( 'ABSPATH' ) || exit;
 

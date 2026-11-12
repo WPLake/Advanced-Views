@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Ga
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Field_Provider\Field_Types\Image_Field_Type;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Variables;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Pattern\Style_Pattern;
@@ -42,9 +43,9 @@ final class Lightbox_Pattern implements Template_Pattern, Script_Pattern, Style_
 	public static function data_attributes( Variable_Token $target ): array {
 		return array(
 			'data-src'      => $target->clone()
-				->add_item_path( 'full_size' ),
+				->add_item_path( Image_Field_Type::FULL_SIZE ),
 			'data-sub-html' => $target->clone()
-				->add_item_path( 'caption' ),
+				->add_item_path( Image_Field_Type::CAPTION ),
 		);
 	}
 

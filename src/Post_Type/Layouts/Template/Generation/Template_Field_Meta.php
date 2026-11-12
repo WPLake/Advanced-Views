@@ -6,9 +6,9 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation;
 
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Field_Context\Field_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Row_Composer;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Outers_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Pattern_Container;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\Outers_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\Pattern_Container;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\Layout_Library;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;

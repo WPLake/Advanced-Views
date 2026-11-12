@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout;
+namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout;
 
 defined( 'ABSPATH' ) || exit;
 

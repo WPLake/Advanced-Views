@@ -3,14 +3,14 @@
 namespace Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries;
 
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\frontend_library_domain;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\layout_library_domain;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Selection\selection_library_domain;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\layout_library_adapter_domain;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection\selection_library_adapter_domain;
 
 class frontend_libraries_domain extends frontend_library_domain {
 	const WHITELIST_DOMAINS = [
 		parent::class,
-		layout_library_domain::class,
-		selection_library_domain::class,
+		layout_library_adapter_domain::class,
+		selection_library_adapter_domain::class,
 		...parent::WHITELIST_DOMAINS
 	];
 }

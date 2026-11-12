@@ -8,8 +8,8 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\dashboard_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Core\post_type_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\layouts_cpt_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\post_selections_cpt_domain;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\layout_library_domain;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Selection\selection_library_domain;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\layout_library_adapter_domain;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection\selection_library_adapter_domain;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\frontend_library_domain;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\frontend_libraries_domain;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\template_token_domain;
@@ -27,8 +27,8 @@ class assets_domain extends Domain_Policy {
 		post_selections_cpt_domain::class,
 		// todo break cycle-dependency (library_pattern <-> assets)
 		frontend_library_domain::class,
-		layout_library_domain::class,
-		selection_library_domain::class,
+		layout_library_adapter_domain::class,
+		selection_library_adapter_domain::class,
 		frontend_libraries_domain::class,
 		template_token_domain::class,
 	];

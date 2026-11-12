@@ -13,9 +13,9 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Pattern\Style_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Pattern\Script_Pattern;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Layout\Layout_Library_Base;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Selection\Selection_Code_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Selection\Selection_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\Layout_Library_Base;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection\Selection_Code_Builder;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection\Selection_Library;
 
 defined( 'ABSPATH' ) || exit;
 

@@ -110,14 +110,11 @@ final class Woo_Data_Vendor extends Field_Provider_Base {
 			$real_field_name = self::get_real_field_name( $field_id );
 
 			$field_names = self::get_fields_with_labels()[ $field_id ] ?? array();
-			$field_class = $this->get_field_class( $field_id );
-
 			$field_meta
 				->set_type( $field_id )
 				->set_name( $real_field_name )
 				->set_label( $field_names['label'] ?? '' )
 				->set_identifier( $field_names['identifier'] ?? '' )
-				->set_field_class( $field_class )
 				->set_is_field_exist( true );
 
 			if ( Woo_Fields::FIELD_GALLERY === $field_id ) {

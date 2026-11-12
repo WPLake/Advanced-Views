@@ -30,7 +30,7 @@ interface Template_Pattern {
 
 	/**
 	 * Dynamic values are clones of the item token with an item path of the item's field, so a pattern using them
-	 * must be attached to an element whose items have that property (e.g. Gallery_Field_Type, not any List_Field_Type).
+	 * must be attached to an element whose items have that property (e.g. Gallery_Field, not any List_Field).
 	 *
 	 * @return array<string,string|Variable_Token>
 	 */

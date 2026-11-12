@@ -217,7 +217,6 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 
 		$name           = string( $data, 'name' );
 		$identifier     = string( $data, 'id' );
-		$field_class    = $this->get_field_class( $field_type );
 		$choices        = arr( $data, 'options' );
 		$is_multiple    = boolExtended( $data, 'multiple' );
 		$save_format    = string( $data, 'save_format' );
@@ -241,7 +240,6 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			->set_type( $field_type )
 			->set_label( $label )
 			->set_identifier( $identifier )
-			->set_field_class( $field_class )
 			->set_choices( $choices )
 			->set_is_multiple( $is_multiple )
 			->set_return_format( $save_format )

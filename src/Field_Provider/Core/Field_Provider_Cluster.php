@@ -8,7 +8,6 @@ defined( 'ABSPATH' ) || exit;
 
 use DateTime;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Field_Provider\Field_Type\Field_Type;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
@@ -737,37 +736,16 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	}
 
 	/**
-	 * Format is 'common:specific', e.g. 'list:file' for the vendor's 'file' type rendered by a List-based field class.
-	 * The specific part is shown only for the vendor-native types (built-in fields like Woo's or WP's have internal ones),
-	 * the common part exists only for the Field_Type classes, and equal parts are shown once.
+	 * The type is shown only for the vendor-native types (built-in fields like Woo's or WP's have internal ones).
 	 */
 	protected static function resolve_type_label( Field_Meta $field_meta ): string {
 		// repeatable fields are 'group' in the meta, while the original is kept in the self-repeatable one.
 		$self_repeatable_meta = $field_meta->get_self_repeatable_meta();
 		$type_meta            = $self_repeatable_meta ?? $field_meta;
-		$field_class          = $type_meta->get_field_class();
-
-		$is_field_type_class = is_a(
-			$field_class,
-			Field_Type::class,
-			true
-		);
-
-		$common   = $is_field_type_class ?
-			$field_class::_TYPE_ :
-			'';
-		$specific = $type_meta->is_native_type() ?
+		$type                 = $type_meta->is_native_type() ?
 			$type_meta->get_type() :
 			'';
-
-		$candidates = array( $common, $specific );
-		$parts      = array_filter(
-			$candidates,
-			static fn( string $part ): bool => strlen( $part ) > 0
-		);
-		$unique     = array_unique( $parts );
-		$type       = implode( ':', $unique );
-		$is_filled  = strlen( $type ) > 0;
+		$is_filled            = strlen( $type ) > 0;
 
 		if ( $is_filled && null !== $self_repeatable_meta ) {
 			$repeatable_label = __( 'repeatable', 'acf-views' );
