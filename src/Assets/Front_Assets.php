@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Assets;
 
 use Closure;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Assets\Rework\Patterns_Registry;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -52,9 +52,9 @@ class Front_Assets extends Actor_Base implements Actor {
 	private File_System $file_system;
 	protected Html_Renderer $html_renderer;
 	private Code_Marker $code_marker;
-	private Patterns_Registry $patterns_registry;
+	private Library_Container $library_container;
 
-	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Code_Marker $code_marker, Style_Builder $style_builder, Patterns_Registry $patterns_registry ) {
+	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Code_Marker $code_marker, Style_Builder $style_builder, Library_Container $library_container ) {
 		$this->script_loader                               = new Script_Loader( $asset_resolver );
 		$this->file_system                                     = $file_system;
 		$this->buffer_level                                    = null;
@@ -67,7 +67,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$this->tailwind_css_rules      = array();
 		$this->html_renderer           = $html_renderer;
 		$this->code_marker             = $code_marker;
-		$this->patterns_registry       = $patterns_registry;
+		$this->library_container       = $library_container;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -334,7 +334,7 @@ class Front_Assets extends Actor_Base implements Actor {
 			$this->inline_js_code[ $unique_id ] = $inline_js_code;
 		}
 
-		foreach ( $this->patterns_registry->get_all() as $pattern ) {
+		foreach ( $this->library_container->get_all() as $pattern ) {
 			if ( $pattern instanceof Layout_Library &&
 				$cpt_settings instanceof Layout_Settings ) {
 				$pattern->maybe_activate_layout( $cpt_settings );
@@ -505,7 +505,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	protected function collect_marked_pieces( Closure $generate_pieces ): array {
 		$marked_pieces = array();
 
-		foreach ( $this->patterns_registry->get_all() as $pattern ) {
+		foreach ( $this->library_container->get_all() as $pattern ) {
 			$auto_discover_name = $pattern->get_auto_discover_name();
 			$pieces             = $generate_pieces( $pattern );
 
@@ -559,7 +559,7 @@ class Front_Assets extends Actor_Base implements Actor {
 			wp_enqueue_script_module( '@wordpress/interactivity' );
 		}
 
-		foreach ( $this->patterns_registry->get_all() as $pattern ) {
+		foreach ( $this->library_container->get_all() as $pattern ) {
 			$script_provider  = $pattern->get_js_library();
 			$style_provider = $pattern->get_css_library();
 

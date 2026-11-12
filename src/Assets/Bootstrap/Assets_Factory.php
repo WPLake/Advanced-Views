@@ -10,20 +10,15 @@ use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Code_Marker;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
-use Org\Wplake\Advanced_Views\Assets\Rework\Patterns_Registry;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Cpt\Layout_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Cpt\Selection_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Lightbox\Lightbox_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Map\Map_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Light_Gallery_Library;
 
 class Assets_Factory extends Factory_Base {
 	public function front_assets(): Front_Assets {
@@ -34,14 +29,7 @@ class Assets_Factory extends Factory_Base {
 			$this->resolve( Html_Renderer::class ),
 			$this->resolve( Code_Marker::class ),
 			$this->resolve( Style_Builder::class ),
-			$this->resolve( Patterns_Registry::class )
-		);
-	}
-
-	public function patterns_registry(): Patterns_Registry {
-		return new Patterns_Registry(
-			$this->resolve( Instance_Container::class ),
-			$this->pattern_classes()
+			$this->resolve( Library_Container::class )
 		);
 	}
 
@@ -49,17 +37,6 @@ class Assets_Factory extends Factory_Base {
 		return new Admin_Assets(
 			$this->resolve( Asset_Resolver::class ),
 			$this->interactive_fields()
-		);
-	}
-
-	/**
-	 * @return class-string<Frontend_Library>[]
-	 */
-	protected function pattern_classes(): array {
-		return array(
-			Map_Library::class,
-			Light_Gallery_Library::class,
-			Lightbox_Library::class,
 		);
 	}
 

@@ -4,12 +4,8 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Assets\Rework;
 
-use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
-use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\Layout_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection\Selection_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Builder\Template_Builder;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
@@ -18,43 +14,11 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Var
 
 defined( 'ABSPATH' ) || exit;
 
-class Patterns_Registry extends Factory_Base {
-	/**
-	 * @var array<string,Frontend_Library>
-	 */
-	private array $patterns;
+class Selection_Card_Composer {
+	private Library_Container $library_container;
 
-	/**
-	 * @param class-string<Frontend_Library>[] $pattern_classes Later classes override the earlier ones with the same pattern name
-	 */
-	public function __construct( Instance_Container $container, array $pattern_classes ) {
-		parent::__construct( $container );
-
-		$this->patterns = array();
-
-		$this->register_patterns( $pattern_classes );
-	}
-
-	/**
-	 * @return array<string,Frontend_Library>
-	 */
-	public function get_all(): array {
-		return $this->patterns;
-	}
-
-	/**
-	 * @param string[] $names
-	 *
-	 * @return Layout_Library[]
-	 */
-	public function resolve_template_patterns( array $names ): array {
-		$names_keys       = array_flip( $names );
-		$patterns_by_name = array_intersect_key( $this->patterns, $names_keys );
-
-		return array_filter(
-			$patterns_by_name,
-			fn( $pattern ) => $pattern instanceof Layout_Library
-		);
+	public function __construct( Library_Container $library_container ) {
+		$this->library_container = $library_container;
 	}
 
 	public function get_card_items_wrapper( Post_Selection_Settings $post_selection_settings ): ?Html_Tag {
@@ -94,23 +58,12 @@ class Patterns_Registry extends Factory_Base {
 	}
 
 	/**
-	 * @param class-string<Frontend_Library>[] $pattern_classes
-	 */
-	protected function register_patterns( array $pattern_classes ): void {
-		foreach ( $pattern_classes as $pattern_class ) {
-			$pattern = $this->resolve( $pattern_class );
-
-			$this->patterns[ $pattern->get_name() ] = $pattern;
-		}
-	}
-
-	/**
 	 * @return class-string<Template_Pattern>[]
 	 */
 	protected function resolve_selection_template_patterns( Post_Selection_Settings $post_selection_settings ): array {
 		$template_patterns = array();
 
-		foreach ( $this->patterns as $pattern ) {
+		foreach ( $this->library_container->get_all() as $pattern ) {
 			if ( $pattern instanceof Selection_Library &&
 				$pattern->is_target_selection( $post_selection_settings ) ) {
 				$template_pattern = $pattern->get_selection_template_pattern( $post_selection_settings );
