@@ -31,7 +31,7 @@ class Tailwind_Integrator {
 	}
 
 	public function is_tailwind( string $css ): bool {
-		return str_contains( $css, self::MARKER );
+		return false !== strpos( $css, self::MARKER );
 	}
 
 	public function register_asset( string $unique_id, string $css_source ): void {
