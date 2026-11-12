@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Runtime\Front_Asset_Loader;
 use Org\Wplake\Advanced_Views\Assets\Runtime\Script\Interactivity_Loader;
 use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Front_Page_Buffer;
-use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Inline_Style_Injector;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Style_Injector;
 use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind_Integrator;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
@@ -29,7 +29,7 @@ class Assets_Bootstrap extends Bootstrap_Base {
 		return array(
 			Front_Page_Buffer::class,
 			Front_Asset_Loader::class,
-			Inline_Style_Injector::class,
+			Style_Injector::class,
 			Admin_Assets::class,
 			Interactivity_Loader::class,
 		);

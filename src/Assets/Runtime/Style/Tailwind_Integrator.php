@@ -5,7 +5,6 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Assets\Runtime\Style;
 
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Code_Minifier;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 
 defined( 'ABSPATH' ) || exit;
@@ -19,34 +18,15 @@ class Tailwind_Integrator {
 	 * @var array<string,true>
 	 */
 	private array $css_rules;
-	/**
-	 * @var array<string,true>
-	 */
-	private array $asset_ids;
 
 	public function __construct( File_System $file_system, Live_Reloader_Component $live_reloader_component ) {
 		$this->file_system             = $file_system;
 		$this->live_reloader_component = $live_reloader_component;
 		$this->css_rules               = array();
-		$this->asset_ids               = array();
 	}
 
 	public function is_tailwind( string $css ): bool {
 		return false !== strpos( $css, self::MARKER );
-	}
-
-	public function register_asset( string $unique_id, string $css_source ): void {
-		if ( $this->is_tailwind( $css_source ) ) {
-			$this->asset_ids[ $unique_id ] = true;
-
-			return;
-		}
-
-		unset( $this->asset_ids[ $unique_id ] );
-	}
-
-	public function is_tailwind_asset( string $unique_id ): bool {
-		return key_exists( $unique_id, $this->asset_ids );
 	}
 
 	/**
@@ -54,14 +34,14 @@ class Tailwind_Integrator {
 	 */
 	public function reset(): self {
 		$this->css_rules = array();
-		$this->asset_ids = array();
 
 		return $this;
 	}
 
+	/**
+	 * @param string $tailwind_css must be minified, the parsing relies on it.
+	 */
 	public function merge( string $tailwind_css ): string {
-		$tailwind_css = Code_Minifier::minify_css( $tailwind_css );
-
 		// 1. get all the media queries.
 		preg_match_all( '/(@media[^{]*)\{((?:[^{}]*\{[^{}]*\})*[^{}]*)\}/', $tailwind_css, $media_queries, PREG_SET_ORDER );
 
@@ -100,9 +80,7 @@ class Tailwind_Integrator {
 			$wp_filesystem         = $this->file_system->get_wp_filesystem();
 
 			if ( $wp_filesystem->exists( $tailwind_globals_file ) ) {
-				$tailwind_styles = (string) $wp_filesystem->get_contents( $tailwind_globals_file );
-
-				return Code_Minifier::minify_css( $tailwind_styles );
+				return (string) $wp_filesystem->get_contents( $tailwind_globals_file );
 			}
 		}
 

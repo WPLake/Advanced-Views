@@ -2,11 +2,9 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Assets\Rework;
+namespace Org\Wplake\Advanced_Views\Post_Type\Core\Asset;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Assets\Runtime\Script\Interactivity_Loader;
-use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind_Integrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Cpt_Component_Composer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
@@ -17,8 +15,6 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Container;
 defined( 'ABSPATH' ) || exit;
 
 class Cpt_Assets_Collector {
-	private Tailwind_Integrator $tailwind_integrator;
-	private Interactivity_Loader $interactivity_loader;
 	private Library_Container $library_container;
 	/**
 	 * @var array<string, string>
@@ -28,34 +24,28 @@ class Cpt_Assets_Collector {
 	 * @var array<string, string>
 	 */
 	private array $js_code;
+	private bool $is_interactivity_required;
 
-	public function __construct(
-		Tailwind_Integrator $tailwind_integrator,
-		Interactivity_Loader $interactivity_loader,
-		Library_Container $library_container
-	) {
-		$this->tailwind_integrator  = $tailwind_integrator;
-		$this->interactivity_loader = $interactivity_loader;
-		$this->library_container    = $library_container;
-		$this->css_code             = array();
-		$this->js_code              = array();
+	public function __construct( Library_Container $library_container ) {
+		$this->library_container         = $library_container;
+		$this->css_code                  = array();
+		$this->js_code                   = array();
+		$this->is_interactivity_required = false;
 	}
 
 	public function add_asset( Cpt_Settings $cpt_settings ): void {
 		$unique_id = $cpt_settings->get_unique_id();
-		$css_code  = Cpt_Component_Composer::compose_css( $cpt_settings );
+		$css_code  = $cpt_settings->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
 		$js_code   = Cpt_Component_Composer::compose_js( $cpt_settings );
 
-		if ( strlen( $css_code ) > 0 &&
+		if ( '' !== trim( $css_code ) &&
 			false === $cpt_settings->is_css_internal() ) {
 			$this->css_code[ $unique_id ] = $css_code;
-
-			$this->tailwind_integrator->register_asset( $unique_id, $cpt_settings->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY ) );
 		}
 
 		if ( strlen( $js_code ) > 0 ) {
 			if ( $cpt_settings->is_wp_interactivity_in_use() ) {
-				$this->interactivity_loader->require_interactivity();
+				$this->is_interactivity_required = true;
 			}
 
 			$this->js_code[ $unique_id ] = $js_code;
@@ -65,14 +55,18 @@ class Cpt_Assets_Collector {
 	}
 
 	/**
-	 * @return array<string, string>
+	 * @return array<string, string> raw, not minified
 	 */
 	public function get_css_code(): array {
 		return $this->css_code;
 	}
 
+	public function is_interactivity_required(): bool {
+		return $this->is_interactivity_required;
+	}
+
 	/**
-	 * @return array<string, string>
+	 * @return array<string, string> raw (already wrapped into the web component), not minified
 	 */
 	public function get_js_code(): array {
 		return $this->js_code;

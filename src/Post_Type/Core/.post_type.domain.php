@@ -7,6 +7,9 @@ use Org\Wplake\Advanced_Views\Assets\assets_domain;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\field_provider_domain;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\dashboard_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Library\cpt_library_integration_domain;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\layout_library_adapter_domain;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection\selection_library_adapter_domain;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\frontend_library_domain;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\template_engine_domain;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\template_token_domain;
 
@@ -19,6 +22,9 @@ class post_type_domain extends Domain_Policy {
 		// todo break cycle-dependency (cpt_library_integration <-> post_type)
 		cpt_library_integration_domain::class,
 		field_provider_domain::class,
+		frontend_library_domain::class,
+		layout_library_adapter_domain::class,
+		selection_library_adapter_domain::class,
 		template_engine_domain::class,
 		template_token_domain::class,
 	];

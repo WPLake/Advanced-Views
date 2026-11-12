@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
-use Org\Wplake\Advanced_Views\Assets\Rework\Cpt_Assets_Collector;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Asset\Cpt_Assets_Collector;
 use WP_REST_Request;
 
 abstract class Instance_Factory {

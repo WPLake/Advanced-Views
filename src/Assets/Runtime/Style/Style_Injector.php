@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Reloader_Root_Marke
 
 defined( 'ABSPATH' ) || exit;
 
-class Inline_Style_Injector extends Actor_Base implements Actor {
+class Style_Injector extends Actor_Base implements Actor {
 	const STUB            = '<!--advanced-views:styles-->';
 	const CUSTOM_LOCATION = '<!--advanced-views:styles/custom-location-->';
 
