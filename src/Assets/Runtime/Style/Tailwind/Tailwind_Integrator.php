@@ -68,6 +68,30 @@ final class Tailwind_Integrator {
 	}
 
 	protected function get_unique_rules( string $css, string $prefix = '' ): string {
+		$css_rules = $this->register_new_rules( $css, $prefix );
+
+		$prefix_length              = strlen( $prefix );
+		$is_important_rule_required = $prefix_length > 0 &&
+									$this->live_reloader_component->is_active();
+		$merged_css                 = '';
+
+		foreach ( $css_rules as $selector => $rules ) {
+			$rules = $is_important_rule_required ?
+				self::mark_important( $rules ) :
+				$rules;
+
+			$merged_css .= sprintf( '%s{%s}', $selector, $rules );
+		}
+
+		return $merged_css;
+	}
+
+	/**
+	 * Keeps only the rules that weren't printed yet, and remembers them.
+	 *
+	 * @return array<string,string> selector => rules
+	 */
+	protected function register_new_rules( string $css, string $prefix ): array {
 		/**
 		 * Covers the following cases:
 		 * 1. '.class{}',
@@ -99,27 +123,7 @@ final class Tailwind_Integrator {
 			}
 		}
 
-		$prefix_length              = strlen( $prefix );
-		$is_important_rule_required = $prefix_length > 0 &&
-									$this->live_reloader_component->is_active();
-		$merged_css                 = '';
-
-		foreach ( $css_rules as $selector => $rules ) {
-			// tailwind @media rules require '!important' to make sure they work regardless of the position
-			// (it's actual with the live reloading mode).
-			if ( $is_important_rule_required ) {
-				$rules  = str_replace(
-					';',
-					'!important;',
-					$rules
-				);
-				$rules .= '!important';
-			}
-
-			$merged_css .= $selector . '{' . $rules . '}';
-		}
-
-		return $merged_css;
+		return $css_rules;
 	}
 
 	/**
@@ -152,5 +156,19 @@ final class Tailwind_Integrator {
 			'',
 			$tailwind_css
 		);
+	}
+
+	/**
+	 * Tailwind @media rules require '!important' to work regardless of the position
+	 * (it's actual with the live reloading mode).
+	 */
+	protected static function mark_important( string $rules ): string {
+		$important_rules = str_replace(
+			';',
+			'!important;',
+			$rules
+		);
+
+		return sprintf( '%s!important', $important_rules );
 	}
 }

@@ -81,9 +81,15 @@ final class Setup_Builder {
 		$statements = array();
 
 		foreach ( $setup as $line ) {
-			$statements[] = '' === $line ?
-				'' :
-				sprintf( '%s%s;', $tabs, $line );
+			$is_filled = strlen( $line ) > 0;
+
+			$statements[] = $is_filled ?
+				sprintf(
+					'%s%s;',
+					$tabs,
+					$line
+				) :
+				'';
 		}
 
 		$new_line = $this->formatter->new_line();

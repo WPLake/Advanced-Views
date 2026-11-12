@@ -54,7 +54,8 @@ final class Style_Builder {
 		$has_selector = strlen( $field_selector ) > 0;
 
 		if ( $has_selector ) {
-			$separator = 0 === strpos( $inner_selector, ':' ) ?
+			$is_pseudo = 0 === strpos( $inner_selector, ':' );
+			$separator = $is_pseudo ?
 				'' :
 				' ';
 
@@ -73,7 +74,11 @@ final class Style_Builder {
 			fn() => $this->compose_declarations( $declarations )
 		);
 		$opening_line = sprintf( '%s {', $selector );
-		$block_lines  = array( $opening_line, $lines, '}' );
+		$block_lines  = array(
+			$opening_line,
+			$lines,
+			'}',
+		);
 
 		return join( $new_line, $block_lines );
 	}

@@ -46,12 +46,11 @@ final class Script_Tag_Composer {
 				'type'                      => 'module',
 				'data-advanced-views-asset' => $name,
 			);
+			$js         = raw_html( $js_code );
 
 			return tag( 'script' )
 				->attributes( $attributes )
-				->content(
-					raw_html( $js_code )
-				);
+				->content( $js );
 		}
 
 		return null;

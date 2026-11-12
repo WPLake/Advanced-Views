@@ -8,7 +8,11 @@ defined( 'ABSPATH' ) || exit;
 
 final class JS_Component_Composer {
 	public static function compose_classic_component( string $tag_name, string $js_code ): string {
-		return self::compose_component( $tag_name, $js_code, '' );
+		return self::compose_component(
+			$tag_name,
+			$js_code,
+			''
+		);
 	}
 
 	public static function compose_shadow_component( string $tag_name, string $js_code ): string {
@@ -20,7 +24,11 @@ final class JS_Component_Composer {
 
 		$box_shadow_js = implode( '', $shadow_js_lines );
 
-		return self::compose_component( $tag_name, $js_code, $box_shadow_js );
+		return self::compose_component(
+			$tag_name,
+			$js_code,
+			$box_shadow_js
+		);
 	}
 
 	protected static function compose_component( string $tag_name, string $js_code, string $box_shadow_js ): string {
@@ -32,7 +40,12 @@ final class JS_Component_Composer {
 		);
 
 		if ( is_string( $component_name ) ) {
-			return self::compose_class( $component_name, $tag_name, $js_code, $box_shadow_js );
+			return self::compose_class(
+				$component_name,
+				$tag_name,
+				$js_code,
+				$box_shadow_js
+			);
 		}
 
 		return $js_code;

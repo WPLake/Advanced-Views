@@ -67,8 +67,9 @@ final class Library_Container extends Factory_Base {
 
 		foreach ( $this->library_classes as $library_class ) {
 			$library = $this->resolve( $library_class );
+			$name    = $library->get_name();
 
-			$libraries[ $library->get_name() ] = $library;
+			$libraries[ $name ] = $library;
 		}
 
 		return $libraries;

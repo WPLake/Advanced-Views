@@ -105,10 +105,10 @@ final class Style_Tag_Composer {
 	 * @param array<string,string|bool> $attrs
 	 */
 	protected static function compose_code_tag( array $attrs, string $code ): Html_Tag {
+		$css = raw_html( $code );
+
 		return tag( 'style' )
 			->attributes( $attrs )
-			->content(
-				raw_html( $code )
-			);
+			->content( $css );
 	}
 }

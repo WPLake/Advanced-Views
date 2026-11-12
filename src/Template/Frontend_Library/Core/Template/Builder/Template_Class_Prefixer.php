@@ -23,7 +23,10 @@ final class Template_Class_Prefixer {
 		if ( $is_filled ) {
 			$attributes     = $tag->get_attributes();
 			$static_classes = string( $attributes, 'class' );
-			$class_list     = array( $class_prefix, $static_classes );
+			$class_list     = array(
+				$class_prefix,
+				$static_classes,
+			);
 			$classes        = self::join_classes( $class_list );
 			$name           = $tag->get_name();
 

@@ -62,8 +62,7 @@ final class Library_Script_Loader {
 	}
 
 	protected function enqueue_external_scripts( Script_Provider $provider ): void {
-		$version = $this->asset_resolver->get_version();
-
+		$version          = $this->asset_resolver->get_version();
 		$external_scripts = $provider->get_external_scripts();
 
 		foreach ( $external_scripts as $handle => $script ) {

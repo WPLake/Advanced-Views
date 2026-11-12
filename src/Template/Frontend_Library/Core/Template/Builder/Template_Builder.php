@@ -118,8 +118,9 @@ final class Template_Builder {
 		$merged_attrs = $merged instanceof Html_Tag ?
 			$merged->get_attributes() :
 			array();
+		$outer_attrs  = $outer->get_attributes();
 		$name         = $outer->get_name();
-		$attrs        = array_merge( $merged_attrs, $outer->get_attributes() );
+		$attrs        = array_merge( $merged_attrs, $outer_attrs );
 
 		return tag( $name )
 			->attributes( $attrs );
