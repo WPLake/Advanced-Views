@@ -19,7 +19,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Rendering\Token_Tre
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-final class Web_Component_Renderer {
+final class Cpt_Component_Renderer {
 	protected WP_Html_Escaper $escaper;
 	protected Tag_Renderer $tag_renderer;
 	protected Html_Renderer $html_renderer;

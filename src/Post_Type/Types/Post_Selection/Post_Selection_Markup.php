@@ -7,8 +7,8 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Cpt_Component_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Cpt_Component_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
@@ -32,10 +32,10 @@ class Post_Selection_Markup {
 	private Selection_Wrapper_Resolver $card_composer;
 	protected Token_Factory_Storage $token_factory_storage;
 	private Layout_Cpt $layout_cpt;
-	protected Web_Component_Renderer $renderer;
-	protected Web_Component_Factory $web_component_factory;
+	protected Cpt_Component_Renderer $renderer;
+	protected Cpt_Component_Factory $web_component_factory;
 
-	public function __construct( Selection_Wrapper_Resolver $card_composer, Token_Factory_Storage $token_factory_storage, Layout_Cpt $layout_cpt, Web_Component_Renderer $renderer, Web_Component_Factory $web_component_factory ) {
+	public function __construct( Selection_Wrapper_Resolver $card_composer, Token_Factory_Storage $token_factory_storage, Layout_Cpt $layout_cpt, Cpt_Component_Renderer $renderer, Cpt_Component_Factory $web_component_factory ) {
 		$this->card_composer         = $card_composer;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->layout_cpt            = $layout_cpt;

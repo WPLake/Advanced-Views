@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Cpt_Component_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Layout_Builder;
 
@@ -18,9 +18,9 @@ final class Layout_Renderer {
 	 */
 	private array $markups_safe;
 	private Layout_Builder $layout_builder;
-	private Web_Component_Renderer $renderer;
+	private Cpt_Component_Renderer $renderer;
 
-	public function __construct( Layout_Builder $layout_builder, Web_Component_Renderer $renderer ) {
+	public function __construct( Layout_Builder $layout_builder, Cpt_Component_Renderer $renderer ) {
 		$this->layout_builder = $layout_builder;
 		$this->renderer       = $renderer;
 		$this->markups_safe   = array();

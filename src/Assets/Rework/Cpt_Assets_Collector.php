@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Assets\Rework;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Cpt_Component_Composer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\Layout_Library;
@@ -58,7 +59,7 @@ class Cpt_Assets_Collector {
 				$this->interactivity_loader->require_interactivity();
 			}
 
-			$this->js_code[ $unique_id ] = Web_Component_Builder::build_component_js( $cpt_settings, $js_code );
+			$this->js_code[ $unique_id ] = Cpt_Component_Composer::compose_js( $cpt_settings, $js_code );
 		}
 
 		$this->activate_libraries( $cpt_settings );

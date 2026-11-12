@@ -8,11 +8,11 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Cpt_Component_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Structure\Row_Policy;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Row\Row_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Structure\Row_Policy;
 use Org\Wplake\Advanced_Views\Template\Html\Composite_Attribute;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
@@ -25,9 +25,9 @@ final class Layout_Builder {
 	private Row_Builder $row_builder;
 	private Row_Policy $row_policy;
 	private Token_Factory_Storage $token_factory_storage;
-	private Web_Component_Factory $web_component_factory;
+	private Cpt_Component_Factory $web_component_factory;
 
-	public function __construct( Row_Builder $row_builder, Row_Policy $row_policy, Token_Factory_Storage $token_factory_storage, Web_Component_Factory $web_component_factory ) {
+	public function __construct( Row_Builder $row_builder, Row_Policy $row_policy, Token_Factory_Storage $token_factory_storage, Cpt_Component_Factory $web_component_factory ) {
 		$this->row_builder           = $row_builder;
 		$this->row_policy            = $row_policy;
 		$this->token_factory_storage = $token_factory_storage;
