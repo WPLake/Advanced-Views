@@ -2,16 +2,16 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor;
+namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Elementor;
 
 defined( 'ABSPATH' ) || exit;
 
 use Elementor\Controls_Manager;
 use Elementor\Plugin as Elementor_Plugin;
 use Elementor\Widget_Base;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Integration_Category;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Integration_Category;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**

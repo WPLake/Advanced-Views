@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor\Cpt_Widget_Registrar;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Elementor\Cpt_Widget_Registrar;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Elementor\Layout_Elementor_Assets;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Gutenberg\Layout_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Gutenberg\Shortcode_Gutenberg_Block;

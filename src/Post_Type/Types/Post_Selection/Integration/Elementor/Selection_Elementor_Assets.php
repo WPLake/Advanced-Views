@@ -11,7 +11,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Item_Picker;
 
 /**
  * The Post Selection Elementor widget's own editor/preview script enqueueing + localization - a standalone

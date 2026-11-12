@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor;
+namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Elementor;
 
 defined( 'ABSPATH' ) || exit;
 

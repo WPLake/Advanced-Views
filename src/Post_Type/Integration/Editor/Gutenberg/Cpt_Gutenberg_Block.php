@@ -2,12 +2,12 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Gutenberg;
+namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Gutenberg;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Integration_Category;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Integration_Category;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 /**

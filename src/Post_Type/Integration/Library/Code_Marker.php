@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Frontend_Library;
+namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Library;
 
 defined( 'ABSPATH' ) || exit;
 

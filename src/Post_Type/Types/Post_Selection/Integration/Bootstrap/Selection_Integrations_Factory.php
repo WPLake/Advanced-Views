@@ -8,10 +8,10 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor\Cpt_Widget_Registrar;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Gutenberg\Cpt_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Elementor\Cpt_Widget_Registrar;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Gutenberg\Cpt_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Integration\Elementor\Selection_Elementor_Assets;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Integration\Elementor\Selection_Elementor_Widget;

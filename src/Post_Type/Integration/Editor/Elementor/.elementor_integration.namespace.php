@@ -1,6 +1,6 @@
 <?php
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor;
+namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Elementor;
 
 use Architecture\Policy\Namespace_Policy;
 

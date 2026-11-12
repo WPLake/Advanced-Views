@@ -9,9 +9,9 @@ defined( 'ABSPATH' ) || exit;
 use Elementor\Controls_Manager;
 use Elementor\Widget_Base;
 use LogicException;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Integration_Category;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor\Cpt_Elementor_Widget;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor\Widget_Dependencies;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Integration_Category;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Elementor\Cpt_Elementor_Widget;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Elementor\Widget_Dependencies;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 final class Selection_Elementor_Widget extends Widget_Base implements Widget_Dependencies {

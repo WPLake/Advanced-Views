@@ -11,9 +11,9 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Integration_Category;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Gutenberg\Cpt_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Integration_Category;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Gutenberg\Cpt_Gutenberg_Block;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 final class Selection_Gutenberg_Block extends Actor_Base implements Actor {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Gutenberg;
+namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Gutenberg;
 
 use Architecture\Policy\Namespace_Policy;
 

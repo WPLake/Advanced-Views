@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
-use Org\Wplake\Advanced_Views\Post_Type\Frontend_Library\Library_Cpt_Integrator;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Library\Library_Cpt_Integrator;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;

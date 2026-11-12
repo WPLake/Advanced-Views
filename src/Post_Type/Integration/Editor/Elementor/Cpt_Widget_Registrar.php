@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Elementor;
+namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Elementor;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -12,9 +12,9 @@ use Elementor\Widgets_Manager;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Integration_Category;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Item_Picker;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Core\Cpt_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Integration_Category;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Renderer;
 
 /**
  * Registers the Elementor category and widget(s) for one CPT (Layout, Post Selection...) - one instance per CPT.
