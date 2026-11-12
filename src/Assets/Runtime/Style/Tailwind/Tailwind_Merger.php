@@ -8,7 +8,7 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Compo
 
 defined( 'ABSPATH' ) || exit;
 
-final class Tailwind_Rule_Merger {
+final class Tailwind_Merger {
 	private Live_Reloader_Component $live_reloader_component;
 	/**
 	 * @var array<string,true>
@@ -33,8 +33,8 @@ final class Tailwind_Rule_Merger {
 	 * @param string $tailwind_css must be minified, the parser relies on it.
 	 */
 	public function merge( string $tailwind_css ): string {
-		$media_rules   = Tailwind_Css_Parser::parse_media_rules( $tailwind_css );
-		$primary_css   = Tailwind_Css_Parser::strip_media_queries( $tailwind_css );
+		$media_rules   = Tailwind_Parser::parse_media_rules( $tailwind_css );
+		$primary_css   = Tailwind_Parser::strip_media_queries( $tailwind_css );
 		$condition_css = $this->merge_media_rules( $media_rules );
 		$unique_css    = $this->get_unique_rules( $primary_css );
 
@@ -84,7 +84,7 @@ final class Tailwind_Rule_Merger {
 	 * @return array<string,string> selector => rules
 	 */
 	protected function register_new_rules( string $css, string $prefix ): array {
-		$parsed_rules = Tailwind_Css_Parser::parse_rules( $css );
+		$parsed_rules = Tailwind_Parser::parse_rules( $css );
 		$new_rules    = array();
 
 		foreach ( $parsed_rules as $selector => $rules ) {

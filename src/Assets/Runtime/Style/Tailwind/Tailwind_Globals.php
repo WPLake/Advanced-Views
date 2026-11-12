@@ -8,7 +8,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Tailwind_Globals_Reader {
+final class Tailwind_Globals {
 	private File_System $file_system;
 
 	public function __construct( File_System $file_system ) {

@@ -4,7 +4,9 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Assets\Runtime\Style;
 
-use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Processor;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Page_Styles;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Parser;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Code_Minifier;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Asset_Collector;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Library_Style_Collector;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
@@ -16,16 +18,16 @@ defined( 'ABSPATH' ) || exit;
 final class Style_Tag_Composer {
 	private Cpt_Asset_Collector $assets_collector;
 	private Library_Style_Collector $style_collector;
-	private Tailwind_Processor $tailwind_processor;
+	private Tailwind_Page_Styles $tailwind_styles;
 
 	public function __construct(
 		Cpt_Asset_Collector $assets_collector,
 		Library_Style_Collector $style_collector,
-		Tailwind_Processor $tailwind_processor
+		Tailwind_Page_Styles $tailwind_styles
 	) {
-		$this->assets_collector   = $assets_collector;
-		$this->style_collector    = $style_collector;
-		$this->tailwind_processor = $tailwind_processor;
+		$this->assets_collector = $assets_collector;
+		$this->style_collector  = $style_collector;
+		$this->tailwind_styles  = $tailwind_styles;
 	}
 
 	/**
@@ -33,7 +35,7 @@ final class Style_Tag_Composer {
 	 */
 	public function compose_tags(): array {
 		$library_tags = $this->compose_library_tags();
-		// the order matters: the Tailwind globals are available only after the assets are processed.
+		// the order matters: the Tailwind globals are available only after the assets are merged.
 		$asset_tags  = $this->compose_asset_tags();
 		$global_tags = $this->compose_global_tags();
 
@@ -82,11 +84,12 @@ final class Style_Tag_Composer {
 	 * @return Html_Tag[]
 	 */
 	protected function compose_global_tags(): array {
-		$global_styles = $this->tailwind_processor->get_globals();
-		$is_filled     = strlen( $global_styles ) > 0;
+		$global_styles = $this->tailwind_styles->get_globals();
+		$css_code      = Code_Minifier::minify_css( $global_styles );
+		$is_filled     = strlen( $css_code ) > 0;
 
 		if ( $is_filled ) {
-			$tag = self::compose_code_tag( array( 'data-advanced-views-tailwind-global' => true ), $global_styles );
+			$tag = self::compose_code_tag( array( 'data-advanced-views-tailwind-global' => true ), $css_code );
 
 			return array( $tag );
 		}
@@ -95,8 +98,14 @@ final class Style_Tag_Composer {
 	}
 
 	protected function compose_asset_tag( string $name, string $css_code ): ?Html_Tag {
-		$css_code = $this->tailwind_processor->process( $css_code );
-		// can be empty after the processing.
+		// the marker is a comment, so the check must precede the minification.
+		$is_tailwind = Tailwind_Parser::is_tailwind( $css_code );
+		$css_code    = Code_Minifier::minify_css( $css_code );
+		$css_code    = $is_tailwind ?
+			$this->tailwind_styles->merge_asset( $css_code ) :
+			$css_code;
+
+		// can be empty after the minification or merging.
 		$is_filled = strlen( $css_code ) > 0;
 
 		if ( $is_filled ) {

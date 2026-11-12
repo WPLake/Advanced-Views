@@ -7,9 +7,20 @@ namespace Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * The CSS must be minified, the parsing relies on it.
+ * The CSS must be minified, the parsing relies on it (except the Tailwind check).
  */
-final class Tailwind_Css_Parser {
+final class Tailwind_Parser {
+	const MARKER = 'advanced-views:tailwind';
+
+	/**
+	 * @param string $css must be raw: the marker is a comment, so it's gone after the minification.
+	 */
+	public static function is_tailwind( string $css ): bool {
+		$marker_position = strpos( $css, self::MARKER );
+
+		return is_int( $marker_position );
+	}
+
 	/**
 	 * @return array<string,string> media condition => its rules
 	 */
