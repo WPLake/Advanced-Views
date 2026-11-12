@@ -4,8 +4,8 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Assets\Runtime\Style;
 
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Deduplicator;
 use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Globals;
-use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Merger;
 use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Parser;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Code_Minifier;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Asset_Collector;
@@ -19,19 +19,19 @@ defined( 'ABSPATH' ) || exit;
 final class Style_Tag_Composer {
 	private Cpt_Asset_Collector $assets_collector;
 	private Library_Style_Collector $style_collector;
-	private Tailwind_Merger $tailwind_merger;
+	private Tailwind_Deduplicator $tailwind_deduplicator;
 	private Tailwind_Globals $tailwind_globals;
 
 	public function __construct(
 		Cpt_Asset_Collector $assets_collector,
 		Library_Style_Collector $style_collector,
-		Tailwind_Merger $tailwind_merger,
+		Tailwind_Deduplicator $rule_filter,
 		Tailwind_Globals $tailwind_globals
 	) {
-		$this->assets_collector = $assets_collector;
-		$this->style_collector  = $style_collector;
-		$this->tailwind_merger  = $tailwind_merger;
-		$this->tailwind_globals = $tailwind_globals;
+		$this->assets_collector      = $assets_collector;
+		$this->style_collector       = $style_collector;
+		$this->tailwind_deduplicator = $rule_filter;
+		$this->tailwind_globals      = $tailwind_globals;
 	}
 
 	/**
@@ -39,7 +39,7 @@ final class Style_Tag_Composer {
 	 */
 	public function compose_tags(): array {
 		$library_tags = $this->compose_library_tags();
-		// the order matters: the Tailwind globals are available only after the assets are merged.
+		// the order matters: the Tailwind globals are available only after the assets are filtered.
 		$asset_tags  = $this->compose_asset_tags();
 		$global_tags = $this->compose_global_tags();
 
@@ -88,7 +88,7 @@ final class Style_Tag_Composer {
 	 * @return Html_Tag[]
 	 */
 	protected function compose_global_tags(): array {
-		$global_styles = $this->tailwind_merger->is_used() ?
+		$global_styles = $this->tailwind_deduplicator->is_used() ?
 			$this->tailwind_globals->get_global_styles() :
 			'';
 		$css_code      = Code_Minifier::minify_css( $global_styles );
@@ -107,11 +107,12 @@ final class Style_Tag_Composer {
 		// the marker is a comment, so the check must precede the minification.
 		$is_tailwind = Tailwind_Parser::is_tailwind( $css_code );
 		$css_code    = Code_Minifier::minify_css( $css_code );
-		$css_code    = $is_tailwind ?
-			$this->tailwind_merger->merge( $css_code ) :
+
+		$css_code = $is_tailwind ?
+			$this->tailwind_deduplicator->strip_duplicate_rules( $css_code ) :
 			$css_code;
 
-		// can be empty after the minification or merging.
+		// can be empty after the minification or filtering.
 		$is_filled = strlen( $css_code ) > 0;
 
 		if ( $is_filled ) {

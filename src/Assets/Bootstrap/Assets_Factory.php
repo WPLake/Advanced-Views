@@ -8,8 +8,8 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Deduplicator;
 use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Globals;
-use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Merger;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
@@ -25,8 +25,8 @@ class Assets_Factory extends Factory_Base {
 		);
 	}
 
-	public function tailwind_rule_merger(): Tailwind_Merger {
-		return new Tailwind_Merger(
+	public function tailwind_rule_filter(): Tailwind_Deduplicator {
+		return new Tailwind_Deduplicator(
 			$this->resolve( Live_Reloader_Component::class )
 		);
 	}

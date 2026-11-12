@@ -8,7 +8,7 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Compo
 
 defined( 'ABSPATH' ) || exit;
 
-final class Tailwind_Merger {
+final class Tailwind_Deduplicator {
 	private Live_Reloader_Component $live_reloader_component;
 	/**
 	 * @var array<string,true>
@@ -21,7 +21,7 @@ final class Tailwind_Merger {
 	}
 
 	/**
-	 * Whether any Tailwind rule was merged into the page.
+	 * Whether any Tailwind rule was passed to the page.
 	 */
 	public function is_used(): bool {
 		return array() !== $this->css_rules;
@@ -30,10 +30,11 @@ final class Tailwind_Merger {
 	/**
 	 * @param string $tailwind_css must be minified, the parser relies on it.
 	 */
-	public function merge( string $tailwind_css ): string {
-		$media_rules   = Tailwind_Parser::parse_media_rules( $tailwind_css );
-		$primary_css   = Tailwind_Parser::strip_media_queries( $tailwind_css );
-		$condition_css = $this->merge_media_rules( $media_rules );
+	public function strip_duplicate_rules( string $tailwind_css ): string {
+		$media_rules = Tailwind_Parser::parse_media_rules( $tailwind_css );
+		$primary_css = Tailwind_Parser::strip_media_queries( $tailwind_css );
+
+		$condition_css = $this->filter_media_rules( $media_rules );
 		$unique_css    = $this->get_unique_rules( $primary_css );
 
 		return $unique_css . $condition_css;
@@ -42,7 +43,7 @@ final class Tailwind_Merger {
 	/**
 	 * @param array<string,string> $media_rules
 	 */
-	protected function merge_media_rules( array $media_rules ): string {
+	protected function filter_media_rules( array $media_rules ): string {
 		$condition_css = '';
 
 		foreach ( $media_rules as $media_condition => $media_content ) {
@@ -63,17 +64,17 @@ final class Tailwind_Merger {
 		$prefix_length              = strlen( $prefix );
 		$is_important_rule_required = $prefix_length > 0 &&
 									$this->live_reloader_component->is_active();
-		$merged_css                 = '';
+		$unique_css                 = '';
 
 		foreach ( $css_rules as $selector => $rules ) {
 			$rules = $is_important_rule_required ?
 				self::mark_important( $rules ) :
 				$rules;
 
-			$merged_css .= sprintf( '%s{%s}', $selector, $rules );
+			$unique_css .= sprintf( '%s{%s}', $selector, $rules );
 		}
 
-		return $merged_css;
+		return $unique_css;
 	}
 
 	/**
