@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Assets\Rework\Cpt_Assets_Collector;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
@@ -29,7 +29,7 @@ class Layout_Factory extends Instance_Factory {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct(
-		Front_Assets $front_assets,
+		Cpt_Assets_Collector $assets_collector,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Layout_Renderer $layout_renderer,
 		Template_Renderer_Storage $template_renderer_storage,
@@ -38,7 +38,7 @@ class Layout_Factory extends Instance_Factory {
 		Field_Provider_Cluster $provider_cluster,
 		Html_Renderer $html_renderer
 	) {
-		parent::__construct( $front_assets );
+		parent::__construct( $assets_collector );
 
 		$this->layouts_settings_storage  = $layouts_settings_storage;
 		$this->layout_renderer             = $layout_renderer;

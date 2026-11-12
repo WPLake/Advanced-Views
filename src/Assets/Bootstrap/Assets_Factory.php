@@ -8,8 +8,6 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
-use Org\Wplake\Advanced_Views\Assets\Rework\Interactivity_Loader;
 use Org\Wplake\Advanced_Views\Assets\Rework\Tailwind_Integrator;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
@@ -17,23 +15,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Layout_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Selection_Interactive_Fields;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Container;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style_Builder;
-use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 
 class Assets_Factory extends Factory_Base {
-	public function front_assets(): Front_Assets {
-		return new Front_Assets(
-			$this->resolve( Asset_Resolver::class ),
-			$this->resolve( Live_Reloader_Component::class ),
-			$this->resolve( Html_Renderer::class ),
-			$this->resolve( Style_Builder::class ),
-			$this->resolve( Library_Container::class ),
-			$this->tailwind_merger(),
-			$this->resolve( Interactivity_Loader::class )
-		);
-	}
-
 	public function admin_assets(): Admin_Assets {
 		return new Admin_Assets(
 			$this->resolve( Asset_Resolver::class ),
@@ -41,7 +24,7 @@ class Assets_Factory extends Factory_Base {
 		);
 	}
 
-	protected function tailwind_merger(): Tailwind_Integrator {
+	public function tailwind_integrator(): Tailwind_Integrator {
 		return new Tailwind_Integrator(
 			$this->resolve( Layout_Settings_Storage::class )->get_file_system(),
 			$this->resolve( Live_Reloader_Component::class )

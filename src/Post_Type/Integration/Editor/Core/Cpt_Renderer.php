@@ -78,7 +78,7 @@ final class Cpt_Renderer {
 	}
 
 	/**
-	 * Each render carries its own scoped 'data-avf-id' style tag rather than relying on Front_Assets' page-level
+	 * Each render carries its own scoped 'data-avf-id' style tag rather than relying on Cpt_Assets_Loader's page-level
 	 * printing, since a dynamic 'render_callback' (ServerSideRender, Elementor's AJAX re-render) has no such page
 	 * to print into; the editor's own script relocates this tag into <head>, replacing any existing one with the
 	 * same id.
