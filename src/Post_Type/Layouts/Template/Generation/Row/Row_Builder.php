@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Assets\Rework\Patterns_Registry;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
@@ -29,10 +29,10 @@ class Row_Builder implements Row_Composer {
 	private Inner_Row_Policy $policy;
 	private Field_Builder $field_builder;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
+	public function __construct( Field_Provider_Cluster $provider_cluster, Patterns_Registry $patterns_registry, Token_Factory_Storage $token_factory_storage ) {
 		$this->context_loader = new Row_Context_Loader(
 			$provider_cluster,
-			$front_assets,
+			$patterns_registry,
 			$token_factory_storage
 		);
 		$this->policy         = new Inner_Row_Policy( $provider_cluster );

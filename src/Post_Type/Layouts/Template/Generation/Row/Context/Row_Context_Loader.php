@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Layouts\Template\Generation\Row\Co
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Assets\Rework\Patterns_Registry;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
@@ -18,12 +18,12 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Facto
 
 final class Row_Context_Loader {
 	private Field_Provider_Cluster $provider_cluster;
-	private Front_Assets $front_assets;
+	private Patterns_Registry $patterns_registry;
 	private Token_Factory_Storage $token_factory_storage;
 
-	public function __construct( Field_Provider_Cluster $provider_cluster, Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage ) {
+	public function __construct( Field_Provider_Cluster $provider_cluster, Patterns_Registry $patterns_registry, Token_Factory_Storage $token_factory_storage ) {
 		$this->provider_cluster      = $provider_cluster;
-		$this->front_assets          = $front_assets;
+		$this->patterns_registry     = $patterns_registry;
 		$this->token_factory_storage = $token_factory_storage;
 	}
 
@@ -67,9 +67,9 @@ final class Row_Context_Loader {
 	 * @return Layout_Library[]
 	 */
 	protected function resolve_field_patterns( Field_Settings $field_settings ): array {
-		$vendor_name  = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
-		$front_assets = $this->provider_cluster->get_field_front_assets( $vendor_name, $field_settings );
+		$vendor_name    = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
+		$pattern_names = $this->provider_cluster->get_field_front_assets( $vendor_name, $field_settings );
 
-		return $this->front_assets->resolve_template_patterns( $front_assets );
+		return $this->patterns_registry->resolve_template_patterns( $pattern_names );
 	}
 }

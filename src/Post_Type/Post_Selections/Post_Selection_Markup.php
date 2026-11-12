@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Web_Component_Renderer;
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Assets\Rework\Patterns_Registry;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Layout_Settings;
@@ -29,14 +29,14 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
  * @phpstan-import-type Html_Node from Html_Tag
  */
 class Post_Selection_Markup {
-	private Front_Assets $front_assets;
+	private Patterns_Registry $patterns_registry;
 	protected Token_Factory_Storage $token_factory_storage;
 	private Layouts_Cpt $layout_cpt;
 	protected Web_Component_Renderer $renderer;
 	protected Web_Component_Factory $web_component_factory;
 
-	public function __construct( Front_Assets $front_assets, Token_Factory_Storage $token_factory_storage, Layouts_Cpt $layout_cpt, Web_Component_Renderer $renderer, Web_Component_Factory $web_component_factory ) {
-		$this->front_assets          = $front_assets;
+	public function __construct( Patterns_Registry $patterns_registry, Token_Factory_Storage $token_factory_storage, Layouts_Cpt $layout_cpt, Web_Component_Renderer $renderer, Web_Component_Factory $web_component_factory ) {
+		$this->patterns_registry     = $patterns_registry;
 		$this->token_factory_storage = $token_factory_storage;
 		$this->layout_cpt            = $layout_cpt;
 		$this->renderer               = $renderer;
@@ -86,7 +86,7 @@ class Post_Selection_Markup {
 
 	protected function items_wrapper_tag( Post_Selection_Settings $post_selection_settings, string $class_name = '' ): Html_Tag {
 		$classes  = '';
-		$wrapper  = $this->front_assets->get_card_items_wrapper( $post_selection_settings );
+		$wrapper  = $this->patterns_registry->get_card_items_wrapper( $post_selection_settings );
 		$external = $wrapper instanceof Html_Tag ?
 			string( $wrapper->get_attributes(), 'class' ) :
 			'';
@@ -116,7 +116,7 @@ class Post_Selection_Markup {
 											->add_item_path( 'layout_id' );
 		$post_id_var = $token_factory->variable( 'post_id' );
 
-		$asset_attrs = $this->front_assets->get_card_item_attributes( $post_selection_settings, $post_id_var );
+		$asset_attrs = $this->patterns_registry->get_card_item_attributes( $post_selection_settings, $post_id_var );
 
 		return $token_factory->shortcode( $this->layout_cpt->shortcode() )
 			->set_attributes(
@@ -275,7 +275,7 @@ class Post_Selection_Markup {
 	}
 
 	protected function items_tag( Token_Factory $token_factory, Post_Selection_Settings $post_selection_settings ): Html_Tag {
-		$item_outers = $this->front_assets->get_card_item_outers( $post_selection_settings, $token_factory );
+		$item_outers = $this->patterns_registry->get_card_item_outers( $post_selection_settings, $token_factory );
 		$loop        = array( $this->loop_token( $token_factory, $post_selection_settings ) );
 		$content     = Outers_Builder::compose_outers( $item_outers, $loop );
 

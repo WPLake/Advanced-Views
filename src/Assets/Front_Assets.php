@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Assets;
 
 use Closure;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
+use Org\Wplake\Advanced_Views\Assets\Rework\Patterns_Registry;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -15,23 +15,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Frontend_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Builder\Script_Pattern_Builder;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Loader;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Provider;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style_Builder;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Provider;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Loader;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Layout\Layout_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Builder\Template_Builder;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Template\Pattern\Template_Pattern;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Light_Gallery_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Lightbox\Lightbox_Library;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Map\Map_Library;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Adapters\Selection\Selection_Library;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Factory\Token_Factory;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Variable\Variable_Token;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
@@ -42,13 +33,8 @@ class Front_Assets extends Actor_Base implements Actor {
 	const MINIFY_TYPE_JS  = 'js';
 
 	private Script_Loader $script_loader;
-	private Field_Provider_Cluster $provider_cluster;
 	private ?int $buffer_level;
 	private bool $is_custom_interactivity_api_import_map_required;
-	/**
-	 * @var Frontend_Library[]
-	 */
-	private array $patterns;
 	/**
 	 * @var array<string, string>
 	 */
@@ -66,17 +52,14 @@ class Front_Assets extends Actor_Base implements Actor {
 	private File_System $file_system;
 	protected Html_Renderer $html_renderer;
 	private Code_Marker $code_marker;
-	protected Script_Pattern_Builder $script_pattern_builder;
-	protected Style_Builder $style_builder;
+	private Patterns_Registry $patterns_registry;
 
-	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Field_Provider_Cluster $provider_cluster, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Code_Marker $code_marker, Script_Pattern_Builder $script_pattern_builder, Style_Builder $style_builder ) {
+	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Code_Marker $code_marker, Style_Builder $style_builder, Patterns_Registry $patterns_registry ) {
 		$this->script_loader                               = new Script_Loader( $asset_resolver );
-		$this->provider_cluster                                = $provider_cluster;
 		$this->file_system                                     = $file_system;
 		$this->buffer_level                                    = null;
 		$this->is_custom_interactivity_api_import_map_required = false;
 
-		$this->patterns                = array();
 		$this->inline_js_code          = array();
 		$this->include_css_code        = array();
 		$this->live_reloader_component = $live_reloader_component;
@@ -84,10 +67,7 @@ class Front_Assets extends Actor_Base implements Actor {
 		$this->tailwind_css_rules      = array();
 		$this->html_renderer           = $html_renderer;
 		$this->code_marker             = $code_marker;
-		$this->script_pattern_builder  = $script_pattern_builder;
-		$this->style_builder             = $style_builder;
-
-		$this->register_patterns();
+		$this->patterns_registry       = $patterns_registry;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -107,25 +87,6 @@ class Front_Assets extends Actor_Base implements Actor {
 		self::add_action( 'wp_head', array( $this, 'print_styles_stub' ) );
 		// don't use 'get_header', as it doesn't work in blocks theme.
 		self::add_action( 'template_redirect', array( $this, 'start_buffering' ) );
-	}
-
-	/**
-	 * @return Frontend_Library[]
-	 */
-	protected function create_patterns(): array {
-		return array(
-			new Map_Library( $this->provider_cluster, $this->script_pattern_builder, $this->style_builder ),
-			new Light_Gallery_Library( $this->provider_cluster, $this->script_pattern_builder, $this->style_builder ),
-			new Lightbox_Library( $this->provider_cluster, $this->script_pattern_builder, $this->style_builder ),
-		);
-	}
-
-	protected function register_patterns(): void {
-		$patterns = $this->create_patterns();
-
-		foreach ( $patterns as $pattern ) {
-			$this->patterns[ $pattern->get_name() ] = $pattern;
-		}
 	}
 
 	protected static function extract_imports_from_js_code( string &$js_code ): string {
@@ -373,7 +334,7 @@ class Front_Assets extends Actor_Base implements Actor {
 			$this->inline_js_code[ $unique_id ] = $inline_js_code;
 		}
 
-		foreach ( $this->patterns as $pattern ) {
+		foreach ( $this->patterns_registry->get_all() as $pattern ) {
 			if ( $pattern instanceof Layout_Library &&
 				$cpt_settings instanceof Layout_Settings ) {
 				$pattern->maybe_activate_layout( $cpt_settings );
@@ -544,7 +505,7 @@ class Front_Assets extends Actor_Base implements Actor {
 	protected function collect_marked_pieces( Closure $generate_pieces ): array {
 		$marked_pieces = array();
 
-		foreach ( $this->patterns as $pattern ) {
+		foreach ( $this->patterns_registry->get_all() as $pattern ) {
 			$auto_discover_name = $pattern->get_auto_discover_name();
 			$pieces             = $generate_pieces( $pattern );
 
@@ -591,57 +552,6 @@ class Front_Assets extends Actor_Base implements Actor {
 		return array();
 	}
 
-	/**
-	 * @param string[] $names
-	 *
-	 * @return Layout_Library[]
-	 */
-	public function resolve_template_patterns( array $names ): array {
-		$names_keys       = array_flip( $names );
-		$patterns_by_name = array_intersect_key( $this->patterns, $names_keys );
-
-		return array_filter(
-			$patterns_by_name,
-			fn( $pattern ) => $pattern instanceof Layout_Library
-		);
-	}
-
-	public function get_card_items_wrapper( Post_Selection_Settings $post_selection_settings ): ?Html_Tag {
-		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
-
-		return Template_Builder::row_wrapper( $patterns );
-	}
-
-	/**
-	 * @return Html_Tag[]
-	 */
-	public function get_card_item_outers( Post_Selection_Settings $post_selection_settings, Token_Factory $token_factory ): array {
-		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
-		$items    = $token_factory->variable( 'items' );
-		$outers   = Template_Builder::field_wrappers( $patterns, $items );
-
-		if ( Post_Selection_Settings::CLASS_GENERATION_NONE === $post_selection_settings->classes_generation ) {
-			return $outers;
-		}
-
-		$bem_name = $post_selection_settings->get_bem_name();
-
-		return Template_Builder::prefix_selection_classes(
-			$outers,
-			sprintf( '%s__list', $bem_name ),
-			sprintf( '%s__track', $bem_name )
-		);
-	}
-
-	/**
-	 * @return array<string,string|Variable_Token>
-	 */
-	public function get_card_item_attributes( Post_Selection_Settings $post_selection_settings, Variable_Token $item ): array {
-		$patterns = $this->resolve_selection_template_patterns( $post_selection_settings );
-
-		return Template_Builder::item_attributes( $patterns, $item );
-	}
-
 	public function enqueue_assets(): void {
 		// enqueue wp interactivity, as in non-block themes it isn't enqueued by default.
 		if ( $this->is_custom_interactivity_api_import_map_required &&
@@ -649,7 +559,7 @@ class Front_Assets extends Actor_Base implements Actor {
 			wp_enqueue_script_module( '@wordpress/interactivity' );
 		}
 
-		foreach ( $this->patterns as $pattern ) {
+		foreach ( $this->patterns_registry->get_all() as $pattern ) {
 			$script_provider  = $pattern->get_js_library();
 			$style_provider = $pattern->get_css_library();
 
@@ -696,25 +606,5 @@ class Front_Assets extends Actor_Base implements Actor {
 		$code_html = $this->html_renderer->render_html( $tags );
 
 		return sprintf( "%s\n", $code_html );
-	}
-
-	/**
-	 * @return class-string<Template_Pattern>[]
-	 */
-	protected function resolve_selection_template_patterns( Post_Selection_Settings $post_selection_settings ): array {
-		$template_patterns = array();
-
-		foreach ( $this->patterns as $pattern ) {
-			if ( $pattern instanceof Selection_Library &&
-				$pattern->is_target_selection( $post_selection_settings ) ) {
-				$template_pattern = $pattern->get_selection_template_pattern( $post_selection_settings );
-
-				if ( is_string( $template_pattern ) ) {
-					$template_patterns[] = $template_pattern;
-				}
-			}
-		}
-
-		return $template_patterns;
 	}
 }
