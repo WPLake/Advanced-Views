@@ -7,7 +7,8 @@ namespace Org\Wplake\Advanced_Views\Assets\Bootstrap;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
-use Org\Wplake\Advanced_Views\Assets\Inline_Assets_Injector;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Inline_Assets_Injector;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Inline_Style_Injector;
 use Org\Wplake\Advanced_Views\Assets\Rework\Interactivity_Loader;
 use Org\Wplake\Advanced_Views\Assets\Rework\Page_Buffer;
 use Org\Wplake\Advanced_Views\Assets\Rework\Tailwind_Integrator;
@@ -28,6 +29,7 @@ class Assets_Bootstrap extends Bootstrap_Base {
 		return array(
 			Page_Buffer::class,
 			Inline_Assets_Injector::class,
+			Inline_Style_Injector::class,
 			Admin_Assets::class,
 			Interactivity_Loader::class,
 		);

@@ -26,7 +26,11 @@ class Cpt_Assets_Collector {
 	 */
 	private array $js_code;
 
-	public function __construct( Tailwind_Integrator $tailwind_integrator, Interactivity_Loader $interactivity_loader, Library_Container $library_container ) {
+	public function __construct(
+		Tailwind_Integrator $tailwind_integrator,
+		Interactivity_Loader $interactivity_loader,
+		Library_Container $library_container
+	) {
 		$this->tailwind_integrator  = $tailwind_integrator;
 		$this->interactivity_loader = $interactivity_loader;
 		$this->library_container    = $library_container;
