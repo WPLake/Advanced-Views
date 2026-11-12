@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Assets\Runtime\Script;
 
 use Org\Wplake\Advanced_Views\Plugin\Utils\Code_Minifier;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Asset\Cpt_Assets_Collector;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Asset_Collector;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
@@ -13,9 +13,9 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 defined( 'ABSPATH' ) || exit;
 
 class Script_Tag_Composer {
-	private Cpt_Assets_Collector $assets_collector;
+	private Cpt_Asset_Collector $assets_collector;
 
-	public function __construct( Cpt_Assets_Collector $assets_collector ) {
+	public function __construct( Cpt_Asset_Collector $assets_collector ) {
 		$this->assets_collector = $assets_collector;
 	}
 

@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Style_Renderer;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Asset\Cpt_Assets_Collector;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Asset_Collector;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Asset_Loader;
 
 defined( 'ABSPATH' ) || exit;
@@ -18,14 +18,14 @@ defined( 'ABSPATH' ) || exit;
 class Front_Asset_Loader extends Actor_Base implements Actor {
 	private Library_Asset_Loader $library_asset_loader;
 	private Interactivity_Loader $interactivity_loader;
-	private Cpt_Assets_Collector $assets_collector;
+	private Cpt_Asset_Collector $assets_collector;
 	private Style_Renderer $style_printer;
 	private Script_Renderer $script_printer;
 
 	public function __construct(
 		Library_Asset_Loader $library_asset_loader,
 		Interactivity_Loader $interactivity_loader,
-		Cpt_Assets_Collector $assets_collector,
+		Cpt_Asset_Collector $assets_collector,
 		Style_Renderer $style_printer,
 		Script_Renderer $script_printer
 	) {

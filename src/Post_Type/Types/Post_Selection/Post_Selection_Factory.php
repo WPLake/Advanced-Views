@@ -7,8 +7,8 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Asset\Cpt_Assets_Collector;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Asset_Collector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
@@ -24,7 +24,7 @@ class Post_Selection_Factory extends Instance_Factory {
 	private Selection_Settings_Storage $post_selections_settings_storage;
 
 	public function __construct(
-		Cpt_Assets_Collector $assets_collector,
+		Cpt_Asset_Collector $assets_collector,
 		Post_Query $query_builder,
 		Post_Selection_Markup $post_selection_markup,
 		Template_Renderer_Storage $template_renderer_storage,

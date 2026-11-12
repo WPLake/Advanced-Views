@@ -7,13 +7,12 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Asset\Cpt_Assets_Collector;
 use WP_REST_Request;
 
 abstract class Instance_Factory {
-	protected Cpt_Assets_Collector $assets_collector;
+	protected Cpt_Asset_Collector $assets_collector;
 
-	public function __construct( Cpt_Assets_Collector $assets_collector ) {
+	public function __construct( Cpt_Asset_Collector $assets_collector ) {
 		$this->assets_collector = $assets_collector;
 	}
 

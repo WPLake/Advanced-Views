@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Core\Asset;
+namespace Org\Wplake\Advanced_Views\Post_Type\Core;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Cpt_Component_Composer;
@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Container;
 
 defined( 'ABSPATH' ) || exit;
 
-class Cpt_Assets_Collector {
+class Cpt_Asset_Collector {
 	private Library_Container $library_container;
 	/**
 	 * @var array<string, string>

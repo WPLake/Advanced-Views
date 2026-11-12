@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Assets\Runtime\Style;
 
 use Org\Wplake\Advanced_Views\Plugin\Utils\Code_Minifier;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Asset\Cpt_Assets_Collector;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Asset_Collector;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Library_Style_Collector;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
@@ -14,12 +14,12 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 defined( 'ABSPATH' ) || exit;
 
 class Style_Tag_Composer {
-	private Cpt_Assets_Collector $assets_collector;
+	private Cpt_Asset_Collector $assets_collector;
 	private Tailwind_Integrator $tailwind_integrator;
 	private Library_Style_Collector $style_collector;
 
 	public function __construct(
-		Cpt_Assets_Collector $assets_collector,
+		Cpt_Asset_Collector $assets_collector,
 		Tailwind_Integrator $tailwind_integrator,
 		Library_Style_Collector $style_collector
 	) {
