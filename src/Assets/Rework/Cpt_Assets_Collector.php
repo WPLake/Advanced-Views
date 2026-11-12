@@ -25,10 +25,6 @@ class Cpt_Assets_Collector {
 	 * @var array<string, string>
 	 */
 	private array $js_code;
-	/**
-	 * @var array<string,true>
-	 */
-	private array $tailwind_asset_ids;
 
 	public function __construct( Tailwind_Integrator $tailwind_integrator, Interactivity_Loader $interactivity_loader, Library_Container $library_container ) {
 		$this->tailwind_integrator  = $tailwind_integrator;
@@ -36,7 +32,6 @@ class Cpt_Assets_Collector {
 		$this->library_container    = $library_container;
 		$this->css_code             = array();
 		$this->js_code              = array();
-		$this->tailwind_asset_ids   = array();
 	}
 
 	public function add_asset( Cpt_Settings $cpt_settings ): void {
@@ -51,7 +46,7 @@ class Cpt_Assets_Collector {
 			false === $cpt_settings->is_css_internal() ) {
 			$this->css_code[ $unique_id ] = $css_code;
 
-			$this->mark_tailwind_asset( $unique_id, $css_source );
+			$this->tailwind_integrator->register_asset( $unique_id, $css_source );
 		}
 
 		if ( strlen( $js_code ) > 0 ) {
@@ -77,24 +72,6 @@ class Cpt_Assets_Collector {
 	 */
 	public function get_js_code(): array {
 		return $this->js_code;
-	}
-
-	public function is_tailwind_asset( string $unique_id ): bool {
-		return key_exists( $unique_id, $this->tailwind_asset_ids );
-	}
-
-	public function clear_tailwind_assets(): void {
-		$this->tailwind_asset_ids = array();
-	}
-
-	protected function mark_tailwind_asset( string $unique_id, string $css_source ): void {
-		if ( $this->tailwind_integrator->is_tailwind( $css_source ) ) {
-			$this->tailwind_asset_ids[ $unique_id ] = true;
-
-			return;
-		}
-
-		unset( $this->tailwind_asset_ids[ $unique_id ] );
 	}
 
 	protected function activate_libraries( Cpt_Settings $cpt_settings ): void {

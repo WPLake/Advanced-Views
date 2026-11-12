@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Assets\Bootstrap;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
-use Org\Wplake\Advanced_Views\Assets\Rework\Assets_Output_Injector;
+use Org\Wplake\Advanced_Views\Assets\Inline_Assets_Injector;
 use Org\Wplake\Advanced_Views\Assets\Rework\Interactivity_Loader;
 use Org\Wplake\Advanced_Views\Assets\Rework\Tailwind_Integrator;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
@@ -25,7 +25,7 @@ class Assets_Bootstrap extends Bootstrap_Base {
 
 	public static function get_actor_classes(): array {
 		return array(
-			Assets_Output_Injector::class,
+			Inline_Assets_Injector::class,
 			Admin_Assets::class,
 			Interactivity_Loader::class,
 		);

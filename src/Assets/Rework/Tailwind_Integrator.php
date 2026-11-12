@@ -18,15 +18,34 @@ class Tailwind_Integrator {
 	 * @var array<string,true>
 	 */
 	private array $css_rules;
+	/**
+	 * @var array<string,true>
+	 */
+	private array $asset_ids;
 
 	public function __construct( File_System $file_system, Live_Reloader_Component $live_reloader_component ) {
 		$this->file_system             = $file_system;
 		$this->live_reloader_component = $live_reloader_component;
 		$this->css_rules               = array();
+		$this->asset_ids               = array();
 	}
 
 	public function is_tailwind( string $css ): bool {
 		return str_contains( $css, self::MARKER );
+	}
+
+	public function register_asset( string $unique_id, string $css_source ): void {
+		if ( $this->is_tailwind( $css_source ) ) {
+			$this->asset_ids[ $unique_id ] = true;
+
+			return;
+		}
+
+		unset( $this->asset_ids[ $unique_id ] );
+	}
+
+	public function is_tailwind_asset( string $unique_id ): bool {
+		return key_exists( $unique_id, $this->asset_ids );
 	}
 
 	/**
@@ -34,6 +53,7 @@ class Tailwind_Integrator {
 	 */
 	public function reset(): self {
 		$this->css_rules = array();
+		$this->asset_ids = array();
 
 		return $this;
 	}

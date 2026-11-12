@@ -2,29 +2,29 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Assets\Rework;
+namespace Org\Wplake\Advanced_Views\Assets;
 
+use Org\Wplake\Advanced_Views\Assets\Rework\Inline_Assets_Builder;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Reloader_Root_Marker;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
-use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
-class Assets_Output_Injector extends Actor_Base implements Actor {
-	private Inline_Assets_Renderer $assets_renderer;
-	private Live_Reloader_Component $live_reloader_component;
+class Inline_Assets_Injector extends Actor_Base implements Actor {
+	private Inline_Assets_Builder $assets_builder;
+	private Reloader_Root_Marker $reloader_root_marker;
 	private Html_Renderer $html_renderer;
 	private ?int $buffer_level;
 
-	public function __construct( Inline_Assets_Renderer $assets_renderer, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer ) {
-		$this->assets_renderer         = $assets_renderer;
-		$this->live_reloader_component = $live_reloader_component;
-		$this->html_renderer           = $html_renderer;
-		$this->buffer_level            = null;
+	public function __construct( Inline_Assets_Builder $assets_builder, Reloader_Root_Marker $reloader_root_marker, Html_Renderer $html_renderer ) {
+		$this->assets_builder       = $assets_builder;
+		$this->reloader_root_marker = $reloader_root_marker;
+		$this->html_renderer        = $html_renderer;
+		$this->buffer_level         = null;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -49,8 +49,10 @@ class Assets_Output_Injector extends Actor_Base implements Actor {
 	}
 
 	public function print_assets(): void {
-		$all_css_code = $this->assets_renderer->render_css();
-		$all_js_code  = $this->assets_renderer->render_js();
+		$all_css_code = $this->render_tags( $this->assets_builder->compose_css() );
+		$all_js_code  = $this->render_tags( $this->assets_builder->compose_js() );
+
+		$this->assets_builder->reset();
 
 		if ( 0 === strlen( $all_css_code ) &&
 			0 === strlen( $all_js_code ) ) {
@@ -74,6 +76,22 @@ class Assets_Output_Injector extends Actor_Base implements Actor {
 		}
 	}
 
+	/**
+	 * @param Html_Tag[] $tags
+	 */
+	protected function render_tags( array $tags ): string {
+		if ( array() === $tags ) {
+			return '';
+		}
+
+		$rendered_tags = array_map(
+			fn( Html_Tag $tag ) => $this->html_renderer->render_html( $tag ),
+			$tags
+		);
+
+		return sprintf( "\n%s\n", implode( "\n", $rendered_tags ) );
+	}
+
 	protected function flush_own_buffer(): void {
 		// do not close the buffer, if it's not ours
 		// (then ours will be closed automatically with the end of script execution).
@@ -95,7 +113,7 @@ class Assets_Output_Injector extends Actor_Base implements Actor {
 		$custom_location_position = strpos( $page_content, '<!--advanced-views:styles/custom-location-->' );
 
 		if ( is_int( $custom_location_position ) ) {
-			$custom_location_css = $this->compose_custom_location_css( $all_css_code );
+			$custom_location_css = $this->reloader_root_marker->mark( $all_css_code );
 			$page_content        = str_replace( '<!--advanced-views:styles/custom-location-->', $custom_location_css, $page_content );
 			$all_css_code        = '';
 		}
@@ -104,28 +122,5 @@ class Assets_Output_Injector extends Actor_Base implements Actor {
 
 		// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo $page_content;
-	}
-
-	protected function compose_custom_location_css( string $all_css_code ): string {
-		// introduce a styles variable, which allows to detect the styles root inside a webcomponent.
-		if ( false === $this->live_reloader_component->is_active() ) {
-			return $all_css_code;
-		}
-
-		// the wrapper is necessary to make .parentElement work.
-		$location_script = tag( 'script' )
-			->content(
-				raw_html( 'class AvfStylesLocation extends HTMLElement{connectedCallback(){"loading"===document.readyState?document.addEventListener("DOMContentLoaded",this.setup.bind(this)):this.setup()}setup(){window["avfStylesRoot"]=this.parentElement;}}customElements.define("avf-styles-location", AvfStylesLocation)' )
-			);
-
-		$tags = tag( 'div' )
-			->attributes( array( 'hidden' => true ) )
-			->content(
-				raw_html( $all_css_code ),
-				tag( 'avf-styles-location' ),
-				$location_script
-			);
-
-		return $this->html_renderer->render_html( $tags );
 	}
 }

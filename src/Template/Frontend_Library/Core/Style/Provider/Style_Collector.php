@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Builder\Style
 
 defined( 'ABSPATH' ) || exit;
 
-final class Style_Loader {
+final class Style_Collector {
 	private Asset_Resolver $asset_resolver;
 	private Style_Builder $style_builder;
 	private string $code;

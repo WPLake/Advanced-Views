@@ -9,7 +9,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Loader;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Provider;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Loader;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Collector;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Style\Provider\Style_Provider;
 
 defined( 'ABSPATH' ) || exit;
@@ -17,12 +17,12 @@ defined( 'ABSPATH' ) || exit;
 class Library_Asset_Loader extends Actor_Base implements Actor {
 	private Library_Container $library_container;
 	private Script_Loader $script_loader;
-	private Style_Loader $style_loader;
+	private Style_Collector $style_collector;
 
-	public function __construct( Library_Container $library_container, Script_Loader $script_loader, Style_Loader $style_loader ) {
+	public function __construct( Library_Container $library_container, Script_Loader $script_loader, Style_Collector $style_collector ) {
 		$this->library_container = $library_container;
 		$this->script_loader     = $script_loader;
-		$this->style_loader      = $style_loader;
+		$this->style_collector   = $style_collector;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -47,7 +47,7 @@ class Library_Asset_Loader extends Actor_Base implements Actor {
 				$style_provider->has_active_styles() ) {
 				$name = $library->get_name();
 
-				$this->style_loader->enqueue_styles( $name, $style_provider );
+				$this->style_collector->enqueue_styles( $name, $style_provider );
 			}
 		}
 	}
