@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Assets\Rework\Tailwind_Merger;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
@@ -23,11 +24,11 @@ class Assets_Factory extends Factory_Base {
 	public function front_assets(): Front_Assets {
 		return new Front_Assets(
 			$this->resolve( Asset_Resolver::class ),
-			$this->resolve( Layout_Settings_Storage::class )->get_file_system(),
 			$this->resolve( Live_Reloader_Component::class ),
 			$this->resolve( Html_Renderer::class ),
 			$this->resolve( Style_Builder::class ),
-			$this->resolve( Library_Container::class )
+			$this->resolve( Library_Container::class ),
+			$this->tailwind_merger()
 		);
 	}
 
@@ -35,6 +36,13 @@ class Assets_Factory extends Factory_Base {
 		return new Admin_Assets(
 			$this->resolve( Asset_Resolver::class ),
 			$this->interactive_fields()
+		);
+	}
+
+	protected function tailwind_merger(): Tailwind_Merger {
+		return new Tailwind_Merger(
+			$this->resolve( Layout_Settings_Storage::class )->get_file_system(),
+			$this->resolve( Live_Reloader_Component::class )
 		);
 	}
 

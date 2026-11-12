@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Shortcode;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Assets\Rework\Code_Minifier;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -197,7 +197,7 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 
 		if ( $cpt_data->is_css_internal() ) {
 			$css_code   = $cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
-			$shadow_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
+			$shadow_css = Code_Minifier::minify_css( $css_code );
 			$host_css   = sprintf( ':host{all: initial!important;}%s', $shadow_css );
 
 			$tags = tag( 'style' )

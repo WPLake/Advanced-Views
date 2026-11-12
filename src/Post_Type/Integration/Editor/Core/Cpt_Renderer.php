@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Assets\Rework\Code_Minifier;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
@@ -87,7 +87,7 @@ final class Cpt_Renderer {
 		// internal (e.g. shadow DOM) CSS is scoped to its own markup and inlined there instead.
 		if ( ! $cpt_settings->is_css_internal() ) {
 			$css_code     = $cpt_settings->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
-			$minified_css = Front_Assets::minify_code( $css_code, Front_Assets::MINIFY_TYPE_CSS );
+			$minified_css = Code_Minifier::minify_css( $css_code );
 			$unique_id    = $cpt_settings->get_unique_id();
 
 			$tags = tag( 'style' )

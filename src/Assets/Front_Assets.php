@@ -5,12 +5,13 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Assets;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
+use Org\Wplake\Advanced_Views\Assets\Rework\Code_Minifier;
+use Org\Wplake\Advanced_Views\Assets\Rework\Tailwind_Merger;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Library_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Core\Script\Provider\Script_Loader;
@@ -27,9 +28,6 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 defined( 'ABSPATH' ) || exit;
 
 class Front_Assets extends Actor_Base implements Actor {
-	const MINIFY_TYPE_CSS = 'css';
-	const MINIFY_TYPE_JS  = 'js';
-
 	private Script_Loader $script_loader;
 	private ?int $buffer_level;
 	private bool $is_custom_interactivity_api_import_map_required;
@@ -46,14 +44,13 @@ class Front_Assets extends Actor_Base implements Actor {
 	/**
 	 * @var array<string,true>
 	 */
-	private array $tailwind_css_rules;
-	private File_System $file_system;
+	private array $tailwind_asset_ids;
+	private Tailwind_Merger $tailwind_merger;
 	protected Html_Renderer $html_renderer;
 	private Library_Container $library_container;
 
-	public function __construct( Asset_Resolver $asset_resolver, File_System $file_system, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Style_Builder $style_builder, Library_Container $library_container ) {
+	public function __construct( Asset_Resolver $asset_resolver, Live_Reloader_Component $live_reloader_component, Html_Renderer $html_renderer, Style_Builder $style_builder, Library_Container $library_container, Tailwind_Merger $tailwind_merger ) {
 		$this->script_loader                               = new Script_Loader( $asset_resolver );
-		$this->file_system                                     = $file_system;
 		$this->buffer_level                                    = null;
 		$this->is_custom_interactivity_api_import_map_required = false;
 
@@ -61,7 +58,8 @@ class Front_Assets extends Actor_Base implements Actor {
 		$this->include_css_code        = array();
 		$this->live_reloader_component = $live_reloader_component;
 		$this->style_loader      = new Style_Loader( $asset_resolver, $style_builder );
-		$this->tailwind_css_rules      = array();
+		$this->tailwind_asset_ids      = array();
+		$this->tailwind_merger         = $tailwind_merger;
 		$this->html_renderer           = $html_renderer;
 		$this->library_container       = $library_container;
 	}
@@ -141,101 +139,6 @@ class Front_Assets extends Actor_Base implements Actor {
 		echo $js_code;
 	}
 
-	protected function get_unique_tailwind_rules( string $css, string $prefix = '' ): string {
-		$merged_css = '';
-
-		/**
-		 * Covers the following cases:
-		 * 1. '.class{}',
-		 * 2. 'h1{}',
-		 * 3. '.class,h1{}',
-		 * 4. ':host .class'.
-		 */
-		preg_match_all( '/([:.a-z]+[^{]*){([^}]+)}/', $css, $matches, PREG_SET_ORDER );
-
-		$css_rules = array();
-
-		foreach ( $matches as $match ) {
-			$selector = trim( $match[1] );
-			$rules    = trim( $match[2] );
-
-			$global_selector = $prefix . $selector;
-
-			if ( false === key_exists( $global_selector, $this->tailwind_css_rules ) ) {
-				$this->tailwind_css_rules[ $global_selector ] = true;
-
-				$css_rules[ $selector ] = $rules;
-			}
-		}
-
-		$prefix_length              = strlen( $prefix );
-		$is_important_rule_required = $prefix_length > 0 &&
-									$this->live_reloader_component->is_active();
-
-		foreach ( $css_rules as $selector => $rules ) {
-			// tailwind @media rules require '!important' to make sure they work regardless of the position
-			// (it's actual with the live reloading mode).
-			if ( $is_important_rule_required ) {
-				$rules  = str_replace( ';', '!important;', $rules );
-				$rules .= '!important';
-			}
-
-			$merged_css .= $selector . '{' . $rules . '}';
-		}
-
-		return $merged_css;
-	}
-
-	protected function merge_tailwind_rules( string $tailwind_css ): string {
-		$tailwind_css = self::minify_code( $tailwind_css, self::MINIFY_TYPE_CSS );
-
-		// 1. get all the media queries.
-		preg_match_all( '/(@media[^{]*)\{((?:[^{}]*\{[^{}]*\})*[^{}]*)\}/', $tailwind_css, $media_queries, PREG_SET_ORDER );
-
-		$media_rules = array();
-		foreach ( $media_queries as $media_query ) {
-			$media_condition = trim( $media_query[1] );
-			$media_content   = trim( $media_query[2] );
-
-			$media_rules[ $media_condition ] ??= '';
-			$media_rules[ $media_condition ]  .= $media_content;
-		}
-
-		// 2. remove all the media queries from the primary css.
-		$tailwind_css = (string) preg_replace( '/@media[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/', '', $tailwind_css );
-
-		// 3. merge all the media queries.
-		$condition_css = '';
-
-		foreach ( $media_rules as $media_condition => $media_content ) {
-			$unique_media_content = $this->get_unique_tailwind_rules( $media_content, $media_condition );
-
-			$condition_css .= strlen( $unique_media_content ) > 0 ?
-				$media_condition . '{' . $unique_media_content . '}' :
-			'';
-		}
-
-		$primary_css = $this->get_unique_tailwind_rules( $tailwind_css );
-
-		return $primary_css . $condition_css;
-	}
-
-	protected function get_global_tailwind_styles(): string {
-		if ( $this->file_system->is_active() ) {
-			$base_folder           = $this->file_system->get_target_base_folder();
-			$tailwind_globals_file = sprintf( '%s/tailwind.css', $base_folder );
-			$wp_filesystem         = $this->file_system->get_wp_filesystem();
-
-			if ( $wp_filesystem->exists( $tailwind_globals_file ) ) {
-				$tailwind_styles = (string) $wp_filesystem->get_contents( $tailwind_globals_file );
-
-				return self::minify_code( $tailwind_styles, self::MINIFY_TYPE_CSS );
-			}
-		}
-
-		return '';
-	}
-
 	protected static function print_interactivity_api_import_map( string $interactivity_api_script_url ): void {
 		$imports   = array(
 			'@wordpress/interactivity' => $interactivity_api_script_url,
@@ -256,50 +159,6 @@ class Front_Assets extends Actor_Base implements Actor {
 		wp_print_inline_script_tag( $json_data, $attributes );
 	}
 
-	public static function minify_code( string $code, string $type ): string {
-		$tailwind_position = strpos( $code, 'advanced-views:tailwind' );
-		$is_tailwind       = is_int( $tailwind_position );
-
-		// remove all multiline comments.
-		$code_without_comments = preg_replace( '|\/\*[\s\S]+\*\/|U', '', $code );
-		$code                  = $code_without_comments ?? $code;
-
-		// remove all single line comments.
-		// \s at the begin is used to make sure url's aren't affected, e.g. 'url(http://example.com)' in CSS.
-		$code_without_comments = preg_replace( '|[\s]+\/\/(.?)+\n|', '', $code );
-		$code                  = $code_without_comments ?? $code;
-
-		// remove unnecessary spaces.
-		$code = str_replace( array( "\t", "\n", "\r" ), '', $code );
-
-		// replace multiple spaces with one.
-		$code_without_extra_spaces = preg_replace( '|\s+|', ' ', $code );
-		$code                      = $code_without_extra_spaces ?? $code;
-
-		$code = str_replace( ': ', ':', $code );
-		$code = str_replace( '; ', ';', $code );
-
-		$code = str_replace( ' {', '{', $code );
-		$code = str_replace( '{ ', '{', $code );
-
-		$code = str_replace( ' }', '}', $code );
-		$code = str_replace( '} ', '}', $code );
-
-		if ( 'js' === $type ) {
-			$code = str_replace( ' =', '=', $code );
-			$code = str_replace( '= ', '=', $code );
-
-			$code = str_replace( ' ?', '?', $code );
-			$code = str_replace( '? ', '?', $code );
-		} else {
-			$code .= $is_tailwind ?
-				"\n/*advanced-views:tailwind*/" :
-				'';
-		}
-
-		return $code;
-	}
-
 	public function start_buffering(): void {
 		ob_start();
 		$this->buffer_level = ob_get_level();
@@ -314,12 +173,14 @@ class Front_Assets extends Actor_Base implements Actor {
 		$css_source = $cpt_settings->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
 		$js_source  = $cpt_settings->get_js_code();
 
-		$css_code = self::minify_code( $css_source, self::MINIFY_TYPE_CSS );
-		$js_code  = self::minify_code( $js_source, self::MINIFY_TYPE_JS );
+		$css_code = Code_Minifier::minify_css( $css_source );
+		$js_code  = Code_Minifier::minify_js( $js_source );
 
 		if ( strlen( $css_code ) > 0 &&
 			false === $cpt_settings->is_css_internal() ) {
 			$this->include_css_code[ $unique_id ] = $css_code;
+
+			$this->mark_tailwind_asset( $unique_id, $css_source );
 		}
 
 		if ( strlen( $js_code ) > 0 ) {
@@ -354,12 +215,10 @@ class Front_Assets extends Actor_Base implements Actor {
 		$is_tailwind_in_use = false;
 
 		foreach ( $this->include_css_code as $name => $css_code ) {
-			$tailwind_position = strpos( $css_code, 'advanced-views:tailwind' );
-
-			if ( is_int( $tailwind_position ) ) {
+			if ( key_exists( $name, $this->tailwind_asset_ids ) ) {
 				$is_tailwind_in_use = true;
 
-				$css_code = $this->merge_tailwind_rules( $css_code );
+				$css_code = $this->tailwind_merger->merge( $css_code );
 
 				// can be empty after merging.
 				if ( 0 === strlen( $css_code ) ) {
@@ -376,11 +235,11 @@ class Front_Assets extends Actor_Base implements Actor {
 			++$counter;
 		}
 
-		// empty potentially the large array, as it's not needed anymore.
-		$this->tailwind_css_rules = array();
+		$this->tailwind_merger->reset();
+		$this->tailwind_asset_ids = array();
 
 		if ( $is_tailwind_in_use ) {
-			$global_tailwind_styles = $this->get_global_tailwind_styles();
+			$global_tailwind_styles = $this->tailwind_merger->get_global_styles();
 
 			if ( strlen( $global_tailwind_styles ) > 0 ) {
 				$all_css_code .= 0 === $counter ?
@@ -512,6 +371,16 @@ class Front_Assets extends Actor_Base implements Actor {
 		}
 
 		return $src;
+	}
+
+	protected function mark_tailwind_asset( string $unique_id, string $css_source ): void {
+		if ( $this->tailwind_merger->is_tailwind( $css_source ) ) {
+			$this->tailwind_asset_ids[ $unique_id ] = true;
+
+			return;
+		}
+
+		unset( $this->tailwind_asset_ids[ $unique_id ] );
 	}
 
 	/**
