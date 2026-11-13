@@ -19,9 +19,13 @@ class Reloader_Root_Marker {
 		$this->html_renderer           = $html_renderer;
 	}
 
+	public function is_active(): bool {
+		return $this->live_reloader_component->is_active();
+	}
+
 	public function mark( string $all_css_code ): string {
 		// introduce a styles variable, which allows to detect the styles root inside a webcomponent.
-		if ( false === $this->live_reloader_component->is_active() ) {
+		if ( false === $this->is_active() ) {
 			return $all_css_code;
 		}
 

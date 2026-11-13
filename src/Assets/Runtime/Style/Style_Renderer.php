@@ -25,16 +25,9 @@ final class Style_Renderer {
 	}
 
 	public function print_styles(): void {
-		$tags      = $this->style_provider->resolve_tags();
-		$css_code  = $this->tags_renderer->render_tags( $tags );
-		$is_filled = strlen( $css_code ) > 0;
+		$tags     = $this->style_provider->resolve_tags();
+		$css_code = $this->tags_renderer->render_tags( $tags );
 
-		if ( $is_filled ) {
-			$this->style_injector->inject( $css_code );
-
-			return;
-		}
-
-		$this->style_injector->release();
+		$this->style_injector->inject( $css_code );
 	}
 }

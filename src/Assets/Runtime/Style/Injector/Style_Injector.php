@@ -38,28 +38,33 @@ final class Style_Injector extends Actor_Base implements Actor {
 
 	/**
 	 * Prints the buffered page with the styles inside, or just the styles, if the page wasn't buffered.
+	 * The live reloader needs its styles root on the page even when there are no styles yet.
 	 */
 	public function inject( string $css ): void {
-		if ( $this->page_buffer->is_started() ) {
-			$page_content = $this->page_buffer->take_content();
+		$is_page_required = strlen( $css ) > 0 ||
+							$this->reloader_root_marker->is_active();
 
+		if ( $is_page_required ) {
 			// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $this->place( $page_content, $css );
+			echo $this->resolve_output( $css );
 
 			return;
 		}
 
-		// if the buffer wasn't started, then 'template_redirect' hook wasn't called,
-		// so we must echo styles here, instead of the header.
-		// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $css;
+		// nothing to inject: the buffered page must still be released.
+		$this->page_buffer->flush_own();
 	}
 
-	/**
-	 * For the case when there are no styles to inject: the buffered page must still be released.
-	 */
-	public function release(): void {
-		$this->page_buffer->flush_own();
+	protected function resolve_output( string $css ): string {
+		if ( $this->page_buffer->is_started() ) {
+			$page_content = $this->page_buffer->take_content();
+
+			return $this->place( $page_content, $css );
+		}
+
+		// if the buffer wasn't started, then 'template_redirect' hook wasn't called,
+		// so the styles are printed here, instead of the header.
+		return $css;
 	}
 
 	/**
