@@ -8,10 +8,8 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Assets\Admin_Assets;
 use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
-use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Deduplicator;
 use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Globals;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Layout_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
@@ -25,13 +23,7 @@ class Assets_Factory extends Factory_Base {
 		);
 	}
 
-	public function tailwind_rule_filter(): Tailwind_Deduplicator {
-		return new Tailwind_Deduplicator(
-			$this->resolve( Live_Reloader_Component::class )
-		);
-	}
-
-	public function tailwind_globals_reader(): Tailwind_Globals {
+	public function tailwind_globals(): Tailwind_Globals {
 		return new Tailwind_Globals(
 			$this->resolve( Layout_Settings_Storage::class )->get_file_system()
 		);

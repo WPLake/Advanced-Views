@@ -25,7 +25,7 @@ class assets_domain extends Domain_Policy {
 		layout_cpt_domain::class,
 		// todo break cycle-dependency (selections <-> assets)
 		post_selection_cpt_domain::class,
-		// todo break cycle-dependency (library_pattern <-> assets)
+		// todo break cycle-dependency (frontend_library <-> assets)
 		frontend_library_domain::class,
 		layout_library_adapter_domain::class,
 		selection_library_adapter_domain::class,

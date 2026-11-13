@@ -25,12 +25,12 @@ final class Style_Tag_Provider {
 	public function __construct(
 		Cpt_Asset_Collector $assets_collector,
 		Library_Style_Collector $style_collector,
-		Tailwind_Deduplicator $rule_filter,
+		Tailwind_Deduplicator $tailwind_deduplicator,
 		Tailwind_Globals $tailwind_globals
 	) {
 		$this->assets_collector      = $assets_collector;
 		$this->style_collector       = $style_collector;
-		$this->tailwind_deduplicator = $rule_filter;
+		$this->tailwind_deduplicator = $tailwind_deduplicator;
 		$this->tailwind_globals      = $tailwind_globals;
 	}
 

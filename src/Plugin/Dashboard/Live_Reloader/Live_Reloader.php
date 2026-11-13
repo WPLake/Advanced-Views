@@ -6,6 +6,7 @@ namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader;
 
 use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
+use Org\Wplake\Advanced_Views\Assets\Runtime\Style\Tailwind\Tailwind_Parser;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -98,24 +99,12 @@ class Live_Reloader extends Actor_Base implements Actor {
 		// so we must add !important to all the media rules,
 		// otherwise we may have a case when css rule without @media placed below will override the above,
 		// e.g. @media{.lg:flex-row} and flex-col.
-		if ( false === strpos( $css, 'advanced-views:tailwind' ) ) {
+		if ( false === Tailwind_Parser::is_tailwind( $css ) ) {
 			return $css;
 		}
 
-		// 1. get all the media queries.
-		preg_match_all( '/(@media[^{]*)\{((?:[^{}]*\{[^{}]*\})*[^{}]*)\}/', $css, $media_queries, PREG_SET_ORDER );
-
-		// 2. remove all the media queries from the css.
-		$css = (string) preg_replace( '/@media[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/', '', $css );
-
-		$media_rules = array();
-		foreach ( $media_queries as $media_query ) {
-			$media_condition = trim( $media_query[1] );
-			$media_content   = trim( $media_query[2] );
-
-			$media_rules[ $media_condition ] ??= '';
-			$media_rules[ $media_condition ]  .= $media_content;
-		}
+		$media_rules = Tailwind_Parser::parse_media_rules( $css );
+		$css         = Tailwind_Parser::strip_media_queries( $css );
 
 		foreach ( $media_rules as $media_condition => $media_content ) {
 			$media_content = str_replace( '}', '!important}', $media_content );
