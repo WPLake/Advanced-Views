@@ -12,7 +12,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Script_Tag_Composer {
+final class Script_Tag_Provider {
 	private Cpt_Asset_Collector $assets_collector;
 
 	public function __construct( Cpt_Asset_Collector $assets_collector ) {
@@ -22,12 +22,12 @@ final class Script_Tag_Composer {
 	/**
 	 * @return Html_Tag[]
 	 */
-	public function compose_tags(): array {
+	public function resolve_tags(): array {
 		$tags     = array();
 		$js_codes = $this->assets_collector->get_js_code();
 
 		foreach ( $js_codes as $name => $js_code ) {
-			$script_tag = self::compose_script_tag( $name, $js_code );
+			$script_tag = self::resolve_script_tag( $name, $js_code );
 
 			if ( $script_tag instanceof Html_Tag ) {
 				$tags[] = $script_tag;
@@ -37,7 +37,7 @@ final class Script_Tag_Composer {
 		return $tags;
 	}
 
-	protected static function compose_script_tag( string $name, string $js_code ): ?Html_Tag {
+	protected static function resolve_script_tag( string $name, string $js_code ): ?Html_Tag {
 		$js_code   = Code_Minifier::minify_js( $js_code );
 		$is_filled = strlen( $js_code ) > 0;
 

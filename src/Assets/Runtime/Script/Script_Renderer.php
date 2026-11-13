@@ -10,16 +10,16 @@ use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 defined( 'ABSPATH' ) || exit;
 
 final class Script_Renderer {
-	private Script_Tag_Composer $script_composer;
+	private Script_Tag_Provider $script_provider;
 	private Html_Renderer $html_renderer;
 
-	public function __construct( Script_Tag_Composer $script_composer, Html_Renderer $html_renderer ) {
-		$this->script_composer = $script_composer;
+	public function __construct( Script_Tag_Provider $script_provider, Html_Renderer $html_renderer ) {
+		$this->script_provider = $script_provider;
 		$this->html_renderer   = $html_renderer;
 	}
 
 	public function print_scripts(): void {
-		$tags      = $this->script_composer->compose_tags();
+		$tags      = $this->script_provider->resolve_tags();
 		$js_code   = $this->render_tags( $tags );
 		$is_filled = strlen( $js_code ) > 0;
 

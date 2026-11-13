@@ -11,11 +11,8 @@ defined( 'ABSPATH' ) || exit;
 
 final class Cpt_Component_Composer {
 	public static function compose_js( Cpt_Settings $cpt_settings ): string {
-		$js_code         = $cpt_settings->get_js_code();
-		$trimmed_js_code = trim( $js_code );
-		$is_filled       = strlen( $trimmed_js_code ) > 0;
-
-		if ( $is_filled ) {
+		if ( $cpt_settings->has_js_code() ) {
+			$js_code  = $cpt_settings->get_js_code();
 			$tag_name = $cpt_settings->get_tag_name();
 
 			$classic_builder = fn() => JS_Component_Composer::compose_classic_component( $tag_name, $js_code );

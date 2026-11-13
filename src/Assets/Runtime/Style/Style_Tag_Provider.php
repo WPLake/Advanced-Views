@@ -16,7 +16,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Style_Tag_Composer {
+final class Style_Tag_Provider {
 	private Cpt_Asset_Collector $assets_collector;
 	private Library_Style_Collector $style_collector;
 	private Tailwind_Deduplicator $tailwind_deduplicator;
@@ -37,11 +37,11 @@ final class Style_Tag_Composer {
 	/**
 	 * @return Html_Tag[]
 	 */
-	public function compose_tags(): array {
-		$library_tags = $this->compose_library_tags();
+	public function resolve_tags(): array {
+		$library_tags = $this->resolve_library_tags();
 		// the order matters: the Tailwind globals are available only after the assets are filtered.
-		$asset_tags  = $this->compose_asset_tags();
-		$global_tags = $this->compose_global_tags();
+		$asset_tags  = $this->resolve_cpt_tags();
+		$global_tags = $this->resolve_global_tags();
 
 		return array_merge(
 			$library_tags,
@@ -53,7 +53,7 @@ final class Style_Tag_Composer {
 	/**
 	 * @return Html_Tag[]
 	 */
-	protected function compose_library_tags(): array {
+	protected function resolve_library_tags(): array {
 		$css_code  = $this->style_collector->get_css_code();
 		$is_filled = strlen( $css_code ) > 0;
 
@@ -69,12 +69,12 @@ final class Style_Tag_Composer {
 	/**
 	 * @return Html_Tag[]
 	 */
-	protected function compose_asset_tags(): array {
+	protected function resolve_cpt_tags(): array {
 		$tags      = array();
 		$css_codes = $this->assets_collector->get_css_code();
 
 		foreach ( $css_codes as $name => $css_code ) {
-			$asset_tag = $this->compose_asset_tag( $name, $css_code );
+			$asset_tag = $this->resolve_asset_tag( $name, $css_code );
 
 			if ( $asset_tag instanceof Html_Tag ) {
 				$tags[] = $asset_tag;
@@ -87,7 +87,7 @@ final class Style_Tag_Composer {
 	/**
 	 * @return Html_Tag[]
 	 */
-	protected function compose_global_tags(): array {
+	protected function resolve_global_tags(): array {
 		$global_styles = $this->tailwind_deduplicator->is_used() ?
 			$this->tailwind_globals->get_global_styles() :
 			'';
@@ -103,7 +103,7 @@ final class Style_Tag_Composer {
 		return array();
 	}
 
-	protected function compose_asset_tag( string $name, string $css_code ): ?Html_Tag {
+	protected function resolve_asset_tag( string $name, string $css_code ): ?Html_Tag {
 		// the marker is a comment, so the check must precede the minification.
 		$is_tailwind = Tailwind_Parser::is_tailwind( $css_code );
 		$css_code    = Code_Minifier::minify_css( $css_code );

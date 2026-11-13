@@ -7,13 +7,16 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Library\Library_Asset_Collector;
 use WP_REST_Request;
 
 abstract class Instance_Factory {
 	protected Cpt_Asset_Collector $assets_collector;
+	protected Library_Asset_Collector $library_asset_collector;
 
-	public function __construct( Cpt_Asset_Collector $assets_collector ) {
-		$this->assets_collector = $assets_collector;
+	public function __construct( Cpt_Asset_Collector $assets_collector, Library_Asset_Collector $library_asset_collector ) {
+		$this->assets_collector        = $assets_collector;
+		$this->library_asset_collector = $library_asset_collector;
 	}
 
 	/**

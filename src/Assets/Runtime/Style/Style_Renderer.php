@@ -11,22 +11,22 @@ use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 defined( 'ABSPATH' ) || exit;
 
 final class Style_Renderer {
-	private Style_Tag_Composer $style_composer;
+	private Style_Tag_Provider $style_provider;
 	private Style_Injector $style_injector;
 	private Html_Renderer $html_renderer;
 
 	public function __construct(
-		Style_Tag_Composer $style_composer,
+		Style_Tag_Provider $style_provider,
 		Style_Injector $style_injector,
 		Html_Renderer $html_renderer
 	) {
-		$this->style_composer = $style_composer;
+		$this->style_provider = $style_provider;
 		$this->style_injector = $style_injector;
 		$this->html_renderer  = $html_renderer;
 	}
 
 	public function print_styles(): void {
-		$tags      = $this->style_composer->compose_tags();
+		$tags      = $this->style_provider->resolve_tags();
 		$css_code  = $this->render_tags( $tags );
 		$is_filled = strlen( $css_code ) > 0;
 

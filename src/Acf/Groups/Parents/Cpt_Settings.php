@@ -274,6 +274,10 @@ abstract class Cpt_Settings extends Group implements Cpt_Theme_Settings {
 		return $this->js_code;
 	}
 
+	public function has_js_code(): bool {
+		return '' !== trim( $this->get_js_code() );
+	}
+
 	public function is_web_component(): bool {
 		return self::WEB_COMPONENT_NONE !== $this->web_component;
 	}

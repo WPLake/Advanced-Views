@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Asset_Collector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Library\Library_Asset_Collector;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Field_Context\Field_Context_Loader;
@@ -30,6 +31,7 @@ class Layout_Factory extends Instance_Factory {
 
 	public function __construct(
 		Cpt_Asset_Collector $assets_collector,
+		Library_Asset_Collector $library_asset_collector,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Layout_Renderer $layout_renderer,
 		Template_Renderer_Storage $template_renderer_storage,
@@ -38,7 +40,7 @@ class Layout_Factory extends Instance_Factory {
 		Field_Provider_Cluster $provider_cluster,
 		Html_Renderer $html_renderer
 	) {
-		parent::__construct( $assets_collector );
+		parent::__construct( $assets_collector, $library_asset_collector );
 
 		$this->layouts_settings_storage  = $layouts_settings_storage;
 		$this->layout_renderer           = $layout_renderer;
@@ -94,7 +96,10 @@ class Layout_Factory extends Instance_Factory {
 		// mark as rendered, only if is not empty
 		// 'makeAndGetHtml' used as the primary. 'make' used for the specific cases, like validationInstance.
 		if ( $is_not_empty ) {
-			$this->assets_collector->add_asset( $view->get_view_data() );
+			$layout_settings = $view->get_view_data();
+
+			$this->assets_collector->add_asset( $layout_settings );
+			$this->library_asset_collector->activate_libraries( $layout_settings );
 		}
 	}
 

@@ -10,6 +10,7 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Asset_Collector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Library\Library_Asset_Collector;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
@@ -25,13 +26,14 @@ class Post_Selection_Factory extends Instance_Factory {
 
 	public function __construct(
 		Cpt_Asset_Collector $assets_collector,
+		Library_Asset_Collector $library_asset_collector,
 		Post_Query $query_builder,
 		Post_Selection_Markup $post_selection_markup,
 		Template_Renderer_Storage $template_renderer_storage,
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Html_Renderer $html_renderer
 	) {
-		parent::__construct( $assets_collector );
+		parent::__construct( $assets_collector, $library_asset_collector );
 
 		$this->query_builder                    = $query_builder;
 		$this->post_selection_markup            = $post_selection_markup;
@@ -64,6 +66,7 @@ class Post_Selection_Factory extends Instance_Factory {
 		$post_selection_settings = $card->getCardData();
 
 		$this->assets_collector->add_asset( $post_selection_settings );
+		$this->library_asset_collector->activate_libraries( $post_selection_settings );
 	}
 
 	/**
