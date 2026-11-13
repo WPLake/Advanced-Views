@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Template\Web_Component;
 
+use Org\Wplake\Advanced_Views\Plugin\Utils\Code_Minifier;
+
 defined( 'ABSPATH' ) || exit;
 
 final class JS_Component_Composer {
@@ -75,8 +77,10 @@ final class JS_Component_Composer {
 
 	/**
 	 * The imports are cut out of the code (by reference), as they must be at the top of the component.
+	 * The comments are stripped first, otherwise a commented import would be picked up as a real one.
 	 */
 	protected static function extract_imports( string &$js_code ): string {
+		$js_code = Code_Minifier::strip_comments( $js_code );
 		$imports = '';
 
 		preg_match_all(

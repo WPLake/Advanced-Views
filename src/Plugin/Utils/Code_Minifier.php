@@ -23,7 +23,7 @@ final class Code_Minifier {
 		return self::replace_all( $code, $replacements );
 	}
 
-	protected static function minify_common( string $code ): string {
+	public static function strip_comments( string $code ): string {
 		// remove all multiline comments.
 		$code_without_comments = preg_replace( '|\/\*[\s\S]+\*\/|U', '', $code );
 		$code                  = $code_without_comments ?? $code;
@@ -31,7 +31,12 @@ final class Code_Minifier {
 		// remove all single line comments.
 		// \s at the begin is used to make sure url's aren't affected, e.g. 'url(http://example.com)' in CSS.
 		$code_without_comments = preg_replace( '|[\s]+\/\/(.?)+\n|', '', $code );
-		$code                  = $code_without_comments ?? $code;
+
+		return $code_without_comments ?? $code;
+	}
+
+	protected static function minify_common( string $code ): string {
+		$code = self::strip_comments( $code );
 
 		// remove unnecessary spaces.
 		$code = str_replace( array( "\t", "\n", "\r" ), '', $code );
