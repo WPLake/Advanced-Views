@@ -32,6 +32,7 @@ trait Markup_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- overridden in child classes.
 	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
 		return array();
 	}
@@ -39,6 +40,7 @@ trait Markup_Field_Base {
 	/**
 	 * @return Html_Node[]
 	 */
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- overridden in child classes.
 	protected function compose_internal_item_layout( string $item_id, Template_Field_Meta $markup_field_data ): array {
 		return array();
 	}
@@ -98,6 +100,7 @@ trait Markup_Field_Base {
 	/**
 	 * @return string[]
 	 */
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- overridden in child classes.
 	public function get_conditional_fields( Field_Meta $field_meta ): array {
 		return array();
 	}
@@ -106,6 +109,7 @@ trait Markup_Field_Base {
 		return false;
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- overridden in child classes.
 	public function get_front_assets( Field_Settings $field_settings ): array {
 		return array();
 	}

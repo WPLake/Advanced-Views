@@ -77,10 +77,10 @@ class User_Field extends List_Field {
 		$shortcode = $token_factory->shortcode( Hard_Layout_Cpt::cpt_name() )
 			->set_attributes(
 				array(
-								'id'        => $id_var,
-								'object-id' => 'user',
-								'user-id'   => $user_id_var,
-							)
+					'id'        => $id_var,
+					'object-id' => 'user',
+					'user-id'   => $user_id_var,
+				)
 			);
 
 		return array( $shortcode );

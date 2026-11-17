@@ -18,10 +18,10 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 class Post_Attachment_Video implements Markup_Field {
 	use Markup_Field_Base;
+	use Custom_Field;
 
 	const MIME_TYPE = 'mime_type';
 
-	use Custom_Field;
 
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
@@ -33,19 +33,22 @@ class Post_Attachment_Video implements Markup_Field {
 
 		$video_class = $this->get_field_class( 'element', $markup_field_data );
 
-
 		return array(
 			tag( 'video' )
-				->attributes( array(
-					'class'    => $video_class,
-					'controls' => true,
-				) )
+				->attributes(
+					array(
+						'class'    => $video_class,
+						'controls' => true,
+					)
+				)
 				->content(
 					tag( 'source' )
-						->attributes( array(
-							'src'  => $src_var,
-							'type' => $type_var,
-						) )
+						->attributes(
+							array(
+								'src'  => $src_var,
+								'type' => $type_var,
+							)
+						)
 				),
 		);
 	}

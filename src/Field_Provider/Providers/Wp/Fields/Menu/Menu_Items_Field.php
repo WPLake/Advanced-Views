@@ -30,12 +30,12 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
  */
 class Menu_Items_Field implements Markup_Field {
 	use Markup_Field_Base;
+	use Custom_Field;
 
 	const IS_ACTIVE       = 'isActive';
 	const IS_CHILD_ACTIVE = 'isChildActive';
 	const CHILDREN        = 'children';
 
-	use Custom_Field;
 
 	private Link_Field $link_field;
 

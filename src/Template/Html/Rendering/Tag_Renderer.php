@@ -114,7 +114,7 @@ final class Tag_Renderer {
 
 	protected function render_attributes( Html_Tag $tag, string $open_tag ): string {
 		$tag_length = strlen( $open_tag );
-		$attributes       = $tag->get_attributes();
+		$attributes = $tag->get_attributes();
 
 		return $this->attributes_renderer->render( $attributes, $tag_length );
 	}

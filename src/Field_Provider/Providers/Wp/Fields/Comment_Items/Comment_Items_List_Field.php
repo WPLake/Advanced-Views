@@ -25,12 +25,12 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
  */
 class Comment_Items_List_Field implements Markup_Field {
 	use Markup_Field_Base;
+	use Custom_Field;
 
 	const AUTHOR_NAME = 'author_name';
 	const CONTENT     = 'content';
 	const COMMENT_ID  = 'comment_id';
 
-	use Custom_Field;
 
 	/**
 	 * @return Html_Node[]
@@ -79,10 +79,10 @@ class Comment_Items_List_Field implements Markup_Field {
 		$shortcode = $token_factory->shortcode( Hard_Layout_Cpt::cpt_name() )
 			->set_attributes(
 				array(
-								'id'         => $id_var,
-								'object-id'  => 'comment',
-								'comment-id' => $comment_id_var,
-							)
+					'id'         => $id_var,
+					'object-id'  => 'comment',
+					'comment-id' => $comment_id_var,
+				)
 			);
 
 		return array( $shortcode );

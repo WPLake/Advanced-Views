@@ -15,10 +15,12 @@ defined( 'ABSPATH' ) || exit;
 final class Html_Printer {
 	public static function link_tags( string $url, string $label ): Html_Tag {
 		$link_tag = tag( 'a' )
-			->attributes( array(
-				'target' => '_blank',
-				'href'   => $url,
-			) );
+			->attributes(
+				array(
+					'target' => '_blank',
+					'href'   => $url,
+				)
+			);
 
 		return $link_tag
 			->content(
@@ -31,11 +33,13 @@ final class Html_Printer {
 	 */
 	public static function dashboard_form_tags( string $page, string $form_nonce, array $blocks ): Html_Tag {
 		$form_tag = tag( 'form' )
-			->attributes( array(
-				'action' => '',
-				'method' => 'post',
-				'class'  => 'av-dashboard',
-			) );
+			->attributes(
+				array(
+					'action' => '',
+					'method' => 'post',
+					'class'  => 'av-dashboard',
+				)
+			);
 		$main_tag = tag( 'div' )
 			->attributes( array( 'class' => 'av-dashboard__main' ) );
 
@@ -55,11 +59,13 @@ final class Html_Printer {
 
 	public static function hidden_input_tags( string $name, string $value ): Html_Tag {
 		return tag( 'input' )
-			->attributes( array(
-				'type'  => 'hidden',
-				'name'  => $name,
-				'value' => $value,
-			) );
+			->attributes(
+				array(
+					'type'  => 'hidden',
+					'name'  => $name,
+					'value' => $value,
+				)
+			);
 	}
 
 	public static function title_tags( string $title ): Html_Tag {

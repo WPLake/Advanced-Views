@@ -72,7 +72,7 @@ final class Field_Pro_Marker extends Actor_Base implements Actor {
 		$type         = $field['type'] ?? '';
 		$instructions = self::get_instructions( $field );
 
-		$field['label']       ??= '';
+		$field['label']      ??= '';
 		$field['instructions'] = $instructions;
 
 		if ( 'tab' === $type ) {

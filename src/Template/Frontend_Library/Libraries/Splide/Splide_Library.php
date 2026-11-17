@@ -57,7 +57,7 @@ final class Splide_Library extends Layout_Library_Base implements Selection_Libr
 			array();
 	}
 
-	public function is_target_selection(Post_Selection_Settings $post_selection_settings ): bool {
+	public function is_target_selection( Post_Selection_Settings $post_selection_settings ): bool {
 		return 'splide_v4' === $post_selection_settings->slider_type;
 	}
 

@@ -20,10 +20,10 @@ defined( 'ABSPATH' ) || exit;
 
 class Post_Thumbnail_Link_Field implements Markup_Field {
 	use Markup_Field_Base;
+	use Custom_Field;
 
 	const HREF = 'href';
 
-	use Custom_Field;
 
 	protected Image_Field $image_field;
 

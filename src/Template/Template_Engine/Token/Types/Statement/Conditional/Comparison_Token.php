@@ -15,8 +15,8 @@ class Comparison_Token extends Statement_Token_Base {
 	const COMPARISON_EMPTY   = ' ?: ';
 	const COMPARISON_OR      = ' || ';
 
-	protected ?Statement_Token $left    = null;
-	protected ?Statement_Token $right   = null;
+	protected ?Statement_Token $left   = null;
+	protected ?Statement_Token $right  = null;
 	protected string $operator_escaped = '';
 
 	public function set_left_operand( Statement_Token $left ): self {

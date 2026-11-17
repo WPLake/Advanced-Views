@@ -38,7 +38,7 @@ final class Raw_Field_Value {
 		$this->context                = $context;
 		$this->layout                 = $layout;
 		$this->source                 = $source;
-		$this->field_value_resolver        = $field_value_resolver;
+		$this->field_value_resolver   = $field_value_resolver;
 		$this->formatted_value        = null;
 		$this->is_set_formatted_value = false;
 

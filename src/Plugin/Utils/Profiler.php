@@ -56,15 +56,17 @@ class Profiler {
 		$classes_amount      = count( $classes_total_usage );
 		$classes_prefix      = sprintf( "%d\n", $classes_amount );
 
-		$tags      = tag( 'div' )
-			->attributes( array(
-				'style' => array(
-					'max-width' => '1000px',
-					'margin'    => '0 auto',
-					'padding'   => '50px',
-					'border'    => '2px solid gray',
-				),
-			) )
+		$tags = tag( 'div' )
+			->attributes(
+				array(
+					'style' => array(
+						'max-width' => '1000px',
+						'margin'    => '0 auto',
+						'padding'   => '50px',
+						'border'    => '2px solid gray',
+					),
+				)
+			)
 			->content(
 				self::pre_chain( $total_usage ),
 				tag( 'hr' ),

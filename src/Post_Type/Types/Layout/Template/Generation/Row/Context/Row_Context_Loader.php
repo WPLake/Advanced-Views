@@ -67,7 +67,7 @@ final class Row_Context_Loader {
 	 * @return Layout_Library[]
 	 */
 	protected function resolve_field_patterns( Field_Settings $field_settings ): array {
-		$vendor_name    = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
+		$vendor_name   = $this->provider_cluster->get_vendor_name_by_key( $field_settings->key );
 		$pattern_names = $this->provider_cluster->get_field_front_assets( $vendor_name, $field_settings );
 
 		$libraries = $this->library_container->get_by_names( $pattern_names );

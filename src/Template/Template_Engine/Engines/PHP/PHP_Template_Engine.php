@@ -23,8 +23,8 @@ final class PHP_Template_Engine implements Template_Engine {
 	private Html_Escaper $escaper;
 
 	public function __construct( Logger $logger, Settings_Storage $settings, Html_Renderer $html_renderer, Html_Escaper $escaper ) {
-		$this->logger   = $logger;
-		$this->settings = $settings;
+		$this->logger        = $logger;
+		$this->settings      = $settings;
 		$this->html_renderer = $html_renderer;
 		$this->escaper       = $escaper;
 	}

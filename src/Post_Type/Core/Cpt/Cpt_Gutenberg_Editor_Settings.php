@@ -21,7 +21,7 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 	protected Html_Renderer $html_renderer;
 
 	public function __construct( string $cpt_name, Html_Renderer $html_renderer ) {
-		$this->cpt_name = $cpt_name;
+		$this->cpt_name      = $cpt_name;
 		$this->html_renderer = $html_renderer;
 	}
 
@@ -106,26 +106,30 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 		$assistance_text = sprintf( ' %s', $assistance );
 
 		$support_link = tag( 'a' )
-			->attributes( array(
-				'target' => '_blank',
-				'href'   => 'https://wplake.org/acf-views-support/',
-			) )
+			->attributes(
+				array(
+					'target' => '_blank',
+					'href'   => 'https://wplake.org/acf-views-support/',
+				)
+			)
 			->content(
 				$reach_out_label
 			);
 
-		$tags    = tag( 'p' )
-			->attributes( array(
-				'style' => array(
-					'position'  => 'fixed',
-					'right'     => '20px',
-					'bottom'    => '20px',
-					'z-index'   => '9999',
-					'color'     => 'red',
-					'max-width' => '500px',
-					'font-size' => '13px',
-				),
-			) )
+		$tags = tag( 'p' )
+			->attributes(
+				array(
+					'style' => array(
+						'position'  => 'fixed',
+						'right'     => '20px',
+						'bottom'    => '20px',
+						'z-index'   => '9999',
+						'color'     => 'red',
+						'max-width' => '500px',
+						'font-size' => '13px',
+					),
+				)
+			)
 			->content(
 				$error_text,
 				$please_text,

@@ -56,7 +56,7 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 
 		$this->layout_settings_storage = $layout_settings_storage;
 		$this->layout_factory          = $layout_factory;
-		$this->layout_renderer           = $layout_renderer;
+		$this->layout_renderer         = $layout_renderer;
 		$this->layout_meta_boxes       = $layout_meta_boxes;
 	}
 

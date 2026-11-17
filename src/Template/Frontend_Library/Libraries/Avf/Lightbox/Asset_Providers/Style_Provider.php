@@ -25,7 +25,7 @@ final class Style_Provider extends Style_Provider_Base {
 
 	public function get_inline_styles(): array {
 		return array(
-			'.acf-views-light-box'                       => array(
+			'.acf-views-light-box'                 => array(
 				'position'        => 'fixed',
 				'top'             => '0',
 				'left'            => '0',
@@ -38,14 +38,14 @@ final class Style_Provider extends Style_Provider_Base {
 				'background'      => 'rgba(0, 0, 0, 0.9)',
 				'padding'         => '5%',
 			),
-			'.acf-views-light-box__image'                => array(
+			'.acf-views-light-box__image'          => array(
 				'max-width'  => '100%',
 				'max-height' => '100%',
 			),
-			'.acf-views-light-box__image:hover'          => array(
+			'.acf-views-light-box__image:hover'    => array(
 				'cursor' => 'zoom-out',
 			),
-			'.acf-views-light-box__icon'                 => array(
+			'.acf-views-light-box__icon'           => array(
 				'stroke'         => 'currentColor',
 				'stroke-linecap' => 'square',
 				'stroke-width'   => '6px',
@@ -59,14 +59,14 @@ final class Style_Provider extends Style_Provider_Base {
 				'opacity'        => '.5',
 				'transition'     => 'all ease .3s',
 			),
-			'.acf-views-light-box__icon:hover'           => array(
+			'.acf-views-light-box__icon:hover'     => array(
 				'cursor'  => 'pointer',
 				'opacity' => '.7',
 			),
-			'.acf-views-light-box__icon-left'            => array(
+			'.acf-views-light-box__icon-left'      => array(
 				'transform' => 'scaleX(-1) translateX(150%)',
 			),
-			'.acf-views-light-box__icon--inactive'       => array(
+			'.acf-views-light-box__icon--inactive' => array(
 				'opacity'        => '.3',
 				'pointer-events' => 'none',
 			),

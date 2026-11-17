@@ -120,10 +120,12 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 		$title_tags     = tag( 'strong' )
 			->content(
 				tag( 'a' )
-					->attributes( array(
-						'class' => 'row-title',
-						'href'  => $edit_post_link,
-					) )
+					->attributes(
+						array(
+							'class' => 'row-title',
+							'href'  => $edit_post_link,
+						)
+					)
 					->content(
 						$cpt_settings->title
 					)

@@ -52,7 +52,7 @@ class Layout_Save_Actions extends Cpt_Save_Actions {
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
 		$this->layout_settings          = $layout_settings;
-		$this->layout_renderer            = $layout_renderer;
+		$this->layout_renderer          = $layout_renderer;
 		$this->layout_factory           = $layout_factory;
 	}
 

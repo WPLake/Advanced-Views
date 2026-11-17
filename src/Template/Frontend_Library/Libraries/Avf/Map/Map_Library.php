@@ -26,8 +26,7 @@ class Map_Library extends Layout_Library_Base {
 	public function __construct( Field_Provider_Cluster $provider_cluster, Script_Pattern_Builder $script_pattern_builder, Style_Builder $style_builder ) {
 		parent::__construct( $provider_cluster, $script_pattern_builder, $style_builder );
 
-
-		$this->maps       = array();
+		$this->maps            = array();
 		$this->script_provider = $this->create_js_library();
 	}
 

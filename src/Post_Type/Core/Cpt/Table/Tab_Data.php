@@ -33,16 +33,16 @@ class Tab_Data {
 	private array $bulk_actions;
 
 	public function __construct( Cpt_Table_Tab $cpt_table_tab ) {
-		$this->cpt_table_tab        = $cpt_table_tab;
-		$this->name                 = '';
-		$this->label                = '';
-		$this->description_nodes    = array();
-		$this->label_in_brackets    = '';
-		$this->total_items_count    = 0;
-		$this->items                = array();
-		$this->remote_source        = '';
-		$this->pagination_per_page  = 0;
-		$this->bulk_actions         = array();
+		$this->cpt_table_tab       = $cpt_table_tab;
+		$this->name                = '';
+		$this->label               = '';
+		$this->description_nodes   = array();
+		$this->label_in_brackets   = '';
+		$this->total_items_count   = 0;
+		$this->items               = array();
+		$this->remote_source       = '';
+		$this->pagination_per_page = 0;
+		$this->bulk_actions        = array();
 	}
 
 	/**

@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Sta
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement\Statement_Token;
 
 class Conditional_Value_Token extends Statement_Token_Base {
-	protected ?Statement_Token $comparison   = null;
+	protected ?Statement_Token $comparison    = null;
 	protected ?Statement_Token $accept_value  = null;
 	protected ?Statement_Token $decline_value = null;
 

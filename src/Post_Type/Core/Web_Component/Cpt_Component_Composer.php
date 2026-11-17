@@ -19,9 +19,9 @@ final class Cpt_Component_Composer {
 			$shadow_builder  = fn() => JS_Component_Composer::compose_shadow_component( $tag_name, $js_code );
 
 			$builders = array(
-				Cpt_Settings::WEB_COMPONENT_CLASSIC                => $classic_builder,
+				Cpt_Settings::WEB_COMPONENT_CLASSIC    => $classic_builder,
 				Cpt_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE => $classic_builder,
-				Cpt_Settings::WEB_COMPONENT_SHADOW_DOM             => $shadow_builder,
+				Cpt_Settings::WEB_COMPONENT_SHADOW_DOM => $shadow_builder,
 			);
 
 			$builder = $builders[ $cpt_settings->web_component ] ?? null;

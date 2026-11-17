@@ -85,10 +85,12 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 
 		return array(
 			tag( 'a' )
-				->attributes( array(
-					'href'   => $edit_link,
-					'target' => '_blank',
-				) )
+				->attributes(
+					array(
+						'href'   => $edit_link,
+						'target' => '_blank',
+					)
+				)
 				->content(
 					$view_data->title
 				),

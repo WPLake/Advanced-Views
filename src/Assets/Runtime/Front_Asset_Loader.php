@@ -32,8 +32,8 @@ final class Front_Asset_Loader extends Actor_Base implements Actor {
 		$this->library_asset_loader = $library_asset_loader;
 		$this->interactivity_loader = $interactivity_loader;
 		$this->assets_collector     = $assets_collector;
-		$this->style_renderer        = $style_renderer;
-		$this->script_renderer       = $script_renderer;
+		$this->style_renderer       = $style_renderer;
+		$this->script_renderer      = $script_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {

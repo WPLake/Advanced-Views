@@ -26,10 +26,10 @@ abstract class Layout_Library_Base implements Layout_Library {
 	protected Style_Builder $style_builder;
 
 	public function __construct( Field_Provider_Cluster $provider_cluster, Script_Pattern_Builder $script_pattern_builder, Style_Builder $style_builder ) {
-		$this->provider_cluster    = $provider_cluster;
-		$this->script_pattern_builder  = $script_pattern_builder;
-		$this->style_builder = $style_builder;
-		$this->auto_discover_name  = '';
+		$this->provider_cluster       = $provider_cluster;
+		$this->script_pattern_builder = $script_pattern_builder;
+		$this->style_builder          = $style_builder;
+		$this->auto_discover_name     = '';
 	}
 
 	public function get_name(): string {

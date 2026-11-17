@@ -32,9 +32,9 @@ class Lightbox_Library extends Layout_Library_Base {
 
 		$this->set_auto_discover_name( 'acf-views-lightbox' );
 
-		$this->light_boxes = array();
-		$this->script_provider  = new Script_Provider();
-		$this->style_provider = new Style_Provider();
+		$this->light_boxes     = array();
+		$this->script_provider = new Script_Provider();
+		$this->style_provider  = new Style_Provider();
 	}
 
 	public function get_js_library(): Script_Provider {

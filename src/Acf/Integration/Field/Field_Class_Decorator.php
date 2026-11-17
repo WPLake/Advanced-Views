@@ -24,6 +24,7 @@ final class Field_Class_Decorator extends Actor_Base implements Actor {
 	 *
 	 * @return T
 	 */
+	// phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames -- 'class' is the ACF key name.
 	public static function append_class( array $holder, string $class ): array {
 		$current_class = string( $holder, 'class' );
 		$has_class     = strlen( $current_class ) > 0;
