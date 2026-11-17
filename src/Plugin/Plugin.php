@@ -4,18 +4,15 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -30,20 +27,16 @@ class Plugin extends Actor_Base implements Actor {
 	private bool $is_switching_versions;
 
 	private Options_Storage $options;
-	private Cpt_Theme_Settings $settings;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Options_Storage $options, Cpt_Theme_Settings $settings ) {
+	public function __construct( Options_Storage $options, Html_Renderer $html_renderer ) {
 		$this->options               = $options;
-		$this->settings              = $settings;
 		$this->is_switching_versions = false;
+		$this->html_renderer         = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
 		return $route_detector->is_admin_route();
-	}
-
-	public static function make_url_relative( string $url ): string {
-		return str_replace( get_site_url(), '', $url );
 	}
 
 	public static function get_theme_text_domain(): string {
@@ -173,14 +166,6 @@ class Plugin extends Actor_Base implements Actor {
 		self::add_action( 'admin_notices', array( $this, 'maybe_show_compatibility_warnings' ) );
 		self::add_action( 'activated_plugin', array( $this, 'deactivate_other_instances' ) );
 		self::add_action( 'pre_current_active_plugins', array( $this, 'show_plugin_deactivated_notice' ) );
-
-		self::add_filter( 'acf/prepare_field', array( $this, 'amend_field_settings' ) );
-		self::add_filter( 'acf/field_wrapper_attributes', array( $this, 'add_class_to_admin_pro_field_classes' ), 10, 2 );
-
-		if ( $route_detector->is_cpt_admin_route( Hard_Layout_Cpt::cpt_name(), Route_Detector::CPT_ADD ) ||
-			$route_detector->is_cpt_admin_route( Hard_Post_Selection_Cpt::cpt_name(), Route_Detector::CPT_ADD ) ) {
-			self::add_filter( 'acf/prepare_field', array( $this, 'set_global_defaults_for_field' ) );
-		}
 	}
 
 	public function is_pro_field_locked(): bool {
@@ -279,173 +264,20 @@ class Plugin extends Actor_Base implements Actor {
 
 		$this->options::delete_transient( Options_Storage::TRANSIENT_DEACTIVATED_OTHER_INSTANCES );
 
-		printf(
-			'<div class="notice notice-warning">' .
-			'<p>%s</p>' .
-			'</div>',
-			esc_html( $message )
-		);
-	}
+		$tags = tag( 'div' )
+			->attributes( array( 'class' => 'notice notice-warning' ) )
+			->content(
+				tag( 'p' )
+					->content(
+						$message
+					)
+			);
 
-	/**
-	 * @param array<string,mixed> $field
-	 *
-	 * @return array<string,mixed>
-	 */
-	public function amend_field_settings( array $field ): array {
-		$field = $this->amend_pro_field_label_and_instruction( $field );
-		$field = $this->add_deprecated_field_class( $field );
-		$field = $this->add_custom_field_class( $field );
-
-		return $field;
-	}
-
-	/**
-	 * @param array<string,mixed> $field
-	 *
-	 * @return array<string,mixed>
-	 */
-	public function set_global_defaults_for_field( array $field ): array {
-		$field_name = $field['key'] ?? '';
-
-		switch ( $field_name ) {
-			case Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_TEMPLATE_ENGINE ):
-			case Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_TEMPLATE_ENGINE ):
-				$field['value'] = $this->settings->get_template_engine();
-				break;
-			case Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_WEB_COMPONENT ):
-			case Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_WEB_COMPONENT ):
-				$web_components_type = $this->settings->get_web_component_type();
-
-				if ( '' !== $web_components_type ) {
-					$field['value'] = $web_components_type;
-				}
-				break;
-			case Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_CLASSES_GENERATION ):
-			case Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_CLASSES_GENERATION ):
-				$field['value'] = $this->settings->get_classes_generation();
-				break;
-			case Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_SASS_CODE ):
-			case Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_SASS_CODE ):
-				$field['value'] = $this->settings->get_sass_code();
-				break;
-			case Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_TS_CODE ):
-			case Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_TS_CODE ):
-				$field['value'] = $this->settings->get_ts_code();
-				break;
-		}
-
-		return $field;
-	}
-
-	/**
-	 * @param array<string,mixed> $wrapper
-	 * @param array<string,mixed> $field
-	 *
-	 * @return array<string,mixed>
-	 */
-	public function add_class_to_admin_pro_field_classes( array $wrapper, array $field ): array {
-		$is_pro_field = key_exists( 'a-pro', $field ) &&
-								$this->is_pro_field_locked();
-
-		if ( $is_pro_field ) {
-			$wrapper['class'] = string( $wrapper, 'class' );
-
-			$wrapper['class'] .= ' acf-views-pro';
-		}
-
-		return $wrapper;
+		$this->html_renderer->print_html( $tags );
 	}
 
 	public function is_switching_versions(): bool {
 		return $this->is_switching_versions;
-	}
-
-	/**
-	 * @param array<string,mixed> $field
-	 *
-	 * @return array<string,mixed>
-	 */
-	protected function amend_pro_field_label_and_instruction( array $field ): array {
-		$is_pro_field = key_exists( 'a-pro', $field ) &&
-							$this->is_pro_field_locked();
-
-		if ( ! $is_pro_field ) {
-			return $field;
-		}
-
-		$type             = $field['type'] ?? '';
-		$field['label'] ??= '';
-
-		$instructions = key_exists( 'instructions', $field ) &&
-						is_string( $field['instructions'] ) ?
-			$field['instructions'] :
-			'';
-
-		$field['instructions'] = $instructions;
-
-		if ( 'tab' === $type ) {
-			$field['class'] = string( $field, 'class' );
-
-			$field['class'] .= ' acf-views-tab__pro';
-		} else {
-			// labels do not support HTML, so we can't use a link.
-			$field['label'] = sprintf(
-				'%s (%s)',
-				esc_html( string( $field, 'label' ) ),
-				$this->is_pro_version() ?
-					esc_html__( 'Unlock Pro', 'acf-views' ) :
-					esc_html__( 'Upgrade to Pro', 'acf-views' )
-			);
-		}
-
-		return $field;
-	}
-
-	/**
-	 * @param array<string,mixed> $field
-	 *
-	 * @return array<string,mixed>
-	 */
-	protected function add_deprecated_field_class( array $field ): array {
-		if ( ! key_exists( 'a-deprecated', $field ) ) {
-			return $field;
-		}
-
-		if ( ! key_exists( 'wrapper', $field ) ||
-			false === is_array( $field['wrapper'] ) ) {
-			$field['wrapper'] = array();
-		}
-
-		if ( ! key_exists( 'class', $field['wrapper'] ) ) {
-			$field['wrapper']['class'] = '';
-		}
-
-		$field['wrapper']['class'] .= ' acf-field--deprecated';
-
-		return $field;
-	}
-
-	/**
-	 * @param array<string,mixed> $field
-	 *
-	 * @return array<string,mixed>
-	 */
-	protected function add_custom_field_class( array $field ): array {
-		$class_argument = 'a-html-class';
-
-		if ( key_exists( $class_argument, $field ) ) {
-			$wrapper          = arr( $field, 'wrapper' );
-			$class            = string( $wrapper, 'class' ) . ' ' . string( $field, $class_argument );
-			$field['wrapper'] = array_merge(
-				$wrapper,
-				array(
-					'class' => esc_html( $class ),
-				)
-			);
-		}
-
-		return $field;
 	}
 
 	protected function print_opcache_compatibility_warning(): void {
@@ -457,14 +289,34 @@ class Plugin extends Actor_Base implements Actor {
 			'Please change the "opcache.save_comments" option in your php.ini file to the default value of "1" on your hosting.',
 			'acf-views'
 		);
-		printf(
-			'<div class="notice notice-error"><p>%s 
-<br>%s <a target="_blank" href="%s">%s</a>
-</p></div>',
-			esc_html( $detected_message ),
-			esc_html( $action_message ),
-			esc_url( External_Links::CONFLICTS_URL ),
-			esc_html( __( 'Read more', 'acf-views' ) ),
-		);
+		$read_more_label  = __( 'Read more', 'acf-views' );
+
+		$read_more_link = tag( 'a' )
+			->attributes(
+				array(
+					'target' => '_blank',
+					'href'   => External_Links::CONFLICTS_URL,
+				)
+			)
+			->content(
+				$read_more_label
+			);
+
+		$detected_text = sprintf( '%s ', $detected_message );
+		$action_text   = sprintf( '%s ', $action_message );
+
+		$tags = tag( 'div' )
+			->attributes( array( 'class' => 'notice notice-error' ) )
+			->content(
+				tag( 'p' )
+					->content(
+						$detected_text,
+						tag( 'br' ),
+						$action_text,
+						$read_more_link
+					)
+			);
+
+		$this->html_renderer->print_html( $tags );
 	}
 }

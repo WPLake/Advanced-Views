@@ -8,9 +8,12 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Acf_Dependency;
 use Org\Wplake\Advanced_Views\Acf\Acf_Internal_Features;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Custom_Acf_Field_Types;
-use Org\Wplake\Advanced_Views\Acf\Group_Integrations\Tools_Settings_Integration;
+use Org\Wplake\Advanced_Views\Acf\Integration\Groups\Custom_Acf_Field_Types;
+use Org\Wplake\Advanced_Views\Acf\Integration\Groups\Tools_Settings_Integration;
 use Org\Wplake\Advanced_Views\Acf\Groups\Git_Repository;
+use Org\Wplake\Advanced_Views\Acf\Integration\Field\Field_Class_Decorator;
+use Org\Wplake\Advanced_Views\Acf\Integration\Field\Field_Default_Setter;
+use Org\Wplake\Advanced_Views\Acf\Integration\Field\Field_Pro_Marker;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
@@ -35,6 +38,9 @@ class Acf_Bootstrap extends Bootstrap_Base {
 			Acf_Internal_Features::class,
 			Tools_Settings_Integration::class,
 			Custom_Acf_Field_Types::class,
+			Field_Pro_Marker::class,
+			Field_Class_Decorator::class,
+			Field_Default_Setter::class,
 		);
 	}
 

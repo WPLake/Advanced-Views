@@ -5,10 +5,10 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core;
 
 use DateTime;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Source;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 
 defined( 'ABSPATH' ) || exit;
@@ -32,23 +32,14 @@ interface Field_Provider {
 	/**
 	 * @param string[] $include_only_types
 	 *
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
-	public function get_field_choices(
-		array $include_only_types = array(),
-		// todo different response must be separate methods, see ugly Field_Provider_Cluster::get_label_choices workaround.
-		bool $is_meta_format = false,
-		bool $is_field_name_as_label = false
-	): array;
+	public function get_field_choices( array $include_only_types = array() ): array;
 
 	/**
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
-	public function get_sub_field_choices(
-		// todo must be separate methods, same as get_field_choices.
-		bool $is_meta_format = false,
-		bool $is_field_name_as_label = false
-	): array;
+	public function get_sub_field_choices(): array;
 
 	/**
 	 * @return array<string, array<int,string|int>>

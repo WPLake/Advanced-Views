@@ -41,8 +41,6 @@ class Fs_Fields {
 			'custom_markup',
 			'css_code',
 			'sass_code',
-			'js_code',
-			'ts_code',
 		);
 	}
 
@@ -115,6 +113,35 @@ class Fs_Fields {
 	}
 
 	/**
+	 * Files of the old format, used only if the JSON misses the related field.
+	 *
+	 * @return string[]
+	 */
+	public function get_fallback_fs_field_file_names(): array {
+		$field_names = self::get_fallback_field_names();
+
+		return array_keys( $field_names );
+	}
+
+	/**
+	 * @param array<string,mixed> $fs_field_values
+	 * @param array<string,mixed> $data_json
+	 */
+	public function set_fallback_fs_fields( Cpt_Settings $cpt_settings, array $fs_field_values, array $data_json ): void {
+		$fallback_field_names = self::get_fallback_field_names();
+
+		foreach ( $fallback_field_names as $field_file => $field_name ) {
+			$field_value   = $fs_field_values[ $field_file ] ?? null;
+			$is_applicable = is_string( $field_value ) && ! key_exists( $field_name, $data_json );
+
+			if ( $is_applicable ) {
+				// @phpstan-ignore-next-line
+				$cpt_settings->{$field_name} = $field_value;
+			}
+		}
+	}
+
+	/**
 	 * @return string[]
 	 */
 	public function get_fs_field_file_names( bool $is_without_auto_generated = false ): array {
@@ -122,8 +149,6 @@ class Fs_Fields {
 		$file_names            = array(
 			'style.css',
 			'style.scss',
-			'script.js',
-			'script.ts',
 			'data.json',
 		);
 
@@ -172,7 +197,6 @@ class Fs_Fields {
 
 		$std_fields = array(
 			'style.css'                          => $cpt_settings->css_code,
-			'script.js'                          => $cpt_settings->js_code,
 			'data.json'                          => $this->get_data_json( $cpt_settings ),
 			'default' . $template_file_extension => $cpt_settings->markup,
 			'custom' . $template_file_extension  => $cpt_settings->custom_markup,
@@ -180,10 +204,6 @@ class Fs_Fields {
 
 		if ( '' !== $cpt_settings->sass_code ) {
 			$std_fields['style.scss'] = $cpt_settings->sass_code;
-		}
-
-		if ( '' !== $cpt_settings->ts_code ) {
-			$std_fields['script.ts'] = $cpt_settings->ts_code;
 		}
 
 		return false === $is_skip_auto_generated ?
@@ -227,12 +247,15 @@ class Fs_Fields {
 			case 'style.scss':
 				$cpt_settings->sass_code = $field_value;
 				break;
-			case 'script.js':
-				$cpt_settings->js_code = $field_value;
-				break;
-			case 'script.ts':
-				$cpt_settings->ts_code = $field_value;
-				break;
 		}
+	}
+
+	/**
+	 * @return array<string,string> file name => field name
+	 */
+	public static function get_fallback_field_names(): array {
+		return array(
+			'script.js' => 'js_code',
+		);
 	}
 }

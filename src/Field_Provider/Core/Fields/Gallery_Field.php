@@ -4,76 +4,68 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Light_Gallery_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Macy_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Masonry_Pattern;
-use Org\Wplake\Advanced_Views\Template\Library_Pattern\Patterns\Splide_Pattern;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Light_Gallery\Light_Gallery_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Macy\Macy_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Avf\Masonry\Masonry_Library;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Splide\Splide_Library;
 
 defined( 'ABSPATH' ) || exit;
 
-class Gallery_Field extends Markup_Field_Base {
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
+class Gallery_Field implements Markup_Field {
+	use Markup_Field_Base;
+
 	protected Image_Field $image_field;
 
 	public function __construct( Image_Field $image_field ) {
 		$this->image_field = $image_field;
 	}
 
-	protected function print_item_markup( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
-		$markup_field_data->set_is_with_field_wrapper( true );
-
-		$this->image_field->print_markup( $item_id, $markup_field_data );
-	}
-
-	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$source_var = $token_factory->variable( $field_id )
-									->add_item_path( 'value' );
+									->add_item_path( self::VALUE );
 		$item_var   = $token_factory->variable( 'image_item' );
-		$loop_body  = $token_factory->html(
-			function () use ( $markup_field_data, $field_id, $item_var, $token_factory ) {
-				$token_factory->format()
-					->new_line();
-				$markup_field_data->increment_and_print_tabs();
 
-				$this->print_item( $field_id, $item_var->get_name(), $markup_field_data );
-
-				$token_factory->format()
-						->new_line();
-				$markup_field_data->decrement_and_print_tabs();
-			}
-		);
+		$item_id   = $item_var->get_name();
+		$loop_body = $this->compose_item( $field_id, $item_id, $markup_field_data );
 
 		$loop = $token_factory->loop()
 						->set_source_variable( $source_var )
 						->set_item_variable( $item_var )
 						->set_body( $loop_body );
 
-		$token_factory->format()
-						->new_line();
-		$markup_field_data->print_tabs();
+		return array( $loop );
+	}
 
-		$loop->print();
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_item_markup( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
+		$markup_field_data->set_is_with_field_wrapper( true );
 
-		$token_factory->format()
-						->new_line();
+		return $this->image_field->compose_html( $item_id, $markup_field_data );
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		$args = array(
-			'value' => array(),
+			self::VALUE => array(),
 		);
 
-		$value = is_array( $variable_field_data->get_value() ) ?
-			$variable_field_data->get_value() :
+		$value = is_array( $field_value->get_value() ) ?
+			$field_value->get_value() :
 			array();
 
 		if ( array() === $value ) {
@@ -81,9 +73,9 @@ class Gallery_Field extends Markup_Field_Base {
 		}
 
 		foreach ( $value as $image ) {
-			$variable_field_data->set_value( $image );
+			$field_value->set_value( $image );
 
-			$args['value'][] = $this->image_field->get_template_variables( $variable_field_data );
+			$args[ self::VALUE ][] = $this->image_field->get_template_variables( $field_value );
 		}
 
 		return $args;
@@ -92,18 +84,18 @@ class Gallery_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		$args = array(
-			'value' => array(),
+			self::VALUE => array(),
 		);
 
 		$value   = array();
-		$value[] = $this->image_field->get_validation_template_variables( $variable_field_data );
+		$value[] = $this->image_field->get_validation_template_variables( $field_value );
 
 		return array_merge(
 			$args,
 			array(
-				'value' => $value,
+				self::VALUE => $value,
 			)
 		);
 	}
@@ -128,7 +120,7 @@ class Gallery_Field extends Markup_Field_Base {
 			$conditional_fields[] = Field_Settings::FIELD_SLIDER_TYPE;
 		}
 
-		return array_merge( parent::get_conditional_fields( $field_meta ), $conditional_fields );
+		return $conditional_fields;
 	}
 
 	public function get_front_assets( Field_Settings $field_settings ): array {
@@ -136,20 +128,20 @@ class Gallery_Field extends Markup_Field_Base {
 
 		switch ( $field_settings->gallery_type ) {
 			case 'masonry':
-				$front_assets[] = Masonry_Pattern::NAME;
+				$front_assets[] = Masonry_Library::NAME;
 				break;
 			case 'lightgallery_v2':
-				$front_assets[] = Light_Gallery_Pattern::NAME;
+				$front_assets[] = Light_Gallery_Library::NAME;
 				break;
 			case 'macy_v2':
-				$front_assets[] = Macy_Pattern::NAME;
+				$front_assets[] = Macy_Library::NAME;
 				break;
 		}
 
 		if ( 'splide_v4' === $field_settings->slider_type ) {
-			$front_assets[] = Splide_Pattern::NAME;
+			$front_assets[] = Splide_Library::NAME;
 		}
 
-		return array_merge( parent::get_front_assets( $field_settings ), $front_assets );
+		return $front_assets;
 	}
 }

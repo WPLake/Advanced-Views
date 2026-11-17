@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Acf\Groups\Parents;
 use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Mount_Point_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Fs_Only_Tab;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\PHP\PHP_Template_Engine;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\PHP_Template_Engine;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -18,7 +18,6 @@ abstract class Cpt_Settings extends Group implements Cpt_Theme_Settings {
 	const FIELD_TITLE                          = 'title';
 	const FIELD_CLASSES_GENERATION             = 'classes_generation';
 	const FIELD_SASS_CODE                      = 'sass_code';
-	const FIELD_TS_CODE                        = 'ts_code';
 	const WEB_COMPONENT_CLASSIC                = 'classic';
 	const WEB_COMPONENT_SHADOW_DOM_DECLARATIVE = 'shadow_root_template';
 	const WEB_COMPONENT_SHADOW_DOM             = 'shadow_dom';
@@ -76,11 +75,6 @@ abstract class Cpt_Settings extends Group implements Cpt_Theme_Settings {
 	 * @a-type textarea
 	 */
 	public string $sass_code; // declare type as 'textarea', otherwise new line characters will be removed.
-	/**
-	 * @a-deprecated This argument is used just to hide the field from the UI
-	 * @a-type textarea
-	 */
-	public string $ts_code; // declare type as 'textarea', otherwise new line characters will be removed.
 	/**
 	 * @a-deprecated This argument is used just to hide the field from the UI
 	 */
@@ -274,6 +268,10 @@ abstract class Cpt_Settings extends Group implements Cpt_Theme_Settings {
 		return $this->js_code;
 	}
 
+	public function has_js_code(): bool {
+		return '' !== trim( $this->get_js_code() );
+	}
+
 	public function is_web_component(): bool {
 		return self::WEB_COMPONENT_NONE !== $this->web_component;
 	}
@@ -355,10 +353,6 @@ abstract class Cpt_Settings extends Group implements Cpt_Theme_Settings {
 
 	public function get_sass_code(): string {
 		return $this->sass_code;
-	}
-
-	public function get_ts_code(): string {
-		return $this->ts_code;
 	}
 
 	public function get_web_component_type(): string {

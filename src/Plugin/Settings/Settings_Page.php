@@ -17,8 +17,8 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -195,7 +195,6 @@ final class Settings_Page extends Loggable_Actor implements Actor {
 		$this->settings_storage->set_classes_generation( $this->settings->classes_generation );
 		$this->settings_storage->set_is_cpt_admin_optimization_enabled( $this->settings->is_cpt_admin_optimization_enabled );
 		$this->settings_storage->set_sass_template( $this->settings->sass_template );
-		$this->settings_storage->set_ts_template( $this->settings->ts_template );
 
 		$git_repositories = array();
 
@@ -275,7 +274,6 @@ final class Settings_Page extends Loggable_Actor implements Actor {
 			Plugin_Settings::FIELD_CLASSES_GENERATION     => $this->settings_storage->get_classes_generation(),
 			Plugin_Settings::FIELD_IS_CPT_ADMIN_OPTIMIZATION_ENABLED => $this->settings_storage->is_cpt_admin_optimization_enabled(),
 			Plugin_Settings::FIELD_SASS_TEMPLATE          => $this->settings_storage->get_sass_code(),
-			Plugin_Settings::FIELD_TS_TEMPLATE            => $this->settings_storage->get_ts_code(),
 			Plugin_Settings::FIELD_LIVE_RELOAD_INTERVAL_SECONDS => $this->settings_storage->get_live_reload_interval_seconds(),
 			Plugin_Settings::FIELD_LIVE_RELOAD_INACTIVE_DELAY_SECONDS => $this->settings_storage->get_live_reload_inactive_delay_seconds(),
 		);

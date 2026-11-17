@@ -6,16 +6,17 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Library\Library_Asset_Collector;
 use WP_REST_Request;
 
 abstract class Instance_Factory {
-	private Front_Assets $front_assets;
+	protected Cpt_Asset_Collector $assets_collector;
+	protected Library_Asset_Collector $library_asset_collector;
 
-	public function __construct( Front_Assets $front_assets ) {
-		$this->front_assets = $front_assets;
+	public function __construct( Cpt_Asset_Collector $assets_collector, Library_Asset_Collector $library_asset_collector ) {
+		$this->assets_collector        = $assets_collector;
+		$this->library_asset_collector = $library_asset_collector;
 	}
 
 	/**
@@ -37,10 +38,6 @@ abstract class Instance_Factory {
 	 * @return array<string,mixed>
 	 */
 	abstract protected function get_template_variables_for_validation( string $unique_id ): array;
-
-	protected function add_used_cpt_data( Cpt_Settings $cpt_settings ): void {
-		$this->front_assets->add_asset( $cpt_settings );
-	}
 
 	/**
 	 * @param mixed[]|null $variables

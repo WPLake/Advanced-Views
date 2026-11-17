@@ -12,18 +12,21 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Profiler;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 
 abstract class Report_Base extends Loggable_Actor {
 	protected Plugin $plugin;
 	protected Plugin_Meta $plugin_meta;
 	protected Settings_Storage $settings;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Logger $logger, Plugin $plugin, Plugin_Meta $plugin_meta, Settings_Storage $settings ) {
+	public function __construct( Logger $logger, Plugin $plugin, Plugin_Meta $plugin_meta, Settings_Storage $settings, Html_Renderer $html_renderer ) {
 		parent::__construct( $logger );
 
-		$this->plugin      = $plugin;
-		$this->plugin_meta = $plugin_meta;
-		$this->settings    = $settings;
+		$this->plugin        = $plugin;
+		$this->plugin_meta   = $plugin_meta;
+		$this->settings      = $settings;
+		$this->html_renderer = $html_renderer;
 	}
 
 	/**

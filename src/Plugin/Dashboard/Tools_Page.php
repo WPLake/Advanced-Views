@@ -1,6 +1,5 @@
 <?php
 
-
 declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard;
@@ -21,18 +20,26 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Filesystem_Base;
 use WP_Post;
 use WP_Query;
+use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 final class Tools_Page extends Actor_Base implements Actor {
 
 	const SLUG = 'avf-tools';
@@ -53,10 +60,11 @@ final class Tools_Page extends Actor_Base implements Actor {
 	private bool $is_import_successful;
 	private string $import_result_message;
 	private ?WP_Filesystem_Base $wp_filesystem_base;
-	private Layouts_Cpt $layouts_cpt;
-	private Selections_Cpt $post_selections_cpt;
+	private Layout_Cpt $layouts_cpt;
+	private Selection_Cpt $post_selections_cpt;
 	private Settings_Storage $settings;
 	private Cache_Flusher $cache_flusher;
+	protected Html_Renderer $html_renderer;
 
 	public function __construct(
 		Tools_Settings $tools_settings,
@@ -65,10 +73,11 @@ final class Tools_Page extends Actor_Base implements Actor {
 		Plugin_Meta $plugin_meta,
 		Logger $logger,
 		Debug_Dump_Creator $debug_dump_creator,
-		Layouts_Cpt $layouts_cpt,
-		Selections_Cpt $post_selections_cpt,
+		Layout_Cpt $layouts_cpt,
+		Selection_Cpt $post_selections_cpt,
 		Settings_Storage $settings,
-		Cache_Flusher $cache_flusher
+		Cache_Flusher $cache_flusher,
+		Html_Renderer $html_renderer
 	) {
 		$this->tools_settings                   = $tools_settings;
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
@@ -86,6 +95,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 		$this->is_import_successful  = false;
 		$this->import_result_message = '';
 		$this->wp_filesystem_base    = null;
+		$this->html_renderer         = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -155,40 +165,13 @@ final class Tools_Page extends Actor_Base implements Actor {
 
 		$redirect_url = Plugin::get_admin_url( self::SLUG ) .
 						sprintf( '&message=1&type=export&_views=%s&_cards=%s', $count_of_view_ids, $count_of_card_ids );
-		?>
-		<script>
-			(function () {
-				function save() {
-					const data = <?php echo wp_json_encode( $this->export_data ); ?>;
 
-					let date = new Date().toISOString().slice(0, 10);
-					let timestamp = new Date().getTime();
-					// .txt to pass WP Media library
-					let fileName = `advanced-views-export-${date}-${timestamp}.txt`;
-					// add some text prefix to avoid WP Media library to think it's a JSON
-					let content = "Advanced Views:" + JSON.stringify(data);
+		$tags = tag( 'script' )
+			->content(
+				raw_html( $this->download_script( $redirect_url ) )
+			);
 
-					const file = new File([content], fileName, {
-						type: 'application/json',
-					})
-
-					let toolsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
-
-					const a = document.createElement('a');
-
-					a.href = URL.createObjectURL(file);
-					a.download = fileName;
-					a.click();
-
-					window.location.href = toolsUrl;
-				}
-
-				'loading' === document.readyState ?
-					window.document.addEventListener('DOMContentLoaded', save) :
-					save();
-			}())
-		</script>
-		<?php
+		$this->html_renderer->print_html( $tags );
 		exit;
 	}
 
@@ -446,30 +429,6 @@ final class Tools_Page extends Actor_Base implements Actor {
 		array $fail_view_unique_ids,
 		array $fail_card_unique_ids
 	): string {
-		$views_info            = array();
-		$cards_info            = array();
-		$import_result_message = '';
-
-		foreach ( $success_view_ids as $success_view_id ) {
-			$success_view_id = (int) $success_view_id;
-
-			$views_info[] = sprintf(
-				'<a href="%s" target="_blank">%s</a>',
-				get_edit_post_link( $success_view_id ),
-				get_the_title( $success_view_id )
-			);
-		}
-
-		foreach ( $success_card_ids as $success_card_id ) {
-			$success_card_id = (int) $success_card_id;
-
-			$cards_info[] = sprintf(
-				'<a href="%s" target="_blank">%s</a>',
-				get_edit_post_link( $success_card_id ),
-				get_the_title( $success_card_id )
-			);
-		}
-
 		$layout_labels         = $this->layouts_cpt->labels();
 		$post_selection_labels = $this->post_selections_cpt->labels();
 
@@ -477,7 +436,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 			array() === $fail_card_unique_ids ) {
 			$this->is_import_successful = true;
 
-			$import_result_message .= sprintf(
+			$summary = sprintf(
 			// translators: Successfully imported x Layout(s) and y Post Selection(s).
 				__( 'Successfully imported %1$d %2$s and %3$d %4$s.', 'acf-views' ),
 				count( $success_view_ids ),
@@ -485,10 +444,8 @@ final class Tools_Page extends Actor_Base implements Actor {
 				count( $success_card_ids ),
 				$post_selection_labels->item_s_name( count( $success_card_ids ) )
 			);
-
-			$import_result_message .= '<br>';
 		} else {
-			$import_result_message .= sprintf(
+			$summary = sprintf(
 			// translators: Something went wrong. Imported x from y Layout(s) and x from y Post Selections.
 				__( 'Something went wrong. Imported %1$d from %2$d %3$s and %4$d from %5$d %6$s.', 'acf-views' ),
 				count( $success_view_ids ),
@@ -498,67 +455,113 @@ final class Tools_Page extends Actor_Base implements Actor {
 				count( $success_card_ids ) + count( $fail_card_unique_ids ),
 				$post_selection_labels->item_s_name( count( $success_card_ids ) )
 			);
-
-			$import_result_message .= '<br>';
 		}
 
-		if ( array() !== $views_info ) {
-			$views_label = sprintf(
-					// translators: %s - plural name of the CPT.
-				__( 'Imported %s', 'acf-views' ),
-				$layout_labels->plural_name()
-			);
-			$import_result_message .= sprintf(
-				'<br>%s:<br><br> %s.',
-				$views_label,
-				implode( '<br>', $views_info )
-			);
-			$import_result_message .= '<br>';
+		$views_label = sprintf(
+		// translators: %s - plural name of the CPT.
+			__( 'Imported %s', 'acf-views' ),
+			$layout_labels->plural_name()
+		);
+		$cards_label = sprintf(
+		// translators: %s - plural name of the CPT.
+			__( 'Imported %s', 'acf-views' ),
+			$post_selection_labels->plural_name()
+		);
+		$wrong_views_label = sprintf(
+		// translators: %s - plural name of the CPT.
+			__( 'Wrong %s', 'acf-views' ),
+			$layout_labels->plural_name()
+		);
+		$wrong_cards_label = sprintf(
+		// translators: %s - plural name of the CPT.
+			__( 'Wrong %s', 'acf-views' ),
+			$post_selection_labels->plural_name()
+		);
+
+		$tags = array(
+			$summary,
+			tag( 'br' ),
+			...$this->imported_items_tags( $views_label, $success_view_ids ),
+			...$this->imported_items_tags( $cards_label, $success_card_ids ),
+			...$this->failed_items_tags( $wrong_views_label, $fail_view_unique_ids ),
+			...$this->failed_items_tags( $wrong_cards_label, $fail_card_unique_ids ),
+		);
+
+		return $this->html_renderer->render_html( ...$tags );
+	}
+
+	/**
+	 * @param string[] $post_ids
+	 *
+	 * @return Html_Node[]
+	 */
+	protected function imported_items_tags( string $label, array $post_ids ): array {
+		if ( array() === $post_ids ) {
+			return array();
 		}
 
-		if ( array() !== $cards_info ) {
-			$cards_label = sprintf(
-			// translators: %s - plural name of the CPT.
-				__( 'Imported %s', 'acf-views' ),
-				$post_selection_labels->plural_name()
-			);
-			$import_result_message .= sprintf(
-				'<br>%s:<br><br> %s.',
-				$cards_label,
-				implode( '<br>', $cards_info )
-			);
-			$import_result_message .= '<br>';
+		$links = array();
+
+		foreach ( $post_ids as $index => $post_id ) {
+			if ( $index > 0 ) {
+				$links[] = tag( 'br' );
+			}
+
+			$post_id    = (int) $post_id;
+			$raw_link   = get_edit_post_link( $post_id );
+			$edit_link  = string( $raw_link );
+			$post_title = get_the_title( $post_id );
+
+			$links[] = tag( 'a' )
+				->attributes(
+					array(
+						'href'   => $edit_link,
+						'target' => '_blank',
+					)
+				)
+				->content(
+					$post_title
+				);
 		}
 
-		if ( array() !== $fail_view_unique_ids ) {
-			$views_label = sprintf(
-			// translators: %s - plural name of the CPT.
-				__( 'Wrong %s', 'acf-views' ),
-				$layout_labels->plural_name()
-			);
-			$import_result_message .= sprintf(
-				'%s: %s.',
-				$views_label,
-				implode( '<br>', $fail_view_unique_ids )
-			);
-			$import_result_message .= '<br>';
+		return array(
+			tag( 'br' ),
+			$label . ':',
+			tag( 'br' ),
+			tag( 'br' ),
+			' ',
+			...$links,
+			'.',
+			tag( 'br' ),
+		);
+	}
+
+	/**
+	 * @param string[] $unique_ids
+	 *
+	 * @return Html_Node[]
+	 */
+	protected function failed_items_tags( string $label, array $unique_ids ): array {
+		if ( array() === $unique_ids ) {
+			return array();
 		}
 
-		if ( array() !== $fail_card_unique_ids ) {
-			$cards_label = sprintf(
-			// translators: %s - plural name of the CPT.
-				__( 'Wrong %s', 'acf-views' ),
-				$post_selection_labels->plural_name()
-			);
-			$import_result_message .= sprintf(
-				'%s: %s.',
-				$cards_label,
-				implode( '<br>', $fail_card_unique_ids )
-			);
-			$import_result_message .= '<br>';
+		$ids = array();
+
+		foreach ( $unique_ids as $index => $unique_id ) {
+			if ( $index > 0 ) {
+				$ids[] = tag( 'br' );
+			}
+
+			$ids[] = $unique_id;
 		}
 
-		return $import_result_message;
+		return array(
+			$label . ': ',
+			...$ids,
+			'.',
+			tag( 'br' ),
+		);
 	}
 
 	/**
@@ -673,5 +676,42 @@ final class Tools_Page extends Actor_Base implements Actor {
 				);
 		wp_safe_redirect( $url );
 		exit;
+	}
+
+	protected function download_script( string $redirect_url ): string {
+		ob_start();
+		?>
+			(function () {
+				function save() {
+					const data = <?php echo wp_json_encode( $this->export_data ); ?>;
+
+					let date = new Date().toISOString().slice(0, 10);
+					let timestamp = new Date().getTime();
+					// .txt to pass WP Media library
+					let fileName = `advanced-views-export-${date}-${timestamp}.txt`;
+					// add some text prefix to avoid WP Media library to think it's a JSON
+					let content = "Advanced Views:" + JSON.stringify(data);
+
+					const file = new File([content], fileName, {
+						type: 'application/json',
+					})
+
+					let toolsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
+
+					const a = document.createElement('a');
+
+					a.href = URL.createObjectURL(file);
+					a.download = fileName;
+					a.click();
+
+					window.location.href = toolsUrl;
+				}
+
+				'loading' === document.readyState ?
+					window.document.addEventListener('DOMContentLoaded', save) :
+					save();
+			}())
+		<?php
+		return (string) ob_get_clean();
 	}
 }

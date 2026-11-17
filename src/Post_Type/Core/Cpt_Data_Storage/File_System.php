@@ -10,15 +10,16 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Filesystem_Base;
+
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
 class File_System extends Loggable_Actor implements Actor {
-	use Safe_Array_Arguments;
-
 	private static bool $is_fs_not_writable_notice_shown = false;
 
 	/**
@@ -31,8 +32,9 @@ class File_System extends Loggable_Actor implements Actor {
 	private string $base_folder;
 	private string $items_folder_name;
 	private ?WP_Filesystem_Base $wp_filesystem_base;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Logger $logger, string $items_folder_name, string $external_base_folder = '' ) {
+	public function __construct( Logger $logger, string $items_folder_name, Html_Renderer $html_renderer, string $external_base_folder = '' ) {
 		parent::__construct( $logger );
 
 		$this->items_folder_name    = $items_folder_name;
@@ -40,6 +42,7 @@ class File_System extends Loggable_Actor implements Actor {
 		$this->base_folder          = $external_base_folder;
 		$this->is_read_item_folders = false;
 		$this->wp_filesystem_base   = null;
+		$this->html_renderer        = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -50,7 +53,9 @@ class File_System extends Loggable_Actor implements Actor {
 		// set only if it isn't an external folder.
 		if ( 0 === strlen( $this->base_folder ) ) {
 			File_System_Loader::instance()
-								->add_onload_callback( fn() => $this->set_base_folder( $route_detector ) );
+								->add_onload_callback(
+									fn() => $this->set_base_folder( $route_detector )
+								);
 		}
 	}
 
@@ -76,7 +81,7 @@ class File_System extends Loggable_Actor implements Actor {
 			array();
 
 		foreach ( $sub_folders as $sub_folder_info ) {
-			$folder_name = $this->get_string_arg( 'name', $sub_folder_info );
+			$folder_name = string( $sub_folder_info, 'name' );
 
 			$folder_info = explode( '_', $folder_name );
 
@@ -104,34 +109,39 @@ class File_System extends Loggable_Actor implements Actor {
 	}
 
 	protected function show_folder_is_not_writable_warning(): void {
-		self::add_action(
-			'admin_notices',
-			function (): void {
-				// it's going to be checked in both CPTs, but we need only one notice.
-				if ( self::$is_fs_not_writable_notice_shown ) {
-					return;
-				}
-
-				self::$is_fs_not_writable_notice_shown = true;
-
-				echo '<div class="notice notice-error"><p>';
-				echo esc_html( __( 'The FS storage directory is not writable.', 'acf-views' ) );
-				echo ' (path = ' . esc_html( $this->base_folder ) . ')<br>';
-				echo esc_html(
-					__(
-						'Check and fix file permissions to work with Views and Cards.',
-						'acf-views'
-					)
-				) . '<br>';
-				echo esc_html(
-					__(
-						'Note: Do not disable the FS storage feature before fixing it, otherwise your data will be lost.',
-						'acf-views'
-					)
-				);
-				echo '</p></div>';
+		$print_notice = function (): void {
+			// it's going to be checked in both CPTs, but we need only one notice.
+			if ( self::$is_fs_not_writable_notice_shown ) {
+				return;
 			}
-		);
+
+			self::$is_fs_not_writable_notice_shown = true;
+
+			$not_writable_label = __( 'The FS storage directory is not writable.', 'acf-views' );
+			$not_writable_text  = sprintf( '%s (path = %s)', $not_writable_label, $this->base_folder );
+			$permissions_label  = __( 'Check and fix file permissions to work with Views and Cards.', 'acf-views' );
+			$warning_label      = __(
+				'Note: Do not disable the FS storage feature before fixing it, otherwise your data will be lost.',
+				'acf-views'
+			);
+
+			$tags = tag( 'div' )
+				->attributes( array( 'class' => 'notice notice-error' ) )
+				->content(
+					tag( 'p' )
+						->content(
+							$not_writable_text,
+							tag( 'br' ),
+							$permissions_label,
+							tag( 'br' ),
+							$warning_label
+						)
+				);
+
+			$this->html_renderer->print_html( $tags );
+		};
+
+		self::add_action( 'admin_notices', $print_notice );
 	}
 
 	protected function is_base_folder_writable(): bool {
@@ -219,6 +229,18 @@ class File_System extends Loggable_Actor implements Actor {
 		}
 
 		return $fields;
+	}
+
+	/**
+	 * @param string[] $field_files
+	 */
+	public function delete_fields_from_fs( string $item_id, array $field_files ): void {
+		$item_folder = $this->get_item_folder_by_short_unique_id( $item_id );
+		$has_folder  = strlen( $item_folder ) > 0;
+
+		if ( $has_folder ) {
+			$this->delete_files_from_item_folder( $item_folder, $field_files );
+		}
 	}
 
 	public function rename_item( string $short_unique_id, string $new_title ): void {
@@ -400,5 +422,22 @@ class File_System extends Loggable_Actor implements Actor {
 		}
 
 		return $this->wp_filesystem_base;
+	}
+
+	/**
+	 * @param string[] $field_files
+	 */
+	protected function delete_files_from_item_folder( string $item_folder, array $field_files ): void {
+		$wp_filesystem = $this->get_wp_filesystem();
+		$type_folder   = join( '/', array( $this->base_folder, $this->items_folder_name ) );
+
+		foreach ( $field_files as $field_file ) {
+			$file_path = join( '/', array( $type_folder, $item_folder, $field_file ) );
+			$is_file   = $wp_filesystem->is_file( $file_path );
+
+			if ( $is_file ) {
+				$wp_filesystem->delete( $file_path );
+			}
+		}
 	}
 }

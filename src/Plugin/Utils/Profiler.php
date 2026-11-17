@@ -4,9 +4,13 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Plugin\Utils;
 
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+
 defined( 'ABSPATH' ) || exit;
 
-abstract class Profiler {
+class Profiler {
 	const SOURCE_NETWORK = '_network';
 
 	/**
@@ -27,45 +31,49 @@ abstract class Profiler {
 	private static float $plugin_loaded_sec  = 0;
 	private static ?bool $is_profiler_active = null;
 
+	protected Html_Renderer $html_renderer;
+
+	public function __construct( Html_Renderer $html_renderer ) {
+		$this->html_renderer = $html_renderer;
+	}
+
 	public static function get_callback( string $source, string $hook_name, callable $callback ): callable {
 		return self::is_active() ?
 			fn( ...$args ) => self::execute_callback( $source, $hook_name, $callback, $args ) :
 			$callback;
 	}
 
-	public static function plugin_loaded( float $start_timestamp ): void {
+	public function loaded( float $start_timestamp ): void {
 		if ( self::is_active() ) {
 			self::$plugin_loaded_sec = microtime( true ) - $start_timestamp;
-			add_action( 'shutdown', array( self::class, 'print_report' ) );
+			add_action( 'shutdown', array( $this, 'print_report' ) );
 		}
 	}
 
-	public static function print_report(): void {
+	public function print_report(): void {
 		$classes_total_usage = self::get_classes_total_usage();
+		$total_usage         = self::get_total_usage();
+		$classes_amount      = count( $classes_total_usage );
+		$classes_prefix      = sprintf( "%d\n", $classes_amount );
 
-		echo '<div style="max-width:1000px;margin:0 auto;padding:50px;border:2px solid gray;">';
+		$tags      = tag( 'div' )
+			->attributes( array(
+				'style' => array(
+					'max-width' => '1000px',
+					'margin'    => '0 auto',
+					'padding'   => '50px',
+					'border'    => '2px solid gray',
+				),
+			) )
+			->content(
+				self::pre_chain( $total_usage ),
+				tag( 'hr' ),
+				self::pre_chain( $classes_total_usage, $classes_prefix ),
+				tag( 'hr' ),
+				self::pre_chain( self::$class_hooks_usage )
+			);
 
-		echo '<pre>';
-		// @phpcs:ignore
-		print_r(self::get_total_usage() );
-		echo '</pre>';
-
-		echo '<hr>';
-
-		echo '<pre>';
-		echo count( $classes_total_usage ) . '<br>';
-		// @phpcs:ignore
-		print_r( $classes_total_usage );
-		echo '</pre>';
-
-		echo '<hr>';
-
-		echo '<pre>';
-		// @phpcs:ignore
-		print_r(self::$class_hooks_usage );
-		echo '</pre>';
-
-		echo '</div>';
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**
@@ -99,7 +107,8 @@ abstract class Profiler {
 
 		uasort(
 			$classes_total_usage,
-			fn( array $first, array $second ) => $second['time_sec'] <=> $first['time_sec']
+			fn( array $first, array $second ) =>
+				$second['time_sec'] <=> $first['time_sec']
 		);
 
 		return $classes_total_usage;
@@ -116,7 +125,7 @@ abstract class Profiler {
 	}
 
 	/**
-	 * @param array<string|int,mixed> $args
+	 * @param array<int,mixed> $args
 	 *
 	 * @return mixed
 	 */
@@ -153,5 +162,17 @@ abstract class Profiler {
 
 		self::$class_hooks_usage[ $source ][ $hook_name ]['calls']    += 1;
 		self::$class_hooks_usage[ $source ][ $hook_name ]['time_sec'] += $execution_time_sec;
+	}
+
+	/**
+	 * @param mixed $data
+	 */
+	protected static function pre_chain( $data, string $prefix = '' ): Html_Tag {
+
+		return tag( 'pre' )
+			->content(
+				// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
+				$prefix . print_r( $data, true )
+			);
 	}
 }

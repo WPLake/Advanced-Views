@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Group;
-use Org\Wplake\Advanced_Views\Assets\Front_Assets;
+use Org\Wplake\Advanced_Views\Acf\Integration\Field_Value_Guard;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
@@ -17,18 +17,16 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Library\Library_Cpt_Integrator;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration_Storage;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
-	use Safe_Array_Arguments;
-
 	private Cpt_Settings_Storage $cpt_settings_storage;
 	private Plugin $plugin;
 	/**
@@ -44,7 +42,7 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 	 * @var array<string,string>
 	 */
 	private array $validated_input_names;
-	private Front_Assets $front_assets;
+	private Library_Cpt_Integrator $cpt_integrator;
 	protected Template_Integration_Storage $template_integration_storage;
 	protected Instance_Factory $instance_factory;
 
@@ -53,7 +51,7 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Plugin $plugin,
 		Cpt_Settings $cpt_settings,
-		Front_Assets $front_assets,
+		Library_Cpt_Integrator $cpt_integrator,
 		Template_Integration_Storage $template_integration_storage,
 		Instance_Factory $instance_factory
 	) {
@@ -64,7 +62,7 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 		// don't make a clone, as otherwise $viewValidationData in inheritors won't be actual anymore
 		// (there is a clone at the child class level).
 		$this->cpt_settings                 = $cpt_settings;
-		$this->front_assets                 = $front_assets;
+		$this->cpt_integrator               = $cpt_integrator;
 		$this->available_acf_fields         = array_keys( $this->cpt_settings->getFieldValues() );
 		$this->field_values                 = array();
 		$this->validated_input_names        = array();
@@ -135,48 +133,6 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 	}
 
 	/**
-	 * @param array<string,string> $actual_pieces
-	 */
-	protected function sync_code( string $code, array $actual_pieces ): string {
-		// ungreedy, so that we can grep all the pieces.
-		preg_match_all(
-			'/\/\*([^*]*):([^*]+)\(auto-discover-begin\)[^*]+\*\/[\d\D]+\/\*[^*]*\(auto-discover-end\)[^*]+\*\//U',
-			$code,
-			$current_pieces,
-			PREG_SET_ORDER
-		);
-
-		// 1. remove present pieces from the actual list (to avoid override)
-		// 2. remove absent pieces from the code
-		foreach ( $current_pieces as $current_piece ) {
-			$type     = trim( $current_piece[1] );
-			$name     = trim( $current_piece[2] );
-			$piece_id = $type . ':' . $name;
-
-			if ( key_exists( $piece_id, $actual_pieces ) ) {
-				unset( $actual_pieces[ $piece_id ] );
-
-				continue;
-			}
-
-			$code = str_replace( $current_piece[0], '', $code );
-		}
-
-		// remove empty lines (after removals).
-		$code = trim( $code );
-
-		// 3. add new pieces
-		foreach ( $actual_pieces as $actual_piece ) {
-			$code .= $actual_piece;
-		}
-
-		// remove empty lines (after additions).
-		$code = trim( $code );
-
-		return $code;
-	}
-
-	/**
 	 * @param int|string $post_id
 	 *
 	 * @throws Exception
@@ -193,7 +149,7 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 
 		$cpt_data = $this->cpt_settings_storage->get( $unique_id );
 
-		// it must be before the frontAssets generation, otherwise CSS may already be not empty even for the first save.
+		// it must be before the libraries' code integration, otherwise CSS may already be not empty even for the first save.
 		if ( '' === $cpt_data->css_code &&
 			Cpt_Settings::WEB_COMPONENT_NONE !== $cpt_data->web_component ) {
 			// by default, Web component is inline, which is wrong, we expect it to be block.
@@ -203,22 +159,8 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 			$cpt_data->css_code = sprintf( "#%s {\n\tdisplay: block;\n}\n", $id );
 		}
 
-		$code = $this->front_assets->generate_code( $cpt_data );
-
-		$js_code  = array();
-		$css_code = array();
-
-		foreach ( $code as $auto_discover_name => $codes ) {
-			foreach ( $codes['js'] as $field_id => $field_js_code ) {
-				$js_code[ $auto_discover_name . ':' . $field_id ] = $field_js_code;
-			}
-			foreach ( $codes['css'] as $field_id => $field_css_code ) {
-				$css_code[ $auto_discover_name . ':' . $field_id ] = $field_css_code;
-			}
-		}
-
-		$cpt_data->js_code  = $this->sync_code( $cpt_data->js_code, $js_code );
-		$cpt_data->css_code = $this->sync_code( $cpt_data->css_code, $css_code );
+		$this->cpt_integrator->integrate_js_code( $cpt_data );
+		$this->cpt_integrator->integrate_css_code( $cpt_data );
 
 		// new title is already in the place, we compare with "post_title" just to detect the change.
 		if ( $post_title !== $cpt_data->title ) {
@@ -663,7 +605,7 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 	protected function save_validation_instance_to_storage( string $unique_id, ?Group $group ): void {
 		// to avoid changing fields for Unlicensed users.
 		if ( $this->plugin->is_pro_field_locked() ) {
-			$this->cpt_settings->reset_pro_fields( $group );
+			Field_Value_Guard::reset_pro_fields( $this->cpt_settings, $group );
 		}
 
 		$this->cpt_settings_storage->replace( $unique_id, $this->cpt_settings );

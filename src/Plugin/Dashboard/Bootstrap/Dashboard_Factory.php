@@ -9,21 +9,25 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Pages;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Import_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Toolbar_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 
 class Dashboard_Factory extends Factory_Base {
 	public function admin_pages(): Admin_Pages {
 		return new Admin_Pages(
 			$this->resolve( Plugin::class ),
 			$this->resolve( Plugin_Meta::class ),
-			$this->resolve( Html_Printer::class ),
 			$this->resolve( Demo_Importer::class ),
-			$this->plugin_cpts()
+			$this->plugin_cpts(),
+			$this->resolve( Html_Renderer::class ),
+			$this->resolve( Toolbar_Printer::class ),
+			$this->resolve( Import_Printer::class )
 		);
 	}
 
@@ -32,8 +36,8 @@ class Dashboard_Factory extends Factory_Base {
 	 */
 	protected function plugin_cpts(): array {
 		return array(
-			$this->resolve( Layouts_Cpt::class ),
-			$this->resolve( Selections_Cpt::class ),
+			$this->resolve( Layout_Cpt::class ),
+			$this->resolve( Selection_Cpt::class ),
 		);
 	}
 }

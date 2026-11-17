@@ -8,9 +8,15 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Fs_Only_Tab extends Cpt_Table_Tab {
 
 	const NAME               = 'fs_only';
@@ -20,11 +26,13 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 	const KEY_RESULT_MESSAGE = self::KEY_PREFIX . 'result-ids';
 
 	private Cpt_Settings_Storage $cpt_settings_storage;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Cpt_Table $cpt_table, Cpt_Settings_Storage $cpt_settings_storage ) {
-		parent::__construct( $cpt_table );
+	public function __construct( Cpt_Table $cpt_table, Cpt_Settings_Storage $cpt_settings_storage, Html_Renderer $html_renderer, Row_Title_Printer $row_title_printer ) {
+		parent::__construct( $cpt_table, $row_title_printer );
 
 		$this->cpt_settings_storage = $cpt_settings_storage;
+		$this->html_renderer        = $html_renderer;
 	}
 
 	protected function get_tab(): ?Tab_Data {
@@ -52,35 +60,8 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 		$tab_data = new Tab_Data( $this );
 		$tab_data->set_name( self::NAME );
 		$tab_data->set_label( __( 'FS only', 'acf-views' ) );
-		$tab_data->set_description_callback(
-			function (): void {
-				echo esc_html(
-					__(
-						'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
-						'acf-views'
-					)
-				);
-				echo '<br>';
-				echo esc_html(
-					__(
-						'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
-						'acf-views'
-					)
-				);
-				echo '<br>';
-				echo esc_html(
-					__(
-						'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
-						'acf-views'
-					)
-				);
-				printf(
-					' <a target="_blank" href="%s">%s</a>',
-					esc_url( 'https://docs.advanced-views.com/features/file-system-storage' ),
-					esc_html( __( 'Read more', 'acf-views' ) )
-				);
-			}
-		);
+
+		$tab_data->set_description_nodes( $this->description_nodes() );
 		$tab_data->set_label_in_brackets( (string) $fs_only_items_count );
 		$tab_data->set_bulk_actions( $this->get_bulk_actions() );
 		$tab_data->set_total_items_count( $fs_only_items_count );
@@ -141,40 +122,105 @@ class Fs_Only_Tab extends Cpt_Table_Tab {
 
 		$ids = explode( ',', $ids );
 
-		$safe_item_links = array();
+		$item_links = array();
 
 		foreach ( $ids as $unique_id ) {
-			$cpt_data          = $this->cpt_settings_storage->get( $unique_id );
-			$safe_item_links[] = sprintf(
-				'<a href="%s" target="_blank">%s</a>',
-				esc_url( $cpt_data->get_edit_post_link() ),
-				esc_html( $cpt_data->title )
-			);
+			$cpt_data = $this->cpt_settings_storage->get( $unique_id );
+
+			// the 'br' goes between the links.
+			if ( array() !== $item_links ) {
+				$item_links[] = tag( 'br' );
+			}
+
+			$edit_link = $cpt_data->get_edit_post_link();
+
+			$link_tag = tag( 'a' )
+				->attributes(
+					array(
+						'href'   => $edit_link,
+						'target' => '_blank',
+					)
+				)
+				->content(
+					$cpt_data->title
+				);
+
+			$item_links[] = $link_tag;
 		}
 
-		echo '<div class="notice notice-success">' .
-			'<p>' .
-			esc_html( (string) count( $ids ) ) .
-			' ' .
-			esc_html( __( 'items successfully synced', 'acf-views' ) ) .
-			'</p>' .
-		     // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			'<p>' . implode( '<br>', $safe_item_links ) . '</p>' .
-			'</div>';
+		$synced_amount = count( $ids );
+		$synced_label  = __( 'items successfully synced', 'acf-views' );
+		$synced_text   = sprintf( '%d %s', $synced_amount, $synced_label );
+
+		$synced_message = tag( 'p' )
+			->content(
+				$synced_text
+			);
+		$links_message  = tag( 'p' )
+			->content( ...$item_links );
+
+		$tags = tag( 'div' )
+			->attributes( array( 'class' => 'notice notice-success' ) )
+			->content(
+				$synced_message,
+				$links_message
+			);
+
+		$this->html_renderer->print_html( $tags );
 	}
 
-	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	public function row_title_nodes( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): array {
 		$url = add_query_arg(
 			array(
 				self::KEY_SINGLE_ACTION => $cpt_settings->get_unique_id(),
 				'_wpnonce'              => wp_create_nonce( 'bulk-posts' ),
 			)
 		);
-		printf( '<strong><span class="row-title">%s</span></strong>', esc_html( $cpt_settings->title ) );
-		printf(
-			'<div class="row-actions"><span class="sync"><a href="%s">%s</a></span></div>',
-			esc_url( $url ),
-			esc_html( __( 'Sync', 'acf-views' ) )
+		return $this->row_title_printer->row_title_nodes(
+			$cpt_settings->title,
+			'sync',
+			$url,
+			__( 'Sync', 'acf-views' )
+		);
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function description_nodes(): array {
+		$read_more_label = __( 'Read more', 'acf-views' );
+
+		$read_more_link = tag( 'a' )
+			->attributes(
+				array(
+					'target' => '_blank',
+					'href'   => 'https://docs.advanced-views.com/features/file-system-storage',
+				)
+			)
+			->content(
+				$read_more_label
+			);
+
+		return array(
+			__(
+				'The "FS only" tab displays a list of items that do not have a record in the WordPress posts table and cannot be edited using the UI.',
+				'acf-views'
+			),
+			tag( 'br' ),
+			__(
+				'If you need to amend such an item, you should "sync" it using the "sync" row or a bulk action.',
+				'acf-views'
+			),
+			tag( 'br' ),
+			__(
+				'After doing so, the items will become editable using the UI (but the item data will still be stored in FS).',
+				'acf-views'
+			),
+			' ',
+			$read_more_link,
 		);
 	}
 }

@@ -6,8 +6,10 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Base;
 use WP_REST_Request;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
 
 defined( 'ABSPATH' ) || exit;
@@ -16,11 +18,13 @@ abstract class Instance {
 	private string $template;
 	private Cpt_Settings $cpt_settings;
 	private string $classes;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Cpt_Settings $cpt_settings, string $template, string $classes = '' ) {
-		$this->cpt_settings = $cpt_settings;
-		$this->template     = $template;
-		$this->classes      = $classes;
+	public function __construct( Cpt_Settings $cpt_settings, string $template, Html_Renderer $html_renderer, string $classes = '' ) {
+		$this->cpt_settings  = $cpt_settings;
+		$this->template      = $template;
+		$this->classes       = $classes;
+		$this->html_renderer = $html_renderer;
 	}
 
 	/**
@@ -92,13 +96,18 @@ abstract class Instance {
 	}
 
 	protected function print_template_engine_is_not_loaded_message(): void {
-		$message = sprintf(
 		// translators: %s is the template engine name.
-			__( '%s template engine is not available (PHP >= 8.2.0 is required).', 'acf-views' ),
-			ucfirst( $this->cpt_settings->template_engine )
-		);
+		$message_template = __( '%s template engine is not available (PHP >= 8.2.0 is required).', 'acf-views' );
+		$engine_name      = ucfirst( $this->cpt_settings->template_engine );
+		$message          = sprintf( $message_template, $engine_name );
 
-		echo '<p style="color:red;">' . esc_html( $message ) . '</p>';
+		$tags = tag( 'p' )
+			->attributes( array( 'style' => array( 'color' => 'red' ) ) )
+			->content(
+				$message
+			);
+
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**

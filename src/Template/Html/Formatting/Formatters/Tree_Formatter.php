@@ -1,0 +1,41 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Template\Html\Formatting\Formatters;
+
+defined( 'ABSPATH' ) || exit;
+
+use Closure;
+use Org\Wplake\Advanced_Views\Template\Html\Formatting\Node_Formatter;
+
+class Tree_Formatter implements Node_Formatter {
+	protected Text_Formatter $formatter;
+
+	public function __construct( Text_Formatter $formatter ) {
+		$this->formatter = $formatter;
+	}
+
+	public function format_node( $node, string $node_html ): string {
+		return $this->formatter->tabulate() .
+				$node_html;
+	}
+
+	public function format_node_content( $node, Closure $render_content ): string {
+		$new_line        = $this->formatter->new_line();
+		$shifted_content = $this->formatter->tab_shift( $render_content );
+		$indented_end    = $this->formatter->indent_line();
+
+		$content_parts = array(
+			$new_line,
+			$shifted_content,
+			$indented_end,
+		);
+
+		return join( '', $content_parts );
+	}
+
+	public function format_interleave( $previous_node, $next_node ): string {
+		return $this->formatter->new_line();
+	}
+}

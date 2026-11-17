@@ -18,11 +18,14 @@ use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
+use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Html_Escaper;
+use Org\Wplake\Advanced_Views\Template\Html\Escaping\Html_Escaper;
 
 class Plugin_Bootstrap extends Bootstrap_Base {
 	public static function get_type_definitions(): array {
 				return array(
 					Cpt_Theme_Settings::class => Settings_Storage::class,
+					Html_Escaper::class       => WP_Html_Escaper::class,
 				);
 	}
 

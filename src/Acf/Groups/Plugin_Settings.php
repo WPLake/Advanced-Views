@@ -24,7 +24,6 @@ class Plugin_Settings extends Group {
 	const FIELD_WEB_COMPONENTS_TYPE                = 'web_components_type';
 	const FIELD_CLASSES_GENERATION                 = 'classes_generation';
 	const FIELD_SASS_TEMPLATE                      = 'sass_template';
-	const FIELD_TS_TEMPLATE                        = 'ts_template';
 	const FIELD_IS_CPT_ADMIN_OPTIMIZATION_ENABLED  = 'is_cpt_admin_optimization_enabled';
 
 	/**
@@ -101,12 +100,6 @@ class Plugin_Settings extends Group {
 	 * @a-type textarea
 	 */
 	public string $sass_template;
-	/**
-	 * @label TypeScript Template (for File System Storage)
-	 * @instructions When present, this value is used as the default for the 'script.ts' file of Layout and Post Selection. <br> If skipped, 'script.ts' creation will be omitted.
-	 * @a-type textarea
-	 */
-	public string $ts_template;
 
 	/**
 	 * @a-type tab

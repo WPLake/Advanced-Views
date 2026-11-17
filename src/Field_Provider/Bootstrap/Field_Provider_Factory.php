@@ -6,14 +6,14 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Bootstrap;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Field_Provider\Acf\Acf_Data_Vendor;
+use Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Acf_Data_Vendor;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Field_Provider\Data_Vendors;
-use Org\Wplake\Advanced_Views\Field_Provider\Meta_Box\Meta_Box_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Pods\Pods_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Woo\Woo_Data_Vendor;
-use Org\Wplake\Advanced_Views\Field_Provider\Wp\Wp_Data_Vendor;
+use Org\Wplake\Advanced_Views\Field_Provider\Providers\Meta_Box\Meta_Box_Data_Vendor;
+use Org\Wplake\Advanced_Views\Field_Provider\Providers\Pods\Pods_Data_Vendor;
+use Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Woo_Data_Vendor;
+use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Wp_Data_Vendor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;

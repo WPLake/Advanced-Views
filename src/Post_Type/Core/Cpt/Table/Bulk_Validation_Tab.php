@@ -7,9 +7,14 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 	const NAME = 'bulk_validation';
 
@@ -19,9 +24,10 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 	public function __construct(
 		Cpt_Table $cpt_table,
 		Cpt_Settings_Storage $cpt_settings_storage,
-		Fs_Only_Tab $fs_only_tab
+		Fs_Only_Tab $fs_only_tab,
+		Row_Title_Printer $row_title_printer
 	) {
-		parent::__construct( $cpt_table );
+		parent::__construct( $cpt_table, $row_title_printer );
 
 		$this->cpt_settings_storage = $cpt_settings_storage;
 		$this->fs_only_tab          = $fs_only_tab;
@@ -71,16 +77,12 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 		$tab_data = new Tab_Data( $this );
 		$tab_data->set_name( self::NAME );
 		$tab_data->set_label( __( 'Bulk validation', 'acf-views' ) );
-		$tab_data->set_description_callback(
-			function (): void {
-				echo esc_html(
-					__(
-						'Bulk validation - Used to validate the Custom Template field of all existing items and displays items that have failed validation.',
-						'acf-views'
-					)
-				);
-			}
+		$description = __(
+			'Bulk validation - Used to validate the Custom Template field of all existing items and displays items that have failed validation.',
+			'acf-views'
 		);
+
+		$tab_data->set_description_nodes( array( $description ) );
 		// some items can be FS-only, so show the sync action too.
 		$tab_data->set_bulk_actions( $this->fs_only_tab->get_bulk_actions() );
 		$tab_data->set_total_items_count( count( $items ) );
@@ -106,23 +108,32 @@ abstract class Bulk_Validation_Tab extends Cpt_Table_Tab {
 		// nothing to do here.
 	}
 
-	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	public function row_title_nodes( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): array {
 		if ( $this->cpt_settings_storage->is_fs_only_item( $cpt_settings->get_unique_id() ) ) {
-			$this->fs_only_tab->print_row_title( $tab_data, $cpt_settings );
-
-			return;
+			return $this->fs_only_tab->row_title_nodes( $tab_data, $cpt_settings );
 		}
 
 		$edit_post_link = $cpt_settings->get_edit_post_link();
-		printf(
-			'<strong><a class="row-title" href="%s">%s</a></strong>',
-			esc_url( $edit_post_link ),
-			esc_html( $cpt_settings->title )
-		);
-		printf(
-			'<div class="row-actions"><span class="edit"><a href="%s">%s</a></span></div>',
-			esc_url( $edit_post_link ),
-			esc_html( __( 'Edit', 'acf-views' ) )
+		$title_tags     = tag( 'strong' )
+			->content(
+				tag( 'a' )
+					->attributes( array(
+						'class' => 'row-title',
+						'href'  => $edit_post_link,
+					) )
+					->content(
+						$cpt_settings->title
+					)
+			);
+
+		return $this->row_title_printer->title_and_action_nodes(
+			$title_tags,
+			'edit',
+			$edit_post_link,
+			__( 'Edit', 'acf-views' )
 		);
 	}
 }

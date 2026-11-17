@@ -12,18 +12,22 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\External_Storage_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Import_Result;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Row_Title_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Tab_Data;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Repository_Item;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 abstract class Git_Tabs extends External_Storage_Tab {
-	use Safe_Array_Arguments;
-
 	const TAB_PREFIX             = 'gitlab_';
 	const KEY_PREFIX             = 'acf-views-import-';
 	const KEY_BATCH_ACTION       = self::KEY_PREFIX . 'items';
@@ -53,9 +57,11 @@ abstract class Git_Tabs extends External_Storage_Tab {
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
 		Field_Provider_Cluster $provider_cluster,
-		Logger $logger
+		Logger $logger,
+		Html_Renderer $html_renderer,
+		Row_Title_Printer $row_title_printer
 	) {
-		parent::__construct( $cpt_table, $cpt_settings_storage, $provider_cluster, $cpt_settings_migrator, $logger );
+		parent::__construct( $cpt_table, $cpt_settings_storage, $provider_cluster, $cpt_settings_migrator, $logger, $html_renderer, $row_title_printer );
 
 		$this->settings           = $settings;
 		$this->git_api            = $git_api;
@@ -74,39 +80,58 @@ abstract class Git_Tabs extends External_Storage_Tab {
 
 	/**
 	 * @param array{id:string, accessToken:string, name:string} $git_repository
+	 *
+	 * @return Html_Node[]
 	 */
-	protected function print_description( array $git_repository ): void {
-		echo esc_html(
+	protected function description_nodes( array $git_repository ): array {
+		$reset_cache_link = $this->get_reset_cache_link( $git_repository['id'] );
+
+		$read_more_label = __( 'Read more', 'acf-views' );
+		$here_label      = __( 'here', 'acf-views' );
+
+		$read_more_link = tag( 'a' )
+			->attributes(
+				array(
+					'target' => '_blank',
+					'href'   => 'https://docs.advanced-views.com/features/workflow/cross-installation-components',
+				)
+			)
+			->content(
+				$read_more_label
+			);
+		$reset_link     = tag( 'a' )
+			->attributes( array( 'href' => $reset_cache_link ) )
+			->content(
+				$here_label
+			);
+
+		return array(
 			__(
 				'By saving items in your GitLab repository, you can create your own library and reuse them on other websites.',
 				'acf-views'
-			)
+			),
+			' ',
+			$read_more_link,
+			tag( 'br' ),
+			__( 'If you have made any external changes to this repository, please click', 'acf-views' ),
+			' ',
+			$reset_link,
+			' ',
+			__( 'to clear the cache.', 'acf-views' ),
 		);
-		printf(
-			' <a target="_blank" href="https://docs.advanced-views.com/features/workflow/cross-installation-components">%s</a>',
-			esc_html__( 'Read more', 'acf-views' )
-		);
-		echo '<br>';
-		echo esc_html__(
-			'If you have made any external changes to this repository, please click',
-			'acf-views'
+	}
+
+	protected function get_reset_cache_link( string $repository_id ): string {
+		$current_tab = $this->get_cpt_table()->get_current_tab();
+		$nonce       = wp_create_nonce( 'bulk-posts' );
+
+		$url_args = array(
+			self::KEY_CACHE_CLEAR_ACTION => 1,
+			'_wpnonce'                   => $nonce,
+			self::KEY_REMOTE_SOURCE      => $repository_id,
 		);
 
-		$reset_cache_link = $this->get_cpt_table()->get_tab_url(
-			$this->get_cpt_table()->get_current_tab(),
-			array(
-				self::KEY_CACHE_CLEAR_ACTION => 1,
-				'_wpnonce'                   => wp_create_nonce( 'bulk-posts' ),
-				self::KEY_REMOTE_SOURCE      => $git_repository['id'],
-			)
-		);
-
-		printf(
-			' <a href="%s">%s</a> ',
-			esc_url( $reset_cache_link ),
-			esc_html__( 'here', 'acf-views' )
-		);
-		echo esc_html__( 'to clear the cache.', 'acf-views' );
+		return $this->get_cpt_table()->get_tab_url( $current_tab, $url_args );
 	}
 
 	/**
@@ -148,7 +173,6 @@ abstract class Git_Tabs extends External_Storage_Tab {
 
 		return $cpt_data_items;
 	}
-
 
 	/**
 	 * @return Cpt_Settings[]
@@ -306,10 +330,12 @@ abstract class Git_Tabs extends External_Storage_Tab {
 		string $repository_access_token,
 		array $unique_ids
 	): Import_Result {
+		$fs_fields = $this->get_cpt_data_storage()->get_fs_fields();
 		// skip auto-generates files, they useless for us.
-		$fs_field_file_names = $this->get_cpt_data_storage()
-									->get_fs_fields()
-									->get_fs_field_file_names( true );
+		$fs_field_file_names = $fs_fields->get_fs_field_file_names( true );
+		// old-format files (e.g. script.js), used only if data.json misses the related field.
+		$fallback_file_names = $fs_fields->get_fallback_fs_field_file_names();
+		$fs_field_file_names = array_merge( $fs_field_file_names, $fallback_file_names );
 		// include all vendor export files to the 'known' list of files.
 		$fs_field_file_names = array_merge( $fs_field_file_names, $this->provider_cluster->get_export_file_names() );
 
@@ -418,12 +444,24 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			return;
 		}
 
-		echo '<div class="notice notice-success">';
-		printf( '<p>%s</p>', esc_html( __( 'Cache successfully cleared.', 'acf-views' ) ) );
-		echo '</div>';
+		$message = __( 'Cache successfully cleared.', 'acf-views' );
+
+		$tags = tag( 'div' )
+			->attributes( array( 'class' => 'notice notice-success' ) )
+			->content(
+				tag( 'p' )
+					->content(
+						$message
+					)
+			);
+
+		$this->html_renderer->print_html( $tags );
 	}
 
-	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	public function row_title_nodes( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): array {
 		$import_link = $this->get_cpt_table()->get_tab_url(
 			$this->get_cpt_table()->get_current_tab(),
 			array(
@@ -433,11 +471,11 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			)
 		);
 
-		printf( '<strong><span class="row-title">%s</span></strong>', esc_html( $cpt_settings->title ) );
-		printf(
-			'<div class="row-actions"><span class="import"><a href="%s">%s</a></span></div>',
-			esc_url( $import_link ),
-			esc_html( __( 'Import', 'acf-views' ) )
+		return $this->row_title_printer->row_title_nodes(
+			$cpt_settings->title,
+			'import',
+			$import_link,
+			__( 'Import', 'acf-views' )
 		);
 	}
 
@@ -449,11 +487,7 @@ abstract class Git_Tabs extends External_Storage_Tab {
 			$tab_data = new Tab_Data( $this );
 			$tab_data->set_name( self::TAB_PREFIX . $git_repository['id'] );
 			$tab_data->set_label( $git_repository['name'] );
-			$tab_data->set_description_callback(
-				function () use ( $git_repository ): void {
-					$this->print_description( $git_repository );
-				}
-			);
+			$tab_data->set_description_nodes( $this->description_nodes( $git_repository ) );
 			$tab_data->set_label_in_brackets( __( 'gitlab', 'acf-views' ) );
 			$tab_data->set_items( $this->get_items( $pagination_per_page, $total_items_count ) );
 			$tab_data->set_total_items_count( $total_items_count );

@@ -16,6 +16,7 @@ abstract class Item_Management extends Loggable_Actor {
 	private File_System $file_system;
 	private Fs_Fields $fs_fields;
 	private Db_Management $db_management;
+	private bool $is_fallback_fields_enabled = false;
 
 	public function __construct(
 		Logger $logger,
@@ -28,6 +29,16 @@ abstract class Item_Management extends Loggable_Actor {
 		$this->file_system   = $file_system;
 		$this->fs_fields     = $fs_fields;
 		$this->db_management = $db_management;
+	}
+
+	/**
+	 * Makes the load also read the fallback FS fields (the old-format files, e.g. script.js),
+	 * a file value is used only if the JSON misses the related field.
+	 */
+	public function enable_fallback_fields( bool $is_enabled = true ): self {
+		$this->is_fallback_fields_enabled = $is_enabled;
+
+		return $this;
 	}
 
 	abstract public function replace( string $unique_id, Cpt_Settings $cpt_settings ): void;
@@ -93,11 +104,9 @@ abstract class Item_Management extends Loggable_Actor {
 			return;
 		}
 
-		$item_id         = $this->get_item_by_unique_id( $unique_id );
-		$fs_field_values = $this->file_system->read_fields_from_fs(
-			$item_id,
-			$this->fs_fields->get_fs_field_file_names()
-		);
+		$item_id             = $this->get_item_by_unique_id( $unique_id );
+		$fs_field_file_names = $this->get_fs_field_file_names_to_read();
+		$fs_field_values     = $this->file_system->read_fields_from_fs( $item_id, $fs_field_file_names );
 
 		if ( 0 === count( $fs_field_values ) ) {
 			// do not mark loaded, as item is missing in the FS.
@@ -114,6 +123,22 @@ abstract class Item_Management extends Loggable_Actor {
 		unset( $fs_field_values['data.json'] );
 
 		$this->fs_fields->set_fs_fields( $cpt_settings, $fs_field_values );
+
+		if ( $this->is_fallback_fields_enabled ) {
+			$this->fs_fields->set_fallback_fs_fields( $cpt_settings, $fs_field_values, $json );
+		}
+	}
+
+	/**
+	 * @return string[]
+	 */
+	protected function get_fs_field_file_names_to_read(): array {
+		$file_names          = $this->fs_fields->get_fs_field_file_names();
+		$fallback_file_names = $this->fs_fields->get_fallback_fs_field_file_names();
+
+		return $this->is_fallback_fields_enabled ?
+			array_merge( $file_names, $fallback_file_names ) :
+			$file_names;
 	}
 
 	// $uniqueId for import only

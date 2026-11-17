@@ -16,6 +16,4 @@ interface Cpt_Theme_Settings {
 	public function get_classes_generation(): string;
 
 	public function get_sass_code(): string;
-
-	public function get_ts_code(): string;
 }

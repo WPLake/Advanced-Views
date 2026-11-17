@@ -11,22 +11,27 @@ use Org\Wplake\Advanced_Views\Plugin\Automated_Reports\Environment_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
 use WP_Query;
+use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 final class Debug_Dump_Creator {
 	private Tools_Settings $tools_settings;
 	private Logger $logger;
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Selection_Settings_Storage $post_selections_settings_storage;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Tools_Settings $tools_settings, Logger $logger, Layout_Settings_Storage $layouts_settings_storage, Selection_Settings_Storage $post_selections_settings_storage ) {
+	public function __construct( Tools_Settings $tools_settings, Logger $logger, Layout_Settings_Storage $layouts_settings_storage, Selection_Settings_Storage $post_selections_settings_storage, Html_Renderer $html_renderer ) {
 		$this->tools_settings                   = $tools_settings;
 		$this->logger                           = $logger;
 		$this->layouts_settings_storage         = $layouts_settings_storage;
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
+		$this->html_renderer                    = $html_renderer;
 	}
 
 	public function echo_dump_file(): void {
@@ -45,37 +50,13 @@ final class Debug_Dump_Creator {
 				'message' => 1,
 			)
 		);
-		?>
-		<script>
-			(function () {
-				function save() {
-					const data = <?php echo wp_json_encode( $dump_data ); ?>;
 
-					let date = new Date().toISOString().slice(0, 10);
-					let timestamp = new Date().getTime();
-					let fileName = `advanced-views-debug-dump-${date}-${timestamp}.json`;
-					let content = JSON.stringify(data);
+		$tags = tag( 'script' )
+			->content(
+				raw_html( $this->download_script( $dump_data, $redirect_url ) )
+			);
 
-					const file = new File([content], fileName, {
-						type: 'application/json',
-					})
-
-					let settingsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
-
-					const a = document.createElement('a');
-
-					a.href = URL.createObjectURL(file);
-					a.download = fileName;
-					a.click();
-					window.location.href = settingsUrl;
-				}
-
-				'loading' === document.readyState ?
-					window.document.addEventListener('DOMContentLoaded', save) :
-					save();
-			}())
-		</script>
-		<?php
+		$this->html_renderer->print_html( $tags );
 		exit;
 	}
 
@@ -130,5 +111,42 @@ final class Debug_Dump_Creator {
 		}
 
 		return $export_data;
+	}
+
+	/**
+	 * @param array<string,mixed> $dump_data
+	 */
+	protected function download_script( array $dump_data, string $redirect_url ): string {
+		ob_start();
+		?>
+			(function () {
+				function save() {
+					const data = <?php echo wp_json_encode( $dump_data ); ?>;
+
+					let date = new Date().toISOString().slice(0, 10);
+					let timestamp = new Date().getTime();
+					let fileName = `advanced-views-debug-dump-${date}-${timestamp}.json`;
+					let content = JSON.stringify(data);
+
+					const file = new File([content], fileName, {
+						type: 'application/json',
+					})
+
+					let settingsUrl = "<?php echo esc_url_raw( $redirect_url ); ?>";
+
+					const a = document.createElement('a');
+
+					a.href = URL.createObjectURL(file);
+					a.download = fileName;
+					a.click();
+					window.location.href = settingsUrl;
+				}
+
+				'loading' === document.readyState ?
+					window.document.addEventListener('DOMContentLoaded', save) :
+					save();
+			}())
+		<?php
+		return (string) ob_get_clean();
 	}
 }

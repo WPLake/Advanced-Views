@@ -4,19 +4,16 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Pro_Stub_Field;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
 
 defined( 'ABSPATH' ) || exit;
 
 abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provider {
-	use Safe_Array_Arguments;
-
 	/**
 	 * @var array<string,Markup_Field>
 	 */
@@ -26,52 +23,6 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 		parent::__construct( $logger );
 
 		$this->field_types = $this->get_field_types();
-	}
-
-	/**
-	 * @return array<string,Markup_Field>
-	 */
-	abstract protected function get_field_types(): array;
-
-	protected function get_field_key( string $group_id, string $field_id, string $sub_field_id = '' ): string {
-		$source = ! $this->is_without_name_in_keys() ?
-			$this->get_name() :
-			'';
-
-		return Field_Settings::create_field_key( $group_id, $field_id, $sub_field_id, $source );
-	}
-
-	// for back compatibility only.
-	protected function is_without_name_in_keys(): bool {
-		return false;
-	}
-
-	/**
-	 * @return string[]
-	 */
-	protected function get_pro_stub_field_types(): array {
-		$pro_stub_field_types = array();
-
-		foreach ( $this->field_types as $field_type => $instance ) {
-			if ( false === ( $instance instanceof Pro_Stub_Field ) ) {
-				continue;
-			}
-
-			$pro_stub_field_types[] = $field_type;
-		}
-
-		return $pro_stub_field_types;
-	}
-
-	protected function get_pro_only_label(): string {
-		return __( '[PRO only]', 'acf-views' );
-	}
-
-	/**
-	 * @return  array<string,Markup_Field>
-	 */
-	protected function get_registered_field_types(): array {
-		return $this->field_types;
 	}
 
 	public function get_group_key( string $group_id ): string {
@@ -90,9 +41,9 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 	}
 
 	/**
-	 * @return array<string|int, Field_Meta|string>
+	 * @return array<string, Field_Meta>
 	 */
-	public function get_sub_field_choices( bool $is_meta_format = false, bool $is_field_name_as_label = false ): array {
+	public function get_sub_field_choices(): array {
 		return array();
 	}
 
@@ -111,12 +62,9 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 		$field_key_conditional_rules = array();
 
 		$field_choices = false === $is_sub_fields ?
-			$this->get_field_choices( array(), true ) :
-			$this->get_sub_field_choices( true );
+			$this->get_field_choices() :
+			$this->get_sub_field_choices();
 
-		/**
-		 * @var Field_Meta $field_meta
-		 */
 		foreach ( $field_choices as $field_key => $field_meta ) {
 			if ( false === $field_meta->is_field_exist() ) {
 				continue;
@@ -137,10 +85,8 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 				$repeatable_instance = $this->get_markup_field_instance( $self_repeatable_meta->get_type() );
 
 				if ( null !== $repeatable_instance ) {
-					$conditional_instance_field_keys = array_merge(
-						$conditional_instance_field_keys,
-						$repeatable_instance->get_conditional_fields( $field_meta )
-					);
+					$repeatable_keys                 = $repeatable_instance->get_conditional_fields( $field_meta );
+					$conditional_instance_field_keys = array_merge( $conditional_instance_field_keys, $repeatable_keys );
 					$conditional_instance_field_keys = array_unique( $conditional_instance_field_keys );
 				}
 			}
@@ -165,7 +111,8 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 	 * @return string[]
 	 */
 	public function get_field_front_assets( Field_Settings $field_settings ): array {
-		$field_type     = $field_settings->get_field_meta()->get_type();
+		$field_meta     = $field_settings->get_field_meta();
+		$field_type     = $field_meta->get_type();
 		$field_instance = $this->field_types[ $field_type ] ?? null;
 
 		return null !== $field_instance ?
@@ -198,5 +145,52 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 	public function get_export_meta_data( array $groups_data ): array {
 		// by default, no special meta is needed (it's vendor specific only, e.g. for Pods).
 		return array();
+	}
+
+	/**
+	 * @return array<string,Markup_Field>
+	 */
+	abstract protected function get_field_types(): array;
+
+	protected function get_field_key( string $group_id, string $field_id, string $sub_field_id = '' ): string {
+		$source = ! $this->is_without_name_in_keys() ?
+			$this->get_name() :
+			'';
+
+		return Field_Settings::create_field_key(
+			$group_id,
+			$field_id,
+			$sub_field_id,
+			$source
+		);
+	}
+
+	// for back compatibility only.
+	protected function is_without_name_in_keys(): bool {
+		return false;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	protected function get_pro_stub_field_types(): array {
+		$pro_stub_field_types = array();
+
+		foreach ( $this->field_types as $field_type => $instance ) {
+			if ( false === ( $instance instanceof Pro_Stub_Field ) ) {
+				continue;
+			}
+
+			$pro_stub_field_types[] = $field_type;
+		}
+
+		return $pro_stub_field_types;
+	}
+
+	/**
+	 * @return  array<string,Markup_Field>
+	 */
+	protected function get_registered_field_types(): array {
+		return $this->field_types;
 	}
 }

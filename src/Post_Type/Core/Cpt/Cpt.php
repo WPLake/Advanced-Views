@@ -4,23 +4,28 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Core\Cpt;
 
-use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
 abstract class Cpt extends Actor_Base implements Actor {
 	private Cpt_Settings_Storage $cpt_settings_storage;
 	protected Plugin_Cpt $plugin_cpt;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Plugin_Cpt $plugin_cpt, Cpt_Settings_Storage $cpt_settings_storage ) {
+	public function __construct( Plugin_Cpt $plugin_cpt, Cpt_Settings_Storage $cpt_settings_storage, Html_Renderer $html_renderer ) {
 		$this->plugin_cpt           = $plugin_cpt;
 		$this->cpt_settings_storage = $cpt_settings_storage;
+		$this->html_renderer        = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -68,27 +73,40 @@ abstract class Cpt extends Actor_Base implements Actor {
 			return $html;
 		}
 
-		$content  = sprintf(
-			'%s <a target="_blank" href="%s">%s</a> %s <a target="_blank" href="%s">%s</a>.',
-			__( 'Thank you for creating with', 'acf-views' ),
-			'https://wordpress.org/',
-			__( 'WordPress', 'acf-views' ),
-			__( 'and', 'acf-views' ),
-			External_Links::BASIC_VERSION_URL,
-			__( 'Advanced Views', 'acf-views' )
-		);
-		$content .= ' ' . sprintf(
-			"<span>%s <a target='_blank' href='%s'>%s</a> %s</span>",
-			__( 'Take', 'acf-views' ),
-			External_Links::SURVEY_URL,
-			__( '2 minute survey', 'acf-views' ),
-			__( 'to improve Advanced Views.', 'acf-views' )
-		);
+		$take_label      = __( 'Take', 'acf-views' );
+		$survey_label    = __( '2 minute survey', 'acf-views' );
+		$improve_label   = __( 'to improve Advanced Views.', 'acf-views' );
+		$thank_label     = __( 'Thank you for creating with', 'acf-views' );
+		$wordpress_label = __( 'WordPress', 'acf-views' );
+		$and_label       = __( 'and', 'acf-views' );
+		$plugin_label    = __( 'Advanced Views', 'acf-views' );
+		$take_text       = sprintf( '%s ', $take_label );
+		$improve_text    = sprintf( ' %s', $improve_label );
+		$thank_text      = sprintf( '%s ', $thank_label );
+		$and_text        = sprintf( ' %s ', $and_label );
+		$survey_link     = self::link_tags( External_Links::SURVEY_URL, $survey_label );
+		$wordpress_link  = self::link_tags( 'https://wordpress.org/', $wordpress_label );
+		$plugin_link     = self::link_tags( External_Links::BASIC_VERSION_URL, $plugin_label );
 
-		return sprintf(
-			'<span id="footer-thankyou">%s</span>',
-			$content
-		);
+		$survey = tag( 'span' )
+			->content(
+				$take_text,
+				$survey_link,
+				$improve_text
+			);
+
+		$tags = tag( 'span' )
+			->attributes( array( 'id' => 'footer-thankyou' ) )
+			->content(
+				$thank_text,
+				$wordpress_link,
+				$and_text,
+				$plugin_link,
+				'. ',
+				$survey
+			);
+
+		return $this->html_renderer->render_html( $tags );
 	}
 
 	protected function get_cpt_name(): string {
@@ -103,9 +121,6 @@ abstract class Cpt extends Actor_Base implements Actor {
 		$labels        = $this->plugin_cpt->labels();
 		$plural_name   = $labels->plural_name();
 		$singular_name = $labels->singular_name();
-
-		// translators: %1$s - plural name of the CPT, %2$s - link opening tag, %3$s - link closing tag.
-		$not_found_label = __( 'No %1$s yet. %2$s Add New %1$s %3$s', 'acf-views' );
 
 		return array(
 			'name'               => $plural_name,
@@ -148,41 +163,77 @@ abstract class Cpt extends Actor_Base implements Actor {
 				__( 'Search %s', 'acf-views' ),
 				$plural_name
 			),
-			'not_found'          => $this->inject_add_new_item_link( $not_found_label ),
+			'not_found'          => $this->get_not_found_label(),
 			'not_found_in_trash' => __( 'Not Found In Trash', 'acf-views' ),
 		);
 	}
 
 	protected function get_storage_label(): string {
-		$description  = '<span style="display:inline-block; float:right;">';
-		$description .= __(
-			'<a target="_blank" href="https://docs.advanced-views.com/features/file-system-storage">File system storage</a> is',
-			'acf-views'
-		);
-		$description .= ' ';
-		$description .= $this->cpt_settings_storage->get_file_system()->is_active() ?
-			__( 'enabled', 'acf-views' )
-			: __( 'disabled', 'acf-views' );
-		$description .= '.';
-		$description .= '</span>';
+		$state = $this->cpt_settings_storage->get_file_system()->is_active() ?
+			__( 'enabled', 'acf-views' ) :
+			__( 'disabled', 'acf-views' );
 
-		return $description;
+		$storage_label = __( 'File system storage', 'acf-views' );
+		$storage_link  = self::link_tags( 'https://docs.advanced-views.com/features/file-system-storage', $storage_label );
+
+		// translators: %s - the file system storage state, 'enabled' or 'disabled'.
+		$state_label = __( 'is %s.', 'acf-views' );
+		$state_value = sprintf( $state_label, $state );
+		$state_text  = sprintf( ' %s', $state_value );
+
+		$tags = tag( 'span' )
+			->attributes(
+				array(
+					'style' => array(
+						'display' => 'inline-block',
+						'float'   => 'right',
+					),
+				)
+			)
+			->content(
+				$storage_link,
+				$state_text
+			);
+
+		return $this->html_renderer->render_html( $tags );
 	}
 
-	protected function inject_add_new_item_link( string $label_template ): string {
-		$relative_url = sprintf( 'post-new.php?post_type=%s', $this->get_cpt_name() );
-		$absolute_url = admin_url( $relative_url );
+	protected function get_not_found_label(): string {
+		$singular_name = $this->plugin_cpt->labels()->singular_name();
+		$add_new_url   = admin_url( sprintf( 'post-new.php?post_type=%s', $this->get_cpt_name() ) );
 
-		$opening_tag = sprintf(
-			'<a href="%s" target="_self">',
-			esc_url( $absolute_url )
+		$tags = array(
+			sprintf(
+			// translators: %s - singular name of the CPT.
+				__( 'No %s yet.', 'acf-views' ),
+				$singular_name
+			) . ' ',
+			self::link_tags(
+				$add_new_url,
+				sprintf(
+				// translators: %s - singular name of the CPT.
+					__( 'Add New %s', 'acf-views' ),
+					$singular_name
+				),
+				'_self'
+			),
 		);
-		$closing_tag = '</a>';
 
-		$labels        = $this->plugin_cpt->labels();
-		$singular_name = $labels->singular_name();
+		return $this->html_renderer->render_html( ...$tags );
+	}
 
-		return sprintf( $label_template, $singular_name, $opening_tag, $closing_tag );
+	protected static function link_tags( string $url, string $label, string $target = '_blank' ): Html_Tag {
+
+		return tag( 'a' )
+			->attributes(
+				array(
+					'target' => $target,
+					'href'   => $url,
+				)
+			)
+			->content(
+				$label
+			);
 	}
 
 	/**

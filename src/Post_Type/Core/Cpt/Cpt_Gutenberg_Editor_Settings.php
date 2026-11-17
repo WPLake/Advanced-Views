@@ -9,16 +9,20 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
 use WPCom_Markdown;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
 class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 	private string $cpt_name;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( string $cpt_name ) {
+	public function __construct( string $cpt_name, Html_Renderer $html_renderer ) {
 		$this->cpt_name = $cpt_name;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -93,23 +97,43 @@ class Cpt_Gutenberg_Editor_Settings extends Actor_Base implements Actor {
 			return;
 		}
 
-		echo '<p style="position: fixed;right: 20px;bottom: 20px;z-index: 9999; color: red;max-width:500px;font-size:13px;">';
+		$reach_out_label = __( 'reach out', 'acf-views' );
+		$error_label     = __( 'Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue.', 'acf-views' );
+		$please_label    = __( 'Please', 'acf-views' );
+		$assistance      = __( 'to our support team for further assistance.', 'acf-views' );
+		$error_text      = sprintf( '%s ', $error_label );
+		$please_text     = sprintf( '%s ', $please_label );
+		$assistance_text = sprintf( ' %s', $assistance );
 
-		esc_html_e(
-			'Advanced Views error: The Gutenberg editor is disabled, indicating a potential compatibility issue.',
-			'acf-views'
-		);
+		$support_link = tag( 'a' )
+			->attributes( array(
+				'target' => '_blank',
+				'href'   => 'https://wplake.org/acf-views-support/',
+			) )
+			->content(
+				$reach_out_label
+			);
 
-		echo ' ';
+		$tags    = tag( 'p' )
+			->attributes( array(
+				'style' => array(
+					'position'  => 'fixed',
+					'right'     => '20px',
+					'bottom'    => '20px',
+					'z-index'   => '9999',
+					'color'     => 'red',
+					'max-width' => '500px',
+					'font-size' => '13px',
+				),
+			) )
+			->content(
+				$error_text,
+				$please_text,
+				$support_link,
+				$assistance_text
+			);
 
-		printf(
-		// translators: %1$s - link opening tag, %2$s - link closing tag.
-			esc_html__( 'Please %1$s reach out %2$s to our support team for further assistance.', 'acf-views' ),
-			'<a target="_blank" href="https://wplake.org/acf-views-support/">',
-			'</a>'
-		);
-
-		echo '</p>';
+		$this->html_renderer->print_html( $tags );
 	}
 
 	// Jetpack's markdown module "very polite" and breaks json in our post_content.

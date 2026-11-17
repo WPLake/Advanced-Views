@@ -12,6 +12,9 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 abstract class External_Storage_Tab extends Cpt_Table_Tab {
@@ -23,20 +26,24 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	private Field_Provider_Cluster $provider_cluster;
 	private Cpt_Settings_Migrator $cpt_settings_migrator;
 	private Logger $logger;
+	protected Html_Renderer $html_renderer;
 
 	public function __construct(
 		Cpt_Table $cpt_table,
 		Cpt_Settings_Storage $cpt_settings_storage,
 		Field_Provider_Cluster $provider_cluster,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
-		Logger $logger
+		Logger $logger,
+		Html_Renderer $html_renderer,
+		Row_Title_Printer $row_title_printer
 	) {
-		parent::__construct( $cpt_table );
+		parent::__construct( $cpt_table, $row_title_printer );
 
 		$this->cpt_settings_storage  = $cpt_settings_storage;
 		$this->provider_cluster      = $provider_cluster;
 		$this->cpt_settings_migrator = $cpt_settings_migrator;
 		$this->logger                = $logger;
+		$this->html_renderer         = $html_renderer;
 	}
 
 	abstract protected function get_cpt_data( string $unique_id ): Cpt_Settings;
@@ -97,9 +104,13 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 		$cpt_data->load( $cpt_data->get_post_id(), '', $data_json );
 
 		// 4. set fs field values
+		$fs_fields = $this->cpt_settings_storage->get_fs_fields();
+
 		foreach ( $field_values as $file_field => $value ) {
-			$this->cpt_settings_storage->get_fs_fields()->set_fs_field( $cpt_data, $file_field, $value );
+			$fs_fields->set_fs_field( $cpt_data, $file_field, $value );
 		}
+
+		$fs_fields->set_fallback_fs_fields( $cpt_data, $field_values, $data_json );
 
 		// 5. perform upgrades (if items were created with the old plugin version)
 		$this->cpt_settings_migrator->migrate_cpt_settings( $cpt_data );
@@ -180,123 +191,62 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			}
 		}
 
-		echo '<div class="notice notice-success">';
+		$layout_links = array();
+		$card_links   = array();
 
-		echo '<p>';
-		esc_html_e( 'Success!', 'acf-views' );
-		echo '</p>';
+		foreach ( $import_result->get_unique_ids() as $unique_id ) {
+			// views and cards have different storages,
+			// while in this class we have only the single one.
+			$cpt_data = $this->get_cpt_data( $unique_id );
+			$link     = array(
+				'url'   => $cpt_data->get_edit_post_link(),
+				'title' => $cpt_data->title,
+			);
+
+			if ( $this->is_layout_item( $cpt_data ) ) {
+				$layout_links[] = $link;
+			} else {
+				$card_links[] = $link;
+			}
+		}
+
+		$paragraphs   = array();
+		$paragraphs[] = tag( 'p' )
+			->content(
+				__( 'Success!', 'acf-views' )
+			);
 
 		if ( $views_count > 0 ) {
-			echo '<p>';
-			echo esc_html( (string) $views_count ) . ' ' . esc_html(
-				_n( 'Item', 'Items', $views_count, 'acf-views' )
-			);
-			echo ' ';
-			// translators: x items successfully imported.
-			esc_html_e( 'successfully imported:', 'acf-views' );
-			echo '</p>';
-			echo '<p>';
-
-			$counter          = 0;
-			$views_last_index = $views_count - 1;
-
-			foreach ( $import_result->get_unique_ids() as $unique_id ) {
-				// views and cards have different storages,
-				// while in this class we have only the single one.
-				$cpt_data = $this->get_cpt_data( $unique_id );
-
-				if ( false === $this->is_layout_item( $cpt_data ) ) {
-					continue;
-				}
-
-				printf(
-					'<a href="%s" target="_blank">%s</a>',
-					esc_url( $cpt_data->get_edit_post_link() ),
-					esc_html( $cpt_data->title )
-				);
-
-				if ( $counter !== $views_last_index ) {
-					echo '<br>';
-				}
-
-				++$counter;
-			}
-
-			echo '</p>';
+			$paragraphs[] = $this->imported_items_paragraph( $views_count );
+			$paragraphs[] = $this->links_paragraph( $layout_links );
 		}
 
 		if ( $cards_count > 0 ) {
-			echo '<p>';
-			echo esc_html( (string) $cards_count ) . ' ' . esc_html( _n( 'Item', 'Items', $cards_count, 'acf-views' ) );
-			echo ' ';
-			// translators: x items successfully imported.
-			esc_html_e( 'successfully imported:', 'acf-views' );
-			echo '</p>';
-			echo '<p>';
-
-			$counter         = 0;
-			$card_last_index = $cards_count - 1;
-
-			foreach ( $import_result->get_unique_ids() as $unique_id ) {
-				// views and cards have different storages,
-				// while in this class we have only the single one.
-				$cpt_data = $this->get_cpt_data( $unique_id );
-
-				if ( $this->is_layout_item( $cpt_data ) ) {
-					continue;
-				}
-
-				printf(
-					'<a href="%s" target="_blank">%s</a>',
-					esc_url( $cpt_data->get_edit_post_link() ),
-					esc_html( $cpt_data->title )
-				);
-
-				if ( $counter !== $card_last_index ) {
-					echo '<br>';
-				}
-
-				++$counter;
-			}
-
-			echo '</p>';
+			$paragraphs[] = $this->imported_items_paragraph( $cards_count );
+			$paragraphs[] = $this->links_paragraph( $card_links );
 		}
 
 		foreach ( $grouped_meta_group_links as $vendor_name => $group_links ) {
 			$group_links_count = count( $group_links );
 
-			printf(
-				'<p>%s %s %s %s</p>',
-				esc_html( (string) $group_links_count ),
-				esc_html( ucfirst( $vendor_name ) ),
-				esc_html( _n( 'group', 'groups', $group_links_count, 'acf-views' ) ),
-				// translators: x items successfully imported.
-				esc_html__( 'successfully imported:', 'acf-views' )
-			);
+			$vendor_label = ucfirst( $vendor_name );
+			$groups_label = _n( 'group', 'groups', $group_links_count, 'acf-views' );
+			// translators: x items successfully imported.
+			$imported_label = __( 'successfully imported:', 'acf-views' );
+			$groups_text    = sprintf( '%s %s %s %s', $group_links_count, $vendor_label, $groups_label, $imported_label );
 
-			echo '<p>';
-
-			$last_link_index = $group_links_count - 1;
-			$counter         = 0;
-
-			foreach ( $group_links as $group_link ) {
-				printf(
-					'<a href="%s" target="_blank">%s</a>',
-					esc_url( $group_link['url'] ),
-					esc_html( $group_link['title'] )
+			$paragraphs[] = tag( 'p' )
+				->content(
+					$groups_text
 				);
-
-				if ( $counter !== $last_link_index ) {
-					echo '<br>';
-				}
-
-				++$counter;
-			}
-
-			echo '</p>';
+			$paragraphs[] = $this->links_paragraph( $group_links );
 		}
 
-		echo '</div>';
+		$tags = tag( 'div' )
+			->attributes( array( 'class' => 'notice notice-success' ) )
+			->content( ...$paragraphs );
+
+		$this->html_renderer->print_html( $tags );
 	}
 
 	protected function get_cpt_data_storage(): Cpt_Settings_Storage {
@@ -309,5 +259,47 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 
 	public function maybe_show_action_result_message(): void {
 		$this->maybe_show_import_result_message();
+	}
+
+	protected function imported_items_paragraph( int $items_count ): Html_Tag {
+		$items_label = _n( 'Item', 'Items', $items_count, 'acf-views' );
+		// translators: x items successfully imported.
+		$imported_label = __( 'successfully imported:', 'acf-views' );
+		$items_text     = sprintf( '%s %s %s', $items_count, $items_label, $imported_label );
+
+		return tag( 'p' )
+			->content(
+				$items_text
+			);
+	}
+
+	/**
+	 * @param array<array{url:string,title:string}> $links
+	 */
+	protected function links_paragraph( array $links ): Html_Tag {
+		$members = array();
+
+		foreach ( $links as $link ) {
+			// the 'br' goes between the links.
+			if ( array() !== $members ) {
+				$members[] = tag( 'br' );
+			}
+
+			$link_tag = tag( 'a' )
+				->attributes(
+					array(
+						'href'   => $link['url'],
+						'target' => '_blank',
+					)
+				)
+				->content(
+					$link['title']
+				);
+
+			$members[] = $link_tag;
+		}
+
+		return tag( 'p' )
+			->content( ...$members );
 	}
 }

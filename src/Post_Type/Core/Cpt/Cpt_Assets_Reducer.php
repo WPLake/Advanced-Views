@@ -10,16 +10,21 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
 class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 	private Settings_Storage $settings;
 	private string $cpt_name;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Settings_Storage $settings, string $cpt_name ) {
-		$this->settings = $settings;
-		$this->cpt_name = $cpt_name;
+	public function __construct( Settings_Storage $settings, string $cpt_name, Html_Renderer $html_renderer ) {
+		$this->settings      = $settings;
+		$this->cpt_name      = $cpt_name;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -253,34 +258,55 @@ class Cpt_Assets_Reducer extends Actor_Base implements Actor {
 	public function print_fallback_message(): void {
 		$settings_url = Plugin::get_admin_url( Settings_Page::SLUG );
 
-		$safe_opening_tag = sprintf(
-			'<a href="%s" target="_blank">',
-			esc_url( $settings_url )
-		);
+		$settings_label = __( 'Settings', 'acf-views' );
+		$loading_label  = __( 'Loading the Editor is taking longer than expected.', 'acf-views' );
+		$visit_label    = __( 'If you still see this message after an extended period, please visit the', 'acf-views' );
+		$disable_label  = __( 'and disable the screen performance optimization.', 'acf-views' );
+		$visit_text     = sprintf( '%s ', $visit_label );
+		$disable_text   = sprintf( ' %s', $disable_label );
 
-		echo '<p class="acf-views__loading-fallback acf-views__loading-fallback--hidden">';
+		$settings_link = tag( 'a' )
+			->attributes(
+				array(
+					'href'   => $settings_url,
+					'target' => '_blank',
+				)
+			)
+			->content(
+				$settings_label
+			);
 
-		echo esc_html__( 'Loading the Editor is taking longer than expected.', 'acf-views' );
+		$tags = tag( 'p' )
+			->attributes( array( 'class' => 'acf-views__loading-fallback acf-views__loading-fallback--hidden' ) )
+			->content(
+				$loading_label,
+				tag( 'br' ),
+				$visit_text,
+				$settings_link,
+				$disable_text
+			);
 
-		echo '<br>';
-		printf(
-				// translators: 1 is the opening tag, 2 is the closing tag.
-			esc_html__( 'If you still see this message after an extended period, please visit the %1$s Settings %2$s and disable the screen performance optimization.', 'acf-views' ),
-			// @phpcs:ignore
-            $safe_opening_tag,
-			'</a>'
-		);
+		$this->html_renderer->print_html( $tags );
 
-		echo '</p>';
+		$node = tag( 'script' )
+			->attributes( array( 'type' => 'module' ) )
+			->content(
+				raw_html( $this->fallback_script() )
+			);
+
+		$this->html_renderer->print_html( $node );
+	}
+
+	protected function fallback_script(): string {
+		ob_start();
 		?>
-		<script type="module">
 		document.addEventListener('DOMContentLoaded', function () {
 			setTimeout(()=>{
 				document.querySelector('.acf-views__loading-fallback')
 					.classList.remove('acf-views__loading-fallback--hidden');
 			},15 * 1000)
 		});
-		</script>
 		<?php
+		return (string) ob_get_clean();
 	}
 }

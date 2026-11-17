@@ -7,26 +7,34 @@ namespace Org\Wplake\Advanced_Views\Compatibility\Migration;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Compatibility\Migration\Core\Version\Version_Migration;
-use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Options_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 final class Upgrade_Notice extends Actor_Base implements Actor {
 	private Plugin_Meta $plugin_meta;
 	private string $dismiss_key;
 	private string $dismiss_nonce_action;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Plugin_Meta $plugin_meta ) {
+	public function __construct( Plugin_Meta $plugin_meta, Html_Renderer $html_renderer ) {
 		$this->plugin_meta = $plugin_meta;
 
 		$this->dismiss_key          = sprintf( '_%s-upgrade-notice-dismiss', $this->plugin_meta->get_short_slug() );
 		$this->dismiss_nonce_action = 'avf-upgrade-notice';
+		$this->html_renderer        = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -76,33 +84,26 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 	public function print_notice(): void {
 		$upgrade_notice = $this->get_upgrade_notice();
 
-		echo '<div class="notice notice-info">';
-		echo '<p>';
+		$dismiss_members = Avf_User::can_manage() ?
+			$this->get_dismiss_members() :
+			null;
 
-		echo esc_html__( 'Advanced Views plugin has been successfully upgraded!', 'acf-views' );
+		$notice_lines = $this->get_notice_lines_members( $upgrade_notice );
 
-		echo '<br>';
-
-		// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo str_replace( "\n", '<br>', esc_html( $upgrade_notice ) );
-
-		if ( Avf_User::can_manage() ) {
-			$dismiss_url = add_query_arg(
-				array(
-					$this->dismiss_key => 1,
-					'_wpnonce'         => wp_create_nonce( $this->dismiss_nonce_action ),
-				),
-				Plugin::get_current_admin_url()
+		$paragraph =
+			tag( 'p' )
+			->content(
+				__( 'Advanced Views plugin has been successfully upgraded!', 'acf-views' ),
+				tag( 'br' ),
+				...array_merge( $notice_lines, array( $dismiss_members ) )
+			);
+		$tags      = tag( 'div' )
+			->attributes( array( 'class' => 'notice notice-info' ) )
+			->content(
+				$paragraph
 			);
 
-			printf(
-				'<a style="float:right;" href="%s">%s</a>',
-				esc_url( $dismiss_url ),
-				esc_html( __( 'Thanks, hide', 'acf-views' ) )
-			);
-		}
-		echo '</p>';
-		echo '</div>';
+		$this->html_renderer->print_html( $tags );
 	}
 
 	protected function hide_notice(): bool {
@@ -125,5 +126,43 @@ final class Upgrade_Notice extends Actor_Base implements Actor {
 		$upgrade_transient = Options_Storage::get_transient( Options_Storage::TRANSIENT_UPGRADE_NOTICE );
 
 		return string( $upgrade_transient );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function get_notice_lines_members( string $upgrade_notice ): array {
+		$members = array();
+
+		foreach ( explode( "\n", $upgrade_notice ) as $index => $line ) {
+			if ( $index > 0 ) {
+				$members[] = tag( 'br' );
+			}
+
+			$members[] = $line;
+		}
+
+		return $members;
+	}
+
+	protected function get_dismiss_members(): Html_Tag {
+		$dismiss_url = add_query_arg(
+			array(
+				$this->dismiss_key => 1,
+				'_wpnonce'         => wp_create_nonce( $this->dismiss_nonce_action ),
+			),
+			Plugin::get_current_admin_url()
+		);
+
+		return tag( 'a' )
+			->attributes(
+				array(
+					'style' => array( 'float' => 'right' ),
+					'href'  => $dismiss_url,
+				)
+			)
+			->content(
+				__( 'Thanks, hide', 'acf-views' )
+			);
 	}
 }

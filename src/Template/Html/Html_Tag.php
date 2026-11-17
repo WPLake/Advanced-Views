@@ -1,0 +1,70 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Template\Html;
+
+defined( 'ABSPATH' ) || exit;
+
+
+/**
+ * @phpstan-import-type Html_Node from Html_Element
+ */
+final class Html_Tag implements Html_Element {
+	private string $name;
+	/**
+	 * @var array<string,mixed>
+	 */
+	private array $attributes = array();
+	/**
+	 * @var array<int,Html_Node>
+	 */
+	private array $nodes = array();
+
+	public function __construct( string $tag ) {
+		$this->name = $tag;
+	}
+
+	/**
+	 * @param array<string,mixed> $attributes
+	 */
+	public function attributes( array $attributes ): self {
+		$this->attributes = $attributes;
+
+		return $this;
+	}
+
+	/**
+	 * Null items are dropped, to simplify the conditional rendering: `$condition ? $node : null` can be passed as is.
+	 *
+	 * @param Html_Node|null ...$nodes
+	 */
+	public function content( ...$nodes ): self {
+		$nodes = array_filter(
+			$nodes,
+			static fn( $item ) => ! is_null( $item )
+		);
+
+		$this->nodes = array_values( $nodes );
+
+		return $this;
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	public function get_nodes(): array {
+		return $this->nodes;
+	}
+
+	public function get_name(): string {
+		return $this->name;
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	public function get_attributes(): array {
+		return $this->attributes;
+	}
+}

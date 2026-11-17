@@ -11,13 +11,17 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Import_Printer;
+use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Toolbar_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Page;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Screen;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
@@ -32,12 +36,14 @@ class Admin_Pages extends Actor_Base implements Actor {
 
 	private Plugin $plugin;
 	private Plugin_Meta $plugin_meta;
-	private Html_Printer $html;
 	private Demo_Importer $demo_import;
 	/**
 	 * @var Plugin_Cpt[]
 	 */
 	private array $plugin_cpts;
+	protected Html_Renderer $html_renderer;
+	protected Toolbar_Printer $toolbar_printer;
+	protected Import_Printer $import_printer;
 
 	/**
 	 * @param Plugin_Cpt[] $plugin_cpts
@@ -45,15 +51,19 @@ class Admin_Pages extends Actor_Base implements Actor {
 	public function __construct(
 		Plugin $plugin,
 		Plugin_Meta $plugin_meta,
-		Html_Printer $html,
 		Demo_Importer $demo_import,
-		array $plugin_cpts
+		array $plugin_cpts,
+		Html_Renderer $html_renderer,
+		Toolbar_Printer $toolbar_printer,
+		Import_Printer $import_printer
 	) {
-		$this->plugin      = $plugin;
-		$this->plugin_meta = $plugin_meta;
-		$this->html        = $html;
-		$this->demo_import = $demo_import;
-		$this->plugin_cpts = $plugin_cpts;
+		$this->import_printer  = $import_printer;
+		$this->toolbar_printer = $toolbar_printer;
+		$this->plugin          = $plugin;
+		$this->plugin_meta     = $plugin_meta;
+		$this->demo_import     = $demo_import;
+		$this->plugin_cpts     = $plugin_cpts;
+		$this->html_renderer   = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -87,18 +97,30 @@ class Admin_Pages extends Actor_Base implements Actor {
 			self::PAGE_DEMO_IMPORT => __( 'Demo import', 'acf-views' ),
 		);
 
+		$iframe_attrs = array(
+			'src'   => External_Links::DOCS_URL,
+			'style' => array(
+				'border'      => '0',
+				'width'       => 'calc(100% + 20px)',
+				'height'      => 'calc(100vh - 32px - 65px)',
+				'margin-left' => '-20px',
+			),
+		);
+
+		$print_docs_page = function () use ( $iframe_attrs ): void {
+			$tags = tag( 'iframe' )
+				->attributes( $iframe_attrs );
+
+			$this->html_renderer->print_html( $tags );
+		};
+
 		add_submenu_page(
 			$parent_slug,
 			$page_titles[ self::PAGE_DOCS ],
 			$page_titles[ self::PAGE_DOCS ],
 			Avf_User::get_manage_capability(),
 			self::PAGE_DOCS,
-			function (): void {
-				printf(
-					'<iframe src="%s" style="border: 0;width: calc(100%% + 20px);height: calc(100vh - 32px - 65px);margin-left: -20px;"></iframe>',
-					esc_url( External_Links::DOCS_URL )
-				);
-			}
+			$print_docs_page
 		);
 
 		add_submenu_page(
@@ -149,7 +171,10 @@ class Admin_Pages extends Actor_Base implements Actor {
 			break;
 		}
 
-		$this->html->print_dashboard_header( $this->plugin::get_name(), $this->plugin_meta->get_version(), $tabs );
+		$name    = $this->plugin::get_name();
+		$version = $this->plugin_meta->get_version();
+
+		$this->toolbar_printer->print_dashboard_header( $name, $version, $tabs );
 	}
 
 	public function get_import_page(): void {
@@ -171,7 +196,7 @@ class Admin_Pages extends Actor_Base implements Actor {
 
 		$form_nonce = wp_create_nonce( 'av-demo-import' );
 
-		$this->html->print_dashboard_import(
+		$this->import_printer->print_dashboard_import(
 			$is_with_delete_button,
 			$form_nonce,
 			$is_with_form_message,
@@ -323,28 +348,50 @@ class Admin_Pages extends Actor_Base implements Actor {
 	 */
 	protected function get_cpt_links(): array {
 		return array_map(
-			fn( Plugin_Cpt $plugin_cpt ) => sprintf(
-				'<a href="%s" target="_self">%s</a>',
-				esc_url( Plugin::get_admin_url( '', $plugin_cpt->cpt_name() ) ),
-				$plugin_cpt->labels()->plural_name()
-			),
+			fn( Plugin_Cpt $plugin_cpt ) => $this->render_cpt_link( $plugin_cpt ),
 			$this->plugin_cpts
 		);
+	}
+
+	protected function render_cpt_link( Plugin_Cpt $plugin_cpt ): string {
+		$cpt_name    = $plugin_cpt->cpt_name();
+		$plural_name = $plugin_cpt->labels()->plural_name();
+		$link_attrs  = array(
+			'href'   => Plugin::get_admin_url( '', $cpt_name ),
+			'target' => '_self',
+		);
+
+		$link = tag( 'a' )
+			->attributes( $link_attrs )
+			->content(
+				$plural_name
+			);
+
+		return $this->html_renderer->render_html( $link );
 	}
 
 	/**
 	 * @return string[]
 	 */
 	protected function get_promo_links(): array {
-		$link_style = 'color:#d46f4d; font-weight:bold; transition: opacity 0.3s;';
+		$link = tag( 'a' )
+			->attributes(
+				array(
+					'href'        => External_Links::PRO_VERSION_URL,
+					'target'      => '_blank',
+					'style'       => array(
+						'color'       => '#d46f4d',
+						'font-weight' => 'bold',
+						'transition'  => 'opacity 0.3s',
+					),
+					'onmouseover' => 'this.style.opacity=0.7',
+					'onmouseout'  => 'this.style.opacity=1',
+				)
+			)
+			->content(
+				__( 'Get Pro', 'acf-views' )
+			);
 
-		return array(
-			sprintf(
-				'<a href="%s" target="_blank" style="%s" onmouseover="this.style.opacity=0.7" onmouseout="this.style.opacity=1">%s</a>',
-				External_Links::PRO_VERSION_URL,
-				esc_attr( $link_style ),
-				esc_html__( 'Get Pro', 'acf-views' )
-			),
-		);
+		return array( $this->html_renderer->render_html( $link ) );
 	}
 }

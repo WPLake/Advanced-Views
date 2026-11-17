@@ -19,6 +19,9 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System_Loader;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
 /**
@@ -26,6 +29,8 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
  * IT DOESN'T SEND ANY PERSONAL OR SENSITIVE DATA.
  * Can be disabled in the plugin settings.
  * FYI: built-in WordPress growth counter was removed https://meta.trac.wordpress.org/ticket/6511
+ *
+ * @phpstan-import-type Html_Node from Html_Tag
  */
 class Usage_Report extends Report_Base implements Actor {
 	const DELAY_MIN_HR       = 12;
@@ -47,9 +52,10 @@ class Usage_Report extends Report_Base implements Actor {
 		Plugin_Meta $plugin_meta,
 		Settings_Storage $settings,
 		State_Report $state_report,
-		array $cpt_settings_storages
+		array $cpt_settings_storages,
+		Html_Renderer $html_renderer
 	) {
-		parent::__construct( $logger, $plugin, $plugin_meta, $settings );
+		parent::__construct( $logger, $plugin, $plugin_meta, $settings, $html_renderer );
 
 		$this->plugin                = $plugin;
 		$this->settings              = $settings;
@@ -118,39 +124,23 @@ class Usage_Report extends Report_Base implements Actor {
 			return;
 		}
 
-		echo '<div class="notice notice-warning">';
-		echo '<p>';
+		$hide_members = Avf_User::can_manage() ?
+			$this->get_hide_members( $dismiss_key, $nonce_name ) :
+			array();
 
-		esc_html_e(
-			'The Advanced Views plugin sends automatic error and usage reports to developers, enabling faster issue resolution and plugin improvement.',
-			'acf-views'
-		);
-
-		echo '<br>';
-
-		esc_html_e(
-			'Automatic reports do not include any private or sensitive information and can be disabled in the plugin settings.',
-			'acf-views'
-		);
-
-		if ( Avf_User::can_manage() ) {
-			$hide_url = add_query_arg(
-				array(
-					$dismiss_key => 1,
-					'_wpnonce'   => wp_create_nonce( $nonce_name ),
-				)
+		$tags = tag( 'div' )
+			->attributes( array( 'class' => 'notice notice-warning' ) )
+			->content(
+				tag( 'p' )
+					->content(
+						__( 'The Advanced Views plugin sends automatic error and usage reports to developers, enabling faster issue resolution and plugin improvement.', 'acf-views' ),
+						tag( 'br' ),
+						__( 'Automatic reports do not include any private or sensitive information and can be disabled in the plugin settings.', 'acf-views' ),
+						...$hide_members
+					)
 			);
 
-			echo '<br><br>';
-			printf(
-				'<a href="%s">%s</a>',
-				esc_url( $hide_url ),
-				esc_html( __( 'Got it, hide', 'acf-views' ) )
-			);
-		}
-
-		echo '</p>';
-		echo '</div>';
+		$this->html_renderer->print_html( $tags );
 	}
 
 	public function send_and_schedule_next(): void {
@@ -320,5 +310,29 @@ class Usage_Report extends Report_Base implements Actor {
 			! $this->settings->is_automatic_reports_confirmed() ) {
 			self::add_action( 'admin_notices', array( $this, 'show_automatic_reports_notice' ) );
 		}
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function get_hide_members( string $dismiss_key, string $nonce_name ): array {
+		$hide_url = add_query_arg(
+			array(
+				$dismiss_key => 1,
+				'_wpnonce'   => wp_create_nonce( $nonce_name ),
+			)
+		);
+
+		$hide_link = tag( 'a' )
+			->attributes( array( 'href' => $hide_url ) )
+			->content(
+				__( 'Got it, hide', 'acf-views' )
+			);
+
+		return array(
+			tag( 'br' ),
+			tag( 'br' ),
+			$hide_link,
+		);
 	}
 }

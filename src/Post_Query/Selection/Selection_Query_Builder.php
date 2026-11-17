@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context_Container;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Entity\Entity_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Entity\Order_Query_Builder;
+use Org\Wplake\Advanced_Views\Post_Query\Entity\Pagination_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Meta\Field_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Meta\Meta_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Query\Meta\Meta_Value_Resolver;
@@ -45,7 +46,8 @@ class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Conta
 		$this->add_query_builder( new Entity_Query_Builder() )
 			->add_query_builder( new Order_Query_Builder( $this->provider_cluster ) )
 			->add_taxonomy_builder()
-			->add_meta_builder();
+			->add_meta_builder()
+			->add_pagination_builder();
 	}
 
 	public function build_post_query( Query_Settings $selection_settings ): array {
@@ -88,6 +90,15 @@ class Selection_Query_Builder implements Post_Query_Builder, Query_Context_Conta
 
 	protected function create_meta_value_resolver(): Meta_Value_Resolver {
 		return new Meta_Value_Resolver();
+	}
+
+	protected function add_pagination_builder(): self {
+		$pagination_query_builder = new Pagination_Query_Builder();
+
+		$this->add_context_container( $pagination_query_builder )
+			->add_query_builder( $pagination_query_builder );
+
+		return $this;
 	}
 
 	protected function add_query_builder( Post_Query_Builder $query_builder ): self {

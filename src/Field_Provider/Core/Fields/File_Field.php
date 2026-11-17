@@ -4,16 +4,21 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Splide\Splide_Library;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class File_Field extends List_Field {
 	private Link_Field $link_field;
 
@@ -21,45 +26,49 @@ class File_Field extends List_Field {
 		$this->link_field = $link_field;
 	}
 
-	protected function print_internal_item_layout( string $item_id, Markup_Field_Data $markup_field_data ): void {
-		$this->link_field->print_markup( $item_id, $markup_field_data );
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_internal_item_layout( string $item_id, Template_Field_Meta $markup_field_data ): array {
+		return $this->link_field->compose_html( $item_id, $markup_field_data );
 	}
 
-	protected function print_external_item_layout( string $field_id, string $item_id, Markup_Field_Data $markup_field_data ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory    = $markup_field_data->get_token_factory();
-		$object_id_source = $markup_field_data->get_field_meta()->is_multiple() ?
-			'item' :
+		$object_id_source = $markup_field_data->get_context()->get_field_meta()->is_multiple() ?
+			static::LOOP_ITEM_NAME :
 			$field_id;
 
 		$id_var        = $token_factory->variable( $field_id )
-										->add_item_path( 'layout_id' );
+										->add_item_path( self::LAYOUT_ID );
 		$object_id_var = $token_factory->variable( $object_id_source )
-										->add_item_path( 'value' );
+										->add_item_path( self::VALUE );
 
-		printf( '[%s', esc_html( Hard_Layout_Cpt::cpt_name() ) );
-
-		$token_factory->format()
-			->attributes(
+		$shortcode = $token_factory->shortcode( Hard_Layout_Cpt::cpt_name() )
+			->set_attributes(
 				array(
 					'id'        => $id_var,
 					'object-id' => $object_id_var,
 				)
 			);
 
-		echo ']';
+		return array( $shortcode );
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
-		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
 		return array_merge(
-			parent::get_template_variables( $variable_field_data ),
+			parent::get_template_variables( $field_value ),
 			array(
-				'view_id'   => $layout_id,
-				'layout_id' => $layout_id,
+				self::VIEW_ID   => $layout_id,
+				self::LAYOUT_ID => $layout_id,
 			)
 		);
 	}
@@ -67,49 +76,53 @@ class File_Field extends List_Field {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
-		$layout_id = $variable_field_data->get_field_data()->get_short_unique_acf_view_id();
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
+		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
 		return array_merge(
-			parent::get_validation_template_variables( $variable_field_data ),
+			parent::get_validation_template_variables( $field_value ),
 			array(
-				'view_id'   => $layout_id,
-				'layout_id' => $layout_id,
+				self::VIEW_ID   => $layout_id,
+				self::LAYOUT_ID => $layout_id,
 			)
 		);
 	}
 
-	protected function get_item_template_args( Variable_Field_Data $variable_field_data ): array {
-		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
+	protected function get_item_template_args( Raw_Field_Value $field_value ): array {
+		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
-				'value' => int( $variable_field_data->get_value() ),
+				self::VALUE => int( $field_value->get_value() ),
 			);
 		}
 
-		$post_id = is_numeric( $variable_field_data->get_value() ) ?
-			(int) $variable_field_data->get_value() :
+		$post_id = is_numeric( $field_value->get_value() ) ?
+			(int) $field_value->get_value() :
 			0;
 
-		$variable_field_data->set_value(
+		$field_value->set_value(
 			0 !== $post_id ?
 				array(
-					'url'   => (string) wp_get_attachment_url( $post_id ),
-					'title' => get_post( $post_id )->post_title ?? '',
+					Link_Field::URL   => (string) wp_get_attachment_url( $post_id ),
+					Link_Field::TITLE => get_post( $post_id )->post_title ?? '',
 				) :
 				array()
 		);
 
-		return $this->link_field->get_template_variables( $variable_field_data );
+		return $this->link_field->get_template_variables( $field_value );
 	}
 
-	protected function get_validation_item_template_args( Variable_Field_Data $variable_field_data ): array {
-		if ( $variable_field_data->get_field_data()->has_external_layout() ) {
+	protected function get_validation_item_template_args( Raw_Field_Value $field_value ): array {
+		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
-				'value' => 0,
+				self::VALUE => 0,
 			);
 		}
 
-		return $this->link_field->get_validation_template_variables( $variable_field_data );
+		return $this->link_field->get_validation_template_variables( $field_value );
+	}
+
+	public function get_front_assets( Field_Settings $field_settings ): array {
+		return array_merge( parent::get_front_assets( $field_settings ), Splide_Library::get_field_front_assets( $field_settings ) );
 	}
 
 	/**

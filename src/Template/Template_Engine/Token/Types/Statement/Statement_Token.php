@@ -1,0 +1,31 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Statement;
+
+defined( 'ABSPATH' ) || exit;
+
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Template_Token;
+
+/**
+ * A single-line token, usable both as a node and as an attribute value. Has no nested nodes.
+ */
+interface Statement_Token extends Template_Token {
+	/**
+	 * The complete statement, as it appears in the template (output tags included for values).
+	 */
+	public function get_statement(): string;
+
+	/**
+	 * The bare form, used only when nested into other tokens (e.g. a variable name without the output tags).
+	 */
+	public function get_token(): string;
+
+	/**
+	 * Switches the statement to the unescaped output, e.g. for the already safe HTML.
+	 *
+	 * @return static
+	 */
+	public function display_as_raw( bool $is_raw ): self;
+}

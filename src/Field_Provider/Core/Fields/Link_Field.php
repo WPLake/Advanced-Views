@@ -6,90 +6,83 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
-class Link_Field extends Markup_Field_Base {
-	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+class Link_Field implements Markup_Field {
+	use Markup_Field_Base;
+
+	const TARGET     = 'target';
+	const TITLE      = 'title';
+	const LINK_LABEL = 'linkLabel';
+	// keys of the source link value.
+	const URL = 'url';
+
+	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		$target_var     = $token_factory->variable( $field_id )
-										->add_item_path( 'target' );
+										->add_item_path( self::TARGET );
 		$href_var       = $token_factory->variable( $field_id )
-										->add_item_path( 'value' );
+										->add_item_path( self::VALUE );
 		$link_label_var = $token_factory->variable( $field_id )
-											->add_item_path( 'linkLabel' );
+											->add_item_path( self::LINK_LABEL );
 		$title_var      = $token_factory->variable( $field_id )
-									->add_item_path( 'title' );
+									->add_item_path( self::TITLE );
 
-		echo '<a';
-
-		$token_factory->format()
-						->attribute( 'target', $target_var );
-
-		printf(
-			' class="%s"',
-			esc_html(
-				$this->get_field_class(
-					'link',
-					$markup_field_data
-				)
-			)
+		$link_attributes = array(
+			'target' => $target_var,
+			'class'  => $this->get_field_class( 'link', $markup_field_data ),
+			'href'   => $href_var,
 		);
 
-		$token_factory->format()
-						->attribute( 'href', $href_var );
-
-		echo '>';
-
-		$token_factory->format()
-						->new_line();
-		$markup_field_data->increment_and_print_tabs();
-
-		$comparison = $token_factory->comparison()
+		$link_content = $token_factory
+			->comparison()
 			->set_left_operand( $link_label_var )
 			->set_comparison_empty()
 			->set_right_operand( $title_var );
 
-		$token_factory->to_echo( $comparison )
-						->print();
-
-		$token_factory->format()
-						->new_line();
-		$markup_field_data->decrement_and_print_tabs();
-
-		echo '</a>';
+		return array(
+			tag( 'a' )
+				->attributes( $link_attributes )
+				->content(
+					$link_content
+				),
+		);
 	}
 
 	/**
 	 * @return array<string, string>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$field_context = $field_value->get_context();
+
 		$args = array(
-			'value'     => '',
-			'target'    => '_self',
-			'title'     => '',
-			'linkLabel' => $variable_field_data->get_field_data()->get_link_label_translation(),
+			self::VALUE      => '',
+			self::TARGET     => '_self',
+			self::TITLE      => '',
+			self::LINK_LABEL => $field_context->get_field_settings()->get_link_label_translation(),
 		);
 
-		$value = arr( $variable_field_data->get_value() );
+		$value = arr( $field_value->get_value() );
 
 		if ( 0 === count( $value ) ) {
 			return $args;
 		}
 
-		$target        = string( $value, 'target' );
-		$is_target_set = strlen( $target ) > 0 || bool( $value, 'target' );
+		$target        = string( $value, self::TARGET );
+		$is_target_set = strlen( $target ) > 0 || bool( $value, self::TARGET );
 
-		$args['value']  = string( $value, 'url' );
-		$args['title']  = string( $value, 'title' );
-		$args['target'] = $variable_field_data->get_field_data()->is_link_target_blank || $is_target_set ?
+		$args[ self::VALUE ]  = string( $value, self::URL );
+		$args[ self::TITLE ]  = string( $value, self::TITLE );
+		$args[ self::TARGET ] = $field_context->get_field_settings()->is_link_target_blank || $is_target_set ?
 			'_blank' :
 			'_self';
 
@@ -99,12 +92,12 @@ class Link_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		return array(
-			'value'     => 'https://wordpress.org/',
-			'target'    => '_self',
-			'title'     => 'wordpress.org',
-			'linkLabel' => $variable_field_data->get_field_data()->get_link_label_translation(),
+			self::VALUE      => 'https://wordpress.org/',
+			self::TARGET     => '_self',
+			self::TITLE      => 'wordpress.org',
+			self::LINK_LABEL => $field_value->get_context()->get_field_settings()->get_link_label_translation(),
 		);
 	}
 
@@ -120,12 +113,9 @@ class Link_Field extends Markup_Field_Base {
 	 * @return string[]
 	 */
 	public function get_conditional_fields( Field_Meta $field_meta ): array {
-		return array_merge(
-			parent::get_conditional_fields( $field_meta ),
-			array(
-				Field_Settings::FIELD_LINK_LABEL,
-				Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
-			)
+		return array(
+			Field_Settings::FIELD_LINK_LABEL,
+			Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
 		);
 	}
 }

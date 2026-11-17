@@ -22,6 +22,5 @@ class Cpt_Settings_Creator extends Actor_Base {
 		$cpt_settings->web_component      = $this->settings->get_web_component_type();
 		$cpt_settings->classes_generation = $this->settings->get_classes_generation();
 		$cpt_settings->sass_code          = $this->settings->get_sass_code();
-		$cpt_settings->ts_code            = $this->settings->get_ts_code();
 	}
 }

@@ -4,26 +4,38 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 interface Markup_Field {
-	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void;
+	const VALUE     = 'value';
+	const VIEW_ID   = 'view_id';
+	const LAYOUT_ID = 'layout_id';
+	const LABEL     = 'label';
+
+	/**
+	 * @return Html_Node[]
+	 */
+	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array;
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array;
+	public function get_template_variables( Raw_Field_Value $field_value ): array;
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array;
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array;
 
 	/**
 	 * @return string[]

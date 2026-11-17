@@ -66,7 +66,6 @@ __("Template engine", "acf-views");
 __("Web components type", "acf-views");
 __("Classes generation", "acf-views");
 __("Sass Template (for File System Storage)", "acf-views");
-__("TypeScript Template (for File System Storage)", "acf-views");
 __("Git repositories", "acf-views");
 __("Git Repositories", "acf-views");
 
@@ -82,7 +81,6 @@ __("Controls the <a target='_blank' href='https://docs.advanced-views.com/featur
 __("Controls the web component setting for new Layouts and Post Selections.", "acf-views");
 __("Controls classes generation in the Default Template for new Layouts and Post Selections.", "acf-views");
 __("When present, this value is used as the default for the 'style.scss' file of Layout and Post Selection, which is useful e.g. when <a target='_blank' href='https://docs.advanced-views.com/features/file-system-storage/advanced-usage'>Tailwind is in use</a>. <br> If skipped, 'style.scss' creation will be omitted.", "acf-views");
-__("When present, this value is used as the default for the 'script.ts' file of Layout and Post Selection. <br> If skipped, 'script.ts' creation will be omitted.", "acf-views");
 __("By saving Layouts and Post Selections in your GitLab repository, you can create your own library and reuse them on other websites. <br> <a target='_blank' href='https://docs.advanced-views.com/features/workflow/cross-installation-components'>Read more</a>", "acf-views");
 
 // Plugin_Settings.php : buttons

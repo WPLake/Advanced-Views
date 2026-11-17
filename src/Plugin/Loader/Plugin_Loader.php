@@ -20,14 +20,15 @@ use Org\Wplake\Advanced_Views\Plugin\Loader\Repository\Repository_Factory;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Profiler;
 use Org\Wplake\Advanced_Views\Post_Type\Bootstrap\Post_Type_Bootstrap;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Bootstrap\Layout_Acf_Bootstrap;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Bootstrap\Layouts_Bootstrap;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Integration\Bootstrap\Layout_Integrations_Bootstrap;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Tabs\Bootstrap\Layout_Tabs_Bootstrap;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Acf\Bootstrap\Selection_Acf_Bootstrap;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Bootstrap\Post_Selections_Bootstrap;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Integration\Bootstrap\Selection_Integrations_Bootstrap;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Tabs\Bootstrap\Selection_Tabs_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Bootstrap\Layout_Acf_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Bootstrap\Layout_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Bootstrap\Layout_Integrations_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Tabs\Bootstrap\Layout_Tabs_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Bootstrap\Selection_Acf_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Bootstrap\Post_Selection_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Integration\Bootstrap\Selection_Integrations_Bootstrap;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Tabs\Bootstrap\Selection_Tabs_Bootstrap;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Bootstrap\Frontend_Library_Bootstrap;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Bootstrap\Template_Engine_Bootstrap;
 
 class Plugin_Loader {
@@ -36,10 +37,10 @@ class Plugin_Loader {
 
 		if ( ! Plugin_Tester::is_test_bootstrap() ) {
 			$plugin_meta = new Plugin_Meta( $plugin_file );
-			static::bootstrap_actors( $plugin_meta );
-		}
+			$repository  = static::bootstrap_actors( $plugin_meta );
 
-		Profiler::plugin_loaded( $start_timestamp );
+			$repository->resolve( Profiler::class )->loaded( $start_timestamp );
+		}
 	}
 
 	public static function bootstrap_actors( Plugin_Meta $meta ): Instance_Repository {
@@ -64,15 +65,16 @@ class Plugin_Loader {
 			Field_Provider_Bootstrap::class,
 			Plugin_Bootstrap::class,
 			Assets_Bootstrap::class,
+			Frontend_Library_Bootstrap::class,
 			Bridge_Bootstrap::class,
 			Dashboard_Bootstrap::class,
 			// layouts.
-			Layouts_Bootstrap::class,
+			Layout_Bootstrap::class,
 			Layout_Acf_Bootstrap::class,
 			Layout_Tabs_Bootstrap::class,
 			Layout_Integrations_Bootstrap::class,
 			// post_selections.
-			Post_Selections_Bootstrap::class,
+			Post_Selection_Bootstrap::class,
 			Selection_Acf_Bootstrap::class,
 			Selection_Tabs_Bootstrap::class,
 			Selection_Integrations_Bootstrap::class,

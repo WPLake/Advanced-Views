@@ -9,9 +9,8 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Twig\Twig_Template_Engine;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\PHP\PHP_Template_Engine;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Twig_Template_Engine;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\PHP_Template_Engine;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\bool;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
@@ -20,7 +19,6 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 class Settings_Storage implements Cpt_Theme_Settings {
 	const QUERY_ARG_PAGE_DEV_MODE = 'avf_page-dev-mode';
 
-	use Safe_Array_Arguments;
 
 	private Options_Storage $options;
 
@@ -48,7 +46,6 @@ class Settings_Storage implements Cpt_Theme_Settings {
 	private string $web_components_type;
 	private string $classes_generation;
 	private string $sass_template;
-	private string $ts_template;
 	private bool $is_cpt_admin_optimization_enabled;
 
 	public function __construct( Options_Storage $options ) {
@@ -77,9 +74,9 @@ class Settings_Storage implements Cpt_Theme_Settings {
 			}
 
 			$valid_git_repositories[] = array(
-				'id'          => $this->get_string_arg( 'id', $git_repository ),
-				'accessToken' => $this->get_string_arg( 'accessToken', $git_repository ),
-				'name'        => $this->get_string_arg( 'name', $git_repository ),
+				'id'          => string( $git_repository, 'id' ),
+				'accessToken' => string( $git_repository, 'accessToken' ),
+				'name'        => string( $git_repository, 'name' ),
 			);
 		}
 
@@ -101,7 +98,6 @@ class Settings_Storage implements Cpt_Theme_Settings {
 				'classesGeneration'              => $this->classes_generation,
 				'isCptAdminOptimizationEnabled'  => $this->is_cpt_admin_optimization_enabled,
 				'sassTemplate'                   => $this->sass_template,
-				'tsTemplate'                     => $this->ts_template,
 				'liveReloadIntervalSeconds'      => $this->live_reload_interval_seconds,
 				'liveReloadInactiveDelaySeconds' => $this->live_reload_inactive_delay_seconds,
 			)
@@ -244,14 +240,6 @@ class Settings_Storage implements Cpt_Theme_Settings {
 		$this->is_cpt_admin_optimization_enabled = $is_cpt_admin_optimization_enabled;
 	}
 
-	public function get_ts_code(): string {
-		return $this->ts_template;
-	}
-
-	public function set_ts_template( string $ts_template ): void {
-		$this->ts_template = $ts_template;
-	}
-
 	public function get_sass_code(): string {
 		return $this->sass_template;
 	}
@@ -302,7 +290,6 @@ class Settings_Storage implements Cpt_Theme_Settings {
 		);
 		$this->is_cpt_admin_optimization_enabled  = bool( $this->settings, 'isCptAdminOptimizationEnabled' );
 		$this->sass_template                      = string( $this->settings, 'sassTemplate' );
-		$this->ts_template                        = string( $this->settings, 'tsTemplate' );
 		$this->live_reload_interval_seconds       = int( $this->settings, 'liveReloadIntervalSeconds', 5 );
 		$this->live_reload_inactive_delay_seconds = int( $this->settings, 'liveReloadInactiveDelaySeconds', 20 );
 

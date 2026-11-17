@@ -1,0 +1,17 @@
+<?php
+
+namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp;
+
+use Org\Wplake\Advanced_Views\Field_Provider\Core\field_provider_domain;
+
+class wp_provider_domain extends field_provider_domain {
+	const WHITELIST_DOMAINS = [
+		parent::class,
+		...parent::WHITELIST_DOMAINS,
+	];
+	const WHITELIST_GLOBALS = [
+		...parent::WHITELIST_GLOBALS,
+		'WP_Comment',
+		'WP_User',
+	];
+}

@@ -14,20 +14,28 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Filesystem_Base;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 class Templates_Environment extends Loggable_Actor implements Actor {
 	private string $uploads_folder;
 
 	private ?WP_Filesystem_Base $wp_filesystem_base;
 	private Plugin $plugin;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( string $uploads_folder, Logger $logger, Plugin $plugin ) {
+	public function __construct( string $uploads_folder, Logger $logger, Plugin $plugin, Html_Renderer $html_renderer ) {
 		parent::__construct( $logger );
 
 		$this->uploads_folder     = $uploads_folder;
 		$this->plugin             = $plugin;
 		$this->wp_filesystem_base = null;
+		$this->html_renderer      = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -61,17 +69,20 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 			return;
 		}
 
-		echo '<div class="notice notice-error"><p>';
-		echo esc_html( __( 'The templates directory is not writable.', 'acf-views' ) );
-		echo ' (path = ' . esc_html( $this->uploads_folder ) . ')<br>';
-		echo esc_html( __( 'Most likely, the WordPress uploads directory is not writable.', 'acf-views' ) ) . '<br>';
-		echo esc_html(
-			__(
-				'Check and fix file permissions, then deactivate and activate back the Advanced Views plugin. If the issue persists, contact support.',
-				'acf-views'
+		$tags = tag( 'div' )
+			->attributes(
+				array(
+					'class' => array( 'notice', 'notice-error' ),
+				)
 			)
-		);
-		echo '</p></div>';
+			->content(
+				tag( 'p' )
+					->content(
+						...$this->not_writable_nodes()
+					)
+			);
+
+		$this->html_renderer->print_html( $tags );
 	}
 
 	public function create_templates_dir(): void {
@@ -124,6 +135,23 @@ class Templates_Environment extends Loggable_Actor implements Actor {
 
 		// remove the dir.
 		$wp_filesystem->rmdir( $templates_dir, true );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function not_writable_nodes(): array {
+		return array(
+			__( 'The templates directory is not writable.', 'acf-views' ),
+			' (path = ' . $this->uploads_folder . ')',
+			tag( 'br' ),
+			__( 'Most likely, the WordPress uploads directory is not writable.', 'acf-views' ),
+			tag( 'br' ),
+			__(
+				'Check and fix file permissions, then deactivate and activate back the Advanced Views plugin. If the issue persists, contact support.',
+				'acf-views'
+			),
+		);
 	}
 
 	protected function is_templates_dir_writable(): bool {

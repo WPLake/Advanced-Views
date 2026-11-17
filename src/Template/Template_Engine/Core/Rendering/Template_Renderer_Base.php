@@ -9,16 +9,19 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Loggable_Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Throwable;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 abstract class Template_Renderer_Base extends Loggable_Actor implements Template_Renderer {
 	protected Settings_Storage $settings;
+	protected Html_Renderer $html_renderer;
 
-
-	public function __construct( Logger $logger, Settings_Storage $settings ) {
+	public function __construct( Logger $logger, Settings_Storage $settings, Html_Renderer $html_renderer ) {
 		parent::__construct( $logger );
 
-		$this->settings = $settings;
+		$this->settings      = $settings;
+		$this->html_renderer = $html_renderer;
 	}
 
 	public static function extract_error_message( string $markup ): string {
@@ -31,12 +34,26 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 		return $error_message;
 	}
 
-	protected static function print_error_message( string $unique_view_id, string $error_message ): void {
-		printf(
-			'<p style="color:red;" class="acf-views__error">Advanced Views (%s) template: <span class="acf-views__error-message">%s</span></p>',
-			esc_html( $unique_view_id ),
-			esc_html( $error_message )
-		);
+	protected function print_error_message( string $unique_view_id, string $error_message ): void {
+		$message = tag( 'span' )
+			->attributes( array( 'class' => 'acf-views__error-message' ) )
+			->content(
+				$error_message
+			);
+
+		$tags = tag( 'p' )
+			->attributes(
+				array(
+					'style' => 'color:red;',
+					'class' => 'acf-views__error',
+				)
+			)
+			->content(
+				sprintf( 'Advanced Views (%s) template: ', $unique_view_id ),
+				$message
+			);
+
+		$this->html_renderer->print_html( $tags );
 	}
 
 	/**
@@ -69,21 +86,24 @@ abstract class Template_Renderer_Base extends Loggable_Actor implements Template
 			);
 		}
 
-		self::print_error_message( $unique_id, $error_message );
+		$this->print_error_message( $unique_id, $error_message );
 
 		// do not include in case of the validation, it doesn't have sense + breaks the error grep regex.
 		if ( $is_debug_mode &&
 			! $is_validation ) {
-			echo '<pre>' . esc_html(
-				// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
-				print_r(
-					array(
-						'template' => $template,
-						'args'     => $args,
-					),
-					true
-				)
-			) . '</pre>';
+			$tags = tag( 'pre' )
+				->content(
+					// @phpcs:ignore WordPress.PHP.DevelopmentFunctions
+					print_r(
+						array(
+							'template' => $template,
+							'args'     => $args,
+						),
+						true
+					)
+				);
+
+			$this->html_renderer->print_html( $tags );
 		}
 	}
 }

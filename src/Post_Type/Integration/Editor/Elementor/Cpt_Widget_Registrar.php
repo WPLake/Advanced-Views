@@ -1,0 +1,74 @@
+<?php
+
+declare( strict_types=1 );
+
+namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Elementor;
+
+defined( 'ABSPATH' ) || exit;
+
+use Elementor\Elements_Manager;
+use Elementor\Widget_Base;
+use Elementor\Widgets_Manager;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
+use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Integration_Category;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Item_Picker;
+use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Renderer;
+
+/**
+ * Registers the Elementor category and widget(s) for one CPT (Layout, Post Selection...) - one instance per CPT.
+ * Editor/preview script enqueueing lives in a separate actor (Layout_Elementor_Assets/Selection_Elementor_Assets),
+ * since asset paths/localized var names are the one piece of config that genuinely differs per CPT.
+ */
+final class Cpt_Widget_Registrar extends Actor_Base implements Actor {
+	private Cpt_Item_Picker $item_picker;
+	private Cpt_Renderer $renderer;
+
+	/**
+	 * @var class-string<Widget_Base&Widget_Dependencies>[]
+	 */
+	private array $widgets;
+
+	public function __construct( Cpt_Item_Picker $item_picker, Cpt_Renderer $renderer ) {
+		$this->item_picker = $item_picker;
+		$this->renderer    = $renderer;
+		$this->widgets     = array();
+	}
+
+	public static function has_route_hooks( Route_Detector $route_detector ): bool {
+		return true;
+	}
+
+	public function set_route_hooks( Route_Detector $route_detector ): void {
+		self::add_action(
+			'elementor/elements/categories_registered',
+			fn( Elements_Manager $elements_manager ) => $elements_manager->add_category(
+				Cpt_Integration_Category::NAME,
+				array(
+					'title' => Cpt_Integration_Category::get_label(),
+					'icon'  => 'fa fa-plug',
+				)
+			)
+		);
+
+		self::add_action( 'elementor/widgets/register', array( $this, 'register_widgets' ) );
+	}
+
+	/**
+	 * @param class-string<Widget_Base&Widget_Dependencies> $widget
+	 */
+	public function add_widget( string $widget ): void {
+		$this->widgets[] = $widget;
+	}
+
+	public function register_widgets( Widgets_Manager $widgets_manager ): void {
+		$widget = new Cpt_Elementor_Widget( $this->item_picker, $this->renderer );
+
+		foreach ( $this->widgets as $widget_class ) {
+			$widget_class::set_dependencies( $widget );
+
+			$widgets_manager->register( new $widget_class() );
+		}
+	}
+}

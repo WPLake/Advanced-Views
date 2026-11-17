@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Acf;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Assets\Resolver\Asset_Resolver;
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
@@ -54,7 +54,10 @@ class Acf_Dependency extends Actor_Base implements Actor {
 		// Hide ACF admin menu (as we loaded ACF only for our plugin).
 		self::add_filter( 'acf/settings/show_admin', '__return_false' );
 		// ensure right url, otherwise internal ACF asset paths are incorrect.
-		self::add_filter( 'acf/settings/url', fn() => $acf_plugin_url );
+		self::add_filter(
+			'acf/settings/url',
+			fn() => $acf_plugin_url
+		);
 
 		require_once $acf_file;
 

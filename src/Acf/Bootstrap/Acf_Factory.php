@@ -9,8 +9,8 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Acf\Groups\Git_Repository;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Layouts_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Post_Selections\Selections_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Creator;
 
 class Acf_Factory extends Factory_Base {
@@ -19,8 +19,8 @@ class Acf_Factory extends Factory_Base {
 		$groups_path   = $plugin_meta->get_root_path( 'src/Acf/Groups' );
 		$namespace_map = array( 'Org\Wplake\Advanced_Views\Acf\Groups' => $groups_path );
 		$cpt_names     = array(
-			$this->resolve( Layouts_Cpt::class )->cpt_name(),
-			$this->resolve( Selections_Cpt::class )->cpt_name(),
+			$this->resolve( Layout_Cpt::class )->cpt_name(),
+			$this->resolve( Selection_Cpt::class )->cpt_name(),
 		);
 
 		return new Acf_Groups_Loader( $namespace_map, $cpt_names );

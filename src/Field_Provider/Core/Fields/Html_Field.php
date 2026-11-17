@@ -4,15 +4,19 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
 
 defined( 'ABSPATH' ) || exit;
 
-class Html_Field extends Markup_Field_Base {
+class Html_Field implements Markup_Field {
+	use Markup_Field_Base;
+
+	const RAW_VALUE = 'raw_value';
+
 	private bool $is_formatted_value_in_use;
 	private bool $is_with_replace_new_line_to_br;
 
@@ -28,28 +32,30 @@ class Html_Field extends Markup_Field_Base {
 		$this->is_with_replace_new_line_to_br = $is_with_replace_new_line_to_br;
 	}
 
-	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
-		$var = $markup_field_data->get_token_factory()->variable( $field_id )
-								->add_item_path( 'value' );
+	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
+		$token_factory = $markup_field_data->get_token_factory();
 
-		$markup_field_data->get_token_factory()->to_echo( $var )
-							->set_is_raw( true )
-		->print();
+		$value_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::VALUE )
+			->display_as_raw( true );
+
+		return array( $value_var );
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		$twig_args = array(
-			'value'     => '',
-			'raw_value' => '',
+			self::VALUE     => '',
+			self::RAW_VALUE => '',
 		);
 
 		// by default use the formatted value, as we need html (e.g. for oembed) instead of the pure value.
 		$value = $this->is_formatted_value_in_use ?
-			$variable_field_data->get_formatted_value() :
-			$variable_field_data->get_value();
+			$field_value->get_formatted_value() :
+			$field_value->get_value();
 
 		$value = is_string( $value ) ||
 				is_numeric( $value ) ?
@@ -62,10 +68,10 @@ class Html_Field extends Markup_Field_Base {
 		return array_merge(
 			$twig_args,
 			array(
-				'value'     => $value,
+				self::VALUE     => $value,
 				// always provide the raw value alongside with the current,
 				// e.g. in oEmbed case, it allows to get the url instead of the iframe's html.
-				'raw_value' => $variable_field_data->get_value(),
+				self::RAW_VALUE => $field_value->get_value(),
 			)
 		);
 	}
@@ -73,10 +79,10 @@ class Html_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		return array(
-			'value'     => '1',
-			'raw_value' => '1',
+			self::VALUE     => '1',
+			self::RAW_VALUE => '1',
 		);
 	}
 

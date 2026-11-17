@@ -5,14 +5,16 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Assets\Resolver\Asset_Resolver;
+use Org\Wplake\Advanced_Views\Assets\Asset_Resolver;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -29,8 +31,9 @@ class Live_Reloader_Component extends Actor_Base implements Actor {
 	private int $cards_inner_counter;
 	private Asset_Resolver $asset_resolver;
 	private Settings_Storage $settings;
+	protected Html_Renderer $html_renderer;
 
-	public function __construct( Asset_Resolver $asset_resolver, Settings_Storage $settings ) {
+	public function __construct( Asset_Resolver $asset_resolver, Settings_Storage $settings, Html_Renderer $html_renderer ) {
 		$this->asset_resolver       = $asset_resolver;
 		$this->settings             = $settings;
 		$this->is_active            = false;
@@ -38,6 +41,7 @@ class Live_Reloader_Component extends Actor_Base implements Actor {
 		$this->parent_card_id       = '';
 		$this->cards_inner_counter  = 0;
 		$this->view_ids_inside_card = array();
+		$this->html_renderer        = $html_renderer;
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
@@ -96,20 +100,25 @@ class Live_Reloader_Component extends Actor_Base implements Actor {
 
 		$this->is_present = true;
 
-		return sprintf(
-			'<avf-live-reloader hidden data-element="%s"></avf-live-reloader>',
-			esc_attr(
-				(string) wp_json_encode(
-					array(
-						'uniqueId'           => $unique_id,
-						'codeHashes'         => $cpt_settings->get_code_hashes(),
-						'parentCardId'       => $this->parent_card_id,
-						'shortcodeArguments' => $shortcode_arguments,
-						'isGutenbergBlock'   => $is_gutenberg_block,
-					)
-				)
-			)
+		$element_data = array(
+			'uniqueId'           => $unique_id,
+			'codeHashes'         => $cpt_settings->get_code_hashes(),
+			'parentCardId'       => $this->parent_card_id,
+			'shortcodeArguments' => $shortcode_arguments,
+			'isGutenbergBlock'   => $is_gutenberg_block,
 		);
+
+		$element_json = (string) wp_json_encode( $element_data );
+
+		$tags = tag( 'avf-live-reloader' )
+			->attributes(
+				array(
+					'hidden'       => true,
+					'data-element' => $element_json,
+				)
+			);
+
+		return $this->html_renderer->render_html( $tags );
 	}
 
 	public function maybe_enqueue_reloading_js(): void {

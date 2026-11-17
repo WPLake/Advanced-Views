@@ -89,3 +89,26 @@ function eval_template( string $__code, array $__context, &$__error ): void {
 		$__error = $error;
 	}
 }
+
+/**
+ * @param array<int|string,mixed> $full_array
+ *
+ * @return array<int|string,mixed>
+ */
+function paginate_array( array $full_array, int $per_page, int $page_number ): array {
+	$count_of_items = count( $full_array );
+
+	$from_index = ( $page_number - 1 ) * $per_page;
+
+	if ( $from_index >= $count_of_items ) {
+		return array();
+	}
+
+	$to_index = min( $from_index + $per_page, $count_of_items );
+
+	return array_slice(
+		$full_array,
+		$from_index,
+		$to_index - $from_index
+	);
+}

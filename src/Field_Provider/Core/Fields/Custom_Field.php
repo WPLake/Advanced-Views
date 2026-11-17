@@ -128,9 +128,9 @@ trait Custom_Field {
 
 		return array(
 			// avoid double encoding in Twig.
-			'title'  => html_entity_decode( $title, ENT_QUOTES ),
-			'url'    => $url,
-			'target' => $target,
+			Link_Field::TITLE  => html_entity_decode( $title, ENT_QUOTES ),
+			Link_Field::URL    => $url,
+			Link_Field::TARGET => $target,
 		);
 	}
 }

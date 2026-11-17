@@ -10,13 +10,19 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Safe_Array_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Utils\paginate_array;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+
+/**
+ * @phpstan-import-type Html_Node from Html_Tag
+ */
 abstract class Pre_Built_Tab extends External_Storage_Tab {
-	use Safe_Array_Arguments;
-
 	const NAME              = 'pre_built';
 	const KEY_PREFIX        = 'acf-views-pre-built-import-';
 	const KEY_RESULT_ITEMS  = self::KEY_PREFIX . 'result-items';
@@ -38,9 +44,11 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		Cpt_Settings_Storage $external_cpt_data_storage,
 		Field_Provider_Cluster $provider_cluster,
 		Cpt_Settings_Migrator $cpt_settings_migrator,
-		Logger $logger
+		Logger $logger,
+		Html_Renderer $html_renderer,
+		Row_Title_Printer $row_title_printer
 	) {
-		parent::__construct( $cpt_table, $cpt_data_storage, $provider_cluster, $cpt_settings_migrator, $logger );
+		parent::__construct( $cpt_table, $cpt_data_storage, $provider_cluster, $cpt_settings_migrator, $logger, $html_renderer, $row_title_printer );
 
 		$this->external_cpt_settings_storage = $external_cpt_data_storage;
 		$this->pulling_unique_ids            = array();
@@ -48,7 +56,37 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 
 	abstract protected function import_related_cpt_data_items( string $unique_id ): ?Import_Result;
 
-	abstract protected function print_tab_description_middle(): void;
+	/**
+	 * @return Html_Node[]
+	 */
+	abstract protected function tab_description_middle_nodes(): array;
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function tab_description_nodes(): array {
+		$read_more_label = __( 'Read more', 'acf-views' );
+
+		$read_more_link = tag( 'a' )
+			->attributes( array(
+				'target' => '_blank',
+				'href'   => 'https://docs.advanced-views.com/layouts/features/pre-built-components',
+			) )
+			->content(
+				$read_more_label
+			);
+
+		return array(
+			__( 'Import pre-built components.', 'acf-views' ),
+			tag( 'br' ),
+			...$this->tab_description_middle_nodes(),
+			tag( 'br' ),
+			__( 'Hover on the title and click Import.', 'acf-views' ),
+			' ',
+			$read_more_link,
+			'.',
+		);
+	}
 
 	protected function get_tab(): ?Tab_Data {
 		$all_pre_built_items = $this->external_cpt_settings_storage->get_all();
@@ -69,7 +107,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		/**
 		 * @var Cpt_Settings[] $current_pre_built_items
 		 */
-		$current_pre_built_items = self::apply_array_pagination(
+		$current_pre_built_items = paginate_array(
 			$all_pre_built_items,
 			$this->get_pagination_per_page(),
 			$this->get_cpt_table()->get_current_page_number()
@@ -78,28 +116,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		$tab_data = new Tab_Data( $this );
 		$tab_data->set_name( self::NAME );
 		$tab_data->set_label( __( 'Pre-built components', 'acf-views' ) );
-		$tab_data->set_description_callback(
-			function (): void {
-				esc_html_e(
-					'Import pre-built components.',
-					'acf-views'
-				);
-				echo '<br>';
-				$this->print_tab_description_middle();
-				echo '<br>';
-				esc_html_e(
-					'Hover on the title and click Import.',
-					'acf-views'
-				);
-				echo ' ';
-				printf(
-					' <a target="_blank" href="%s">%s</a>',
-					esc_url( 'https://docs.advanced-views.com/layouts/features/pre-built-components' ),
-					esc_html__( 'Read more', 'acf-views' )
-				);
-				echo '.';
-			}
-		);
+		$tab_data->set_description_nodes( $this->tab_description_nodes() );
 		$tab_data->set_label_in_brackets( (string) $items_count );
 		$tab_data->set_bulk_actions( $this->get_bulk_actions() );
 		$tab_data->set_total_items_count( $items_count );
@@ -147,7 +164,7 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		// read_fields_from_fs() returns mixed (array for data.json)
 		// so instead of the standard 'merge' we must use the custom one.
 		foreach ( $vendor_meta_groups_data as $field_name => $field_value ) {
-			$field_values[ $field_name ] = $this->get_string_arg( $field_name, $vendor_meta_groups_data );
+			$field_values[ $field_name ] = string( $vendor_meta_groups_data, array( $field_name ) );
 		}
 
 		$import_result = $this->import_cpt_data( $unique_id, $field_values );
@@ -207,18 +224,21 @@ abstract class Pre_Built_Tab extends External_Storage_Tab {
 		exit;
 	}
 
-	public function print_row_title( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): void {
+	/**
+	 * @return Html_Node[]
+	 */
+	public function row_title_nodes( Tab_Data $tab_data, Cpt_Settings $cpt_settings ): array {
 		$url = add_query_arg(
 			array(
 				self::KEY_SINGLE_ACTION => $cpt_settings->get_unique_id(),
 				'_wpnonce'              => wp_create_nonce( 'bulk-posts' ),
 			)
 		);
-		printf( '<strong><span class="row-title">%s</span></strong>', esc_html( $cpt_settings->title ) );
-		printf(
-			'<div class="row-actions"><span class="import"><a href="%s">%s</a></span></div>',
-			esc_url( $url ),
-			esc_html( __( 'Import', 'acf-views' ) )
+		return $this->row_title_printer->row_title_nodes(
+			$cpt_settings->title,
+			'import',
+			$url,
+			__( 'Import', 'acf-views' )
 		);
 	}
 }

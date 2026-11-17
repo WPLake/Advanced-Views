@@ -4,57 +4,60 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Markup_Field_Data;
-use Org\Wplake\Advanced_Views\Post_Type\Layouts\Fields\Variable_Field_Data;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Template_Field_Meta;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
+use function Org\Wplake\Advanced_Views\Template\Html\compose_attribute;
+use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
-class True_False_Field extends Markup_Field_Base {
-	public function print_markup( string $field_id, Markup_Field_Data $markup_field_data ): void {
+class True_False_Field implements Markup_Field {
+	use Markup_Field_Base;
+
+	const STATE = 'state';
+
+	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
+		$field_context = $markup_field_data->get_context();
+
 		$token_factory = $markup_field_data->get_token_factory();
-		$safe_classes  = esc_html(
-			$this->get_item_class(
-				'true-false--state--:',
-				$markup_field_data->get_view_data(),
-				$markup_field_data->get_field_data()
-			)
+		$state_var     = $token_factory->variable( $field_id )->add_item_path( self::STATE );
+		$item_class    = $this->get_item_class(
+			'true-false--state--:',
+			$field_context->get_layout_settings(),
+			$field_context->get_field_settings()
 		);
 
-		ob_start();
-		$var = $token_factory->variable( $field_id )
-							->add_item_path( 'state' );
-		$token_factory->to_echo( $var )
-			->print();
+		// the state token goes in place of the ':' placeholder.
+		$item_class_parts = explode( ':', $item_class );
+		$parts            = array(
+			$this->get_field_class( 'true-false', $markup_field_data ) . ' ' . array_shift( $item_class_parts ),
+		);
 
-		$code = (string) ob_get_clean();
+		foreach ( $item_class_parts as $item_class_part ) {
+			$parts[] = $state_var;
+			$parts[] = $item_class_part;
+		}
 
-		$safe_classes = str_replace( ':', $code, $safe_classes );
+		$composed_class = compose_attribute( $parts );
 
-		printf(
-			'<div class="%s %s"></div>',
-			esc_html(
-				$this->get_field_class(
-					'true-false',
-					$markup_field_data
-				)
-			),
-			// @phpcs:ignore WordPress.Security.EscapeOutput
-			$safe_classes
+		return array(
+			tag( 'div' )
+				->attributes( array( 'class' => $composed_class ) ),
 		);
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Variable_Field_Data $variable_field_data ): array {
-		$is_checked = in_array( $variable_field_data->get_value(), array( 1, '1', true ), true );
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$is_checked = in_array( $field_value->get_value(), array( 1, '1', true ), true );
 
 		$args = array(
-			'value' => $is_checked,
-			'state' => $is_checked ?
+			self::VALUE => $is_checked,
+			self::STATE => $is_checked ?
 				'checked' :
 				'unchecked',
 		);
@@ -65,12 +68,12 @@ class True_False_Field extends Markup_Field_Base {
 	/**
 	 * @return array<string, mixed>
 	 */
-	public function get_validation_template_variables( Variable_Field_Data $variable_field_data ): array {
-		$is_checked = in_array( $variable_field_data->get_value(), array( 1, '1', true ), true );
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
+		$is_checked = in_array( $field_value->get_value(), array( 1, '1', true ), true );
 
 		$args = array(
-			'value' => $is_checked,
-			'state' => $is_checked ?
+			self::VALUE => $is_checked,
+			self::STATE => $is_checked ?
 				'checked' :
 				'unchecked',
 		);

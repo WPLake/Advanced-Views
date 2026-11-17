@@ -9,12 +9,13 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Blade\Blade_Template_Engine;
+use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Template_Engine;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Templates_Environment;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\PHP\PHP_Template_Engine;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Twig\Twig_Template_Engine;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Blade\Blade_Template_Engine;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\PHP\PHP_Template_Engine;
+use Org\Wplake\Advanced_Views\Template\Template_Engine\Engines\Twig\Twig_Template_Engine;
 
 final class Template_Engine_Factory extends Factory_Base {
 	public function engines_storage(): Engines_Storage {
@@ -34,7 +35,8 @@ final class Template_Engine_Factory extends Factory_Base {
 		return new Templates_Environment(
 			Plugin::uploads_folder(),
 			$this->resolve( Logger::class ),
-			$this->resolve( Plugin::class )
+			$this->resolve( Plugin::class ),
+			$this->resolve( Html_Renderer::class )
 		);
 	}
 
