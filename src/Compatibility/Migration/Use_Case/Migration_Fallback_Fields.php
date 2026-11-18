@@ -33,7 +33,7 @@ final class Migration_Fallback_Fields extends Migration_Base {
 			);
 	}
 
-	protected function migrate_items(): void {
+	public function migrate_items(): void {
 		$file_system = $this->cpt_settings_storage->get_file_system();
 
 		if ( $file_system->is_active() ) {
