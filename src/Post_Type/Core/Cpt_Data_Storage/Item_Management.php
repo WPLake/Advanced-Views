@@ -34,8 +34,10 @@ abstract class Item_Management extends Loggable_Actor {
 	/**
 	 * Makes the load also read the fallback FS fields (the old-format files, e.g. script.js),
 	 * a file value is used only if the JSON misses the related field.
+	 *
+	 * @return static
 	 */
-	public function use_fallback_fields( bool $is_enabled = true ): self {
+	public function use_fallback_fields( bool $is_enabled = true ) {
 		$this->is_fallback_fields_enabled = $is_enabled;
 
 		return $this;
