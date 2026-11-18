@@ -10,6 +10,11 @@ defined( 'ABSPATH' ) || exit;
 
 abstract class Cpt_Settings_Storage extends Item_Management {
 	/**
+	 * Drops the loaded items, so the next get() reads them again (e.g. after the fallback fields toggling).
+	 */
+	abstract public function reset_cache(): self;
+
+	/**
 	 * @return array<string,string>
 	 */
 	public function get_unique_id_with_name_items_list(): array {

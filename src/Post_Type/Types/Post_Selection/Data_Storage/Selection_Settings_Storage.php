@@ -6,11 +6,11 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage;
 
 use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -39,6 +39,12 @@ class Selection_Settings_Storage extends Cpt_Settings_Storage {
 		if ( $cpt_settings instanceof Post_Selection_Settings ) {
 			$this->items[ $unique_id ] = $cpt_settings;
 		}
+	}
+
+	public function reset_cache(): self {
+		$this->items = array();
+
+		return $this;
 	}
 
 	/**

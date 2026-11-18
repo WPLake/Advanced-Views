@@ -35,7 +35,7 @@ abstract class Item_Management extends Loggable_Actor {
 	 * Makes the load also read the fallback FS fields (the old-format files, e.g. script.js),
 	 * a file value is used only if the JSON misses the related field.
 	 */
-	public function enable_fallback_fields( bool $is_enabled = true ): self {
+	public function use_fallback_fields( bool $is_enabled = true ): self {
 		$this->is_fallback_fields_enabled = $is_enabled;
 
 		return $this;
@@ -113,14 +113,14 @@ abstract class Item_Management extends Loggable_Actor {
 			return;
 		}
 
-		$json = $fs_field_values['data.json'] ?? array();
+		$json = $fs_field_values[ Fs_Fields::DATA_JSON ] ?? array();
 		$json = is_array( $json ) ?
 			$json :
 			array();
 
 		$cpt_settings->load( $post_id, '', $json );
 
-		unset( $fs_field_values['data.json'] );
+		unset( $fs_field_values[ Fs_Fields::DATA_JSON ] );
 
 		$this->fs_fields->set_fs_fields( $cpt_settings, $fs_field_values );
 
@@ -179,7 +179,7 @@ abstract class Item_Management extends Loggable_Actor {
 				$item_id,
 				$title,
 				array(
-					'data.json' => $json,
+					Fs_Fields::DATA_JSON => $json,
 				)
 			);
 		} else {

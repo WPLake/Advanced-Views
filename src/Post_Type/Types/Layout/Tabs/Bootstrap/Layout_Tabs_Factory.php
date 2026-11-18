@@ -19,8 +19,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Table\Layout_Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Tabs\Layout_Bulk_Validation_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Tabs\Layout_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
@@ -72,7 +72,7 @@ class Layout_Tabs_Factory extends Factory_Base {
 		);
 
 		// the bundled items keep their JS in the old-format script.js file.
-		$pre_built_settings_storage->enable_fallback_fields();
+		$pre_built_settings_storage->use_fallback_fields();
 
 		$cpt_table        = $this->resolve( Layout_Cpt_Table::class );
 		$settings_storage = $this->resolve( Layout_Settings_Storage::class );

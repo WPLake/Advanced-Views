@@ -11,6 +11,13 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template
 defined( 'ABSPATH' ) || exit;
 
 class Fs_Fields {
+	const DATA_JSON        = 'data.json';
+	const STYLE_CSS        = 'style.css';
+	const STYLE_SCSS       = 'style.scss';
+	const SCRIPT_JS        = 'script.js';
+	const MULTILINGUAL_PHP = 'multilingual.php';
+	const LINKS_MD         = 'links.md';
+
 	protected Template_Integration_Storage $template_integration_storage;
 
 	public function __construct( Template_Integration_Storage $template_integration_storage ) {
@@ -132,7 +139,8 @@ class Fs_Fields {
 
 		foreach ( $fallback_field_names as $field_file => $field_name ) {
 			$field_value   = $fs_field_values[ $field_file ] ?? null;
-			$is_applicable = is_string( $field_value ) && ! key_exists( $field_name, $data_json );
+			$json_key      = $cpt_settings::getAcfFieldName( $field_name );
+			$is_applicable = is_string( $field_value ) && ! key_exists( $json_key, $data_json );
 
 			if ( $is_applicable ) {
 				// @phpstan-ignore-next-line
@@ -147,9 +155,9 @@ class Fs_Fields {
 	public function get_fs_field_file_names( bool $is_without_auto_generated = false ): array {
 		$template_integrations = $this->template_integration_storage->get_integrations();
 		$file_names            = array(
-			'style.css',
-			'style.scss',
-			'data.json',
+			self::STYLE_CSS,
+			self::STYLE_SCSS,
+			self::DATA_JSON,
 		);
 
 		foreach ( $template_integrations as $template_integration ) {
@@ -161,8 +169,8 @@ class Fs_Fields {
 			$file_names = array_merge(
 				$file_names,
 				array(
-					'multilingual.php',
-					'links.md',
+					self::MULTILINGUAL_PHP,
+					self::LINKS_MD,
 				)
 			);
 		}
@@ -181,13 +189,13 @@ class Fs_Fields {
 		// only links.md is needed for bulk refresh.
 		if ( $is_bulk_refresh ) {
 			return array(
-				'links.md' => $this->get_links_md_content( $cpt_settings ),
+				self::LINKS_MD => $this->get_links_md_content( $cpt_settings ),
 			);
 		}
 
 		$auto_generated = array(
-			'multilingual.php' => $this->get_multilingual_strings_file_content( $cpt_settings ),
-			'links.md'         => $this->get_links_md_content( $cpt_settings ),
+			self::MULTILINGUAL_PHP => $this->get_multilingual_strings_file_content( $cpt_settings ),
+			self::LINKS_MD         => $this->get_links_md_content( $cpt_settings ),
 		);
 
 		$integration             = $this->template_integration_storage->resolve_integration( $cpt_settings->template_engine );
@@ -196,14 +204,14 @@ class Fs_Fields {
 			'';
 
 		$std_fields = array(
-			'style.css'                          => $cpt_settings->css_code,
-			'data.json'                          => $this->get_data_json( $cpt_settings ),
+			self::STYLE_CSS                      => $cpt_settings->css_code,
+			self::DATA_JSON                      => $this->get_data_json( $cpt_settings ),
 			'default' . $template_file_extension => $cpt_settings->markup,
 			'custom' . $template_file_extension  => $cpt_settings->custom_markup,
 		);
 
 		if ( '' !== $cpt_settings->sass_code ) {
-			$std_fields['style.scss'] = $cpt_settings->sass_code;
+			$std_fields[ self::STYLE_SCSS ] = $cpt_settings->sass_code;
 		}
 
 		return false === $is_skip_auto_generated ?
@@ -241,10 +249,10 @@ class Fs_Fields {
 		}
 
 		switch ( $field_file ) {
-			case 'style.css':
+			case self::STYLE_CSS:
 				$cpt_settings->css_code = $field_value;
 				break;
-			case 'style.scss':
+			case self::STYLE_SCSS:
 				$cpt_settings->sass_code = $field_value;
 				break;
 		}
@@ -255,7 +263,7 @@ class Fs_Fields {
 	 */
 	public static function get_fallback_field_names(): array {
 		return array(
-			'script.js' => 'js_code',
+			self::SCRIPT_JS => 'js_code',
 		);
 	}
 }

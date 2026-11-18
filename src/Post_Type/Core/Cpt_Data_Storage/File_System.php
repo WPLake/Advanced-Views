@@ -99,7 +99,7 @@ class File_System extends Loggable_Actor implements Actor {
 	 * @return mixed
 	 */
 	protected function get_field_value_from_file( string $field_file, string $file_content ) {
-		if ( 'data.json' !== $field_file ) {
+		if ( Fs_Fields::DATA_JSON !== $field_file ) {
 			return $file_content;
 		}
 

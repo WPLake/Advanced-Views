@@ -73,7 +73,7 @@ class Selection_Tabs_Factory extends Factory_Base {
 		);
 
 		// the bundled items keep their JS in the old-format script.js file.
-		$pre_built_settings_storage->enable_fallback_fields();
+		$pre_built_settings_storage->use_fallback_fields();
 
 		$cpt_table             = $this->resolve( Post_Selection_Table::class );
 		$settings_storage      = $this->resolve( Selection_Settings_Storage::class );

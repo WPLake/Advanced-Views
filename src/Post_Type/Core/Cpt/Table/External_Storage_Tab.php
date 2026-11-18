@@ -14,6 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Fs_Fields;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -56,7 +57,7 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 	 * @param array<string,string> $field_values
 	 */
 	protected function import_cpt_data( string $unique_id, array $field_values ): ?Import_Result {
-		$data_json_string = $field_values['data.json'] ?? '';
+		$data_json_string = $field_values[ Fs_Fields::DATA_JSON ] ?? '';
 		/**
 		 * @var string[]|null $data_json
 		 */
@@ -74,8 +75,8 @@ abstract class External_Storage_Tab extends Cpt_Table_Tab {
 			return null;
 		}
 
-		if ( key_exists( 'data.json', $field_values ) ) {
-			unset( $field_values['data.json'] );
+		if ( key_exists( Fs_Fields::DATA_JSON, $field_values ) ) {
+			unset( $field_values[ Fs_Fields::DATA_JSON ] );
 		}
 
 		// 1. get item, maybe it's already exists (then we'll override it)
