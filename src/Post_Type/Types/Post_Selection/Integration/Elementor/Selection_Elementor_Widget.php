@@ -51,6 +51,10 @@ final class Selection_Elementor_Widget extends Widget_Base implements Widget_Dep
 		return array( 'post selection', 'advanced views' );
 	}
 
+	public function show_in_panel(): bool {
+		return false;
+	}
+
 	protected function register_controls(): void {
 		$this->add_selection_controls();
 

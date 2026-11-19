@@ -55,7 +55,10 @@ final class Selection_Gutenberg_Block extends Actor_Base implements Actor {
 			__DIR__ . '/block.json',
 			array(
 				'category'        => Cpt_Integration_Category::NAME,
-				'supports'        => Cpt_Gutenberg_Block::get_supports(),
+				'supports'        => array_merge(
+					Cpt_Gutenberg_Block::get_supports(),
+					array( 'inserter' => false )
+				),
 				'attributes'      => array_merge(
 					array(
 						'selectionId' => array(
