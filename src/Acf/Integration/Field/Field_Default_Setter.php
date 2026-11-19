@@ -9,9 +9,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
@@ -24,13 +22,7 @@ final class Field_Default_Setter extends Actor_Base implements Actor {
 	}
 
 	public static function has_route_hooks( Route_Detector $route_detector ): bool {
-		$layout_cpt_name    = Hard_Layout_Cpt::cpt_name();
-		$selection_cpt_name = Hard_Post_Selection_Cpt::cpt_name();
-
-		$is_layout_add    = $route_detector->is_cpt_admin_route( $layout_cpt_name, Route_Detector::CPT_ADD );
-		$is_selection_add = $route_detector->is_cpt_admin_route( $selection_cpt_name, Route_Detector::CPT_ADD );
-
-		return $is_layout_add || $is_selection_add;
+		return $route_detector->is_cpt_admin_route( Hard_Layout_Cpt::cpt_name(), Route_Detector::CPT_ADD );
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {
@@ -92,20 +84,11 @@ final class Field_Default_Setter extends Actor_Base implements Actor {
 		$layout_classes   = Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_CLASSES_GENERATION );
 		$layout_sass      = Layout_Settings::getAcfFieldName( Layout_Settings::FIELD_SASS_CODE );
 
-		$selection_engine    = Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_TEMPLATE_ENGINE );
-		$selection_component = Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_WEB_COMPONENT );
-		$selection_classes   = Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_CLASSES_GENERATION );
-		$selection_sass      = Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_SASS_CODE );
-
 		return array(
-			$layout_engine       => $set_template_engine,
-			$selection_engine    => $set_template_engine,
-			$layout_component    => $set_web_component,
-			$selection_component => $set_web_component,
-			$layout_classes      => $set_classes_generation,
-			$selection_classes   => $set_classes_generation,
-			$layout_sass         => $set_sass_code,
-			$selection_sass      => $set_sass_code,
+			$layout_engine    => $set_template_engine,
+			$layout_component => $set_web_component,
+			$layout_classes   => $set_classes_generation,
+			$layout_sass      => $set_sass_code,
 		);
 	}
 }

@@ -42,21 +42,8 @@ abstract class Cpt_Settings extends Group implements Cpt_Theme_Settings {
 	// @phpcs:ignore WordPress.NamingConventions.ValidVariableName.MemberNotSnakeCase
 
 	public string $title;
-	/**
-	 * @a-type tab
-	 * @label Mount Points
-	 * @a-order 2
-	 */
+	// just define without any annotations, it'll be overwritten by children.
 	public bool $mount_points_tab;
-	/**
-	 * @item \Org\Wplake\Advanced_Views\Acf\Groups\Mount_Point_Settings
-	 * @var Mount_Point_Settings[]
-	 * @label Mount Points
-	 * @instructions 'Mount' this item to a location that doesn't support shortcodes. Mounting uses 'the_content' theme hook. <a target="_blank" href="https://docs.advanced-views.com/display-content/mount-points-pro">Read more</a>
-	 * @button_label Add Mount Point
-	 * @a-no-tab 1
-	 * @a-order 2
-	 */
 	public array $mount_points;
 	// just define without any annotations, it'll be overwritten by children.
 	public string $template_engine;

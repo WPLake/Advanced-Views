@@ -98,6 +98,38 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 	}
 
 	public function add_meta_boxes(): void {
+		if ( $this->is_templated_post() ) {
+			$this->add_template_meta_boxes();
+		} else {
+			$this->add_query_only_meta_boxes();
+		}
+
+		parent::add_meta_boxes();
+	}
+
+	protected function is_templated_post(): bool {
+		$post = get_post();
+
+		return $post instanceof WP_Post &&
+			$this->post_selections_settings_storage->get( $post->post_name )->has_template();
+	}
+
+	protected function add_query_only_meta_boxes(): void {
+		add_meta_box(
+			'acf-cards_displaying_results',
+			__( 'Displaying results', 'acf-views' ),
+			function (): void {
+				echo esc_html( __( 'To display Selection results add it as a Source in any Post Layout', 'acf-views' ) );
+			},
+			array(
+				Hard_Post_Selection_Cpt::cpt_name(),
+			),
+			'side',
+			'high'
+		);
+	}
+
+	protected function add_template_meta_boxes(): void {
 		add_meta_box(
 			'acf-cards_shortcode_cpt',
 			__( 'Embed the Post Selection', 'acf-views' ),
@@ -146,7 +178,5 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 			'side',
 			'core'
 		);
-
-		parent::add_meta_boxes();
 	}
 }

@@ -13,7 +13,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Select
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Post_Selection_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -39,19 +38,12 @@ class Post_Selection_Cpt extends Cpt {
 	}
 
 	public function add_cpt(): void {
-		$labels        = $this->plugin_cpt->labels();
-		$singular_name = $labels->singular_name();
-		$plural_name   = $labels->plural_name();
+		$labels      = $this->plugin_cpt->labels();
+		$plural_name = $labels->plural_name();
 
-		$tags = array(
-			__( 'Query posts, products or custom post types and display each result using a Layout with a', 'acf-views' ) . ' ',
-			self::link_tags( 'https://docs.advanced-views.com/getting-started/first-post-selection', $singular_name ),
-			'. ',
-			tag( 'br' ),
-			__( 'Add filters, sorting and pagination as needed.', 'acf-views' ),
+		$description  = $this->html_renderer->render_html(
+			__( 'Create a dynamic Post, Product or Custom Post Type query and display its results in any Layout.', 'acf-views' )
 		);
-
-		$description  = $this->html_renderer->render_html( ...$tags );
 		$description .= $this->get_storage_label();
 
 		$cpt_args = array(

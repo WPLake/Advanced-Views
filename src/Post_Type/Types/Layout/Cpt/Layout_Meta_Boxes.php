@@ -26,9 +26,6 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
  * @phpstan-import-type Html_Node from Html_Tag
  */
 class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
-	const ARGUMENT_FROM_LAYOUT = '_from';
-	const NONCE_MAKE_NEW       = 'av-make-card';
-
 	private Field_Provider_Cluster $provider_cluster;
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Layout_Cpt $layouts_cpt;
@@ -252,47 +249,6 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			}
 
 			++$counter;
-		}
-
-		if ( array() !== $related_cards ||
-			$is_list_look ) {
-			$nodes[] = tag( 'br' );
-			$nodes[] = tag( 'br' );
-		}
-
-		$post_id = $layout_settings->get_post_id();
-
-		// only if post is present.
-		if ( 0 !== $post_id ) {
-			$url = add_query_arg(
-				array(
-					'post_type'                => $this->selections_cpt->cpt_name(),
-					self::ARGUMENT_FROM_LAYOUT => $post_id,
-					'_wpnonce'                 => wp_create_nonce( self::NONCE_MAKE_NEW ),
-				),
-				admin_url( '/post-new.php' )
-			);
-
-			$label = __( 'Query posts to display using this Layout', 'acf-views' );
-
-			$nodes[] = tag( 'a' )
-				->attributes(
-					array(
-						'href'   => $url,
-						'target' => '_blank',
-						'class'  => 'button',
-						'style'  => array(
-							'min-height'  => '0',
-							'line-height' => '1.2',
-							'padding'     => '3px 7px',
-							'font-size'   => '11px',
-							'transition'  => 'all .3s ease',
-						),
-					)
-				)
-				->content(
-					$label
-				);
 		}
 
 		return $nodes;

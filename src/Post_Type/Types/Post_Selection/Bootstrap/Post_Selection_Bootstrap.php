@@ -17,7 +17,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Sel
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Selection_Git_Box;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Selection_Interactive_Fields;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Selection_Layout_Integration;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Selection_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Selection_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Table\Post_Selection_Table;
@@ -48,7 +47,6 @@ class Post_Selection_Bootstrap extends Bootstrap_Base {
 			Selection_Save_Actions::class,
 			Post_Selection_Shortcode::class,
 			Selection_Git_Box::class,
-			Selection_Layout_Integration::class,
 			Selection_Interactive_Fields::class,
 		);
 	}

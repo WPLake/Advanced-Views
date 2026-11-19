@@ -61,7 +61,8 @@ abstract class Cpt_Meta_Boxes extends Actor_Base implements Actor {
 				fn() => $this->postbox->print_postbox_upgrade(),
 				$screens,
 				'side',
-				'low'
+				// above the Git box (default), which is registered separately.
+				'core'
 			);
 		}
 	}

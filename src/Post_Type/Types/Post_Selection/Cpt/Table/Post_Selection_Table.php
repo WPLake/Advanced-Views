@@ -6,7 +6,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Table;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
@@ -24,25 +23,21 @@ defined( 'ABSPATH' ) || exit;
  */
 class Post_Selection_Table extends Cpt_Table {
 	const COLUMN_DESCRIPTION   = self::COLUMN_PREFIX . 'description';
-	const COLUMN_SHORTCODE     = self::COLUMN_PREFIX . 'shortcode';
 	const COLUMN_RELATED_VIEW  = self::COLUMN_PREFIX . 'relatedView';
 	const COLUMN_LAST_MODIFIED = self::COLUMN_PREFIX . 'lastModified';
 
-	private Postbox_Printer $postbox;
 	private Selection_Meta_Boxes $post_selections_cpt_meta_boxes;
 	private Layout_Cpt $layout_cpt;
 
 	public function __construct(
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Selection_Cpt $public_cpt,
-		Postbox_Printer $postbox,
 		Selection_Meta_Boxes $post_selections_cpt_meta_boxes,
 		Layout_Cpt $layout_cpt,
 		Html_Renderer $html_renderer
 	) {
 		parent::__construct( $post_selections_settings_storage, $public_cpt, $html_renderer );
 
-		$this->postbox                        = $postbox;
 		$this->post_selections_cpt_meta_boxes = $post_selections_cpt_meta_boxes;
 		$this->layout_cpt                     = $layout_cpt;
 	}
@@ -60,14 +55,6 @@ class Post_Selection_Table extends Cpt_Table {
 		switch ( $short_column_name ) {
 			case self::COLUMN_DESCRIPTION:
 				return array( $card_data->description );
-			case self::COLUMN_SHORTCODE:
-				return $this->postbox->postbox_shortcode_nodes(
-					$card_data->get_unique_id( true ),
-					true,
-					$this->public_plugin_cpt,
-					$card_data->title,
-					true
-				);
 			case self::COLUMN_LAST_MODIFIED:
 				$post_id = $card_data->get_post_id();
 
@@ -116,7 +103,6 @@ class Post_Selection_Table extends Cpt_Table {
 			$columns,
 			array(
 				self::COLUMN_DESCRIPTION   => __( 'Description', 'acf-views' ),
-				self::COLUMN_SHORTCODE     => __( 'Embed the Post Selection', 'acf-views' ),
 				self::COLUMN_RELATED_VIEW  => sprintf(
 					// translators: %s - singular name of the CPT.
 					__( 'Related %s', 'acf-views' ),
