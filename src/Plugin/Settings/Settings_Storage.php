@@ -27,11 +27,6 @@ class Settings_Storage implements Cpt_Theme_Settings {
 	 */
 	protected array $settings;
 	private string $version;
-	/**
-	 * @var array<string|int, mixed>
-	 */
-	private array $demo_import;
-
 	private bool $is_dev_mode;
 	private ?bool $is_page_dev_mode;
 	/**
@@ -88,7 +83,6 @@ class Settings_Storage implements Cpt_Theme_Settings {
 			$this->settings,
 			array(
 				'version'                        => $this->version,
-				'demoImport'                     => $this->demo_import,
 				'isDevMode'                      => $this->is_dev_mode,
 				'gitRepositories'                => $this->git_repositories,
 				'isWithoutAutomaticReports'      => $this->is_automatic_reports_disabled,
@@ -174,20 +168,6 @@ class Settings_Storage implements Cpt_Theme_Settings {
 		return $this->is_automatic_reports_confirmed;
 	}
 
-	/**
-	 * @param array<string,mixed> $demo_import
-	 */
-	public function set_demo_import( array $demo_import ): void {
-		$this->demo_import = $demo_import;
-	}
-
-	/**
-	 * @return array<string|int,mixed>
-	 */
-	public function get_demo_import(): array {
-		return $this->demo_import;
-	}
-
 	public function is_dev_mode(): bool {
 		return $this->is_dev_mode ||
 				$this->is_page_dev_mode();
@@ -269,7 +249,6 @@ class Settings_Storage implements Cpt_Theme_Settings {
 		$this->settings  = arr( $option_settings );
 
 		$this->version                            = string( $this->settings, 'version' );
-		$this->demo_import                        = arr( $this->settings, 'demoImport' );
 		$this->is_dev_mode                        = bool( $this->settings, 'isDevMode' );
 		$this->is_automatic_reports_disabled      = bool( $this->settings, 'isWithoutAutomaticReports' );
 		$this->is_automatic_reports_confirmed     = bool( $this->settings, 'isAutomaticReportsConfirmed' );

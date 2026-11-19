@@ -4,20 +4,6 @@
 
 defined( 'ABSPATH' ) || exit;
 
-// Demo_Group.php : labels
-
-__("Brand", "acf-views");
-__("Model", "acf-views");
-__("Price", "acf-views");
-__("Website link", "acf-views");
-
-// Demo_Group.php : choices
-
-__("Samsung", "acf-views");
-__("Nokia", "acf-views");
-__("HTC", "acf-views");
-__("Xiaomi", "acf-views");
-
 // Git_Repository.php : labels
 
 __("Repository ID", "acf-views");

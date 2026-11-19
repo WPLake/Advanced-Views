@@ -11,9 +11,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Import_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Toolbar_Printer;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
 use Org\Wplake\Advanced_Views\Plugin\Environment\External_Links;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Plugin_Meta;
@@ -28,7 +26,6 @@ defined( 'ABSPATH' ) || exit;
 
 class Admin_Pages extends Actor_Base implements Actor {
 
-	const PAGE_DEMO_IMPORT = 'demo-import';
 	const PAGE_DOCS        = 'docs';
 	// constant is in use in Lite too, so should be here, not in Pro.
 	const PAGE_PRO    = 'pro';
@@ -36,14 +33,12 @@ class Admin_Pages extends Actor_Base implements Actor {
 
 	private Plugin $plugin;
 	private Plugin_Meta $plugin_meta;
-	private Demo_Importer $demo_import;
 	/**
 	 * @var Plugin_Cpt[]
 	 */
 	private array $plugin_cpts;
 	protected Html_Renderer $html_renderer;
 	protected Toolbar_Printer $toolbar_printer;
-	protected Import_Printer $import_printer;
 
 	/**
 	 * @param Plugin_Cpt[] $plugin_cpts
@@ -51,17 +46,13 @@ class Admin_Pages extends Actor_Base implements Actor {
 	public function __construct(
 		Plugin $plugin,
 		Plugin_Meta $plugin_meta,
-		Demo_Importer $demo_import,
 		array $plugin_cpts,
 		Html_Renderer $html_renderer,
-		Toolbar_Printer $toolbar_printer,
-		Import_Printer $import_printer
+		Toolbar_Printer $toolbar_printer
 	) {
-		$this->import_printer  = $import_printer;
 		$this->toolbar_printer = $toolbar_printer;
 		$this->plugin          = $plugin;
 		$this->plugin_meta     = $plugin_meta;
-		$this->demo_import     = $demo_import;
 		$this->plugin_cpts     = $plugin_cpts;
 		$this->html_renderer   = $html_renderer;
 	}
@@ -94,7 +85,6 @@ class Admin_Pages extends Actor_Base implements Actor {
 
 		$page_titles = array(
 			self::PAGE_DOCS        => __( 'Docs', 'acf-views' ),
-			self::PAGE_DEMO_IMPORT => __( 'Demo import', 'acf-views' ),
 		);
 
 		$iframe_attrs = array(
@@ -121,15 +111,6 @@ class Admin_Pages extends Actor_Base implements Actor {
 			Avf_User::get_manage_capability(),
 			self::PAGE_DOCS,
 			$print_docs_page
-		);
-
-		add_submenu_page(
-			$parent_slug,
-			$page_titles[ self::PAGE_DEMO_IMPORT ],
-			$page_titles[ self::PAGE_DEMO_IMPORT ],
-			Avf_User::get_manage_capability(),
-			self::PAGE_DEMO_IMPORT,
-			array( $this, 'get_import_page' )
 		);
 
 		$this->hide_subpages_from_menu( $parent_slug, $page_titles );
@@ -175,33 +156,6 @@ class Admin_Pages extends Actor_Base implements Actor {
 		$version = $this->plugin_meta->get_version();
 
 		$this->toolbar_printer->print_dashboard_header( $name, $version, $tabs );
-	}
-
-	public function get_import_page(): void {
-		$is_with_delete_button = false;
-
-		$is_with_form_message = false;
-
-		if ( false === $this->demo_import->is_processed() ) {
-			$this->demo_import->read_ids();
-		} else {
-			$is_with_form_message = true;
-		}
-
-		if ( $this->demo_import->is_has_data() &&
-			! $this->demo_import->is_has_error() ) {
-			$is_with_form_message  = true;
-			$is_with_delete_button = true;
-		}
-
-		$form_nonce = wp_create_nonce( 'av-demo-import' );
-
-		$this->import_printer->print_dashboard_import(
-			$is_with_delete_button,
-			$form_nonce,
-			$is_with_form_message,
-			$this->demo_import
-		);
 	}
 
 	/**
@@ -268,13 +222,6 @@ class Admin_Pages extends Actor_Base implements Actor {
 					'class'       => 'av-toolbar__upgrade-link',
 					'isActive'    => false,
 					'isSecondary' => false,
-				),
-				array(
-					'isRightBlock' => true,
-					'url'          => Plugin::get_admin_url( self::PAGE_DEMO_IMPORT ),
-					'label'        => __( 'Demo Import', 'acf-views' ),
-					'isActive'     => false,
-					'isSecondary'  => true,
 				),
 				array(
 					'isRightBlock' => true,

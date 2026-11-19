@@ -12,7 +12,6 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Bar;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Admin_Pages;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
-use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools\Demo_Importer;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Tools_Page;
 
 class Dashboard_Bootstrap extends Bootstrap_Base {
@@ -27,7 +26,6 @@ class Dashboard_Bootstrap extends Bootstrap_Base {
 		return array(
 			Admin_Pages::class,
 			Tools_Page::class,
-			Demo_Importer::class,
 			Live_Reloader::class,
 			Live_Reloader_Component::class,
 			Admin_Bar::class,
