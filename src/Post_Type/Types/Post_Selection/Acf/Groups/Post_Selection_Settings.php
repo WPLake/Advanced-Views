@@ -56,6 +56,12 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 */
 	public string $title;
 	/**
+	 * Deprecated: a templateless (false) Selection is query-only, the flag is set only by the migration.
+	 *
+	 * @a-deprecated This argument is used just to hide the field from the UI
+	 */
+	public bool $has_template;
+	/**
 	 * @a-type tab
 	 * @label Query
 	 */
@@ -573,6 +579,10 @@ return new class extends Selection_Controller_Base {
 
 	public function get_meta_filter(): Meta_Filter_Settings {
 		return $this->meta_filter;
+	}
+
+	public function has_template(): bool {
+		return $this->has_template;
 	}
 
 	public function is_with_pagination(): bool {

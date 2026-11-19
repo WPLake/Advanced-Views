@@ -24,6 +24,7 @@ use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_3
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_8_0;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_8_9;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_9_6;
+use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_9_10;
 use Org\Wplake\Advanced_Views\Compatibility\Version_Migrations\V_3\Migration_3_9_9;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Factory_Base;
 
@@ -83,6 +84,7 @@ final class Version_Migrations_Factory extends Factory_Base {
 			Migration_3_8_9::class,
 			Migration_3_9_6::class,
 			Migration_3_9_9::class,
+			Migration_3_9_10::class,
 		);
 	}
 }

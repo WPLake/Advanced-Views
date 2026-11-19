@@ -4,7 +4,7 @@ Tags: gutenberg, elementor, posts grid, custom fields, templates
 Requires at least: 5.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 3.9.9
+Stable tag: 3.9.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -204,6 +204,10 @@ Advanced Views lets you display fields from almost any WordPress data source:
 * [GitHub plugin repository](https://github.com/WPLake/Advanced-Views)
 
 == Changelog ==
+
+= 3.9.10 (2026-) =
+- Demo import feature removed
+- New Post Selections become templateless
 
 = 3.9.9 (2026-) =
 - Enhance: libraries adoption (Slider, Carousel, Masonry); JavaScript field becomes Pro-tier
