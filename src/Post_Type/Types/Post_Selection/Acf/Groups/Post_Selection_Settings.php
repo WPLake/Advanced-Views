@@ -415,20 +415,6 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
 	 */
 	public bool $is_markup_with_digital_id;
-	/**
-	 * @a-type tab
-	 * @label Preview
-	 * @a-order 3
-	 */
-	public bool $preview_tab;
-	/**
-	 * @label Preview
-	 * @instructions See an output preview of your Post Selection, where you can test some CSS styles. <br> Styles from your front page are included in the preview (some differences may appear). <br>Note: Press 'Update' if you have changed Custom Markup (in the Template tab) to see the latest preview. <br> After testing: Copy and paste the Card styles to the CSS Code field. <br> Important! Don't style your View here, instead use the CSS Code field in your View for this goal.
-	 * @placeholder Loading... Please wait a few seconds
-	 * @disabled 1
-	 * @a-order 3
-	 */
-	public string $preview;
 
 	// cache.
 	private string $no_posts_found_message_translation;

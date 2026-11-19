@@ -6,19 +6,14 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Meta_Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Tax_Field_Settings;
 use Org\Wplake\Advanced_Views\Assets\ACE_Mods;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Postbox_Printer;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Post_Selection_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Post_Selection_Markup;
@@ -33,7 +28,6 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 	protected Post_Selection_Markup $selection_markup;
 	protected Post_Selection_Factory $selection_factory;
 	protected Selection_Meta_Boxes $selection_meta_boxes;
-	protected Layout_Settings_Storage $layout_settings_storage;
 
 	public function __construct(
 		Selection_Cpt $public_cpt,
@@ -44,8 +38,7 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 		Template_Integration_Storage $template_integration_storage,
 		Field_Provider_Cluster $provider_cluster,
 		Settings_Storage $settings,
-		Selection_Meta_Boxes $selection_meta_boxes,
-		Layout_Settings_Storage $layout_settings_storage
+		Selection_Meta_Boxes $selection_meta_boxes
 	) {
 		parent::__construct(
 			$public_cpt,
@@ -61,16 +54,6 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 		$this->selection_markup           = $selection_markup;
 		$this->selection_factory          = $selection_factory;
 		$this->selection_meta_boxes       = $selection_meta_boxes;
-		$this->layout_settings_storage    = $layout_settings_storage;
-	}
-
-	public function get_page_js_data(): array {
-		return array_merge(
-			parent::get_page_js_data(),
-			array(
-				'cardPreview' => $this->get_preview_js_data(),
-			)
-		);
 	}
 
 	protected function get_interactive_response( WP_Post $post ): array {
@@ -102,7 +85,7 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 	 */
 	protected function get_editor_field_values( Post_Selection_Settings $selection_settings ): array {
 		ob_start();
-		// ignore customMarkup (we need the preview).
+		// ignore customMarkup.
 		$this->selection_markup->print_markup( $selection_settings, false, true );
 		$markup = (string) ob_get_clean();
 
@@ -224,45 +207,5 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 				'identifierInputId' => '',
 			),
 		);
-	}
-
-	/**
-	 * @return array<string,string>
-	 */
-	protected function get_preview_js_data(): array {
-		$js_data = array(
-			'HTML' => '',
-			'CSS'  => '',
-		);
-
-		global $post;
-
-		if ( ! Plugin::is_cpt_screen( Hard_Post_Selection_Cpt::cpt_name() ) ||
-			'publish' !== $post->post_status ) {
-			return $js_data;
-		}
-
-		$card_data = $this->selection_settings_storage->get( $post->post_name );
-		ob_start();
-		$this->selection_factory->make_and_print_html(
-			$card_data,
-			Query_Context::new_instance()
-		);
-		$card_html = (string) ob_get_clean();
-		$view_data = $this->layout_settings_storage->get( $card_data->acf_view_id );
-
-		// amend to allow work the '#card' alias.
-		$view_html       = str_replace(
-			'class="acf-card ',
-			'id="card" class="acf-card ',
-			$card_html
-		);
-		$js_data['HTML'] = htmlentities( $view_html, ENT_QUOTES );
-		// Card CSS without minification as it's for views' purposes.
-		$js_data['CSS']      = htmlentities( $card_data->get_css_code( Layout_Settings::CODE_MODE_PREVIEW ), ENT_QUOTES );
-		$js_data['VIEW_CSS'] = htmlentities( $view_data->get_css_code( Layout_Settings::CODE_MODE_DISPLAY ), ENT_QUOTES );
-		$js_data['HOME']     = get_site_url();
-
-		return $js_data;
 	}
 }

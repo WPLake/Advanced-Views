@@ -448,8 +448,6 @@ __("Classes generation", "acf-views");
 __("BEM Unique Name", "acf-views");
 __("CSS classes", "acf-views");
 __("Use the Post ID as the Post Selection ID in the markup", "acf-views");
-__("Preview", "acf-views");
-__("Preview", "acf-views");
 
 // Post_Selection_Settings.php : descriptions
 
@@ -488,7 +486,6 @@ __("Controls classes generation in the Default Template.", "acf-views");
 __("Define a unique <a target='_blank' href='https://getbem.com/introduction/'>BEM name</a> for the element that will be used in the markup, or leave it empty to use the default ('avf-selection').", "acf-views");
 __("Add a class name without a dot (e.g. 'class-name') or multiple classes with single space as a delimiter (e.g. 'class-name1 class-name2'). These classes are added to the wrapping HTML element. <a target='_blank' href='https://www.w3schools.com/cssref/sel_class.asp'>Learn more about CSS Classes</a>.", "acf-views");
 __("Note: For backward compatibility purposes only. Enable this option if you have external CSS selectors that rely on outdated digital IDs.", "acf-views");
-__("See an output preview of your Post Selection, where you can test some CSS styles. <br> Styles from your front page are included in the preview (some differences may appear). <br>Note: Press 'Update' if you have changed Custom Markup (in the Template tab) to see the latest preview. <br> After testing: Copy and paste the Card styles to the CSS Code field. <br> Important! Don't style your View here, instead use the CSS Code field in your View for this goal.", "acf-views");
 
 // Post_Selection_Settings.php : buttons
 
