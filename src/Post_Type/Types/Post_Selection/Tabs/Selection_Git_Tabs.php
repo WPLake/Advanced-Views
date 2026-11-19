@@ -70,6 +70,10 @@ class Selection_Git_Tabs extends Git_Tabs {
 	): Import_Result {
 		$card_data = $this->post_selections_settings_storage->get( $unique_id );
 
+		if ( ! $card_data->has_template() ) {
+			return new Import_Result();
+		}
+
 		return $this->layouts_git_cpt_table_tabs->import_items(
 			$repository_id,
 			$repository_access_token,

@@ -63,6 +63,10 @@ class Post_Selection_Pre_Built_Tab extends Pre_Built_Tab {
 	protected function import_related_cpt_data_items( string $unique_id ): ?Import_Result {
 		$card_data = $this->post_selections_settings_storage->get( $unique_id );
 
+		if ( ! $card_data->has_template() ) {
+			return null;
+		}
+
 		return $this->layouts_pre_built_tab->import_cpt_data_with_all_related_items( $card_data->acf_view_id );
 	}
 

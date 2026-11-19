@@ -49,6 +49,10 @@ class Selection_Git_Box extends Git_Meta_Box {
 			return false;
 		}
 
+		if ( ! $cpt_settings->has_template() ) {
+			return true;
+		}
+
 		$card_data = $cpt_settings;
 		$view_data = $this->layouts_settings_storage->get( $card_data->acf_view_id );
 

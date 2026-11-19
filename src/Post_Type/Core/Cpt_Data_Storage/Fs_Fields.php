@@ -204,14 +204,20 @@ class Fs_Fields {
 			'';
 
 		$std_fields = array(
-			self::STYLE_CSS                      => $cpt_settings->css_code,
-			self::DATA_JSON                      => $this->get_data_json( $cpt_settings ),
-			'default' . $template_file_extension => $cpt_settings->markup,
-			'custom' . $template_file_extension  => $cpt_settings->custom_markup,
+			self::DATA_JSON => $this->get_data_json( $cpt_settings ),
 		);
 
-		if ( '' !== $cpt_settings->sass_code ) {
-			$std_fields[ self::STYLE_SCSS ] = $cpt_settings->sass_code;
+		if ( $cpt_settings->has_template() ) {
+			$std_fields = array(
+				self::STYLE_CSS                      => $cpt_settings->css_code,
+				self::DATA_JSON                      => $std_fields[ self::DATA_JSON ],
+				'default' . $template_file_extension => $cpt_settings->markup,
+				'custom' . $template_file_extension  => $cpt_settings->custom_markup,
+			);
+
+			if ( '' !== $cpt_settings->sass_code ) {
+				$std_fields[ self::STYLE_SCSS ] = $cpt_settings->sass_code;
+			}
 		}
 
 		return false === $is_skip_auto_generated ?
