@@ -586,7 +586,8 @@ return new class extends Selection_Controller_Base {
 	}
 
 	public function is_with_pagination(): bool {
-		return $this->is_with_pagination;
+		return $this->has_template &&
+				$this->is_with_pagination;
 	}
 
 	public function get_pagination_per_page(): int {
@@ -645,7 +646,9 @@ return new class extends Selection_Controller_Base {
 	 * @return string[]
 	 */
 	protected function get_used_meta_group_ids(): array {
-		return array( $this->acf_view_id );
+		return $this->has_template ?
+			array( $this->acf_view_id ) :
+			array();
 	}
 
 	/**

@@ -43,7 +43,7 @@ final class Pagination_Library implements Frontend_Library, Selection_Library {
 	}
 
 	public function maybe_activate_selection( Post_Selection_Settings $post_selection_settings ): void {
-		if ( $post_selection_settings->is_with_pagination ) {
+		if ( $post_selection_settings->is_with_pagination() ) {
 			$this->pagination_instances[] = self::create_instance( $post_selection_settings );
 
 			$this->script_provider->enable();

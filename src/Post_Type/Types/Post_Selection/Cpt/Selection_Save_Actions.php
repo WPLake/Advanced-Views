@@ -141,8 +141,11 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 		}
 
 		$this->update_query_preview( $selection_settings );
-		$this->update_markup( $selection_settings );
-		$this->add_layout_css( $selection_settings );
+
+		if ( $selection_settings->has_template() ) {
+			$this->update_markup( $selection_settings );
+			$this->add_layout_css( $selection_settings );
+		}
 
 		if ( ! $is_skip_save ) {
 			$this->selection_settings_storage->save( $selection_settings );

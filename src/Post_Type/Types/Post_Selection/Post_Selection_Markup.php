@@ -54,7 +54,7 @@ class Post_Selection_Markup {
 	protected function extra_nodes( Post_Selection_Settings $post_selection_settings ): array {
 		$nodes = $this->context_posts_nodes( $post_selection_settings );
 
-		if ( $post_selection_settings->is_with_pagination ) {
+		if ( $post_selection_settings->is_with_pagination() ) {
 			$token_factory     = $this->token_factory_storage->resolve_token_factory( $post_selection_settings->template_engine );
 			$pagination_branch = $this->selection_pagination_branch( $token_factory, $post_selection_settings );
 			$pagination_if     = $token_factory->if()

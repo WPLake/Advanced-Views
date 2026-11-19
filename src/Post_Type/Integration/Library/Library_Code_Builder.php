@@ -66,6 +66,7 @@ class Library_Code_Builder {
 
 		if ( $library instanceof Selection_Library &&
 			$cpt_settings instanceof Post_Selection_Settings &&
+			$cpt_settings->has_template() &&
 			$library->is_target_selection( $cpt_settings ) ) {
 			return $library->generate_selection_css( $cpt_settings );
 		}
@@ -84,6 +85,7 @@ class Library_Code_Builder {
 
 		if ( $library instanceof Selection_Library &&
 			$cpt_settings instanceof Post_Selection_Settings &&
+			$cpt_settings->has_template() &&
 			$library->is_target_selection( $cpt_settings ) ) {
 			return $library->generate_selection_js( $cpt_settings );
 		}

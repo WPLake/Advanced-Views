@@ -66,12 +66,24 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 			);
 		}
 
+		$card_data = $this->cards_data_storage->get( $card_unique_id );
+
+		if ( ! $card_data->has_template() ) {
+			return $this->get_error_markup(
+				$this->get_shortcode_name(),
+				$attrs,
+				sprintf(
+					// translators: %s is a Post Selection unique id.
+					__( 'Post Selection (#%s) has no Template to render', 'acf-views' ),
+					$card_data->get_unique_id( true )
+				)
+			);
+		}
+
 		$classes = $attrs['class'] ?? '';
 		$classes = is_string( $classes ) ?
 			$classes :
 			'';
-
-		$card_data = $this->cards_data_storage->get( $card_unique_id );
 
 		$custom_arguments = $attrs['custom-arguments'] ?? '';
 

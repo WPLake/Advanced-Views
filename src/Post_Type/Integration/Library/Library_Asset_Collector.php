@@ -30,7 +30,8 @@ final class Library_Asset_Collector {
 			}
 
 			if ( $library instanceof Selection_Library &&
-				$cpt_settings instanceof Post_Selection_Settings ) {
+				$cpt_settings instanceof Post_Selection_Settings &&
+				$cpt_settings->has_template() ) {
 				$library->maybe_activate_selection( $cpt_settings );
 			}
 		}

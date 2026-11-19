@@ -96,7 +96,7 @@ class Post_Selection_Cpt extends Cpt {
 
 		$card_data = $this->get_cards_data_storage()->get( $card_unique_id );
 
-		if ( ! $card_data->is_with_pagination ) {
+		if ( ! $card_data->is_with_pagination() ) {
 			$response['error'] .= __( 'Request is wrong, Selection is unavailable.', 'acf-views' );
 			echo wp_json_encode( $response );
 
