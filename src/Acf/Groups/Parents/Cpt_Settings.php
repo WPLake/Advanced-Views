@@ -44,6 +44,9 @@ abstract class Cpt_Settings extends Group implements Cpt_Theme_Settings {
 	public string $title;
 	// just define without any annotations, it'll be overwritten by children.
 	public bool $mount_points_tab;
+	/**
+	 * @var Mount_Point_Settings[]
+	 */
 	public array $mount_points;
 	// just define without any annotations, it'll be overwritten by children.
 	public string $template_engine;

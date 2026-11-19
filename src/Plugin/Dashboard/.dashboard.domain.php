@@ -6,6 +6,7 @@ use Architecture\Policy\Domain_Policy;
 use Org\Wplake\Advanced_Views\Assets\assets_domain;
 use Org\Wplake\Advanced_Views\Compatibility\Migration\migration_domain;
 use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\wp_provider_domain;
+use Org\Wplake\Advanced_Views\Post_Type\Core\post_type_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\layout_cpt_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\post_selection_cpt_domain;
 
@@ -15,6 +16,7 @@ class dashboard_domain extends Domain_Policy {
 		assets_domain::class,
 		migration_domain::class,
 		wp_provider_domain::class,
+		post_type_domain::class,
 		// todo break cycle-dependency (layouts <-> dashboard)
 		layout_cpt_domain::class,
 		// todo break cycle-dependency (selections <-> dashboard)

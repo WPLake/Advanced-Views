@@ -230,7 +230,7 @@ __("Use the Post ID in the Gutenberg block's name", "acf-views");
 // Layout_Settings.php : descriptions
 
 __("The internal name of the Layout, visible on the list screen.", "acf-views");
-__("'Mount' this item to a location that doesn't support shortcodes. Mounting uses 'the_content' theme hook. <a target="_blank" href="https://docs.advanced-views.com/display-content/mount-points-pro">Read more</a>", "acf-views");
+__("'Mount' this item to a location that doesn't support shortcodes. Mounting uses 'the_content' theme hook. <a target=\"_blank\" href=\"https://docs.advanced-views.com/display-content/mount-points-pro\">Read more</a>", "acf-views");
 __("Assign fields to your Layout. <br> Tip: hover mouse on the field number column and drag to reorder.", "acf-views");
 __("Choose a Parent group when setting up Nested repeater or Flexible layout.", "acf-views");
 __("If you're making an internal Layout for the <a target='_blank' href='https://docs.advanced-views.com/field-types/layout/group-field'>group</a>, <a target='_blank' href='https://docs.advanced-views.com/field-types/layout/repeater-field'>repeater</a> or <a target='_blank' href='https://docs.advanced-views.com/field-types/layout/flexible-field'>flexible</a> field, then fill out this field.", "acf-views");
@@ -438,7 +438,7 @@ __("Use the Post ID as the Post Selection ID in the markup", "acf-views");
 // Post_Selection_Settings.php : descriptions
 
 __("The internal name of the Post Selection, visible on the list screen.", "acf-views");
-__("'Mount' this item to a location that doesn't support shortcodes. Mounting uses 'the_content' theme hook. <a target="_blank" href="https://docs.advanced-views.com/display-content/mount-points-pro">Read more</a>", "acf-views");
+__("'Mount' this item to a location that doesn't support shortcodes. Mounting uses 'the_content' theme hook. <a target=\"_blank\" href=\"https://docs.advanced-views.com/display-content/mount-points-pro\">Read more</a>", "acf-views");
 __("'Posts Query (WP_query)' will get posts based on the defined query, while 'Page Context (archive pages)' will get posts from where the Post Selection is inserted (e.g. archive, author or category).", "acf-views");
 __("Filter by post type. Multiple types can be selected.", "acf-views");
 __("Filter by post status. Multiple types can be selected.", "acf-views");

@@ -20,6 +20,7 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Cache_Flusher;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Plugin\Utils\WP_Filesystem_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Settings_Migrator;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
@@ -64,6 +65,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 	private Selection_Cpt $post_selections_cpt;
 	private Settings_Storage $settings;
 	private Cache_Flusher $cache_flusher;
+	private Cpt_Settings_Migrator $cpt_settings_migrator;
 	protected Html_Renderer $html_renderer;
 
 	public function __construct(
@@ -77,7 +79,8 @@ final class Tools_Page extends Actor_Base implements Actor {
 		Selection_Cpt $post_selections_cpt,
 		Settings_Storage $settings,
 		Cache_Flusher $cache_flusher,
-		Html_Renderer $html_renderer
+		Html_Renderer $html_renderer,
+		Cpt_Settings_Migrator $cpt_settings_migrator
 	) {
 		$this->tools_settings                   = $tools_settings;
 		$this->post_selections_settings_storage = $post_selections_settings_storage;
@@ -89,6 +92,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 		$this->post_selections_cpt              = $post_selections_cpt;
 		$this->settings                         = $settings;
 		$this->cache_flusher                    = $cache_flusher;
+		$this->cpt_settings_migrator            = $cpt_settings_migrator;
 
 		$this->values                = array();
 		$this->export_data           = array();
@@ -614,6 +618,7 @@ final class Tools_Page extends Actor_Base implements Actor {
 
 			// load all the old data. It'll also override the unique id if the instance is just made, that's right as id kept the same.
 			$cpt_data->load( $cpt_data->get_post_id(), '', $details );
+			$this->cpt_settings_migrator->migrate_cpt_settings( $cpt_data );
 
 			$data_storage->save( $cpt_data );
 
