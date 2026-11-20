@@ -29,12 +29,8 @@ class Acf_Integration extends Settings_Vendor_Integration {
 	 * @param array<string,mixed> $field_group
 	 */
 	public function render_tab( array $field_group ): void {
-		$group_id = key_exists( 'ID', $field_group ) &&
-					is_numeric( $field_group['ID'] ) ?
-			(int) $field_group['ID'] :
-			0;
-
-		$post = get_post( $group_id );
+		$group_id = self::get_group_id( $field_group );
+		$post     = get_post( $group_id );
 
 		if ( $post instanceof WP_Post ) {
 			$button_args = array(
@@ -81,5 +77,17 @@ class Acf_Integration extends Settings_Vendor_Integration {
 		$field_id = string( $field, 'key' );
 
 		$field_type = string( $field, 'type' );
+	}
+
+	/**
+	 * @param array<string,mixed> $field_group
+	 */
+	protected static function get_group_id( array $field_group ): int {
+		$raw_id    = $field_group['ID'] ?? 0;
+		$is_number = is_numeric( $raw_id );
+
+		return $is_number ?
+			(int) $raw_id :
+			0;
 	}
 }

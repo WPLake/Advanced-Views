@@ -46,7 +46,6 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\boolExtended;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\stringOrNull;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -216,16 +215,11 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 		}
 
 		if ( array() === $data ) {
-			$data = get_field_object( $field_meta->get_field_id() );
-			$data = is_array( $data ) ?
-				$data :
-				array();
+			$data = self::load_field_data( $field_meta->get_field_id() );
 		}
 
 		$name           = string( $data, 'name' );
-		$type           = string( $data, 'type' );
 		$label          = string( $data, 'label' );
-		$pro_stub_types = $this->get_pro_stub_field_types();
 		$return_format  = string( $data, 'return_format' );
 		$choices        = arr( $data, 'choices' );
 		$display_format = string( $data, 'display_format' );
@@ -233,12 +227,15 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 		$zoom           = int( $data, 'zoom' );
 		$center_lat     = string( $data, 'center_lat' );
 		$center_lng     = string( $data, 'center_lng' );
+
+		$type           = string( $data, 'type' );
+		$is_filled      = strlen( $type ) > 0;
+		$pro_stub_types = $this->get_pro_stub_field_types();
 		$is_pro_only    = in_array(
 			$type,
 			$pro_stub_types,
 			true
 		);
-		$is_filled      = strlen( $type ) > 0;
 
 		$field_meta
 			->set_is_native_type( true )
@@ -257,13 +254,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 			->set_is_field_exist( $is_filled );
 
 		if ( key_exists( 'default_value', $data ) ) {
-			if ( is_array( $data['default_value'] ) ) {
-				$field_meta->set_default_value( $data['default_value'] );
-			} else {
-				$default_value = string( $data, 'default_value' );
-
-				$field_meta->set_default_value( $default_value );
-			}
+			self::fill_default_value( $field_meta, $data );
 		}
 
 		$set_multiple = fn() => $field_meta->set_is_multiple( true );
@@ -275,7 +266,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 			'google_map_multi'         => $set_multiple,
 			'open_street_map'          => $set_multiple,
 			'gallery'                  => $set_multiple,
-			'taxonomy'                 => fn() => $this->fill_taxonomy_meta( $field_meta, $data ),
+			'taxonomy'                 => fn() => self::fill_taxonomy_meta( $field_meta, $data ),
 			'repeater'                 => $set_repeater,
 			'_flexible_content_layout' => $set_repeater,
 			'group'                    => fn() => $field_meta->set_is_group( true ),
@@ -306,24 +297,19 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 			$is_block  = $source->is_block();
 
 			if ( is_array( $local_data ) ) {
-				return $this->get_local_field_value( $local_data, $field_id, $source_id, $is_formatted );
+				return self::get_local_field_value( $local_data, $field_id, $source_id, $is_formatted );
 			}
 
-			if ( $is_formatted ) {
-				return $is_block ?
-					get_field( $field_id ) :
-					get_field( $field_id, $source_id );
-			}
+			// 'false' as the post id means the current one.
+			$post_id = $is_block ?
+				false :
+				$source_id;
 
-			return $is_block ?
+			return $is_formatted ?
+				get_field( $field_id, $post_id ) :
 				get_field(
 					$field_id,
-					false,
-					false
-				) :
-				get_field(
-					$field_id,
-					$source_id,
+					$post_id,
 					false
 				);
 		}
@@ -332,16 +318,12 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	}
 
 	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
-		$formats = array(
-			'date_picker'      => 'Ymd',
-			'date_time_picker' => 'Y-m-d H:i:s',
-			'time_picker'      => 'H:i:s',
-		);
-
-		$type = $field_meta->get_type();
+		$formats = self::get_date_formats();
+		$type    = $field_meta->get_type();
 
 		if ( key_exists( $type, $formats ) ) {
-			$date_time = DateTime::createFromFormat( $formats[ $type ], $value );
+			$format    = $formats[ $type ];
+			$date_time = DateTime::createFromFormat( $format, $value );
 
 			return $date_time instanceof DateTime ?
 				$date_time :
@@ -355,13 +337,9 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 		DateTime $date_time,
 		Field_Meta $field_meta
 	): string {
-		$formats = array(
-			'date_picker'      => 'Ymd',
-			'time_picker'      => 'H:i:s',
-			'date_time_picker' => 'Y-m-d H:i:s',
-		);
+		$formats = self::get_date_formats();
+		$type    = $field_meta->get_type();
 
-		$type = $field_meta->get_type();
 		// any other field type (e.g. text/number) storing a date/timestamp in a custom format:
 		// fall back to a generic, widely-comparable format instead of an empty value.
 		$format = $formats[ $type ] ?? 'Y-m-d H:i:s';
@@ -374,10 +352,9 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	 */
 	public function get_sub_field_choices(): array {
 		if ( function_exists( 'acf_get_fields' ) ) {
-			$sub_field_choices           = array();
-			$supported_field_types       = $this->get_supported_field_types();
-			$field_types_with_sub_fields = array( 'repeater', 'group', 'flexible_content', 'clone' );
-			$groups                      = $this->get_groups();
+			$sub_field_choices     = array();
+			$supported_field_types = $this->get_supported_field_types();
+			$groups                = $this->get_groups();
 
 			foreach ( $groups as $group ) {
 				$fields = acf_get_fields( $group );
@@ -385,42 +362,21 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 				$group_key = string( $group, 'key' );
 
 				foreach ( $fields as $group_field ) {
-					$field_type = string( $group_field, 'type' );
+					$sub_fields = $this->get_container_sub_fields( $group_field, $supported_field_types );
 
-					$is_supported = in_array(
-						$field_type,
-						$supported_field_types,
-						true
-					);
+					if ( array() !== $sub_fields ) {
+						$group_field_id = string( $group_field, 'key' );
+						$field_key      = $this->get_field_key( $group_key, $group_field_id );
 
-					// ignore 'clone' if it isn't supported (Lite version).
-					if ( ! $is_supported ) {
-						continue;
+						$sub_field_choices = $this->get_field_choices_recursively(
+							$sub_field_choices,
+							$sub_fields,
+							$supported_field_types,
+							array(),
+							$group_key,
+							$field_key
+						);
 					}
-
-					$sub_fields = $this->get_sub_fields( $group_field );
-
-					$is_with_sub_fields = in_array(
-						$field_type,
-						$field_types_with_sub_fields,
-						true
-					);
-
-					if ( ! $is_with_sub_fields || array() === $sub_fields ) {
-						continue;
-					}
-
-					$group_field_id = string( $group_field, 'key' );
-					$field_key      = $this->get_field_key( $group_key, $group_field_id );
-
-					$sub_field_choices = $this->get_field_choices_recursively(
-						$sub_field_choices,
-						$sub_fields,
-						$supported_field_types,
-						array(),
-						$group_key,
-						$field_key
-					);
 				}
 			}
 
@@ -450,19 +406,9 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	 * @return mixed[]|null
 	 */
 	public function get_group_export_data( string $group_id ): ?array {
-		$is_supported = function_exists( 'acf_get_field_group' ) &&
-						function_exists( 'acf_get_fields' ) &&
-						function_exists( 'acf_prepare_internal_post_type_for_export' );
+		$importer = $this->create_group_importer();
 
-		$group_info = $is_supported ?
-			$this->get_group_with_fields( $group_id ) :
-			null;
-
-		if ( is_array( $group_info ) ) {
-			return $this->prepare_group_for_export( $group_info, $group_id );
-		}
-
-		return null;
+		return $importer->export_group( $group_id );
 	}
 
 	/**
@@ -470,44 +416,9 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	 * @param mixed[] $meta_data
 	 */
 	public function import_group( array $group_data, array $meta_data ): ?string {
-		$is_supported = function_exists( 'acf_get_field_group' ) &&
-						function_exists( 'acf_import_field_group' );
+		$importer = $this->create_group_importer();
 
-		if ( ! $is_supported ) {
-			return null;
-		}
-
-		$logger              = $this->get_logger();
-		$group_key           = string( $group_data, 'key' );
-		$existing_group_info = acf_get_field_group( $group_key );
-
-		if ( is_array( $existing_group_info ) ) {
-			$group_id         = int( $existing_group_info, 'ID' );
-			$group_data['ID'] = $group_id;
-
-			$logger->debug(
-				'ACF group to import already exists: overriding instead of creation',
-				array(
-					'key' => $group_key,
-					'ID'  => $group_id,
-				)
-			);
-		}
-
-		$group_data = acf_import_field_group( $group_data );
-
-		if ( false === is_array( $group_data ) ) {
-			$logger->warning(
-				'failed to import ACF field group',
-				array(
-					'group_data' => $group_data,
-				)
-			);
-
-			return null;
-		}
-
-		return stringOrNull( $group_data, 'key' );
+		return $importer->import_group( $group_data );
 	}
 
 	// for back compatibility only.
@@ -541,65 +452,8 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 		return array();
 	}
 
-	/**
-	 * @return array<string|int,mixed>|null
-	 */
-	protected function get_group_with_fields( string $group_id ): ?array {
-		if ( false === function_exists( 'acf_get_field_group' ) || false === function_exists( 'acf_get_fields' ) ) {
-			return null;
-		}
-
-		$logger      = $this->get_logger();
-		$log_context = array(
-			'group_id' => $group_id,
-		);
-
-		$group_info = acf_get_field_group( $group_id );
-
-		if ( false === is_array( $group_info ) ) {
-			$logger->warning( 'failed to get ACF field group info', $log_context );
-
-			return null;
-		}
-
-		// fields are missing (empty) in the 'acf_get_field_group' call.
-		$fields_info = acf_get_fields( $group_info );
-
-		if ( false === is_array( $fields_info ) ) {
-			$logger->warning( 'failed to get ACF fields info', $log_context );
-
-			return null;
-		}
-
-		$group_info['fields'] = $fields_info;
-
-		return $group_info;
-	}
-
-	/**
-	 * @param array<string|int,mixed> $group_info
-	 *
-	 * @return mixed[]|null
-	 */
-	protected function prepare_group_for_export( array $group_info, string $group_id ): ?array {
-		if ( false === function_exists( 'acf_prepare_internal_post_type_for_export' ) ) {
-			return null;
-		}
-
-		$prepared_info = acf_prepare_internal_post_type_for_export( $group_info );
-
-		if ( is_array( $prepared_info ) ) {
-			return $prepared_info;
-		}
-
-		$logger      = $this->get_logger();
-		$log_context = array(
-			'group_id' => $group_id,
-		);
-
-		$logger->warning( 'failed to prepare ACF field group for export', $log_context );
-
-		return null;
+	protected function create_group_importer(): Acf_Group_Importer {
+		return new Acf_Group_Importer( $this->get_logger() );
 	}
 
 	/**
@@ -620,18 +474,38 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	protected function get_sub_fields( array $group_field ): array {
 		$sub_fields = arr( $group_field, 'sub_fields' );
 		$sub_fields = $this->paste_clone_fields( $sub_fields );
-
-		$layouts = arr( $group_field, 'layouts' );
-		// by default, layouts don't have any type.
-		foreach ( $layouts as &$layout ) {
-			if ( false === is_array( $layout ) ) {
-				continue;
-			}
-
-			$layout['type'] = '_flexible_content_layout';
-		}
+		$layouts    = self::get_typed_layouts( $group_field );
 
 		return array_merge( $sub_fields, $layouts );
+	}
+
+	/**
+	 * @param array<string|int,mixed> $group_field
+	 * @param string[] $supported_field_types
+	 *
+	 * @return array<string|int,mixed>
+	 */
+	protected function get_container_sub_fields( array $group_field, array $supported_field_types ): array {
+		$container_types = array( 'repeater', 'group', 'flexible_content', 'clone' );
+		$field_type      = string( $group_field, 'type' );
+
+		$is_supported = in_array(
+			$field_type,
+			$supported_field_types,
+			true
+		);
+		$is_container = in_array(
+			$field_type,
+			$container_types,
+			true
+		);
+
+		// 'clone' is ignored if it isn't supported (Lite version).
+		if ( $is_supported && $is_container ) {
+			return $this->get_sub_fields( $group_field );
+		}
+
+		return array();
 	}
 
 	/**
@@ -650,71 +524,53 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 		string $group_id,
 		string $parent_choice_value = ''
 	): array {
-		$vendor_name = $this->get_name();
-
 		foreach ( $fields as $group_field ) {
-			if ( false === is_array( $group_field ) ) {
-				continue;
-			}
+			$is_choice = is_array( $group_field ) &&
+						self::is_choice_field( $group_field, $supported_field_types, $include_only_types );
 
-			$type = string( $group_field, 'type' );
+			if ( $is_choice ) {
+				$field_id   = string( $group_field, 'key' );
+				$field_key  = $this->resolve_field_key( $group_id, $field_id, $parent_choice_value );
+				$field_meta = $this->create_field_meta( $field_id, $group_field );
 
-			$is_supported = in_array(
-				$type,
-				$supported_field_types,
-				true
-			);
-			$is_included  = array() === $include_only_types || in_array(
-				$type,
-				$include_only_types,
-				true
-			);
+				$field_choices[ $field_key ] = $field_meta;
 
-			if ( ! $is_supported || ! $is_included ) {
-				continue;
-			}
+				$sub_fields = $this->get_sub_fields( $group_field );
 
-			$field_id  = string( $group_field, 'key' );
-			$field_key = '' === $parent_choice_value ?
-				$this->get_field_key( $group_id, $field_id ) :
-				Field_Settings::create_field_key( $parent_choice_value, $field_id );
-
-			$field_meta = new Field_Meta( $vendor_name, $field_id );
-			$this->fill_field_meta( $field_meta, $group_field );
-
-			$field_choices[ $field_key ] = $field_meta;
-
-			$sub_fields = $this->get_sub_fields( $group_field );
-
-			if ( array() !== $sub_fields ) {
-				$field_choices = $this->get_field_choices_recursively(
-					$field_choices,
-					$sub_fields,
-					$supported_field_types,
-					$include_only_types,
-					$group_id,
-					$field_key
-				);
+				if ( array() !== $sub_fields ) {
+					$field_choices = $this->get_field_choices_recursively(
+						$field_choices,
+						$sub_fields,
+						$supported_field_types,
+						$include_only_types,
+						$group_id,
+						$field_key
+					);
+				}
 			}
 		}
 
 		return $field_choices;
 	}
 
+	protected function resolve_field_key( string $group_id, string $field_id, string $parent_choice_value ): string {
+		if ( '' === $parent_choice_value ) {
+			return $this->get_field_key( $group_id, $field_id );
+		}
+
+		return Field_Settings::create_field_key( $parent_choice_value, $field_id );
+	}
+
 	/**
-	 * @param mixed[] $data
+	 * @param array<string|int,mixed> $group_field
 	 */
-	protected function fill_taxonomy_meta( Field_Meta $field_meta, array $data ): void {
-		$appearance          = string( $data, 'field_type' );
-		$multiple_appearance = array( 'checkbox', 'multi_select' );
+	protected function create_field_meta( string $field_id, array $group_field ): Field_Meta {
+		$vendor_name = $this->get_name();
+		$field_meta  = new Field_Meta( $vendor_name, $field_id );
 
-		$is_multiple = in_array(
-			$appearance,
-			$multiple_appearance,
-			true
-		);
+		$this->fill_field_meta( $field_meta, $group_field );
 
-		$field_meta->set_is_multiple( $is_multiple );
+		return $field_meta;
 	}
 
 	/**
@@ -723,7 +579,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	 *
 	 * @return mixed
 	 */
-	protected function get_local_field_value(
+	protected static function get_local_field_value(
 		array $local_data,
 		string $field_id,
 		$source_id,
@@ -752,5 +608,96 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * @param mixed[] $data
+	 */
+	protected static function fill_taxonomy_meta( Field_Meta $field_meta, array $data ): void {
+		$appearance          = string( $data, 'field_type' );
+		$multiple_appearance = array( 'checkbox', 'multi_select' );
+
+		$is_multiple = in_array(
+			$appearance,
+			$multiple_appearance,
+			true
+		);
+
+		$field_meta->set_is_multiple( $is_multiple );
+	}
+
+	/**
+	 * @param mixed[] $data
+	 */
+	protected static function fill_default_value( Field_Meta $field_meta, array $data ): void {
+		$default_value = $data['default_value'];
+
+		if ( false === is_array( $default_value ) ) {
+			$default_value = string( $data, 'default_value' );
+		}
+
+		$field_meta->set_default_value( $default_value );
+	}
+
+	/**
+	 * @return mixed[]
+	 */
+	protected static function load_field_data( string $field_id ): array {
+		$data = get_field_object( $field_id );
+
+		return is_array( $data ) ?
+			$data :
+			array();
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	protected static function get_date_formats(): array {
+		return array(
+			'date_picker'      => 'Ymd',
+			'date_time_picker' => 'Y-m-d H:i:s',
+			'time_picker'      => 'H:i:s',
+		);
+	}
+
+	/**
+	 * @param array<string|int,mixed> $group_field
+	 *
+	 * @return array<string|int,mixed>
+	 */
+	protected static function get_typed_layouts( array $group_field ): array {
+		$layouts = arr( $group_field, 'layouts' );
+
+		// by default, layouts don't have any type.
+		foreach ( $layouts as &$layout ) {
+			if ( is_array( $layout ) ) {
+				$layout['type'] = '_flexible_content_layout';
+			}
+		}
+
+		return $layouts;
+	}
+
+	/**
+	 * @param array<string|int,mixed> $group_field
+	 * @param string[] $supported_field_types
+	 * @param string[] $include_only_types
+	 */
+	protected static function is_choice_field( array $group_field, array $supported_field_types, array $include_only_types ): bool {
+		$type = string( $group_field, 'type' );
+
+		$is_supported = in_array(
+			$type,
+			$supported_field_types,
+			true
+		);
+		$is_included  = array() === $include_only_types || in_array(
+			$type,
+			$include_only_types,
+			true
+		);
+
+		return $is_supported && $is_included;
 	}
 }

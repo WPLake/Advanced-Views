@@ -29,7 +29,6 @@ final class Icon_Picker_Field implements Markup_Field {
 
 	const TYPE = 'type';
 
-
 	private Image_Field $image_field;
 
 	public function __construct( Image_Field $image_field ) {
@@ -46,13 +45,13 @@ final class Icon_Picker_Field implements Markup_Field {
 		$media_library_branch = $this->media_library_branch( $field_id, $markup_field_data );
 		$custom_image_branch  = $this->custom_image_branch( $field_id, $markup_field_data );
 
-		return array(
-			$token_factory
-				->if()
-				->set_if_branch( $dashicons_branch )
-				->set_elseif_branch( $media_library_branch )
-			->set_else_branch( $custom_image_branch ),
-		);
+		$if_token = $token_factory
+			->if()
+			->set_if_branch( $dashicons_branch )
+			->set_elseif_branch( $media_library_branch )
+			->set_else_branch( $custom_image_branch );
+
+		return array( $if_token );
 	}
 
 	/**
@@ -111,7 +110,8 @@ final class Icon_Picker_Field implements Markup_Field {
 		$condition = self::type_comparison( 'dashicons', $field_id, $markup_field_data );
 		$body      = $this->compose_icon_markup( $field_id, $markup_field_data );
 
-		return $token_factory->if_branch()
+		return $token_factory
+			->if_branch()
 			->set_condition( $condition )
 			->set_body( $body );
 	}
@@ -122,7 +122,8 @@ final class Icon_Picker_Field implements Markup_Field {
 		$condition = self::type_comparison( 'media_library', $field_id, $markup_field_data );
 		$body      = $this->compose_icon_image_markup( $field_id, $markup_field_data );
 
-		return $token_factory->if_branch()
+		return $token_factory
+			->if_branch()
 			->set_condition( $condition )
 			->set_body( $body );
 	}
@@ -132,7 +133,8 @@ final class Icon_Picker_Field implements Markup_Field {
 
 		$body = $this->compose_custom_image_markup( $field_id, $markup_field_data );
 
-		return $token_factory->if_branch()
+		return $token_factory
+			->if_branch()
 			->set_body( $body );
 	}
 
@@ -142,20 +144,22 @@ final class Icon_Picker_Field implements Markup_Field {
 	protected function compose_icon_markup( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$icon_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
+		$icon_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::VALUE );
 
 		$icon_class = $this->get_field_class( 'icon', $markup_field_data );
 
+		$attributes = array(
+			'class' => array(
+				$icon_class,
+				'dashicons',
+				$icon_var,
+			),
+		);
+
 		$tag = tag( 'i' )
-			->attributes(
-				array(
-					'class' => array(
-						$icon_class,
-						'dashicons',
-						$icon_var,
-					),
-				)
-			);
+			->attributes( $attributes );
 
 		return array( $tag );
 	}
@@ -173,30 +177,34 @@ final class Icon_Picker_Field implements Markup_Field {
 	protected function compose_custom_image_markup( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$src_var = $token_factory->variable( $field_id )->add_item_path( self::VALUE );
+		$src_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::VALUE );
 
 		$image_class = $this->get_field_class( 'icon', $markup_field_data );
 
+		$attributes = array(
+			'class'   => $image_class,
+			'src'     => $src_var,
+			'loading' => 'lazy',
+			'alt'     => 'icon',
+		);
+
 		$tag = tag( 'img' )
-			->attributes(
-				array(
-					'class'   => $image_class,
-					'src'     => $src_var,
-					'loading' => 'lazy',
-					'alt'     => 'icon',
-				)
-			);
+			->attributes( $attributes );
 
 		return array( $tag );
 	}
 
 	protected static function type_comparison( string $type, string $field_id, Template_Field_Meta $markup_field_data ): Comparison_Token {
 		$token_factory = $markup_field_data->get_token_factory();
-		$type_var      = $token_factory->variable( $field_id )
-										->add_item_path( self::TYPE );
+		$type_var      = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::TYPE );
 		$type_literal  = $token_factory->literal( $type );
 
-		return $token_factory->comparison()
+		return $token_factory
+			->comparison()
 			->set_left_operand( $type_var )
 			->set_comparison_equal()
 			->set_right_operand( $type_literal );

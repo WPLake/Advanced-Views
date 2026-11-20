@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Fields;
 
+use WP_Post;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Link_Field;
@@ -17,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-class Page_Link_Field extends List_Field {
+final class Page_Link_Field extends List_Field {
 	const LOOP_ITEM_NAME = 'link_item';
 
 	private Link_Field $link_field;
@@ -27,39 +28,15 @@ class Page_Link_Field extends List_Field {
 	}
 
 	/**
-	 * @return array{url: string, title: string}
+	 * @return string[]
 	 */
-	protected function get_post_info( string $id_or_url ): array {
-		$post_info = array(
-			Link_Field::URL   => '',
-			Link_Field::TITLE => '',
-		);
-
-		if ( is_numeric( $id_or_url ) ) {
-			$post = get_post( (int) $id_or_url );
-		} else {
-			$post_slug = str_replace( get_site_url(), '', $id_or_url );
-			$post_slug = trim( $post_slug, '/' );
-			$post      = get_page_by_path(
-				$post_slug,
-				OBJECT,
-				array(
-					'post',
-					'page',
-				)
-			);
-		}
-
-		if ( null === $post ) {
-			return $post_info;
-		}
-
-		$title = get_the_title( $post );
-
-		return array(
-			Link_Field::URL   => (string) get_permalink( $post->ID ),
-			// avoid double encoding in Twig.
-			Link_Field::TITLE => html_entity_decode( $title, ENT_QUOTES ),
+	public function get_conditional_fields( Field_Meta $field_meta ): array {
+		return array_merge(
+			parent::get_conditional_fields( $field_meta ),
+			array(
+				Field_Settings::FIELD_LINK_LABEL,
+				Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
+			)
 		);
 	}
 
@@ -67,11 +44,10 @@ class Page_Link_Field extends List_Field {
 	 * @return array<string, string>
 	 */
 	protected function get_item_template_args( Raw_Field_Value $field_value ): array {
-		$value = is_string( $field_value->get_value() ) ||
-				is_numeric( $field_value->get_value() ) ?
-			(string) $field_value->get_value() :
-			'';
-		$field_value->set_value( $this->get_post_info( $value ) );
+		$id_or_url = self::get_id_or_url( $field_value->get_value() );
+		$post_info = self::get_post_info( $id_or_url );
+
+		$field_value->set_value( $post_info );
 
 		return $this->link_field->get_template_variables( $field_value );
 	}
@@ -96,14 +72,54 @@ class Page_Link_Field extends List_Field {
 	}
 
 	/**
-	 * @return string[]
+	 * @param mixed $value
 	 */
-	public function get_conditional_fields( Field_Meta $field_meta ): array {
-		return array_merge(
-			parent::get_conditional_fields( $field_meta ),
+	protected static function get_id_or_url( $value ): string {
+		$is_scalar = is_string( $value ) || is_numeric( $value );
+
+		return $is_scalar ?
+			(string) $value :
+			'';
+	}
+
+	/**
+	 * @return array{url: string, title: string}
+	 */
+	protected static function get_post_info( string $id_or_url ): array {
+		$post = self::find_post( $id_or_url );
+
+		if ( $post instanceof WP_Post ) {
+			$title     = get_the_title( $post );
+			$permalink = (string) get_permalink( $post->ID );
+
+			return array(
+				Link_Field::URL   => $permalink,
+				// avoid double encoding in Twig.
+				Link_Field::TITLE => html_entity_decode( $title, ENT_QUOTES ),
+			);
+		}
+
+		return array(
+			Link_Field::URL   => '',
+			Link_Field::TITLE => '',
+		);
+	}
+
+	protected static function find_post( string $id_or_url ): ?WP_Post {
+		if ( is_numeric( $id_or_url ) ) {
+			return get_post( (int) $id_or_url );
+		}
+
+		$site_url  = get_site_url();
+		$post_slug = str_replace( $site_url, '', $id_or_url );
+		$post_slug = trim( $post_slug, '/' );
+
+		return get_page_by_path(
+			$post_slug,
+			OBJECT,
 			array(
-				Field_Settings::FIELD_LINK_LABEL,
-				Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
+				'post',
+				'page',
 			)
 		);
 	}
