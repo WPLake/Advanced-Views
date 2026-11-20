@@ -7,13 +7,12 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Table;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Cpt_Table;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Selection_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
+use WP_Post_Type;
 use WP_Query;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
@@ -23,33 +22,33 @@ defined( 'ABSPATH' ) || exit;
  * @phpstan-import-type Html_Node from Html_Tag
  */
 class Selection_Cpt_Table extends Cpt_Table {
+	const COLUMN_ID            = self::COLUMN_PREFIX . 'id';
 	const COLUMN_DESCRIPTION   = self::COLUMN_PREFIX . 'description';
-	const COLUMN_RELATED_VIEW  = self::COLUMN_PREFIX . 'relatedView';
+	const COLUMN_POST_TYPES    = self::COLUMN_PREFIX . 'postTypes';
 	const COLUMN_LAST_MODIFIED = self::COLUMN_PREFIX . 'lastModified';
-
-	private Selection_Meta_Boxes $post_selections_cpt_meta_boxes;
-	private Layout_Cpt $layout_cpt;
+	const COLUMN_CREATED       = self::COLUMN_PREFIX . 'created';
 
 	public function __construct(
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Selection_Cpt $public_cpt,
-		Selection_Meta_Boxes $post_selections_cpt_meta_boxes,
-		Layout_Cpt $layout_cpt,
 		Html_Renderer $html_renderer
 	) {
 		parent::__construct( $post_selections_settings_storage, $public_cpt, $html_renderer );
-
-		$this->post_selections_cpt_meta_boxes = $post_selections_cpt_meta_boxes;
-		$this->layout_cpt                     = $layout_cpt;
 	}
 
 	public function add_sortable_columns_to_request( WP_Query $wp_query ): void {
-		$order_by         = $wp_query->get( 'orderby' );
-		$is_modified_sort = is_admin() &&
-							self::COLUMN_LAST_MODIFIED === $order_by;
+		$order_by       = $wp_query->get( 'orderby' );
+		$orderby_fields = array(
+			self::COLUMN_LAST_MODIFIED => 'post_modified',
+			self::COLUMN_CREATED       => 'post_date',
+		);
 
-		if ( $is_modified_sort ) {
-			$wp_query->set( 'orderby', 'post_modified' );
+		$is_sortable = is_admin() &&
+						is_string( $order_by ) &&
+						key_exists( $order_by, $orderby_fields );
+
+		if ( $is_sortable ) {
+			$wp_query->set( 'orderby', $orderby_fields[ $order_by ] );
 		}
 	}
 
@@ -61,17 +60,12 @@ class Selection_Cpt_Table extends Cpt_Table {
 	public function get_columns( array $columns ): array {
 		unset( $columns['date'] );
 
-		$layout_labels = $this->layout_cpt->labels();
-		$layout_name   = $layout_labels->singular_name();
-
 		$own_columns = array(
+			self::COLUMN_POST_TYPES    => __( 'Post Types', 'acf-views' ),
 			self::COLUMN_DESCRIPTION   => __( 'Description', 'acf-views' ),
-			self::COLUMN_RELATED_VIEW  => sprintf(
-				// translators: %s - singular name of the CPT.
-				__( 'Related %s', 'acf-views' ),
-				$layout_name
-			),
+			self::COLUMN_ID            => __( 'Unique ID', 'acf-views' ),
 			self::COLUMN_LAST_MODIFIED => __( 'Last modified', 'acf-views' ),
+			self::COLUMN_CREATED       => __( 'Created', 'acf-views' ),
 		);
 
 		return array_merge( $columns, $own_columns );
@@ -83,12 +77,12 @@ class Selection_Cpt_Table extends Cpt_Table {
 	 * @return array<string,string>
 	 */
 	public function get_sortable_columns( array $columns ): array {
-		return array_merge(
-			$columns,
-			array(
-				self::COLUMN_LAST_MODIFIED => self::COLUMN_LAST_MODIFIED,
-			)
+		$sortable_columns = array(
+			self::COLUMN_LAST_MODIFIED => self::COLUMN_LAST_MODIFIED,
+			self::COLUMN_CREATED       => self::COLUMN_CREATED,
 		);
+
+		return array_merge( $columns, $sortable_columns );
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {
@@ -108,10 +102,11 @@ class Selection_Cpt_Table extends Cpt_Table {
 	protected function column_nodes( string $short_column_name, Cpt_Settings $cpt_settings ): array {
 		if ( $cpt_settings instanceof Post_Selection_Settings ) {
 			$builders = array(
+				self::COLUMN_POST_TYPES    => fn() => array( self::post_type_labels( $cpt_settings ) ),
 				self::COLUMN_DESCRIPTION   => fn() => array( $cpt_settings->description ),
-				self::COLUMN_LAST_MODIFIED => fn() => $this->last_modified_nodes( $cpt_settings ),
-				// without the not found message.
-				self::COLUMN_RELATED_VIEW  => fn() => $this->post_selections_cpt_meta_boxes->related_acf_view_nodes( $cpt_settings, true ),
+				self::COLUMN_ID            => fn() => array( $cpt_settings->get_unique_id( true ) ),
+				self::COLUMN_LAST_MODIFIED => fn() => self::date_nodes( $cpt_settings, 'post_modified' ),
+				self::COLUMN_CREATED       => fn() => self::date_nodes( $cpt_settings, 'post_date' ),
 			);
 
 			if ( key_exists( $short_column_name, $builders ) ) {
@@ -122,14 +117,14 @@ class Selection_Cpt_Table extends Cpt_Table {
 		return array();
 	}
 
-	protected function get_cards_meta_boxes(): Selection_Meta_Boxes {
-		return $this->post_selections_cpt_meta_boxes;
+	protected function get_unique_id_prefix(): string {
+		return Post_Selection_Settings::UNIQUE_ID_PREFIX;
 	}
 
 	/**
 	 * @return Html_Node[]
 	 */
-	protected function last_modified_nodes( Post_Selection_Settings $selection_settings ): array {
+	protected static function date_nodes( Post_Selection_Settings $selection_settings, string $post_field ): array {
 		$post_id = $selection_settings->get_post_id();
 
 		$post = 0 !== $post_id ?
@@ -137,15 +132,25 @@ class Selection_Cpt_Table extends Cpt_Table {
 			null;
 
 		if ( $post instanceof WP_Post ) {
-			$modified_parts = explode( ' ', $post->post_modified );
+			$date_parts = explode( ' ', $post->$post_field );
 
-			return array( $modified_parts[0] );
+			return array( $date_parts[0] );
 		}
 
 		return array();
 	}
 
-	protected function get_unique_id_prefix(): string {
-		return Post_Selection_Settings::UNIQUE_ID_PREFIX;
+	protected static function post_type_labels( Post_Selection_Settings $selection_settings ): string {
+		$labels = array_map( array( self::class, 'post_type_label' ), $selection_settings->post_types );
+
+		return implode( '; ', $labels );
+	}
+
+	protected static function post_type_label( string $post_type ): string {
+		$post_type_object = get_post_type_object( $post_type );
+
+		return $post_type_object instanceof WP_Post_Type ?
+			$post_type_object->label :
+			$post_type;
 	}
 }

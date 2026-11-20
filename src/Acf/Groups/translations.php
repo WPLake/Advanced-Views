@@ -395,20 +395,21 @@ __("Source", "acf-views");
 __("Post Type", "acf-views");
 __("Post Status", "acf-views");
 __("Maximum number of posts", "acf-views");
+__("Pool of posts", "acf-views");
+__("Exclude posts", "acf-views");
+__("Taxonomy Filters", "acf-views");
+__("Taxonomy Filters", "acf-views");
+__("Meta Filters", "acf-views");
+__("Sorting", "acf-views");
 __("Sort by", "acf-views");
 __("Sort by Meta Field Group", "acf-views");
 __("Sort by Meta Field", "acf-views");
 __("Sort order", "acf-views");
-__("Pool of posts", "acf-views");
-__("Exclude posts", "acf-views");
 __("Ignore Sticky Posts", "acf-views");
-__("Query Preview", "acf-views");
-__("Filters", "acf-views");
-__("Taxonomy Filters", "acf-views");
-__("Meta Filters", "acf-views");
-__("Display", "acf-views");
+__("Output", "acf-views");
 __("Editorial description", "acf-views");
-__("Developer", "acf-views");
+__("Query Preview", "acf-views");
+__("Advanced", "acf-views");
 __("PHP Controller", "acf-views");
 
 // Post_Selection_Settings.php : descriptions
@@ -418,15 +419,15 @@ __("'Posts Query (WP_query)' will get posts based on the defined query, while 'P
 __("Filter by post type. Multiple types can be selected.", "acf-views");
 __("Filter by post status. Multiple types can be selected.", "acf-views");
 __("Use '-1' for unlimited.", "acf-views");
+__("Manually assign specific posts to limit the query to. Only this pool of posts will then be considered for other filters. The 'Pool of posts' option can be selected to 'Sort by'.", "acf-views");
+__("Here you can manually exclude specific posts from the query. It means the query will ignore posts from this list, even if they fit the filters. Warning : this field can't be used together with 'Pool of posts'.", "acf-views");
 __("Sort results by selecting an option. <br> 'Default' keeps the default order: latest first, while sticky flags may affect it.", "acf-views");
 __("Select a target group.", "acf-views");
 __("Select a target field.", "acf-views");
 __("Defines the sorting order of posts.", "acf-views");
-__("Manually assign specific posts to limit the query to. Only this pool of posts will then be considered for other filters. The 'Pool of posts' option can be selected to 'Sort by'.", "acf-views");
-__("Here you can manually exclude specific posts from the query. It means the query will ignore posts from this list, even if they fit the filters. Warning : this field can't be used together with 'Pool of posts'.", "acf-views");
 __("If unchecked then sticky posts will be at the top of results. <a target='_blank' href='https://wordpress.org/support/article/sticky-posts/'>Learn more about Sticky Posts</a>.", "acf-views");
-__("For debugging purposes, this shows the query used to fetch posts for this Post Selection. Tip: Publish or update your Post Selection, then reload the page to view the latest query.", "acf-views");
 __("Add a short description for your Post Selection's purpose. Only seen on the admin Post Selections list.", "acf-views");
+__("Publish or update your Post Selection to see the latest query.", "acf-views");
 __("By customizing the PHP Controller instance, you can add extra variables to the template, extra arguments to the <a target='_blank' href='https://developer.wordpress.org/reference/classes/wp_query/#parameters'>WP_Query instance</a>, and define the AJAX and REST API handlers. <a target='_blank' href='https://docs.advanced-views.com/post-selections/code-fields/selection-controller'>Read more</a> <br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace).", "acf-views");
 
 // Post_Selection_Settings.php : choices

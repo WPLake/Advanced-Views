@@ -206,7 +206,10 @@ Advanced Views lets you display fields from almost any WordPress data source:
 
 = 3.9.10 (2026-) =
 - Demo import feature removed
-- New Post Selections become templateless
+- Post Selections: new instances become templateless
+- Post Selection: improved field grouping and preview
+
+TODO: Columns order
 
 = 3.9.9 (2026-) =
 - Enhance: libraries adoption (Slider, Carousel, Masonry); JavaScript field becomes Pro-tier

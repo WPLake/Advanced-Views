@@ -33,6 +33,7 @@ class Post_Selection_Settings extends Templated_Selection_Settings implements Qu
 	const FIELD_CUSTOM_MARKUP             = 'custom_markup';
 	const FIELD_ACF_VIEW_ID               = 'acf_view_id';
 	const FIELD_BASIC_TAB                 = 'basic_tab';
+	const FIELD_LAYOUT_TAB                = 'layout_tab';
 	const FIELD_TEMPLATE_TAB              = 'template_tab';
 	const FIELD_CSS_AND_JS_TAB            = 'css_and_js_tab';
 	const FIELD_DEVELOPER_TAB             = 'developer_tab';
@@ -58,10 +59,10 @@ class Post_Selection_Settings extends Templated_Selection_Settings implements Qu
 	/**
 	 * @label Source
 	 * @a-type select
-	 * @required 1
 	 * @instructions 'Posts Query (WP_query)' will get posts based on the defined query, while 'Page Context (archive pages)' will get posts from where the Post Selection is inserted (e.g. archive, author or category).
 	 * @choices {"posts_query":"Posts Query (WP_Query)","context_posts":"Page context (archive pages)"}
 	 * @defeault_value custom_query
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
 	 * @a-order 30
 	 */
 	public string $items_source;
@@ -73,7 +74,7 @@ class Post_Selection_Settings extends Templated_Selection_Settings implements Qu
 	 * @label Post Type
 	 * @instructions Filter by post type. Multiple types can be selected.
 	 * @var string[]
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
 	 * @a-order 40
 	 */
 	public array $post_types;
@@ -86,7 +87,7 @@ class Post_Selection_Settings extends Templated_Selection_Settings implements Qu
 	 * @instructions Filter by post status. Multiple types can be selected.
 	 * @default_value ["publish"]
 	 * @var string[]
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
 	 * @a-order 50
 	 */
 	public array $post_statuses;
@@ -95,10 +96,70 @@ class Post_Selection_Settings extends Templated_Selection_Settings implements Qu
 	 * @label Maximum number of posts
 	 * @instructions Use '-1' for unlimited.
 	 * @default_value -1
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
 	 * @a-order 60
 	 */
 	public int $limit;
+	/**
+	 * @a-type post_object
+	 * @return_format id
+	 * @label Pool of posts
+	 * @multiple 1
+	 * @instructions Manually assign specific posts to limit the query to. Only this pool of posts will then be considered for other filters. The 'Pool of posts' option can be selected to 'Sort by'.
+	 * @var int[]
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
+	 * @a-order 70
+	 */
+	public array $post_in;
+	/**
+	 * @a-type post_object
+	 * @return_format id
+	 * @label Exclude posts
+	 * @instructions  Here you can manually exclude specific posts from the query. It means the query will ignore posts from this list, even if they fit the filters. Warning : this field can't be used together with 'Pool of posts'.
+	 * @multiple 1
+	 * @var int[]
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
+	 * @a-order 80
+	 */
+	public array $post_not_in;
+	/**
+	 * @a-type tab
+	 * @label Taxonomy Filters
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
+	 * @a-order 90
+	 */
+	public bool $tax_filters_tab;
+	/**
+	 * @label Taxonomy Filters
+	 * @a-no-tab 1
+	 * @display seamless
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
+	 * @a-order 100
+	 */
+	public Tax_Filter_Settings $tax_filter;
+
+	/**
+	 * @a-type tab
+	 * @label Meta Filters
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
+	 * @a-order 110
+	 */
+	public bool $meta_filters_tab;
+	/**
+	 * @a-no-tab 1
+	 * @display seamless
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
+	 * @a-order 120
+	 */
+	public Meta_Filter_Settings $meta_filter;
+
+	/**
+	 * @a-type tab
+	 * @label Sorting
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
+	 * @a-order 130
+	 */
+	public bool $sorting_tab;
 	/**
 	 * @a-type select
 	 * @required 1
@@ -106,8 +167,8 @@ class Post_Selection_Settings extends Templated_Selection_Settings implements Qu
 	 * @instructions Sort results by selecting an option. <br> 'Default' keeps the default order: latest first, while sticky flags may affect it.
 	 * @choices {"none":"Default","ID":"ID","menu_order":"Menu order","meta_value":"Meta value","meta_value_num":"Meta value numeric","author":"Author","title":"Title","name":"Name","type":"Type","date":"Date","modified":"Modified","parent":"Parent","rand":"Random","comment_count":"Comment count","post__in":"Pool of posts"}
 	 * @default_value none
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
-	 * @a-order 70
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
+	 * @a-order 140
 	 */
 	public string $order_by;
 	/**
@@ -118,7 +179,7 @@ class Post_Selection_Settings extends Templated_Selection_Settings implements Qu
 	 * @label Sort by Meta Field Group
 	 * @instructions Select a target group.
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__order-by","operator": "==","value": "meta_value"}],[{"field": "local_acf_views_acf-card-data__order-by","operator": "==","value": "meta_value_num"}]]
-	 * @a-order 80
+	 * @a-order 150
 	 */
 	public string $order_by_meta_field_group;
 	/**
@@ -128,7 +189,7 @@ class Post_Selection_Settings extends Templated_Selection_Settings implements Qu
 	 * @required 1
 	 * @instructions Select a target field.
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__order-by","operator": "==","value": "meta_value"}],[{"field": "local_acf_views_acf-card-data__order-by","operator": "==","value": "meta_value_num"}]]
-	 * @a-order 90
+	 * @a-order 160
 	 */
 	public string $order_by_meta_field_key;
 	/**
@@ -138,82 +199,21 @@ class Post_Selection_Settings extends Templated_Selection_Settings implements Qu
 	 * @instructions Defines the sorting order of posts.
 	 * @choices {"ASC":"Ascending","DESC":"Descending"}
 	 * @default_value ASC
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
-	 * @a-order 100
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
+	 * @a-order 170
 	 */
 	public string $order;
 	/**
-	 * @a-type post_object
-	 * @return_format id
-	 * @label Pool of posts
-	 * @multiple 1
-	 * @instructions Manually assign specific posts to limit the query to. Only this pool of posts will then be considered for other filters. The 'Pool of posts' option can be selected to 'Sort by'.
-	 * @var int[]
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
-	 * @a-order 110
-	 */
-	public array $post_in;
-	/**
-	 * @a-type post_object
-	 * @return_format id
-	 * @label Exclude posts
-	 * @instructions  Here you can manually exclude specific posts from the query. It means the query will ignore posts from this list, even if they fit the filters. Warning : this field can't be used together with 'Pool of posts'.
-	 * @multiple 1
-	 * @var int[]
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
-	 * @a-order 120
-	 */
-	public array $post_not_in;
-	/**
 	 * @label Ignore Sticky Posts
 	 * @instructions If unchecked then sticky posts will be at the top of results. <a target='_blank' href='https://wordpress.org/support/article/sticky-posts/'>Learn more about Sticky Posts</a>.
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
-	 * @a-order 130
-	 */
-	public bool $is_ignore_sticky_posts;
-	/**
-	 * @a-type textarea
-	 * @label Query Preview
-	 * @instructions For debugging purposes, this shows the query used to fetch posts for this Post Selection. Tip: Publish or update your Post Selection, then reload the page to view the latest query.
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
-	 * @a-order 140
-	 */
-	public string $query_preview;
-
-	/**
-	 * @a-type tab
-	 * @label Filters
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
-	 * @a-order 150
-	 */
-	public bool $tax_filters_tab;
-	/**
-	 * @label Taxonomy Filters
-	 * @a-no-tab 1
-	 * @display seamless
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
-	 * @a-order 160
-	 */
-	public Tax_Filter_Settings $tax_filter;
-
-	/**
-	 * @a-type tab
-	 * @label Meta Filters
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
-	 * @a-order 170
-	 */
-	public bool $meta_filters_tab;
-	/**
-	 * @a-no-tab 1
-	 * @display seamless
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
 	 * @a-order 180
 	 */
-	public Meta_Filter_Settings $meta_filter;
+	public bool $is_ignore_sticky_posts;
 
 	/**
 	 * @a-type tab
-	 * @label Display
+	 * @label Output
 	 * @a-order 190
 	 */
 	public bool $layout_tab;
@@ -224,13 +224,18 @@ class Post_Selection_Settings extends Templated_Selection_Settings implements Qu
 	 * @a-order 230
 	 */
 	public string $description;
-
-
-
+	/**
+	 * @a-type textarea
+	 * @label Query Preview
+	 * @instructions Publish or update your Post Selection to see the latest query.
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
+	 * @a-order 255
+	 */
+	public string $query_preview;
 
 	/**
 	 * @a-type tab
-	 * @label Developer
+	 * @label Advanced
 	 * @a-order 380
 	 */
 	public bool $developer_tab;

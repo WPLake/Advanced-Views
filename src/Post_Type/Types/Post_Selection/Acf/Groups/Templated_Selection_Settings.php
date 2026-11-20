@@ -93,14 +93,14 @@ abstract class Templated_Selection_Settings extends Cpt_Settings {
 	/**
 	 * @a-type tab
 	 * @label Pagination
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
 	 * @a-order 260
 	 */
 	public bool $pagination_tab;
 	/**
 	 * @label With Pagination
 	 * @instructions If enabled then the selected pagination type is applied and the 'Posts per page' rule takes effect. <a target='_blank' href='https://docs.advanced-views.com/post-selections/features/posts-pagination'>Read more</a>.
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
 	 * @a-order 270
 	 */
 	public bool $is_with_pagination;
@@ -111,7 +111,7 @@ abstract class Templated_Selection_Settings extends Cpt_Settings {
 	 * @choices {"load_more_button":"Load More Button","infinity_scroll":"Infinity Scroll","page_numbers":"Page Numbers"}
 	 * @default_value load_more_button
 	 * @a-pro-choices ["load_more_button","infinity_scroll"]
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
 	 * @a-order 280
 	 */
 	public string $pagination_type;
@@ -120,7 +120,7 @@ abstract class Templated_Selection_Settings extends Cpt_Settings {
 	 * @instructions Define a Custom label for the load more button.
 	 * @default_value Load more
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__pagination-type","operator": "==","value": "load_more_button"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
 	 * @a-order 290
 	 */
 	public string $load_more_button_label;
@@ -128,7 +128,7 @@ abstract class Templated_Selection_Settings extends Cpt_Settings {
 	 * @label Posts Per Page
 	 * @instructions Controls how many posts will be displayed initially and how many posts will be appended every time when user triggers 'Load More'. Total amount of posts is limited by the 'Maximum number of posts' field in the 'Query' tab.
 	 * @default_value 9
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
 	 * @a-order 300
 	 */
 	public int $pagination_per_page;
