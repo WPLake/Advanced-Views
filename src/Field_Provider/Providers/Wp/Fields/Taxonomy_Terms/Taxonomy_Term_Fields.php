@@ -4,7 +4,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\Taxonomy_
 
 defined( 'ABSPATH' ) || exit;
 
-class Taxonomy_Term_Fields {
+final class Taxonomy_Term_Fields {
 	const GROUP_NAME = '$taxonomy$';
 	// all fields have ids like 'field_x', so no conflicts possible.
 	const PREFIX = '_taxonomy_';

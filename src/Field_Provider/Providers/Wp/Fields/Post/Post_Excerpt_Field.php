@@ -16,9 +16,67 @@ use WP_Post;
 
 defined( 'ABSPATH' ) || exit;
 
-class Post_Excerpt_Field implements Markup_Field {
+final class Post_Excerpt_Field implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
+
+	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
+		$token_factory = $markup_field_data->get_token_factory();
+
+		return array(
+			$token_factory
+				->variable( $field_id )
+				->add_item_path( self::VALUE ),
+		);
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$args = array(
+			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
+		);
+
+		$value = $field_value->get_value();
+		$post  = self::get_post( $value );
+
+		// it's important to check if the post type supports the excerpt (overall)
+		// do not use has_excerpt(), because it checks only the 'excerpt' post field,
+		// while user may want to see the wp generated excerpt (first sentences).
+		$is_excerpt_supported = is_object( $post ) && post_type_supports( $post->post_type, 'excerpt' );
+
+		if ( $is_excerpt_supported ) {
+			// custom modification to avoid issues (see body for the details).
+			$excerpt = $this->get_excerpt( $post->post_excerpt, $post );
+			// to avoid double escaping.
+			$excerpt   = html_entity_decode( $excerpt, ENT_QUOTES );
+			$is_filled = strlen( $excerpt ) > 0;
+
+			$args[ self::VALUE ] = $is_filled ?
+				$excerpt :
+				$args[ self::VALUE ];
+		}
+
+		return $args;
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
+		return array(
+			self::VALUE => 'excerpt',
+		);
+	}
+
+	public function is_with_field_wrapper(
+		Layout_Settings $layout_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta
+	): bool {
+		return true;
+	}
 
 	// custom modification to avoid issues (see body for the details).
 	protected function get_excerpt( string $text, WP_Post $wp_post ): string {
@@ -88,62 +146,5 @@ class Post_Excerpt_Field implements Markup_Field {
 		 * @since 2.8.0
 		 */
 		return apply_filters( 'wp_trim_excerpt', $text, $raw_excerpt );
-	}
-
-	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
-		$token_factory = $markup_field_data->get_token_factory();
-
-		return array(
-			$token_factory
-				->variable( $field_id )
-			->add_item_path( self::VALUE ),
-		);
-	}
-
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$args = array(
-			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
-		);
-
-		$post = self::get_post( $field_value->get_value() );
-
-		// it's important to check if the post type supports the excerpt (overall)
-		// do not use has_excerpt(), because it checks only the 'excerpt' post field,
-		// while user may want to see the wp generated excerpt (first sentences).
-		if ( null === $post ||
-			! post_type_supports( $post->post_type, 'excerpt' ) ) {
-			return $args;
-		}
-
-		// custom modification to avoid issues (see body for the details).
-		$excerpt = $this->get_excerpt( $post->post_excerpt, $post );
-		// to avoid double escaping.
-		$excerpt = html_entity_decode( $excerpt, ENT_QUOTES );
-
-		$args[ self::VALUE ] = '' !== $excerpt ?
-			$excerpt :
-			$args[ self::VALUE ];
-
-		return $args;
-	}
-
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
-		return array(
-			self::VALUE => 'excerpt',
-		);
-	}
-
-	public function is_with_field_wrapper(
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta
-	): bool {
-		return true;
 	}
 }

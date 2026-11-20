@@ -16,7 +16,7 @@ use WP_User;
 
 defined( 'ABSPATH' ) || exit;
 
-class Comment_User_Field implements Markup_Field {
+final class Comment_User_Field implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
 
@@ -26,7 +26,7 @@ class Comment_User_Field implements Markup_Field {
 		return array(
 			$token_factory
 				->variable( $field_id )
-			->add_item_path( self::VALUE ),
+				->add_item_path( self::VALUE ),
 		);
 	}
 
@@ -38,19 +38,16 @@ class Comment_User_Field implements Markup_Field {
 			self::VALUE => '',
 		);
 
-		$comment = self::get_comment( $field_value->get_value() );
+		$value   = $field_value->get_value();
+		$comment = self::get_comment( $value );
 
-		if ( null === $comment ) {
-			return $args;
+		if ( is_object( $comment ) ) {
+			$user = get_user_by( 'email', $comment->comment_author_email );
+
+			if ( $user instanceof WP_User ) {
+				$args[ self::VALUE ] = $user->ID;
+			}
 		}
-
-		$user = get_user_by( 'email', $comment->comment_author_email );
-
-		if ( ! ( $user instanceof WP_User ) ) {
-			return $args;
-		}
-
-		$args[ self::VALUE ] = $user->ID;
 
 		return $args;
 	}

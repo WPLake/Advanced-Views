@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 
 defined( 'ABSPATH' ) || exit;
 
-class User_Display_Name_Field implements Markup_Field {
+final class User_Display_Name_Field implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
 
@@ -25,7 +25,7 @@ class User_Display_Name_Field implements Markup_Field {
 		return array(
 			$token_factory
 				->variable( $field_id )
-			->add_item_path( self::VALUE ),
+				->add_item_path( self::VALUE ),
 		);
 	}
 
@@ -37,15 +37,15 @@ class User_Display_Name_Field implements Markup_Field {
 			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$user = self::get_user( $field_value->get_value() );
+		$value = $field_value->get_value();
+		$user  = self::get_user( $value );
 
-		if ( null === $user ) {
-			return $args;
-		}
-
-		if ( '' !== $user->display_name ) {
-			// to avoid double escaping issue in Twig.
-			$args[ self::VALUE ] = html_entity_decode( $user->display_name, ENT_QUOTES );
+		if ( is_object( $user ) ) {
+			$is_filled = strlen( $user->display_name ) > 0;
+			if ( $is_filled ) {
+				// to avoid double escaping issue in Twig.
+				$args[ self::VALUE ] = html_entity_decode( $user->display_name, ENT_QUOTES );
+			}
 		}
 
 		return $args;

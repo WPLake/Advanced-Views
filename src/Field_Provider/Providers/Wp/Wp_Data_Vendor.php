@@ -59,7 +59,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\User\User_Websi
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 
-class Wp_Data_Vendor extends Field_Provider_Base {
+final class Wp_Data_Vendor extends Field_Provider_Base {
 	// for back compatibility only.
 	const NAME = 'wp';
 
@@ -113,11 +113,8 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 	public function get_field_choices( array $include_only_types = array() ): array {
 		$field_choices = $this->create_group_field_choices( $include_only_types );
 
-		$is_terms_included = array() === $include_only_types || in_array(
-			Taxonomy_Term_Fields::FIELD_TERMS,
-			$include_only_types,
-			true
-		);
+		$is_terms_listed   = in_array( Taxonomy_Term_Fields::FIELD_TERMS, $include_only_types, true );
+		$is_terms_included = array() === $include_only_types || $is_terms_listed;
 
 		if ( $is_terms_included ) {
 			$taxonomy_choices = $this->create_taxonomy_choices();
@@ -136,44 +133,9 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 		$is_taxonomy_field = 0 === strpos( $field_id, Taxonomy_Term_Fields::PREFIX );
 
 		if ( $is_taxonomy_field ) {
-			$term_name = str_replace( Taxonomy_Term_Fields::PREFIX, '', $field_id );
-
-			$taxonomy = get_taxonomy( $term_name );
-			// @phpstan-ignore-next-line for some reason label can be bool (e.g. post_multilingual, likely from Polylang).
-			$label = is_object( $taxonomy ) ? (string) $taxonomy->label : $term_name;
-
-			// name is necessary for the identifier and markup generation.
-			// multiple is necessary to define, as the custom field will include the Taxonomy field,
-			// which waits for this setting.
-			$field_meta
-				->set_type( Taxonomy_Term_Fields::FIELD_TERMS )
-				->set_name( $term_name )
-				->set_label( $label )
-				->set_identifier( $label )
-				->set_is_multiple( true )
-				->set_is_field_exist( true );
-
-			return;
-		}
-
-		$supported_types = $this->get_supported_field_types();
-
-		$is_supported = in_array(
-			$field_id,
-			$supported_types,
-			true
-		);
-
-		if ( $is_supported ) {
-			$field_names = self::get_field_names( $field_id );
-
-			// name is necessary for the identifier and markup generation.
-			$field_meta
-				->set_type( $field_id )
-				->set_name( $field_id )
-				->set_label( $field_names['label'] )
-				->set_identifier( $field_names['identifier'] )
-				->set_is_field_exist( true );
+			self::fill_taxonomy_field_meta( $field_meta );
+		} else {
+			$this->fill_supported_field_meta( $field_meta );
 		}
 	}
 
@@ -192,6 +154,8 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 	) {
 		$field_id = $field_meta->get_field_id();
 
+		$is_options = $source->is_options();
+
 		$is_post_group      = 0 === strpos( $field_id, Post_Fields::PREFIX );
 		$is_menu_item_group = 0 === strpos( $field_id, Menu_Item_Fields::PREFIX );
 		// only if not menuItemGroup, as prefixes have the same root.
@@ -209,7 +173,7 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 						$is_taxonomy_terms_group ||
 						$is_menu_item_group ||
 						$is_comment_items_group;
-		$is_id_used  = false === $source->is_options() && $is_id_group;
+		$is_id_used  = ! $is_options && $is_id_group;
 
 		if ( $is_id_used ) {
 			return $source->get_id();
@@ -347,11 +311,8 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 			$field_ids = array_keys( $group_choices );
 
 			foreach ( $field_ids as $field_id ) {
-				$is_included = array() === $include_only_types || in_array(
-					$field_id,
-					$include_only_types,
-					true
-				);
+				$is_listed   = in_array( $field_id, $include_only_types, true );
+				$is_included = array() === $include_only_types || $is_listed;
 
 				if ( $is_included ) {
 					$field_key = $this->get_field_key( $group_name, $field_id );
@@ -386,6 +347,45 @@ class Wp_Data_Vendor extends Field_Provider_Base {
 		}
 
 		return $taxonomy_choices;
+	}
+
+	protected function fill_supported_field_meta( Field_Meta $field_meta ): void {
+		$field_id        = $field_meta->get_field_id();
+		$supported_types = $this->get_supported_field_types();
+
+		$is_supported = in_array( $field_id, $supported_types, true );
+
+		if ( $is_supported ) {
+			$field_names = self::get_field_names( $field_id );
+
+			// name is necessary for the identifier and markup generation.
+			$field_meta
+				->set_type( $field_id )
+				->set_name( $field_id )
+				->set_label( $field_names['label'] )
+				->set_identifier( $field_names['identifier'] )
+				->set_is_field_exist( true );
+		}
+	}
+
+	protected static function fill_taxonomy_field_meta( Field_Meta $field_meta ): void {
+		$field_id  = $field_meta->get_field_id();
+		$term_name = str_replace( Taxonomy_Term_Fields::PREFIX, '', $field_id );
+
+		$taxonomy = get_taxonomy( $term_name );
+		// @phpstan-ignore-next-line for some reason label can be bool (e.g. post_multilingual, likely from Polylang).
+		$label = is_object( $taxonomy ) ? (string) $taxonomy->label : $term_name;
+
+		// name is necessary for the identifier and markup generation.
+		// multiple is necessary to define, as the custom field will include the Taxonomy field,
+		// which waits for this setting.
+		$field_meta
+			->set_type( Taxonomy_Term_Fields::FIELD_TERMS )
+			->set_name( $term_name )
+			->set_label( $label )
+			->set_identifier( $label )
+			->set_is_multiple( true )
+			->set_is_field_exist( true );
 	}
 
 	/**

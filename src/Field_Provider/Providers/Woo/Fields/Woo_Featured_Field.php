@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 defined( 'ABSPATH' ) || exit;
 
 // This field isn't a postmeta field, but refers to the 'product_visibility' taxonomy.
-class Woo_Featured_Field implements Markup_Field {
+final class Woo_Featured_Field implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
 
@@ -36,11 +36,9 @@ class Woo_Featured_Field implements Markup_Field {
 
 		$product = self::get_product( $field_value->get_value() );
 
-		if ( null === $product ) {
-			return $args;
+		if ( is_object( $product ) ) {
+			$args[ self::VALUE ] = $product->get_featured();
 		}
-
-		$args[ self::VALUE ] = $product->get_featured();
 
 		return $args;
 	}

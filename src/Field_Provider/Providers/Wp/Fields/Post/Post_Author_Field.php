@@ -10,36 +10,46 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Lists\User_Field;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
+use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
-class Post_Author_Field extends User_Field {
+final class Post_Author_Field extends User_Field {
 	use Custom_Field;
 
 	/**
-	 * @param mixed $post_id
+	 * @return string[]
 	 */
-	protected function get_post_author_id( $post_id ): ?int {
-		$post = self::get_post( $post_id );
+	public function get_conditional_fields( Field_Meta $field_meta ): array {
+		return array_merge(
+			parent::get_conditional_fields( $field_meta ),
+			array(
+				Field_Settings::FIELD_ACF_VIEW_ID,
+			)
+		);
+	}
 
-		if ( null === $post ) {
-			return null;
+	public function is_with_field_wrapper(
+		Layout_Settings $layout_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta
+	): bool {
+		if ( $field_settings->has_external_layout() ) {
+			return true;
 		}
 
-		$author_id = string( get_post_field( 'post_author', $post ) );
-		$author    = strlen( $author_id ) > 0 ?
-			get_user_by( 'ID', $author_id ) :
-			null;
-
-		return $author->ID ?? null;
+		return parent::is_with_field_wrapper( $layout_settings, $field_settings, $field_meta );
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
 	protected function get_item_template_args( Raw_Field_Value $field_value ): array {
-		$field_value->set_value( $this->get_post_author_id( $field_value->get_value() ) );
+		$post_id   = $field_value->get_value();
+		$author_id = self::get_post_author_id( $post_id );
+
+		$field_value->set_value( $author_id );
 
 		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
@@ -64,26 +74,24 @@ class Post_Author_Field extends User_Field {
 	}
 
 	/**
-	 * @return string[]
+	 * @param mixed $post_id
 	 */
-	public function get_conditional_fields( Field_Meta $field_meta ): array {
-		return array_merge(
-			parent::get_conditional_fields( $field_meta ),
-			array(
-				Field_Settings::FIELD_ACF_VIEW_ID,
-			)
-		);
-	}
+	protected static function get_post_author_id( $post_id ): ?int {
+		$post = self::get_post( $post_id );
 
-	public function is_with_field_wrapper(
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta
-	): bool {
-		if ( $field_settings->has_external_layout() ) {
-			return true;
+		if ( is_object( $post ) ) {
+			return self::get_author_id( $post );
 		}
 
-		return parent::is_with_field_wrapper( $layout_settings, $field_settings, $field_meta );
+		return null;
+	}
+
+	protected static function get_author_id( WP_Post $post ): ?int {
+		$author_id = string( get_post_field( 'post_author', $post ) );
+		$author    = strlen( $author_id ) > 0 ?
+			get_user_by( 'ID', $author_id ) :
+			null;
+
+		return $author->ID ?? null;
 	}
 }

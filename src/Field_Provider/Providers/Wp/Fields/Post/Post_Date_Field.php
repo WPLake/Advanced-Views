@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 
 defined( 'ABSPATH' ) || exit;
 
-class Post_Date_Field implements Markup_Field {
+final class Post_Date_Field implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
 
@@ -25,7 +25,7 @@ class Post_Date_Field implements Markup_Field {
 		return array(
 			$token_factory
 				->variable( $field_id )
-			->add_item_path( self::VALUE ),
+				->add_item_path( self::VALUE ),
 		);
 	}
 
@@ -37,17 +37,16 @@ class Post_Date_Field implements Markup_Field {
 			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$post = self::get_post( $field_value->get_value() );
+		$value = $field_value->get_value();
+		$post  = self::get_post( $value );
 
-		if ( null === $post ) {
-			return $args;
+		if ( is_object( $post ) ) {
+			$date = get_the_date( '', $post );
+
+			$args[ self::VALUE ] = is_string( $date ) ?
+				$date :
+				$args[ self::VALUE ];
 		}
-
-		$date = get_the_date( '', $post );
-
-		$args[ self::VALUE ] = false !== $date ?
-			$date :
-			$args[ self::VALUE ];
 
 		return $args;
 	}

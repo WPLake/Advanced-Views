@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 
 defined( 'ABSPATH' ) || exit;
 
-class Comment_Author_Name_Link_Field implements Markup_Field {
+final class Comment_Author_Name_Link_Field implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
 
@@ -34,24 +34,23 @@ class Comment_Author_Name_Link_Field implements Markup_Field {
 	 * @return array<string, mixed>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$comment = self::get_comment( $field_value->get_value() );
+		$value   = $field_value->get_value();
+		$comment = self::get_comment( $value );
 
-		if ( null === $comment ) {
-			$field_value->set_value( array() );
+		$field_args = array();
 
-			return $this->link_field->get_template_variables( $field_value );
+		if ( is_object( $comment ) ) {
+			$author_name = get_comment_author( $comment );
+			$author_url  = get_comment_author_url( $comment );
+
+			$field_args = array(
+				Link_Field::URL   => $author_url,
+				// avoid double escaping in Twig.
+				Link_Field::TITLE => html_entity_decode( $author_name, ENT_QUOTES ),
+			);
 		}
 
-		$author_name = get_comment_author( $comment );
-		$author_url  = get_comment_author_url( $comment );
-
-		$filed_args = array(
-			Link_Field::URL   => $author_url,
-			// avoid double escaping in Twig.
-			Link_Field::TITLE => html_entity_decode( $author_name, ENT_QUOTES ),
-		);
-
-		$field_value->set_value( $filed_args );
+		$field_value->set_value( $field_args );
 
 		return $this->link_field->get_template_variables( $field_value );
 	}

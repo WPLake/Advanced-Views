@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\User;
 
 defined( 'ABSPATH' ) || exit;
 
-class User_Fields {
+final class User_Fields {
 	const GROUP_NAME = '$user$';
 	// all fields have ids like 'field_x', so no conflicts possible.
 	const PREFIX = '_user_';

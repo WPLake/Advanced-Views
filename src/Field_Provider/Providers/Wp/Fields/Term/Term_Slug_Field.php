@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 
 defined( 'ABSPATH' ) || exit;
 
-class Term_Slug_Field implements Markup_Field {
+final class Term_Slug_Field implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
 
@@ -25,7 +25,7 @@ class Term_Slug_Field implements Markup_Field {
 		return array(
 			$token_factory
 				->variable( $field_id )
-			->add_item_path( self::VALUE ),
+				->add_item_path( self::VALUE ),
 		);
 	}
 
@@ -37,16 +37,16 @@ class Term_Slug_Field implements Markup_Field {
 			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$term = self::get_term( $field_value->get_value() );
+		$value = $field_value->get_value();
+		$term  = self::get_term( $value );
 
-		if ( null === $term ) {
-			return $args;
+		if ( is_object( $term ) ) {
+			$is_filled = strlen( $term->slug ) > 0;
+			// decode to avoid double encoding in Twig.
+			$args[ self::VALUE ] = $is_filled ?
+				html_entity_decode( $term->slug, ENT_QUOTES ) :
+				$args[ self::VALUE ];
 		}
-
-		// decode to avoid double encoding in Twig.
-		$args[ self::VALUE ] = '' !== $term->slug ?
-			html_entity_decode( $term->slug, ENT_QUOTES ) :
-			$args[ self::VALUE ];
 
 		return $args;
 	}

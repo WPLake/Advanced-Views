@@ -163,7 +163,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	public function get_group_choices(): array {
 		$source_label  = __( '(Pods)', 'acf-views' );
 		$group_choices = array();
-		$groups_by_pod = $this->get_groups();
+		$groups_by_pod = self::get_groups();
 
 		foreach ( $groups_by_pod as $type => $groups ) {
 			foreach ( $groups as $group ) {
@@ -171,10 +171,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 					continue;
 				}
 
-				$group_info = $group->get_args();
-				$group_info = is_array( $group_info ) ?
-					$group_info :
-					array();
+				$group_info = self::get_object_args( $group );
 
 				$group_id    = string( $group_info, 'name' );
 				$group_title = string( $group_info, 'label' );
@@ -201,7 +198,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	 */
 	public function get_field_choices( array $include_only_types = array() ): array {
 		$field_choices = array();
-		$groups_by_pod = $this->get_groups();
+		$groups_by_pod = self::get_groups();
 
 		foreach ( $groups_by_pod as $type => $groups ) {
 			foreach ( $groups as $group ) {
@@ -296,8 +293,9 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	) {
 		if ( function_exists( 'pods' ) ) {
 			$field_id          = $field_meta->get_field_id();
-			$field_source_type = explode( '.', $field_id )[0];
-			$field_name        = explode( '.', $field_id )[1] ?? '';
+			$id_parts          = explode( '.', $field_id );
+			$field_source_type = $id_parts[0];
+			$field_name        = $id_parts[1] ?? '';
 			$source_id         = $source->get_id();
 
 			$value = $this->get_pods_value(
@@ -359,8 +357,8 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	 * @return null|array{title:string,url:string}
 	 */
 	public function get_group_link_by_group_id( string $group_id ): ?array {
-		$pod   = $this->get_pod_object_by_group_id( $group_id );
-		$group = $this->get_group_object_by_group_id( $group_id );
+		$pod   = self::get_pod_object_by_group_id( $group_id );
+		$group = self::get_group_object_by_group_id( $group_id );
 
 		$is_valid = is_object( $pod ) &&
 					is_object( $group ) &&
@@ -368,14 +366,8 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 					method_exists( $group, 'get_args' );
 
 		if ( $is_valid ) {
-			$pod_info   = $pod->get_args();
-			$pod_info   = is_array( $pod_info ) ?
-				$pod_info :
-				array();
-			$group_info = $group->get_args();
-			$group_info = is_array( $group_info ) ?
-				$group_info :
-				array();
+			$pod_info   = self::get_object_args( $pod );
+			$group_info = self::get_object_args( $group );
 
 			$pod_id      = int( $pod_info, 'id' );
 			$group_label = string( $group_info, 'label' );
@@ -404,7 +396,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	 * @return mixed[]|null
 	 */
 	public function get_group_export_data( string $group_id ): ?array {
-		$pod = $this->get_pod_object_by_group_id( $group_id );
+		$pod = self::get_pod_object_by_group_id( $group_id );
 
 		$is_supported = is_object( $pod ) &&
 						is_callable( array( $pod, 'get_id' ) ) &&
@@ -421,9 +413,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			'group_id' => $group_id,
 		);
 
-		$migrate_file = sprintf( '%scomponents/Migrate-Packages/Migrate-Packages.php', constant( 'PODS_DIR' ) );
-
-		include_once $migrate_file;
+		include_once self::get_migrate_file();
 
 		$pod_id      = $pod->get_id();
 		$export_args = array(
@@ -490,9 +480,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			return null;
 		}
 
-		$migrate_file = sprintf( '%scomponents/Migrate-Packages/Migrate-Packages.php', constant( 'PODS_DIR' ) );
-
-		include_once $migrate_file;
+		include_once self::get_migrate_file();
 
 		// for compatibility with our old export format, which didn't have meta.
 		if ( array() === $meta_data ) {
@@ -520,39 +508,6 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 		}
 
 		return stringOrNull( $group_data, 'name' );
-	}
-
-	/**
-	 * @return array<string,array<int,object>>
-	 */
-	protected function get_groups(): array {
-		$pods_api = self::get_pods_api();
-
-		if ( is_object( $pods_api ) && method_exists( $pods_api, 'load_pods' ) ) {
-			$pods = $pods_api->load_pods();
-
-			$groups = array();
-
-			foreach ( $pods as $type => $pod ) {
-				$is_pod = is_object( $pod ) && method_exists( $pod, 'get_groups' );
-
-				if ( ! $is_pod ) {
-					continue;
-				}
-
-				$type            = (string) $type;
-				$pod_groups      = $pod->get_groups();
-				$groups[ $type ] = array();
-
-				foreach ( $pod_groups as $pod_group ) {
-					$groups[ $type ][] = $pod_group;
-				}
-			}
-
-			return $groups;
-		}
-
-		return array();
 	}
 
 	/**
@@ -702,25 +657,8 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 
 		if ( 'custom-simple' === $pick_object ) {
 			$pick_choices = string( $data, 'pick_custom' );
-			$is_filled    = strlen( $pick_choices ) > 0;
-			$choices      = array();
 
-			if ( $is_filled ) {
-				$pick_choices = explode( "\n", $pick_choices );
-
-				foreach ( $pick_choices as $pick_choice ) {
-					$pick_choice = explode( '|', $pick_choice );
-					$choice_key  = trim( $pick_choice[0] );
-					// optional, can be just one value.
-					$choice_value = key_exists( 1, $pick_choice ) ?
-						trim( $pick_choice[1] ) :
-						$choice_key;
-
-					$choices[ $choice_key ] = $choice_value;
-				}
-			}
-
-			return $choices;
+			return self::parse_custom_choices( $pick_choices );
 		}
 
 		// skip non-select fields (in Fields/Pods_Pick_Field.php they don't employ the Select field).
@@ -773,53 +711,14 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 		return null;
 	}
 
-	protected function get_pod_object_by_group_id( string $group_id ): ?object {
-		$pods_api = self::get_pods_api();
-
-		if ( is_object( $pods_api ) && method_exists( $pods_api, 'load_pod' ) ) {
-			$pod_id    = explode( '.', $group_id )[0];
-			$load_args = array(
-				'name' => $pod_id,
-			);
-
-			$pod = $pods_api->load_pod( $load_args );
-
-			return is_object( $pod ) ?
-				$pod :
-				null;
-		}
-
-		return null;
-	}
-
-	protected function get_group_object_by_group_id( string $group_id ): ?object {
-		$pods_api = self::get_pods_api();
-
-		if ( is_object( $pods_api ) && method_exists( $pods_api, 'load_group' ) ) {
-			$pod_id         = explode( '.', $group_id )[0];
-			$group_short_id = explode( '.', $group_id )[1] ?? '';
-			$load_args      = array(
-				'pod'  => $pod_id,
-				'name' => $group_short_id,
-			);
-
-			$group = $pods_api->load_group( $load_args );
-
-			return is_object( $group ) ?
-				$group :
-				null;
-		}
-
-		return null;
-	}
-
 	/**
 	 * @return array<string,mixed>
 	 */
 	protected function find_field_info( string $field_id ): array {
-		$field_source_type = explode( '.', $field_id )[0];
-		$field_name        = explode( '.', $field_id )[1] ?? '';
-		$groups_by_pod     = $this->get_groups();
+		$id_parts          = explode( '.', $field_id );
+		$field_source_type = $id_parts[0];
+		$field_name        = $id_parts[1] ?? '';
+		$groups_by_pod     = self::get_groups();
 		$data              = array();
 
 		foreach ( $groups_by_pod as $type => $groups ) {
@@ -828,28 +727,10 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			}
 
 			foreach ( $groups as $group ) {
-				if ( false === method_exists( $group, 'get_fields' ) ) {
-					continue;
-				}
+				$field_info = self::find_group_field_info( $group, $field_name );
 
-				$fields = $group->get_fields();
-
-				foreach ( $fields as $field ) {
-					$is_field = is_object( $field ) && method_exists( $field, 'get_args' );
-
-					if ( ! $is_field ) {
-						continue;
-					}
-
-					$field_info = $field->get_args();
-					$field_info = is_array( $field_info ) ?
-						$field_info :
-						array();
-
-					if ( string( $field_info, 'name' ) === $field_name ) {
-						$data = $field_info;
-						break;
-					}
+				if ( is_array( $field_info ) ) {
+					$data = $field_info;
 				}
 			}
 		}
@@ -871,10 +752,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			return $field_choices;
 		}
 
-		$group_info = $group->get_args();
-		$group_info = is_array( $group_info ) ?
-			$group_info :
-			array();
+		$group_info = self::get_object_args( $group );
 
 		$group_name            = string( $group_info, 'name' );
 		$group_id              = self::get_pods_group_id( $type, $group_name );
@@ -889,10 +767,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 				continue;
 			}
 
-			$field_info = $field->get_args();
-			$field_info = is_array( $field_info ) ?
-				$field_info :
-				array();
+			$field_info = self::get_object_args( $field );
 			$field_type = string( $field_info, 'type' );
 
 			$is_supported = in_array(
@@ -922,6 +797,144 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 		}
 
 		return $field_choices;
+	}
+
+	/**
+	 * @return array<string,array<int,object>>
+	 */
+	protected static function get_groups(): array {
+		$pods_api = self::get_pods_api();
+
+		if ( is_object( $pods_api ) && method_exists( $pods_api, 'load_pods' ) ) {
+			$pods = $pods_api->load_pods();
+
+			$groups = array();
+
+			foreach ( $pods as $type => $pod ) {
+				$is_pod = is_object( $pod ) && method_exists( $pod, 'get_groups' );
+
+				if ( ! $is_pod ) {
+					continue;
+				}
+
+				$type            = (string) $type;
+				$pod_groups      = $pod->get_groups();
+				$groups[ $type ] = array();
+
+				foreach ( $pod_groups as $pod_group ) {
+					$groups[ $type ][] = $pod_group;
+				}
+			}
+
+			return $groups;
+		}
+
+		return array();
+	}
+
+	protected static function get_pod_object_by_group_id( string $group_id ): ?object {
+		$pods_api = self::get_pods_api();
+
+		if ( is_object( $pods_api ) && method_exists( $pods_api, 'load_pod' ) ) {
+			$pod_id    = explode( '.', $group_id )[0];
+			$load_args = array(
+				'name' => $pod_id,
+			);
+
+			$pod = $pods_api->load_pod( $load_args );
+
+			return is_object( $pod ) ?
+				$pod :
+				null;
+		}
+
+		return null;
+	}
+
+	protected static function get_group_object_by_group_id( string $group_id ): ?object {
+		$pods_api = self::get_pods_api();
+
+		if ( is_object( $pods_api ) && method_exists( $pods_api, 'load_group' ) ) {
+			$pod_id         = explode( '.', $group_id )[0];
+			$group_short_id = explode( '.', $group_id )[1] ?? '';
+			$load_args      = array(
+				'pod'  => $pod_id,
+				'name' => $group_short_id,
+			);
+
+			$group = $pods_api->load_group( $load_args );
+
+			return is_object( $group ) ?
+				$group :
+				null;
+		}
+
+		return null;
+	}
+
+	/**
+	 * @return ?array<string,mixed>
+	 */
+	protected static function find_group_field_info( object $group, string $field_name ): ?array {
+		if ( method_exists( $group, 'get_fields' ) ) {
+			$fields = $group->get_fields();
+
+			foreach ( $fields as $field ) {
+				$is_field   = is_object( $field ) && method_exists( $field, 'get_args' );
+				$field_info = $is_field ?
+					self::get_object_args( $field ) :
+					array();
+
+				if ( $is_field && string( $field_info, 'name' ) === $field_name ) {
+					return $field_info;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	protected static function parse_custom_choices( string $pick_choices ): array {
+		$choices   = array();
+		$is_filled = strlen( $pick_choices ) > 0;
+		$lines     = $is_filled ?
+			explode( "\n", $pick_choices ) :
+			array();
+
+		foreach ( $lines as $line ) {
+			$choice_parts = explode( '|', $line );
+			$choice_key   = trim( $choice_parts[0] );
+			// optional, can be just one value.
+			$choice_value = key_exists( 1, $choice_parts ) ?
+				trim( $choice_parts[1] ) :
+				$choice_key;
+
+			$choices[ $choice_key ] = $choice_value;
+		}
+
+		return $choices;
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	protected static function get_object_args( object $pods_object ): array {
+		$args = method_exists( $pods_object, 'get_args' ) ?
+			$pods_object->get_args() :
+			array();
+
+		return is_array( $args ) ?
+			$args :
+			array();
+	}
+
+	protected static function get_migrate_file(): string {
+		$pods_dir = constant( 'PODS_DIR' );
+
+		return sprintf( '%scomponents/Migrate-Packages/Migrate-Packages.php', $pods_dir );
 	}
 
 	/**

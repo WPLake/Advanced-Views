@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 
 defined( 'ABSPATH' ) || exit;
 
-class Woo_Gallery_Field extends Gallery_Field {
+final class Woo_Gallery_Field extends Gallery_Field {
 	use Custom_Field;
 
 	/**
@@ -23,16 +23,14 @@ class Woo_Gallery_Field extends Gallery_Field {
 
 		$product = self::get_product( $field_value->get_value() );
 
-		if ( null === $product ) {
-			return $args;
-		}
+		if ( is_object( $product ) ) {
+			$image_ids = $product->get_gallery_image_ids();
 
-		$image_ids = $product->get_gallery_image_ids();
+			foreach ( $image_ids as $image_id ) {
+				$field_value->set_value( $image_id );
 
-		foreach ( $image_ids as $image_id ) {
-			$field_value->set_value( $image_id );
-
-			$args[ self::VALUE ][] = $this->image_field->get_template_variables( $field_value );
+				$args[ self::VALUE ][] = $this->image_field->get_template_variables( $field_value );
+			}
 		}
 
 		return $args;
@@ -49,11 +47,10 @@ class Woo_Gallery_Field extends Gallery_Field {
 		$value   = array();
 		$value[] = $this->image_field->get_validation_template_variables( $field_value );
 
-		return array_merge(
-			$args,
-			array(
-				self::VALUE => $value,
-			)
+		$value_args = array(
+			self::VALUE => $value,
 		);
+
+		return array_merge( $args, $value_args );
 	}
 }

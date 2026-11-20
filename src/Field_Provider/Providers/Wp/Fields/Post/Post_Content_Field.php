@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 
 defined( 'ABSPATH' ) || exit;
 
-class Post_Content_Field implements Markup_Field {
+final class Post_Content_Field implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
 
@@ -38,21 +38,21 @@ class Post_Content_Field implements Markup_Field {
 			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$post = self::get_post( $field_value->get_value() );
+		$value = $field_value->get_value();
+		$post  = self::get_post( $value );
 
-		if ( null === $post ) {
-			return $args;
+		if ( is_object( $post ) ) {
+			$content = $post->post_content;
+			// to avoid double escaping.
+			$content = html_entity_decode( $content, ENT_QUOTES );
+			// renders shortcodes and ACF Gutenberg blocks.
+			$content   = apply_filters( 'the_content', $content );
+			$is_filled = strlen( $content ) > 0;
+
+			$args[ self::VALUE ] = $is_filled ?
+				$content :
+				$args[ self::VALUE ];
 		}
-
-		$content = $post->post_content;
-		// to avoid double escaping.
-		$content = html_entity_decode( $content, ENT_QUOTES );
-		// renders shortcodes and ACF Gutenberg blocks.
-		$content = apply_filters( 'the_content', $content );
-
-		$args[ self::VALUE ] = '' !== $content ?
-			$content :
-			$args[ self::VALUE ];
 
 		return $args;
 	}

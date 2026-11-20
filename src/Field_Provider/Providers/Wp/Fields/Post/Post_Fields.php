@@ -4,7 +4,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\Post;
 
 defined( 'ABSPATH' ) || exit;
 
-class Post_Fields {
+final class Post_Fields {
 	const GROUP_NAME = '$post$';
 	// all fields have ids like 'field_x', so no conflicts possible.
 	const PREFIX = '_post_';

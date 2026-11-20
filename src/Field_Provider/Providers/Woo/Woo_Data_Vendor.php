@@ -73,11 +73,12 @@ final class Woo_Data_Vendor extends Field_Provider_Base {
 		$field_ids     = array_keys( $fields );
 
 		foreach ( $field_ids as $field_id ) {
-			$is_included = array() === $include_only_types || in_array(
+			$is_listed   = in_array(
 				$field_id,
 				$include_only_types,
 				true
 			);
+			$is_included = array() === $include_only_types || $is_listed;
 
 			if ( $is_included ) {
 				$field_key = $this->get_field_key( Woo_Fields::GROUP_NAME, $field_id );
@@ -106,20 +107,7 @@ final class Woo_Data_Vendor extends Field_Provider_Base {
 		);
 
 		if ( $is_supported ) {
-			// it's necessary to have real meta names for WP_Query.
-			$real_field_name = self::get_real_field_name( $field_id );
-
-			$field_names = self::get_fields_with_labels()[ $field_id ] ?? array();
-			$field_meta
-				->set_type( $field_id )
-				->set_name( $real_field_name )
-				->set_label( $field_names['label'] ?? '' )
-				->set_identifier( $field_names['identifier'] ?? '' )
-				->set_is_field_exist( true );
-
-			if ( Woo_Fields::FIELD_GALLERY === $field_id ) {
-				$field_meta->set_is_multiple( true );
-			}
+			self::fill_supported_field_meta( $field_meta, $field_id );
 		}
 	}
 
@@ -136,11 +124,11 @@ final class Woo_Data_Vendor extends Field_Provider_Base {
 		bool $is_formatted = false,
 		?array $local_data = null
 	) {
-		if ( $source->is_options() ) {
-			return null;
+		if ( ! $source->is_options() ) {
+			return $source->get_id();
 		}
 
-		return $source->get_id();
+		return null;
 	}
 
 	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
@@ -257,6 +245,25 @@ final class Woo_Data_Vendor extends Field_Provider_Base {
 				'identifier' => 'featured',
 			),
 		);
+	}
+
+	protected static function fill_supported_field_meta( Field_Meta $field_meta, string $field_id ): void {
+		// it's necessary to have real meta names for WP_Query.
+		$real_field_name = self::get_real_field_name( $field_id );
+
+		$fields      = self::get_fields_with_labels();
+		$field_names = $fields[ $field_id ] ?? array();
+
+		$field_meta
+			->set_type( $field_id )
+			->set_name( $real_field_name )
+			->set_label( $field_names['label'] ?? '' )
+			->set_identifier( $field_names['identifier'] ?? '' )
+			->set_is_field_exist( true );
+
+		if ( Woo_Fields::FIELD_GALLERY === $field_id ) {
+			$field_meta->set_is_multiple( true );
+		}
 	}
 
 	protected static function get_real_field_name( string $field_id ): string {

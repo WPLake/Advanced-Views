@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 
 defined( 'ABSPATH' ) || exit;
 
-class Comment_Status_Field implements Markup_Field {
+final class Comment_Status_Field implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
 
@@ -25,7 +25,7 @@ class Comment_Status_Field implements Markup_Field {
 		return array(
 			$token_factory
 				->variable( $field_id )
-			->add_item_path( self::VALUE ),
+				->add_item_path( self::VALUE ),
 		);
 	}
 
@@ -37,17 +37,16 @@ class Comment_Status_Field implements Markup_Field {
 			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$comment = self::get_comment( $field_value->get_value() );
+		$value   = $field_value->get_value();
+		$comment = self::get_comment( $value );
 
-		if ( null === $comment ) {
-			return $args;
+		if ( is_object( $comment ) ) {
+			$comment_status = wp_get_comment_status( $comment );
+
+			$args[ self::VALUE ] = is_string( $comment_status ) ?
+				$comment_status :
+				$args[ self::VALUE ];
 		}
-
-		$comment_status = wp_get_comment_status( $comment );
-
-		$args[ self::VALUE ] = false !== $comment_status ?
-			$comment_status :
-			$args[ self::VALUE ];
 
 		return $args;
 	}

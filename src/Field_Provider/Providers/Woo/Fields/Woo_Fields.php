@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Woo\Fields;
 
 defined( 'ABSPATH' ) || exit;
 
-class Woo_Fields {
+final class Woo_Fields {
 	const GROUP_NAME = '$woo$';
 	// all fields have ids like 'field_x', so no conflicts possible.
 	const PREFIX = '_woo_';

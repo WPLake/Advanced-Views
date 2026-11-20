@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 
 defined( 'ABSPATH' ) || exit;
 
-class Comment_Content_Field implements Markup_Field {
+final class Comment_Content_Field implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
 
@@ -23,9 +23,11 @@ class Comment_Content_Field implements Markup_Field {
 		$token_factory = $markup_field_data->get_token_factory();
 
 		// escaped by default, not raw - as commentId may point on a pending comment with unverified content.
-		return array(
-			$token_factory->variable( $field_id )->add_item_path( self::VALUE ),
-		);
+		$value_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::VALUE );
+
+		return array( $value_var );
 	}
 
 	/**
@@ -36,22 +38,22 @@ class Comment_Content_Field implements Markup_Field {
 			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$comment = self::get_comment( $field_value->get_value() );
+		$value   = $field_value->get_value();
+		$comment = self::get_comment( $value );
 
-		if ( null === $comment ) {
-			return $args;
+		if ( is_object( $comment ) ) {
+			$content   = $comment->comment_content;
+			$is_filled = strlen( $content ) > 0;
+
+			// 1. avoid double encoding
+			// 2. do not use get_comment_text() because it adds 'In reply to' text
+			$args[ self::VALUE ] = $is_filled ?
+				html_entity_decode( $content, ENT_QUOTES ) :
+				$args[ self::VALUE ];
+
+			// replace new lines with <br>.
+			$args[ self::VALUE ] = str_replace( "\n", '<br>', $args[ self::VALUE ] );
 		}
-
-		$content = $comment->comment_content;
-
-		// 1. avoid double encoding
-		// 2. do not use get_comment_text() because it adds 'In reply to' text
-		$args[ self::VALUE ] = '' !== $content ?
-			html_entity_decode( $content, ENT_QUOTES ) :
-			$args[ self::VALUE ];
-
-		// replace new lines with <br>.
-		$args[ self::VALUE ] = str_replace( "\n", '<br>', $args[ self::VALUE ] );
 
 		return $args;
 	}

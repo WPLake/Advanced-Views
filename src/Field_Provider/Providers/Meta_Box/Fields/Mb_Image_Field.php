@@ -9,12 +9,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 
 defined( 'ABSPATH' ) || exit;
 
-class Mb_Image_Field extends Image_Field {
+final class Mb_Image_Field extends Image_Field {
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		if ( is_array( $field_value->get_value() ) &&
-			key_exists( 'ID', $field_value->get_value() ) ) {
-			$id = is_numeric( $field_value->get_value()['ID'] ) ?
-				$field_value->get_value()['ID'] :
+		$value = $field_value->get_value();
+
+		if ( is_array( $value ) &&
+			key_exists( 'ID', $value ) ) {
+			$id = is_numeric( $value['ID'] ) ?
+				$value['ID'] :
 				0;
 
 			$field_value->set_value( $id );

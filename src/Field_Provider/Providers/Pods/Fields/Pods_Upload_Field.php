@@ -19,7 +19,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
 defined( 'ABSPATH' ) || exit;
 
-class Pods_Upload_Field implements Markup_Field {
+final class Pods_Upload_Field implements Markup_Field {
 	use Markup_Field_Base;
 
 	private Image_Field $image_field;
@@ -32,63 +32,34 @@ class Pods_Upload_Field implements Markup_Field {
 		$this->gallery_field = $gallery_field;
 	}
 
-	protected function get_field_instance( Field_Meta $field_meta ): Markup_Field {
-		if ( ! in_array( $field_meta->get_return_format(), array( 'images', 'images-any' ), true ) ) {
-			return $this->file_field;
-		}
-
-		return $field_meta->is_multiple() ?
-			$this->gallery_field :
-			$this->image_field;
-	}
-
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
-		return $this->get_field_instance( $markup_field_data->get_context()->get_field_meta() )
-			->compose_html( $field_id, $markup_field_data );
+		$field_context  = $markup_field_data->get_context();
+		$field_meta     = $field_context->get_field_meta();
+		$field_instance = $this->get_field_instance( $field_meta );
+
+		return $field_instance->compose_html( $field_id, $markup_field_data );
 	}
 
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		$field_context = $field_value->get_context();
+		$field_meta    = $field_context->get_field_meta();
+		$is_multiple   = $field_meta->is_multiple();
+		$origin_value  = $field_value->get_value();
 
-		if ( $field_context->get_field_meta()->is_multiple() ) {
-			if ( is_array( $field_value->get_value() ) ) {
-				$field_value->set_value(
-					array_map(
-						function ( $value ) {
-							if ( false === is_array( $value ) ) {
-								return 0;
-							}
+		$new_value = self::get_normalized_value( $origin_value, $is_multiple );
+		$field_value->set_value( $new_value );
 
-							$id = int( $value, 'ID' );
+		$field_instance = $this->get_field_instance( $field_meta );
 
-							// in Pod Blocks 'id' is in lower case.
-							return 0 !== $id ?
-								$id :
-								int( $value, 'id' );
-						},
-						$field_value->get_value()
-					)
-				);
-			} else {
-				$field_value->set_value( array() );
-			}
-		} elseif ( is_array( $field_value->get_value() ) ) {
-			$id = int( $field_value->get_value(), 'ID' );
-			// in Pod Blocks 'id' is in lower case.
-			$field_value->set_value(
-				0 !== $id ?
-					$id :
-					int( $field_value->get_value(), 'id' )
-			);
-		} else {
-			$field_value->set_value( 0 );
-		}
-
-		return $this->get_field_instance( $field_context->get_field_meta() )->get_template_variables( $field_value );
+		return $field_instance->get_template_variables( $field_value );
 	}
 
 	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
-		return $this->get_field_instance( $field_value->get_context()->get_field_meta() )->get_validation_template_variables( $field_value );
+		$field_context  = $field_value->get_context();
+		$field_meta     = $field_context->get_field_meta();
+		$field_instance = $this->get_field_instance( $field_meta );
+
+		return $field_instance->get_validation_template_variables( $field_value );
 	}
 
 	public function is_with_field_wrapper(
@@ -96,14 +67,90 @@ class Pods_Upload_Field implements Markup_Field {
 		Field_Settings $field_settings,
 		Field_Meta $field_meta
 	): bool {
-		return $this->get_field_instance( $field_meta )->is_with_field_wrapper( $layout_settings, $field_settings, $field_meta );
+		$field_instance = $this->get_field_instance( $field_meta );
+
+		return $field_instance->is_with_field_wrapper(
+			$layout_settings,
+			$field_settings,
+			$field_meta
+		);
 	}
 
 	public function get_conditional_fields( Field_Meta $field_meta ): array {
-		return $this->get_field_instance( $field_meta )->get_conditional_fields( $field_meta );
+		$field_instance = $this->get_field_instance( $field_meta );
+
+		return $field_instance->get_conditional_fields( $field_meta );
 	}
 
 	public function get_front_assets( Field_Settings $field_settings ): array {
-		return $this->get_field_instance( $field_settings->get_field_meta() )->get_front_assets( $field_settings );
+		$field_meta     = $field_settings->get_field_meta();
+		$field_instance = $this->get_field_instance( $field_meta );
+
+		return $field_instance->get_front_assets( $field_settings );
+	}
+
+	protected function get_field_instance( Field_Meta $field_meta ): Markup_Field {
+		$return_format = $field_meta->get_return_format();
+		$is_images     = in_array(
+			$return_format,
+			array(
+				'images',
+				'images-any',
+			),
+			true
+		);
+
+		if ( $is_images ) {
+			return $field_meta->is_multiple() ?
+				$this->gallery_field :
+				$this->image_field;
+		}
+
+		return $this->file_field;
+	}
+
+	/**
+	 * @param mixed $value
+	 *
+	 * @return int|int[]
+	 */
+	protected static function get_normalized_value( $value, bool $is_multiple ) {
+		if ( $is_multiple ) {
+			return self::get_attachment_ids( $value );
+		}
+
+		return self::get_attachment_id( $value );
+	}
+
+	/**
+	 * @param mixed $value
+	 *
+	 * @return int[]
+	 */
+	protected static function get_attachment_ids( $value ): array {
+		if ( is_array( $value ) ) {
+			return array_map(
+				fn( $item ) => self::get_attachment_id( $item ),
+				$value
+			);
+		}
+
+		return array();
+	}
+
+	/**
+	 * @param mixed $value
+	 */
+	protected static function get_attachment_id( $value ): int {
+		if ( is_array( $value ) ) {
+			$id = int( $value, 'ID' );
+
+			// in Pod Blocks 'id' is in lower case.
+			return 0 !== $id ?
+				$id :
+				int( $value, 'id' );
+		}
+
+		return 0;
 	}
 }

@@ -9,14 +9,16 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 
 defined( 'ABSPATH' ) || exit;
 
-class Mb_Gallery_Field extends Gallery_Field {
+final class Mb_Gallery_Field extends Gallery_Field {
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$value = $field_value->get_value();
+
 		// ids are array keys.
-		$field_value->set_value(
-			is_array( $field_value->get_value() ) ?
-				array_keys( $field_value->get_value() ) :
-				array()
-		);
+		$ids = is_array( $value ) ?
+			array_keys( $value ) :
+			array();
+
+		$field_value->set_value( $ids );
 
 		return parent::get_template_variables( $field_value );
 	}

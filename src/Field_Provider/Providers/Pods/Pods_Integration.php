@@ -207,7 +207,8 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	}
 
 	protected function render_postbox( object $pod ): string {
-		$pod_name = $this->get_pod_name( $pod );
+		$pod_name    = $this->get_pod_name( $pod );
+		$postbox_tag = $this->related_postbox_tag( $pod_name, $pod );
 
 		$tags = tag( 'div' )
 			->attributes(
@@ -222,9 +223,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 					),
 				)
 			)
-			->content(
-				$this->related_postbox_tag( $pod_name, $pod )
-			);
+			->content( $postbox_tag );
 
 		return $this->html_renderer->render_html( $tags );
 	}
@@ -242,10 +241,13 @@ class Pods_Integration extends Settings_Vendor_Integration {
 				$title
 			);
 
+		$views_nodes = $this->related_acf_views_nodes( null, false, $related_views );
+		$links_tag   = self::add_new_links_tag( $pod );
+
 		$nodes = array(
 			$heading,
-			...$this->related_acf_views_nodes( null, false, $related_views ),
-			$this->add_new_links_tag( $pod ),
+			...$views_nodes,
+			$links_tag,
 		);
 
 		return tag( 'div' )
@@ -264,37 +266,25 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	/**
 	 * @param object $pod
 	 */
-	protected function add_new_links_tag( $pod ): ?Html_Tag {
-		if ( ! method_exists( $pod, 'get_groups' ) ) {
-			return null;
-		}
+	protected static function add_new_links_tag( $pod ): ?Html_Tag {
+		$links = self::create_add_new_links( $pod );
 
-		$links = array();
-
-		foreach ( $pod->get_groups() as $group ) {
-			$group_info = self::get_group_args( $group );
-
-			if ( is_array( $group_info ) ) {
-				$group_title = string( $group_info, 'label' );
-				$link_title  = sprintf( ' %s', $group_title );
-				$group_id    = int( $group_info, 'id' );
-
-				$links[] = self::add_new_link_tag( $group_id, $link_title );
-			}
-		}
-
-		return tag( 'div' )
-			->attributes(
-				array(
-					'style' => array(
-						'display'   => 'flex',
-						'gap'       => '10px',
-						'flex-wrap' => 'wrap',
-						'margin'    => '20px 0 0',
-					),
+		if ( method_exists( $pod, 'get_groups' ) ) {
+			return tag( 'div' )
+				->attributes(
+					array(
+						'style' => array(
+							'display'   => 'flex',
+							'gap'       => '10px',
+							'flex-wrap' => 'wrap',
+							'margin'    => '20px 0 0',
+						),
+					)
 				)
-			)
-			->content( ...$links );
+				->content( ...$links );
+		}
+
+		return null;
 	}
 
 	/**
@@ -349,6 +339,30 @@ class Pods_Integration extends Settings_Vendor_Integration {
 	}
 
 	/**
+	 * @return Html_Tag[]
+	 */
+	protected static function create_add_new_links( object $pod ): array {
+		$links      = array();
+		$pod_groups = method_exists( $pod, 'get_groups' ) ?
+			$pod->get_groups() :
+			array();
+
+		foreach ( $pod_groups as $group ) {
+			$group_info = self::get_group_args( $group );
+
+			if ( is_array( $group_info ) ) {
+				$group_title = string( $group_info, 'label' );
+				$link_title  = sprintf( ' %s', $group_title );
+				$group_id    = int( $group_info, 'id' );
+
+				$links[] = self::add_new_link_tag( $group_id, $link_title );
+			}
+		}
+
+		return $links;
+	}
+
+	/**
 	 * @param mixed $group
 	 *
 	 * @return ?array<string,mixed>
@@ -388,9 +402,11 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			);
 			$group      = $pods_api->load_group( $group_args );
 
-			return is_object( $group ) &&
-				method_exists( $group, 'get_fields' ) &&
-				method_exists( $group, 'get_parent_object' ) ?
+			$is_valid = is_object( $group ) &&
+						method_exists( $group, 'get_fields' ) &&
+						method_exists( $group, 'get_parent_object' );
+
+			return $is_valid ?
 				$group :
 				null;
 		}
@@ -447,13 +463,19 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			pods_api() :
 			null;
 
-		if ( is_object( $pods_api ) && method_exists( $pods_api, 'load_pod' ) && strlen( $id ) > 0 ) {
+		$is_loadable = is_object( $pods_api ) &&
+						method_exists( $pods_api, 'load_pod' ) &&
+						strlen( $id ) > 0;
+
+		if ( $is_loadable ) {
 			$pod_args = array(
 				'id' => $id,
 			);
 			$pod      = $pods_api->load_pod( $pod_args );
 
-			return is_object( $pod ) && method_exists( $pod, 'get_args' ) ?
+			$is_valid = is_object( $pod ) && method_exists( $pod, 'get_args' );
+
+			return $is_valid ?
 				$pod :
 				null;
 		}

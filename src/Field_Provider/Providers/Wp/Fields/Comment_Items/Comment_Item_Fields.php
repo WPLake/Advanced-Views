@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\Comment_I
 
 defined( 'ABSPATH' ) || exit;
 
-class Comment_Item_Fields {
+final class Comment_Item_Fields {
 	const GROUP_NAME = '$comment_items$';
 	// all fields have ids like 'field_x', so no conflicts possible.
 	const PREFIX = '_comment_items_';

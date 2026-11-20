@@ -21,7 +21,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
 defined( 'ABSPATH' ) || exit;
 
-class Pods_Pick_Field implements Markup_Field {
+final class Pods_Pick_Field implements Markup_Field {
 	use Markup_Field_Base;
 
 	private Select_Field $select_field;
@@ -44,19 +44,76 @@ class Pods_Pick_Field implements Markup_Field {
 		$this->file_field        = $file_field;
 	}
 
+	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
+		$field_context  = $markup_field_data->get_context();
+		$field_meta     = $field_context->get_field_meta();
+		$field_instance = $this->get_field_instance( $field_meta );
+
+		return $field_instance->compose_html( $field_id, $markup_field_data );
+	}
+
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$field_context  = $field_value->get_context();
+		$field_meta     = $field_context->get_field_meta();
+		$field_instance = $this->get_field_instance( $field_meta );
+		$is_multiple    = $field_meta->is_multiple();
+		$origin_value   = $field_value->get_value();
+
+		$new_value = self::get_normalized_value( $field_instance, $origin_value, $is_multiple );
+		$field_value->set_value( $new_value );
+
+		return $field_instance->get_template_variables( $field_value );
+	}
+
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
+		$field_context  = $field_value->get_context();
+		$field_meta     = $field_context->get_field_meta();
+		$field_instance = $this->get_field_instance( $field_meta );
+
+		return $field_instance->get_validation_template_variables( $field_value );
+	}
+
+	public function is_with_field_wrapper(
+		Layout_Settings $layout_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta
+	): bool {
+		$field_instance = $this->get_field_instance( $field_meta );
+
+		return $field_instance->is_with_field_wrapper(
+			$layout_settings,
+			$field_settings,
+			$field_meta
+		);
+	}
+
+	public function get_conditional_fields( Field_Meta $field_meta ): array {
+		$field_instance = $this->get_field_instance( $field_meta );
+
+		return $field_instance->get_conditional_fields( $field_meta );
+	}
+
+	public function get_front_assets( Field_Settings $field_settings ): array {
+		$field_meta     = $field_settings->get_field_meta();
+		$field_instance = $this->get_field_instance( $field_meta );
+
+		return $field_instance->get_front_assets( $field_settings );
+	}
+
 	protected function get_field_instance( Field_Meta $field_meta ): Markup_Field {
-		switch ( $field_meta->get_return_format() ) {
-			case 'post_type':
-				return $this->post_object_field;
-			case 'taxonomy':
-				return $this->taxonomy_field;
-			case 'user':
-				return $this->user_field;
-			case 'media':
-				return $this->file_field;
-		}
+		$return_format = $field_meta->get_return_format();
 
 		// comment & nav_menu aren't supported (atm there is no single instance for them).
+		$instances = array(
+			'post_type' => $this->post_object_field,
+			'taxonomy'  => $this->taxonomy_field,
+			'user'      => $this->user_field,
+			'media'     => $this->file_field,
+		);
+
+		if ( key_exists( $return_format, $instances ) ) {
+			return $instances[ $return_format ];
+		}
 
 		return $this->select_field;
 	}
@@ -66,76 +123,66 @@ class Pods_Pick_Field implements Markup_Field {
 	 *
 	 * @return mixed
 	 */
-	protected function get_instance_value( Markup_Field $markup_field, $value ) {
-		if ( $markup_field instanceof Post_Object_Field ||
-			$markup_field instanceof User_Field ||
-			$markup_field instanceof File_Field ) {
-			if ( false === is_array( $value ) ) {
-				return 0;
-			}
+	protected static function get_normalized_value( Markup_Field $markup_field, $value, bool $is_multiple ) {
+		if ( $is_multiple ) {
+			return self::get_instance_values( $markup_field, $value );
+		}
 
+		return self::get_instance_value( $markup_field, $value );
+	}
+
+	/**
+	 * @param mixed $value
+	 *
+	 * @return mixed[]
+	 */
+	protected static function get_instance_values( Markup_Field $markup_field, $value ): array {
+		if ( is_array( $value ) ) {
+			return array_map(
+				fn( $item ) => self::get_instance_value( $markup_field, $item ),
+				$value
+			);
+		}
+
+		return array();
+	}
+
+	/**
+	 * @param mixed $value
+	 *
+	 * @return mixed
+	 */
+	protected static function get_instance_value( Markup_Field $markup_field, $value ) {
+		$is_object_field = $markup_field instanceof Post_Object_Field ||
+							$markup_field instanceof User_Field ||
+							$markup_field instanceof File_Field;
+
+		if ( $is_object_field ) {
+			return self::get_object_id( $value );
+		}
+
+		if ( $markup_field instanceof Taxonomy_Field ) {
+			return is_array( $value ) ?
+				int( $value, 'term_id' ) :
+				0;
+		}
+
+		return $value;
+	}
+
+	/**
+	 * @param mixed $value
+	 */
+	protected static function get_object_id( $value ): int {
+		if ( is_array( $value ) ) {
 			$id = int( $value, 'ID' );
 
 			// in Pod Blocks 'id' is in lower case.
 			return 0 !== $id ?
 				$id :
 				int( $value, 'id' );
-		} elseif ( $markup_field instanceof Taxonomy_Field ) {
-			if ( false === is_array( $value ) ) {
-				return 0;
-			}
-
-			return int( $value, 'term_id' );
 		}
 
-		return $value;
-	}
-
-	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
-		return $this->get_field_instance( $markup_field_data->get_context()->get_field_meta() )
-			->compose_html( $field_id, $markup_field_data );
-	}
-
-	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$field_context = $field_value->get_context();
-
-		$field_instance = $this->get_field_instance( $field_context->get_field_meta() );
-
-		if ( $field_context->get_field_meta()->is_multiple() ) {
-			if ( is_array( $field_value->get_value() ) ) {
-				$field_value->set_value(
-					array_map(
-						fn( $value ) => $this->get_instance_value( $field_instance, $value ),
-						$field_value->get_value()
-					)
-				);
-			} else {
-				$field_value->set_value( array() );
-			}
-		} else {
-			$field_value->set_value( $this->get_instance_value( $field_instance, $field_value->get_value() ) );
-		}
-
-		return $field_instance->get_template_variables( $field_value );
-	}
-
-	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
-		return $this->get_field_instance( $field_value->get_context()->get_field_meta() )->get_validation_template_variables( $field_value );
-	}
-
-	public function is_with_field_wrapper(
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta
-	): bool {
-		return $this->get_field_instance( $field_meta )->is_with_field_wrapper( $layout_settings, $field_settings, $field_meta );
-	}
-
-	public function get_conditional_fields( Field_Meta $field_meta ): array {
-		return $this->get_field_instance( $field_meta )->get_conditional_fields( $field_meta );
-	}
-
-	public function get_front_assets( Field_Settings $field_settings ): array {
-		return $this->get_field_instance( $field_settings->get_field_meta() )->get_front_assets( $field_settings );
+		return 0;
 	}
 }

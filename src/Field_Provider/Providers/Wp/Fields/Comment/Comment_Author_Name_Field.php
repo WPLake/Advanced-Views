@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 
 defined( 'ABSPATH' ) || exit;
 
-class Comment_Author_Name_Field implements Markup_Field {
+final class Comment_Author_Name_Field implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
 
@@ -25,7 +25,7 @@ class Comment_Author_Name_Field implements Markup_Field {
 		return array(
 			$token_factory
 				->variable( $field_id )
-			->add_item_path( self::VALUE ),
+				->add_item_path( self::VALUE ),
 		);
 	}
 
@@ -37,18 +37,18 @@ class Comment_Author_Name_Field implements Markup_Field {
 			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$comment = self::get_comment( $field_value->get_value() );
+		$value   = $field_value->get_value();
+		$comment = self::get_comment( $value );
 
-		if ( null === $comment ) {
-			return $args;
+		if ( is_object( $comment ) ) {
+			$author    = get_comment_author( $comment );
+			$is_filled = strlen( $author ) > 0;
+
+			// avoid double escaping.
+			$args[ self::VALUE ] = $is_filled ?
+				html_entity_decode( $author, ENT_QUOTES ) :
+				$args[ self::VALUE ];
 		}
-
-		$author = get_comment_author( $comment );
-
-		// avoid double escaping.
-		$args[ self::VALUE ] = '' !== $author ?
-			html_entity_decode( $author, ENT_QUOTES ) :
-			$args[ self::VALUE ];
 
 		return $args;
 	}

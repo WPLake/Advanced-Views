@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 
 defined( 'ABSPATH' ) || exit;
 
-class Woo_Height_Field implements Markup_Field {
+final class Woo_Height_Field implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
 
@@ -25,7 +25,7 @@ class Woo_Height_Field implements Markup_Field {
 		return array(
 			$token_factory
 				->variable( $field_id )
-			->add_item_path( self::VALUE ),
+				->add_item_path( self::VALUE ),
 		);
 	}
 
@@ -39,11 +39,9 @@ class Woo_Height_Field implements Markup_Field {
 
 		$product = self::get_product( $field_value->get_value() );
 
-		if ( null === $product ) {
-			return $args;
+		if ( is_object( $product ) ) {
+			$args[ self::VALUE ] = $product->get_height();
 		}
-
-		$args[ self::VALUE ] = $product->get_height();
 
 		return $args;
 	}

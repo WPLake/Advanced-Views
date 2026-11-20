@@ -45,26 +45,26 @@ class Meta_Box_Integration extends Settings_Vendor_Integration {
 	 * @return mixed[]
 	 */
 	protected function get_group_fields( WP_Post $wp_post ): array {
-		if ( false === function_exists( 'rwmb_get_registry' ) ) {
-			return array();
+		if ( function_exists( 'rwmb_get_registry' ) ) {
+			$registry   = rwmb_get_registry( 'meta_box' );
+			$query_args = array( 'id' => $wp_post->post_name );
+			$found      = $registry->get_by( $query_args );
+
+			$first_found = is_array( $found ) &&
+							count( $found ) > 0 ?
+				array_shift( $found ) :
+				null;
+
+			$meta_box = is_object( $first_found ) &&
+						property_exists( $first_found, 'meta_box' ) &&
+						is_array( $first_found->meta_box ) ?
+				$first_found->meta_box :
+				array();
+
+			return arr( $meta_box, 'fields' );
 		}
 
-		$registry   = rwmb_get_registry( 'meta_box' );
-		$query_args = array( 'id' => $wp_post->post_name );
-		$fields     = $registry->get_by( $query_args );
-
-		$fields = is_array( $fields ) &&
-					count( $fields ) > 0 ?
-			array_shift( $fields ) :
-			null;
-
-		$fields = is_object( $fields ) &&
-					property_exists( $fields, 'meta_box' ) &&
-					is_array( $fields->meta_box ) ?
-			$fields->meta_box :
-			array();
-
-		return arr( $fields, 'fields' );
+		return array();
 	}
 
 	/**

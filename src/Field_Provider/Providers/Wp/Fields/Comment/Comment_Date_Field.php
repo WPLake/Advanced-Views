@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 
 defined( 'ABSPATH' ) || exit;
 
-class Comment_Date_Field implements Markup_Field {
+final class Comment_Date_Field implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
 
@@ -25,7 +25,7 @@ class Comment_Date_Field implements Markup_Field {
 		return array(
 			$token_factory
 				->variable( $field_id )
-			->add_item_path( self::VALUE ),
+				->add_item_path( self::VALUE ),
 		);
 	}
 
@@ -37,17 +37,17 @@ class Comment_Date_Field implements Markup_Field {
 			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$comment = self::get_comment( $field_value->get_value() );
+		$value   = $field_value->get_value();
+		$comment = self::get_comment( $value );
 
-		if ( null === $comment ) {
-			return $args;
+		if ( is_object( $comment ) ) {
+			$date      = get_comment_date( '', $comment );
+			$is_filled = strlen( $date ) > 0;
+
+			$args[ self::VALUE ] = $is_filled ?
+				$date :
+				$args[ self::VALUE ];
 		}
-
-		$date = get_comment_date( '', $comment );
-
-		$args[ self::VALUE ] = '' !== $date ?
-			$date :
-			$args[ self::VALUE ];
 
 		return $args;
 	}

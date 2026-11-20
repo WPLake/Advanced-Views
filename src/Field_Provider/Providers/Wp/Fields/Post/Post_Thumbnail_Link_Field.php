@@ -18,7 +18,7 @@ use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 defined( 'ABSPATH' ) || exit;
 
-class Post_Thumbnail_Link_Field implements Markup_Field {
+final class Post_Thumbnail_Link_Field implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
 
@@ -34,10 +34,12 @@ class Post_Thumbnail_Link_Field implements Markup_Field {
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$target_var = $token_factory->variable( $field_id )
-										->add_item_path( Link_Field::TARGET );
-		$href_var   = $token_factory->variable( $field_id )
-										->add_item_path( self::HREF );
+		$target_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( Link_Field::TARGET );
+		$href_var   = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::HREF );
 
 		$link_attributes = array(
 			'target' => $target_var,
@@ -65,27 +67,22 @@ class Post_Thumbnail_Link_Field implements Markup_Field {
 			self::HREF         => '',
 		);
 
-		$post = self::get_post( $field_value->get_value() );
+		$value = $field_value->get_value();
+		$post  = self::get_post( $value );
 
-		if ( null === $post ) {
-			$field_value->set_value( 0 );
+		$image_id = 0;
 
-			return array_merge(
-				$args,
-				$this->image_field->get_template_variables( $field_value )
-			);
+		if ( is_object( $post ) ) {
+			// @phpstan-ignore-next-line
+			$args[ self::HREF ] = (string) get_the_permalink( $post );
+			$image_id           = (int) get_post_thumbnail_id( $post );
 		}
-
-		// @phpstan-ignore-next-line
-		$args[ self::HREF ] = (string) get_the_permalink( $post );
-		$image_id           = (int) get_post_thumbnail_id( $post );
 
 		$field_value->set_value( $image_id );
 
-		return array_merge(
-			$args,
-			$this->image_field->get_template_variables( $field_value )
-		);
+		$image_args = $this->image_field->get_template_variables( $field_value );
+
+		return array_merge( $args, $image_args );
 	}
 
 	/**

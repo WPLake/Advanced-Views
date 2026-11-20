@@ -321,8 +321,6 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		bool $is_formatted = false,
 		?array $local_data = null
 	) {
-		$field_id = $field_meta->get_field_id();
-
 		$source_id = $source->get_id();
 		$args      = $this->get_field_request_args(
 			$field_settings,
@@ -330,11 +328,13 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			$source,
 			$source_id
 		);
-		$is_block  = $source->is_block();
 
 		if ( is_array( $local_data ) ) {
 			return $this->get_local_field_value( $local_data, $field_meta, $is_formatted, $args, $source_id );
 		}
+
+		$field_id = $field_meta->get_field_id();
+		$is_block = $source->is_block();
 
 		if ( $is_block && $is_formatted ) {
 			return function_exists( 'mb_the_block_field' ) ?
@@ -363,7 +363,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			);
 		}
 
-		return $this->get_raw_field_value( $field_meta, $args, $source_id );
+		return self::get_raw_field_value( $field_meta, $args, $source_id );
 	}
 
 	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
@@ -495,7 +495,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	 * @param mixed[] $meta_data
 	 */
 	public function import_group( array $group_data, array $meta_data ): ?string {
-		$registry = $this->get_registry();
+		$registry = self::get_registry();
 
 		$prepared_data = is_object( $registry ) ?
 			$this->prepare_group_data( $group_data ) :
@@ -510,7 +510,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 					method_exists( $registry, 'make' );
 
 		if ( $is_ready ) {
-			$this->save_group_meta( $post->ID, $prepared_data );
+			self::save_group_meta( $post->ID, $prepared_data );
 
 			// manually signup in MetaBox registry,
 			// otherwise won't be available for query within this request.
@@ -605,18 +605,6 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		return $args;
 	}
 
-	protected function get_registry(): ?object {
-		$registry = function_exists( 'rwmb_get_registry' ) ?
-			rwmb_get_registry( 'meta_box' ) :
-			null;
-
-		$is_usable = is_object( $registry ) && method_exists( $registry, 'make' );
-
-		return $is_usable ?
-			$registry :
-			null;
-	}
-
 	/**
 	 * Returns the data with the existing post id (if any), so the post is updated instead of inserted.
 	 *
@@ -679,25 +667,6 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		}
 
 		return $post;
-	}
-
-	/**
-	 * @param mixed[] $group_data
-	 */
-	protected function save_group_meta( int $post_id, array $group_data ): void {
-		$meta_keys = self::get_export_meta_keys();
-
-		foreach ( $meta_keys as $meta_key ) {
-			if ( ! key_exists( $meta_key, $group_data ) ) {
-				continue;
-			}
-
-			update_post_meta(
-				$post_id,
-				$meta_key,
-				$group_data[ $meta_key ]
-			);
-		}
 	}
 
 	/**
@@ -1051,13 +1020,44 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			null;
 	}
 
+	protected static function get_registry(): ?object {
+		$registry = function_exists( 'rwmb_get_registry' ) ?
+			rwmb_get_registry( 'meta_box' ) :
+			null;
+
+		$is_usable = is_object( $registry ) && method_exists( $registry, 'make' );
+
+		return $is_usable ?
+			$registry :
+			null;
+	}
+
+	/**
+	 * @param mixed[] $group_data
+	 */
+	protected static function save_group_meta( int $post_id, array $group_data ): void {
+		$meta_keys = self::get_export_meta_keys();
+
+		foreach ( $meta_keys as $meta_key ) {
+			if ( ! key_exists( $meta_key, $group_data ) ) {
+				continue;
+			}
+
+			update_post_meta(
+				$post_id,
+				$meta_key,
+				$group_data[ $meta_key ]
+			);
+		}
+	}
+
 	/**
 	 * @param array<string,string> $args
 	 * @param int|string|false $source_id
 	 *
 	 * @return mixed
 	 */
-	protected function get_raw_field_value( Field_Meta $field_meta, array $args, $source_id ) {
+	protected static function get_raw_field_value( Field_Meta $field_meta, array $args, $source_id ) {
 		$field_id        = $field_meta->get_field_id();
 		$self_repeatable = $field_meta->get_self_repeatable_meta();
 		$map_types       = array( 'osm', 'map' );

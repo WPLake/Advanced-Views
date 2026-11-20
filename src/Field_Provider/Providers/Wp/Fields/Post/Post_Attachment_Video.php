@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Templat
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
-class Post_Attachment_Video implements Markup_Field {
+final class Post_Attachment_Video implements Markup_Field {
 	use Markup_Field_Base;
 	use Custom_Field;
 
@@ -26,10 +26,12 @@ class Post_Attachment_Video implements Markup_Field {
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$src_var  = $token_factory->variable( $field_id )
-									->add_item_path( self::VALUE );
-		$type_var = $token_factory->variable( $field_id )
-									->add_item_path( self::MIME_TYPE );
+		$src_var  = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::VALUE );
+		$type_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::MIME_TYPE );
 
 		$video_class = $this->get_field_class( 'element', $markup_field_data );
 
@@ -57,22 +59,25 @@ class Post_Attachment_Video implements Markup_Field {
 	 * @return array<string, mixed>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$post = self::get_post( $field_value->get_value() );
+		$value = $field_value->get_value();
+		$post  = self::get_post( $value );
 
-		if ( null === $post ||
-			'attachment' !== $post->post_type ||
-			0 !== strpos( $post->post_mime_type, 'video/' ) ) {
+		$is_video = is_object( $post ) &&
+					'attachment' === $post->post_type &&
+					0 === strpos( $post->post_mime_type, 'video/' );
+
+		if ( $is_video ) {
+			$attachment_url = (string) wp_get_attachment_url( $post->ID );
+
 			return array(
-				self::VALUE     => '',
-				self::MIME_TYPE => '',
+				self::VALUE     => $attachment_url,
+				self::MIME_TYPE => $post->post_mime_type,
 			);
 		}
 
-		$attachment_url = (string) wp_get_attachment_url( $post->ID );
-
 		return array(
-			self::VALUE     => $attachment_url,
-			self::MIME_TYPE => $post->post_mime_type,
+			self::VALUE     => '',
+			self::MIME_TYPE => '',
 		);
 	}
 

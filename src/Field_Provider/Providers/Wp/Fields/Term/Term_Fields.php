@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\Term;
 
 defined( 'ABSPATH' ) || exit;
 
-class Term_Fields {
+final class Term_Fields {
 	const GROUP_NAME = '$term$';
 
 	const PREFIX = '_term_';

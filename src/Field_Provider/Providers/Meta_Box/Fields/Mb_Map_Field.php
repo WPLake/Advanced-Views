@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
 
-class Mb_Map_Field implements Markup_Field {
+final class Mb_Map_Field implements Markup_Field {
 	use Markup_Field_Base;
 
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
