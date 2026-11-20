@@ -52,13 +52,15 @@ class Html_Field implements Markup_Field {
 			self::RAW_VALUE => '',
 		);
 
+		$raw_value = $field_value->get_value();
+
 		// by default use the formatted value, as we need html (e.g. for oembed) instead of the pure value.
 		$value = $this->is_formatted_value_in_use ?
 			$field_value->get_formatted_value() :
-			$field_value->get_value();
+			$raw_value;
 
-		$value = is_string( $value ) ||
-				is_numeric( $value ) ?
+		$is_text = is_string( $value ) || is_numeric( $value );
+		$value   = $is_text ?
 			(string) $value :
 			'';
 		$value = $this->is_with_replace_new_line_to_br ?
@@ -71,7 +73,7 @@ class Html_Field implements Markup_Field {
 				self::VALUE     => $value,
 				// always provide the raw value alongside with the current,
 				// e.g. in oEmbed case, it allows to get the url instead of the iframe's html.
-				self::RAW_VALUE => $field_value->get_value(),
+				self::RAW_VALUE => $raw_value,
 			)
 		);
 	}

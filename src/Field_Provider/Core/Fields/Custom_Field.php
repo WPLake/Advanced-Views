@@ -80,8 +80,8 @@ trait Custom_Field {
 			(int) $value :
 			0;
 
-		$product = ( 0 !== $post_id &&
-					function_exists( 'wc_get_product' ) ) ?
+		$is_available = 0 !== $post_id && function_exists( 'wc_get_product' );
+		$product      = $is_available ?
 			wc_get_product( $post_id ) :
 			null;
 

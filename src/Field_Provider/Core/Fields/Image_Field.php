@@ -47,24 +47,24 @@ class Image_Field implements Image_Field_Type, Markup_Field {
 		);
 
 		foreach ( $attributes_map as $attribute_name => $item_key ) {
-			$attributes[ $attribute_name ] = $token_factory->variable( $field_id )
-															->add_item_path( $item_key );
+			$attributes[ $attribute_name ] = $token_factory
+				->variable( $field_id )
+				->add_item_path( $item_key );
 		}
 
 		$inner_attributes = $this->inner_attributes( $field_id, $markup_field_data );
 		$image_attrs      = array_merge( $attributes, $inner_attributes );
 
-		return array(
-			tag( 'img' )
-				->attributes( $image_attrs ),
-		);
+		$image_tag = tag( 'img' )->attributes( $image_attrs );
+
+		return array( $image_tag );
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$field_context = $field_value->get_context();
+		$field_settings = $field_value->get_context()->get_field_settings();
 
 		$args = array(
 			self::WIDTH       => 0,
@@ -84,69 +84,24 @@ class Image_Field implements Image_Field_Type, Markup_Field {
 			self::ID          => 0,
 		);
 
-		$image_size = '' !== $field_context->get_field_settings()->image_size ?
-			$field_context->get_field_settings()->image_size :
+		$image_size = '' !== $field_settings->image_size ?
+			$field_settings->image_size :
 			'full';
 
-		$value = is_numeric( $field_value->get_value() ) ?
-			(int) $field_value->get_value() :
+		$raw_value     = $field_value->get_value();
+		$attachment_id = is_numeric( $raw_value ) ?
+			(int) $raw_value :
 			0;
 
-		if ( 0 === $value ) {
-			return $args;
+		$image_data = $this->get_image_data( $attachment_id, $image_size );
+		$image_src  = $image_data[0] ?? '';
+		$is_found   = strlen( $image_src ) > 0;
+
+		if ( $is_found ) {
+			$image_args = $this->compose_image_variables( $attachment_id, $image_data );
+
+			return array_merge( $args, $image_args );
 		}
-
-		$image_data = wp_get_attachment_image_src( $value, $image_size );
-		$image_data = false === $image_data ?
-			array() :
-			$image_data;
-
-		$image_src = $image_data[0] ?? '';
-		$width     = $image_data[1] ?? 0;
-		$height    = $image_data[2] ?? 0;
-
-		if ( '' === $image_src ) {
-			return $args;
-		}
-
-		$alt = get_post_meta( $value, '_wp_attachment_image_alt', true );
-
-		$args[ self::ID ]          = $value;
-		$args[ self::WIDTH ]       = $width;
-		$args[ self::HEIGHT ]      = $height;
-		$args[ self::VALUE ]       = $image_src;
-		$args[ self::ALT ]         = is_string( $alt ) || is_numeric( $alt ) ?
-			$alt :
-			'';
-		$args[ self::FULL_SIZE ]   = (string) wp_get_attachment_image_url( $value, 'full' );
-		$args[ self::CAPTION ]     = get_post_field( 'post_excerpt', $value );
-		$args[ self::DESCRIPTION ] = get_post_field( 'post_content', $value );
-
-		if ( false !== strpos( $image_src, '.svg' ) ) {
-			$attached_file             = (string) get_attached_file( $value );
-			$args[ self::SVG_CONTENT ] = '' !== $attached_file ?
-				// @phpcs:ignore
-				(string) file_get_contents( $attached_file ) :
-				'';
-		}
-
-		$image_meta = wp_get_attachment_metadata( $value );
-
-		if ( false === is_array( $image_meta ) ) {
-			return $args;
-		}
-
-		$sizes_array = array( absint( $width ), absint( $height ) );
-		$src_et      = (string) wp_calculate_image_srcset( $sizes_array, $image_src, $image_meta, $value );
-		$sizes       = (string) wp_calculate_image_sizes( $sizes_array, $image_src, $image_meta, $value );
-
-		if ( '' === $src_et ||
-			'' === $sizes ) {
-			return $args;
-		}
-
-		$args[ self::SRCSET ] = $src_et;
-		$args[ self::SIZES ]  = $sizes;
 
 		return $args;
 	}
@@ -202,8 +157,10 @@ class Image_Field implements Image_Field_Type, Markup_Field {
 	public function get_conditional_fields( Field_Meta $field_meta ): array {
 		$conditional_fields = array( Field_Settings::FIELD_IMAGE_SIZE );
 
+		$self_repeatable_meta = $field_meta->get_self_repeatable_meta();
+
 		// repeatable fields aren't supported (they've markup like a repeater field).
-		if ( null === $field_meta->get_self_repeatable_meta() ) {
+		if ( null === $self_repeatable_meta ) {
 			$conditional_fields = array_merge(
 				$conditional_fields,
 				array(
@@ -236,5 +193,104 @@ class Image_Field implements Image_Field_Type, Markup_Field {
 	 */
 	protected function inner_attributes( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		return $markup_field_data->get_item_attributes( $field_id );
+	}
+
+	/**
+	 * @return array<int, mixed>
+	 */
+	protected function get_image_data( int $attachment_id, string $image_size ): array {
+		$image_data = 0 !== $attachment_id ?
+			wp_get_attachment_image_src( $attachment_id, $image_size ) :
+			false;
+
+		return is_array( $image_data ) ?
+			$image_data :
+			array();
+	}
+
+	/**
+	 * @param array<int, mixed> $image_data
+	 *
+	 * @return array<string, mixed>
+	 */
+	protected function compose_image_variables( int $attachment_id, array $image_data ): array {
+		$image_src = $image_data[0] ?? '';
+		$width     = $image_data[1] ?? 0;
+		$height    = $image_data[2] ?? 0;
+
+		$alt         = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
+		$is_alt_text = is_string( $alt ) || is_numeric( $alt );
+		$full_size   = (string) wp_get_attachment_image_url( $attachment_id, 'full' );
+		$caption     = get_post_field( 'post_excerpt', $attachment_id );
+		$description = get_post_field( 'post_content', $attachment_id );
+		$svg_content = $this->get_svg_content( $attachment_id, $image_src );
+		$srcset_args = $this->get_srcset_variables( $attachment_id, $image_src, $width, $height );
+
+		$image_args = array(
+			self::ID          => $attachment_id,
+			self::WIDTH       => $width,
+			self::HEIGHT      => $height,
+			self::VALUE       => $image_src,
+			self::ALT         => $is_alt_text ?
+				$alt :
+				'',
+			self::FULL_SIZE   => $full_size,
+			self::CAPTION     => $caption,
+			self::DESCRIPTION => $description,
+			self::SVG_CONTENT => $svg_content,
+		);
+
+		return array_merge( $image_args, $srcset_args );
+	}
+
+	protected function get_svg_content( int $attachment_id, string $image_src ): string {
+		$is_svg = is_int( strpos( $image_src, '.svg' ) );
+
+		if ( $is_svg ) {
+			$attached_file = (string) get_attached_file( $attachment_id );
+			$is_filled     = strlen( $attached_file ) > 0;
+
+			return $is_filled ?
+				// @phpcs:ignore
+				(string) file_get_contents( $attached_file ) :
+				'';
+		}
+
+		return '';
+	}
+
+	/**
+	 * @param mixed $width
+	 * @param mixed $height
+	 *
+	 * @return array<string, string>
+	 */
+	protected function get_srcset_variables( int $attachment_id, string $image_src, $width, $height ): array {
+		$image_meta = wp_get_attachment_metadata( $attachment_id );
+
+		if ( is_array( $image_meta ) ) {
+			$sizes_array = array( absint( $width ), absint( $height ) );
+			$srcset      = (string) wp_calculate_image_srcset(
+				$sizes_array,
+				$image_src,
+				$image_meta,
+				$attachment_id
+			);
+			$sizes       = (string) wp_calculate_image_sizes(
+				$sizes_array,
+				$image_src,
+				$image_meta,
+				$attachment_id
+			);
+
+			if ( strlen( $srcset ) > 0 && strlen( $sizes ) > 0 ) {
+				return array(
+					self::SRCSET => $srcset,
+					self::SIZES  => $sizes,
+				);
+			}
+		}
+
+		return array();
 	}
 }

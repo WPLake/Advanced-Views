@@ -26,6 +26,106 @@ abstract class List_Field implements Markup_Field {
 	const LOOP_ITEM_NAME    = 'item';
 	const OPTIONS_DELIMITER = 'options_delimiter';
 
+	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
+		if ( $markup_field_data->get_context()->get_field_meta()->is_multiple() ) {
+			$item_loop = $this->item_loop( $field_id, $markup_field_data );
+
+			return array( $item_loop );
+		}
+
+		return $this->compose_inner_item( $field_id, $markup_field_data );
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$field_context = $field_value->get_context();
+		$field_meta    = $field_context->get_field_meta();
+		$is_multiple   = $field_meta->is_multiple();
+
+		$args = array(
+			self::VALUE => array(),
+		);
+
+		if ( $is_multiple ) {
+			$args[ self::OPTIONS_DELIMITER ] = $field_context->get_field_settings()->options_delimiter;
+		}
+
+		$raw_value = $field_value->get_value();
+		$value     = $this->get_value( $field_meta, $raw_value );
+		$is_empty  = array() === $value || '' === $value;
+
+		if ( $is_empty ) {
+			return $is_multiple ?
+				$args :
+				$this->merge_item_template_args( $args, $field_value, null );
+		}
+
+		if ( $is_multiple ) {
+			$items = (array) $value;
+
+			foreach ( $items as $item ) {
+				$field_value->set_value( $item );
+
+				$args[ self::VALUE ][] = $this->get_item_template_args( $field_value );
+			}
+
+			return $args;
+		}
+
+		return $this->merge_item_template_args( $args, $field_value, $value );
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
+		$field_context = $field_value->get_context();
+		$is_multiple   = $field_context->get_field_meta()->is_multiple();
+
+		$args = array(
+			self::VALUE => array(),
+		);
+
+		if ( $is_multiple ) {
+			$args[ self::OPTIONS_DELIMITER ] = $field_context->get_field_settings()->options_delimiter;
+		}
+
+		$item_args = $this->get_validation_item_template_args( $field_value );
+
+		if ( $is_multiple ) {
+			return array_merge(
+				$args,
+				array(
+					self::VALUE => array( $item_args ),
+				)
+			);
+		}
+
+		return array_merge( $args, $item_args );
+	}
+
+	public function is_with_field_wrapper(
+		Layout_Settings $layout_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta
+	): bool {
+		return $layout_settings->is_with_unnecessary_wrappers ||
+				$field_meta->is_multiple();
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function get_conditional_fields( Field_Meta $field_meta ): array {
+		return $field_meta->is_multiple() ?
+			array(
+				Field_Settings::FIELD_OPTIONS_DELIMITER,
+			) :
+			array();
+	}
+
 	/**
 	 * @return array<string, mixed>
 	 */
@@ -61,21 +161,16 @@ abstract class List_Field implements Markup_Field {
 		return '';
 	}
 
-	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
-		if ( $markup_field_data->get_context()->get_field_meta()->is_multiple() ) {
-			return array( $this->item_loop( $field_id, $markup_field_data ) );
-		}
-
-		return $this->compose_inner_item( $field_id, $markup_field_data );
-	}
-
 	protected function item_loop( string $field_id, Template_Field_Meta $markup_field_data ): Loop_Token {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$source_var = $token_factory->variable( $field_id )
-										->add_item_path( self::VALUE );
+		$source_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::VALUE );
 		$item_var   = $token_factory->variable( static::LOOP_ITEM_NAME );
-		$loop       = $token_factory->loop()
+
+		$loop = $token_factory
+			->loop()
 			->set_source_variable( $source_var )
 			->set_item_variable( $item_var );
 
@@ -90,14 +185,16 @@ abstract class List_Field implements Markup_Field {
 	 */
 	protected function compose_loop_body( Variable_Token $index_var, string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$inner_item       = $this->compose_inner_item( $field_id, $markup_field_data );
-		$is_delimiter_set = strlen( $markup_field_data->get_context()->get_field_settings()->options_delimiter ) > 0;
+		$delimiter        = $markup_field_data->get_context()->get_field_settings()->options_delimiter;
+		$is_delimiter_set = strlen( $delimiter ) > 0;
 
 		if ( $is_delimiter_set ) {
 			$token_factory    = $markup_field_data->get_token_factory();
 			$delimiter_branch = $this->delimiter_branch( $index_var, $field_id, $markup_field_data );
 
-			$delimiter_if = $token_factory->if()
-											->set_if_branch( $delimiter_branch );
+			$delimiter_if = $token_factory
+				->if()
+				->set_if_branch( $delimiter_branch );
 
 			return array_merge( array( $delimiter_if ), $inner_item );
 		}
@@ -108,14 +205,18 @@ abstract class List_Field implements Markup_Field {
 	protected function delimiter_branch( Variable_Token $index_var, string $field_id, Template_Field_Meta $markup_field_data ): IF_Branch {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$secondary_element_comparison = $token_factory->comparison()
+		$zero = $token_factory->literal( 0 );
+
+		$secondary_element_comparison = $token_factory
+			->comparison()
 			->set_left_operand( $index_var )
 			->set_comparison_greater()
-			->set_right_operand( $token_factory->literal( 0 ) );
+			->set_right_operand( $zero );
 
 		$body = $this->compose_item_delimiter( $field_id, $markup_field_data );
 
-		return $token_factory->if_branch()
+		return $token_factory
+			->if_branch()
 			->set_condition( $secondary_element_comparison )
 			->set_body( $body );
 	}
@@ -134,8 +235,9 @@ abstract class List_Field implements Markup_Field {
 			$field_context->get_field_settings()
 		);
 
-		$delimiter_var = $token_factory->variable( $field_id )
-										->add_item_path( self::OPTIONS_DELIMITER );
+		$delimiter_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::OPTIONS_DELIMITER );
 
 		$delimiter_tag = tag( 'span' )
 			->attributes( array( 'class' => $item_class ) )
@@ -156,109 +258,17 @@ abstract class List_Field implements Markup_Field {
 	}
 
 	/**
+	 * @param array<string, mixed> $args
+	 * @param mixed $value
+	 *
 	 * @return array<string, mixed>
 	 */
-	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$field_context = $field_value->get_context();
+	protected function merge_item_template_args( array $args, Raw_Field_Value $field_value, $value ): array {
+		// it's a single item, so merge, not assign to the 'value' key.
+		$field_value->set_value( $value );
 
-		$args = array(
-			self::VALUE => array(),
-		);
+		$item_args = $this->get_item_template_args( $field_value );
 
-		if ( $field_context->get_field_meta()->is_multiple() ) {
-			$args[ self::OPTIONS_DELIMITER ] = $field_context->get_field_settings()->options_delimiter;
-		}
-
-		$value = $this->get_value( $field_context->get_field_meta(), $field_value->get_value() );
-
-		if ( array() === $value ||
-			'' === $value ) {
-			// it's a single item, so merge, not assign to the 'value' key.
-			if ( ! $field_context->get_field_meta()->is_multiple() ) {
-				$field_value->set_value( null );
-
-				$args = array_merge(
-					$args,
-					$this->get_item_template_args( $field_value )
-				);
-			}
-
-			return $args;
-		}
-
-		if ( $field_context->get_field_meta()->is_multiple() ) {
-			$value = (array) $value;
-
-			foreach ( $value as $item ) {
-				$field_value->set_value( $item );
-
-				$args[ self::VALUE ][] = $this->get_item_template_args( $field_value );
-			}
-		} else {
-			$field_value->set_value( $value );
-
-			// it's a single item, so merge, not assign to the 'value' key.
-			$args = array_merge(
-				$args,
-				$this->get_item_template_args( $field_value )
-			);
-		}
-
-		return $args;
-	}
-
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
-		$field_context = $field_value->get_context();
-
-		$args = array(
-			self::VALUE => array(),
-		);
-
-		if ( $field_context->get_field_meta()->is_multiple() ) {
-			$args[ self::OPTIONS_DELIMITER ] = $field_context->get_field_settings()->options_delimiter;
-		}
-
-		$item_args = $this->get_validation_item_template_args( $field_value );
-		$item      = array();
-
-		if ( $field_context->get_field_meta()->is_multiple() ) {
-			$item[] = $item_args;
-
-			return array_merge(
-				$args,
-				array(
-					self::VALUE => $item,
-				)
-			);
-		}
-
-		$item = $item_args;
-
-		return array_merge( $args, $item );
-	}
-
-	public function is_with_field_wrapper(
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta
-	): bool {
-		return $layout_settings->is_with_unnecessary_wrappers ||
-				$field_meta->is_multiple();
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function get_conditional_fields( Field_Meta $field_meta ): array {
-		$conditional_fields = $field_meta->is_multiple() ?
-			array(
-				Field_Settings::FIELD_OPTIONS_DELIMITER,
-			) :
-			array();
-
-		return $conditional_fields;
+		return array_merge( $args, $item_args );
 	}
 }

@@ -61,9 +61,10 @@ final class Related_Groups_Import_Result {
 		$items     = explode( ';', $query_string );
 
 		foreach ( $items as $item ) {
-			$parts = explode( ':', $item );
+			$parts    = explode( ':', $item );
+			$is_valid = 2 === count( $parts );
 
-			if ( 2 === count( $parts ) ) {
+			if ( $is_valid ) {
 				$vendor_name = $parts[0];
 
 				$group_ids[ $vendor_name ] = explode( ',', $parts[1] );

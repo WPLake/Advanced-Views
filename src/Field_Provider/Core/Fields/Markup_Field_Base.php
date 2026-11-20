@@ -18,6 +18,31 @@ defined( 'ABSPATH' ) || exit;
  */
 trait Markup_Field_Base {
 
+	public function is_empty_value_supported_in_markup(): bool {
+		return false;
+	}
+
+	public function get_custom_field_wrapper_tag(): string {
+		return '';
+	}
+
+	/**
+	 * @return string[]
+	 */
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- overridden in child classes.
+	public function get_conditional_fields( Field_Meta $field_meta ): array {
+		return array();
+	}
+
+	public function is_sub_fields_supported(): bool {
+		return false;
+	}
+
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- overridden in child classes.
+	public function get_front_assets( Field_Settings $field_settings ): array {
+		return array();
+	}
+
 	/**
 	 * @return Html_Node[]
 	 */
@@ -56,29 +81,37 @@ trait Markup_Field_Base {
 	}
 
 	protected function get_field_class( string $suffix, Template_Field_Meta $markup_field_data ): string {
-		$field_context = $markup_field_data->get_context();
+		$field_context   = $markup_field_data->get_context();
+		$layout_settings = $field_context->get_layout_settings();
+		$field_settings  = $field_context->get_field_settings();
 
-		if ( Cpt_Settings::CLASS_GENERATION_NONE === $field_context->get_layout_settings()->classes_generation ) {
+		if ( Cpt_Settings::CLASS_GENERATION_NONE === $layout_settings->classes_generation ) {
 			return '';
 		}
 
+		$bem_name              = $layout_settings->get_bem_name();
+		$is_with_row_wrapper   = $markup_field_data->is_with_row_wrapper();
+		$is_with_field_wrapper = $markup_field_data->is_with_field_wrapper();
+
 		$classes      = array();
-		$is_first_tag = ! $markup_field_data->is_with_row_wrapper() &&
-						! $markup_field_data->is_with_field_wrapper();
+		$is_first_tag = ! $is_with_row_wrapper && ! $is_with_field_wrapper;
 
 		if ( $is_first_tag ) {
-			$classes[] = $field_context->get_layout_settings()->get_bem_name() . '__' . $field_context->get_field_settings()->id;
+			$classes[] = sprintf( '%s__%s', $bem_name, $field_settings->id );
 
-			if ( ! $field_context->get_layout_settings()->is_with_common_classes ) {
+			if ( ! $layout_settings->is_with_common_classes ) {
 				return implode( ' ', $classes );
 			}
 		}
 
-		$classes[] = $this->get_item_class( $suffix, $field_context->get_layout_settings(), $field_context->get_field_settings() );
+		$classes[] = $this->get_item_class(
+			$suffix,
+			$layout_settings,
+			$field_settings
+		);
 
-		if ( ! $markup_field_data->is_with_field_wrapper() &&
-			$field_context->get_layout_settings()->is_with_common_classes ) {
-			$classes[] = $field_context->get_layout_settings()->get_bem_name() . '__field';
+		if ( ! $is_with_field_wrapper && $layout_settings->is_with_common_classes ) {
+			$classes[] = sprintf( '%s__field', $bem_name );
 		}
 
 		return implode( ' ', $classes );
@@ -87,30 +120,5 @@ trait Markup_Field_Base {
 	// method is kept for backward compatibility, use the View->getItemClass() instead.
 	protected function get_item_class( string $suffix, Layout_Settings $layout_settings, Field_Settings $field_settings ): string {
 		return $layout_settings->get_item_class( $suffix, $field_settings );
-	}
-
-	public function is_empty_value_supported_in_markup(): bool {
-		return false;
-	}
-
-	public function get_custom_field_wrapper_tag(): string {
-		return '';
-	}
-
-	/**
-	 * @return string[]
-	 */
-	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- overridden in child classes.
-	public function get_conditional_fields( Field_Meta $field_meta ): array {
-		return array();
-	}
-
-	public function is_sub_fields_supported(): bool {
-		return false;
-	}
-
-	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter -- overridden in child classes.
-	public function get_front_assets( Field_Settings $field_settings ): array {
-		return array();
 	}
 }

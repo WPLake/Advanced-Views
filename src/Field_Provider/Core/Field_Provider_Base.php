@@ -26,9 +26,7 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 	}
 
 	public function get_group_key( string $group_id ): string {
-		$source = false === $this->is_without_name_in_keys() ?
-			$this->get_name() :
-			'';
+		$source = $this->get_key_source();
 
 		return Item_Settings::create_group_key( $group_id, $source );
 	}
@@ -66,34 +64,11 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 			$this->get_sub_field_choices();
 
 		foreach ( $field_choices as $field_key => $field_meta ) {
-			if ( false === $field_meta->is_field_exist() ) {
-				continue;
-			}
+			$conditional_field_keys = $this->get_conditional_field_keys( $field_meta );
 
-			$field_instance = $this->get_markup_field_instance( $field_meta->get_type() );
-
-			if ( null === $field_instance ) {
-				continue;
-			}
-
-			$conditional_instance_field_keys = $field_instance->get_conditional_fields( $field_meta );
-
-			$self_repeatable_meta = $field_meta->get_self_repeatable_meta();
-
-			// add repeatable setting to the field settings too.
-			if ( null !== $self_repeatable_meta ) {
-				$repeatable_instance = $this->get_markup_field_instance( $self_repeatable_meta->get_type() );
-
-				if ( null !== $repeatable_instance ) {
-					$repeatable_keys                 = $repeatable_instance->get_conditional_fields( $field_meta );
-					$conditional_instance_field_keys = array_merge( $conditional_instance_field_keys, $repeatable_keys );
-					$conditional_instance_field_keys = array_unique( $conditional_instance_field_keys );
-				}
-			}
-
-			foreach ( $conditional_instance_field_keys as $conditional_instance_field_key ) {
-				$field_key_conditional_rules[ $conditional_instance_field_key ] ??= array();
-				$field_key_conditional_rules[ $conditional_instance_field_key ][] = $field_key;
+			foreach ( $conditional_field_keys as $conditional_field_key ) {
+				$field_key_conditional_rules[ $conditional_field_key ] ??= array();
+				$field_key_conditional_rules[ $conditional_field_key ][] = $field_key;
 			}
 		}
 
@@ -103,8 +78,11 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 	public function is_empty_value_supported_in_markup( string $field_type ): bool {
 		$field_instance = $this->field_types[ $field_type ] ?? null;
 
-		return null !== $field_instance &&
-				$field_instance->is_empty_value_supported_in_markup();
+		if ( $field_instance instanceof Markup_Field ) {
+			return $field_instance->is_empty_value_supported_in_markup();
+		}
+
+		return false;
 	}
 
 	/**
@@ -127,11 +105,11 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 		$field_types_with_sub_fields = array();
 
 		foreach ( $this->field_types as $field_type => $instance ) {
-			if ( false === $instance->is_sub_fields_supported() ) {
-				continue;
-			}
+			$is_sub_fields_supported = $instance->is_sub_fields_supported();
 
-			$field_types_with_sub_fields[] = $field_type;
+			if ( $is_sub_fields_supported ) {
+				$field_types_with_sub_fields[] = $field_type;
+			}
 		}
 
 		return $field_types_with_sub_fields;
@@ -153,9 +131,7 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 	abstract protected function get_field_types(): array;
 
 	protected function get_field_key( string $group_id, string $field_id, string $sub_field_id = '' ): string {
-		$source = ! $this->is_without_name_in_keys() ?
-			$this->get_name() :
-			'';
+		$source = $this->get_key_source();
 
 		return Field_Settings::create_field_key(
 			$group_id,
@@ -163,6 +139,55 @@ abstract class Field_Provider_Base extends Loggable_Actor implements Field_Provi
 			$sub_field_id,
 			$source
 		);
+	}
+
+	/**
+	 * @return string[]
+	 */
+	protected function get_conditional_field_keys( Field_Meta $field_meta ): array {
+		$is_field_exist = $field_meta->is_field_exist();
+		$field_instance = $this->get_markup_field_instance( $field_meta->get_type() );
+
+		if ( $is_field_exist && $field_instance instanceof Markup_Field ) {
+			$conditional_field_keys = $field_instance->get_conditional_fields( $field_meta );
+			$repeatable_keys        = $this->get_repeatable_conditional_field_keys( $field_meta );
+
+			// add repeatable setting to the field settings too.
+			if ( is_array( $repeatable_keys ) ) {
+				$merged_keys = array_merge( $conditional_field_keys, $repeatable_keys );
+
+				return array_unique( $merged_keys );
+			}
+
+			return $conditional_field_keys;
+		}
+
+		return array();
+	}
+
+	/**
+	 * @return string[]|null
+	 */
+	protected function get_repeatable_conditional_field_keys( Field_Meta $field_meta ): ?array {
+		$self_repeatable_meta = $field_meta->get_self_repeatable_meta();
+
+		if ( null !== $self_repeatable_meta ) {
+			$repeatable_instance = $this->get_markup_field_instance( $self_repeatable_meta->get_type() );
+
+			if ( null !== $repeatable_instance ) {
+				return $repeatable_instance->get_conditional_fields( $field_meta );
+			}
+		}
+
+		return null;
+	}
+
+	protected function get_key_source(): string {
+		$is_without_name = $this->is_without_name_in_keys();
+
+		return $is_without_name ?
+			'' :
+			$this->get_name();
 	}
 
 	// for back compatibility only.

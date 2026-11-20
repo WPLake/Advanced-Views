@@ -28,14 +28,21 @@ class Link_Field implements Markup_Field {
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		$target_var     = $token_factory->variable( $field_id )
-										->add_item_path( self::TARGET );
-		$href_var       = $token_factory->variable( $field_id )
-										->add_item_path( self::VALUE );
-		$link_label_var = $token_factory->variable( $field_id )
-											->add_item_path( self::LINK_LABEL );
-		$title_var      = $token_factory->variable( $field_id )
-									->add_item_path( self::TITLE );
+		$target_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::TARGET );
+
+		$href_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::VALUE );
+
+		$link_label_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::LINK_LABEL );
+
+		$title_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::TITLE );
 
 		$link_attributes = array(
 			'target' => $target_var,
@@ -49,42 +56,41 @@ class Link_Field implements Markup_Field {
 			->set_comparison_empty()
 			->set_right_operand( $title_var );
 
-		return array(
-			tag( 'a' )
-				->attributes( $link_attributes )
-				->content(
-					$link_content
-				),
-		);
+		$link_tag = tag( 'a' )
+			->attributes( $link_attributes )
+			->content( $link_content );
+
+		return array( $link_tag );
 	}
 
 	/**
 	 * @return array<string, string>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$field_context = $field_value->get_context();
+		$field_settings = $field_value->get_context()->get_field_settings();
 
 		$args = array(
 			self::VALUE      => '',
 			self::TARGET     => '_self',
 			self::TITLE      => '',
-			self::LINK_LABEL => $field_context->get_field_settings()->get_link_label_translation(),
+			self::LINK_LABEL => $field_settings->get_link_label_translation(),
 		);
 
-		$value = arr( $field_value->get_value() );
+		$raw_value = $field_value->get_value();
+		$value     = arr( $raw_value );
+		$is_filled = count( $value ) > 0;
 
-		if ( 0 === count( $value ) ) {
-			return $args;
+		if ( $is_filled ) {
+			$target        = string( $value, self::TARGET );
+			$is_target_set = strlen( $target ) > 0 || bool( $value, self::TARGET );
+			$is_blank      = $field_settings->is_link_target_blank || $is_target_set;
+
+			$args[ self::VALUE ]  = string( $value, self::URL );
+			$args[ self::TITLE ]  = string( $value, self::TITLE );
+			$args[ self::TARGET ] = $is_blank ?
+				'_blank' :
+				'_self';
 		}
-
-		$target        = string( $value, self::TARGET );
-		$is_target_set = strlen( $target ) > 0 || bool( $value, self::TARGET );
-
-		$args[ self::VALUE ]  = string( $value, self::URL );
-		$args[ self::TITLE ]  = string( $value, self::TITLE );
-		$args[ self::TARGET ] = $field_context->get_field_settings()->is_link_target_blank || $is_target_set ?
-			'_blank' :
-			'_self';
 
 		return $args;
 	}

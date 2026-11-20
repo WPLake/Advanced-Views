@@ -21,11 +21,11 @@ class Date_Picker_Field implements Markup_Field {
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		return array(
-			$token_factory
-				->variable( $field_id )
-			->add_item_path( self::VALUE ),
-		);
+		$value_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::VALUE );
+
+		return array( $value_var );
 	}
 
 	/**
@@ -39,31 +39,24 @@ class Date_Picker_Field implements Markup_Field {
 
 		$date_time = $field_value->convert_value_to_date_time();
 
-		if ( null === $date_time ) {
-			return $args;
+		if ( $date_time instanceof DateTime ) {
+			$date_variables = $this->compose_date_variables( $field_value, $date_time );
+
+			return array_merge( $args, $date_variables );
 		}
 
-		return array_merge(
-			$args,
-			array(
-				// date_i18n() unlike the '$date->format($displayFormat)' supports different languages.
-				self::VALUE     => date_i18n(
-					$field_value->get_context()->get_field_meta()->get_display_format(),
-					$date_time->getTimestamp()
-				),
-				self::TIMESTAMP => $date_time->getTimestamp(),
-			)
-		);
+		return $args;
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
 	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
-		$now = new DateTime();
+		$now            = new DateTime();
+		$display_format = $field_value->get_context()->get_field_meta()->get_display_format();
 
 		return array(
-			self::VALUE     => $now->format( $field_value->get_context()->get_field_meta()->get_display_format() ),
+			self::VALUE     => $now->format( $display_format ),
 			self::TIMESTAMP => $now->getTimestamp(),
 		);
 	}
@@ -78,5 +71,21 @@ class Date_Picker_Field implements Markup_Field {
 
 	public function get_custom_field_wrapper_tag(): string {
 		return 'p';
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	protected function compose_date_variables( Raw_Field_Value $field_value, DateTime $date_time ): array {
+		$timestamp      = $date_time->getTimestamp();
+		$display_format = $field_value->get_context()->get_field_meta()->get_display_format();
+
+		// date_i18n() unlike the '$date->format($displayFormat)' supports different languages.
+		$date = date_i18n( $display_format, $timestamp );
+
+		return array(
+			self::VALUE     => $date,
+			self::TIMESTAMP => $timestamp,
+		);
 	}
 }

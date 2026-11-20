@@ -31,76 +31,15 @@ class Taxonomy_Field extends List_Field {
 	}
 
 	/**
-	 * @return array{url: string, title: string}
-	 */
-	protected function get_term_info( int $id ): array {
-		$post_info = array(
-			Link_Field::URL   => '',
-			Link_Field::TITLE => '',
-		);
-
-		$term = get_term( $id );
-
-		if ( null === $term ||
-			is_wp_error( $term ) ) {
-			return $post_info;
-		}
-
-		$term_link = get_term_link( $term );
-
-		return array(
-			Link_Field::URL   => is_string( $term_link ) ? $term_link : '',
-			// decode to avoid double encoding in Twig.
-			Link_Field::TITLE => html_entity_decode( $term->name, ENT_QUOTES ),
-		);
-	}
-
-	/**
-	 * @return Html_Node[]
-	 */
-	protected function compose_internal_item_layout( string $item_id, Template_Field_Meta $markup_field_data ): array {
-		$markup_field_data->set_is_with_field_wrapper(
-			$markup_field_data->get_context()->get_field_meta()->is_multiple() ||
-			$markup_field_data->is_with_field_wrapper()
-		);
-
-		return $this->link_field->compose_html( $item_id, $markup_field_data );
-	}
-
-	/**
-	 * @return Html_Node[]
-	 */
-	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
-		$token_factory    = $markup_field_data->get_token_factory();
-		$object_id_source = $markup_field_data->get_context()->get_field_meta()->is_multiple() ?
-			static::LOOP_ITEM_NAME :
-			$field_id;
-
-		$id_var      = $token_factory->variable( $field_id )
-										->add_item_path( self::LAYOUT_ID );
-		$term_id_var = $token_factory->variable( $object_id_source )
-										->add_item_path( self::VALUE );
-
-		$shortcode = $token_factory->shortcode( Hard_Layout_Cpt::cpt_name() )
-			->set_attributes(
-				array(
-					'id'        => $id_var,
-					'object-id' => 'term',
-					'term-id'   => $term_id_var,
-				)
-			);
-
-		return array( $shortcode );
-	}
-
-	/**
 	 * @return array<string, mixed>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
+		$parent_variables = parent::get_template_variables( $field_value );
+
 		return array_merge(
-			parent::get_template_variables( $field_value ),
+			$parent_variables,
 			array(
 				self::VIEW_ID   => $layout_id,
 				self::LAYOUT_ID => $layout_id,
@@ -114,13 +53,120 @@ class Taxonomy_Field extends List_Field {
 	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
+		$parent_variables = parent::get_validation_template_variables( $field_value );
+
 		return array_merge(
-			parent::get_validation_template_variables( $field_value ),
+			$parent_variables,
 			array(
 				self::VIEW_ID   => $layout_id,
 				self::LAYOUT_ID => $layout_id,
 			)
 		);
+	}
+
+	public function get_front_assets( Field_Settings $field_settings ): array {
+		$parent_assets = parent::get_front_assets( $field_settings );
+		$splide_assets = Splide_Library::get_field_front_assets( $field_settings );
+
+		return array_merge( $parent_assets, $splide_assets );
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function get_conditional_fields( Field_Meta $field_meta ): array {
+		$conditional_fields = array(
+			Field_Settings::FIELD_LINK_LABEL,
+			Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
+			Field_Settings::FIELD_ACF_VIEW_ID,
+		);
+
+		if ( $field_meta->is_multiple() ) {
+			$conditional_fields[] = Field_Settings::FIELD_SLIDER_TYPE;
+		}
+
+		$parent_fields = parent::get_conditional_fields( $field_meta );
+
+		return array_merge( $parent_fields, $conditional_fields );
+	}
+
+	public function is_with_field_wrapper(
+		Layout_Settings $layout_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta
+	): bool {
+		if ( $field_settings->has_external_layout() ) {
+			return true;
+		}
+
+		return parent::is_with_field_wrapper( $layout_settings, $field_settings, $field_meta );
+	}
+
+	/**
+	 * @return array{url: string, title: string}
+	 */
+	protected static function get_term_info( int $id ): array {
+		$post_info = array(
+			Link_Field::URL   => '',
+			Link_Field::TITLE => '',
+		);
+
+		$term = get_term( $id );
+
+		if ( $term instanceof WP_Term ) {
+			$term_link = get_term_link( $term );
+
+			return array(
+				Link_Field::URL   => is_string( $term_link ) ? $term_link : '',
+				// decode to avoid double encoding in Twig.
+				Link_Field::TITLE => html_entity_decode( $term->name, ENT_QUOTES ),
+			);
+		}
+
+		return $post_info;
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_internal_item_layout( string $item_id, Template_Field_Meta $markup_field_data ): array {
+		$is_multiple           = $markup_field_data->get_context()->get_field_meta()->is_multiple();
+		$is_with_field_wrapper = $is_multiple || $markup_field_data->is_with_field_wrapper();
+
+		$markup_field_data->set_is_with_field_wrapper( $is_with_field_wrapper );
+
+		return $this->link_field->compose_html( $item_id, $markup_field_data );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
+		$token_factory    = $markup_field_data->get_token_factory();
+		$object_id_source = $markup_field_data->get_context()->get_field_meta()->is_multiple() ?
+			static::LOOP_ITEM_NAME :
+			$field_id;
+
+		$id_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::LAYOUT_ID );
+
+		$term_id_var = $token_factory
+			->variable( $object_id_source )
+			->add_item_path( self::VALUE );
+
+		$cpt_name   = Hard_Layout_Cpt::cpt_name();
+		$attributes = array(
+			'id'        => $id_var,
+			'object-id' => 'term',
+			'term-id'   => $term_id_var,
+		);
+
+		$shortcode = $token_factory
+			->shortcode( $cpt_name )
+			->set_attributes( $attributes );
+
+		return array( $shortcode );
 	}
 
 	/**
@@ -143,12 +189,14 @@ class Taxonomy_Field extends List_Field {
 			);
 		}
 
-		$value = int( $field_value->get_value() );
+		$value = int( $term_id );
 
-		$field_value->set_value( $this->get_term_info( $value ) );
+		$field_value->set_value( self::get_term_info( $value ) );
+
+		$link_variables = $this->link_field->get_template_variables( $field_value );
 
 		return array_merge(
-			$this->link_field->get_template_variables( $field_value ),
+			$link_variables,
 			array(
 				self::PARENT_ID => $parent_id,
 			)
@@ -166,44 +214,13 @@ class Taxonomy_Field extends List_Field {
 			);
 		}
 
+		$link_variables = $this->link_field->get_validation_template_variables( $field_value );
+
 		return array_merge(
-			$this->link_field->get_validation_template_variables( $field_value ),
+			$link_variables,
 			array(
 				self::PARENT_ID => 0,
 			)
 		);
-	}
-
-	public function get_front_assets( Field_Settings $field_settings ): array {
-		return array_merge( parent::get_front_assets( $field_settings ), Splide_Library::get_field_front_assets( $field_settings ) );
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function get_conditional_fields( Field_Meta $field_meta ): array {
-		$conditional_fields = array(
-			Field_Settings::FIELD_LINK_LABEL,
-			Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
-			Field_Settings::FIELD_ACF_VIEW_ID,
-		);
-
-		if ( $field_meta->is_multiple() ) {
-			$conditional_fields[] = Field_Settings::FIELD_SLIDER_TYPE;
-		}
-
-		return array_merge( parent::get_conditional_fields( $field_meta ), $conditional_fields );
-	}
-
-	public function is_with_field_wrapper(
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta
-	): bool {
-		if ( $field_settings->has_external_layout() ) {
-			return true;
-		}
-
-		return parent::is_with_field_wrapper( $layout_settings, $field_settings, $field_meta );
 	}
 }

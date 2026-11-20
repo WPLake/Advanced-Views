@@ -13,20 +13,20 @@ class Url_Field extends Link_Field {
 	 * @return array<string, string>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$value = is_string( $field_value->get_value() ) ?
-			$field_value->get_value() :
+		$raw_value = $field_value->get_value();
+		$value     = is_string( $raw_value ) ?
+			$raw_value :
 			'';
+		$is_filled = strlen( $value ) > 0;
 
-		if ( '' === $value ) {
-			$field_value->set_value( array() );
+		$field_args = array();
 
-			return parent::get_template_variables( $field_value );
+		if ( $is_filled ) {
+			$field_args = array(
+				self::URL   => $value,
+				self::TITLE => $field_value->get_context()->get_field_settings()->get_label_translation(),
+			);
 		}
-
-		$field_args = array(
-			self::URL   => $value,
-			self::TITLE => $field_value->get_context()->get_field_settings()->get_label_translation(),
-		);
 
 		$field_value->set_value( $field_args );
 

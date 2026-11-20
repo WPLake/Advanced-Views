@@ -12,6 +12,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
 use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Splide\Splide_Library;
+use WP_User;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
 defined( 'ABSPATH' ) || exit;
@@ -29,9 +30,81 @@ class User_Field extends List_Field {
 	}
 
 	/**
+	 * @return array<string, mixed>
+	 */
+	public function get_template_variables( Raw_Field_Value $field_value ): array {
+		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
+
+		$parent_variables = parent::get_template_variables( $field_value );
+
+		return array_merge(
+			$parent_variables,
+			array(
+				self::VIEW_ID   => $layout_id,
+				self::LAYOUT_ID => $layout_id,
+			)
+		);
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
+		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
+
+		$parent_variables = parent::get_validation_template_variables( $field_value );
+
+		return array_merge(
+			$parent_variables,
+			array(
+				self::VIEW_ID   => $layout_id,
+				self::LAYOUT_ID => $layout_id,
+			)
+		);
+	}
+
+	public function get_front_assets( Field_Settings $field_settings ): array {
+		$parent_assets = parent::get_front_assets( $field_settings );
+		$splide_assets = Splide_Library::get_field_front_assets( $field_settings );
+
+		return array_merge( $parent_assets, $splide_assets );
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function get_conditional_fields( Field_Meta $field_meta ): array {
+		$conditional_fields = array(
+			Field_Settings::FIELD_LINK_LABEL,
+			Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
+			Field_Settings::FIELD_ACF_VIEW_ID,
+		);
+
+		if ( $field_meta->is_multiple() ) {
+			$conditional_fields[] = Field_Settings::FIELD_SLIDER_TYPE;
+		}
+
+		$parent_fields = parent::get_conditional_fields( $field_meta );
+
+		return array_merge( $parent_fields, $conditional_fields );
+	}
+
+	public function is_with_field_wrapper(
+		Layout_Settings $layout_settings,
+		Field_Settings $field_settings,
+		Field_Meta $field_meta
+	): bool {
+		if ( $field_settings->has_external_layout() ) {
+			return true;
+		}
+
+		return parent::is_with_field_wrapper( $layout_settings, $field_settings, $field_meta );
+	}
+
+	/**
 	 * @return array{url: string, title: string}
 	 */
-	protected function get_user_info( int $id ): array {
+	protected static function get_user_info( int $id ): array {
 		$user_info = array(
 			Link_Field::URL   => '',
 			Link_Field::TITLE => '',
@@ -39,14 +112,14 @@ class User_Field extends List_Field {
 
 		$user = get_user_by( 'ID', $id );
 
-		if ( false === $user ) {
-			return $user_info;
+		if ( $user instanceof WP_User ) {
+			return array(
+				Link_Field::URL   => get_author_posts_url( $user->ID ),
+				Link_Field::TITLE => $user->display_name,
+			);
 		}
 
-		return array(
-			Link_Field::URL   => get_author_posts_url( $user->ID ),
-			Link_Field::TITLE => $user->display_name,
-		);
+		return $user_info;
 	}
 
 	/**
@@ -69,51 +142,26 @@ class User_Field extends List_Field {
 			static::LOOP_ITEM_NAME :
 			$field_id;
 
-		$id_var      = $token_factory->variable( $field_id )
-										->add_item_path( self::LAYOUT_ID );
-		$user_id_var = $token_factory->variable( $object_id_source )
-										->add_item_path( self::VALUE );
+		$id_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::LAYOUT_ID );
 
-		$shortcode = $token_factory->shortcode( Hard_Layout_Cpt::cpt_name() )
-			->set_attributes(
-				array(
-					'id'        => $id_var,
-					'object-id' => 'user',
-					'user-id'   => $user_id_var,
-				)
-			);
+		$user_id_var = $token_factory
+			->variable( $object_id_source )
+			->add_item_path( self::VALUE );
+
+		$cpt_name   = Hard_Layout_Cpt::cpt_name();
+		$attributes = array(
+			'id'        => $id_var,
+			'object-id' => 'user',
+			'user-id'   => $user_id_var,
+		);
+
+		$shortcode = $token_factory
+			->shortcode( $cpt_name )
+			->set_attributes( $attributes );
 
 		return array( $shortcode );
-	}
-
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
-
-		return array_merge(
-			parent::get_template_variables( $field_value ),
-			array(
-				self::VIEW_ID   => $layout_id,
-				self::LAYOUT_ID => $layout_id,
-			)
-		);
-	}
-
-	/**
-	 * @return array<string, mixed>
-	 */
-	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
-		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
-
-		return array_merge(
-			parent::get_validation_template_variables( $field_value ),
-			array(
-				self::VIEW_ID   => $layout_id,
-				self::LAYOUT_ID => $layout_id,
-			)
-		);
 	}
 
 	/**
@@ -128,7 +176,7 @@ class User_Field extends List_Field {
 
 		$id = int( $field_value->get_value() );
 
-		$field_value->set_value( $this->get_user_info( $id ) );
+		$field_value->set_value( self::get_user_info( $id ) );
 
 		return $this->link_field->get_template_variables( $field_value );
 	}
@@ -144,38 +192,5 @@ class User_Field extends List_Field {
 		}
 
 		return $this->link_field->get_validation_template_variables( $field_value );
-	}
-
-	public function get_front_assets( Field_Settings $field_settings ): array {
-		return array_merge( parent::get_front_assets( $field_settings ), Splide_Library::get_field_front_assets( $field_settings ) );
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function get_conditional_fields( Field_Meta $field_meta ): array {
-		$conditional_fields = array(
-			Field_Settings::FIELD_LINK_LABEL,
-			Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
-			Field_Settings::FIELD_ACF_VIEW_ID,
-		);
-
-		if ( $field_meta->is_multiple() ) {
-			$conditional_fields[] = Field_Settings::FIELD_SLIDER_TYPE;
-		}
-
-		return array_merge( parent::get_conditional_fields( $field_meta ), $conditional_fields );
-	}
-
-	public function is_with_field_wrapper(
-		Layout_Settings $layout_settings,
-		Field_Settings $field_settings,
-		Field_Meta $field_meta
-	): bool {
-		if ( $field_settings->has_external_layout() ) {
-			return true;
-		}
-
-		return parent::is_with_field_wrapper( $layout_settings, $field_settings, $field_meta );
 	}
 }

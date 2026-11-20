@@ -23,7 +23,9 @@ class True_False_Field implements Markup_Field {
 		$field_context = $markup_field_data->get_context();
 
 		$token_factory = $markup_field_data->get_token_factory();
-		$state_var     = $token_factory->variable( $field_id )->add_item_path( self::STATE );
+		$state_var     = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::STATE );
 		$item_class    = $this->get_item_class(
 			'true-false--state--:',
 			$field_context->get_layout_settings(),
@@ -32,9 +34,16 @@ class True_False_Field implements Markup_Field {
 
 		// the state token goes in place of the ':' placeholder.
 		$item_class_parts = explode( ':', $item_class );
-		$parts            = array(
-			$this->get_field_class( 'true-false', $markup_field_data ) . ' ' . array_shift( $item_class_parts ),
+		$field_class      = $this->get_field_class( 'true-false', $markup_field_data );
+		$first_part       = array_shift( $item_class_parts );
+		$first_class_part = join(
+			' ',
+			array(
+				$field_class,
+				$first_part,
+			)
 		);
+		$parts            = array( $first_class_part );
 
 		foreach ( $item_class_parts as $item_class_part ) {
 			$parts[] = $state_var;
@@ -43,42 +52,23 @@ class True_False_Field implements Markup_Field {
 
 		$composed_class = compose_attribute( $parts );
 
-		return array(
-			tag( 'div' )
-				->attributes( array( 'class' => $composed_class ) ),
-		);
+		$div_tag = tag( 'div' )->attributes( array( 'class' => $composed_class ) );
+
+		return array( $div_tag );
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$is_checked = in_array( $field_value->get_value(), array( 1, '1', true ), true );
-
-		$args = array(
-			self::VALUE => $is_checked,
-			self::STATE => $is_checked ?
-				'checked' :
-				'unchecked',
-		);
-
-		return $args;
+		return self::compose_state_variables( $field_value );
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
 	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
-		$is_checked = in_array( $field_value->get_value(), array( 1, '1', true ), true );
-
-		$args = array(
-			self::VALUE => $is_checked,
-			self::STATE => $is_checked ?
-				'checked' :
-				'unchecked',
-		);
-
-		return $args;
+		return self::compose_state_variables( $field_value );
 	}
 
 	public function is_with_field_wrapper(
@@ -92,5 +82,24 @@ class True_False_Field implements Markup_Field {
 	// mark that false value still is supported in markup.
 	public function is_empty_value_supported_in_markup(): bool {
 		return true;
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	protected static function compose_state_variables( Raw_Field_Value $field_value ): array {
+		$value      = $field_value->get_value();
+		$is_checked = in_array(
+			$value,
+			array( 1, '1', true ),
+			true
+		);
+
+		return array(
+			self::VALUE => $is_checked,
+			self::STATE => $is_checked ?
+				'checked' :
+				'unchecked',
+		);
 	}
 }

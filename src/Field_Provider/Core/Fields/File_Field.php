@@ -27,45 +27,15 @@ class File_Field extends List_Field {
 	}
 
 	/**
-	 * @return Html_Node[]
-	 */
-	protected function compose_internal_item_layout( string $item_id, Template_Field_Meta $markup_field_data ): array {
-		return $this->link_field->compose_html( $item_id, $markup_field_data );
-	}
-
-	/**
-	 * @return Html_Node[]
-	 */
-	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
-		$token_factory    = $markup_field_data->get_token_factory();
-		$object_id_source = $markup_field_data->get_context()->get_field_meta()->is_multiple() ?
-			static::LOOP_ITEM_NAME :
-			$field_id;
-
-		$id_var        = $token_factory->variable( $field_id )
-										->add_item_path( self::LAYOUT_ID );
-		$object_id_var = $token_factory->variable( $object_id_source )
-										->add_item_path( self::VALUE );
-
-		$shortcode = $token_factory->shortcode( Hard_Layout_Cpt::cpt_name() )
-			->set_attributes(
-				array(
-					'id'        => $id_var,
-					'object-id' => $object_id_var,
-				)
-			);
-
-		return array( $shortcode );
-	}
-
-	/**
 	 * @return array<string, mixed>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
 		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
+		$parent_variables = parent::get_template_variables( $field_value );
+
 		return array_merge(
-			parent::get_template_variables( $field_value ),
+			$parent_variables,
 			array(
 				self::VIEW_ID   => $layout_id,
 				self::LAYOUT_ID => $layout_id,
@@ -79,8 +49,10 @@ class File_Field extends List_Field {
 	public function get_validation_template_variables( Raw_Field_Value $field_value ): array {
 		$layout_id = $field_value->get_context()->get_field_settings()->get_short_unique_acf_view_id();
 
+		$parent_variables = parent::get_validation_template_variables( $field_value );
+
 		return array_merge(
-			parent::get_validation_template_variables( $field_value ),
+			$parent_variables,
 			array(
 				self::VIEW_ID   => $layout_id,
 				self::LAYOUT_ID => $layout_id,
@@ -88,41 +60,11 @@ class File_Field extends List_Field {
 		);
 	}
 
-	protected function get_item_template_args( Raw_Field_Value $field_value ): array {
-		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
-			return array(
-				self::VALUE => int( $field_value->get_value() ),
-			);
-		}
-
-		$post_id = is_numeric( $field_value->get_value() ) ?
-			(int) $field_value->get_value() :
-			0;
-
-		$field_value->set_value(
-			0 !== $post_id ?
-				array(
-					Link_Field::URL   => (string) wp_get_attachment_url( $post_id ),
-					Link_Field::TITLE => get_post( $post_id )->post_title ?? '',
-				) :
-				array()
-		);
-
-		return $this->link_field->get_template_variables( $field_value );
-	}
-
-	protected function get_validation_item_template_args( Raw_Field_Value $field_value ): array {
-		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
-			return array(
-				self::VALUE => 0,
-			);
-		}
-
-		return $this->link_field->get_validation_template_variables( $field_value );
-	}
-
 	public function get_front_assets( Field_Settings $field_settings ): array {
-		return array_merge( parent::get_front_assets( $field_settings ), Splide_Library::get_field_front_assets( $field_settings ) );
+		$parent_assets = parent::get_front_assets( $field_settings );
+		$splide_assets = Splide_Library::get_field_front_assets( $field_settings );
+
+		return array_merge( $parent_assets, $splide_assets );
 	}
 
 	/**
@@ -139,7 +81,9 @@ class File_Field extends List_Field {
 			$conditional_fields[] = Field_Settings::FIELD_SLIDER_TYPE;
 		}
 
-		return array_merge( parent::get_conditional_fields( $field_meta ), $conditional_fields );
+		$parent_fields = parent::get_conditional_fields( $field_meta );
+
+		return array_merge( $parent_fields, $conditional_fields );
 	}
 
 	public function is_with_field_wrapper(
@@ -152,5 +96,87 @@ class File_Field extends List_Field {
 		}
 
 		return parent::is_with_field_wrapper( $layout_settings, $field_settings, $field_meta );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_internal_item_layout( string $item_id, Template_Field_Meta $markup_field_data ): array {
+		return $this->link_field->compose_html( $item_id, $markup_field_data );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
+		$token_factory    = $markup_field_data->get_token_factory();
+		$object_id_source = $markup_field_data->get_context()->get_field_meta()->is_multiple() ?
+			static::LOOP_ITEM_NAME :
+			$field_id;
+
+		$id_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::LAYOUT_ID );
+
+		$object_id_var = $token_factory
+			->variable( $object_id_source )
+			->add_item_path( self::VALUE );
+
+		$cpt_name   = Hard_Layout_Cpt::cpt_name();
+		$attributes = array(
+			'id'        => $id_var,
+			'object-id' => $object_id_var,
+		);
+
+		$shortcode = $token_factory
+			->shortcode( $cpt_name )
+			->set_attributes( $attributes );
+
+		return array( $shortcode );
+	}
+
+	protected function get_item_template_args( Raw_Field_Value $field_value ): array {
+		$value = $field_value->get_value();
+
+		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
+			return array(
+				self::VALUE => int( $value ),
+			);
+		}
+
+		$post_id    = is_numeric( $value ) ?
+			(int) $value :
+			0;
+		$link_value = $this->get_link_value( $post_id );
+
+		$field_value->set_value( $link_value );
+
+		return $this->link_field->get_template_variables( $field_value );
+	}
+
+	/**
+	 * @return array<string, string>
+	 */
+	protected function get_link_value( int $post_id ): array {
+		if ( 0 !== $post_id ) {
+			$url = (string) wp_get_attachment_url( $post_id );
+
+			return array(
+				Link_Field::URL   => $url,
+				Link_Field::TITLE => get_post( $post_id )->post_title ?? '',
+			);
+		}
+
+		return array();
+	}
+
+	protected function get_validation_item_template_args( Raw_Field_Value $field_value ): array {
+		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
+			return array(
+				self::VALUE => 0,
+			);
+		}
+
+		return $this->link_field->get_validation_template_variables( $field_value );
 	}
 }

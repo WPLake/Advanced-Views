@@ -18,11 +18,11 @@ class Plain_Field implements Markup_Field {
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
 		$token_factory = $markup_field_data->get_token_factory();
 
-		return array(
-			$token_factory
-				->variable( $field_id )
-			->add_item_path( self::VALUE ),
-		);
+		$value_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::VALUE );
+
+		return array( $value_var );
 	}
 
 	/**
@@ -33,9 +33,10 @@ class Plain_Field implements Markup_Field {
 			self::VALUE => '',
 		);
 
-		$value = is_string( $field_value->get_value() ) ||
-				is_numeric( $field_value->get_value() ) ?
-			(string) $field_value->get_value() :
+		$raw_value = $field_value->get_value();
+		$is_text   = is_string( $raw_value ) || is_numeric( $raw_value );
+		$value     = $is_text ?
+			(string) $raw_value :
 			'';
 
 		return array_merge(

@@ -81,6 +81,28 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	}
 
 	/**
+	 * @return string[]
+	 */
+	public static function get_all_conditional_fields(): array {
+		return array(
+			Field_Settings::FIELD_LINK_LABEL,
+			Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
+			Field_Settings::FIELD_ACF_VIEW_ID,
+			Field_Settings::FIELD_SLIDER_TYPE,
+			Field_Settings::FIELD_MAP_MARKER_ICON,
+			Field_Settings::FIELD_MAP_MARKER_ICON_TITLE,
+			Field_Settings::FIELD_MAP_ADDRESS_FORMAT,
+			Field_Settings::FIELD_IS_MAP_WITH_ADDRESS,
+			Field_Settings::FIELD_IS_MAP_WITHOUT_GOOGLE_MAP,
+			Field_Settings::FIELD_IMAGE_SIZE,
+			Field_Settings::FIELD_LIGHTBOX_TYPE,
+			Field_Settings::FIELD_GALLERY_WITH_LIGHT_BOX,
+			Field_Settings::FIELD_GALLERY_TYPE,
+			Field_Settings::FIELD_OPTIONS_DELIMITER,
+		);
+	}
+
+	/**
 	 * @return  array<string, Field_Provider> name => instance
 	 */
 	public function get_provider_cluster(): array {
@@ -196,23 +218,25 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		string $vendor_name,
 		string $field_type
 	): ?Markup_Field {
-		if ( ! key_exists( $vendor_name, $this->provider_cluster ) ) {
-			return null;
+		if ( key_exists( $vendor_name, $this->provider_cluster ) ) {
+			$vendor_cache = $this->markup_field_cache[ $vendor_name ] ?? array();
+
+			if ( ! key_exists( $field_type, $vendor_cache ) ) {
+				$this->markup_field_cache[ $vendor_name ][ $field_type ] = $this->provider_cluster[ $vendor_name ]->get_markup_field_instance( $field_type );
+			}
+
+			return $this->markup_field_cache[ $vendor_name ][ $field_type ];
 		}
 
-		if ( ! key_exists( $field_type, $this->markup_field_cache[ $vendor_name ] ?? array() ) ) {
-			$this->markup_field_cache[ $vendor_name ][ $field_type ] = $this->provider_cluster[ $vendor_name ]->get_markup_field_instance( $field_type );
-		}
-
-		return $this->markup_field_cache[ $vendor_name ][ $field_type ];
+		return null;
 	}
 
 	public function is_empty_value_supported_in_markup( string $vendor_name, string $field_type ): bool {
-		if ( ! key_exists( $vendor_name, $this->provider_cluster ) ) {
-			return false;
+		if ( key_exists( $vendor_name, $this->provider_cluster ) ) {
+			return $this->provider_cluster[ $vendor_name ]->is_empty_value_supported_in_markup( $field_type );
 		}
 
-		return $this->provider_cluster[ $vendor_name ]->is_empty_value_supported_in_markup( $field_type );
+		return false;
 	}
 
 	/**
@@ -221,31 +245,25 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	 * @return string[]
 	 */
 	public function get_supported_field_types( string $vendor_name ): array {
-		if ( ! key_exists( $vendor_name, $this->provider_cluster ) ) {
-			return array();
+		if ( key_exists( $vendor_name, $this->provider_cluster ) ) {
+			return $this->provider_cluster[ $vendor_name ]->get_supported_field_types();
 		}
 
-		return $this->provider_cluster[ $vendor_name ]->get_supported_field_types();
+		return array();
 	}
 
 	public function get_field_meta( string $vendor_name, string $field_id ): Field_Meta {
-		$vendor = $this->provider_cluster[ $vendor_name ] ?? null;
+		$vendor_cache = $this->field_meta_cache[ $vendor_name ] ?? array();
 
-		$this->field_meta_cache[ $vendor_name ] ??= array();
-
-		if ( ! key_exists( $field_id, $this->field_meta_cache[ $vendor_name ] ) ) {
-			$field_meta = new Field_Meta( $vendor_name, $field_id );
-
-			if ( null !== $vendor ) {
-				$vendor->fill_field_meta( $field_meta );
-			}
-
-			// it's okay if vendor isn't loaded (e.g. it's ACF field and ACF plugin is not present on the site)
-			// so it'll have fieldMeta with isFieldExists() false.
-			$this->field_meta_cache[ $vendor_name ][ $field_id ] = $field_meta;
+		if ( key_exists( $field_id, $vendor_cache ) ) {
+			return $vendor_cache[ $field_id ];
 		}
 
-		return $this->field_meta_cache[ $vendor_name ][ $field_id ];
+		$field_meta = $this->create_field_meta( $vendor_name, $field_id );
+
+		$this->field_meta_cache[ $vendor_name ][ $field_id ] = $field_meta;
+
+		return $field_meta;
 	}
 
 	/**
@@ -263,18 +281,18 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	) {
 		$vendor_name = $field_meta->get_vendor_name();
 
-		if ( ! key_exists( $vendor_name, $this->provider_cluster ) ) {
-			return null;
+		if ( key_exists( $vendor_name, $this->provider_cluster ) ) {
+			return $this->provider_cluster[ $vendor_name ]->get_field_value(
+				$field_settings,
+				$field_meta,
+				$source,
+				$item_settings,
+				$is_formatted,
+				$local_data
+			);
 		}
 
-		return $this->provider_cluster[ $vendor_name ]->get_field_value(
-			$field_settings,
-			$field_meta,
-			$source,
-			$item_settings,
-			$is_formatted,
-			$local_data
-		);
+		return null;
 	}
 
 	// use $isForceLoading for tests only.
@@ -282,15 +300,13 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		$providers = $this->resolve_providers();
 
 		foreach ( $providers as $vendor ) {
-			$is_skipped = ! $vendor->is_available() && ! $is_force_loading;
+			$is_loaded = $is_force_loading || $vendor->is_available();
 
-			if ( $is_skipped ) {
-				continue;
+			if ( $is_loaded ) {
+				$vendor_name = $vendor->get_name();
+
+				$this->provider_cluster[ $vendor_name ] = $vendor;
 			}
-
-			$vendor_name = $vendor->get_name();
-
-			$this->provider_cluster[ $vendor_name ] = $vendor;
 		}
 	}
 
@@ -298,14 +314,14 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	 * @return string[]
 	 */
 	public function get_field_front_assets( string $vendor_name, Field_Settings $field_settings ): array {
-		if ( ! key_exists( $vendor_name, $this->provider_cluster ) ) {
-			return array();
+		if ( key_exists( $vendor_name, $this->provider_cluster ) ) {
+			$field_front_assets = $this->provider_cluster[ $vendor_name ]->get_field_front_assets( $field_settings );
+
+			// avoid duplicates (can be in case of the inheritance chain).
+			return array_unique( $field_front_assets );
 		}
 
-		$field_front_assets = $this->provider_cluster[ $vendor_name ]->get_field_front_assets( $field_settings );
-
-		// avoid duplicates (can be in case of the inheritance chain).
-		return array_unique( $field_front_assets );
+		return array();
 	}
 
 	/**
@@ -319,63 +335,31 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 
 		foreach ( $layout_settings->items as $item ) {
 			foreach ( $item->repeater_fields as $repeater_field ) {
-				$vendor_name  = $this->get_vendor_name_by_key( $repeater_field->key );
-				$front_assets = $this->get_field_front_assets( $vendor_name, $repeater_field );
-
-				if ( ! in_array( $asset_name, $front_assets, true ) ) {
-					continue;
+				if ( $this->has_front_asset( $asset_name, $repeater_field ) ) {
+					$fields[1][] = $repeater_field;
 				}
-
-				$fields[1][] = $repeater_field;
 			}
 
-			$vendor_name  = $this->get_vendor_name_by_key( $item->field->key );
-			$front_assets = $this->get_field_front_assets( $vendor_name, $item->field );
-
-			if ( ! in_array( $asset_name, $front_assets, true ) ) {
-				continue;
+			if ( $this->has_front_asset( $asset_name, $item->field ) ) {
+				$fields[0][] = $item->field;
 			}
-
-			$fields[0][] = $item->field;
 		}
 
 		return $fields;
 	}
 
-	/**
-	 * @return string[]
-	 */
-	public static function get_all_conditional_fields(): array {
-		return array(
-			Field_Settings::FIELD_LINK_LABEL,
-			Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
-			Field_Settings::FIELD_ACF_VIEW_ID,
-			Field_Settings::FIELD_SLIDER_TYPE,
-			Field_Settings::FIELD_MAP_MARKER_ICON,
-			Field_Settings::FIELD_MAP_MARKER_ICON_TITLE,
-			Field_Settings::FIELD_MAP_ADDRESS_FORMAT,
-			Field_Settings::FIELD_IS_MAP_WITH_ADDRESS,
-			Field_Settings::FIELD_IS_MAP_WITHOUT_GOOGLE_MAP,
-			Field_Settings::FIELD_IMAGE_SIZE,
-			Field_Settings::FIELD_LIGHTBOX_TYPE,
-			Field_Settings::FIELD_GALLERY_WITH_LIGHT_BOX,
-			Field_Settings::FIELD_GALLERY_TYPE,
-			Field_Settings::FIELD_OPTIONS_DELIMITER,
-		);
-	}
-
 	public function is_field_type_with_sub_fields( string $vendor, string $field_type ): bool {
-		if ( ! key_exists( $vendor, $this->provider_cluster ) ) {
-			return false;
+		if ( key_exists( $vendor, $this->provider_cluster ) ) {
+			$types_with_sub_fields = $this->provider_cluster[ $vendor ]->get_field_types_with_sub_fields();
+
+			return in_array(
+				$field_type,
+				$types_with_sub_fields,
+				true
+			);
 		}
 
-		$types_with_sub_fields = $this->provider_cluster[ $vendor ]->get_field_types_with_sub_fields();
-
-		return in_array(
-			$field_type,
-			$types_with_sub_fields,
-			true
-		);
+		return false;
 	}
 
 	public function convert_date_to_string_for_db_comparison(
@@ -383,14 +367,14 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		DateTime $date_time,
 		Field_Meta $field_meta
 	): string {
-		if ( ! key_exists( $vendor, $this->provider_cluster ) ) {
-			return '';
+		if ( key_exists( $vendor, $this->provider_cluster ) ) {
+			return $this->provider_cluster[ $vendor ]->convert_date_to_string_for_db_comparison(
+				$date_time,
+				$field_meta
+			);
 		}
 
-		return $this->provider_cluster[ $vendor ]->convert_date_to_string_for_db_comparison(
-			$date_time,
-			$field_meta
-		);
+		return '';
 	}
 
 	public function get_vendor_name_by_key( string $key ): string {
@@ -398,7 +382,9 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		$separator_position = strpos( $key, ':' );
 
 		if ( is_int( $separator_position ) ) {
-			return explode( ':', $key )[0];
+			$key_parts = explode( ':', $key );
+
+			return $key_parts[0];
 		}
 
 		$field_id = Field_Settings::get_field_id_by_key( $key );
@@ -413,26 +399,27 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		if ( '' === $vendor_name ) {
 			$fake_key                       = sprintf( '%s|fake-field-id', $group_id );
 			$vendor_name                    = $this->get_vendor_name_by_key( $fake_key );
-			$group_id_without_vendor_prefix = explode( ':', $group_id )[1] ?? $group_id;
+			$group_id_parts                 = explode( ':', $group_id );
+			$group_id_without_vendor_prefix = $group_id_parts[1] ?? $group_id;
 		} else {
 			$group_id_without_vendor_prefix = $group_id;
 		}
 
-		if ( ! key_exists( $vendor_name, $this->provider_cluster ) ) {
-			return null;
+		if ( key_exists( $vendor_name, $this->provider_cluster ) ) {
+			return $this->provider_cluster[ $vendor_name ]->get_group_link_by_group_id( $group_id_without_vendor_prefix );
 		}
 
-		return $this->provider_cluster[ $vendor_name ]->get_group_link_by_group_id( $group_id_without_vendor_prefix );
+		return null;
 	}
 
 	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
 		$vendor_name = $field_meta->get_vendor_name();
 
-		if ( ! key_exists( $vendor_name, $this->provider_cluster ) ) {
-			return null;
+		if ( key_exists( $vendor_name, $this->provider_cluster ) ) {
+			return $this->provider_cluster[ $vendor_name ]->convert_string_to_date_time( $field_meta, $value );
 		}
 
-		return $this->provider_cluster[ $vendor_name ]->convert_string_to_date_time( $field_meta, $value );
+		return null;
 	}
 
 	/**
@@ -441,45 +428,10 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	public function import_related_group_files( array $import_files ): Related_Groups_Import_Result {
 		$related_groups_import_result = new Related_Groups_Import_Result();
 
-		$providers = $this->get_provider_cluster();
-
 		foreach ( $import_files as $file_name => $file_content ) {
-			$json_position = strpos( $file_name, '.json' );
+			$file_import_result = $this->import_file( $file_name, $file_content );
 
-			if ( ! is_int( $json_position ) ) {
-				continue;
-			}
-
-			$file_vendor = str_replace( '.json', '', $file_name );
-
-			if ( ! key_exists( $file_vendor, $providers ) ) {
-				continue;
-			}
-
-			$import_data = json_decode( $file_content, true );
-
-			if ( false === is_array( $import_data ) ) {
-				continue;
-			}
-
-			$vendor = $providers[ $file_vendor ];
-
-			$meta_data = arr( $import_data, 'meta' );
-			// compatibility with the old export format, which didn't have meta at all.
-			$groups_data = arr( $import_data, 'groups' );
-
-			foreach ( $groups_data as $group_data ) {
-				$group_data        = arr( $group_data );
-				$imported_group_id = $vendor->import_group( $group_data, $meta_data );
-
-				if ( null === $imported_group_id ) {
-					continue;
-				}
-
-				$vendor_name = $vendor->get_name();
-
-				$related_groups_import_result->add_group( $vendor_name, $imported_group_id );
-			}
+			$related_groups_import_result->merge( $file_import_result );
 		}
 
 		return $related_groups_import_result;
@@ -518,75 +470,18 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	 * @return array<string, string> fileName => content
 	 */
 	public function get_related_group_export_files( Layout_Settings $layout_settings ): array {
-		$related_groups            = array();
-		$related_group_export_data = array();
-		$providers                 = $this->get_provider_cluster();
-
-		// 1. get all related group ids (not unique)
-		foreach ( $layout_settings->items as $item ) {
-			$group_id = $item->field->get_group_id();
-
-			$vendor_name = $this->get_vendor_name_by_key( $item->field->key );
-
-			if ( ! key_exists( $vendor_name, $providers ) ) {
-				continue;
-			}
-
-			$related_groups[ $vendor_name ] ??= array();
-			$related_groups[ $vendor_name ][] = $group_id;
-		}
-
-		// 2. get export data for each related group
-		foreach ( $related_groups as $vendor_name => $group_ids ) {
-			if ( ! key_exists( $vendor_name, $providers ) ) {
-				continue;
-			}
-
-			$vendor = $providers[ $vendor_name ];
-			// remove duplicates.
-			$group_ids = array_unique( $group_ids );
-
-			foreach ( $group_ids as $group_id ) {
-				// feature can be not supported by the vendor (e.g. WP or Woo vendors).
-				$group_export_data = $vendor->get_group_export_data( $group_id );
-
-				if ( null === $group_export_data ) {
-					continue;
-				}
-
-				$related_group_export_data[ $vendor_name ] ??= array();
-				$related_group_export_data[ $vendor_name ][] = $group_export_data;
-			}
-		}
-
-		// 3. prepare export files
+		$related_groups             = $this->get_related_group_ids( $layout_settings );
+		$related_group_export_data  = $this->get_groups_export_data( $related_groups );
 		$related_group_export_files = array();
 
 		foreach ( $related_group_export_data as $vendor_name => $groups_export_data ) {
-			if ( ! key_exists( $vendor_name, $providers ) ) {
-				continue;
+			$export_content = $this->create_export_content( $vendor_name, $groups_export_data );
+
+			if ( is_string( $export_content ) ) {
+				$file_name = sprintf( '%s.json', $vendor_name );
+
+				$related_group_export_files[ $file_name ] = $export_content;
 			}
-
-			$vendor           = $providers[ $vendor_name ];
-			$export_meta_data = $vendor->get_export_meta_data( $groups_export_data );
-
-			$export_data = array(
-				'meta'   => $export_meta_data,
-				'groups' => $groups_export_data,
-			);
-
-			$groups_export_content = wp_json_encode(
-				$export_data,
-				JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
-			);
-
-			if ( ! is_string( $groups_export_content ) ) {
-				continue;
-			}
-
-			$file_name = sprintf( '%s.json', $vendor_name );
-
-			$related_group_export_files[ $file_name ] = $groups_export_content;
 		}
 
 		return $related_group_export_files;
@@ -644,56 +539,190 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		string $vendor_name,
 		string $field_type
 	): bool {
-		// a) early return if field doesn't have the value in the field.
-		if ( ! $field_settings->has_external_layout() ) {
-			return false;
+		$has_external_layout = $field_settings->has_external_layout();
+		$markup_instance     = $this->get_markup_field_instance( $vendor_name, $field_type );
+
+		/**
+		 * The field must have the acfViewId in the conditional fields
+		 * (as can leave from the previous field type, e.g. after clone).
+		 */
+		if ( $has_external_layout && $markup_instance instanceof Markup_Field ) {
+			$field_meta         = $field_settings->get_field_meta();
+			$conditional_fields = $markup_instance->get_conditional_fields( $field_meta );
+
+			return in_array(
+				Field_Settings::FIELD_ACF_VIEW_ID,
+				$conditional_fields,
+				true
+			);
 		}
 
-		// b) check if the field has acfViewId in the conditional fields
-		// (as can leave from the previous field type, e.g. after clone).
-
-		$providers = $this->get_provider_cluster();
-
-		if ( ! key_exists( $vendor_name, $providers ) ) {
-			return false;
-		}
-
-		$markup_instance = $providers[ $vendor_name ]->get_markup_field_instance( $field_type );
-
-		if ( null === $markup_instance ) {
-			return false;
-		}
-
-		$field_meta         = $field_settings->get_field_meta();
-		$conditional_fields = $markup_instance->get_conditional_fields( $field_meta );
-
-		return in_array(
-			Field_Settings::FIELD_ACF_VIEW_ID,
-			$conditional_fields,
-			true
-		);
+		return false;
 	}
 
 	protected function make_integration_instances( Route_Detector $route_detector ): void {
+		$load_callback = fn() => $this->load_integration_instances( $route_detector );
+
 		// 1. must on or later 'plugins_load', when meta plugins are loaded
 		// 2. must be on or later 'after_setup_theme', when FS only Layouts and Post Selections are available
 		File_System_Loader::instance()
-							->add_loaded_callback(
-								function () use ( $route_detector ): void {
-									$layouts_settings_storage = $this->container->resolve( Layout_Settings_Storage::class );
+			->add_loaded_callback( $load_callback );
+	}
 
-									foreach ( $this->provider_cluster as $vendor ) {
-										$integration_instance = $vendor->make_integration_instance( $this->container );
+	protected function load_integration_instances( Route_Detector $route_detector ): void {
+		$layouts_settings_storage = $this->container->resolve( Layout_Settings_Storage::class );
 
-										// integration instance is optional (e.g. Woo and WP don't have).
-										if ( null === $integration_instance ) {
-											continue;
-										}
+		foreach ( $this->provider_cluster as $vendor ) {
+			$integration_instance = $vendor->make_integration_instance( $this->container );
 
-										$this->load_integration_instance( $route_detector, $integration_instance, $layouts_settings_storage );
-									}
-								}
-							);
+			// integration instance is optional (e.g. Woo and WP don't have).
+			if ( $integration_instance instanceof Field_Provider_Integration ) {
+				$this->load_integration_instance(
+					$route_detector,
+					$integration_instance,
+					$layouts_settings_storage
+				);
+			}
+		}
+	}
+
+	protected function import_file( string $file_name, string $file_content ): Related_Groups_Import_Result {
+		$file_vendor = $this->get_import_file_vendor( $file_name );
+		$import_data = json_decode( $file_content, true );
+
+		if ( $file_vendor instanceof Field_Provider && is_array( $import_data ) ) {
+			return $this->import_vendor_groups( $file_vendor, $import_data );
+		}
+
+		return new Related_Groups_Import_Result();
+	}
+
+	protected function get_import_file_vendor( string $file_name ): ?Field_Provider {
+		$json_position = strpos( $file_name, '.json' );
+		$vendor_name   = str_replace( '.json', '', $file_name );
+		$providers     = $this->get_provider_cluster();
+
+		if ( is_int( $json_position ) && key_exists( $vendor_name, $providers ) ) {
+			return $providers[ $vendor_name ];
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param mixed[] $import_data
+	 */
+	protected function import_vendor_groups( Field_Provider $vendor, array $import_data ): Related_Groups_Import_Result {
+		$import_result = new Related_Groups_Import_Result();
+		$meta_data     = arr( $import_data, 'meta' );
+		// compatibility with the old export format, which didn't have meta at all.
+		$groups_data = arr( $import_data, 'groups' );
+		$vendor_name = $vendor->get_name();
+
+		foreach ( $groups_data as $group_data ) {
+			$group_data        = arr( $group_data );
+			$imported_group_id = $vendor->import_group( $group_data, $meta_data );
+
+			if ( is_string( $imported_group_id ) ) {
+				$import_result->add_group( $vendor_name, $imported_group_id );
+			}
+		}
+
+		return $import_result;
+	}
+
+	/**
+	 * @return array<string, string[]> vendorName => groupIds (not unique)
+	 */
+	protected function get_related_group_ids( Layout_Settings $layout_settings ): array {
+		$related_groups = array();
+		$providers      = $this->get_provider_cluster();
+
+		foreach ( $layout_settings->items as $item ) {
+			$group_id    = $item->field->get_group_id();
+			$vendor_name = $this->get_vendor_name_by_key( $item->field->key );
+
+			if ( key_exists( $vendor_name, $providers ) ) {
+				$related_groups[ $vendor_name ] ??= array();
+				$related_groups[ $vendor_name ][] = $group_id;
+			}
+		}
+
+		return $related_groups;
+	}
+
+	/**
+	 * @param array<string, string[]> $related_groups
+	 *
+	 * @return array<string, mixed[]> vendorName => groups export data
+	 */
+	protected function get_groups_export_data( array $related_groups ): array {
+		$related_group_export_data = array();
+		$providers                 = $this->get_provider_cluster();
+
+		foreach ( $related_groups as $vendor_name => $group_ids ) {
+			$vendor    = $providers[ $vendor_name ];
+			$group_ids = array_unique( $group_ids );
+
+			foreach ( $group_ids as $group_id ) {
+				// feature can be not supported by the vendor (e.g. WP or Woo vendors).
+				$group_export_data = $vendor->get_group_export_data( $group_id );
+
+				if ( is_array( $group_export_data ) ) {
+					$related_group_export_data[ $vendor_name ] ??= array();
+					$related_group_export_data[ $vendor_name ][] = $group_export_data;
+				}
+			}
+		}
+
+		return $related_group_export_data;
+	}
+
+	/**
+	 * @param mixed[] $groups_export_data
+	 */
+	protected function create_export_content( string $vendor_name, array $groups_export_data ): ?string {
+		$providers        = $this->get_provider_cluster();
+		$vendor           = $providers[ $vendor_name ];
+		$export_meta_data = $vendor->get_export_meta_data( $groups_export_data );
+
+		$export_data = array(
+			'meta'   => $export_meta_data,
+			'groups' => $groups_export_data,
+		);
+
+		$export_content = wp_json_encode(
+			$export_data,
+			JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
+		);
+
+		return is_string( $export_content ) ?
+			$export_content :
+			null;
+	}
+
+	protected function create_field_meta( string $vendor_name, string $field_id ): Field_Meta {
+		$vendor     = $this->provider_cluster[ $vendor_name ] ?? null;
+		$field_meta = new Field_Meta( $vendor_name, $field_id );
+
+		// it's okay if vendor isn't loaded (e.g. it's ACF field and ACF plugin is not present on the site)
+		// so it'll have fieldMeta with isFieldExists() false.
+		if ( null !== $vendor ) {
+			$vendor->fill_field_meta( $field_meta );
+		}
+
+		return $field_meta;
+	}
+
+	protected function has_front_asset( string $asset_name, Field_Settings $field_settings ): bool {
+		$vendor_name  = $this->get_vendor_name_by_key( $field_settings->key );
+		$front_assets = $this->get_field_front_assets( $vendor_name, $field_settings );
+
+		return in_array(
+			$asset_name,
+			$front_assets,
+			true
+		);
 	}
 
 	/**

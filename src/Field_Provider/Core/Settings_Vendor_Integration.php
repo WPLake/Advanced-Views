@@ -20,6 +20,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
+use WP_Screen;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
@@ -69,6 +70,79 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		$this->html_renderer            = $html_renderer;
 	}
 
+	public function get_views_data_storage(): Layout_Settings_Storage {
+		return $this->layouts_settings_storage;
+	}
+
+	/**
+	 * @param array<string,string> $columns
+	 *
+	 * @return array<string,string>
+	 */
+	public function add_related_views_column_to_list( array $columns ): array {
+		$column_label = __( 'Assigned to Layout', 'acf-views' );
+
+		return array_merge(
+			$columns,
+			array( 'relatedAcfViews' => $column_label )
+		);
+	}
+
+	public function maybe_create_view_for_group(): void {
+		$redirect_callback = fn() => $this->redirect_to_new_layout();
+
+		self::add_action( 'current_screen', $redirect_callback );
+	}
+
+	public function print_related_views_column( string $column, int $post_id ): void {
+		$post = 'relatedAcfViews' === $column ?
+			get_post( $post_id ) :
+			null;
+
+		if ( $post instanceof WP_Post ) {
+			$this->print_related_acf_views( $post, true );
+		}
+	}
+
+	public function validate_related_views_on_group_change(): void {
+		$message_callback = fn( array $messages ) => $this->add_invalid_markup_message( $messages );
+
+		// with '20', to make sure it's after ACF.
+		self::add_filter(
+			'post_updated_messages',
+			$message_callback,
+			20
+		);
+	}
+
+	public function add_column_to_list_table(): void {
+		$vendor_post_type = $this->get_vendor_post_type();
+		$columns_filter   = sprintf( 'manage_%s_posts_columns', $vendor_post_type );
+		$column_action    = sprintf( 'manage_%s_posts_custom_column', $vendor_post_type );
+
+		// higher priority, to run after ACF's listener (they don't use 'merge').
+		self::add_filter(
+			$columns_filter,
+			array( $this, 'add_related_views_column_to_list' ),
+			20
+		);
+		self::add_action(
+			$column_action,
+			array( $this, 'print_related_views_column' ),
+			10,
+			2
+		);
+	}
+
+	/**
+	 * @param Layout_Settings[] $view_data_items
+	 *
+	 * @return void
+	 */
+	public function signup_gutenberg_blocks( array $view_data_items ): void {
+		// it's a stub. Will be overridden by specific vendors in the Pro version.
+	}
+
 	abstract protected function get_vendor_post_type(): string;
 
 	/**
@@ -86,18 +160,27 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	}
 
 	protected function get_block_description( Layout_Settings $layout_settings ): string {
+		$label     = __( 'Advanced View', 'acf-views' );
+		$unique_id = $layout_settings->get_unique_id( true );
+
 		return sprintf(
 			'%s (%s, id = %s).',
 			$layout_settings->description,
-			__( 'Advanced View', 'acf-views' ),
-			$layout_settings->get_unique_id( true ),
+			$label,
+			$unique_id
 		);
 	}
 
 	protected function get_block_id( Layout_Settings $layout_settings ): string {
-		return $layout_settings->is_gutenberg_block_with_digital_id ?
-			sprintf( 'acf-views-block-%s', $layout_settings->getSource() ) :
-			sprintf( 'acf-view-%s', $layout_settings->get_unique_id( true ) );
+		if ( $layout_settings->is_gutenberg_block_with_digital_id ) {
+			$source = $layout_settings->getSource();
+
+			return sprintf( 'acf-views-block-%s', $source );
+		}
+
+		$unique_id = $layout_settings->get_unique_id( true );
+
+		return sprintf( 'acf-view-%s', $unique_id );
 	}
 
 	protected function getBlockCategory(): string {
@@ -112,7 +195,8 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		int $post_id,
 		?array $local_data = null
 	): void {
-		$source = new Source();
+		$source    = new Source();
+		$unique_id = $layout_settings->get_unique_id();
 
 		$source->set_id( $post_id );
 		$source->set_is_block( true );
@@ -121,7 +205,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		ob_start();
 		$this->layout_factory->make_and_print_html(
 			$source,
-			$layout_settings->get_unique_id(),
+			$unique_id,
 			$post_id,
 			'',
 			array(),
@@ -129,8 +213,15 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		);
 		$html = (string) ob_get_clean();
 
+		$shadow_html = $this->layout_shortcode->maybe_add_quick_link_and_shadow_css(
+			$html,
+			$unique_id,
+			array(),
+			true
+		);
+
 		// @phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $this->layout_shortcode->maybe_add_quick_link_and_shadow_css( $html, $layout_settings->get_unique_id(), array(), true );
+		echo $shadow_html;
 	}
 
 	protected function link_with_js_hover_tag( string $url, string $title ): Html_Tag {
@@ -164,49 +255,55 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 
 		$this->fill_field_id_and_type( $field, $field_id, $field_type );
 
-		if ( ! in_array( $field_type, $supported_field_types, true ) ) {
-			return null;
+		$is_supported = in_array(
+			$field_type,
+			$supported_field_types,
+			true
+		);
+
+		if ( $is_supported ) {
+			$item = $this->item_settings->getDeepClone();
+
+			// we could use the group field on the level, but it less clear for beginners,
+			// as they may wonder how to add fields from other groups, like WP.
+			$item->group      = $group_id;
+			$item->field->key = $item->field::create_field_key( $group_id, $field_id );
+
+			$layout_settings->items[] = $item;
+
+			return $item;
 		}
 
-		$item = $this->item_settings->getDeepClone();
-
-		// we could use the group field on the level, but it less clear for beginners,
-		// as they may wonder how to add fields from other groups, like WP.
-		$item->group      = $group_id;
-		$item->field->key = $item->field::create_field_key( $group_id, $field_id );
-
-		$layout_settings->items[] = $item;
-
-		return $item;
+		return null;
 	}
 
 	/**
 	 * @param array<string,string> $link_attrs
 	 */
 	protected function add_new_link_tag( int $from, string $label_suffix = '', array $link_attrs = array() ): Html_Tag {
-		$link_attrs = array_merge(
-			array(
-				'target'      => '_blank',
-				'class'       => 'button',
-				'style'       => 'min-height: 0;line-height: 1.2;padding: 3px 7px;font-size:11px;height:auto;transition:all .3s ease;',
-				'onmouseover' => "this.style.color='#044767'",
-				'onmouseout'  => "this.style.color='#0783BE'",
-				'icon_class'  => '',
-				'icon_style'  => '',
-			),
-			$link_attrs
+		$default_attrs = array(
+			'target'      => '_blank',
+			'class'       => 'button',
+			'style'       => 'min-height: 0;line-height: 1.2;padding: 3px 7px;font-size:11px;height:auto;transition:all .3s ease;',
+			'onmouseover' => "this.style.color='#044767'",
+			'onmouseout'  => "this.style.color='#0783BE'",
+			'icon_class'  => '',
+			'icon_style'  => '',
 		);
+		$link_attrs    = array_merge( $default_attrs, $link_attrs );
 
 		$label = __( 'Add new', 'acf-views' ) . $label_suffix;
 
-		$url = add_query_arg(
-			array(
-				'post_type'         => Hard_Layout_Cpt::cpt_name(),
-				self::ARGUMENT_FROM => $from,
-				'_wpnonce'          => wp_create_nonce( self::NONCE_ADD_NEW ),
-			),
-			admin_url( '/post-new.php' )
+		$cpt_name   = Hard_Layout_Cpt::cpt_name();
+		$nonce      = wp_create_nonce( self::NONCE_ADD_NEW );
+		$admin_url  = admin_url( '/post-new.php' );
+		$query_args = array(
+			'post_type'         => $cpt_name,
+			self::ARGUMENT_FROM => $from,
+			'_wpnonce'          => $nonce,
 		);
+
+		$url = add_query_arg( $query_args, $admin_url );
 
 		$icon_class = $link_attrs['icon_class'];
 		$icon_style = $link_attrs['icon_style'];
@@ -259,10 +356,8 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		array $related_views = array(),
 		array $add_new_link_args = array()
 	): array {
-		$related_views = null !== $wp_post ?
-			$this->layouts_settings_storage->get_all_with_meta_group_in_use(
-				$this->data_vendor->get_group_key( $wp_post->post_name )
-			) :
+		$related_views = $wp_post instanceof WP_Post ?
+			$this->get_group_related_views( $wp_post ) :
 			$related_views;
 
 		$label = array() !== $related_views ?
@@ -270,7 +365,8 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			__( 'Assigned to %s:', 'acf-views' ) . ' ' :
 			// translators: %s is the plural name of the CPT.
 			__( 'Not assigned to any %s.', 'acf-views' );
-		$label = sprintf( $label, $this->layouts_cpt->labels()->plural_name() );
+		$cpt_labels = $this->layouts_cpt->labels();
+		$label      = sprintf( $label, $cpt_labels->plural_name() );
 
 		$nodes = $is_list_look ?
 			array() :
@@ -280,10 +376,8 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		$counter    = 0;
 
 		foreach ( $related_views as $related_view ) {
-			$nodes[] = $this->link_with_js_hover_tag(
-				$related_view->get_edit_post_link(),
-				$related_view->title,
-			);
+			$edit_link = $related_view->get_edit_post_link();
+			$nodes[]   = $this->link_with_js_hover_tag( $edit_link, $related_view->title );
 
 			if ( $counter !== $last_index ) {
 				$nodes[] = ', ';
@@ -294,14 +388,11 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 
 		// ignore on the creation page +
 		// if post is missing (Pods).
-		if ( null === $wp_post ||
-			'publish' !== $wp_post->post_status ) {
-			return $nodes;
+		if ( $wp_post instanceof WP_Post && 'publish' === $wp_post->post_status ) {
+			$nodes[] = tag( 'br' );
+			$nodes[] = tag( 'br' );
+			$nodes[] = $this->add_new_link_tag( $wp_post->ID, '', $add_new_link_args );
 		}
-
-		$nodes[] = tag( 'br' );
-		$nodes[] = tag( 'br' );
-		$nodes[] = $this->add_new_link_tag( $wp_post->ID, '', $add_new_link_args );
 
 		return $nodes;
 	}
@@ -335,33 +426,11 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 			$this->layouts_cpt_save_actions->update_markup( $related_view_data );
 			$this->layouts_settings_storage->save( $related_view_data );
 
-			$custom_markup = trim( $related_view_data->custom_markup );
+			$invalid_link = $this->create_invalid_markup_link( $related_view_data );
 
-			if ( '' === $custom_markup ) {
-				continue;
+			if ( is_string( $invalid_link ) ) {
+				$views_with_invalid_custom_markup[] = $invalid_link;
 			}
-
-			$view          = $this->layout_factory->make( new Source(), $related_view_data->get_unique_id(), 0 );
-			$is_with_error = '' !== $view->get_markup_validation_error();
-
-			if ( ! $is_with_error ) {
-				continue;
-			}
-
-			$edit_link = $related_view_data->get_edit_post_link();
-
-			$tags = tag( 'a' )
-				->attributes(
-					array(
-						'target' => '_blank',
-						'href'   => $edit_link,
-					)
-				)
-				->content(
-					$related_view_data->title
-				);
-
-			$views_with_invalid_custom_markup[] = $this->html_renderer->render_html( $tags );
 		}
 
 		return $views_with_invalid_custom_markup;
@@ -378,196 +447,203 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		return $this->data_vendor->get_group_key( $wp_post->post_name );
 	}
 
-	public function get_views_data_storage(): Layout_Settings_Storage {
-		return $this->layouts_settings_storage;
+	protected function redirect_to_new_layout(): void {
+		$screen          = get_current_screen();
+		$from_post       = $screen instanceof WP_Screen ?
+			$this->get_group_post_to_convert( $screen ) :
+			null;
+		$layout_settings = $from_post instanceof WP_Post ?
+			$this->layouts_settings_storage->create_new( 'publish', $from_post->post_title ) :
+			null;
+
+		if ( $from_post instanceof WP_Post && $layout_settings instanceof Layout_Settings ) {
+			$this->fill_layout_from_group( $layout_settings, $from_post );
+
+			// it'll save the data above too.
+			$this->layouts_cpt_save_actions->perform_save_actions( $layout_settings->get_post_id() );
+
+			wp_safe_redirect( $layout_settings->get_edit_post_link( 'redirect' ) );
+			exit;
+		}
+	}
+
+	protected function get_group_post_to_convert( WP_Screen $screen ): ?WP_Post {
+		$from      = Query_Arguments::get_int_for_admin_action( self::ARGUMENT_FROM, self::NONCE_ADD_NEW );
+		$from_post = 0 !== $from ?
+			get_post( $from ) :
+			null;
+
+		$layout_cpt_name = Hard_Layout_Cpt::cpt_name();
+		$is_add_layout   = 'post' === $screen->base &&
+							'add' === $screen->action &&
+							$layout_cpt_name === $screen->post_type;
+
+		if ( $is_add_layout &&
+			$from_post instanceof WP_Post &&
+			$this->is_group_post_published( $from_post ) &&
+			Avf_User::can_manage() ) {
+			return $from_post;
+		}
+
+		return null;
+	}
+
+	protected function fill_layout_from_group( Layout_Settings $layout_settings, WP_Post $from_post ): void {
+		$vendor_name           = $this->get_vendor_name();
+		$supported_field_types = $this->provider_cluster->get_supported_field_types( $vendor_name );
+		$group_fields          = $this->get_group_fields( $from_post );
+		$group_key             = $this->get_first_field_group_key( $from_post, $group_fields );
+
+		$layout_settings->title = $from_post->post_title;
+		$this->set_defaults_from_settings( $layout_settings );
+
+		foreach ( $group_fields as $field ) {
+			$field = arr( $field );
+
+			$this->add_item_to_view(
+				$group_key,
+				$field,
+				$layout_settings,
+				$supported_field_types
+			);
+		}
 	}
 
 	/**
-	 * @param array<string,string> $columns
+	 * Get group field key if at least one field is present
+	 * (e.g. Pods requires a field data to get the '_pod_name' part).
+	 * The global group filter stays empty, so beginners can easily mix fields from different groups.
 	 *
-	 * @return array<string,string>
+	 * @param mixed[] $group_fields
 	 */
-	public function add_related_views_column_to_list( array $columns ): array {
-		return array_merge(
-			$columns,
-			array(
-				'relatedAcfViews' => __( 'Assigned to Layout', 'acf-views' ),
-			)
-		);
+	protected function get_first_field_group_key( WP_Post $from_post, array $group_fields ): string {
+		$is_filled = count( $group_fields ) > 0;
+
+		if ( $is_filled ) {
+			return $this->get_group_key_by_from_post( $from_post, arr( $group_fields[0] ) );
+		}
+
+		return '';
 	}
 
-	public function maybe_create_view_for_group(): void {
-		self::add_action(
-			'current_screen',
-			function (): void {
-				$screen = get_current_screen();
+	protected function is_group_post_published( WP_Post $post ): bool {
+		$vendor_post_type = $this->get_vendor_post_type();
 
-				if ( null === $screen ) {
-					return;
-				}
+		return $vendor_post_type === $post->post_type &&
+				'publish' === $post->post_status;
+	}
 
-				$from      = Query_Arguments::get_int_for_admin_action( self::ARGUMENT_FROM, self::NONCE_ADD_NEW );
-				$from_post = 0 !== $from ?
-					get_post( $from ) :
-					null;
+	/**
+	 * @return Layout_Settings[]
+	 */
+	protected function get_group_related_views( WP_Post $group_post ): array {
+		$group_key = $this->data_vendor->get_group_key( $group_post->post_name );
 
-				$is_add_screen = 'post' === $screen->base &&
-								'add' === $screen->action;
+		return $this->layouts_settings_storage->get_all_with_meta_group_in_use( $group_key );
+	}
 
-				if ( Hard_Layout_Cpt::cpt_name() !== $screen->post_type ||
-					false === $is_add_screen ||
-					null === $from_post ||
-					$this->get_vendor_post_type() !== $from_post->post_type ||
-					'publish' !== $from_post->post_status ||
-					! Avf_User::can_manage() ) {
-					return;
-				}
+	/**
+	 * @param array<string,mixed> $messages
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected function add_invalid_markup_message( array $messages ): array {
+		global $post;
 
-				$layout_settings = $this->layouts_settings_storage->create_new( 'publish', $from_post->post_title );
+		$vendor_post_type = $this->get_vendor_post_type();
+		$message          = key_exists( $vendor_post_type, $messages ) && $post instanceof WP_Post ?
+			$this->get_invalid_markup_message( $post ) :
+			'';
+		$is_filled        = strlen( $message ) > 0;
 
-				if ( null === $layout_settings ) {
-					return;
-				}
+		if ( $is_filled ) {
+			$messages[ $vendor_post_type ][1] .= $message;
+		}
 
-				$supported_field_types = $this->provider_cluster->get_supported_field_types( $this->get_vendor_name() );
-				$group_fields          = $this->get_group_fields( $from_post );
-				$group_key             = '';
+		return $messages;
+	}
 
-				$layout_settings->title = $from_post->post_title;
-				$this->set_defaults_from_settings( $layout_settings );
+	protected function get_invalid_markup_message( WP_Post $group_post ): string {
+		if ( $this->is_group_post_published( $group_post ) ) {
+			$related_views = $this->get_group_related_views( $group_post );
 
-				// get group field key if at least one field is present
-				// (e.g. Pods requires a field data to get the '_pod_name' part).
-				if ( count( $group_fields ) > 0 ) {
-					$group_key = $this->get_group_key_by_from_post( $from_post, arr( $group_fields[0] ) );
-					// Leave global group filter empty, so beginners can easily mix fields from different groups.
-					// $view_data->group = $group_key;.
-				}
+			$this->update_markup_preview( $related_views );
 
-				foreach ( $group_fields as $field ) {
-					$field = arr( $field );
+			$invalid_links = $this->get_related_view_links_with_invalid_custom_markup( $related_views );
 
-					$this->add_item_to_view(
-						$group_key,
-						$field,
-						$layout_settings,
-						$supported_field_types
-					);
-				}
-
-				// it'll save the data above too.
-				$this->layouts_cpt_save_actions->perform_save_actions( $layout_settings->get_post_id() );
-
-				wp_safe_redirect( $layout_settings->get_edit_post_link( 'redirect' ) );
-				exit;
+			if ( array() !== $invalid_links ) {
+				return $this->render_invalid_markup_message( $invalid_links );
 			}
-		);
-	}
-
-	public function print_related_views_column( string $column, int $post_id ): void {
-		if ( 'relatedAcfViews' !== $column ) {
-			return;
 		}
 
-		$post = get_post( $post_id );
-
-		if ( null === $post ) {
-			return;
-		}
-
-		$this->print_related_acf_views( $post, true );
-	}
-
-	public function validate_related_views_on_group_change(): void {
-		// with '20', to make sure it's after ACF.
-		self::add_filter(
-			'post_updated_messages',
-			function ( array $messages ) {
-				if ( ! key_exists( $this->get_vendor_post_type(), $messages ) ) {
-					return $messages;
-				}
-
-				global $post;
-
-				if ( null === $post ||
-					$this->get_vendor_post_type() !== $post->post_type ||
-					'publish' !== $post->post_status ) {
-					return $messages;
-				}
-
-				$related_views = $this->layouts_settings_storage->get_all_with_meta_group_in_use(
-					$this->data_vendor->get_group_key( $post->post_name )
-				);
-
-				$this->update_markup_preview( $related_views );
-
-				$related_view_links_with_invalid_custom_markup = $this->get_related_view_links_with_invalid_custom_markup( $related_views );
-
-				if ( array() === $related_view_links_with_invalid_custom_markup ) {
-					return $messages;
-				}
-
-				$links = array();
-
-				foreach ( $related_view_links_with_invalid_custom_markup as $link ) {
-					// the 'br' goes between the links.
-					if ( array() !== $links ) {
-						$links[] = tag( 'br' );
-					}
-
-					$links[] = raw_html( $link );
-				}
-
-				$links_amount = count( $related_view_links_with_invalid_custom_markup );
-				$title_label  = __( 'Views associated with this group contain invalid Custom Markup', 'acf-views' );
-				$title_text   = sprintf( '%s %s:', $links_amount, $title_label );
-
-				$title = tag( 'span' )
-					->attributes( array( 'style' => array( 'color' => '#dc3232' ) ) )
-					->content(
-						$title_text
-					);
-
-				$tags = array(
-					tag( 'br' ),
-					tag( 'br' ),
-					$title,
-					tag( 'br' ),
-					tag( 'br' ),
-					...$links,
-				);
-
-				$extra = $this->html_renderer->render_html( ...$tags );
-
-				$messages[ $this->get_vendor_post_type() ][1] .= $extra;
-
-				return $messages;
-			},
-			20
-		);
-	}
-
-	public function add_column_to_list_table(): void {
-		// higher priority, to run after ACF's listener (they don't use 'merge').
-		self::add_filter(
-			sprintf( 'manage_%s_posts_columns', $this->get_vendor_post_type() ),
-			array( $this, 'add_related_views_column_to_list' ),
-			20
-		);
-		self::add_action(
-			sprintf( 'manage_%s_posts_custom_column', $this->get_vendor_post_type() ),
-			array( $this, 'print_related_views_column' ),
-			10,
-			2
-		);
+		return '';
 	}
 
 	/**
-	 * @param Layout_Settings[] $view_data_items
-	 *
-	 * @return void
+	 * @param string[] $invalid_links
 	 */
-	public function signup_gutenberg_blocks( array $view_data_items ): void {
-		// it's a stub. Will be overridden by specific vendors in the Pro version.
+	protected function render_invalid_markup_message( array $invalid_links ): string {
+		$links = array();
+
+		foreach ( $invalid_links as $link ) {
+			// the 'br' goes between the links.
+			if ( array() !== $links ) {
+				$links[] = tag( 'br' );
+			}
+
+			$links[] = raw_html( $link );
+		}
+
+		$links_amount = count( $invalid_links );
+		$title_label  = __( 'Views associated with this group contain invalid Custom Markup', 'acf-views' );
+		$title_text   = sprintf( '%s %s:', $links_amount, $title_label );
+
+		$title = tag( 'span' )
+			->attributes( array( 'style' => array( 'color' => '#dc3232' ) ) )
+			->content(
+				$title_text
+			);
+
+		$tags = array(
+			tag( 'br' ),
+			tag( 'br' ),
+			$title,
+			tag( 'br' ),
+			tag( 'br' ),
+			...$links,
+		);
+
+		return $this->html_renderer->render_html( ...$tags );
+	}
+
+	protected function create_invalid_markup_link( Layout_Settings $layout_settings ): ?string {
+		$custom_markup = trim( $layout_settings->custom_markup );
+		$is_filled     = strlen( $custom_markup ) > 0;
+
+		if ( $is_filled ) {
+			$unique_id     = $layout_settings->get_unique_id();
+			$view          = $this->layout_factory->make( new Source(), $unique_id, 0 );
+			$error         = $view->get_markup_validation_error();
+			$is_with_error = strlen( $error ) > 0;
+
+			if ( $is_with_error ) {
+				$edit_link = $layout_settings->get_edit_post_link();
+
+				$link_tag = tag( 'a' )
+					->attributes(
+						array(
+							'target' => '_blank',
+							'href'   => $edit_link,
+						)
+					)
+					->content(
+						$layout_settings->title
+					);
+
+				return $this->html_renderer->render_html( $link_tag );
+			}
+		}
+
+		return null;
 	}
 }
