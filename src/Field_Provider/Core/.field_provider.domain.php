@@ -22,6 +22,7 @@ class field_provider_domain extends Domain_Policy {
 	const WHITELIST_GLOBALS = [
 		'WP_Comment',
 		'WP_Post',
+		'WP_Screen',
 		'WP_Term',
 		'WP_User',
 	];

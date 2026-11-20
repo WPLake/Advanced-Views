@@ -27,6 +27,7 @@ use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -559,7 +560,9 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		$is_filled        = strlen( $message ) > 0;
 
 		if ( $is_filled ) {
-			$messages[ $vendor_post_type ][1] .= $message;
+			$type_messages                = arr( $messages, $vendor_post_type );
+			$type_messages[1]             = string( $type_messages, 1 ) . $message;
+			$messages[ $vendor_post_type ] = $type_messages;
 		}
 
 		return $messages;

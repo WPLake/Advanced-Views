@@ -683,7 +683,7 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 	}
 
 	/**
-	 * @param string $date_type 'modified' or 'date'
+	 * @param 'modified'|'date' $date_type
 	 *
 	 * @return Html_Node[]
 	 */
@@ -718,6 +718,9 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 		return array( $time_ago );
 	}
 
+	/**
+	 * @param 'modified'|'date' $date_type
+	 */
 	protected static function get_post_timestamp( Cpt_Settings $cpt_settings, string $date_type ): ?int {
 		$post_id = $cpt_settings->get_post_id();
 

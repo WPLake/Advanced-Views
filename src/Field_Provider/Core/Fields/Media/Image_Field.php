@@ -198,7 +198,7 @@ class Image_Field implements Image_Field_Type, Markup_Field {
 	}
 
 	/**
-	 * @return array<int, mixed>
+	 * @return array{0?: string, 1?: int, 2?: int, 3?: bool}
 	 */
 	protected function get_image_data( int $attachment_id, string $image_size ): array {
 		$image_data = 0 !== $attachment_id ?
@@ -211,7 +211,7 @@ class Image_Field implements Image_Field_Type, Markup_Field {
 	}
 
 	/**
-	 * @param array<int, mixed> $image_data
+	 * @param array{0?: string, 1?: int, 2?: int, 3?: bool} $image_data
 	 *
 	 * @return array<string, mixed>
 	 */
