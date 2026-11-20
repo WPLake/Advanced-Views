@@ -16,6 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Post_Selection_Fact
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
+use WP_Post;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -93,7 +94,8 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 			->set_parent_card_id( $card_unique_id );
 
 		$query_context = Query_Context::new_instance()
-										->set_custom_arguments( $custom_arguments );
+			->set_post_id( self::get_current_post_id() )
+			->set_custom_arguments( $custom_arguments );
 
 		ob_start();
 		$this->selection_factory->make_and_print_html(
@@ -153,6 +155,17 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 	/**
 	 * @param array<string|int,mixed> $attrs
 	 */
+	protected static function get_current_post_id(): int {
+		global $post;
+
+		// a) object-id in the current loop
+		// b) the current page id.
+		return ( $post instanceof WP_Post &&
+				$post->ID > 0 ) ?
+			$post->ID :
+			get_queried_object_id();
+	}
+
 	protected function get_no_template_error( Post_Selection_Settings $card_data, array $attrs ): string {
 		return $this->get_error_markup(
 			$this->get_shortcode_name(),

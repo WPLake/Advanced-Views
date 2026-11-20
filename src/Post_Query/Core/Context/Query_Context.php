@@ -13,6 +13,8 @@ final class Query_Context {
 	 */
 	private array $custom_arguments = array();
 
+	private int $post_id = 0;
+
 	private function __construct() {
 	}
 
@@ -28,6 +30,16 @@ final class Query_Context {
 
 	public function get_page_number(): int {
 		return $this->page_number;
+	}
+
+	public function set_post_id( int $post_id ): self {
+		$this->post_id = $post_id;
+
+		return $this;
+	}
+
+	public function get_post_id(): int {
+		return $this->post_id;
 	}
 
 	/**

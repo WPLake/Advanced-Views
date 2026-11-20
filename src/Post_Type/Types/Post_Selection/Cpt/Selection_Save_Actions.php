@@ -11,7 +11,8 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Core\Logger\Logger;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
+use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
+use Org\Wplake\Advanced_Views\Post_Query\Selection\Selection_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Library\Library_Cpt_Integrator;
@@ -24,7 +25,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template
 class Selection_Save_Actions extends Cpt_Save_Actions {
 
 	private Template_Code_Updater $template_updater;
-	private Post_Query_Builder $query_builder;
+	private Selection_Query_Builder $query_builder;
 	private Post_Selection_Factory $post_selection_factory;
 	/**
 	 * @var Post_Selection_Settings
@@ -39,7 +40,7 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 		Post_Selection_Settings $post_selection_settings,
 		Library_Cpt_Integrator $cpt_integrator,
 		Template_Code_Updater $template_updater,
-		Post_Query_Builder $query_builder,
+		Selection_Query_Builder $query_builder,
 		Post_Selection_Factory $post_selection_factory,
 		Template_Integration_Storage $template_integration_storage
 	) {
@@ -117,6 +118,10 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 	}
 
 	protected function update_query_preview( Post_Selection_Settings $selection_settings ): void {
+		$this->query_builder->set_query_context(
+			Query_Context::new_instance()->set_post_id( $selection_settings->preview_context_post )
+		);
+
 		// @phpcs:ignore
 		$selection_settings->query_preview = print_r(
 			$this->query_builder->build_post_query( $selection_settings ),

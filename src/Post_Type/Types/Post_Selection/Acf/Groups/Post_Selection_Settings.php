@@ -225,6 +225,16 @@ class Post_Selection_Settings extends Templated_Selection_Settings implements Qu
 	 */
 	public string $description;
 	/**
+	 * @a-type post_object
+	 * @return_format 1
+	 * @allow_null 1
+	 * @label Context page
+	 * @instructions Optional. Select a page (or any post) to resolve the query context from, e.g. the current post or term. Affects only the Query Preview; update your Post Selection to see the result.
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
+	 * @a-order 252
+	 */
+	public int $preview_context_post;
+	/**
 	 * @a-type textarea
 	 * @label Query Preview
 	 * @instructions Publish or update your Post Selection to see the latest query.
