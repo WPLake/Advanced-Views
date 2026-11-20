@@ -151,7 +151,7 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 	}
 
 	/**
-	 * @param array<string,mixed> $attrs
+	 * @param array<string|int,mixed> $attrs
 	 */
 	protected function get_no_template_error( Post_Selection_Settings $card_data, array $attrs ): string {
 		return $this->get_error_markup(
