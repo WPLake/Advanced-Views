@@ -129,40 +129,53 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 		);
 	}
 
-	protected function add_template_meta_boxes(): void {
+	protected function add_shortcode_meta_box(): void {
+		$print_box = fn( $post ) => $this->print_shortcode_box( $post );
+
 		add_meta_box(
 			'acf-cards_shortcode_cpt',
 			__( 'Embed the Post Selection', 'acf-views' ),
-			function ( $post ): void {
-				if ( ! $post ||
-					'publish' !== $post->post_status ) {
-					echo esc_html(
-						sprintf(
-							// translators: %s - singular name of the CPT.
-							__( 'Your %s shortcode is available after publishing.', 'acf-views' ),
-							$this->public_cpt->labels()->singular_name()
-						)
-					);
-
-					return;
-				}
-
-				$card_unique_id = $this->post_selections_settings_storage->get( $post->post_name )->get_unique_id( true );
-
-				$this->get_postbox()->print_postbox_shortcode(
-					$card_unique_id,
-					false,
-					$this->public_cpt,
-					get_the_title( $post ),
-					true
-				);
-			},
+			$print_box,
 			array(
 				Hard_Post_Selection_Cpt::cpt_name(),
 			),
 			'side',
 			'high'
 		);
+	}
+
+	protected function print_shortcode_box( ?WP_Post $post ): void {
+		if ( $post instanceof WP_Post &&
+			'publish' === $post->post_status ) {
+			$selection_settings = $this->post_selections_settings_storage->get( $post->post_name );
+			$card_unique_id     = $selection_settings->get_unique_id( true );
+			$title              = get_the_title( $post );
+
+			$this->get_postbox()->print_postbox_shortcode(
+				$card_unique_id,
+				false,
+				$this->public_cpt,
+				$title,
+				true
+			);
+
+			return;
+		}
+
+		$labels        = $this->public_cpt->labels();
+		$singular_name = $labels->singular_name();
+
+		$message = sprintf(
+			// translators: %s - singular name of the CPT.
+			__( 'Your %s shortcode is available after publishing.', 'acf-views' ),
+			$singular_name
+		);
+
+		echo esc_html( $message );
+	}
+
+	protected function add_template_meta_boxes(): void {
+		$this->add_shortcode_meta_box();
 
 		add_meta_box(
 			'acf-cards_related_view',

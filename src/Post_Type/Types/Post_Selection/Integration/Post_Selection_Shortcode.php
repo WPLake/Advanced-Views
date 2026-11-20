@@ -69,15 +69,7 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 		$card_data = $this->cards_data_storage->get( $card_unique_id );
 
 		if ( ! $card_data->has_template() ) {
-			return $this->get_error_markup(
-				$this->get_shortcode_name(),
-				$attrs,
-				sprintf(
-					// translators: %s is a Post Selection unique id.
-					__( 'Post Selection (#%s) has no Template to render', 'acf-views' ),
-					$card_data->get_unique_id( true )
-				)
-			);
+			return $this->get_no_template_error( $card_data, $attrs );
 		}
 
 		$classes = $attrs['class'] ?? '';
@@ -156,5 +148,20 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 			self::add_action( 'wp_ajax_nopriv_advanced_views', array( $this, 'get_ajax_response' ) );
 			self::add_action( 'wp_ajax_advanced_views', array( $this, 'get_ajax_response' ) );
 		}
+	}
+
+	/**
+	 * @param array<string,mixed> $attrs
+	 */
+	protected function get_no_template_error( Post_Selection_Settings $card_data, array $attrs ): string {
+		return $this->get_error_markup(
+			$this->get_shortcode_name(),
+			$attrs,
+			sprintf(
+				// translators: %s is a Post Selection unique id.
+				__( 'Post Selection (#%s) has no Template to render', 'acf-views' ),
+				$card_data->get_unique_id( true )
+			)
+		);
 	}
 }

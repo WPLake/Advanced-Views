@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Db_Management;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\File_System;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Tabs\Layout_Pre_Built_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Table\Post_Selection_Table;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Table\Selection_Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Post_Selection_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Post_Selection_Factory;
@@ -29,7 +29,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 
 class Selection_Tabs_Factory extends Factory_Base {
 	public function fs_only_tab(): Fs_Only_Tab {
-		$cpt_table        = $this->resolve( Post_Selection_Table::class );
+		$cpt_table        = $this->resolve( Selection_Cpt_Table::class );
 		$settings_storage = $this->resolve( Selection_Settings_Storage::class );
 
 		return new Fs_Only_Tab(
@@ -41,7 +41,7 @@ class Selection_Tabs_Factory extends Factory_Base {
 	}
 
 	public function bulk_validation_tab(): Post_Selection_Bulk_Validation_Tab {
-		$cpt_table         = $this->resolve( Post_Selection_Table::class );
+		$cpt_table         = $this->resolve( Selection_Cpt_Table::class );
 		$settings_storage  = $this->resolve( Selection_Settings_Storage::class );
 		$fs_only_tab       = $this->fs_only_tab();
 		$selection_factory = $this->resolve( Post_Selection_Factory::class );
@@ -75,7 +75,7 @@ class Selection_Tabs_Factory extends Factory_Base {
 		// the bundled items keep their JS in the old-format script.js file.
 		$pre_built_settings_storage->use_fallback_fields();
 
-		$cpt_table             = $this->resolve( Post_Selection_Table::class );
+		$cpt_table             = $this->resolve( Selection_Cpt_Table::class );
 		$settings_storage      = $this->resolve( Selection_Settings_Storage::class );
 		$migrator              = $this->resolve( Cpt_Settings_Migrator::class );
 		$layouts_pre_built_tab = $this->resolve( Layout_Pre_Built_Tab::class );

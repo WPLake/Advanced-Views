@@ -13,6 +13,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Selection_Meta_
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
+use WP_Post;
 use WP_Query;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 
@@ -21,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-class Post_Selection_Table extends Cpt_Table {
+class Selection_Cpt_Table extends Cpt_Table {
 	const COLUMN_DESCRIPTION   = self::COLUMN_PREFIX . 'description';
 	const COLUMN_RELATED_VIEW  = self::COLUMN_PREFIX . 'relatedView';
 	const COLUMN_LAST_MODIFIED = self::COLUMN_PREFIX . 'lastModified';
@@ -42,52 +43,13 @@ class Post_Selection_Table extends Cpt_Table {
 		$this->layout_cpt                     = $layout_cpt;
 	}
 
-	/**
-	 * @return Html_Node[]
-	 */
-	protected function column_nodes( string $short_column_name, Cpt_Settings $cpt_settings ): array {
-		if ( false === ( $cpt_settings instanceof Post_Selection_Settings ) ) {
-			return array();
-		}
-
-		$card_data = $cpt_settings;
-
-		switch ( $short_column_name ) {
-			case self::COLUMN_DESCRIPTION:
-				return array( $card_data->description );
-			case self::COLUMN_LAST_MODIFIED:
-				$post_id = $card_data->get_post_id();
-
-				$post = 0 !== $post_id ?
-					get_post( $post_id ) :
-					null;
-
-				return null !== $post ?
-					array( explode( ' ', $post->post_modified )[0] ) :
-					array();
-			case self::COLUMN_RELATED_VIEW:
-				// without the not found message.
-				return $this->post_selections_cpt_meta_boxes->related_acf_view_nodes( $card_data, true );
-		}
-
-		return array();
-	}
-
-	protected function get_cards_meta_boxes(): Selection_Meta_Boxes {
-		return $this->post_selections_cpt_meta_boxes;
-	}
-
 	public function add_sortable_columns_to_request( WP_Query $wp_query ): void {
-		if ( ! is_admin() ) {
-			return;
-		}
+		$order_by         = $wp_query->get( 'orderby' );
+		$is_modified_sort = is_admin() &&
+							self::COLUMN_LAST_MODIFIED === $order_by;
 
-		$order_by = $wp_query->get( 'orderby' );
-
-		switch ( $order_by ) {
-			case self::COLUMN_LAST_MODIFIED:
-				$wp_query->set( 'orderby', 'post_modified' );
-				break;
+		if ( $is_modified_sort ) {
+			$wp_query->set( 'orderby', 'post_modified' );
 		}
 	}
 
@@ -99,18 +61,20 @@ class Post_Selection_Table extends Cpt_Table {
 	public function get_columns( array $columns ): array {
 		unset( $columns['date'] );
 
-		return array_merge(
-			$columns,
-			array(
-				self::COLUMN_DESCRIPTION   => __( 'Description', 'acf-views' ),
-				self::COLUMN_RELATED_VIEW  => sprintf(
-					// translators: %s - singular name of the CPT.
-					__( 'Related %s', 'acf-views' ),
-					$this->layout_cpt->labels()->singular_name()
-				),
-				self::COLUMN_LAST_MODIFIED => __( 'Last modified', 'acf-views' ),
-			)
+		$layout_labels = $this->layout_cpt->labels();
+		$layout_name   = $layout_labels->singular_name();
+
+		$own_columns = array(
+			self::COLUMN_DESCRIPTION   => __( 'Description', 'acf-views' ),
+			self::COLUMN_RELATED_VIEW  => sprintf(
+				// translators: %s - singular name of the CPT.
+				__( 'Related %s', 'acf-views' ),
+				$layout_name
+			),
+			self::COLUMN_LAST_MODIFIED => __( 'Last modified', 'acf-views' ),
 		);
+
+		return array_merge( $columns, $own_columns );
 	}
 
 	/**
@@ -131,10 +95,54 @@ class Post_Selection_Table extends Cpt_Table {
 		parent::set_route_hooks( $route_detector );
 
 		self::add_action( 'pre_get_posts', array( $this, 'add_sortable_columns_to_request' ) );
-		self::add_filter(
-			sprintf( 'manage_edit-%s_sortable_columns', $this->get_cpt_name() ),
-			array( $this, 'get_sortable_columns' )
-		);
+
+		$cpt_name    = $this->get_cpt_name();
+		$filter_name = sprintf( 'manage_edit-%s_sortable_columns', $cpt_name );
+
+		self::add_filter( $filter_name, array( $this, 'get_sortable_columns' ) );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function column_nodes( string $short_column_name, Cpt_Settings $cpt_settings ): array {
+		if ( $cpt_settings instanceof Post_Selection_Settings ) {
+			$builders = array(
+				self::COLUMN_DESCRIPTION   => fn() => array( $cpt_settings->description ),
+				self::COLUMN_LAST_MODIFIED => fn() => $this->last_modified_nodes( $cpt_settings ),
+				// without the not found message.
+				self::COLUMN_RELATED_VIEW  => fn() => $this->post_selections_cpt_meta_boxes->related_acf_view_nodes( $cpt_settings, true ),
+			);
+
+			if ( key_exists( $short_column_name, $builders ) ) {
+				return $builders[ $short_column_name ]();
+			}
+		}
+
+		return array();
+	}
+
+	protected function get_cards_meta_boxes(): Selection_Meta_Boxes {
+		return $this->post_selections_cpt_meta_boxes;
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function last_modified_nodes( Post_Selection_Settings $selection_settings ): array {
+		$post_id = $selection_settings->get_post_id();
+
+		$post = 0 !== $post_id ?
+			get_post( $post_id ) :
+			null;
+
+		if ( $post instanceof WP_Post ) {
+			$modified_parts = explode( ' ', $post->post_modified );
+
+			return array( $modified_parts[0] );
+		}
+
+		return array();
 	}
 
 	protected function get_unique_id_prefix(): string {

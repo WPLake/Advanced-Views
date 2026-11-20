@@ -19,7 +19,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Selection_Git_B
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Selection_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Selection_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Selection_Save_Actions;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Table\Post_Selection_Table;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Table\Selection_Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Integration\Post_Selection_Shortcode;
 
@@ -43,7 +43,7 @@ class Post_Selection_Bootstrap extends Bootstrap_Base {
 		return array(
 			Selection_Meta_Boxes::class,
 			Post_Selection_Cpt::class,
-			Post_Selection_Table::class,
+			Selection_Cpt_Table::class,
 			Selection_Save_Actions::class,
 			Post_Selection_Shortcode::class,
 			Selection_Git_Box::class,

@@ -18,7 +18,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Git_Api\Git_Api_Interface;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Tabs\Layout_Git_Tabs;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Table\Post_Selection_Table;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Table\Selection_Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 
@@ -28,7 +28,7 @@ class Selection_Git_Tabs extends Git_Tabs {
 	private Layout_Git_Tabs $layouts_git_cpt_table_tabs;
 
 	public function __construct(
-		Post_Selection_Table $cpt_table,
+		Selection_Cpt_Table $cpt_table,
 		Settings_Storage $settings,
 		Git_Api_Interface $git_api,
 		Post_Selection_Settings $cpt_settings,
