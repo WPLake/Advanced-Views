@@ -11,7 +11,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Sel
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use WP_Post;
 use WP_Post_Type;
 use WP_Query;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
@@ -64,7 +63,7 @@ class Selection_Cpt_Table extends Cpt_Table {
 			self::COLUMN_POST_TYPES    => __( 'Post Types', 'acf-views' ),
 			self::COLUMN_DESCRIPTION   => __( 'Description', 'acf-views' ),
 			self::COLUMN_ID            => __( 'Unique ID', 'acf-views' ),
-			self::COLUMN_LAST_MODIFIED => __( 'Last modified', 'acf-views' ),
+			self::COLUMN_LAST_MODIFIED => __( 'Modified', 'acf-views' ),
 			self::COLUMN_CREATED       => __( 'Created', 'acf-views' ),
 		);
 
@@ -105,8 +104,8 @@ class Selection_Cpt_Table extends Cpt_Table {
 				self::COLUMN_POST_TYPES    => fn() => array( self::post_type_labels( $cpt_settings ) ),
 				self::COLUMN_DESCRIPTION   => fn() => array( $cpt_settings->description ),
 				self::COLUMN_ID            => fn() => array( $cpt_settings->get_unique_id( true ) ),
-				self::COLUMN_LAST_MODIFIED => fn() => self::date_nodes( $cpt_settings, 'post_modified' ),
-				self::COLUMN_CREATED       => fn() => self::date_nodes( $cpt_settings, 'post_date' ),
+				self::COLUMN_LAST_MODIFIED => fn() => self::get_date_column( $cpt_settings, 'modified' ),
+				self::COLUMN_CREATED       => fn() => self::get_date_column( $cpt_settings, 'date' ),
 			);
 
 			if ( key_exists( $short_column_name, $builders ) ) {
@@ -119,25 +118,6 @@ class Selection_Cpt_Table extends Cpt_Table {
 
 	protected function get_unique_id_prefix(): string {
 		return Post_Selection_Settings::UNIQUE_ID_PREFIX;
-	}
-
-	/**
-	 * @return Html_Node[]
-	 */
-	protected static function date_nodes( Post_Selection_Settings $selection_settings, string $post_field ): array {
-		$post_id = $selection_settings->get_post_id();
-
-		$post = 0 !== $post_id ?
-			get_post( $post_id ) :
-			null;
-
-		if ( $post instanceof WP_Post ) {
-			$date_parts = explode( ' ', $post->$post_field );
-
-			return array( $date_parts[0] );
-		}
-
-		return array();
 	}
 
 	protected static function post_type_labels( Post_Selection_Settings $selection_settings ): string {

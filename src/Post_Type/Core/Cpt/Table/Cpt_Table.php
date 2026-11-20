@@ -21,6 +21,7 @@ use WP_Post_Type;
 use WP_Query;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -679,5 +680,71 @@ abstract class Cpt_Table extends Actor_Base implements Actor {
 					)
 				),
 		);
+	}
+
+	/**
+	 * @param string $date_type 'modified' or 'date'
+	 *
+	 * @return Html_Node[]
+	 */
+	protected static function get_date_column( Cpt_Settings $cpt_settings, string $date_type ): array {
+		$timestamp = self::get_post_timestamp( $cpt_settings, $date_type );
+
+		if ( is_int( $timestamp ) ) {
+			return self::compose_date_column( $timestamp );
+		}
+
+		return array();
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected static function compose_date_column( int $timestamp ): array {
+		$date          = string( wp_date( 'Y-m-d', $timestamp ) );
+		$time_ago_text = self::time_ago( $timestamp );
+
+		$time_ago_attrs = array(
+			'title' => $date,
+			'style' => array(
+				'text-decoration' => 'underline dotted',
+			),
+		);
+
+		$time_ago = tag( 'span' )
+			->attributes( $time_ago_attrs )
+			->content( $time_ago_text );
+
+		return array( $time_ago );
+	}
+
+	protected static function get_post_timestamp( Cpt_Settings $cpt_settings, string $date_type ): ?int {
+		$post_id = $cpt_settings->get_post_id();
+
+		$post = 0 !== $post_id ?
+			get_post( $post_id ) :
+			null;
+
+		$timestamp = $post instanceof WP_Post ?
+			get_post_timestamp( $post, $date_type ) :
+			false;
+
+		return is_int( $timestamp ) ?
+			$timestamp :
+			null;
+	}
+
+	protected static function time_ago( int $timestamp ): string {
+		$date  = wp_date( 'Y-m-d', $timestamp );
+		$today = wp_date( 'Y-m-d' );
+
+		if ( $date === $today ) {
+			return __( 'today', 'acf-views' );
+		}
+
+		$time_diff = human_time_diff( $timestamp );
+
+		// translators: %s - time difference, e.g. '2 weeks'.
+		return sprintf( __( '%s ago', 'acf-views' ), $time_diff );
 	}
 }
