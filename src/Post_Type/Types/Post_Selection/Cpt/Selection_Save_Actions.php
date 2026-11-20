@@ -137,15 +137,9 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 	protected function update_selection( Post_Selection_Settings $selection_settings ): void {
 		$this->update_query_preview( $selection_settings );
 
-		$this->update_template_parts( $selection_settings );
-	}
-
-	protected function update_template_parts( Post_Selection_Settings $selection_settings ): void {
-		if ( ! $selection_settings->has_template() ) {
-			return;
+		if ( $selection_settings->has_template() ) {
+			$this->template_updater->update_markup( $selection_settings );
+			$this->template_updater->update_layout_rules( $selection_settings );
 		}
-
-		$this->template_updater->update_markup( $selection_settings );
-		$this->template_updater->update_layout_rules( $selection_settings );
 	}
 }

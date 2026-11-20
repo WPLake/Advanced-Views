@@ -30,10 +30,17 @@ final class Library_Asset_Collector {
 			}
 
 			if ( $library instanceof Selection_Library &&
-				$cpt_settings instanceof Post_Selection_Settings &&
-				$cpt_settings->has_template() ) {
+				$this->is_templated_selection( $cpt_settings ) ) {
 				$library->maybe_activate_selection( $cpt_settings );
 			}
 		}
+	}
+
+	/**
+	 * @phpstan-assert-if-true Post_Selection_Settings $cpt_settings
+	 */
+	protected function is_templated_selection( Cpt_Settings $cpt_settings ): bool {
+		return $cpt_settings instanceof Post_Selection_Settings &&
+				$cpt_settings->has_template();
 	}
 }

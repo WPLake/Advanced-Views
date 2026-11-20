@@ -65,8 +65,7 @@ class Library_Code_Builder {
 		}
 
 		if ( $library instanceof Selection_Library &&
-			$cpt_settings instanceof Post_Selection_Settings &&
-			$cpt_settings->has_template() &&
+			$this->is_templated_selection( $cpt_settings ) &&
 			$library->is_target_selection( $cpt_settings ) ) {
 			return $library->generate_selection_css( $cpt_settings );
 		}
@@ -84,12 +83,19 @@ class Library_Code_Builder {
 		}
 
 		if ( $library instanceof Selection_Library &&
-			$cpt_settings instanceof Post_Selection_Settings &&
-			$cpt_settings->has_template() &&
+			$this->is_templated_selection( $cpt_settings ) &&
 			$library->is_target_selection( $cpt_settings ) ) {
 			return $library->generate_selection_js( $cpt_settings );
 		}
 
 		return array();
+	}
+
+	/**
+	 * @phpstan-assert-if-true Post_Selection_Settings $cpt_settings
+	 */
+	protected function is_templated_selection( Cpt_Settings $cpt_settings ): bool {
+		return $cpt_settings instanceof Post_Selection_Settings &&
+				$cpt_settings->has_template();
 	}
 }
