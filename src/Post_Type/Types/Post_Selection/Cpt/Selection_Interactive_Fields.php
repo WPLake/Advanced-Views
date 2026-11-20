@@ -28,6 +28,7 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 	protected Post_Selection_Markup $selection_markup;
 	protected Post_Selection_Factory $selection_factory;
 	protected Selection_Meta_Boxes $selection_meta_boxes;
+	protected Selection_Results_Preview $results_preview;
 
 	public function __construct(
 		Selection_Cpt $public_cpt,
@@ -38,7 +39,8 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 		Template_Integration_Storage $template_integration_storage,
 		Field_Provider_Cluster $provider_cluster,
 		Settings_Storage $settings,
-		Selection_Meta_Boxes $selection_meta_boxes
+		Selection_Meta_Boxes $selection_meta_boxes,
+		Selection_Results_Preview $results_preview
 	) {
 		parent::__construct(
 			$public_cpt,
@@ -54,6 +56,7 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 		$this->selection_markup           = $selection_markup;
 		$this->selection_factory          = $selection_factory;
 		$this->selection_meta_boxes       = $selection_meta_boxes;
+		$this->results_preview            = $results_preview;
 	}
 
 	protected function get_interactive_response( WP_Post $post ): array {
@@ -107,6 +110,26 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 	 * @return array<string,mixed>
 	 */
 	protected function get_postbox_elements_response( Post_Selection_Settings $selection_settings ): array {
+		$field_name       = Post_Selection_Settings::getAcfFieldName( Post_Selection_Settings::FIELD_PREVIEW_RESULTS );
+		$results_selector = sprintf( '.acf-field[data-name="%s"] .acf-input', $field_name );
+		$results_html     = $this->results_preview->render_results( $selection_settings );
+
+		$elements = array( $results_selector => $results_html );
+
+		if ( $selection_settings->has_template() ) {
+			// the boxes exist only for templated Selections (see Selection_Meta_Boxes), otherwise the front reports them.
+			$template_elements = $this->get_template_elements_response( $selection_settings );
+
+			return array_merge( $template_elements, $elements );
+		}
+
+		return $elements;
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	protected function get_template_elements_response( Post_Selection_Settings $selection_settings ): array {
 		ob_start();
 		$this->postbox->print_postbox_shortcode(
 			$selection_settings->get_unique_id( true ),

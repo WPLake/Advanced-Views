@@ -408,8 +408,9 @@ __("Sort order", "acf-views");
 __("Ignore Sticky Posts", "acf-views");
 __("Output", "acf-views");
 __("Editorial description", "acf-views");
-__("Context page", "acf-views");
-__("Query Preview", "acf-views");
+__("Preview: Context page", "acf-views");
+__("Preview: Results", "acf-views");
+__("Preview: Query arguments", "acf-views");
 __("Advanced", "acf-views");
 __("PHP Controller", "acf-views");
 
@@ -428,7 +429,8 @@ __("Select a target field.", "acf-views");
 __("Defines the sorting order of posts.", "acf-views");
 __("If unchecked then sticky posts will be at the top of results. <a target='_blank' href='https://wordpress.org/support/article/sticky-posts/'>Learn more about Sticky Posts</a>.", "acf-views");
 __("Add a short description for your Post Selection's purpose. Only seen on the admin Post Selections list.", "acf-views");
-__("Optional. Select a page (or any post) to resolve the query context from, e.g. the current post or term. Affects only the Query Preview; update your Post Selection to see the result.", "acf-views");
+__("Optional. Select a page (or any post) to resolve the query context from, e.g. the current post or term. Affects only the Preview: Results and Preview: Query arguments fields; update your Post Selection to see the result.", "acf-views");
+__("Displays the first 20 matched posts in a list for preview.", "acf-views");
 __("Publish or update your Post Selection to see the latest query.", "acf-views");
 __("By customizing the PHP Controller instance, you can add extra variables to the template, extra arguments to the <a target='_blank' href='https://developer.wordpress.org/reference/classes/wp_query/#parameters'>WP_Query instance</a>, and define the AJAX and REST API handlers. <a target='_blank' href='https://docs.advanced-views.com/post-selections/code-fields/selection-controller'>Read more</a> <br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace).", "acf-views");
 

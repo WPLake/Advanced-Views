@@ -25,6 +25,7 @@ class Post_Selection_Settings extends Templated_Selection_Settings implements Qu
 	const FIELD_CSS_CODE                  = 'css_code';
 	const FIELD_JS_CODE                   = 'js_code';
 	const FIELD_QUERY_PREVIEW             = 'query_preview';
+	const FIELD_PREVIEW_RESULTS           = 'preview_results';
 	const FIELD_EXTRA_QUERY_ARGUMENTS     = 'extra_query_arguments';
 	const FIELD_POST_TYPES                = 'post_types';
 	const FIELD_POST_STATUSES             = 'post_statuses';
@@ -228,15 +229,24 @@ class Post_Selection_Settings extends Templated_Selection_Settings implements Qu
 	 * @a-type post_object
 	 * @return_format 1
 	 * @allow_null 1
-	 * @label Context page
-	 * @instructions Optional. Select a page (or any post) to resolve the query context from, e.g. the current post or term. Affects only the Query Preview; update your Post Selection to see the result.
+	 * @label Preview: Context page
+	 * @instructions Optional. Select a page (or any post) to resolve the query context from, e.g. the current post or term. <br> Affects only the Preview fields. <br> Update your Post Selection to see the result.
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
 	 * @a-order 252
 	 */
 	public int $preview_context_post;
 	/**
+	 * @a-type message
+	 * @label Preview: Results
+	 * @instructions Displays the first 20 matched posts in a list for preview.
+	 * @message Click Save to preview the results.
+	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
+	 * @a-order 253
+	 */
+	public string $preview_results;
+	/**
 	 * @a-type textarea
-	 * @label Query Preview
+	 * @label Preview: Query arguments
 	 * @instructions Publish or update your Post Selection to see the latest query.
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "!=","value": "context_posts"}]]
 	 * @a-order 255
