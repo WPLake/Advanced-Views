@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Field_Provider\Core;
+namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Related_Groups;
 
 defined( 'ABSPATH' ) || exit;
 

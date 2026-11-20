@@ -2,9 +2,11 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
+namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Basic;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Template_Field_Meta;
@@ -12,14 +14,17 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Fiel
 
 defined( 'ABSPATH' ) || exit;
 
-// it has no markup, but present for other goals:
-// when the Gutenberg block option in View is active, it creates Gutenberg with the selected fields only,
-// so without the field type support tab fields won't be added to the Block.
-class Tab_Field implements Markup_Field {
+class Pro_Stub_Field implements Markup_Field {
 	use Markup_Field_Base;
 
 	public function compose_html( string $field_id, Template_Field_Meta $markup_field_data ): array {
-		return array();
+		$token_factory = $markup_field_data->get_token_factory();
+
+		$message = __( 'This field is available in the Pro version only', 'acf-views' );
+
+		$comment = $token_factory->comment( $message );
+
+		return array( $comment );
 	}
 
 	/**

@@ -5,9 +5,9 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Pods\Fields;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\File_Field;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Gallery_Field;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Lists\File_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Media\Gallery_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Media\Image_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;

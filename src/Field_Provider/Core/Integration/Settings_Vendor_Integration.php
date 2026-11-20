@@ -2,10 +2,12 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Field_Provider\Core;
+namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Integration;
 
 use Exception;
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;

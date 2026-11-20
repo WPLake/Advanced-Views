@@ -2,14 +2,16 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
+namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Lists;
 
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Links\Link_Field;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
+use WP_User;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
 defined( 'ABSPATH' ) || exit;
@@ -17,7 +19,9 @@ defined( 'ABSPATH' ) || exit;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-class File_Field extends List_Field {
+class User_Field extends List_Field {
+	const LOOP_ITEM_NAME = 'user_item';
+
 	private Link_Field $link_field;
 
 	public function __construct( Link_Field $link_field ) {
@@ -86,6 +90,27 @@ class File_Field extends List_Field {
 	}
 
 	/**
+	 * @return array{url: string, title: string}
+	 */
+	protected static function get_user_info( int $id ): array {
+		$user_info = array(
+			Link_Field::URL   => '',
+			Link_Field::TITLE => '',
+		);
+
+		$user = get_user_by( 'ID', $id );
+
+		if ( $user instanceof WP_User ) {
+			return array(
+				Link_Field::URL   => get_author_posts_url( $user->ID ),
+				Link_Field::TITLE => $user->display_name,
+			);
+		}
+
+		return $user_info;
+	}
+
+	/**
 	 * @return Html_Node[]
 	 */
 	protected function compose_internal_item_layout( string $item_id, Template_Field_Meta $markup_field_data ): array {
@@ -96,48 +121,33 @@ class File_Field extends List_Field {
 	 * @return Html_Node[]
 	 */
 	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
-		return $this->compose_external_layout_shortcode( $field_id, $markup_field_data );
+		return $this->compose_external_layout_shortcode( $field_id, $markup_field_data, 'user' );
 	}
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	protected function get_item_template_args( Raw_Field_Value $field_value ): array {
-		$value = $field_value->get_value();
-
 		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
-				self::VALUE => int( $value ),
+				self::VALUE => $field_value->get_value(),
 			);
 		}
 
-		$post_id    = is_numeric( $value ) ?
-			(int) $value :
-			0;
-		$link_value = $this->get_link_value( $post_id );
+		$id = int( $field_value->get_value() );
 
-		$field_value->set_value( $link_value );
+		$field_value->set_value( self::get_user_info( $id ) );
 
 		return $this->link_field->get_template_variables( $field_value );
 	}
 
 	/**
-	 * @return array<string, string>
+	 * @return array<string, mixed>
 	 */
-	protected function get_link_value( int $post_id ): array {
-		if ( 0 !== $post_id ) {
-			$url = (string) wp_get_attachment_url( $post_id );
-
-			return array(
-				Link_Field::URL   => $url,
-				Link_Field::TITLE => get_post( $post_id )->post_title ?? '',
-			);
-		}
-
-		return array();
-	}
-
 	protected function get_validation_item_template_args( Raw_Field_Value $field_value ): array {
 		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
-				self::VALUE => 0,
+				self::VALUE => '',
 			);
 		}
 

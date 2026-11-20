@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Settings_Vendor_Integration;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Integration\Settings_Vendor_Integration;
 use Org\Wplake\Advanced_Views\Plugin\Utils\Query_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;

@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\Taxonomy_
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Taxonomy_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Lists\Taxonomy_Field;
 
 defined( 'ABSPATH' ) || exit;
 

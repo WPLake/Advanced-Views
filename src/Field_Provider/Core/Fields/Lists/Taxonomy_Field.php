@@ -2,24 +2,26 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
+namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Lists;
 
+defined( 'ABSPATH' ) || exit;
+
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Links\Link_Field;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
-use WP_Post;
+use WP_Term;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
-
-defined( 'ABSPATH' ) || exit;
 
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-class Post_Object_Field extends List_Field {
-	const LOOP_ITEM_NAME = 'post_item';
+class Taxonomy_Field extends List_Field {
+	const LOOP_ITEM_NAME = 'term_item';
+	const PARENT_ID      = 'parent_id';
 
 	private Link_Field $link_field;
 
@@ -89,6 +91,30 @@ class Post_Object_Field extends List_Field {
 	}
 
 	/**
+	 * @return array{url: string, title: string}
+	 */
+	protected static function get_term_info( int $id ): array {
+		$post_info = array(
+			Link_Field::URL   => '',
+			Link_Field::TITLE => '',
+		);
+
+		$term = get_term( $id );
+
+		if ( $term instanceof WP_Term ) {
+			$term_link = get_term_link( $term );
+
+			return array(
+				Link_Field::URL   => is_string( $term_link ) ? $term_link : '',
+				// decode to avoid double encoding in Twig.
+				Link_Field::TITLE => html_entity_decode( $term->name, ENT_QUOTES ),
+			);
+		}
+
+		return $post_info;
+	}
+
+	/**
 	 * @return Html_Node[]
 	 */
 	protected function compose_internal_item_layout( string $item_id, Template_Field_Meta $markup_field_data ): array {
@@ -104,53 +130,41 @@ class Post_Object_Field extends List_Field {
 	 * @return Html_Node[]
 	 */
 	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
-		return $this->compose_external_layout_shortcode( $field_id, $markup_field_data );
-	}
-
-	/**
-	 * @return array{url: string, title: string}
-	 */
-	protected static function get_post_info( ?int $id ): array {
-		$post = is_int( $id ) ?
-			get_post( $id ) :
-			null;
-
-		if ( $post instanceof WP_Post ) {
-			$title = get_the_title( $post );
-
-			return array(
-				Link_Field::URL   => (string) get_permalink( $post->ID ),
-				// avoid double encoding in the template.
-				Link_Field::TITLE => html_entity_decode( $title, ENT_QUOTES ),
-			);
-		}
-
-		return array(
-			Link_Field::URL   => '',
-			Link_Field::TITLE => '',
-		);
+		return $this->compose_external_layout_shortcode( $field_id, $markup_field_data, 'term' );
 	}
 
 	/**
 	 * @return array<string, mixed>
 	 */
 	protected function get_item_template_args( Raw_Field_Value $field_value ): array {
+		$term_id = $field_value->get_value();
+		$wp_term = is_numeric( $term_id ) ?
+			get_term( (int) $term_id ) :
+			null;
+
+		$parent_id = $wp_term instanceof WP_Term ?
+			$wp_term->parent :
+			0;
+
 		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
-				self::VALUE => $field_value->get_value(),
+				self::VALUE     => $term_id,
+				self::PARENT_ID => $parent_id,
 			);
 		}
 
-		$value = $field_value->get_value();
-		$value = is_numeric( $value ) ?
-			int( $value ) :
-			null;
+		$value = int( $term_id );
 
-		$link_args = self::get_post_info( $value );
+		$field_value->set_value( self::get_term_info( $value ) );
 
-		$field_value->set_value( $link_args );
+		$link_variables = $this->link_field->get_template_variables( $field_value );
 
-		return $this->link_field->get_template_variables( $field_value );
+		return array_merge(
+			$link_variables,
+			array(
+				self::PARENT_ID => $parent_id,
+			)
+		);
 	}
 
 	/**
@@ -159,10 +173,18 @@ class Post_Object_Field extends List_Field {
 	protected function get_validation_item_template_args( Raw_Field_Value $field_value ): array {
 		if ( $field_value->get_context()->get_field_settings()->has_external_layout() ) {
 			return array(
-				self::VALUE => '',
+				self::VALUE     => 0,
+				self::PARENT_ID => 0,
 			);
 		}
 
-		return $this->link_field->get_validation_template_variables( $field_value );
+		$link_variables = $this->link_field->get_validation_template_variables( $field_value );
+
+		return array_merge(
+			$link_variables,
+			array(
+				self::PARENT_ID => 0,
+			)
+		);
 	}
 }

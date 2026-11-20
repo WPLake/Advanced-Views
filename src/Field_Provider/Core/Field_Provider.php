@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Org\Wplake\Advanced_Views\Field_Provider\Core;
 
 use DateTime;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Integration\Field_Provider_Integration;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;

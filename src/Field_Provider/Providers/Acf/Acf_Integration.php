@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf;
 
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Settings_Vendor_Integration;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Integration\Settings_Vendor_Integration;
 use WP_Post;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 

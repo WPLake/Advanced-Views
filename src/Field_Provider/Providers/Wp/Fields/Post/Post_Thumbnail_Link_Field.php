@@ -6,8 +6,8 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\Post;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Image_Field;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Link_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Media\Image_Field;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Links\Link_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Markup_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;

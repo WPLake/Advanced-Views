@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Acf\Fields;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Map_Field_Base;
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Basic\Map_Field_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Template_Field_Meta;

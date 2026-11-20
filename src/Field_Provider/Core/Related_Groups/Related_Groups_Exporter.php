@@ -2,7 +2,9 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Field_Provider\Core;
+namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Related_Groups;
+
+use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider;
 
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
