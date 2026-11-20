@@ -61,7 +61,7 @@ final class Inline_Gallery_Pattern implements Template_Pattern, Script_Pattern, 
 				esc_html( $variables->options )
 			),
 			sprintf(
-				'%s.parentElement.insertBefore(container, %1$s)',
+				'%s.after(container)',
 				esc_html( $variables->element )
 			),
 			'',
