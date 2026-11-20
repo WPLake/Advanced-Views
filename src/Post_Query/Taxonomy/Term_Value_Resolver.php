@@ -48,7 +48,7 @@ class Term_Value_Resolver implements Query_Context_Container {
 	 */
 	protected function get_value_resolvers( Term_Settings $term ): array {
 		return array(
-			'$current$'         => fn() => array( self::resolve_current_term_id() ),
+			'$current$'         => fn() => array( self::resolve_queried_term_id() ),
 			'$meta$'            => fn() => $this->resolve_meta_value( $term ),
 			'$custom-argument$' => fn() => $this->resolve_custom_value( $term ),
 		);
@@ -63,10 +63,10 @@ class Term_Value_Resolver implements Query_Context_Container {
 		$field_data  = $this->provider_cluster->get_field_meta( $vendor_name, $field_id );
 
 		if ( $field_data->is_field_exist() ) {
-			$field_name      = $field_data->get_name();
-			$current_term_id = self::resolve_current_term_id();
+			$field_name = $field_data->get_name();
+			$post_id    = $this->get_context()->get_post_id();
 
-			return self::get_meta_ids( $field_name, $current_term_id );
+			return self::get_meta_ids( $field_name, $post_id );
 		}
 
 		return array();
@@ -116,7 +116,7 @@ class Term_Value_Resolver implements Query_Context_Container {
 		return array();
 	}
 
-	protected static function resolve_current_term_id(): int {
+	protected static function resolve_queried_term_id(): int {
 		return get_queried_object_id();
 	}
 }
