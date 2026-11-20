@@ -428,17 +428,18 @@ return new class extends Layout_Controller_Base {
 	}
 
 	public function get_bem_name(): string {
-		$bem_name = trim( $this->bem_name );
+		$bem_name  = trim( $this->bem_name );
+		$is_filled = strlen( $bem_name ) > 0;
 
-		if ( 0 === strlen( $bem_name ) ) {
-			return Hard_Layout_Cpt::cpt_name();
+		if ( $is_filled ) {
+			$sanitized = self::sanitize_bem_name( $bem_name );
+
+			return is_string( $sanitized ) ?
+				$sanitized :
+				Hard_Layout_Cpt::markup_name();
 		}
 
-		$bem_name = preg_replace( '/[^a-z0-9\-_]/', '', $bem_name );
-
-		return null !== $bem_name ?
-			$bem_name :
-			Hard_Layout_Cpt::markup_name();
+		return Hard_Layout_Cpt::cpt_name();
 	}
 
 

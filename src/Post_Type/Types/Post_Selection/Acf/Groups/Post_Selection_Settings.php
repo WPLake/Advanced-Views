@@ -7,16 +7,12 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups;
 defined( 'ABSPATH' ) || exit;
 
 use Exception;
-use Org\Wplake\Advanced_Views\Acf\Groups\Mount_Point_Settings;
-use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Settings\Query_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
-use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\CreatorInterface;
 use Org\Wplake\Advanced_Views\Vendors\LightSource\AcfGroups\Interfaces\FieldInfoInterface;
 
-class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
+class Post_Selection_Settings extends Templated_Selection_Settings implements Query_Settings {
 	// to fix the group name in case the class name changes.
 	const CUSTOM_GROUP_NAME = self::GROUP_NAME_PREFIX . 'acf-card-data';
 	const LOCATION_RULES    = array(
@@ -41,11 +37,7 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	const FIELD_CSS_AND_JS_TAB            = 'css_and_js_tab';
 	const FIELD_DEVELOPER_TAB             = 'developer_tab';
 
-	const PAGINATION_TYPE_LOAD_MORE_BUTTON = 'load_more_button';
-	const PAGINATION_TYPE_INFINITY         = 'infinity_scroll';
-	const PAGINATION_TYPE_PAGE_NUMBERS     = 'page_numbers';
-	const UNIQUE_ID_PREFIX                 = 'card_';
-	const MAGIC_CSS_SELECTOR               = 'selection';
+	const UNIQUE_ID_PREFIX = 'card_';
 
 	const ITEMS_SOURCE_CONTEXT_POSTS = 'context_posts';
 
@@ -54,35 +46,13 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @required 1
 	 * @instructions The internal name of the Post Selection, visible on the list screen.
 	 * @a-html-class advanced-views__title
+	 * @a-order 10
 	 */
 	public string $title;
 	/**
 	 * @a-type tab
-	 * @label Mount Points
-	 * @a-order 2
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public bool $mount_points_tab;
-	/**
-	 * @item \Org\Wplake\Advanced_Views\Acf\Groups\Mount_Point_Settings
-	 * @var Mount_Point_Settings[]
-	 * @label Mount Points
-	 * @instructions 'Mount' this item to a location that doesn't support shortcodes. Mounting uses 'the_content' theme hook. <a target="_blank" href="https://docs.advanced-views.com/display-content/mount-points-pro">Read more</a>
-	 * @button_label Add Mount Point
-	 * @a-no-tab 1
-	 * @a-order 2
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public array $mount_points;
-	/**
-	 * Deprecated: a templateless (false) Selection is query-only, the flag is set only by the migration.
-	 *
-	 * @a-deprecated This argument is used just to hide the field from the UI
-	 */
-	public bool $has_template;
-	/**
-	 * @a-type tab
 	 * @label Query
+	 * @a-order 20
 	 */
 	public bool $basic_tab;
 	/**
@@ -92,6 +62,7 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @instructions 'Posts Query (WP_query)' will get posts based on the defined query, while 'Page Context (archive pages)' will get posts from where the Post Selection is inserted (e.g. archive, author or category).
 	 * @choices {"posts_query":"Posts Query (WP_Query)","context_posts":"Page context (archive pages)"}
 	 * @defeault_value custom_query
+	 * @a-order 30
 	 */
 	public string $items_source;
 	/**
@@ -103,6 +74,7 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @instructions Filter by post type. Multiple types can be selected.
 	 * @var string[]
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @a-order 40
 	 */
 	public array $post_types;
 	/**
@@ -115,6 +87,7 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @default_value ["publish"]
 	 * @var string[]
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @a-order 50
 	 */
 	public array $post_statuses;
 	/**
@@ -123,6 +96,7 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @instructions Use '-1' for unlimited.
 	 * @default_value -1
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @a-order 60
 	 */
 	public int $limit;
 	/**
@@ -133,6 +107,7 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @choices {"none":"Default","ID":"ID","menu_order":"Menu order","meta_value":"Meta value","meta_value_num":"Meta value numeric","author":"Author","title":"Title","name":"Name","type":"Type","date":"Date","modified":"Modified","parent":"Parent","rand":"Random","comment_count":"Comment count","post__in":"Pool of posts"}
 	 * @default_value none
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @a-order 70
 	 */
 	public string $order_by;
 	/**
@@ -143,6 +118,7 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @label Sort by Meta Field Group
 	 * @instructions Select a target group.
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__order-by","operator": "==","value": "meta_value"}],[{"field": "local_acf_views_acf-card-data__order-by","operator": "==","value": "meta_value_num"}]]
+	 * @a-order 80
 	 */
 	public string $order_by_meta_field_group;
 	/**
@@ -152,6 +128,7 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @required 1
 	 * @instructions Select a target field.
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__order-by","operator": "==","value": "meta_value"}],[{"field": "local_acf_views_acf-card-data__order-by","operator": "==","value": "meta_value_num"}]]
+	 * @a-order 90
 	 */
 	public string $order_by_meta_field_key;
 	/**
@@ -162,6 +139,7 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @choices {"ASC":"Ascending","DESC":"Descending"}
 	 * @default_value ASC
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @a-order 100
 	 */
 	public string $order;
 	/**
@@ -172,6 +150,7 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @instructions Manually assign specific posts to limit the query to. Only this pool of posts will then be considered for other filters. The 'Pool of posts' option can be selected to 'Sort by'.
 	 * @var int[]
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @a-order 110
 	 */
 	public array $post_in;
 	/**
@@ -182,12 +161,14 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @multiple 1
 	 * @var int[]
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @a-order 120
 	 */
 	public array $post_not_in;
 	/**
 	 * @label Ignore Sticky Posts
 	 * @instructions If unchecked then sticky posts will be at the top of results. <a target='_blank' href='https://wordpress.org/support/article/sticky-posts/'>Learn more about Sticky Posts</a>.
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @a-order 130
 	 */
 	public bool $is_ignore_sticky_posts;
 	/**
@@ -195,6 +176,7 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @label Query Preview
 	 * @instructions For debugging purposes, this shows the query used to fetch posts for this Post Selection. Tip: Publish or update your Post Selection, then reload the page to view the latest query.
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @a-order 140
 	 */
 	public string $query_preview;
 
@@ -202,6 +184,7 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @a-type tab
 	 * @label Filters
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @a-order 150
 	 */
 	public bool $tax_filters_tab;
 	/**
@@ -209,6 +192,7 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @a-no-tab 1
 	 * @display seamless
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @a-order 160
 	 */
 	public Tax_Filter_Settings $tax_filter;
 
@@ -216,217 +200,47 @@ class Post_Selection_Settings extends Cpt_Settings implements Query_Settings {
 	 * @a-type tab
 	 * @label Meta Filters
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @a-order 170
 	 */
 	public bool $meta_filters_tab;
 	/**
 	 * @a-no-tab 1
 	 * @display seamless
 	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"}]]
+	 * @a-order 180
 	 */
 	public Meta_Filter_Settings $meta_filter;
 
 	/**
 	 * @a-type tab
 	 * @label Display
+	 * @a-order 190
 	 */
 	public bool $layout_tab;
-	/**
-	 * @a-type av_slug_select
-	 * @allow_null 1
-	 * @label Layout for Results
-	 * @instructions Assigned Layout is used to display every post from the query results.
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public string $acf_view_id;
-	/**
-	 * @label No Posts Found Message
-	 * @instructions Add a message that will be displayed if there are no results. Leave empty for no message.
-	 * @default_value No posts found
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public string $no_posts_found_message;
-	/**
-	 * @a-type select
-	 * @label Enable Slider
-	 * @instructions Select the slider library to enable. <br> Customize the slider after saving, by editing the JS Code in the Styles & Scripts tab.
-	 * @choices {"none":"None","splide_v4":"Splide v4 (29.8KB js, 5KB css)"}
-	 * @default_value none
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public string $slider_type;
 	/**
 	 * @a-type textarea
 	 * @label Editorial description
 	 * @instructions Add a short description for your Post Selection's purpose. Only seen on the admin Post Selections list.
+	 * @a-order 230
 	 */
 	public string $description;
-	/**
-	 * @label Enable Responsive rules
-	 * @instructions When enabled responsive CSS styles are added to the CSS Code field. These styles are automatically updated each time you save. <br>Tip: If you’d like to edit the Post Selection CSS manually, simply disable this option. Disabling this does not remove the previously added CSS Code.
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public bool $is_use_layout_css;
-	/**
-	 * @var Post_Selection_Layout_Settings[]
-	 * @item \Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Layout_Settings
-	 * @label Responsive Rules
-	 * @instructions These rules control Post Selection items responsiveness. <br>Note: These rules are inherited from small to large. For example: If you’ve set up 'Mobile' and 'Desktop' screen rules, then 'Tablet' will have the same rules as 'Mobile' and 'Large Desktop' will have the same rules as 'Desktop'.
-	 * @button_label Add Rule
-	 * @a-no-tab 1
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public array $layout_rules;
 
-	/**
-	 * @a-type tab
-	 * @label Pagination
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public bool $pagination_tab;
-	/**
-	 * @label With Pagination
-	 * @instructions If enabled then the selected pagination type is applied and the 'Posts per page' rule takes effect. <a target='_blank' href='https://docs.advanced-views.com/post-selections/features/posts-pagination'>Read more</a>.
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public bool $is_with_pagination;
-	/**
-	 * @a-type select
-	 * @label Pagination Type
-	 * @instructions Defines a way in which user can load more. For 'Load More Button' and 'Page Numbers' cases a special markup will be added to the Post Selection automatically, you can style it in the Styles & Scripts tab.
-	 * @choices {"load_more_button":"Load More Button","infinity_scroll":"Infinity Scroll","page_numbers":"Page Numbers"}
-	 * @default_value load_more_button
-	 * @a-pro-choices ["load_more_button","infinity_scroll"]
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public string $pagination_type;
-	/**
-	 * @label 'Load More' button label
-	 * @instructions Define a Custom label for the load more button.
-	 * @default_value Load more
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__pagination-type","operator": "==","value": "load_more_button"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public string $load_more_button_label;
-	/**
-	 * @label Posts Per Page
-	 * @instructions Controls how many posts will be displayed initially and how many posts will be appended every time when user triggers 'Load More'. Total amount of posts is limited by the 'Maximum number of posts' field in the 'Query' tab.
-	 * @default_value 9
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__items-source","operator": "==","value": "posts_query"},{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public int $pagination_per_page;
 
-	/**
-	 * @a-type tab
-	 * @label Template
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public bool $template_tab;
-	/**
-	 * @a-type textarea
-	 * @new_lines br
-	 * @label Default Selection Template
-	 * @instructions Output preview of the generated template using the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>chosen template engine</a>. <br> Important! Publish or Update your Post Selection to see the latest markup.
-	 * @disabled 1
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public string $markup;
-	/**
-	 * @a-type textarea
-	 * @label Custom Selection Template
-	 * @instructions Write your own template with full control over the HTML markup. <br> Copy the Default Template code and make your changes. <br><br> Check out our Docs to learn more about the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>available template engines</a>. <br><br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace). <br><br> Make sure you've retained all the default classes; otherwise, pagination won't work.
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public string $custom_markup;
-	/**
-	 * @a-type select
-	 * @label Template Engine
-	 * @instructions Choose one of the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>supported template engines</a>, which will be used for this Post Selection.
-	 * @default_value twig
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public string $template_engine;
 
-	/**
-	 * @a-type tab
-	 * @label Styles & Scripts
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public bool $css_and_js_tab;
-	/**
-	 * @a-type textarea
-	 * @label CSS Code
-	 * @instructions Define your CSS style rules. <br> Rules defined here will be added within &lt;style&gt;&lt;/style&gt; tags ONLY to pages that have this Post Selection. <br><br> Press Ctrl (Cmd) + Alt + L to format the code; Ctrl + F to search/replace; Ctrl + Space for autocomplete. <br><br> Magic shortcuts are available: <br><br>  1. '#selection' as a unique instance selector, will be replaced with '.avf-selection--id--{x}' <br> 2. '#selection__' as a full element selector, so '#selection__element' will be replaced with '.avf-selection--id--{x} .avf-selection__element' <br> 3. '#this' as a short element selector, so '#this__element' will be replaced with '.avf-selection__element' <br> Note: all the shortcuts are compatible with the BEM name option.
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public string $css_code;
-	/**
-	 * @a-type textarea
-	 * @label JavaScript Code
-	 * @instructions Configure libraries or add custom code to your Post Selection.<br><br> By default, the Post Selection is a <a target='_blank' href='https://docs.advanced-views.com/post-selections/code-fields/javascript-code'>web component</a>, so this code will be executed once for every instance, and 'this', that refers to the current instance, is available. <br><br> If the Web Component Type is set to none, the js code here is plain, and can be used for any goals, including <a target='_blank' href='https://docs.advanced-views.com/post-selections/component-options/interactivity-api'>WP Interactivity API</a>. <br><br> The code snippet will be added within &lt;script type='module'&gt;&lt;/script&gt; tags ONLY to pages that have this Post Selection. <br><br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace).
-	 * @a-pro The field must be not required or have default value!
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public string $js_code;
 
 	/**
 	 * @a-type tab
 	 * @label Developer
+	 * @a-order 380
 	 */
 	public bool $developer_tab;
 	/**
 	 * @a-type textarea
 	 * @label PHP Controller
 	 * @instructions By customizing the PHP Controller instance, you can add extra variables to the template, extra arguments to the <a target='_blank' href='https://developer.wordpress.org/reference/classes/wp_query/#parameters'>WP_Query instance</a>, and define the AJAX and REST API handlers. <a target='_blank' href='https://docs.advanced-views.com/post-selections/code-fields/selection-controller'>Read more</a> <br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace).
+	 * @a-order 390
 	 */
 	public string $extra_query_arguments;
-	/**
-	 * @a-type select
-	 * @label Web Component Type
-	 * @instructions By default, every Post Selection is a <a target='_blank' href='https://docs.advanced-views.com/post-selections/code-fields/javascript-code'>web component</a>, which allows you to work easily with the element in the JS code field. <br><br> Set it to 'None' if you're going to use the <a target='_blank' href='https://docs.advanced-views.com/post-selections/component-options/interactivity-api'>WP Interactivity API</a>.
-	 * @choices {"classic":"Classic (no CSS isolation)","shadow_root_template":"Declarative Shadow DOM (CSS isolated, server-side)","shadow_dom":"JS Shadow DOM (CSS isolated, client-side)","none":"None"}
-	 * @default_value classic
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public string $web_component;
-	/**
-	 * @a-type select
-	 * @label Classes generation
-	 * @instructions Controls classes generation in the Default Template.
-	 * @choices {"bem":"BEM style","none":"None"}
-	 * @default_value bem
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public string $classes_generation;
-	/**
-	 * @label BEM Unique Name
-	 * @instructions Define a unique <a target='_blank' href='https://getbem.com/introduction/'>BEM name</a> for the element that will be used in the markup, or leave it empty to use the default ('avf-selection').
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public string $bem_name;
-	/**
-	 * @label CSS classes
-	 * @instructions Add a class name without a dot (e.g. 'class-name') or multiple classes with single space as a delimiter (e.g. 'class-name1 class-name2'). These classes are added to the wrapping HTML element. <a target='_blank' href='https://www.w3schools.com/cssref/sel_class.asp'>Learn more about CSS Classes</a>.
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public string $css_classes;
-	/**
-	 * @a-type true_false
-	 * @label Use the Post ID as the Post Selection ID in the markup
-	 * @instructions Note: For backward compatibility purposes only. Enable this option if you have external CSS selectors that rely on outdated digital IDs.
-	 * @conditional_logic [[{"field": "local_acf_views_acf-card-data__has-template","operator": "==","value": "1"}]]
-	 */
-	public bool $is_markup_with_digital_id;
-
-	// cache.
-	private string $no_posts_found_message_translation;
-	private string $load_more_button_label_translation;
-
-	public function __construct( CreatorInterface $creator ) {
-		parent::__construct( $creator );
-
-		$this->no_posts_found_message_translation = '';
-		$this->load_more_button_label_translation = '';
-	}
 
 	// @phpcs:ignore
 	protected static function getFieldInfo( string $fieldName ): ?FieldInfoInterface {
@@ -477,34 +291,6 @@ return new class extends Selection_Controller_Base {
 				'title' => __( 'Card settings', 'acf-views' ),
 			)
 		);
-	}
-
-	public function has_unique_bem_name(): bool {
-		$bem_name = trim( $this->bem_name );
-
-		return strlen( $bem_name ) > 0 &&
-				! in_array( $bem_name, array( 'acf-card', Hard_Post_Selection_Cpt::cpt_name() ), true );
-	}
-
-	public function get_css_code( string $mode ): string {
-		$aliases  = array( 'card', self::MAGIC_CSS_SELECTOR );
-		$css_code = $this->css_code;
-
-		foreach ( $aliases as $alias ) {
-			$css_code = $this->resolved_css_code( $css_code, $mode, $alias );
-		}
-
-		// back the right way, as before it was hack for CodeMirror.
-		$css_code = str_replace( '"1fr"', '1fr', $css_code );
-
-		return trim( $css_code );
-	}
-
-	/**
-	 * @return array<string,string[]>
-	 */
-	public function get_multilingual_strings(): array {
-		return $this->get_multilingual_strings_from_labels();
 	}
 
 	/**
@@ -559,19 +345,6 @@ return new class extends Selection_Controller_Base {
 		return $this->meta_filter;
 	}
 
-	public function has_template(): bool {
-		return $this->has_template;
-	}
-
-	public function is_with_pagination(): bool {
-		return $this->has_template &&
-				$this->is_with_pagination;
-	}
-
-	public function get_pagination_per_page(): int {
-		return $this->pagination_per_page;
-	}
-
 	public function get_extra_query_arguments(): string {
 		return $this->extra_query_arguments;
 	}
@@ -584,69 +357,7 @@ return new class extends Selection_Controller_Base {
 		return $this->order_by_meta_field_key;
 	}
 
-	public function get_bem_name(): string {
-		$bem_name = trim( $this->bem_name );
-
-		if ( 0 === strlen( $bem_name ) ) {
-			return Hard_Post_Selection_Cpt::markup_name();
-		}
-
-		$bem_name = preg_replace( '/[^a-z0-9\-_]/', '', $bem_name );
-
-		return is_string( $bem_name ) ?
-			$bem_name :
-			Hard_Post_Selection_Cpt::markup_name();
-	}
-
-	public function get_no_posts_found_message_translation(): string {
-		if ( '' !== $this->no_posts_found_message &&
-			'' === $this->no_posts_found_message_translation ) {
-			$this->no_posts_found_message_translation = Plugin::get_label_translation( $this->no_posts_found_message );
-		}
-
-		return $this->no_posts_found_message_translation;
-	}
-
-	public function get_load_more_button_label_translation(): string {
-		if ( '' !== $this->load_more_button_label &&
-			'' === $this->load_more_button_label_translation ) {
-			$this->load_more_button_label_translation = Plugin::get_label_translation( $this->load_more_button_label );
-		}
-
-		return $this->load_more_button_label_translation;
-	}
-
 	public function get_tag_name( string $prefix = '' ): string {
 		return parent::get_tag_name( Hard_Post_Selection_Cpt::markup_name() );
-	}
-
-	/**
-	 * @return string[]
-	 */
-	protected function get_used_meta_group_ids(): array {
-		return $this->has_template ?
-			array( $this->acf_view_id ) :
-			array();
-	}
-
-	/**
-	 * @return array<string,string[]>
-	 */
-	protected function get_multilingual_strings_from_labels(): array {
-		$labels = array();
-
-		if ( '' !== $this->no_posts_found_message ) {
-			$labels[] = $this->no_posts_found_message;
-		}
-
-		if ( '' !== $this->load_more_button_label ) {
-			$labels[] = $this->load_more_button_label;
-		}
-
-		return array() !== $labels ?
-			array(
-				Plugin::get_theme_text_domain() => $labels,
-			) :
-			array();
 	}
 }

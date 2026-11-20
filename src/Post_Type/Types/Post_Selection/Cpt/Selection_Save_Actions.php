@@ -63,6 +63,25 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 		$this->post_selection_factory     = $post_selection_factory;
 	}
 
+	/**
+	 * @param int|string $post_id
+	 *
+	 * @throws Exception
+	 */
+	public function perform_save_actions( $post_id, bool $is_skip_save = false ): ?Post_Selection_Settings {
+		if ( $this->is_my_post( $post_id ) ) {
+			// skip save, it'll be below.
+			$selection_settings = parent::perform_save_actions( $post_id, true );
+
+			// not just on null, but also on the type, for IDE.
+			if ( $selection_settings instanceof Post_Selection_Settings ) {
+				return $this->save_updated_selection( $selection_settings, $is_skip_save );
+			}
+		}
+
+		return null;
+	}
+
 	protected function get_cpt_name(): string {
 		return Hard_Post_Selection_Cpt::cpt_name();
 	}
@@ -73,6 +92,21 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 
 	protected function make_validation_instance(): Instance {
 		return $this->post_selection_factory->make( $this->post_selection_settings );
+	}
+
+	protected function integrate_template_code( Cpt_Settings $cpt_data ): void {
+		$is_templated = ! ( $cpt_data instanceof Post_Selection_Settings ) ||
+						$cpt_data->has_template();
+
+		if ( $is_templated ) {
+			parent::integrate_template_code( $cpt_data );
+		}
+	}
+
+	protected function validate_custom_markup(): void {
+		if ( $this->post_selection_settings->has_template() ) {
+			parent::validate_custom_markup();
+		}
 	}
 
 	protected function update_markup( Cpt_Settings $cpt_settings ): void {
@@ -122,35 +156,22 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 		$post_selection_settings->css_code = $css_code;
 	}
 
-	/**
-	 * @param int|string $post_id
-	 *
-	 * @throws Exception
-	 */
-	public function perform_save_actions( $post_id, bool $is_skip_save = false ): ?Post_Selection_Settings {
-		if ( ! $this->is_my_post( $post_id ) ) {
-			return null;
-		}
-
-		// skip save, it'll be below.
-		$selection_settings = parent::perform_save_actions( $post_id, true );
-
-		// not just on null, but also on the type, for IDE.
-		if ( ! ( $selection_settings instanceof Post_Selection_Settings ) ) {
-			return null;
-		}
-
-		$this->update_query_preview( $selection_settings );
-
-		if ( $selection_settings->has_template() ) {
-			$this->update_markup( $selection_settings );
-			$this->add_layout_css( $selection_settings );
-		}
+	protected function save_updated_selection( Post_Selection_Settings $selection_settings, bool $is_skip_save ): Post_Selection_Settings {
+		$this->update_selection( $selection_settings );
 
 		if ( ! $is_skip_save ) {
 			$this->selection_settings_storage->save( $selection_settings );
 		}
 
 		return $selection_settings;
+	}
+
+	protected function update_selection( Post_Selection_Settings $selection_settings ): void {
+		$this->update_query_preview( $selection_settings );
+
+		if ( $selection_settings->has_template() ) {
+			$this->update_markup( $selection_settings );
+			$this->add_layout_css( $selection_settings );
+		}
 	}
 }

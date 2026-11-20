@@ -355,4 +355,12 @@ abstract class Cpt_Settings extends Group implements Cpt_Theme_Settings {
 	public function get_web_component_type(): string {
 		return $this->web_component;
 	}
+
+	protected static function sanitize_bem_name( string $bem_name ): ?string {
+		$sanitized = preg_replace( '/[^a-z0-9\-_]/', '', $bem_name );
+
+		return is_string( $sanitized ) ?
+			$sanitized :
+			null;
+	}
 }

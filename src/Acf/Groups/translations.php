@@ -390,8 +390,6 @@ __("Grid", "acf-views");
 // Post_Selection_Settings.php : labels
 
 __("Selection Name", "acf-views");
-__("Mount Points", "acf-views");
-__("Mount Points", "acf-views");
 __("Query", "acf-views");
 __("Source", "acf-views");
 __("Post Type", "acf-views");
@@ -409,36 +407,13 @@ __("Filters", "acf-views");
 __("Taxonomy Filters", "acf-views");
 __("Meta Filters", "acf-views");
 __("Display", "acf-views");
-__("Layout for Results", "acf-views");
-__("No Posts Found Message", "acf-views");
-__("Enable Slider", "acf-views");
 __("Editorial description", "acf-views");
-__("Enable Responsive rules", "acf-views");
-__("Responsive Rules", "acf-views");
-__("Pagination", "acf-views");
-__("With Pagination", "acf-views");
-__("Pagination Type", "acf-views");
-__("'Load More' button label", "acf-views");
-__("Posts Per Page", "acf-views");
-__("Template", "acf-views");
-__("Default Selection Template", "acf-views");
-__("Custom Selection Template", "acf-views");
-__("Template Engine", "acf-views");
-__("Styles & Scripts", "acf-views");
-__("CSS Code", "acf-views");
-__("JavaScript Code", "acf-views");
 __("Developer", "acf-views");
 __("PHP Controller", "acf-views");
-__("Web Component Type", "acf-views");
-__("Classes generation", "acf-views");
-__("BEM Unique Name", "acf-views");
-__("CSS classes", "acf-views");
-__("Use the Post ID as the Post Selection ID in the markup", "acf-views");
 
 // Post_Selection_Settings.php : descriptions
 
 __("The internal name of the Post Selection, visible on the list screen.", "acf-views");
-__("'Mount' this item to a location that doesn't support shortcodes. Mounting uses 'the_content' theme hook. <a target=\"_blank\" href=\"https://docs.advanced-views.com/display-content/mount-points-pro\">Read more</a>", "acf-views");
 __("'Posts Query (WP_query)' will get posts based on the defined query, while 'Page Context (archive pages)' will get posts from where the Post Selection is inserted (e.g. archive, author or category).", "acf-views");
 __("Filter by post type. Multiple types can be selected.", "acf-views");
 __("Filter by post status. Multiple types can be selected.", "acf-views");
@@ -451,32 +426,8 @@ __("Manually assign specific posts to limit the query to. Only this pool of post
 __("Here you can manually exclude specific posts from the query. It means the query will ignore posts from this list, even if they fit the filters. Warning : this field can't be used together with 'Pool of posts'.", "acf-views");
 __("If unchecked then sticky posts will be at the top of results. <a target='_blank' href='https://wordpress.org/support/article/sticky-posts/'>Learn more about Sticky Posts</a>.", "acf-views");
 __("For debugging purposes, this shows the query used to fetch posts for this Post Selection. Tip: Publish or update your Post Selection, then reload the page to view the latest query.", "acf-views");
-__("Assigned Layout is used to display every post from the query results.", "acf-views");
-__("Add a message that will be displayed if there are no results. Leave empty for no message.", "acf-views");
-__("Select the slider library to enable. <br> Customize the slider after saving, by editing the JS Code in the Styles & Scripts tab.", "acf-views");
 __("Add a short description for your Post Selection's purpose. Only seen on the admin Post Selections list.", "acf-views");
-__("When enabled responsive CSS styles are added to the CSS Code field. These styles are automatically updated each time you save. <br>Tip: If you’d like to edit the Post Selection CSS manually, simply disable this option. Disabling this does not remove the previously added CSS Code.", "acf-views");
-__("These rules control Post Selection items responsiveness. <br>Note: These rules are inherited from small to large. For example: If you’ve set up 'Mobile' and 'Desktop' screen rules, then 'Tablet' will have the same rules as 'Mobile' and 'Large Desktop' will have the same rules as 'Desktop'.", "acf-views");
-__("If enabled then the selected pagination type is applied and the 'Posts per page' rule takes effect. <a target='_blank' href='https://docs.advanced-views.com/post-selections/features/posts-pagination'>Read more</a>.", "acf-views");
-__("Defines a way in which user can load more. For 'Load More Button' and 'Page Numbers' cases a special markup will be added to the Post Selection automatically, you can style it in the Styles & Scripts tab.", "acf-views");
-__("Define a Custom label for the load more button.", "acf-views");
-__("Controls how many posts will be displayed initially and how many posts will be appended every time when user triggers 'Load More'. Total amount of posts is limited by the 'Maximum number of posts' field in the 'Query' tab.", "acf-views");
-__("Output preview of the generated template using the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>chosen template engine</a>. <br> Important! Publish or Update your Post Selection to see the latest markup.", "acf-views");
-__("Write your own template with full control over the HTML markup. <br> Copy the Default Template code and make your changes. <br><br> Check out our Docs to learn more about the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>available template engines</a>. <br><br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace). <br><br> Make sure you've retained all the default classes; otherwise, pagination won't work.", "acf-views");
-__("Choose one of the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>supported template engines</a>, which will be used for this Post Selection.", "acf-views");
-__("Define your CSS style rules. <br> Rules defined here will be added within &lt;style&gt;&lt;/style&gt; tags ONLY to pages that have this Post Selection. <br><br> Press Ctrl (Cmd) + Alt + L to format the code; Ctrl + F to search/replace; Ctrl + Space for autocomplete. <br><br> Magic shortcuts are available: <br><br>  1. '#selection' as a unique instance selector, will be replaced with '.avf-selection--id--{x}' <br> 2. '#selection__' as a full element selector, so '#selection__element' will be replaced with '.avf-selection--id--{x} .avf-selection__element' <br> 3. '#this' as a short element selector, so '#this__element' will be replaced with '.avf-selection__element' <br> Note: all the shortcuts are compatible with the BEM name option.", "acf-views");
-__("Configure libraries or add custom code to your Post Selection.<br><br> By default, the Post Selection is a <a target='_blank' href='https://docs.advanced-views.com/post-selections/code-fields/javascript-code'>web component</a>, so this code will be executed once for every instance, and 'this', that refers to the current instance, is available. <br><br> If the Web Component Type is set to none, the js code here is plain, and can be used for any goals, including <a target='_blank' href='https://docs.advanced-views.com/post-selections/component-options/interactivity-api'>WP Interactivity API</a>. <br><br> The code snippet will be added within &lt;script type='module'&gt;&lt;/script&gt; tags ONLY to pages that have this Post Selection. <br><br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace).", "acf-views");
 __("By customizing the PHP Controller instance, you can add extra variables to the template, extra arguments to the <a target='_blank' href='https://developer.wordpress.org/reference/classes/wp_query/#parameters'>WP_Query instance</a>, and define the AJAX and REST API handlers. <a target='_blank' href='https://docs.advanced-views.com/post-selections/code-fields/selection-controller'>Read more</a> <br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace).", "acf-views");
-__("By default, every Post Selection is a <a target='_blank' href='https://docs.advanced-views.com/post-selections/code-fields/javascript-code'>web component</a>, which allows you to work easily with the element in the JS code field. <br><br> Set it to 'None' if you're going to use the <a target='_blank' href='https://docs.advanced-views.com/post-selections/component-options/interactivity-api'>WP Interactivity API</a>.", "acf-views");
-__("Controls classes generation in the Default Template.", "acf-views");
-__("Define a unique <a target='_blank' href='https://getbem.com/introduction/'>BEM name</a> for the element that will be used in the markup, or leave it empty to use the default ('avf-selection').", "acf-views");
-__("Add a class name without a dot (e.g. 'class-name') or multiple classes with single space as a delimiter (e.g. 'class-name1 class-name2'). These classes are added to the wrapping HTML element. <a target='_blank' href='https://www.w3schools.com/cssref/sel_class.asp'>Learn more about CSS Classes</a>.", "acf-views");
-__("Note: For backward compatibility purposes only. Enable this option if you have external CSS selectors that rely on outdated digital IDs.", "acf-views");
-
-// Post_Selection_Settings.php : buttons
-
-__("Add Mount Point", "acf-views");
-__("Add Rule", "acf-views");
 
 // Post_Selection_Settings.php : choices
 
@@ -499,17 +450,6 @@ __("Comment count", "acf-views");
 __("Pool of posts", "acf-views");
 __("Ascending", "acf-views");
 __("Descending", "acf-views");
-__("None", "acf-views");
-__("Splide v4 (29.8KB js", "acf-views");
-__("Load More Button", "acf-views");
-__("Infinity Scroll", "acf-views");
-__("Page Numbers", "acf-views");
-__("Classic (no CSS isolation)", "acf-views");
-__("Declarative Shadow DOM (CSS isolated", "acf-views");
-__("JS Shadow DOM (CSS isolated", "acf-views");
-__("None", "acf-views");
-__("BEM style", "acf-views");
-__("None", "acf-views");
 
 // Tax_Field_Settings.php : labels
 
@@ -577,3 +517,72 @@ __("Add Taxonomy", "acf-views");
 
 __("Match ALL", "acf-views");
 __("Match ANY", "acf-views");
+
+// Templated_Selection_Settings.php : labels
+
+__("Mount Points", "acf-views");
+__("Mount Points", "acf-views");
+__("Layout for Results", "acf-views");
+__("No Posts Found Message", "acf-views");
+__("Enable Slider", "acf-views");
+__("Enable Responsive rules", "acf-views");
+__("Responsive Rules", "acf-views");
+__("Pagination", "acf-views");
+__("With Pagination", "acf-views");
+__("Pagination Type", "acf-views");
+__("'Load More' button label", "acf-views");
+__("Posts Per Page", "acf-views");
+__("Template", "acf-views");
+__("Default Selection Template", "acf-views");
+__("Custom Selection Template", "acf-views");
+__("Template Engine", "acf-views");
+__("Styles & Scripts", "acf-views");
+__("CSS Code", "acf-views");
+__("JavaScript Code", "acf-views");
+__("Web Component Type", "acf-views");
+__("Classes generation", "acf-views");
+__("BEM Unique Name", "acf-views");
+__("CSS classes", "acf-views");
+__("Use the Post ID as the Post Selection ID in the markup", "acf-views");
+
+// Templated_Selection_Settings.php : descriptions
+
+__("'Mount' this item to a location that doesn't support shortcodes. Mounting uses 'the_content' theme hook. <a target=\"_blank\" href=\"https://docs.advanced-views.com/display-content/mount-points-pro\">Read more</a>", "acf-views");
+__("Assigned Layout is used to display every post from the query results.", "acf-views");
+__("Add a message that will be displayed if there are no results. Leave empty for no message.", "acf-views");
+__("Select the slider library to enable. <br> Customize the slider after saving, by editing the JS Code in the Styles & Scripts tab.", "acf-views");
+__("When enabled responsive CSS styles are added to the CSS Code field. These styles are automatically updated each time you save. <br>Tip: If you’d like to edit the Post Selection CSS manually, simply disable this option. Disabling this does not remove the previously added CSS Code.", "acf-views");
+__("These rules control Post Selection items responsiveness. <br>Note: These rules are inherited from small to large. For example: If you’ve set up 'Mobile' and 'Desktop' screen rules, then 'Tablet' will have the same rules as 'Mobile' and 'Large Desktop' will have the same rules as 'Desktop'.", "acf-views");
+__("If enabled then the selected pagination type is applied and the 'Posts per page' rule takes effect. <a target='_blank' href='https://docs.advanced-views.com/post-selections/features/posts-pagination'>Read more</a>.", "acf-views");
+__("Defines a way in which user can load more. For 'Load More Button' and 'Page Numbers' cases a special markup will be added to the Post Selection automatically, you can style it in the Styles & Scripts tab.", "acf-views");
+__("Define a Custom label for the load more button.", "acf-views");
+__("Controls how many posts will be displayed initially and how many posts will be appended every time when user triggers 'Load More'. Total amount of posts is limited by the 'Maximum number of posts' field in the 'Query' tab.", "acf-views");
+__("Output preview of the generated template using the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>chosen template engine</a>. <br> Important! Publish or Update your Post Selection to see the latest markup.", "acf-views");
+__("Write your own template with full control over the HTML markup. <br> Copy the Default Template code and make your changes. <br><br> Check out our Docs to learn more about the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>available template engines</a>. <br><br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace). <br><br> Make sure you've retained all the default classes; otherwise, pagination won't work.", "acf-views");
+__("Choose one of the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>supported template engines</a>, which will be used for this Post Selection.", "acf-views");
+__("Define your CSS style rules. <br> Rules defined here will be added within &lt;style&gt;&lt;/style&gt; tags ONLY to pages that have this Post Selection. <br><br> Press Ctrl (Cmd) + Alt + L to format the code; Ctrl + F to search/replace; Ctrl + Space for autocomplete. <br><br> Magic shortcuts are available: <br><br>  1. '#selection' as a unique instance selector, will be replaced with '.avf-selection--id--{x}' <br> 2. '#selection__' as a full element selector, so '#selection__element' will be replaced with '.avf-selection--id--{x} .avf-selection__element' <br> 3. '#this' as a short element selector, so '#this__element' will be replaced with '.avf-selection__element' <br> Note: all the shortcuts are compatible with the BEM name option.", "acf-views");
+__("Configure libraries or add custom code to your Post Selection.<br><br> By default, the Post Selection is a <a target='_blank' href='https://docs.advanced-views.com/post-selections/code-fields/javascript-code'>web component</a>, so this code will be executed once for every instance, and 'this', that refers to the current instance, is available. <br><br> If the Web Component Type is set to none, the js code here is plain, and can be used for any goals, including <a target='_blank' href='https://docs.advanced-views.com/post-selections/component-options/interactivity-api'>WP Interactivity API</a>. <br><br> The code snippet will be added within &lt;script type='module'&gt;&lt;/script&gt; tags ONLY to pages that have this Post Selection. <br><br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace).", "acf-views");
+__("By default, every Post Selection is a <a target='_blank' href='https://docs.advanced-views.com/post-selections/code-fields/javascript-code'>web component</a>, which allows you to work easily with the element in the JS code field. <br><br> Set it to 'None' if you're going to use the <a target='_blank' href='https://docs.advanced-views.com/post-selections/component-options/interactivity-api'>WP Interactivity API</a>.", "acf-views");
+__("Controls classes generation in the Default Template.", "acf-views");
+__("Define a unique <a target='_blank' href='https://getbem.com/introduction/'>BEM name</a> for the element that will be used in the markup, or leave it empty to use the default ('avf-selection').", "acf-views");
+__("Add a class name without a dot (e.g. 'class-name') or multiple classes with single space as a delimiter (e.g. 'class-name1 class-name2'). These classes are added to the wrapping HTML element. <a target='_blank' href='https://www.w3schools.com/cssref/sel_class.asp'>Learn more about CSS Classes</a>.", "acf-views");
+__("Note: For backward compatibility purposes only. Enable this option if you have external CSS selectors that rely on outdated digital IDs.", "acf-views");
+
+// Templated_Selection_Settings.php : buttons
+
+__("Add Mount Point", "acf-views");
+__("Add Rule", "acf-views");
+
+// Templated_Selection_Settings.php : choices
+
+__("None", "acf-views");
+__("Splide v4 (29.8KB js", "acf-views");
+__("Load More Button", "acf-views");
+__("Infinity Scroll", "acf-views");
+__("Page Numbers", "acf-views");
+__("Classic (no CSS isolation)", "acf-views");
+__("Declarative Shadow DOM (CSS isolated", "acf-views");
+__("JS Shadow DOM (CSS isolated", "acf-views");
+__("None", "acf-views");
+__("BEM style", "acf-views");
+__("None", "acf-views");

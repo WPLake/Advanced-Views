@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template
 
 defined( 'ABSPATH' ) || exit;
 
-class Fs_Fields {
+abstract class Fs_Fields {
 	const DATA_JSON        = 'data.json';
 	const STYLE_CSS        = 'style.css';
 	const STYLE_SCSS       = 'style.scss';
@@ -49,6 +49,39 @@ class Fs_Fields {
 			'css_code',
 			'sass_code',
 		);
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	abstract protected function get_std_fields( Cpt_Settings $cpt_settings, string $template_file_extension ): array;
+
+	/**
+	 * @return array<string,string>
+	 */
+	protected function get_data_fields( Cpt_Settings $cpt_settings ): array {
+		return array(
+			self::DATA_JSON => $this->get_data_json( $cpt_settings ),
+		);
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	protected function get_template_fields( Cpt_Settings $cpt_settings, string $template_file_extension ): array {
+		$template_fields = array(
+			self::STYLE_CSS                      => $cpt_settings->css_code,
+			'default' . $template_file_extension => $cpt_settings->markup,
+			'custom' . $template_file_extension  => $cpt_settings->custom_markup,
+		);
+
+		$is_with_sass = strlen( $cpt_settings->sass_code ) > 0;
+
+		if ( $is_with_sass ) {
+			$template_fields[ self::STYLE_SCSS ] = $cpt_settings->sass_code;
+		}
+
+		return $template_fields;
 	}
 
 	// returns the data.json content, without the defaults and template fields.
@@ -203,22 +236,7 @@ class Fs_Fields {
 			$integration->get_file_extension() :
 			'';
 
-		$std_fields = array(
-			self::DATA_JSON => $this->get_data_json( $cpt_settings ),
-		);
-
-		if ( $cpt_settings->has_template() ) {
-			$std_fields = array(
-				self::STYLE_CSS                      => $cpt_settings->css_code,
-				self::DATA_JSON                      => $std_fields[ self::DATA_JSON ],
-				'default' . $template_file_extension => $cpt_settings->markup,
-				'custom' . $template_file_extension  => $cpt_settings->custom_markup,
-			);
-
-			if ( '' !== $cpt_settings->sass_code ) {
-				$std_fields[ self::STYLE_SCSS ] = $cpt_settings->sass_code;
-			}
-		}
+		$std_fields = $this->get_std_fields( $cpt_settings, $template_file_extension );
 
 		return false === $is_skip_auto_generated ?
 			array_merge( $auto_generated, $std_fields ) :

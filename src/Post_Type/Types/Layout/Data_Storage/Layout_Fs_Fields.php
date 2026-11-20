@@ -11,6 +11,13 @@ use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Fs_Fields;
 
 class Layout_Fs_Fields extends Fs_Fields {
+	protected function get_std_fields( Cpt_Settings $cpt_settings, string $template_file_extension ): array {
+		$data_fields     = $this->get_data_fields( $cpt_settings );
+		$template_fields = $this->get_template_fields( $cpt_settings, $template_file_extension );
+
+		return array_merge( $data_fields, $template_fields );
+	}
+
 	/**
 	 * @return string[]
 	 */

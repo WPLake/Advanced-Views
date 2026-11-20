@@ -149,22 +149,7 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 
 		$cpt_data = $this->cpt_settings_storage->get( $unique_id );
 
-		if ( ! $cpt_data->has_template() ) {
-			return $this->rename_and_save( $cpt_data, $post_title, $is_skip_save );
-		}
-
-		// it must be before the libraries' code integration, otherwise CSS may already be not empty even for the first save.
-		if ( '' === $cpt_data->css_code &&
-			Cpt_Settings::WEB_COMPONENT_NONE !== $cpt_data->web_component ) {
-			// by default, Web component is inline, which is wrong, we expect it to be block.
-			$id                 = Hard_Layout_Cpt::cpt_name() === $this->get_cpt_name() ?
-				'layout' :
-				'selection';
-			$cpt_data->css_code = sprintf( "#%s {\n\tdisplay: block;\n}\n", $id );
-		}
-
-		$this->cpt_integrator->integrate_js_code( $cpt_data );
-		$this->cpt_integrator->integrate_css_code( $cpt_data );
+		$this->integrate_template_code( $cpt_data );
 
 		return $this->rename_and_save( $cpt_data, $post_title, $is_skip_save );
 	}
@@ -516,6 +501,26 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 		acf_add_validation_error( $input_name, $message );
 	}
 
+	protected function integrate_template_code( Cpt_Settings $cpt_data ): void {
+		// it must be before the libraries' code integration, otherwise CSS may already be not empty even for the first save.
+		$is_css_empty     = 0 === strlen( $cpt_data->css_code );
+		$is_web_component = Cpt_Settings::WEB_COMPONENT_NONE !== $cpt_data->web_component;
+
+		$layout_cpt_name = Hard_Layout_Cpt::cpt_name();
+		$is_layout       = $layout_cpt_name === $this->get_cpt_name();
+
+		if ( $is_css_empty && $is_web_component ) {
+			// by default, Web component is inline, which is wrong, we expect it to be block.
+			$id                 = $is_layout ?
+				'layout' :
+				'selection';
+			$cpt_data->css_code = sprintf( "#%s {\n\tdisplay: block;\n}\n", $id );
+		}
+
+		$this->cpt_integrator->integrate_js_code( $cpt_data );
+		$this->cpt_integrator->integrate_css_code( $cpt_data );
+	}
+
 	protected function rename_and_save( Cpt_Settings $cpt_data, string $post_title, bool $is_skip_save ): Cpt_Settings {
 		// new title is already in the place, we compare with "post_title" just to detect the change.
 		if ( $post_title !== $cpt_data->title ) {
@@ -530,10 +535,6 @@ abstract class Cpt_Save_Actions extends Loggable_Actor implements Actor {
 	}
 
 	protected function validate_custom_markup(): void {
-		if ( ! $this->cpt_settings->has_template() ) {
-			return;
-		}
-
 		$is_with_custom_markup = strlen( trim( $this->cpt_settings->custom_markup ) ) > 0;
 
 		if ( ! $is_with_custom_markup ) {

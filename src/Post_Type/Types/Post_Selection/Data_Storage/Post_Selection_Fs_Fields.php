@@ -11,6 +11,20 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Sel
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Fs_Fields;
 
 class Post_Selection_Fs_Fields extends Fs_Fields {
+	protected function get_std_fields( Cpt_Settings $cpt_settings, string $template_file_extension ): array {
+		$data_fields  = $this->get_data_fields( $cpt_settings );
+		$is_templated = ! ( $cpt_settings instanceof Post_Selection_Settings ) ||
+						$cpt_settings->has_template();
+
+		if ( $is_templated ) {
+			$template_fields = $this->get_template_fields( $cpt_settings, $template_file_extension );
+
+			return array_merge( $data_fields, $template_fields );
+		}
+
+		return $data_fields;
+	}
+
 	/**
 	 * @return string[]
 	 */
