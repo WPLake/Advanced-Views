@@ -53,7 +53,7 @@ final class Acf_Group_Importer {
 	}
 
 	/**
-	 * @return array<string|int,mixed>|null
+	 * @return array<string,mixed>|null
 	 */
 	protected function get_group_with_fields( string $group_id ): ?array {
 		$group_info = $this->find_group_info( $group_id );
@@ -66,10 +66,12 @@ final class Acf_Group_Importer {
 	}
 
 	/**
-	 * @return array<string|int,mixed>|null
+	 * @return array<string,mixed>|null
 	 */
 	protected function find_group_info( string $group_id ): ?array {
-		$group_info = acf_get_field_group( $group_id );
+		$group_info = function_exists( 'acf_get_field_group' ) ?
+			acf_get_field_group( $group_id ) :
+			false;
 
 		if ( is_array( $group_info ) ) {
 			return $group_info;
@@ -85,13 +87,15 @@ final class Acf_Group_Importer {
 	}
 
 	/**
-	 * @param array<string|int,mixed> $group_info
+	 * @param array<string,mixed> $group_info
 	 *
-	 * @return array<string|int,mixed>|null
+	 * @return array<string,mixed>|null
 	 */
 	protected function add_fields_to_group_info( array $group_info, string $group_id ): ?array {
 		// fields are missing (empty) in the 'acf_get_field_group' call.
-		$fields_info = acf_get_fields( $group_info );
+		$fields_info = function_exists( 'acf_get_fields' ) ?
+			acf_get_fields( $group_info ) :
+			false;
 
 		if ( is_array( $fields_info ) ) {
 			$group_info['fields'] = $fields_info;
@@ -109,12 +113,14 @@ final class Acf_Group_Importer {
 	}
 
 	/**
-	 * @param array<string|int,mixed> $group_info
+	 * @param array<string,mixed> $group_info
 	 *
 	 * @return mixed[]|null
 	 */
 	protected function prepare_group_info( array $group_info, string $group_id ): ?array {
-		$prepared_info = acf_prepare_internal_post_type_for_export( $group_info );
+		$prepared_info = function_exists( 'acf_prepare_internal_post_type_for_export' ) ?
+			acf_prepare_internal_post_type_for_export( $group_info ) :
+			false;
 
 		if ( is_array( $prepared_info ) ) {
 			return $prepared_info;
@@ -134,7 +140,9 @@ final class Acf_Group_Importer {
 	 */
 	protected function import_supported_group( array $group_data ): ?string {
 		$group_data = $this->with_existing_group_id( $group_data );
-		$imported   = acf_import_field_group( $group_data );
+		$imported   = function_exists( 'acf_import_field_group' ) ?
+			acf_import_field_group( $group_data ) :
+			false;
 
 		if ( is_array( $imported ) ) {
 			return stringOrNull( $imported, 'key' );
@@ -156,7 +164,9 @@ final class Acf_Group_Importer {
 	 */
 	protected function with_existing_group_id( array $group_data ): array {
 		$group_key           = string( $group_data, 'key' );
-		$existing_group_info = acf_get_field_group( $group_key );
+		$existing_group_info = function_exists( 'acf_get_field_group' ) ?
+			acf_get_field_group( $group_key ) :
+			false;
 
 		if ( is_array( $existing_group_info ) ) {
 			$group_id         = int( $existing_group_info, 'ID' );

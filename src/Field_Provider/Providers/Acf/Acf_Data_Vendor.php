@@ -643,7 +643,9 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 	 * @return mixed[]
 	 */
 	protected static function load_field_data( string $field_id ): array {
-		$data = get_field_object( $field_id );
+		$data = function_exists( 'get_field_object' ) ?
+			get_field_object( $field_id ) :
+			false;
 
 		return is_array( $data ) ?
 			$data :

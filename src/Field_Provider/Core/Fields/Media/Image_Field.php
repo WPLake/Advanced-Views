@@ -262,12 +262,9 @@ class Image_Field implements Image_Field_Type, Markup_Field {
 	}
 
 	/**
-	 * @param mixed $width
-	 * @param mixed $height
-	 *
 	 * @return array<string, string>
 	 */
-	protected function get_srcset_variables( int $attachment_id, string $image_src, $width, $height ): array {
+	protected function get_srcset_variables( int $attachment_id, string $image_src, int $width, int $height ): array {
 		$image_meta = wp_get_attachment_metadata( $attachment_id );
 
 		if ( is_array( $image_meta ) ) {
