@@ -20,7 +20,7 @@ class Post_Thumbnail_Field extends Image_Field {
 	 * @return array<string, mixed>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$post = $this->get_post( $field_value->get_value() );
+		$post = self::get_post( $field_value->get_value() );
 
 		if ( null === $post ) {
 			$field_value->set_value( 0 );

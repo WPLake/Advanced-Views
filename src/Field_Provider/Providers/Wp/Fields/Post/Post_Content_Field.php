@@ -38,7 +38,7 @@ class Post_Content_Field implements Markup_Field {
 			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$post = $this->get_post( $field_value->get_value() );
+		$post = self::get_post( $field_value->get_value() );
 
 		if ( null === $post ) {
 			return $args;

@@ -37,7 +37,7 @@ class Comment_Parent_Field implements Markup_Field {
 			self::VALUE => '',
 		);
 
-		$comment = $this->get_comment( $field_value->get_value() );
+		$comment = self::get_comment( $field_value->get_value() );
 
 		if ( null === $comment ) {
 			return $args;

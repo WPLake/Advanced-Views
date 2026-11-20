@@ -37,7 +37,7 @@ class Comment_Author_Email_Field implements Markup_Field {
 			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$comment = $this->get_comment( $field_value->get_value() );
+		$comment = self::get_comment( $field_value->get_value() );
 
 		if ( null === $comment ) {
 			return $args;

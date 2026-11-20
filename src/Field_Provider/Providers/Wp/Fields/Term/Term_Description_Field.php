@@ -38,7 +38,7 @@ class Term_Description_Field implements Markup_Field {
 			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$term = $this->get_term( $field_value->get_value() );
+		$term = self::get_term( $field_value->get_value() );
 
 		if ( null === $term ) {
 			return $args;

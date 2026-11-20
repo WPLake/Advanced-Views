@@ -21,7 +21,7 @@ class Woo_Gallery_Field extends Gallery_Field {
 			self::VALUE => array(),
 		);
 
-		$product = $this->get_product( $field_value->get_value() );
+		$product = self::get_product( $field_value->get_value() );
 
 		if ( null === $product ) {
 			return $args;

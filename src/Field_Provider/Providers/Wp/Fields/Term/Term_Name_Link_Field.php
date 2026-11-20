@@ -17,7 +17,7 @@ class Term_Name_Link_Field extends Link_Field {
 	 * @return array<string, string>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$term = $this->get_term( $field_value->get_value() );
+		$term = self::get_term( $field_value->get_value() );
 
 		if ( null === $term ) {
 			$field_value->set_value( array() );

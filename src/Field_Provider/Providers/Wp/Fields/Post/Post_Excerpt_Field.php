@@ -108,7 +108,7 @@ class Post_Excerpt_Field implements Markup_Field {
 			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$post = $this->get_post( $field_value->get_value() );
+		$post = self::get_post( $field_value->get_value() );
 
 		// it's important to check if the post type supports the excerpt (overall)
 		// do not use has_excerpt(), because it checks only the 'excerpt' post field,

@@ -279,7 +279,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 				$link_title  = sprintf( ' %s', $group_title );
 				$group_id    = int( $group_info, 'id' );
 
-				$links[] = $this->add_new_link_tag( $group_id, $link_title );
+				$links[] = self::add_new_link_tag( $group_id, $link_title );
 			}
 		}
 

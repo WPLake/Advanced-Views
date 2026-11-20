@@ -21,7 +21,7 @@ class Post_Author_Field extends User_Field {
 	 * @param mixed $post_id
 	 */
 	protected function get_post_author_id( $post_id ): ?int {
-		$post = $this->get_post( $post_id );
+		$post = self::get_post( $post_id );
 
 		if ( null === $post ) {
 			return null;

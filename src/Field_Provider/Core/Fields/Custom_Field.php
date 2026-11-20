@@ -15,7 +15,7 @@ trait Custom_Field {
 	/**
 	 * @param mixed $value
 	 */
-	protected function get_post( $value ): ?WP_Post {
+	protected static function get_post( $value ): ?WP_Post {
 		$value = is_numeric( $value ) ?
 			(int) $value :
 			0;
@@ -26,7 +26,7 @@ trait Custom_Field {
 	/**
 	 * @param mixed $value
 	 */
-	protected function get_term( $value, string $taxonomy = '' ): ?WP_Term {
+	protected static function get_term( $value, string $taxonomy = '' ): ?WP_Term {
 		$term_id = is_numeric( $value ) ?
 			(int) $value :
 			0;
@@ -44,7 +44,7 @@ trait Custom_Field {
 	/**
 	 * @param mixed $value
 	 */
-	protected function get_user( $value ): ?WP_User {
+	protected static function get_user( $value ): ?WP_User {
 		$user_id = is_numeric( $value ) ?
 			(int) $value :
 			0;
@@ -62,7 +62,7 @@ trait Custom_Field {
 	/**
 	 * @param mixed $value
 	 */
-	protected function get_comment( $value ): ?WP_Comment {
+	protected static function get_comment( $value ): ?WP_Comment {
 		$comment_id = is_numeric( $value ) ?
 			(int) $value :
 			0;
@@ -75,7 +75,7 @@ trait Custom_Field {
 	 *
 	 * @return Wc_Product_Interface|null
 	 */
-	protected function get_product( $value ) {
+	protected static function get_product( $value ) {
 		$post_id = is_numeric( $value ) ?
 			(int) $value :
 			0;
@@ -97,7 +97,7 @@ trait Custom_Field {
 	/**
 	 * @return array{title: string, url: string, target: bool}
 	 */
-	protected function get_menu_item_info( WP_Post $wp_post ): array {
+	protected static function get_menu_item_info( WP_Post $wp_post ): array {
 		$target_page = get_post_meta( $wp_post->ID, '_menu_item_object_id', true );
 		$target_page = is_numeric( $target_page ) ?
 			(int) $target_page :

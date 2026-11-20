@@ -37,7 +37,7 @@ class User_Last_Name_Field implements Markup_Field {
 			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$user = $this->get_user( $field_value->get_value() );
+		$user = self::get_user( $field_value->get_value() );
 
 		if ( null === $user ) {
 			return $args;

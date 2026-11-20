@@ -11,6 +11,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
+use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
+use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Splide\Splide_Library;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\IF_Branch;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Token\Types\Nested\Tokens\Loop_Token;
@@ -255,6 +257,77 @@ abstract class List_Field implements Markup_Field {
 			$field_id;
 
 		return $this->compose_item( $field_id, $item_id, $markup_field_data );
+	}
+
+	/**
+	 * @return Html_Node[]
+	 */
+	protected function compose_external_layout_shortcode(
+		string $field_id,
+		Template_Field_Meta $markup_field_data,
+		string $object_type = ''
+	): array {
+		$token_factory    = $markup_field_data->get_token_factory();
+		$object_id_source = $markup_field_data->get_context()->get_field_meta()->is_multiple() ?
+			static::LOOP_ITEM_NAME :
+			$field_id;
+
+		$id_var = $token_factory
+			->variable( $field_id )
+			->add_item_path( self::LAYOUT_ID );
+
+		$object_id_var = $token_factory
+			->variable( $object_id_source )
+			->add_item_path( self::VALUE );
+
+		$typed_id_key = sprintf( '%s-id', $object_type );
+		$cpt_name     = Hard_Layout_Cpt::cpt_name();
+		$attributes   = '' === $object_type ?
+			array(
+				'id'        => $id_var,
+				'object-id' => $object_id_var,
+			) :
+			array(
+				'id'          => $id_var,
+				'object-id'   => $object_type,
+				$typed_id_key => $object_id_var,
+			);
+
+		$shortcode = $token_factory
+			->shortcode( $cpt_name )
+			->set_attributes( $attributes );
+
+		return array( $shortcode );
+	}
+
+	/**
+	 * @param string[] $parent_assets
+	 *
+	 * @return string[]
+	 */
+	protected function get_link_front_assets( array $parent_assets, Field_Settings $field_settings ): array {
+		$splide_assets = Splide_Library::get_field_front_assets( $field_settings );
+
+		return array_merge( $parent_assets, $splide_assets );
+	}
+
+	/**
+	 * @param string[] $parent_fields
+	 *
+	 * @return string[]
+	 */
+	protected function get_link_conditional_fields( array $parent_fields, Field_Meta $field_meta ): array {
+		$conditional_fields = array(
+			Field_Settings::FIELD_LINK_LABEL,
+			Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
+			Field_Settings::FIELD_ACF_VIEW_ID,
+		);
+
+		if ( $field_meta->is_multiple() ) {
+			$conditional_fields[] = Field_Settings::FIELD_SLIDER_TYPE;
+		}
+
+		return array_merge( $parent_fields, $conditional_fields );
 	}
 
 	/**

@@ -17,7 +17,7 @@ class User_Author_Link_Field extends Link_Field {
 	 * @return array<string, string>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$user = $this->get_user( $field_value->get_value() );
+		$user = self::get_user( $field_value->get_value() );
 
 		if ( null === $user ) {
 			$field_value->set_value( array() );

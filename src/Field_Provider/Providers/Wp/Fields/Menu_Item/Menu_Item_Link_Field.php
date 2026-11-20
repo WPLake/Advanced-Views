@@ -17,7 +17,7 @@ class Menu_Item_Link_Field extends Link_Field {
 	 * @return array<string, string>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$menu_item = $this->get_post( $field_value->get_value() );
+		$menu_item = self::get_post( $field_value->get_value() );
 
 		if ( null === $menu_item ||
 			'nav_menu_item' !== $menu_item->post_type ) {
@@ -26,7 +26,7 @@ class Menu_Item_Link_Field extends Link_Field {
 			return parent::get_template_variables( $field_value );
 		}
 
-		$field_args = $this->get_menu_item_info( $menu_item );
+		$field_args = self::get_menu_item_info( $menu_item );
 
 		$field_value->set_value( $field_args );
 

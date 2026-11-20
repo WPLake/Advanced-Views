@@ -17,7 +17,7 @@ class Post_Attachment_Link extends Link_Field {
 	 * @return array<string, string>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$post = $this->get_post( $field_value->get_value() );
+		$post = self::get_post( $field_value->get_value() );
 
 		if ( null === $post ||
 		'attachment' !== $post->post_type ) {

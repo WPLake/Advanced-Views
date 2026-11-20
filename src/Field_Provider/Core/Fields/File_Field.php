@@ -6,12 +6,10 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Core\Fields;
 
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Template_Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
-use Org\Wplake\Advanced_Views\Template\Frontend_Library\Libraries\Splide\Splide_Library;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
 defined( 'ABSPATH' ) || exit;
@@ -62,28 +60,17 @@ class File_Field extends List_Field {
 
 	public function get_front_assets( Field_Settings $field_settings ): array {
 		$parent_assets = parent::get_front_assets( $field_settings );
-		$splide_assets = Splide_Library::get_field_front_assets( $field_settings );
 
-		return array_merge( $parent_assets, $splide_assets );
+		return $this->get_link_front_assets( $parent_assets, $field_settings );
 	}
 
 	/**
 	 * @return string[]
 	 */
 	public function get_conditional_fields( Field_Meta $field_meta ): array {
-		$conditional_fields = array(
-			Field_Settings::FIELD_LINK_LABEL,
-			Field_Settings::FIELD_IS_LINK_TARGET_BLANK,
-			Field_Settings::FIELD_ACF_VIEW_ID,
-		);
-
-		if ( $field_meta->is_multiple() ) {
-			$conditional_fields[] = Field_Settings::FIELD_SLIDER_TYPE;
-		}
-
 		$parent_fields = parent::get_conditional_fields( $field_meta );
 
-		return array_merge( $parent_fields, $conditional_fields );
+		return $this->get_link_conditional_fields( $parent_fields, $field_meta );
 	}
 
 	public function is_with_field_wrapper(
@@ -109,30 +96,7 @@ class File_Field extends List_Field {
 	 * @return Html_Node[]
 	 */
 	protected function compose_external_item_layout( string $field_id, string $item_id, Template_Field_Meta $markup_field_data ): array {
-		$token_factory    = $markup_field_data->get_token_factory();
-		$object_id_source = $markup_field_data->get_context()->get_field_meta()->is_multiple() ?
-			static::LOOP_ITEM_NAME :
-			$field_id;
-
-		$id_var = $token_factory
-			->variable( $field_id )
-			->add_item_path( self::LAYOUT_ID );
-
-		$object_id_var = $token_factory
-			->variable( $object_id_source )
-			->add_item_path( self::VALUE );
-
-		$cpt_name   = Hard_Layout_Cpt::cpt_name();
-		$attributes = array(
-			'id'        => $id_var,
-			'object-id' => $object_id_var,
-		);
-
-		$shortcode = $token_factory
-			->shortcode( $cpt_name )
-			->set_attributes( $attributes );
-
-		return array( $shortcode );
+		return $this->compose_external_layout_shortcode( $field_id, $markup_field_data );
 	}
 
 	protected function get_item_template_args( Raw_Field_Value $field_value ): array {

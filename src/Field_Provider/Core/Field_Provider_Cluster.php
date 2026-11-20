@@ -19,7 +19,6 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	/**
@@ -426,15 +425,9 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	 * @param array<string, string> $import_files name => content
 	 */
 	public function import_related_group_files( array $import_files ): Related_Groups_Import_Result {
-		$related_groups_import_result = new Related_Groups_Import_Result();
+		$providers = $this->get_provider_cluster();
 
-		foreach ( $import_files as $file_name => $file_content ) {
-			$file_import_result = $this->import_file( $file_name, $file_content );
-
-			$related_groups_import_result->merge( $file_import_result );
-		}
-
-		return $related_groups_import_result;
+		return Related_Groups_Exporter::import_files( $providers, $import_files );
 	}
 
 	/**
@@ -470,21 +463,10 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 	 * @return array<string, string> fileName => content
 	 */
 	public function get_related_group_export_files( Layout_Settings $layout_settings ): array {
-		$related_groups             = $this->get_related_group_ids( $layout_settings );
-		$related_group_export_data  = $this->get_groups_export_data( $related_groups );
-		$related_group_export_files = array();
+		$providers      = $this->get_provider_cluster();
+		$related_groups = $this->get_related_group_ids( $layout_settings );
 
-		foreach ( $related_group_export_data as $vendor_name => $groups_export_data ) {
-			$export_content = $this->create_export_content( $vendor_name, $groups_export_data );
-
-			if ( is_string( $export_content ) ) {
-				$file_name = sprintf( '%s.json', $vendor_name );
-
-				$related_group_export_files[ $file_name ] = $export_content;
-			}
-		}
-
-		return $related_group_export_files;
+		return Related_Groups_Exporter::get_export_files( $providers, $related_groups );
 	}
 
 	/**
@@ -586,51 +568,6 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		}
 	}
 
-	protected function import_file( string $file_name, string $file_content ): Related_Groups_Import_Result {
-		$file_vendor = $this->get_import_file_vendor( $file_name );
-		$import_data = json_decode( $file_content, true );
-
-		if ( $file_vendor instanceof Field_Provider && is_array( $import_data ) ) {
-			return $this->import_vendor_groups( $file_vendor, $import_data );
-		}
-
-		return new Related_Groups_Import_Result();
-	}
-
-	protected function get_import_file_vendor( string $file_name ): ?Field_Provider {
-		$json_position = strpos( $file_name, '.json' );
-		$vendor_name   = str_replace( '.json', '', $file_name );
-		$providers     = $this->get_provider_cluster();
-
-		if ( is_int( $json_position ) && key_exists( $vendor_name, $providers ) ) {
-			return $providers[ $vendor_name ];
-		}
-
-		return null;
-	}
-
-	/**
-	 * @param mixed[] $import_data
-	 */
-	protected function import_vendor_groups( Field_Provider $vendor, array $import_data ): Related_Groups_Import_Result {
-		$import_result = new Related_Groups_Import_Result();
-		$meta_data     = arr( $import_data, 'meta' );
-		// compatibility with the old export format, which didn't have meta at all.
-		$groups_data = arr( $import_data, 'groups' );
-		$vendor_name = $vendor->get_name();
-
-		foreach ( $groups_data as $group_data ) {
-			$group_data        = arr( $group_data );
-			$imported_group_id = $vendor->import_group( $group_data, $meta_data );
-
-			if ( is_string( $imported_group_id ) ) {
-				$import_result->add_group( $vendor_name, $imported_group_id );
-			}
-		}
-
-		return $import_result;
-	}
-
 	/**
 	 * @return array<string, string[]> vendorName => groupIds (not unique)
 	 */
@@ -649,56 +586,6 @@ abstract class Field_Provider_Cluster extends Loggable_Actor implements Actor {
 		}
 
 		return $related_groups;
-	}
-
-	/**
-	 * @param array<string, string[]> $related_groups
-	 *
-	 * @return array<string, mixed[]> vendorName => groups export data
-	 */
-	protected function get_groups_export_data( array $related_groups ): array {
-		$related_group_export_data = array();
-		$providers                 = $this->get_provider_cluster();
-
-		foreach ( $related_groups as $vendor_name => $group_ids ) {
-			$vendor    = $providers[ $vendor_name ];
-			$group_ids = array_unique( $group_ids );
-
-			foreach ( $group_ids as $group_id ) {
-				// feature can be not supported by the vendor (e.g. WP or Woo vendors).
-				$group_export_data = $vendor->get_group_export_data( $group_id );
-
-				if ( is_array( $group_export_data ) ) {
-					$related_group_export_data[ $vendor_name ] ??= array();
-					$related_group_export_data[ $vendor_name ][] = $group_export_data;
-				}
-			}
-		}
-
-		return $related_group_export_data;
-	}
-
-	/**
-	 * @param mixed[] $groups_export_data
-	 */
-	protected function create_export_content( string $vendor_name, array $groups_export_data ): ?string {
-		$providers        = $this->get_provider_cluster();
-		$vendor           = $providers[ $vendor_name ];
-		$export_meta_data = $vendor->get_export_meta_data( $groups_export_data );
-
-		$export_data = array(
-			'meta'   => $export_meta_data,
-			'groups' => $groups_export_data,
-		);
-
-		$export_content = wp_json_encode(
-			$export_data,
-			JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT
-		);
-
-		return is_string( $export_content ) ?
-			$export_content :
-			null;
 	}
 
 	protected function create_field_meta( string $vendor_name, string $field_id ): Field_Meta {

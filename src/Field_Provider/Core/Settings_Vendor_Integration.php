@@ -159,7 +159,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		return $this->provider_cluster;
 	}
 
-	protected function get_block_description( Layout_Settings $layout_settings ): string {
+	protected static function get_block_description( Layout_Settings $layout_settings ): string {
 		$label     = __( 'Advanced View', 'acf-views' );
 		$unique_id = $layout_settings->get_unique_id( true );
 
@@ -171,7 +171,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		);
 	}
 
-	protected function get_block_id( Layout_Settings $layout_settings ): string {
+	protected static function get_block_id( Layout_Settings $layout_settings ): string {
 		if ( $layout_settings->is_gutenberg_block_with_digital_id ) {
 			$source = $layout_settings->getSource();
 
@@ -183,7 +183,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		return sprintf( 'acf-view-%s', $unique_id );
 	}
 
-	protected function getBlockCategory(): string {
+	protected static function get_block_category(): string {
 		return __( 'Advanced Views', 'acf-views' );
 	}
 
@@ -224,7 +224,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		echo $shadow_html;
 	}
 
-	protected function link_with_js_hover_tag( string $url, string $title ): Html_Tag {
+	protected static function link_with_js_hover_tag( string $url, string $title ): Html_Tag {
 		return tag( 'a' )
 			->attributes(
 				array(
@@ -280,7 +280,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	/**
 	 * @param array<string,string> $link_attrs
 	 */
-	protected function add_new_link_tag( int $from, string $label_suffix = '', array $link_attrs = array() ): Html_Tag {
+	protected static function add_new_link_tag( int $from, string $label_suffix = '', array $link_attrs = array() ): Html_Tag {
 		$default_attrs = array(
 			'target'      => '_blank',
 			'class'       => 'button',
@@ -377,7 +377,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 
 		foreach ( $related_views as $related_view ) {
 			$edit_link = $related_view->get_edit_post_link();
-			$nodes[]   = $this->link_with_js_hover_tag( $edit_link, $related_view->title );
+			$nodes[]   = self::link_with_js_hover_tag( $edit_link, $related_view->title );
 
 			if ( $counter !== $last_index ) {
 				$nodes[] = ', ';
@@ -391,7 +391,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		if ( $wp_post instanceof WP_Post && 'publish' === $wp_post->post_status ) {
 			$nodes[] = tag( 'br' );
 			$nodes[] = tag( 'br' );
-			$nodes[] = $this->add_new_link_tag( $wp_post->ID, '', $add_new_link_args );
+			$nodes[] = self::add_new_link_tag( $wp_post->ID, '', $add_new_link_args );
 		}
 
 		return $nodes;

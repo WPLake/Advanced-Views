@@ -37,7 +37,7 @@ class Woo_Sale_Price_Field implements Markup_Field {
 			self::VALUE => $field_value->get_context()->get_field_settings()->default_value,
 		);
 
-		$product = $this->get_product( $field_value->get_value() );
+		$product = self::get_product( $field_value->get_value() );
 
 		if ( null === $product ) {
 			return $args;

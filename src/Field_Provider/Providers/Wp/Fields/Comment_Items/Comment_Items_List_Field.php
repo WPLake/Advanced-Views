@@ -210,7 +210,7 @@ class Comment_Items_List_Field implements Markup_Field {
 			self::LAYOUT_ID => $layout_id,
 		);
 
-		$post = $this->get_post( $field_value->get_value() );
+		$post = self::get_post( $field_value->get_value() );
 
 		if ( null === $post ) {
 			return $args;

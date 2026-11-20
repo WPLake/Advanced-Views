@@ -275,7 +275,7 @@ class Menu_Items_Field implements Markup_Field {
 		}
 
 		$link_args = null !== $wp_post ?
-			$this->get_menu_item_info( $wp_post ) :
+			self::get_menu_item_info( $wp_post ) :
 			array();
 
 		$field_value->set_value( $link_args );
@@ -309,7 +309,7 @@ class Menu_Items_Field implements Markup_Field {
 		$is_child_active = false;
 
 		foreach ( $children as $child_menu_item ) {
-			$link_args = $this->get_menu_item_info( $child_menu_item );
+			$link_args = self::get_menu_item_info( $child_menu_item );
 
 			$field_value->set_value( $link_args );
 
@@ -348,7 +348,7 @@ class Menu_Items_Field implements Markup_Field {
 			self::LAYOUT_ID => $layout_id,
 		);
 
-		$menu = $this->get_term( $field_value->get_value(), 'nav_menu' );
+		$menu = self::get_term( $field_value->get_value(), 'nav_menu' );
 
 		if ( null === $menu ) {
 			return $args;

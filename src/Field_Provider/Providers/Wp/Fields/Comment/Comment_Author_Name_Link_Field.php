@@ -34,7 +34,7 @@ class Comment_Author_Name_Link_Field implements Markup_Field {
 	 * @return array<string, mixed>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$comment = $this->get_comment( $field_value->get_value() );
+		$comment = self::get_comment( $field_value->get_value() );
 
 		if ( null === $comment ) {
 			$field_value->set_value( array() );

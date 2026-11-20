@@ -17,7 +17,7 @@ class Post_Title_Link_Field extends Link_Field {
 	 * @return array<string, string>
 	 */
 	public function get_template_variables( Raw_Field_Value $field_value ): array {
-		$post = $this->get_post( $field_value->get_value() );
+		$post = self::get_post( $field_value->get_value() );
 
 		if ( null === $post ) {
 			$field_value->set_value( array() );

@@ -21,7 +21,7 @@ class Taxonomy_Terms_Field extends Taxonomy_Field {
 	protected function get_value( Field_Meta $field_meta, $value ) {
 		// do not call the parent method, as we always have a single item here.
 
-		$post = $this->get_post( $value );
+		$post = self::get_post( $value );
 
 		if ( null === $post ) {
 			return array();
