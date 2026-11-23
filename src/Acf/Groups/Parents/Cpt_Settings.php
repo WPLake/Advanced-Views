@@ -25,7 +25,6 @@ abstract class Cpt_Settings extends Group implements Cpt_Theme_Settings {
 	const CLASS_GENERATION_NONE                = 'none';
 	const CLASS_GENERATION_BEM                 = 'bem';
 
-	const CODE_MODE_PREVIEW = 'preview';
 	const CODE_MODE_EDIT    = 'edit';
 	const CODE_MODE_DISPLAY = 'display';
 
@@ -133,12 +132,6 @@ abstract class Cpt_Settings extends Group implements Cpt_Theme_Settings {
 			);
 
 			$css_code = trim( $css_code );
-		} elseif ( self::CODE_MODE_PREVIEW === $mode ) {
-			$css_code = str_replace(
-				sprintf( '#%s__', $alias ),
-				sprintf( '#%s .%s__', $alias, $this->get_bem_name() ),
-				$css_code
-			);
 		}
 
 		return $css_code;

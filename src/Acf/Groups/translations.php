@@ -221,9 +221,6 @@ __("CSS classes", "acf-views");
 __("Add classification classes to the markup", "acf-views");
 __("Do not skip unused wrappers", "acf-views");
 __("Use the Post ID as the Layout ID in the markup", "acf-views");
-__("Preview", "acf-views");
-__("Preview Object", "acf-views");
-__("Preview", "acf-views");
 __("With Gutenberg Block", "acf-views");
 __("Use the Post ID in the Gutenberg block's name", "acf-views");
 
@@ -250,8 +247,6 @@ __("Add a class name without a dot (e.g. “class-name”) or multiple classes w
 __("By default, the field name is added as a prefix to all inner classes. For example, the image within the 'avatar' field will have the '__avatar-image' class. <br> Enabling this setting adds the generic class as well, such as '__image'. This feature can be useful if you want to apply styles based on field types.", "acf-views");
 __("By default, empty wrappers in the markup are skipped to optimize the output. For example, the '__row' wrapper will be skipped if there is no field label. <br> Enable this feature if you need all the wrappers in the output.", "acf-views");
 __("Note: For backward compatibility purposes only. Enable this option if you have external CSS selectors that rely on outdated digital IDs.", "acf-views");
-__("Select a data object (which field values will be used) and update the View. After reload the page to see the markup in the preview.", "acf-views");
-__("Here you can see the preview of the Layout and play with CSS rules. <br>Important! Update the View after changes and reload the page to see the latest markup here. <br>Your changes to the preview won't be applied to the view automatically, if you want to keep them copy amended CSS to the 'CSS Code' field and press the 'Update' button. <br> Note: styles from your front page are included in the preview (some differences may appear).", "acf-views");
 __("This field is deprecated.", "acf-views");
 __("Note: For backward compatibility purposes only.", "acf-views");
 
@@ -408,7 +403,7 @@ __("Sort order", "acf-views");
 __("Ignore Sticky Posts", "acf-views");
 __("Output", "acf-views");
 __("Editorial description", "acf-views");
-__("Preview: Context page", "acf-views");
+__("Preview: Context post", "acf-views");
 __("Preview: Results", "acf-views");
 __("Preview: Query arguments", "acf-views");
 __("Advanced", "acf-views");
@@ -429,10 +424,10 @@ __("Select a target field.", "acf-views");
 __("Defines the sorting order of posts.", "acf-views");
 __("If unchecked then sticky posts will be at the top of results. <a target='_blank' href='https://wordpress.org/support/article/sticky-posts/'>Learn more about Sticky Posts</a>.", "acf-views");
 __("Add a short description for your Post Selection's purpose. Only seen on the admin Post Selections list.", "acf-views");
-__("Optional. Select a page (or any post) to resolve the query context from, e.g. the current post or term. Affects only the Preview: Results and Preview: Query arguments fields; update your Post Selection to see the result.", "acf-views");
+__("Optional. Select a post (or page/CPT item) to resolve the query context from. <br> This setting affects only the Preview fields. <br> Update your Post Selection to see the result.", "acf-views");
 __("Displays the first 20 matched posts in a list for preview.", "acf-views");
 __("Publish or update your Post Selection to see the latest query.", "acf-views");
-__("By customizing the PHP Controller instance, you can add extra variables to the template, extra arguments to the <a target='_blank' href='https://developer.wordpress.org/reference/classes/wp_query/#parameters'>WP_Query instance</a>, and define the AJAX and REST API handlers. <a target='_blank' href='https://docs.advanced-views.com/post-selections/code-fields/selection-controller'>Read more</a> <br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace).", "acf-views");
+__("By customizing the PHP Controller instance, you can add extra arguments to the <a target='_blank' href='https://developer.wordpress.org/reference/classes/wp_query/#parameters'>WP_Query instance</a>. <br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace).", "acf-views");
 
 // Post_Selection_Settings.php : choices
 

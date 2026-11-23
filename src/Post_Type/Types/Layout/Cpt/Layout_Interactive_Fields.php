@@ -12,16 +12,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Repeater_Field_Settings;
 use Org\Wplake\Advanced_Views\Assets\ACE_Mods;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Postbox_Printer;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Layout_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration_Storage;
 use WP_Post;
 
@@ -58,15 +55,6 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 		$this->layout_factory          = $layout_factory;
 		$this->layout_renderer         = $layout_renderer;
 		$this->layout_meta_boxes       = $layout_meta_boxes;
-	}
-
-	public function get_page_js_data(): array {
-		return array_merge(
-			parent::get_page_js_data(),
-			array(
-				'viewPreview' => $this->get_preview_js_data(),
-			)
-		);
 	}
 
 	protected function get_interactive_response( WP_Post $post ): array {
@@ -210,54 +198,5 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 				'isFieldsOnly'      => true,
 			),
 		);
-	}
-
-	/**
-	 * @return array<string,string>
-	 */
-	protected function get_preview_js_data(): array {
-		$js_data = array(
-			'HTML' => '',
-			'CSS'  => '',
-		);
-
-		global $post;
-
-		if ( ! Plugin::is_cpt_screen( Hard_Layout_Cpt::cpt_name() ) ||
-			'publish' !== $post->post_status ) {
-			return $js_data;
-		}
-
-		$view_data       = $this->layout_settings_storage->get( $post->post_name );
-		$preview_post_id = $view_data->preview_post;
-
-		if ( 0 !== $preview_post_id ) {
-			$source = new Source();
-
-			$source->set_id( $preview_post_id );
-			$source->set_user_id( get_current_user_id() );
-
-			ob_start();
-			// without minify, it's a preview.
-			$this->layout_factory->make_and_print_html(
-				$source,
-				$post->post_name,
-				0
-			);
-			$view_html = (string) ob_get_clean();
-		} else {
-			// $this->viewMarkup->getMarkup give TWIG, there is no sense to show it
-			// so the HTML is empty until the preview Post ID is selected
-			$view_html = '';
-		}
-
-		// amend to allow work the '#view' alias.
-		$view_html       = str_replace( 'class="acf-view ', 'id="view" class="acf-view ', $view_html );
-		$js_data['HTML'] = htmlentities( $view_html, ENT_QUOTES );
-
-		$js_data['CSS']  = htmlentities( $view_data->get_css_code( Layout_Settings::CODE_MODE_PREVIEW ), ENT_QUOTES );
-		$js_data['HOME'] = get_site_url();
-
-		return $js_data;
 	}
 }

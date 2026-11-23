@@ -231,30 +231,6 @@ class Layout_Settings extends Cpt_Settings {
 	public bool $is_markup_with_digital_id;
 
 	/**
-	 * @a-type tab
-	 * @label Preview
-	 * @a-order 3
-	 */
-	public bool $preview_tab;
-	/**
-	 * @a-type post_object
-	 * @return_format 1
-	 * @allow_null 1
-	 * @label Preview Object
-	 * @instructions Select a data object (which field values will be used) and update the View. After reload the page to see the markup in the preview.
-	 * @a-order 3
-	 */
-	public int $preview_post;
-	/**
-	 * @label Preview
-	 * @instructions Here you can see the preview of the Layout and play with CSS rules. <br>Important! Update the View after changes and reload the page to see the latest markup here. <br>Your changes to the preview won't be applied to the view automatically, if you want to keep them copy amended CSS to the 'CSS Code' field and press the 'Update' button. <br> Note: styles from your front page are included in the preview (some differences may appear).
-	 * @placeholder Loading... Please wait a few seconds
-	 * @disabled 1
-	 * @a-order 3
-	 */
-	public string $preview;
-
-	/**
 	 * @label With Gutenberg Block
 	 * @instructions This field is deprecated.
 	 * @a-pro The field must be not required or have default value!
