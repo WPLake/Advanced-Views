@@ -15,9 +15,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 
 /**
@@ -119,7 +119,7 @@ class Selection_Meta_Boxes extends Cpt_Meta_Boxes {
 			'acf-cards_displaying_results',
 			__( 'Displaying results', 'acf-views' ),
 			function (): void {
-				echo esc_html( __( 'To display Selection results add it as a Source in any Post Layout', 'acf-views' ) );
+				echo esc_html( __( 'To display Selection results add it as a Source in any post Layout', 'acf-views' ) );
 			},
 			array(
 				Hard_Post_Selection_Cpt::cpt_name(),

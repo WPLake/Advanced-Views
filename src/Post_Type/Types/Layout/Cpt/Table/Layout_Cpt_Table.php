@@ -15,9 +15,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Layout_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
+use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Query;
-use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 
 /**
@@ -28,6 +28,7 @@ class Layout_Cpt_Table extends Cpt_Table {
 	const COLUMN_SHORTCODE      = self::COLUMN_PREFIX . 'shortcode';
 	const COLUMN_LAST_MODIFIED  = self::COLUMN_PREFIX . 'lastModified';
 	const COLUMN_RELATED_GROUPS = self::COLUMN_PREFIX . 'relatedGroups';
+	const COLUMN_RELATED_LAYOUTS = self::COLUMN_PREFIX . 'relatedLayouts';
 
 	private Postbox_Printer $postbox;
 	private Layout_Meta_Boxes $layouts_cpt_meta_boxes;
@@ -83,8 +84,13 @@ class Layout_Cpt_Table extends Cpt_Table {
 		$own_columns = array(
 			self::COLUMN_DESCRIPTION    => __( 'Description', 'acf-views' ),
 			self::COLUMN_SHORTCODE      => __( 'Embed the Layout', 'acf-views' ),
-			self::COLUMN_RELATED_GROUPS => __( 'Assigned Field Group', 'acf-views' ),
-			self::COLUMN_LAST_MODIFIED  => __( 'Modified', 'acf-views' ),
+			self::COLUMN_RELATED_GROUPS  => __( 'Field Groups', 'acf-views' ),
+			self::COLUMN_RELATED_LAYOUTS => sprintf(
+				// translators: %s: CPT name.
+				__( '%s', 'acf-views' ),
+				$this->public_plugin_cpt->labels()->plural_name()
+			),
+			self::COLUMN_LAST_MODIFIED   => __( 'Modified', 'acf-views' ),
 		);
 
 		return array_merge( $columns, $own_columns );
@@ -99,10 +105,6 @@ class Layout_Cpt_Table extends Cpt_Table {
 			sprintf( 'manage_edit-%s_sortable_columns', $this->get_cpt_name() ),
 			array( $this, 'get_sortable_columns' )
 		);
-	}
-
-	protected function get_views_meta_boxes(): Layout_Meta_Boxes {
-		return $this->layouts_cpt_meta_boxes;
 	}
 
 	/**
@@ -138,7 +140,9 @@ class Layout_Cpt_Table extends Cpt_Table {
 				),
 			self::COLUMN_RELATED_GROUPS => fn() =>
 				$this->layouts_cpt_meta_boxes->related_groups_nodes( $view_data, true ),
-			self::COLUMN_LAST_MODIFIED  => fn() => self::get_date_column( $view_data, 'modified' ),
+			self::COLUMN_RELATED_LAYOUTS => fn() =>
+				$this->layouts_cpt_meta_boxes->related_views_nodes( $view_data, true ),
+			self::COLUMN_LAST_MODIFIED   => fn() => self::get_date_column( $view_data, 'modified' ),
 		);
 	}
 
