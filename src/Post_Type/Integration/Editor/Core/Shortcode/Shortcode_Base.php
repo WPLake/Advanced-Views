@@ -106,41 +106,32 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		$user_without_roles_input = any( $shortcode_args, 'user-without-roles' );
 		$user_without_roles       = self::get_roles( $user_without_roles_input );
 
-		if ( 0 === count( $user_with_roles ) &&
-			0 === count( $user_without_roles ) ) {
-			return true;
-		}
-
-		$user_has_allowed_roles = array() !== array_intersect( $user_with_roles, $user_roles );
-		$user_has_denied_roles  = array() !== array_intersect( $user_without_roles, $user_roles );
-
-		if ( ( array() !== $user_with_roles && ! $user_has_allowed_roles ) ||
-			( array() !== $user_without_roles && $user_has_denied_roles ) ) {
-			return false;
-		}
-
-		return true;
+		return self::is_available_for_roles(
+			$user_roles,
+			$user_with_roles,
+			$user_without_roles
+		);
 	}
 
 	/**
-	 * @param mixed[] $args
+	 * @param string[] $user_roles
+	 * @param string[] $allowed_roles Empty for no limits.
+	 * @param string[] $denied_roles Empty for no limits.
 	 */
-	protected function create_error_markup( string $shortcode, array $args, string $error ): string {
-		$attrs = array();
+	protected static function is_available_for_roles( array $user_roles, array $allowed_roles, array $denied_roles ): bool {
+		$matched_allowed_roles = array_intersect( $allowed_roles, $user_roles );
+		$matched_denied_roles  = array_intersect( $denied_roles, $user_roles );
 
-		foreach ( $args as $name => $value ) {
-			// skip complex types (that may be passed from Bridge).
-			if ( is_string( $value ) ) {
-				$attrs[] = sprintf( '%s="%s"', $name, $value );
-			}
-		}
+		$is_allowed_unlimited = 0 === count( $allowed_roles );
+		$is_allowed_matched   = count( $matched_allowed_roles ) > 0;
+		$is_denied_matched    = count( $matched_denied_roles ) > 0;
 
-		$joined_attrs    = implode( ' ', $attrs );
-		$shortcode_debug = sprintf( '(%s %s)', $shortcode, $joined_attrs );
+		$is_allowed = $is_allowed_unlimited || $is_allowed_matched;
 
-		$error_label = __( 'AVF shortcode render error:', 'acf-views' );
-		$error_text  = sprintf( '%s %s %s', $error_label, $error, $shortcode_debug );
+		return $is_allowed && ! $is_denied_matched;
+	}
 
+	protected function create_error_markup( string $error_text ): string {
 		$tags = tag( 'p' )
 			->attributes( array( 'style' => array( 'color' => 'red' ) ) )
 			->content(
@@ -153,9 +144,39 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 	/**
 	 * @param mixed[] $args
 	 */
+	protected static function get_error_text( string $shortcode, array $args, string $error ): string {
+		$joined_attrs    = self::join_string_attrs( $args );
+		$shortcode_debug = sprintf( '(%s %s)', $shortcode, $joined_attrs );
+
+		$error_label = __( 'AVF shortcode render error:', 'acf-views' );
+
+		return sprintf( '%s %s %s', $error_label, $error, $shortcode_debug );
+	}
+
+	/**
+	 * @param mixed[] $args
+	 */
+	protected static function join_string_attrs( array $args ): string {
+		$attrs = array();
+
+		foreach ( $args as $name => $value ) {
+			// skip complex types (that may be passed from Bridge).
+			if ( is_string( $value ) ) {
+				$attrs[] = sprintf( '%s="%s"', $name, $value );
+			}
+		}
+
+		return implode( ' ', $attrs );
+	}
+
+	/**
+	 * @param mixed[] $args
+	 */
 	protected function get_error_markup( string $shortcode, array $args, string $error ): string {
 		if ( Avf_User::can_see_errors() ) {
-			return $this->create_error_markup( $shortcode, $args, $error );
+			$error_text = self::get_error_text( $shortcode, $args, $error );
+
+			return $this->create_error_markup( $error_text );
 		}
 
 		return '';
@@ -187,46 +208,26 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		$is_with_quick_link = $this->settings->is_dev_mode() &&
 								Avf_User::can_manage();
 
-		$html = $this->live_reloader_component->get_reloading_component(
+		$reloading_component = $this->live_reloader_component->get_reloading_component(
 			$cpt_data,
 			$shortcode_arguments,
 			$is_gutenberg_block
-		) . $html;
+		);
+		$html                = $reloading_component . $html;
 
-		$shadow_css = '';
+		$is_css_internal = $cpt_data->is_css_internal();
+		$shadow_css      = $is_css_internal ?
+			$this->create_shadow_css( $cpt_data ) :
+			'';
 
-		if ( $cpt_data->is_css_internal() ) {
-			$css_code   = $cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
-			$shadow_css = Code_Minifier::minify_css( $css_code );
-			$host_css   = sprintf( ':host{all: initial!important;}%s', $shadow_css );
+		$is_declarative_shadow_dom = Cpt_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $cpt_data->web_component;
+		$embedded_html             = $is_declarative_shadow_dom ?
+			self::embed_shadow_css( $html, $shadow_css ) :
+			null;
 
-			$tags = tag( 'style' )
-				->content(
-					raw_html( $host_css )
-				);
-
-			$shadow_css = $this->html_renderer->render_html( $tags );
-		}
-
-		if ( Cpt_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $cpt_data->web_component ) {
-			$template_opening_tag = '<template shadowrootmode="open">';
-
-			// use strpos instead of str_replace, as we need to replace the first occurrence only,
-			// e.g. for Card + View inside, only for Card, as for View we already processed.
-			$pos = strpos( $html, $template_opening_tag );
-
-			if ( is_int( $pos ) ) {
-				$template_opening_tag_length = strlen( $template_opening_tag );
-
-				$html = substr_replace(
-					$html,
-					$template_opening_tag . "\r\n" . $shadow_css,
-					$pos,
-					$template_opening_tag_length
-				);
-
-				$shadow_css = '';
-			}
+		if ( is_string( $embedded_html ) ) {
+			$html       = $embedded_html;
+			$shadow_css = '';
 		}
 
 		if ( $is_with_quick_link || Cpt_Settings::WEB_COMPONENT_NONE !== $cpt_data->web_component ) {
@@ -234,6 +235,43 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		}
 
 		return $html;
+	}
+
+	protected function create_shadow_css( Cpt_Settings $cpt_data ): string {
+		$css_code   = $cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
+		$shadow_css = Code_Minifier::minify_css( $css_code );
+		$host_css   = sprintf( ':host{all: initial!important;}%s', $shadow_css );
+
+		$tags = tag( 'style' )
+			->content(
+				raw_html( $host_css )
+			);
+
+		return $this->html_renderer->render_html( $tags );
+	}
+
+	/**
+	 * @return string|null Null if the html has no declarative shadow template.
+	 */
+	protected static function embed_shadow_css( string $html, string $shadow_css ): ?string {
+		$template_opening_tag = '<template shadowrootmode="open">';
+
+		// use strpos instead of str_replace, as we need to replace the first occurrence only,
+		// e.g. for Card + View inside, only for Card, as for View we already processed.
+		$pos = strpos( $html, $template_opening_tag );
+
+		if ( is_int( $pos ) ) {
+			$template_opening_tag_length = strlen( $template_opening_tag );
+
+			return substr_replace(
+				$html,
+				$template_opening_tag . "\r\n" . $shadow_css,
+				$pos,
+				$template_opening_tag_length
+			);
+		}
+
+		return null;
 	}
 
 	protected function add_quick_link_and_last_tag_markup(

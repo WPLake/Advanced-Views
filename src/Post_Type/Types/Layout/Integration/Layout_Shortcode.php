@@ -92,7 +92,9 @@ final class Layout_Shortcode extends Shortcode_Base {
 			);
 		}
 
-		if ( ! $this->is_shortcode_available_for_user( wp_get_current_user()->roles, $attrs ) ) {
+		$is_permitted = $this->is_layout_available_for_user( $view_unique_id, $attrs );
+
+		if ( ! $is_permitted ) {
 			return '';
 		}
 
@@ -266,6 +268,27 @@ final class Layout_Shortcode extends Shortcode_Base {
 
 	protected function get_unique_id_prefix(): string {
 		return Layout_Settings::UNIQUE_ID_PREFIX;
+	}
+
+	/**
+	 * @param mixed[] $attrs
+	 */
+	protected function is_layout_available_for_user( string $unique_id, array $attrs ): bool {
+		$user_roles = wp_get_current_user()->roles;
+
+		$is_shortcode_available = $this->is_shortcode_available_for_user( $user_roles, $attrs );
+
+		$layout_settings = $this->layouts_settings_storage->get( $unique_id );
+		$roles_with      = $layout_settings->get_roles_with();
+		$roles_without   = $layout_settings->get_roles_without();
+
+		$is_layout_available = self::is_available_for_roles(
+			$user_roles,
+			$roles_with,
+			$roles_without
+		);
+
+		return $is_shortcode_available && $is_layout_available;
 	}
 
 	// get_page_by_path() requires post_type, but we don't know it, so use the direct query.

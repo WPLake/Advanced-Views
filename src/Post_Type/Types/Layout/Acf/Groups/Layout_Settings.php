@@ -58,22 +58,6 @@ class Layout_Settings extends Cpt_Settings {
 	 * @a-html-class advanced-views__title
 	 */
 	public string $title;
-	/**
-	 * @a-type tab
-	 * @label Mount Points
-	 * @a-order 2
-	 */
-	public bool $mount_points_tab;
-	/**
-	 * @item \Org\Wplake\Advanced_Views\Acf\Groups\Mount_Point_Settings
-	 * @var Mount_Point_Settings[]
-	 * @label Mount Points
-	 * @instructions 'Mount' this item to a location that doesn't support shortcodes. Mounting uses 'the_content' theme hook. <a target="_blank" href="https://docs.advanced-views.com/display-content/mount-points-pro">Read more</a>
-	 * @button_label Add Mount Point
-	 * @a-no-tab 1
-	 * @a-order 2
-	 */
-	public array $mount_points;
 
 	/**
 	 * @a-type tab
@@ -183,6 +167,12 @@ class Layout_Settings extends Cpt_Settings {
 	 */
 	public bool $options_tab;
 	/**
+	 * @a-type textarea
+	 * @label Editorial description
+	 * @instructions Add a short description for your Views’ purpose. <br> Note : This description is only seen on the admin Advanced Views list.
+	 */
+	public string $description;
+	/**
 	 * @a-type select
 	 * @label Register custom Gutenberg Block
 	 * @instructions If a block vendor is selected then a <a target='_blank' href='https://docs.advanced-views.com/layouts/features/custom-gutenberg-blocks'>custom Gutenberg block</a> for this Layout will be available. <br><br> Note: this option is separate from the built-in Gutenberg integration block.
@@ -194,15 +184,9 @@ class Layout_Settings extends Cpt_Settings {
 	/**
 	 * @a-type true_false
 	 * @label Render template when it's empty
-	 * @instructions By default, if all the selected fields are empty, the Twig template won't be rendered. <br> Enable this option if you have specific logic inside the template and you want to render it even when all the fields are empty.
+	 * @instructions By default, if all the selected fields are empty, the template won't be rendered. <br> Enable this option if you have specific logic inside the template and you want to render it even when all the fields are empty.
 	 */
 	public bool $is_render_when_empty;
-	/**
-	 * @a-type textarea
-	 * @label Editorial description
-	 * @instructions Add a short description for your Views’ purpose. <br> Note : This description is only seen on the admin Advanced Views list.
-	 */
-	public string $description;
 
 	/**
 	 * @a-type tab
@@ -262,27 +246,91 @@ class Layout_Settings extends Cpt_Settings {
 
 	/**
 	 * @a-type tab
-	 * @label Source options
+	 * @label Permissions
+	 * @a-order 2
 	 */
-	public bool $source_tab;
+	public bool $permissions_tab;
 	/**
 	 * @a-type message
-	 * @label Note
-	 * @message The settings below affect only the generated shortcode. After saving and copying it, you can change them again: the same Layout can be loaded from various sources and have multiple shortcode versions.
+	 * @label Visiblity options
+	 * @message You can restrict the Layout's visibility by user role. <br> Role-based access is checked server-side, before rendering, ensuring that no HTML is ever delivered to other users.
+	 * @a-order 2
 	 */
-	public string $source_message;
+	public string $visibility_fields;
+	/**
+	 * @a-type select
+	 * @multiple 1
+	 * @ui 1
+	 * @return_format value
+	 * @label Limit visibility only to roles
+	 * @instructions The Layout is shown only to users with the selected roles. Leave empty for no limits.
+	 * @var string[]
+	 * @a-order 2
+	 */
+	public array $source_roles_with;
+	/**
+	 * @a-type select
+	 * @multiple 1
+	 * @ui 1
+	 * @return_format value
+	 * @label Hide only from roles
+	 * @instructions The Layout is hidden from users with the selected roles. Leave empty for no limits.
+	 * @var string[]
+	 * @a-order 2
+	 */
+	public array $source_roles_without;
+
+	/**
+	 * @a-type tab
+	 * @label Mount Points
+	 * @a-order 2
+	 */
+	public bool $mount_points_tab;
+	/**
+	 * @a-type message
+	 * @label Mount Options
+	 * @message Mount Points are designed for complex, specific cases, when direct shortcode embedding is not possible.
+	 * @a-order 2
+	 */
+	public string $mount_info;
+	/**
+	 * @item \Org\Wplake\Advanced_Views\Acf\Groups\Mount_Point_Settings
+	 * @var Mount_Point_Settings[]
+	 * @label Mount Points
+	 * @instructions 'Mount' this item to a location that doesn't support shortcodes. Mounting uses 'the_content' theme hook. <a target="_blank" href="https://docs.advanced-views.com/display-content/mount-points-pro">Read more</a>
+	 * @button_label Add Mount Point
+	 * @a-no-tab 1
+	 * @a-order 2
+	 */
+	public array $mount_points;
+
+	/**
+	 * @a-type tab
+	 * @label Embed Options
+	 * @a-order 2
+	 */
+	public bool $embed_options_tab;
+	/**
+	 * @a-type message
+	 * @label Embedding options
+	 * @message All the settings on this tab affect only the embedding shortcode. <br> After saving and copying the shortcode, you can change the settings again: the same Layout can be loaded from various sources and have multiple shortcode versions.
+	 * @a-order 2
+	 */
+	public string $embed_options;
 	/**
 	 * @a-type select
 	 * @label Source type
 	 * @instructions 'Context-driven' takes the item(s) from the current context (the current page, user or loop item, the main query posts). 'Defined' sets the source explicitly in the shortcode.
 	 * @choices {"context":"Context-driven","defined":"Defined"}
 	 * @default_value context
+	 * @a-order 2
 	 */
 	public string $source_type;
 	/**
 	 * @label Options page
 	 * @instructions The options page slug (or ACF post id), the fields are loaded from.
 	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "custom"}]]
+	 * @a-order 2
 	 */
 	public string $source_options_page;
 	/**
@@ -293,6 +341,7 @@ class Layout_Settings extends Cpt_Settings {
 	 * @instructions The posts of the selected Post Selections are displayed in the given order, without de-duplication. Can't be combined with the 'Posts' field.
 	 * @var string[]
 	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "post"}, {"field": "local_acf_views_view__item-format","operator": "==","value": "multiple"}]]
+	 * @a-order 2
 	 */
 	public array $source_post_selections;
 	/**
@@ -303,6 +352,7 @@ class Layout_Settings extends Cpt_Settings {
 	 * @instructions Specific posts (Pages, CPT items, Products). Can't be combined with the 'Post Selections' field.
 	 * @var int[]
 	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "post"}]]
+	 * @a-order 2
 	 */
 	public array $source_posts;
 	/**
@@ -313,18 +363,21 @@ class Layout_Settings extends Cpt_Settings {
 	 * @instructions Specific users.
 	 * @var int[]
 	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "user"}]]
+	 * @a-order 2
 	 */
 	public array $source_users;
 	/**
 	 * @label Terms
 	 * @instructions Specific taxonomy term IDs, delimited by a comma.
 	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "term"}]]
+	 * @a-order 2
 	 */
 	public string $source_terms;
 	/**
 	 * @label Comment
 	 * @instructions A specific comment ID.
 	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "comment"}]]
+	 * @a-order 2
 	 */
 	public string $source_comments;
 	/**
@@ -336,28 +389,9 @@ class Layout_Settings extends Cpt_Settings {
 	 * @instructions Specific menus.
 	 * @var string[]
 	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "menu"}]]
+	 * @a-order 2
 	 */
 	public array $source_menus;
-	/**
-	 * @a-type select
-	 * @multiple 1
-	 * @ui 1
-	 * @return_format value
-	 * @label Limit visibility only to roles
-	 * @instructions The Layout is shown only to users with the selected roles. Leave empty for no limits.
-	 * @var string[]
-	 */
-	public array $source_roles_with;
-	/**
-	 * @a-type select
-	 * @multiple 1
-	 * @ui 1
-	 * @return_format value
-	 * @label Hide only from roles
-	 * @instructions The Layout is hidden from users with the selected roles. Leave empty for no limits.
-	 * @var string[]
-	 */
-	public array $source_roles_without;
 
 	/**
 	 * @label With Gutenberg Block
@@ -530,6 +564,20 @@ return new class extends Layout_Controller_Base {
 					'',
 			)
 		);
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function get_roles_with(): array {
+		return $this->source_roles_with;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function get_roles_without(): array {
+		return $this->source_roles_without;
 	}
 
 	public function get_bem_name(): string {
