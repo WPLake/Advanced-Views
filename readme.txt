@@ -205,8 +205,8 @@ Advanced Views lets you display fields from almost any WordPress data source:
 
 == Changelog ==
 
-= 3.9.9 (2026-) =
-- Enhance: libraries adoption (Slider, Carousel, Masonry); JavaScript field becomes Pro-tier
+= 3.9.9 (2026-11-23) =
+- Enhance: libraries adoption - Slider, Carousel, Masonry (JavaScript field becomes Pro-tier)
 
 = 3.9.8 (2026-10-22) =
 - Fix: PHP template engine reported unavailable on PHP < 8.2
