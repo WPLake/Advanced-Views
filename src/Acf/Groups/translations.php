@@ -198,6 +198,8 @@ __("Layout Name", "acf-views");
 __("Mount Points", "acf-views");
 __("Mount Points", "acf-views");
 __("Data", "acf-views");
+__("Item type", "acf-views");
+__("Item format", "acf-views");
 __("Assign Fields", "acf-views");
 __("Parent group (for Nested repeater or Flexible layout)", "acf-views");
 __("Parent field", "acf-views");
@@ -221,6 +223,17 @@ __("CSS classes", "acf-views");
 __("Add classification classes to the markup", "acf-views");
 __("Do not skip unused wrappers", "acf-views");
 __("Use the Post ID as the Layout ID in the markup", "acf-views");
+__("Source", "acf-views");
+__("Source type", "acf-views");
+__("Options page", "acf-views");
+__("Post Selections", "acf-views");
+__("Posts", "acf-views");
+__("Users", "acf-views");
+__("Terms", "acf-views");
+__("Comment", "acf-views");
+__("Menus", "acf-views");
+__("Limit visibility only to roles", "acf-views");
+__("Hide only from roles", "acf-views");
 __("With Gutenberg Block", "acf-views");
 __("Use the Post ID in the Gutenberg block's name", "acf-views");
 
@@ -228,6 +241,8 @@ __("Use the Post ID in the Gutenberg block's name", "acf-views");
 
 __("The internal name of the Layout, visible on the list screen.", "acf-views");
 __("'Mount' this item to a location that doesn't support shortcodes. Mounting uses 'the_content' theme hook. <a target=\"_blank\" href=\"https://docs.advanced-views.com/display-content/mount-points-pro\">Read more</a>", "acf-views");
+__("The type of the data object the Layout displays. Fields that don't match the type stay stored, but render empty.", "acf-views");
+__("'Single item' displays one object. 'Multiple items' displays a loop of the objects.", "acf-views");
 __("Assign fields to your Layout. <br> Tip: hover mouse on the field number column and drag to reorder.", "acf-views");
 __("Choose a Parent group when setting up Nested repeater or Flexible layout.", "acf-views");
 __("If you're making an internal Layout for the <a target='_blank' href='https://docs.advanced-views.com/field-types/layout/group-field'>group</a>, <a target='_blank' href='https://docs.advanced-views.com/field-types/layout/repeater-field'>repeater</a> or <a target='_blank' href='https://docs.advanced-views.com/field-types/layout/flexible-field'>flexible</a> field, then fill out this field.", "acf-views");
@@ -247,6 +262,16 @@ __("Add a class name without a dot (e.g. “class-name”) or multiple classes w
 __("By default, the field name is added as a prefix to all inner classes. For example, the image within the 'avatar' field will have the '__avatar-image' class. <br> Enabling this setting adds the generic class as well, such as '__image'. This feature can be useful if you want to apply styles based on field types.", "acf-views");
 __("By default, empty wrappers in the markup are skipped to optimize the output. For example, the '__row' wrapper will be skipped if there is no field label. <br> Enable this feature if you need all the wrappers in the output.", "acf-views");
 __("Note: For backward compatibility purposes only. Enable this option if you have external CSS selectors that rely on outdated digital IDs.", "acf-views");
+__("'Context-driven' takes the item(s) from the current context (the current page, user or loop item, the main query posts). 'Defined' sets the source explicitly in the shortcode.", "acf-views");
+__("The options page slug (or ACF post id), the fields are loaded from.", "acf-views");
+__("The posts of the selected Post Selections are displayed in the given order, without de-duplication. Can't be combined with the 'Posts' field.", "acf-views");
+__("Specific posts (Pages, CPT items, Products). Can't be combined with the 'Post Selections' field.", "acf-views");
+__("Specific users.", "acf-views");
+__("Specific taxonomy term IDs, delimited by a comma.", "acf-views");
+__("A specific comment ID.", "acf-views");
+__("Specific menus.", "acf-views");
+__("The Layout is shown only to users with the selected roles. Leave empty for no limits.", "acf-views");
+__("The Layout is hidden from users with the selected roles. Leave empty for no limits.", "acf-views");
 __("This field is deprecated.", "acf-views");
 __("Note: For backward compatibility purposes only.", "acf-views");
 
@@ -257,6 +282,14 @@ __("Add Field", "acf-views");
 
 // Layout_Settings.php : choices
 
+__("Post (Page", "acf-views");
+__("User", "acf-views");
+__("Taxonomy term", "acf-views");
+__("Comment", "acf-views");
+__("Menu", "acf-views");
+__("Custom (e.g. Options page)", "acf-views");
+__("Single item", "acf-views");
+__("Multiple items (loop)", "acf-views");
 __("Off", "acf-views");
 __("ACF Block", "acf-views");
 __("Meta Box Block", "acf-views");
@@ -267,6 +300,8 @@ __("JS Shadow DOM (CSS isolated", "acf-views");
 __("None", "acf-views");
 __("BEM style", "acf-views");
 __("None", "acf-views");
+__("Context-driven", "acf-views");
+__("Defined", "acf-views");
 
 // Repeater_Field_Settings.php : labels
 

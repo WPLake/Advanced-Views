@@ -13,7 +13,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Engines_Storage;
 
 defined( 'ABSPATH' ) || exit;
 
-class Layout_Settings_Integration extends Acf_Integration_Base {
+final class Layout_Settings_Integration extends Acf_Integration_Base {
 	private Field_Provider_Cluster $provider_cluster;
 	private Engines_Storage $engines_storage;
 
@@ -40,12 +40,12 @@ class Layout_Settings_Integration extends Acf_Integration_Base {
 	 */
 	protected function get_choices_callbacks(): array {
 		return array(
-			Layout_Settings::FIELD_GROUP           =>
-				fn() => $this->provider_cluster->get_group_choices(),
-			Layout_Settings::FIELD_PARENT_FIELD    =>
-				fn() => $this->get_parent_field_choices(),
-			Layout_Settings::FIELD_TEMPLATE_ENGINE =>
-				fn() => $this->engines_storage->get_choices(),
+			Layout_Settings::FIELD_GROUP                => fn() => $this->provider_cluster->get_group_choices(),
+			Layout_Settings::FIELD_PARENT_FIELD         => fn() => $this->get_parent_field_choices(),
+			Layout_Settings::FIELD_TEMPLATE_ENGINE      => fn() => $this->engines_storage->get_choices(),
+			Layout_Settings::FIELD_SOURCE_MENUS         => fn() => self::get_menu_choices(),
+			Layout_Settings::FIELD_SOURCE_ROLES_WITH    => fn() => self::get_role_choices(),
+			Layout_Settings::FIELD_SOURCE_ROLES_WITHOUT => fn() => self::get_role_choices(),
 		);
 	}
 
@@ -53,5 +53,29 @@ class Layout_Settings_Integration extends Acf_Integration_Base {
 		$choices_callbacks = $this->get_choices_callbacks();
 
 		Acf_Utils::bind_field_choices( Layout_Settings::class, $choices_callbacks );
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	protected static function get_menu_choices(): array {
+		$choices = array();
+
+		$menus = wp_get_nav_menus();
+
+		foreach ( $menus as $menu ) {
+			$choices[ (string) $menu->term_id ] = $menu->name;
+		}
+
+		return $choices;
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	protected static function get_role_choices(): array {
+		$role_names = wp_roles()->get_names();
+
+		return array_map( 'translate_user_role', $role_names );
 	}
 }

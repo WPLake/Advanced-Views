@@ -31,6 +31,19 @@ class Layout_Settings extends Cpt_Settings {
 	const FIELD_TEMPLATE_TAB          = 'template_tab';
 	const FIELD_CSS_AND_JS_TAB        = 'css_and_js_tab';
 	const FIELD_DEVELOPER_TAB         = 'developer_tab';
+	const FIELD_SOURCE_MENUS          = 'source_menus';
+	const FIELD_SOURCE_ROLES_WITH     = 'source_roles_with';
+	const FIELD_SOURCE_ROLES_WITHOUT  = 'source_roles_without';
+	const ITEM_TYPE_POST              = 'post';
+	const ITEM_TYPE_USER              = 'user';
+	const ITEM_TYPE_TERM              = 'term';
+	const ITEM_TYPE_COMMENT           = 'comment';
+	const ITEM_TYPE_MENU              = 'menu';
+	const ITEM_TYPE_CUSTOM            = 'custom';
+	const ITEM_FORMAT_SINGLE          = 'single';
+	const ITEM_FORMAT_MULTIPLE        = 'multiple';
+	const SOURCE_TYPE_CONTEXT         = 'context';
+	const SOURCE_TYPE_DEFINED         = 'defined';
 	const POST_FIELD_IS_HAS_GUTENBERG = 'post_mime_type';
 	// keep the WP format 'image/jpg' to use WP_Query without issues.
 	const POST_VALUE_IS_HAS_GUTENBERG = 'block/block';
@@ -64,21 +77,38 @@ class Layout_Settings extends Cpt_Settings {
 
 	/**
 	 * @a-type tab
-	 * @label Data
+	 * @label Item Settings
 	 */
-	public bool $fields_tab;
+	public bool $item_settings_tab;
+
+	/**
+	 * @a-type select
+	 * @label Item type
+	 * @instructions The type of the data object the Layout displays.
+	 * @choices {"post":"Post (Page, CPT, Product)","user":"User","term":"Taxonomy term","comment":"Comment","menu":"Menu","custom":"Custom (e.g. Options page)"}
+	 * @default_value post
+	 */
+	public string $item_type;
+	/**
+	 * @a-type select
+	 * @label Item format
+	 * @instructions 'Single item' Layout displays one object, 'Multiple items' displays a set of the objects.
+	 * @choices {"single":"Single item","multiple":"Multiple items (loop)"}
+	 * @default_value single
+	 * @conditional_logic [[{"field": "local_acf_views_view__item-type","operator": "!=","value": "custom"}]]
+	 */
+	public string $item_format;
 
 	/**
 	 * @item \Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings
 	 * @var Item_Settings[]
-	 * @label Assign Fields
-	 * @instructions Assign fields to your Layout. <br> Tip: hover mouse on the field number column and drag to reorder.
+	 * @label Item Fields
+	 * @instructions Assign item fields to your Layout. <br> Tip: hover mouse on the field number column and drag to reorder.
 	 * @button_label Add Field
 	 * @collapsed local_acf_views_field__key
 	 * @a-no-tab 1
 	 */
 	public array $items;
-
 
 	/**
 	 * @a-type select
@@ -229,6 +259,105 @@ class Layout_Settings extends Cpt_Settings {
 	 * @instructions Note: For backward compatibility purposes only. Enable this option if you have external CSS selectors that rely on outdated digital IDs.
 	 */
 	public bool $is_markup_with_digital_id;
+
+	/**
+	 * @a-type tab
+	 * @label Source options
+	 */
+	public bool $source_tab;
+	/**
+	 * @a-type message
+	 * @label Note
+	 * @message The settings below affect only the generated shortcode. After saving and copying it, you can change them again: the same Layout can be loaded from various sources and have multiple shortcode versions.
+	 */
+	public string $source_message;
+	/**
+	 * @a-type select
+	 * @label Source type
+	 * @instructions 'Context-driven' takes the item(s) from the current context (the current page, user or loop item, the main query posts). 'Defined' sets the source explicitly in the shortcode.
+	 * @choices {"context":"Context-driven","defined":"Defined"}
+	 * @default_value context
+	 */
+	public string $source_type;
+	/**
+	 * @label Options page
+	 * @instructions The options page slug (or ACF post id), the fields are loaded from.
+	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "custom"}]]
+	 */
+	public string $source_options_page;
+	/**
+	 * @a-type av_ajax_select
+	 * @source post-selections
+	 * @multiple 1
+	 * @label Post Selections
+	 * @instructions The posts of the selected Post Selections are displayed in the given order, without de-duplication. Can't be combined with the 'Posts' field.
+	 * @var string[]
+	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "post"}, {"field": "local_acf_views_view__item-format","operator": "==","value": "multiple"}]]
+	 */
+	public array $source_post_selections;
+	/**
+	 * @a-type post_object
+	 * @return_format id
+	 * @multiple 1
+	 * @label Posts
+	 * @instructions Specific posts (Pages, CPT items, Products). Can't be combined with the 'Post Selections' field.
+	 * @var int[]
+	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "post"}]]
+	 */
+	public array $source_posts;
+	/**
+	 * @a-type user
+	 * @return_format id
+	 * @multiple 1
+	 * @label Users
+	 * @instructions Specific users.
+	 * @var int[]
+	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "user"}]]
+	 */
+	public array $source_users;
+	/**
+	 * @label Terms
+	 * @instructions Specific taxonomy term IDs, delimited by a comma.
+	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "term"}]]
+	 */
+	public string $source_terms;
+	/**
+	 * @label Comment
+	 * @instructions A specific comment ID.
+	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "comment"}]]
+	 */
+	public string $source_comments;
+	/**
+	 * @a-type select
+	 * @multiple 1
+	 * @ui 1
+	 * @return_format value
+	 * @label Menus
+	 * @instructions Specific menus.
+	 * @var string[]
+	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "menu"}]]
+	 */
+	public array $source_menus;
+	/**
+	 * @a-type select
+	 * @multiple 1
+	 * @ui 1
+	 * @return_format value
+	 * @label Limit visibility only to roles
+	 * @instructions The Layout is shown only to users with the selected roles. Leave empty for no limits.
+	 * @var string[]
+	 */
+	public array $source_roles_with;
+	/**
+	 * @a-type select
+	 * @multiple 1
+	 * @ui 1
+	 * @return_format value
+	 * @label Hide only from roles
+	 * @instructions The Layout is hidden from users with the selected roles. Leave empty for no limits.
+	 * @var string[]
+	 */
+	public array $source_roles_without;
 
 	/**
 	 * @label With Gutenberg Block

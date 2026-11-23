@@ -46,7 +46,8 @@ abstract class Templated_Selection_Settings extends Cpt_Settings {
 	 */
 	public bool $has_template;
 	/**
-	 * @a-type av_slug_select
+	 * @a-type av_ajax_select
+	 * @source layouts
 	 * @allow_null 1
 	 * @label Layout for Results
 	 * @instructions Assigned Layout is used to display every post from the query results.

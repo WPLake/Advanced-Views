@@ -67,7 +67,8 @@ class Field_Settings extends Group {
 	 */
 	public string $image_size;
 	/**
-	 * @a-type av_slug_select
+	 * @a-type av_ajax_select
+	 * @source layouts
 	 * @allow_null 1
 	 * @label Object Layout
 	 * @instructions By default, an Object field is rendered in the Layout template as an HTML link to the selected object. <br><br> To display fields from within the selected object, assign a separate Layout with the target object fields. <br><br> Example: To display an excerpt from a Post Object, create a separate Layout with the Post Excerpt field and assign it here. <a target='_blank' href='https://docs.advanced-views.com/field-types/relational/relationship-field'>Read more</a>
