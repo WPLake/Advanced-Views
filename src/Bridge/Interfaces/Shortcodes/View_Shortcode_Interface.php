@@ -16,6 +16,7 @@ interface View_Shortcode_Interface extends Shortcode_Interface {
 	const OBJECT_MENU    = 'menu';
 
 	/**
+	 * @deprecated Use set_posts() or set_options_page() instead.
 	 * @param int|string $object_id Post ID or "options", "term", "comment", "menu" string
 	 *
 	 * @return static
@@ -23,26 +24,31 @@ interface View_Shortcode_Interface extends Shortcode_Interface {
 	public function set_object_id( $object_id ): self;
 
 	/**
+	 * @deprecated Use set_users() instead.
 	 * @return static
 	 */
 	public function set_user_id( int $user_id ): self;
 
 	/**
+	 * @deprecated Use set_terms() instead.
 	 * @return static
 	 */
 	public function set_term_id( int $term_id ): self;
 
 	/**
+	 * @deprecated Use set_comments() instead.
 	 * @return static
 	 */
 	public function set_comment_id( int $comment_id ): self;
 
 	/**
+	 * @deprecated Use set_menus() instead.
 	 * @return static
 	 */
 	public function set_menu_slug( string $menu_slug ): self;
 
 	/**
+	 * @deprecated Use set_posts() instead.
 	 * @return static
 	 */
 	public function set_post_slug( string $post_slug ): self;
