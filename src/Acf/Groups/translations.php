@@ -195,12 +195,10 @@ __("Add Sub Field", "acf-views");
 // Layout_Settings.php : labels
 
 __("Layout Name", "acf-views");
-__("Mount Points", "acf-views");
-__("Mount Points", "acf-views");
-__("Data", "acf-views");
+__("Item Settings", "acf-views");
 __("Item type", "acf-views");
 __("Item format", "acf-views");
-__("Assign Fields", "acf-views");
+__("Item Fields", "acf-views");
 __("Parent group (for Nested repeater or Flexible layout)", "acf-views");
 __("Parent field", "acf-views");
 __("Template", "acf-views");
@@ -211,9 +209,9 @@ __("Styles & Scripts", "acf-views");
 __("CSS Code", "acf-views");
 __("JavaScript code", "acf-views");
 __("Output", "acf-views");
+__("Editorial description", "acf-views");
 __("Register custom Gutenberg Block", "acf-views");
 __("Render template when it's empty", "acf-views");
-__("Editorial description", "acf-views");
 __("Developer", "acf-views");
 __("PHP Controller", "acf-views");
 __("Web Component Type", "acf-views");
@@ -223,7 +221,15 @@ __("CSS classes", "acf-views");
 __("Add classification classes to the markup", "acf-views");
 __("Do not skip unused wrappers", "acf-views");
 __("Use the Post ID as the Layout ID in the markup", "acf-views");
-__("Source", "acf-views");
+__("Permissions", "acf-views");
+__("Visiblity options", "acf-views");
+__("Limit visibility only to roles", "acf-views");
+__("Hide only from roles", "acf-views");
+__("Mount Points", "acf-views");
+__("Mount Options", "acf-views");
+__("Mount Points", "acf-views");
+__("Embed Options", "acf-views");
+__("Embedding options", "acf-views");
 __("Source type", "acf-views");
 __("Options page", "acf-views");
 __("Post Selections", "acf-views");
@@ -232,18 +238,15 @@ __("Users", "acf-views");
 __("Terms", "acf-views");
 __("Comment", "acf-views");
 __("Menus", "acf-views");
-__("Limit visibility only to roles", "acf-views");
-__("Hide only from roles", "acf-views");
 __("With Gutenberg Block", "acf-views");
 __("Use the Post ID in the Gutenberg block's name", "acf-views");
 
 // Layout_Settings.php : descriptions
 
 __("The internal name of the Layout, visible on the list screen.", "acf-views");
-__("'Mount' this item to a location that doesn't support shortcodes. Mounting uses 'the_content' theme hook. <a target=\"_blank\" href=\"https://docs.advanced-views.com/display-content/mount-points-pro\">Read more</a>", "acf-views");
-__("The type of the data object the Layout displays. Fields that don't match the type stay stored, but render empty.", "acf-views");
-__("'Single item' displays one object. 'Multiple items' displays a loop of the objects.", "acf-views");
-__("Assign fields to your Layout. <br> Tip: hover mouse on the field number column and drag to reorder.", "acf-views");
+__("The type of the data object the Layout displays.", "acf-views");
+__("'Single item' Layout displays one object, 'Multiple items' displays a set of the objects.", "acf-views");
+__("Assign item fields to your Layout. <br> Tip: hover mouse on the field number column and drag to reorder.", "acf-views");
 __("Choose a Parent group when setting up Nested repeater or Flexible layout.", "acf-views");
 __("If you're making an internal Layout for the <a target='_blank' href='https://docs.advanced-views.com/field-types/layout/group-field'>group</a>, <a target='_blank' href='https://docs.advanced-views.com/field-types/layout/repeater-field'>repeater</a> or <a target='_blank' href='https://docs.advanced-views.com/field-types/layout/flexible-field'>flexible</a> field, then fill out this field.", "acf-views");
 __("Output preview of the generated template, using the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>chosen template engine</a>. <br> Important! Publish or Update your Layout to see the latest markup.", "acf-views");
@@ -251,9 +254,9 @@ __("Write your own template with full control over the HTML markup. <br> Copy th
 __("Choose one of the <a target='_blank' href='https://docs.advanced-views.com/features/smart-templates'>supported template engines</a>, which will be used for this Layout.", "acf-views");
 __("Define your CSS style rules. <br> Rules defined here will be added within &lt;style&gt;&lt;/style&gt; tags ONLY to pages that have this View. <br><br> Press Ctrl (Cmd) + Alt + L to format the code; Ctrl + F to search/replace; Ctrl + Space for autocomplete. <br><br> Magic shortcuts are available: <br><br>  1. '#layout' as a unique instance selector, will be replaced with '.avf-layout--id--{x}' <br> 2. '#layout__' as a full element selector, so '#layout__element' will be replaced with '.avf-layout--id--{x} .avf-layout__element' <br> 3. '#this' as a short element selector, so '#this__element' will be replaced with '.avf-layout__element' <br> Note: all the shortcuts are compatible with the BEM name option.", "acf-views");
 __("Configure libraries or add custom code to your Layout. <br><br> By default, the Layout is a <a target='_blank' href='https://docs.advanced-views.com/layouts/code-fields/javascript-code'>web component</a>, so this code will be executed once for every instance, and 'this', that refers to the current instance, is available. <br><br> If the Web Component Type is set to none, the js code here is plain, and can be used for any goals, including <a target='_blank' href='https://docs.advanced-views.com/layouts/component-options/interactivity-api'>WP Interactivity API</a>. <br><br> The code snippet will be added within &lt;script type='module'&gt;&lt;/script&gt; tags ONLY to pages that have this View. <br><br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace).", "acf-views");
-__("If a block vendor is selected then a <a target='_blank' href='https://docs.advanced-views.com/layouts/features/custom-gutenberg-blocks'>custom Gutenberg block</a> for this Layout will be available. <br><br> Note: this option is separate from the built-in Gutenberg integration block.", "acf-views");
-__("By default, if all the selected fields are empty, the Twig template won't be rendered. <br> Enable this option if you have specific logic inside the template and you want to render it even when all the fields are empty.", "acf-views");
 __("Add a short description for your Views’ purpose. <br> Note : This description is only seen on the admin Advanced Views list.", "acf-views");
+__("If a block vendor is selected then a <a target='_blank' href='https://docs.advanced-views.com/layouts/features/custom-gutenberg-blocks'>custom Gutenberg block</a> for this Layout will be available. <br><br> Note: this option is separate from the built-in Gutenberg integration block.", "acf-views");
+__("By default, if all the selected fields are empty, the template won't be rendered. <br> Enable this option if you have specific logic inside the template and you want to render it even when all the fields are empty.", "acf-views");
 __("By customizing the PHP Controller instance you can add extra variables to the template and define the AJAX and REST API handlers. <a target='_blank' href='https://docs.advanced-views.com/layouts/code-fields/layout-controller'>Read more</a> <br> Press Ctrl (Cmd) + Alt + L to format the code. Press Ctrl + F to search (or replace).", "acf-views");
 __("By default, every Layout is a <a target='_blank' href='https://docs.advanced-views.com/layouts/code-fields/javascript-code'>web component</a>, which allows you to work easily with the element in the JS code field. <br><br> Set it to 'None' if you're going to use the <a target='_blank' href='https://docs.advanced-views.com/layouts/component-options/interactivity-api'>WP Interactivity API</a>.", "acf-views");
 __("Controls classes generation in the Default Template.", "acf-views");
@@ -262,23 +265,24 @@ __("Add a class name without a dot (e.g. “class-name”) or multiple classes w
 __("By default, the field name is added as a prefix to all inner classes. For example, the image within the 'avatar' field will have the '__avatar-image' class. <br> Enabling this setting adds the generic class as well, such as '__image'. This feature can be useful if you want to apply styles based on field types.", "acf-views");
 __("By default, empty wrappers in the markup are skipped to optimize the output. For example, the '__row' wrapper will be skipped if there is no field label. <br> Enable this feature if you need all the wrappers in the output.", "acf-views");
 __("Note: For backward compatibility purposes only. Enable this option if you have external CSS selectors that rely on outdated digital IDs.", "acf-views");
+__("The Layout is shown only to users with the selected roles. Leave empty for no limits.", "acf-views");
+__("The Layout is hidden from users with the selected roles. Leave empty for no limits.", "acf-views");
+__("'Mount' this item to a location that doesn't support shortcodes. Mounting uses 'the_content' theme hook. <a target=\"_blank\" href=\"https://docs.advanced-views.com/display-content/mount-points-pro\">Read more</a>", "acf-views");
 __("'Context-driven' takes the item(s) from the current context (the current page, user or loop item, the main query posts). 'Defined' sets the source explicitly in the shortcode.", "acf-views");
 __("The options page slug (or ACF post id), the fields are loaded from.", "acf-views");
 __("The posts of the selected Post Selections are displayed in the given order, without de-duplication. Can't be combined with the 'Posts' field.", "acf-views");
 __("Specific posts (Pages, CPT items, Products). Can't be combined with the 'Post Selections' field.", "acf-views");
 __("Specific users.", "acf-views");
-__("Specific taxonomy term IDs, delimited by a comma.", "acf-views");
-__("A specific comment ID.", "acf-views");
+__("Specific taxonomy term IDs. Separate multiple IDs with a comma, e.g. 12,34,56.", "acf-views");
+__("Specific comment IDs. Separate multiple IDs with a comma, e.g. 12,34,56.", "acf-views");
 __("Specific menus.", "acf-views");
-__("The Layout is shown only to users with the selected roles. Leave empty for no limits.", "acf-views");
-__("The Layout is hidden from users with the selected roles. Leave empty for no limits.", "acf-views");
 __("This field is deprecated.", "acf-views");
 __("Note: For backward compatibility purposes only.", "acf-views");
 
 // Layout_Settings.php : buttons
 
-__("Add Mount Point", "acf-views");
 __("Add Field", "acf-views");
+__("Add Mount Point", "acf-views");
 
 // Layout_Settings.php : choices
 

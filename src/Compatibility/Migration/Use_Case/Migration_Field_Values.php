@@ -40,6 +40,13 @@ final class Migration_Field_Values extends Migration_Base {
 			);
 	}
 
+	/**
+	 * The imports save the item themselves.
+	 */
+	public function migrate_cpt_settings( Cpt_Settings $cpt_settings ): void {
+		( $this->migrate_field_values )( $cpt_settings );
+	}
+
 	protected function migrate_field_values(): void {
 		foreach ( $this->cpt_settings_storage->get_all() as $cpt_settings ) {
 			$is_migrated = ( $this->migrate_field_values )( $cpt_settings );

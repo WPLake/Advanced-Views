@@ -129,15 +129,10 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 		$this->layout_meta_boxes->print_related_views_meta_box( $layout_settings );
 		$related_views_meta_box = (string) ob_get_clean();
 
-		ob_start();
-		$this->layout_meta_boxes->print_related_acf_cards_meta_box( $layout_settings );
-		$related_cards_meta_box = (string) ob_get_clean();
-
 		return array(
 			'#acf-views_shortcode .inside'      => $shortcodes,
 			'#acf-views_related_groups .inside' => $related_groups_meta_box,
 			'#acf-views_related_views .inside'  => $related_views_meta_box,
-			'#acf-views_related_cards .inside'  => $related_cards_meta_box,
 		);
 	}
 

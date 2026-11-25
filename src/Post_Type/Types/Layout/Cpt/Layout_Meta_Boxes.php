@@ -8,15 +8,12 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Post_Selection_Cpt;
-use Org\Wplake\Advanced_Views\Plugin\Cpt\Plugin_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Meta_Boxes;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
 use Org\Wplake\Advanced_Views\Template\Html\Html_Tag;
@@ -29,7 +26,6 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 	private Field_Provider_Cluster $provider_cluster;
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Layout_Cpt $layouts_cpt;
-	private Plugin_Cpt $selections_cpt;
 
 	public function __construct(
 		Postbox_Printer $postbox,
@@ -37,7 +33,6 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		Layout_Settings_Storage $layouts_settings_storage,
 		Field_Provider_Cluster $provider_cluster,
 		Layout_Cpt $public_cpt,
-		Selection_Cpt $plugin_cpt,
 		Html_Renderer $html_renderer
 	) {
 		parent::__construct( $postbox, $plugin, $html_renderer );
@@ -45,7 +40,6 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		$this->layouts_settings_storage = $layouts_settings_storage;
 		$this->provider_cluster         = $provider_cluster;
 		$this->layouts_cpt              = $public_cpt;
-		$this->selections_cpt           = $plugin_cpt;
 	}
 
 	protected function get_cpt_name(): string {
@@ -99,12 +93,6 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		bool $is_skip_not_found_message = false
 	): void {
 		$nodes = $this->related_views_nodes( $layout_settings, $is_skip_not_found_message );
-
-		$this->html_renderer->print_html( ...$nodes );
-	}
-
-	public function print_related_acf_cards_meta_box( Layout_Settings $layout_settings, bool $is_list_look = false ): void {
-		$nodes = $this->related_acf_cards_nodes( $layout_settings, $is_list_look );
 
 		$this->html_renderer->print_html( ...$nodes );
 	}
@@ -195,65 +183,6 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 		return $nodes;
 	}
 
-	/**
-	 * @return Html_Node[]
-	 */
-	public function related_acf_cards_nodes( Layout_Settings $layout_settings, bool $is_list_look = false ): array {
-		global $wpdb;
-
-		$query = $wpdb->prepare(
-			"SELECT * from {$wpdb->posts} WHERE post_type = %s AND post_status = 'publish'
-                      AND FIND_IN_SET(%s,post_content_filtered) > 0",
-			Hard_Post_Selection_Cpt::cpt_name(),
-			$layout_settings->get_unique_id()
-		);
-		// @phpcs:ignore
-		$related_cards = $wpdb->get_results( $query );
-
-		// direct $wpdb queries return strings for int columns, wrap into get_post to get right types.
-		/**
-		 * @var WP_Post[] $related_cards
-		 */
-		$related_cards = array_map(
-			fn( $related_card ) => get_post( $related_card->ID ),
-			$related_cards
-		);
-
-		$nodes = array();
-
-		if ( array() === $related_cards &&
-			false === $is_list_look ) {
-			$message = sprintf(
-			// translators: %s is the plural name of the CPT.
-				__( 'Not assigned to any %s.', 'acf-views' ),
-				$this->selections_cpt->labels()->plural_name()
-			);
-
-			$nodes[] = tag( 'p' )
-				->content(
-					$message
-				);
-		}
-
-		$last_item_index = count( $related_cards ) - 1;
-		$counter         = 0;
-
-		foreach ( $related_cards as $related_card ) {
-			$nodes[] = $this->link_with_js_hover_tag(
-				(string) get_edit_post_link( $related_card ),
-				get_the_title( $related_card )
-			);
-
-			if ( $counter !== $last_item_index ) {
-				$nodes[] = ', ';
-			}
-
-			++$counter;
-		}
-
-		return $nodes;
-	}
-
 	public function add_meta_boxes(): void {
 
 		add_meta_box(
@@ -290,25 +219,6 @@ class Layout_Meta_Boxes extends Cpt_Meta_Boxes {
 			),
 			'side',
 			'high'
-		);
-
-		add_meta_box(
-			'acf-views_related_cards',
-			sprintf(
-			// translators: %s - plural name of the CPT.
-				__( 'Used by %s', 'acf-views' ),
-				$this->selections_cpt->labels()->plural_name()
-			),
-			function ( WP_Post $wp_post ): void {
-				$view_data = $this->layouts_settings_storage->get( $wp_post->post_name );
-
-				$this->print_related_acf_cards_meta_box( $view_data );
-			},
-			array(
-				$this->get_cpt_name(),
-			),
-			'side',
-			'core'
 		);
 
 		add_meta_box(

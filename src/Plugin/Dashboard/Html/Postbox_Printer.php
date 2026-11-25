@@ -133,23 +133,6 @@ class Postbox_Printer {
 		$elementor_answer = $is_single ?
 			__( 'Embed with the AV Post Selection widget.', 'acf-views' ) :
 			__( 'Embed with the AV Layout widget.', 'acf-views' );
-		$roles_hint       = $is_single ?
-			__( 'See how to limit visibility by roles', 'acf-views' ) :
-			__( 'See how to load from other sources or limit visibility by roles', 'acf-views' );
-
-		$here_label     = __( 'here', 'acf-views' );
-		$roles_hint_gap = sprintf( '%s ', $roles_hint );
-		$docs_link      = Html_Printer::link_tags(
-			'https://docs.advanced-views.com/layouts/embedding-shortcode',
-			$here_label
-		);
-
-		$roles_link = tag( 'span' )
-			->content(
-				$roles_hint_gap,
-				$docs_link,
-				'.'
-			);
 
 		$gutenberg_question = __( 'Using Gutenberg?', 'acf-views' );
 		$elementor_question = __( 'Using Elementor?', 'acf-views' );
@@ -158,7 +141,6 @@ class Postbox_Printer {
 			$copy_button,
 			self::embed_hint_tags( $gutenberg_question, $gutenberg_answer ),
 			self::embed_hint_tags( $elementor_question, $elementor_answer ),
-			$roles_link,
 		);
 	}
 

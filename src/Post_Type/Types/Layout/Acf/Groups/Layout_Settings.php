@@ -368,14 +368,14 @@ class Layout_Settings extends Cpt_Settings {
 	public array $source_users;
 	/**
 	 * @label Terms
-	 * @instructions Specific taxonomy term IDs, delimited by a comma.
+	 * @instructions Specific taxonomy term IDs. Separate multiple IDs with a comma, e.g. 12,34,56.
 	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "term"}]]
 	 * @a-order 2
 	 */
 	public string $source_terms;
 	/**
 	 * @label Comment
-	 * @instructions A specific comment ID.
+	 * @instructions Specific comment IDs. Separate multiple IDs with a comma, e.g. 12,34,56.
 	 * @conditional_logic [[{"field": "local_acf_views_view__source-type","operator": "==","value": "defined"}, {"field": "local_acf_views_view__item-type","operator": "==","value": "comment"}]]
 	 * @a-order 2
 	 */
