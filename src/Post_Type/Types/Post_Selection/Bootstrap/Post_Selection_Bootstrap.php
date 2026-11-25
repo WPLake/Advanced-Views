@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Plugin\Core\Container\Instance_Container;
 use Org\Wplake\Advanced_Views\Plugin\Core\Module\Bootstrap_Base;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Post_Query_Builder;
+use Org\Wplake\Advanced_Views\Post_Query\Provider\Post_Provider;
 use Org\Wplake\Advanced_Views\Post_Query\Selection\Selection_Query_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Assets_Reducer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Gutenberg_Editor_Settings;
@@ -22,11 +23,13 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Selection_Save_
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Table\Selection_Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Integration\Post_Selection_Shortcode;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Provider\Selection_Post_Provider;
 
 class Post_Selection_Bootstrap extends Bootstrap_Base {
 	public static function get_type_definitions(): array {
 		return array(
 			Post_Query_Builder::class => Selection_Query_Builder::class,
+			Post_Provider::class      => Selection_Post_Provider::class,
 		);
 	}
 

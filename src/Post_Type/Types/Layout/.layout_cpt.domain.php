@@ -2,6 +2,7 @@
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout;
 
+use Org\Wplake\Advanced_Views\Post_Query\Provider\post_query_provider_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Core\post_type_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\cpt_editor_integration_domain;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\post_selection_cpt_domain;
@@ -18,6 +19,7 @@ class layout_cpt_domain extends post_type_domain {
 		template_token_domain::class,
 		cpt_editor_integration_domain::class,
 		post_selection_cpt_domain::class,
+		post_query_provider_domain::class,
 	];
 	const WHITELIST_NAMESPACES = [
 		...parent::WHITELIST_NAMESPACES,
