@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Setting
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Elementor\Layout_Elementor_Assets;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Elementor\Layout_Elementor_Widget;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Gutenberg\Layout_Gutenberg_Block;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Layout_Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 

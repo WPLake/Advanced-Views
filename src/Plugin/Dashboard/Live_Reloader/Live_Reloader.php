@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Layout_Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Integration\Post_Selection_Shortcode;
 use WP_REST_Request;

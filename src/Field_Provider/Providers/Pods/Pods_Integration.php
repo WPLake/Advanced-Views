@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Layout_Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;

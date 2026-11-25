@@ -7,12 +7,13 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Arguments\Shortcode_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
 
 /**
- * Prints a Layout (a single or a multiple one) for the already parsed shortcode args, guarding against recursion.
+ * Prints a Layout (a single or a multiple one) for the already parsed shortcode arguments, guarding against recursion.
  */
-final class Layout_Printer {
+final class Layout_Renderer {
 	private Layout_Factory $layout_factory;
 	/**
 	 * Used to avoid recursion with post_object/relationship fields
@@ -30,14 +31,14 @@ final class Layout_Printer {
 	/**
 	 * @return string|null Null if nothing should be displayed (a recursion).
 	 */
-	public function render( Layout_Settings $layout_settings, Shortcode_Args $args ): ?string {
+	public function render( Layout_Settings $layout_settings, Shortcode_Arguments $arguments ): ?string {
 		$unique_id = $layout_settings->get_unique_id();
 
 		if ( $layout_settings->is_multiple() ) {
-			return $this->render_html( $unique_id, $args );
+			return $this->render_html( $unique_id, $arguments );
 		}
 
-		$source_id = $args->get_source()->get_id();
+		$source_id = $arguments->source->get_id();
 
 		// recursionKey must consist from both. It's allowed to use the same View for a post_object field, but with another id.
 		$recursion_key    = sprintf( '%s-%s', $unique_id, $source_id );
@@ -50,7 +51,7 @@ final class Layout_Printer {
 		if ( $is_first_display ) {
 			$this->displaying_views[ $recursion_key ] = true;
 
-			$html = $this->render_html( $unique_id, $args );
+			$html = $this->render_html( $unique_id, $arguments );
 
 			unset( $this->displaying_views[ $recursion_key ] );
 
@@ -60,16 +61,16 @@ final class Layout_Printer {
 		return null;
 	}
 
-	protected function render_html( string $unique_id, Shortcode_Args $args ): string {
+	protected function render_html( string $unique_id, Shortcode_Arguments $arguments ): string {
 		ob_start();
 		$this->layout_factory->make_and_print_html(
-			$args->get_source(),
+			$arguments->source,
 			$unique_id,
-			$args->get_current_page_id(),
-			$args->get_classes(),
-			$args->get_custom_arguments(),
-			$args->get_local_data(),
-			$args->get_item_ids()
+			$arguments->current_page_id,
+			$arguments->classes,
+			$arguments->custom_arguments,
+			$arguments->local_data,
+			$arguments->item_ids
 		);
 
 		return (string) ob_get_clean();

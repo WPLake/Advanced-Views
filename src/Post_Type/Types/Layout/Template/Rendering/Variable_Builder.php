@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Attributes\Source_Args_Normalizer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Arguments\Attribute_Reader;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Variables\Custom\Custom_Variable_Merger;
@@ -180,7 +180,7 @@ class Variable_Builder {
 	 */
 	protected function get_items_variables( Layout_Instance $layout, array $item_ids, callable $load_fields ): array {
 		$item_type = $layout->get_view_data()->item_type;
-		$items_key = Source_Args_Normalizer::ITEM_ARGS[ $item_type ] ?? '';
+		$items_key = Attribute_Reader::ITEM_ARGUMENTS[ $item_type ] ?? '';
 
 		return array(
 			$items_key    => array(

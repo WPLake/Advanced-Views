@@ -2,18 +2,18 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Source;
+namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Sources;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Attributes\Source_Args_Normalizer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Arguments\Attribute_Reader;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Query\Provider\Post_Provider;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use WP_Term;
 
 /**
- * Resolves the item IDs of a Multiple-format Layout from the shortcode args and the context.
+ * Resolves the item IDs of a Multiple-format Layout from the shortcode arguments and the context.
  */
 final class Item_Ids_Resolver {
 	private Post_Provider $post_provider;
@@ -28,8 +28,8 @@ final class Item_Ids_Resolver {
 	 * @return string|null Null if the attrs are valid.
 	 */
 	public function get_error( string $item_type, array $attrs ): ?string {
-		$posts      = Source_Args_Normalizer::parse_list( $attrs['posts'] ?? null );
-		$selections = Source_Args_Normalizer::parse_list( $attrs['post-selections'] ?? null );
+		$posts      = Attribute_Reader::parse_list( $attrs['posts'] ?? null );
+		$selections = Attribute_Reader::parse_list( $attrs['post-selections'] ?? null );
 
 		$has_posts      = count( $posts ) > 0;
 		$has_selections = count( $selections ) > 0;
@@ -51,13 +51,13 @@ final class Item_Ids_Resolver {
 		}
 
 		if ( Layout_Settings::ITEM_TYPE_MENU === $item_type ) {
-			$menu_slugs = Source_Args_Normalizer::parse_list( $attrs['menus'] ?? null );
+			$menu_slugs = Attribute_Reader::parse_list( $attrs['menus'] ?? null );
 
 			return self::resolve_menus( $menu_slugs );
 		}
 
-		$arg_name = Source_Args_Normalizer::ITEM_ARGS[ $item_type ] ?? '';
-		$ids      = Source_Args_Normalizer::parse_list( $attrs[ $arg_name ] ?? null );
+		$arg_name = Attribute_Reader::ITEM_ARGUMENTS[ $item_type ] ?? '';
+		$ids      = Attribute_Reader::parse_list( $attrs[ $arg_name ] ?? null );
 
 		// users, terms and comments have no context list in this release.
 		return self::to_ids( $ids );
@@ -69,8 +69,8 @@ final class Item_Ids_Resolver {
 	 * @return int[]
 	 */
 	protected function resolve_posts( array $attrs, Query_Context $context ): array {
-		$posts      = Source_Args_Normalizer::parse_list( $attrs['posts'] ?? null );
-		$selections = Source_Args_Normalizer::parse_list( $attrs['post-selections'] ?? null );
+		$posts      = Attribute_Reader::parse_list( $attrs['posts'] ?? null );
+		$selections = Attribute_Reader::parse_list( $attrs['post-selections'] ?? null );
 
 		$has_posts      = count( $posts ) > 0;
 		$has_selections = count( $selections ) > 0;

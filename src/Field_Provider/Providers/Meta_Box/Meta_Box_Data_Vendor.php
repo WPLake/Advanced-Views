@@ -32,7 +32,7 @@ use Org\Wplake\Advanced_Views\Field_Provider\Providers\Meta_Box\Fields\Mb_Taxono
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Layout_Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use WP_Post;

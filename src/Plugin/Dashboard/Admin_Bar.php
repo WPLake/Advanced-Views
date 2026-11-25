@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Plugin\Cpt\Hard\Hard_Layout_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Layout_Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Integration\Post_Selection_Shortcode;
 use WP_Admin_Bar;
 
