@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode_Handler;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
@@ -44,7 +44,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	private Layout_Save_Actions $layouts_cpt_save_actions;
 	private Layout_Factory $layout_factory;
 	private Field_Provider $data_vendor;
-	private Layout_Shortcode $layout_shortcode;
+	private Layout_Shortcode_Handler $layout_shortcode;
 	private Layout_Cpt $layouts_cpt;
 	protected Html_Renderer $html_renderer;
 
@@ -55,7 +55,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		Layout_Save_Actions $layouts_cpt_save_actions,
 		Layout_Factory $layout_factory,
 		Field_Provider $data_vendor,
-		Layout_Shortcode $layout_shortcode,
+		Layout_Shortcode_Handler $layout_shortcode,
 		Cpt_Theme_Settings $settings,
 		Layout_Cpt $layouts_cpt,
 		Html_Renderer $html_renderer

@@ -9,14 +9,14 @@ defined( 'ABSPATH' ) || exit;
 use Org\Wplake\Advanced_Views\Bridge\Advanced_Views;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode_Handler;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Integration\Post_Selection_Shortcode;
 
 final class Shortcode_Renderers implements Actor {
-	private Layout_Shortcode $layout_shortcode;
+	private Layout_Shortcode_Handler $layout_shortcode;
 	private Post_Selection_Shortcode $selection_shortcode;
 
-	public function __construct( Layout_Shortcode $layout_shortcode, Post_Selection_Shortcode $selection_shortcode ) {
+	public function __construct( Layout_Shortcode_Handler $layout_shortcode, Post_Selection_Shortcode $selection_shortcode ) {
 		$this->layout_shortcode    = $layout_shortcode;
 		$this->selection_shortcode = $selection_shortcode;
 	}

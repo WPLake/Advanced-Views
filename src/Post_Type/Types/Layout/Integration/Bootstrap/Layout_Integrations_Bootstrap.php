@@ -13,10 +13,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Elementor\Cpt_Widget_
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Elementor\Layout_Elementor_Assets;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Gutenberg\Layout_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Gutenberg\Shortcode_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Ajax_Handler;
 
 class Layout_Integrations_Bootstrap extends Bootstrap_Base {
 	public static function get_actor_classes(): array {
-		return array( Shortcode_Gutenberg_Block::class );
+		return array(
+			Shortcode_Gutenberg_Block::class,
+			Layout_Ajax_Handler::class,
+		);
 	}
 
 	public static function get_actor_factories( Instance_Container $container ): array {

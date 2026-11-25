@@ -17,6 +17,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Source_Args_Normalizer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Field_Context\Field_Context_Loader;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Field_Value_Resolver;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
@@ -24,6 +25,7 @@ use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_R
 use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 
 class Layout extends Instance {
 	private Layout_Settings $layout_settings;
@@ -42,6 +44,10 @@ class Layout extends Instance {
 	 * @var array<string|int,mixed>|null
 	 */
 	private ?array $local_data;
+	/**
+	 * @var int[]
+	 */
+	private array $item_ids;
 
 	public function __construct(
 		Field_Provider_Cluster $provider_cluster,
@@ -64,6 +70,444 @@ class Layout extends Instance {
 		$this->template_renderer_storage = $template_renderer_storage;
 		$this->field_values              = array();
 		$this->local_data                = null;
+		$this->item_ids                  = array();
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	public function get_ajax_response( string $php_code = '' ): array {
+		$php_variables = $this->get_view_data()->php_variables;
+
+		return parent::get_ajax_response( $php_variables );
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function get_field_value(
+		Field_Settings $field_settings,
+		Field_Meta $field_meta,
+		?Item_Settings $item_settings = null,
+		bool $is_formatted = false
+	) {
+		return $this->provider_cluster->get_field_value(
+			$field_settings,
+			$field_meta,
+			$this->source,
+			$item_settings,
+			$is_formatted,
+			$this->local_data
+		);
+	}
+
+	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
+		return $this->provider_cluster->convert_string_to_date_time( $field_meta, $value );
+	}
+
+	public function get_source(): Source {
+		return $this->source;
+	}
+
+	/**
+	 * @param array<string,mixed> $custom_arguments
+	 */
+	public function insert_fields_and_print_html(
+		array $custom_arguments = array()
+	): bool {
+		$template = $this->get_template();
+
+		$twig_variables = $this->get_template_variables( false, $custom_arguments );
+
+		ob_start();
+		$is_rendered = $this->render_template_and_print_html( $template, $twig_variables );
+		$html        = (string) ob_get_clean();
+
+		// shortcode support (necessary for the relationship field with the Field Layout option and others).
+		echo do_shortcode( $html );
+
+		return $is_rendered;
+	}
+
+	public function get_view_data(): Layout_Settings {
+		return $this->layout_settings;
+	}
+
+	/**
+	 * @param array<string|int,mixed>|null $local_data
+	 */
+	public function set_local_data( ?array $local_data ): void {
+		$this->local_data = $local_data;
+	}
+
+	/**
+	 * @param int[] $item_ids Used only by the Multiple format
+	 */
+	public function set_item_ids( array $item_ids ): void {
+		$this->item_ids = $item_ids;
+	}
+
+	public function get_rest_api_response( WP_REST_Request $wprest_request, string $php_code = '' ): array {
+		$php_variables = $this->get_view_data()->php_variables;
+
+		return parent::get_rest_api_response( $wprest_request, $php_variables );
+	}
+
+	/**
+	 * @param mixed $field_value
+	 *
+	 * @return array<string, mixed>
+	 */
+	protected function get_template_args_for_variable(
+		Item_Settings $item_settings,
+		Field_Meta $field_meta,
+		Source $source,
+		$field_value,
+		bool $is_for_validation
+	): array {
+		$field_context = $this->field_context_loader->load(
+			$this->layout_settings,
+			$item_settings,
+			$item_settings->field,
+			$field_meta
+		);
+		$twig_args     = null !== $field_context ?
+			$this->field_value_resolver->resolve_value(
+				$field_context,
+				$this,
+				$source,
+				$field_value,
+				$is_for_validation
+			) :
+			array();
+
+		$field_id   = $item_settings->field->get_template_field_id();
+		$label_args = array(
+			'label' => $item_settings->field->get_label_translation(),
+		);
+		$field_args = array_merge( $twig_args, $label_args );
+
+		return array(
+			$field_id => $field_args,
+		);
+	}
+
+	/**
+	 * @param array<string,mixed> $variables
+	 */
+	protected function render_template_and_print_html(
+		string $template,
+		array $variables,
+		bool $is_for_validation = false
+	): bool {
+		$is_empty_allowed = $this->layout_settings->allows_empty_rendering() || $is_for_validation;
+
+		$is_empty_render = ! $is_empty_allowed && $this->is_empty( $variables );
+
+		if ( $is_empty_render ) {
+			// do not render, as Twig saves template in cache
+			// so if it's first, then it'll use the empty one for all next calls of this view.
+			return false;
+		}
+
+		$template_engine = $this->template_renderer_storage
+								->resolve_renderer( $this->layout_settings->template_engine );
+
+		if ( null !== $template_engine ) {
+			$template_engine->print(
+				$this->layout_settings->get_unique_id(),
+				$template,
+				$variables,
+				$is_for_validation
+			);
+		} else {
+			$this->print_template_engine_is_not_loaded_message();
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param array<string,mixed> $variables
+	 */
+	protected function is_empty( array $variables ): bool {
+		// the Multiple format has no field variables at this level, it's empty when there are no items.
+		if ( $this->layout_settings->is_multiple() ) {
+			return 0 === count( $this->item_ids );
+		}
+
+		$system_names = $this->get_system_variable_names();
+
+		foreach ( $variables as $twig_variable_name => $twig_variable_value ) {
+			$is_empty_value = is_array( $twig_variable_value ) &&
+								key_exists( 'value', $twig_variable_value ) &&
+								in_array( $twig_variable_value['value'], array( '', array(), null ), true );
+
+			// ignore the system variables.
+			$is_ignored = in_array( $twig_variable_value, array( '', array(), null ), true ) ||
+							in_array( $twig_variable_name, $system_names, true ) ||
+							$is_empty_value;
+
+			if ( $is_ignored ) {
+				continue;
+			}
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param mixed $controller
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected function get_ajax_response_args( $controller ): array {
+		if ( $controller instanceof Request_Controller ) {
+			$controller->set_container( $this->get_container() );
+
+			return $controller->get_ajax_response();
+		}
+
+		return array();
+	}
+
+	/**
+	 * @param mixed $controller
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected function get_rest_api_response_args( WP_REST_Request $wprest_request, $controller ): array {
+		if ( $controller instanceof Request_Controller ) {
+			$controller->set_container( $this->get_container() );
+
+			return $controller->get_rest_api_response( $wprest_request );
+		}
+
+		return array();
+	}
+
+	/**
+	 * @param array<string,mixed> $custom_arguments
+	 *
+	 * @return  array<string,mixed>
+	 */
+	protected function get_template_variables(
+		bool $is_for_validation = false,
+		array $custom_arguments = array()
+	): array {
+		$template_variables = $this->get_default_template_variables( $is_for_validation );
+
+		$short_unique_view_id = $this->get_view_data()->get_unique_id( true );
+		$object_id            = $this->is_single_item( $is_for_validation ) ?
+			$this->get_source()->get_id() :
+			'0';
+
+		// the static function is used to avoid any chance of changing the context (this).
+		$php_variables = self::get_custom_template_variables(
+			$this->get_view_data()->php_variables,
+			$short_unique_view_id,
+			$object_id,
+			$template_variables,
+			$this->get_field_values(),
+			$custom_arguments,
+			$is_for_validation,
+			$this->get_container()
+		);
+
+		$custom_variables = $this->apply_custom_variables_filter( $php_variables, $object_id, $is_for_validation );
+
+		foreach ( $custom_variables as $name => $value ) {
+			$name = str_replace( '-', '_', $name );
+			$name = str_replace( ' ', '_', $name );
+
+			$template_variables[ $name ] = $value;
+		}
+
+		return $template_variables;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	protected function get_system_variable_names(): array {
+		return array(
+			'_view', // for back compatibility.
+			Hard_Layout_Cpt::variable_name(),
+		);
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	protected function get_default_template_variables( bool $is_for_validation = false ): array {
+		$is_multiple = $this->layout_settings->is_multiple();
+		$object_id   = $this->is_single_item( $is_for_validation ) ?
+			strval( $this->source->get_id() ) :
+			'0';
+
+		$this->field_values = array();
+		$twig_variables     = array();
+
+		// internal variables.
+		$internal_variables = array(
+			'classes'   => $this->get_classes(),
+			'id'        => $this->layout_settings->get_markup_id(),
+			// replace for others: term_6 to term-6.
+			'object_id' => str_replace( '_', '-', $object_id ),
+		);
+
+		if ( $is_multiple ) {
+			$items_variables    = $this->get_items_variables( $is_for_validation );
+			$internal_variables = array_merge( $internal_variables, $items_variables );
+		}
+
+		foreach ( $this->get_system_variable_names() as $name ) {
+			$twig_variables[ $name ] = $internal_variables;
+		}
+
+		// in the Multiple format the fields are loaded per item, via the 'load_fields' closure.
+		if ( $is_multiple ) {
+			return $twig_variables;
+		}
+
+		$fields_variables = $this->get_fields_variables( $is_for_validation );
+
+		return array_merge( $twig_variables, $fields_variables );
+	}
+
+	protected function is_single_item( bool $is_for_validation ): bool {
+		$is_multiple = $this->layout_settings->is_multiple();
+
+		return ! $is_for_validation && ! $is_multiple;
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	protected function get_items_variables( bool $is_for_validation ): array {
+		$items_key = Source_Args_Normalizer::ITEM_ARGS[ $this->layout_settings->item_type ] ?? '';
+		$item_ids  = $is_for_validation ?
+			array( 0 ) :
+			$this->item_ids;
+
+		return array(
+			$items_key    => array(
+				'ids' => $item_ids,
+			),
+			'load_fields' => fn( $item_id ): array => $this->load_item_fields( int( $item_id ), $is_for_validation ),
+		);
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	protected function load_item_fields( int $item_id, bool $is_for_validation ): array {
+		// a clone, so the item's field values and source don't affect the Layout itself.
+		$item_layout         = clone $this;
+		$item_layout->source = Source::make_item( $this->layout_settings->item_type, $item_id );
+
+		return $item_layout->get_fields_variables( $is_for_validation );
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	protected function get_fields_variables( bool $is_for_validation ): array {
+		$twig_variables = array();
+
+		foreach ( $this->layout_settings->items as $item ) {
+			$field_meta  = $item->field->get_field_meta();
+			$field_value = $this->resolve_field_value( $item, $field_meta, $is_for_validation );
+
+			$this->field_values[ $item->field->id ] = $field_value;
+
+			$template_args  = $this->get_template_args_for_variable(
+				$item,
+				$field_meta,
+				$this->source,
+				$field_value,
+				$is_for_validation
+			);
+			$twig_variables = array_merge( $twig_variables, $template_args );
+		}
+
+		return $twig_variables;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	protected function resolve_field_value( Item_Settings $item, Field_Meta $field_meta, bool $is_for_validation ) {
+		$is_native = $field_meta->is_native_type();
+
+		$field_value = false === $is_for_validation ?
+			$this->get_field_value( $item->field, $field_meta, $item ) :
+			null;
+
+		$is_empty_value = in_array( $field_value, array( '', array(), null ), true );
+
+		// 1. default value from our plugin. Note: custom field types don't support default values
+		if ( $is_empty_value && $is_native ) {
+			$field_value = $item->field->default_value;
+		}
+
+		$is_empty_value = in_array( $field_value, array( '', array(), null ), true );
+
+		// 2. default value from ACF. Note: custom field types don't support default values
+		if ( $is_empty_value && $is_native ) {
+			$field_value = $field_meta->get_default_value();
+		}
+
+		return $field_value;
+	}
+
+	/**
+	 * @param array<string,mixed> $php_variables
+	 * @param mixed $object_id
+	 *
+	 * @return mixed[]
+	 */
+	protected function apply_custom_variables_filter(
+		array $php_variables,
+		$object_id,
+		bool $is_for_validation
+	): array {
+		$short_unique_view_id = $this->get_view_data()->get_unique_id( true );
+		$field_values         = $this->get_field_values();
+
+		$custom_variables = Plugin::apply_filters(
+			array(
+				'advanced_views/layout/custom_variables',
+				'acf_views/view/custom_variables',
+			),
+			$php_variables,
+			$short_unique_view_id,
+			$object_id,
+			$field_values,
+			$is_for_validation
+		);
+		$custom_variables = Plugin::apply_filters(
+			array(
+				sprintf( 'advanced_views/layout/custom_variables/layout_id=%s', $short_unique_view_id ),
+				sprintf( 'acf_views/view/custom_variables/view_id=%s', $short_unique_view_id ),
+			),
+			$custom_variables,
+			$short_unique_view_id,
+			$object_id,
+			$field_values,
+			$is_for_validation
+		);
+
+		return arr( $custom_variables );
+	}
+
+	/**
+	 * @return  array<string, mixed>
+	 */
+	protected function get_field_values(): array {
+		return $this->field_values;
 	}
 
 	/**
@@ -149,352 +593,5 @@ class Layout extends Instance {
 		}
 
 		return array();
-	}
-
-	/**
-	 * @return array<string,mixed>
-	 */
-	public function get_ajax_response( string $php_code = '' ): array {
-		return parent::get_ajax_response( $this->get_view_data()->php_variables );
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function get_field_value(
-		Field_Settings $field_settings,
-		Field_Meta $field_meta,
-		?Item_Settings $item_settings = null,
-		bool $is_formatted = false
-	) {
-		return $this->provider_cluster->get_field_value(
-			$field_settings,
-			$field_meta,
-			$this->source,
-			$item_settings,
-			$is_formatted,
-			$this->local_data
-		);
-	}
-
-	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
-		return $this->provider_cluster->convert_string_to_date_time( $field_meta, $value );
-	}
-
-	public function get_source(): Source {
-		return $this->source;
-	}
-
-	/**
-	 * @param array<string,mixed> $custom_arguments
-	 */
-	public function insert_fields_and_print_html(
-		array $custom_arguments = array()
-	): bool {
-		$template = $this->get_template();
-
-		$twig_variables = $this->get_template_variables( false, $custom_arguments );
-
-		ob_start();
-		$is_rendered = $this->render_template_and_print_html( $template, $twig_variables );
-		$html        = (string) ob_get_clean();
-
-		// shortcode support (necessary for the relationship field with the Field Layout option and others).
-		echo do_shortcode( $html );
-
-		return $is_rendered;
-	}
-
-	public function get_view_data(): Layout_Settings {
-		return $this->layout_settings;
-	}
-
-	/**
-	 * @param array<string|int,mixed>|null $local_data
-	 */
-	public function set_local_data( ?array $local_data ): void {
-		$this->local_data = $local_data;
-	}
-
-	/**
-	 * @param mixed $field_value
-	 *
-	 * @return array<string, mixed>
-	 */
-	protected function get_template_args_for_variable(
-		Item_Settings $item_settings,
-		Field_Meta $field_meta,
-		Source $source,
-		$field_value,
-		bool $is_for_validation
-	): array {
-		$field_context = $this->field_context_loader->load(
-			$this->layout_settings,
-			$item_settings,
-			$item_settings->field,
-			$field_meta
-		);
-		$twig_args     = null !== $field_context ?
-			$this->field_value_resolver->resolve_value(
-				$field_context,
-				$this,
-				$source,
-				$field_value,
-				$is_for_validation
-			) :
-			array();
-
-		return array(
-			$item_settings->field->get_template_field_id() => array_merge(
-				$twig_args,
-				array(
-					'label' => $item_settings->field->get_label_translation(),
-				)
-			),
-		);
-	}
-
-	/**
-	 * @param array<string,mixed> $variables
-	 */
-	protected function render_template_and_print_html(
-		string $template,
-		array $variables,
-		bool $is_for_validation = false
-	): bool {
-		if ( ! $this->layout_settings->allows_empty_rendering() &&
-			! $is_for_validation ) {
-			$is_empty = true;
-
-			foreach ( $variables as $twig_variable_name => $twig_variable_value ) {
-				$is_empty_value = is_array( $twig_variable_value ) &&
-									key_exists( 'value', $twig_variable_value ) &&
-									in_array( $twig_variable_value['value'], array( '', array(), null ), true );
-
-				// ignore the system variables.
-				if ( in_array( $twig_variable_value, array( '', array(), null ), true ) ||
-					in_array( $twig_variable_name, $this->get_system_variable_names(), true ) ||
-					$is_empty_value ) {
-					continue;
-				}
-
-				$is_empty = false;
-				break;
-			}
-
-			if ( $is_empty ) {
-				// do not render, as Twig saves template in cache
-				// so if it's first, then it'll use the empty one for all next calls of this view.
-				return false;
-			}
-		}
-
-		$template_engine = $this->template_renderer_storage
-								->resolve_renderer( $this->layout_settings->template_engine );
-
-		if ( null !== $template_engine ) {
-			$template_engine->print(
-				$this->layout_settings->get_unique_id(),
-				$template,
-				$variables,
-				$is_for_validation
-			);
-		} else {
-			$this->print_template_engine_is_not_loaded_message();
-		}
-
-		return true;
-	}
-
-	/**
-	 * @param mixed $controller
-	 *
-	 * @return array<string,mixed>
-	 */
-	protected function get_ajax_response_args( $controller ): array {
-		if ( $controller instanceof Request_Controller ) {
-			$controller->set_container( $this->get_container() );
-
-			return $controller->get_ajax_response();
-		}
-
-		return array();
-	}
-
-	/**
-	 * @param mixed $controller
-	 *
-	 * @return array<string,mixed>
-	 */
-	protected function get_rest_api_response_args( WP_REST_Request $wprest_request, $controller ): array {
-		if ( $controller instanceof Request_Controller ) {
-			$controller->set_container( $this->get_container() );
-
-			return $controller->get_rest_api_response( $wprest_request );
-		}
-
-		return array();
-	}
-
-	public function get_rest_api_response( WP_REST_Request $wprest_request, string $php_code = '' ): array {
-		return parent::get_rest_api_response( $wprest_request, $this->get_view_data()->php_variables );
-	}
-
-	/**
-	 * @param array<string,mixed> $custom_arguments
-	 *
-	 * @return  array<string,mixed>
-	 */
-	protected function get_template_variables(
-		bool $is_for_validation = false,
-		array $custom_arguments = array()
-	): array {
-		$template_variables = $this->get_default_template_variables( $is_for_validation );
-
-		$short_unique_view_id = $this->get_view_data()->get_unique_id( true );
-		$object_id            = ! $is_for_validation ?
-			$this->get_source()->get_id() :
-			'0';
-
-		// the static function is used to avoid any chance of changing the context (this).
-		$php_variables = self::get_custom_template_variables(
-			$this->get_view_data()->php_variables,
-			$short_unique_view_id,
-			$object_id,
-			$template_variables,
-			$this->get_field_values(),
-			$custom_arguments,
-			$is_for_validation,
-			$this->get_container()
-		);
-
-		$custom_variables = $this->apply_custom_variables_filter( $php_variables, $object_id, $is_for_validation );
-
-		foreach ( $custom_variables as $name => $value ) {
-			$name = str_replace( '-', '_', $name );
-			$name = str_replace( ' ', '_', $name );
-
-			$template_variables[ $name ] = $value;
-		}
-
-		return $template_variables;
-	}
-
-	/**
-	 * @return string[]
-	 */
-	protected function get_system_variable_names(): array {
-		return array(
-			'_view', // for back compatibility.
-			Hard_Layout_Cpt::variable_name(),
-		);
-	}
-
-	/**
-	 * @return array<string,mixed>
-	 */
-	protected function get_default_template_variables( bool $is_for_validation = false ): array {
-		$object_id = ! $is_for_validation ?
-			strval( $this->source->get_id() ) :
-			'0';
-
-		$this->field_values = array();
-		$twig_variables     = array();
-
-		// internal variables.
-		$internal_variables = array(
-			'classes'   => $this->get_classes(),
-			'id'        => $this->layout_settings->get_markup_id(),
-			// replace for others: term_6 to term-6.
-			'object_id' => str_replace( '_', '-', $object_id ),
-		);
-		foreach ( $this->get_system_variable_names() as $name ) {
-			$twig_variables[ $name ] = $internal_variables;
-		}
-
-		foreach ( $this->layout_settings->items as $item ) {
-			$field_meta = $item->field->get_field_meta();
-
-			$field_value = false === $is_for_validation ?
-				$this->get_field_value( $item->field, $field_meta, $item ) :
-				null;
-
-			$is_empty_value = in_array( $field_value, array( '', array(), null ), true );
-
-			// 1. default value from our plugin. Note: custom field types don't support default values
-			if ( $is_empty_value &&
-				$field_meta->is_native_type() ) {
-				$field_value = $item->field->default_value;
-			}
-
-			$is_empty_value = in_array( $field_value, array( '', array(), null ), true );
-
-			// 2. default value from ACF. Note: custom field types don't support default values
-			if ( $is_empty_value &&
-				$field_meta->is_native_type() ) {
-				$field_value = $field_meta->get_default_value();
-			}
-
-			$this->field_values[ $item->field->id ] = $field_value;
-
-			$twig_variables = array_merge(
-				$twig_variables,
-				$this->get_template_args_for_variable(
-					$item,
-					$field_meta,
-					$this->source,
-					$field_value,
-					$is_for_validation
-				)
-			);
-		}
-
-		return $twig_variables;
-	}
-
-	/**
-	 * @param array<string,mixed> $php_variables
-	 * @param mixed $object_id
-	 *
-	 * @return mixed[]
-	 */
-	protected function apply_custom_variables_filter(
-		array $php_variables,
-		$object_id,
-		bool $is_for_validation
-	): array {
-		$short_unique_view_id = $this->get_view_data()->get_unique_id( true );
-
-		$custom_variables = Plugin::apply_filters(
-			array(
-				'advanced_views/layout/custom_variables',
-				'acf_views/view/custom_variables',
-			),
-			$php_variables,
-			$short_unique_view_id,
-			$object_id,
-			$this->get_field_values(),
-			$is_for_validation
-		);
-		$custom_variables = Plugin::apply_filters(
-			array(
-				sprintf( 'advanced_views/layout/custom_variables/layout_id=%s', $short_unique_view_id ),
-				sprintf( 'acf_views/view/custom_variables/view_id=%s', $short_unique_view_id ),
-			),
-			$custom_variables,
-			$short_unique_view_id,
-			$object_id,
-			$this->get_field_values(),
-			$is_for_validation
-		);
-
-		return arr( $custom_variables );
-	}
-
-	/**
-	 * @return  array<string, mixed>
-	 */
-	protected function get_field_values(): array {
-		return $this->field_values;
 	}
 }

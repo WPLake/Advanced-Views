@@ -78,6 +78,7 @@ class Layout_Factory extends Instance_Factory {
 	/**
 	 * @param mixed[] $custom_arguments
 	 * @param mixed[]|null $local_data
+	 * @param int[] $item_ids Used only by the Multiple format
 	 */
 	public function make_and_print_html(
 		Source $source,
@@ -85,11 +86,13 @@ class Layout_Factory extends Instance_Factory {
 		int $page_id,
 		string $classes = '',
 		array $custom_arguments = array(),
-		?array $local_data = null
+		?array $local_data = null,
+		array $item_ids = array()
 	): void {
 		$view = $this->make( $source, $view_unique_id, $page_id, null, $classes );
 
 		$view->set_local_data( $local_data );
+		$view->set_item_ids( $item_ids );
 
 		$is_not_empty = $view->insert_fields_and_print_html( $custom_arguments );
 

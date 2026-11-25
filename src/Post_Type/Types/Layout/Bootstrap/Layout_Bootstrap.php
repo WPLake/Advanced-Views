@@ -21,7 +21,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Layout_Cpt as Layouts_Cpt_Hookable;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Table\Layout_Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode_Handler;
 
 class Layout_Bootstrap extends Bootstrap_Base {
 	public static function get_instance_factories( Instance_Container $container ): array {
@@ -43,7 +43,7 @@ class Layout_Bootstrap extends Bootstrap_Base {
 			Layouts_Cpt_Hookable::class,
 			Layout_Cpt_Table::class,
 			Layout_Save_Actions::class,
-			Layout_Shortcode::class,
+			Layout_Shortcode_Handler::class,
 			Layout_Git_Box::class,
 			Layout_Interactive_Fields::class,
 		);
