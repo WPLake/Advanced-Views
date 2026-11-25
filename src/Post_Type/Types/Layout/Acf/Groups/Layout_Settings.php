@@ -460,27 +460,6 @@ return new class extends Layout_Controller_Base {
         // it\'s better to return dummy data here [ "custom_variable" => "dummy string", ]
         return $this->get_variables();
     }
-    /**
-     * @return array<string,mixed>
-     */
-    public function get_ajax_response(): array
-	{
-	    // $message = $this->get_container()->get(MyClass::class)->myMethod();
-		return [
-			// "message" => $message,
-		];
-	}
-	/**
-     * @return array<string,mixed>
-     */
-    public function get_rest_api_response(WP_REST_Request $request): array
-	{
-	    // $input = $request->get_json_params();
-	    // $message = $this->get_container()->get(MyClass::class)->myMethod();
-		return [
-			// "message" => $message,
-		];
-	}
 };
 '
 				);
@@ -695,6 +674,13 @@ return new class extends Layout_Controller_Base {
 
 	public function is_for_internal_usage_only(): bool {
 		return '' !== $this->parent_field;
+	}
+
+	public function is_multiple(): bool {
+		$is_multiple_format = self::ITEM_FORMAT_MULTIPLE === $this->item_format;
+		$is_typed           = self::ITEM_TYPE_CUSTOM !== $this->item_type;
+
+		return $is_multiple_format && $is_typed;
 	}
 
 	public function allows_empty_rendering(): bool {
