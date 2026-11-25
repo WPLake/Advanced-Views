@@ -16,7 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Setting
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Elementor\Layout_Elementor_Assets;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Elementor\Layout_Elementor_Widget;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Gutenberg\Layout_Gutenberg_Block;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode_Handler;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 
@@ -34,7 +34,7 @@ class Layout_Integrations_Factory extends Factory_Base {
 	}
 
 	public function renderer(): Cpt_Renderer {
-		$layout_shortcode = $this->resolve( Layout_Shortcode_Handler::class );
+		$layout_shortcode = $this->resolve( Layout_Shortcode_Renderer::class );
 		$settings_storage = $this->resolve( Layout_Settings_Storage::class );
 		$layouts_cpt      = $this->resolve( Layout_Cpt::class );
 

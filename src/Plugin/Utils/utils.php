@@ -29,6 +29,9 @@ function flat_map( array $items, callable $mapper ): array {
 	return $chunks;
 }
 
+/**
+ * @param mixed $value
+ */
 function is_blank_value( $value ): bool {
 	return in_array( $value, array( '', array(), null ), true );
 }
@@ -95,9 +98,11 @@ function eval_template( string $__code, array $__context, &$__error ): void {
 }
 
 /**
- * @param array<int|string,mixed> $full_array
+ * @template T
  *
- * @return array<int|string,mixed>
+ * @param array<int|string,T> $full_array
+ *
+ * @return array<int|string,T>
  */
 function paginate_array( array $full_array, int $per_page, int $page_number ): array {
 	$count_of_items = count( $full_array );

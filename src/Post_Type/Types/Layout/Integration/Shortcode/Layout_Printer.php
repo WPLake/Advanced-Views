@@ -10,9 +10,9 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
 
 /**
- * Renders a Layout (a single or a multiple one) for the already parsed shortcode args.
+ * Prints a Layout (a single or a multiple one) for the already parsed shortcode args, guarding against recursion.
  */
-final class Shortcode_Renderer {
+final class Layout_Printer {
 	private Layout_Factory $layout_factory;
 	/**
 	 * Used to avoid recursion with post_object/relationship fields

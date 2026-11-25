@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering;
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Source_Args_Normalizer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Attributes\Source_Args_Normalizer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Variables\Custom\Custom_Variable_Merger;

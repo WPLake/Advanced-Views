@@ -2,10 +2,11 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode;
+namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Source;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Attributes\Attribute_Reader;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Gutenberg\Shortcode_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
@@ -28,11 +29,11 @@ final class Source_Resolver {
 	 * @return Source|null Null if the 'object-id' argument contains a wrong value.
 	 */
 	public function resolve( string $item_type, array $attrs, int $current_page_id ): ?Source {
-		$object_id  = Shortcode_Attributes::get_string( $attrs, 'object-id' );
+		$object_id  = Attribute_Reader::get_string( $attrs, 'object-id' );
 		$user_id    = self::get_user_id( $attrs );
 		$term_id    = self::get_term_id( $attrs );
 		$comment_id = self::get_comment_id( $attrs );
-		$post_slug  = Shortcode_Attributes::get_string( $attrs, 'post-slug' );
+		$post_slug  = Attribute_Reader::get_string( $attrs, 'post-slug' );
 
 		// enable the 'term' mode by default if we're on a taxonomy page, nothing was set,
 		// and it doesn't happen inside the Gutenberg query loop.
@@ -204,7 +205,7 @@ final class Source_Resolver {
 	 * @param array<string,mixed> $attrs
 	 */
 	protected static function get_menu_term_id( array $attrs ): int {
-		$menu_slug = Shortcode_Attributes::get_string( $attrs, 'menu-slug' );
+		$menu_slug = Attribute_Reader::get_string( $attrs, 'menu-slug' );
 		$is_filled = strlen( $menu_slug ) > 0;
 		$menu_term = $is_filled ?
 			get_term_by( 'slug', $menu_slug, 'nav_menu' ) :

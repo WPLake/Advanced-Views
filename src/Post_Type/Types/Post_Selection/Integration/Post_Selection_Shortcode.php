@@ -42,6 +42,9 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 		return Post_Selection_Settings::UNIQUE_ID_PREFIX;
 	}
 
+	/**
+	 * @param array<string,mixed> $attrs
+	 */
 	public function render_shortcode( array $attrs ): string {
 		if ( ! $this->is_shortcode_available_for_user( wp_get_current_user()->roles, $attrs ) ) {
 			return '';
@@ -152,9 +155,6 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 		}
 	}
 
-	/**
-	 * @param array<string|int,mixed> $attrs
-	 */
 	protected static function get_current_post_id(): int {
 		global $post;
 
@@ -166,6 +166,9 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 			get_queried_object_id();
 	}
 
+	/**
+	 * @param array<string,mixed> $attrs
+	 */
 	protected function get_no_template_error( Post_Selection_Settings $card_data, array $attrs ): string {
 		return $this->get_error_markup(
 			$this->get_shortcode_name(),

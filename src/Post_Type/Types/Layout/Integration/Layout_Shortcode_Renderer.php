@@ -11,8 +11,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Shortcode_Args;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Shortcode_Args_Parser;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Shortcode_Renderer;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Source_Args_Normalizer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Layout_Printer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Attributes\Source_Args_Normalizer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
@@ -21,10 +21,10 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
-final class Layout_Shortcode_Handler extends Shortcode_Base {
+final class Layout_Shortcode_Renderer extends Shortcode_Base {
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Shortcode_Args_Parser $shortcode_args_parser;
-	private Shortcode_Renderer $shortcode_renderer;
+	private Layout_Printer $layout_printer;
 
 	public function __construct(
 		Layout_Cpt $public_cpt,
@@ -34,7 +34,7 @@ final class Layout_Shortcode_Handler extends Shortcode_Base {
 		Layout_Factory $layout_factory,
 		Html_Renderer $html_renderer,
 		Shortcode_Args_Parser $shortcode_args_parser,
-		Shortcode_Renderer $shortcode_renderer
+		Layout_Printer $layout_printer
 	) {
 		parent::__construct(
 			$public_cpt,
@@ -47,9 +47,12 @@ final class Layout_Shortcode_Handler extends Shortcode_Base {
 
 		$this->layouts_settings_storage = $layouts_settings_storage;
 		$this->shortcode_args_parser    = $shortcode_args_parser;
-		$this->shortcode_renderer       = $shortcode_renderer;
+		$this->layout_printer           = $layout_printer;
 	}
 
+	/**
+	 * @param array<string,mixed> $attrs
+	 */
 	public function render_shortcode( array $attrs ): string {
 		$layout_id = self::get_layout_id( $attrs );
 		$post_type = $this->get_post_type();
@@ -109,7 +112,7 @@ final class Layout_Shortcode_Handler extends Shortcode_Base {
 		Shortcode_Args $args,
 		array $attrs
 	): string {
-		$html        = $this->shortcode_renderer->render( $layout_settings, $args );
+		$html        = $this->layout_printer->render( $layout_settings, $args );
 		$is_rendered = is_string( $html );
 
 		return $is_rendered ?

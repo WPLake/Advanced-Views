@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 interface Shortcode_Renderer {
 	/**
-	 * @param array<string|int,mixed> $attrs
+	 * @param array<string,mixed> $attrs
 	 */
 	public function render_shortcode( array $attrs ): string;
 }

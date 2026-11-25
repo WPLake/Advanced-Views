@@ -6,6 +6,9 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Attributes\Attribute_Reader;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Source\Source_Resolver;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Source\Item_Ids_Resolver;
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
@@ -63,7 +66,7 @@ final class Shortcode_Args_Parser {
 
 		$query_context = Query_Context::new_instance()
 										->set_post_id( $current_page_id )
-										->set_custom_arguments( Shortcode_Attributes::get_custom_arguments( $attrs ) );
+										->set_custom_arguments( Attribute_Reader::get_custom_arguments( $attrs ) );
 		$item_ids      = $this->item_ids_resolver->resolve( $layout_settings->item_type, $attrs, $query_context );
 
 		return self::make_args( new Source(), $item_ids, $current_page_id, $attrs );
@@ -74,8 +77,8 @@ final class Shortcode_Args_Parser {
 	 * @param array<string,mixed> $attrs
 	 */
 	protected static function make_args( Source $source, array $item_ids, int $current_page_id, array $attrs ): Shortcode_Args {
-		$classes          = Shortcode_Attributes::get_string( $attrs, 'class' );
-		$custom_arguments = Shortcode_Attributes::get_custom_arguments( $attrs );
+		$classes          = Attribute_Reader::get_string( $attrs, 'class' );
+		$custom_arguments = Attribute_Reader::get_custom_arguments( $attrs );
 		// for inner Views.
 		$local_data = arrayOrNull( $attrs, 'local-data' );
 

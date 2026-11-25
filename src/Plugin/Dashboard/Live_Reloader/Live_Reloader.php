@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode_Handler;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Layout_Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Integration\Post_Selection_Shortcode;
 use WP_REST_Request;
@@ -29,14 +29,14 @@ defined( 'ABSPATH' ) || exit;
 class Live_Reloader extends Actor_Base implements Actor {
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Selection_Settings_Storage $post_selections_settings_storage;
-	private Layout_Shortcode_Handler $layout_shortcode;
+	private Layout_Shortcode_Renderer $layout_shortcode;
 	private Post_Selection_Shortcode $post_selection_shortcode;
 	private int $request_post_id;
 
 	public function __construct(
 		Layout_Settings_Storage $layouts_settings_storage,
 		Selection_Settings_Storage $post_selections_settings_storage,
-		Layout_Shortcode_Handler $layout_shortcode,
+		Layout_Shortcode_Renderer $layout_shortcode,
 		Post_Selection_Shortcode $post_selection_shortcode
 	) {
 		$this->layouts_settings_storage         = $layouts_settings_storage;

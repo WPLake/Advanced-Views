@@ -26,7 +26,7 @@ final class Acf_Utils {
 
 	/**
 	 * @param class-string<Group> $group_class
-	 * @param array<string,callable(array<string,mixed> $field): array<string,string>> $choices_callbacks field constant => choices getter
+	 * @param array<string,callable(array<string,mixed> $field): array<int|string,string>> $choices_callbacks field constant => choices getter
 	 */
 	public static function bind_field_choices( string $group_class, array $choices_callbacks ): void {
 		foreach ( $choices_callbacks as $field_constant => $get_choices ) {

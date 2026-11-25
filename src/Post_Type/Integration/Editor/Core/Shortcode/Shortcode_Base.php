@@ -357,7 +357,12 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 	 * @param array<string,string>|string $args
 	 */
 	public function do_shortcode( $args ): string {
-		$attrs = arr( $args );
+		$attrs = array();
+
+		// positional attributes have int keys, but the renderers work with named ones.
+		foreach ( arr( $args ) as $name => $value ) {
+			$attrs[ (string) $name ] = $value;
+		}
 
 		return $this->render_shortcode( $attrs );
 	}

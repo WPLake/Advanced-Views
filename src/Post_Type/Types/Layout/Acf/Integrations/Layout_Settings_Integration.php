@@ -36,7 +36,7 @@ final class Layout_Settings_Integration extends Acf_Integration_Base {
 	}
 
 	/**
-	 * @return array<string,callable(): array<string,string>>
+	 * @return array<string,callable(): array<int|string,string>>
 	 */
 	protected function get_choices_callbacks(): array {
 		return array(
@@ -56,7 +56,7 @@ final class Layout_Settings_Integration extends Acf_Integration_Base {
 	}
 
 	/**
-	 * @return array<string,string>
+	 * @return array<int|string,string>
 	 */
 	protected static function get_menu_choices(): array {
 		$choices = array();

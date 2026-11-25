@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode;
+namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Attributes;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Reads the typed values from the raw shortcode attributes.
  */
-final class Shortcode_Attributes {
+final class Attribute_Reader {
 	/**
 	 * @param array<string,mixed> $attrs
 	 */

@@ -156,7 +156,7 @@ if ( class_exists( 'acf_field_select' ) ) {
 		protected static function get_selected_choices( Ajax_Select_Source $source, array $field ): array {
 			$items      = $source->get_items();
 			$raw_values = (array) ( $field['value'] ?? array() );
-			$strings    = array_map( 'strval', $raw_values );
+			$strings    = array_map( static fn( $value ): string => is_scalar( $value ) ? (string) $value : '', $raw_values );
 			$values     = array_filter(
 				$strings,
 				fn( string $value ) => '' !== $value
