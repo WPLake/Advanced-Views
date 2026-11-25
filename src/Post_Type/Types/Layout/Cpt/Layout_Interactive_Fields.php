@@ -17,7 +17,7 @@ use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Layout_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Markup_Provider;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration_Storage;
 use WP_Post;
@@ -27,7 +27,7 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 
 	protected Layout_Settings_Storage $layout_settings_storage;
 	protected Layout_Factory $layout_factory;
-	protected Layout_Renderer $layout_renderer;
+	protected Markup_Provider $markup_provider;
 	protected Layout_Meta_Boxes $layout_meta_boxes;
 
 	public function __construct(
@@ -38,7 +38,7 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 		Template_Integration_Storage $template_integration_storage,
 		Field_Provider_Cluster $provider_cluster,
 		Settings_Storage $settings,
-		Layout_Renderer $layout_renderer,
+		Markup_Provider $markup_provider,
 		Layout_Meta_Boxes $layout_meta_boxes
 	) {
 		parent::__construct(
@@ -53,7 +53,7 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 
 		$this->layout_settings_storage = $layout_settings_storage;
 		$this->layout_factory          = $layout_factory;
-		$this->layout_renderer         = $layout_renderer;
+		$this->markup_provider         = $markup_provider;
 		$this->layout_meta_boxes       = $layout_meta_boxes;
 	}
 
@@ -91,7 +91,7 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 	protected function get_editor_field_values( Layout_Settings $layout_settings ): array {
 		ob_start();
 		// ignore customMarkup (we need the preview).
-		$this->layout_renderer->print_markup(
+		$this->markup_provider->print_markup(
 			$layout_settings,
 			0,
 			'',

@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering;
+namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Field_Value;
 
 defined( 'ABSPATH' ) || exit;
 

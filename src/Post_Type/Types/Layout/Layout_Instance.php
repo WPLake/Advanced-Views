@@ -7,15 +7,15 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout;
 defined( 'ABSPATH' ) || exit;
 
 use DateTime;
+use Org\Wplake\Advanced_Views\Bridge\Controllers\Request_Controller;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Instance\Layout_Request_Responder;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Instance\Layout_Template_Printer;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Instance\Layout_Variables_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Variable_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Template_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_REST_Request;
 
@@ -26,9 +26,8 @@ use WP_REST_Request;
 class Layout_Instance extends Instance {
 	private Layout_Settings $layout_settings;
 	private Field_Provider_Cluster $provider_cluster;
-	private Layout_Variables_Builder $variables_builder;
-	private Layout_Template_Printer $template_printer;
-	private Layout_Request_Responder $request_responder;
+	private Variable_Builder $variables_builder;
+	private Template_Renderer $template_renderer;
 	private Source $source;
 	/**
 	 * Used e.g. for inner Views or Pods Blocks
@@ -43,9 +42,8 @@ class Layout_Instance extends Instance {
 
 	public function __construct(
 		Field_Provider_Cluster $provider_cluster,
-		Layout_Variables_Builder $variables_builder,
-		Layout_Template_Printer $template_printer,
-		Layout_Request_Responder $request_responder,
+		Variable_Builder $variables_builder,
+		Template_Renderer $template_renderer,
 		string $twig_template,
 		Layout_Settings $layout_settings,
 		Source $source,
@@ -57,8 +55,7 @@ class Layout_Instance extends Instance {
 		$this->layout_settings   = $layout_settings;
 		$this->provider_cluster  = $provider_cluster;
 		$this->variables_builder = $variables_builder;
-		$this->template_printer  = $template_printer;
-		$this->request_responder = $request_responder;
+		$this->template_renderer = $template_renderer;
 		$this->source            = $source;
 		$this->local_data        = null;
 		$this->item_ids          = array();
@@ -172,7 +169,7 @@ class Layout_Instance extends Instance {
 		$items_count = count( $this->item_ids );
 
 		// the validation renders fake data, it must never be skipped.
-		$is_empty_render = ! $is_for_validation && $this->template_printer->is_empty_render(
+		$is_empty_render = ! $is_for_validation && $this->template_renderer->is_empty_render(
 			$this->layout_settings,
 			$variables,
 			$items_count
@@ -184,7 +181,7 @@ class Layout_Instance extends Instance {
 			return false;
 		}
 
-		$is_printed = $this->template_printer->print( $this->layout_settings, $template, $variables, $is_for_validation );
+		$is_printed = $this->template_renderer->print( $this->layout_settings, $template, $variables, $is_for_validation );
 
 		if ( ! $is_printed ) {
 			$this->print_template_engine_is_not_loaded_message();
@@ -216,9 +213,13 @@ class Layout_Instance extends Instance {
 	 * @return array<string,mixed>
 	 */
 	protected function get_ajax_response_args( $controller ): array {
-		$container = $this->get_container();
+		if ( $controller instanceof Request_Controller ) {
+			$controller->set_container( $this->get_container() );
 
-		return $this->request_responder->get_ajax_response( $controller, $container );
+			return $controller->get_ajax_response();
+		}
+
+		return array();
 	}
 
 	/**
@@ -227,8 +228,12 @@ class Layout_Instance extends Instance {
 	 * @return array<string,mixed>
 	 */
 	protected function get_rest_api_response_args( WP_REST_Request $wprest_request, $controller ): array {
-		$container = $this->get_container();
+		if ( $controller instanceof Request_Controller ) {
+			$controller->set_container( $this->get_container() );
 
-		return $this->request_responder->get_rest_api_response( $wprest_request, $controller, $container );
+			return $controller->get_rest_api_response( $wprest_request );
+		}
+
+		return array();
 	}
 }

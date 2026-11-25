@@ -13,42 +13,38 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Library\Library_Asset_Collector;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Instance\Layout_Request_Responder;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Instance\Layout_Template_Printer;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Instance\Layout_Variables_Builder;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Layout_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Markup_Provider;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Variable_Builder;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Template_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_REST_Request;
 
 class Layout_Factory extends Instance_Factory {
 	private Layout_Settings_Storage $layouts_settings_storage;
-	private Layout_Renderer $layout_renderer;
+	private Markup_Provider $markup_provider;
 	protected Field_Provider_Cluster $provider_cluster;
 	protected Html_Renderer $html_renderer;
-	protected Layout_Variables_Builder $variables_builder;
-	protected Layout_Template_Printer $template_printer;
-	protected Layout_Request_Responder $request_responder;
+	protected Variable_Builder $variables_builder;
+	protected Template_Renderer $template_renderer;
 
 	public function __construct(
 		Cpt_Asset_Collector $assets_collector,
 		Library_Asset_Collector $library_asset_collector,
 		Layout_Settings_Storage $layouts_settings_storage,
-		Layout_Renderer $layout_renderer,
+		Markup_Provider $markup_provider,
 		Field_Provider_Cluster $provider_cluster,
 		Html_Renderer $html_renderer,
-		Layout_Variables_Builder $variables_builder,
-		Layout_Template_Printer $template_printer,
-		Layout_Request_Responder $request_responder
+		Variable_Builder $variables_builder,
+		Template_Renderer $template_renderer
 	) {
 		parent::__construct( $assets_collector, $library_asset_collector );
 
-		$this->layouts_settings_storage  = $layouts_settings_storage;
-		$this->layout_renderer           = $layout_renderer;
-		$this->provider_cluster          = $provider_cluster;
-		$this->html_renderer             = $html_renderer;
-		$this->variables_builder         = $variables_builder;
-		$this->template_printer          = $template_printer;
-		$this->request_responder         = $request_responder;
+		$this->layouts_settings_storage = $layouts_settings_storage;
+		$this->markup_provider          = $markup_provider;
+		$this->provider_cluster         = $provider_cluster;
+		$this->html_renderer            = $html_renderer;
+		$this->variables_builder        = $variables_builder;
+		$this->template_renderer        = $template_renderer;
 	}
 
 	public function get_template_fields( Cpt_Theme_Settings $theme_settings ): array {
@@ -69,7 +65,7 @@ class Layout_Factory extends Instance_Factory {
 		$layout_settings ??= $this->layouts_settings_storage->get( $unique_view_id );
 
 		ob_start();
-		$this->layout_renderer->print_markup( $layout_settings, $page_id );
+		$this->markup_provider->print_markup( $layout_settings, $page_id );
 		$markup = (string) ob_get_clean();
 
 		return $this->create_layout_instance( $source, $layout_settings, $markup, $classes );
@@ -152,8 +148,7 @@ class Layout_Factory extends Instance_Factory {
 		return new Layout_Instance(
 			$this->provider_cluster,
 			$this->variables_builder,
-			$this->template_printer,
-			$this->request_responder,
+			$this->template_renderer,
 			$markup,
 			$settings,
 			$source,

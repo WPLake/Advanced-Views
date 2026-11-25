@@ -2,10 +2,11 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Instance;
+namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering;
 
 defined( 'ABSPATH' ) || exit;
 
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Variables\System_Variable_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 
@@ -14,7 +15,7 @@ use function Org\Wplake\Advanced_Views\Utils\is_blank_value;
 /**
  * Prints a Layout template with its variables through the Layout's template engine.
  */
-final class Layout_Template_Printer {
+final class Template_Renderer {
 	private Template_Renderer_Storage $template_renderer_storage;
 
 	public function __construct( Template_Renderer_Storage $template_renderer_storage ) {
@@ -65,7 +66,7 @@ final class Layout_Template_Printer {
 			return 0 === $items_count;
 		}
 
-		$system_names = Layout_Variables_Builder::get_system_variable_names();
+		$system_names = System_Variable_Builder::get_system_variable_names();
 
 		foreach ( $variables as $variable_name => $variable_value ) {
 			$is_ignored = self::is_ignored_variable( $variable_name, $variable_value, $system_names );

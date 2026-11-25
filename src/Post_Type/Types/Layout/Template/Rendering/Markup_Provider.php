@@ -10,7 +10,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Web_Component\Cpt_Component_Rendere
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Generation\Layout_Builder;
 
-final class Layout_Renderer {
+final class Markup_Provider {
 	/**
 	 * Cache
 	 *

@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Instance;
+namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Variables;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -10,14 +10,14 @@ use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Field_Context\Field_Context_Loader;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Field_Value_Resolver;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Field_Value\Field_Value_Resolver;
 
 use function Org\Wplake\Advanced_Views\Utils\is_blank_value;
 
 /**
  * Builds the field variables of a Layout instance: the loaded (or fake, for the validation) values with the defaults applied.
  */
-final class Layout_Field_Variables_Builder {
+final class Field_Variable_Builder {
 	private Field_Value_Resolver $field_value_resolver;
 	private Field_Context_Loader $field_context_loader;
 
@@ -31,7 +31,7 @@ final class Layout_Field_Variables_Builder {
 	 *
 	 * @return array<string,mixed>
 	 */
-	protected function get_fields_variables( Layout_Instance $layout, array &$field_values ): array {
+	public function get_fields_variables( Layout_Instance $layout, array &$field_values ): array {
 		$twig_variables = array();
 
 		$items = $layout->get_view_data()->items;
@@ -59,7 +59,7 @@ final class Layout_Field_Variables_Builder {
 	 *
 	 * @return array<string,mixed>
 	 */
-	protected function get_validation_fields_variables( Layout_Instance $layout, array &$field_values ): array {
+	public function get_validation_fields_variables( Layout_Instance $layout, array &$field_values ): array {
 		$twig_variables = array();
 
 		$items = $layout->get_view_data()->items;

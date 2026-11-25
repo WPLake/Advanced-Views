@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Instance;
+namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Variables\Custom;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -13,7 +13,7 @@ use function Org\Wplake\Advanced_Views\Utils\eval_snippet;
 /**
  * Gets the custom variables from the Layout's controller (the PHP code field). Pro extends it for the legacy controllers.
  */
-class Layout_Controller_Variables {
+class Controller_Variable_Resolver {
 	/**
 	 * @param int|string $object_id Can be 'options' or 'user_x'
 	 * @param array<string,mixed> $default_variables

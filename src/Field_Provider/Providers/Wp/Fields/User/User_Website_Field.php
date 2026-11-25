@@ -6,7 +6,7 @@ namespace Org\Wplake\Advanced_Views\Field_Provider\Providers\Wp\Fields\User;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Custom_Field;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Fields\Links\Link_Field;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Raw_Field_Value;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Field_Value\Raw_Field_Value;
 
 defined( 'ABSPATH' ) || exit;
 
