@@ -7,7 +7,7 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering;
 defined( 'ABSPATH' ) || exit;
 
 use DateTime;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Field_Context\Field_Context;
 
@@ -26,12 +26,12 @@ final class Raw_Field_Value {
 	 * @var mixed $value
 	 */
 	private $value;
-	private Layout $layout;
+	private Layout_Instance $layout;
 	private Field_Value_Resolver $field_value_resolver;
 
 	public function __construct(
 		Field_Context $context,
-		Layout $layout,
+		Layout_Instance $layout,
 		Source $source,
 		Field_Value_Resolver $field_value_resolver
 	) {
@@ -107,7 +107,7 @@ final class Raw_Field_Value {
 		return $this->source;
 	}
 
-	public function get_view(): Layout {
+	public function get_view(): Layout_Instance {
 		return $this->layout;
 	}
 }

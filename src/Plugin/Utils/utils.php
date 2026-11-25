@@ -29,6 +29,10 @@ function flat_map( array $items, callable $mapper ): array {
 	return $chunks;
 }
 
+function is_blank_value( $value ): bool {
+	return in_array( $value, array( '', array(), null ), true );
+}
+
 // int-safe str_repeat - as native throws an error if $count is negative.
 function repeat_str( string $char, int $count ): string {
 	return $count > 0 ?

@@ -52,79 +52,6 @@ class Post_Selection extends Instance {
 	}
 
 	/**
-	 * @param array<string,mixed> $default_variables
-	 * @param array<string,mixed> $custom_arguments
-	 * @param \Psr\Container\ContainerInterface|null $container
-	 *
-	 * @return array<string,mixed>
-	 */
-	protected static function get_custom_template_variables(
-		string $instance_id,
-		string $php_code,
-		array $default_variables,
-		array $custom_arguments,
-		bool $is_for_validation,
-		$container
-	): array {
-		$template_controller = eval_snippet(
-			$php_code,
-			array(
-				// defined for back compatibility, as the old code may expect it.
-				'_args'       => array(),
-				'_pageNumber' => 0,
-			),
-			$error
-		);
-
-		return self::get_custom_controller_variables(
-			$template_controller,
-			$instance_id,
-			$default_variables,
-			$custom_arguments,
-			$is_for_validation,
-			$container
-		);
-	}
-
-	/**
-	 * @param mixed $template_controller
-	 * @param array<string,mixed> $default_variables
-	 * @param array<string,mixed> $custom_arguments
-	 * @param \Psr\Container\ContainerInterface|null $container
-	 *
-	 * @return array<string,mixed>
-	 */
-	protected static function get_custom_controller_variables(
-		$template_controller,
-		string $instance_id,
-		array $default_variables,
-		array $custom_arguments,
-		bool $is_for_validation,
-		$container
-	): array {
-		if ( $template_controller instanceof Template_Controller ) {
-			$template_controller->set_instance_id( $instance_id );
-			$template_controller->set_default_variables( $default_variables );
-			$template_controller->set_custom_arguments( $custom_arguments );
-			$template_controller->set_container( $container );
-
-			return ! $is_for_validation ?
-				$template_controller->get_variables() :
-				$template_controller->get_variables_for_validation();
-		}
-
-		// array return is allowed for back compatibility.
-		if ( is_array( $template_controller ) ) {
-			/**
-			 * @var array<string,mixed> $template_controller
-			 */
-			return $template_controller;
-		}
-
-		return array();
-	}
-
-	/**
 	 * @return array<string,mixed>
 	 */
 	public function get_ajax_response( string $php_code = '' ): array {
@@ -203,13 +130,14 @@ class Post_Selection extends Instance {
 	}
 
 	/**
-	 * @return string[]
+	 * @param array<string,mixed> $custom_arguments
+	 *
+	 * @return array<string,mixed>
 	 */
-	protected function get_system_variable_names(): array {
-		return array(
-			'_card', // for back compatibility.
-			Hard_Post_Selection_Cpt::variable_name(),
-		);
+	protected function get_template_variables( bool $is_for_validation = false, array $custom_arguments = array() ): array {
+		return $is_for_validation ?
+			$this->get_validation_variables() :
+			$this->get_render_variables( $custom_arguments );
 	}
 
 	/**
@@ -217,10 +145,50 @@ class Post_Selection extends Instance {
 	 *
 	 * @return array<string,mixed>
 	 */
-	protected function get_template_variables( bool $is_for_validation = false, array $custom_arguments = array() ): array {
+	protected function get_render_variables( array $custom_arguments ): array {
+		$card_data       = $this->get_card_data();
+		$short_unique_id = $card_data->get_unique_id( true );
+		$container       = $this->get_container();
+		$twig_variables  = $this->get_system_variables();
+
+		$custom_variables = static::get_custom_template_variables(
+			$short_unique_id,
+			$card_data->extra_query_arguments,
+			$twig_variables,
+			$custom_arguments,
+			$container
+		);
+
+		return $this->merge_custom_variables( $twig_variables, $custom_variables );
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	protected function get_validation_variables(): array {
+		$card_data       = $this->get_card_data();
+		$short_unique_id = $card_data->get_unique_id( true );
+		$container       = $this->get_container();
+		$twig_variables  = $this->get_system_variables();
+
+		$custom_variables = static::get_custom_validation_variables(
+			$short_unique_id,
+			$card_data->extra_query_arguments,
+			$twig_variables,
+			array(),
+			$container
+		);
+
+		return $this->merge_custom_variables( $twig_variables, $custom_variables );
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	protected function get_system_variables(): array {
 		$twig_variables = $this->get_default_template_variables();
 
-		foreach ( $this->get_system_variable_names() as $name ) {
+		foreach ( self::get_system_variable_names() as $name ) {
 			$system_vars = key_exists( $name, $twig_variables ) &&
 							is_array( $twig_variables[ $name ] ) ?
 				$twig_variables[ $name ] :
@@ -235,17 +203,17 @@ class Post_Selection extends Instance {
 			);
 		}
 
-		$short_unique_card_id = $this->get_card_data()->get_unique_id( true );
+		return $twig_variables;
+	}
 
-		// the static function is used to avoid any chance of changing the context (this).
-		$custom_variables = self::get_custom_template_variables(
-			$short_unique_card_id,
-			$this->get_card_data()->extra_query_arguments,
-			$twig_variables,
-			$custom_arguments,
-			$is_for_validation,
-			$this->get_container()
-		);
+	/**
+	 * @param array<string,mixed> $twig_variables
+	 * @param array<string,mixed> $custom_variables
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected function merge_custom_variables( array $twig_variables, array $custom_variables ): array {
+		$short_unique_card_id = $this->get_card_data()->get_unique_id( true );
 
 		$custom_variables = Plugin::apply_filters(
 			array(
@@ -282,13 +250,13 @@ class Post_Selection extends Instance {
 	protected function get_default_template_variables(): array {
 		$system_variables = array();
 
-		foreach ( $this->get_system_variable_names() as $name ) {
-			$short_layout_id = str_replace(
-				Layout_Settings::UNIQUE_ID_PREFIX,
-				'',
-				$this->settings->acf_view_id
-			);
+		$short_layout_id = str_replace(
+			Layout_Settings::UNIQUE_ID_PREFIX,
+			'',
+			$this->settings->acf_view_id
+		);
 
+		foreach ( self::get_system_variable_names() as $name ) {
 			$system_variables[ $name ] = array(
 				'id'                     => $this->settings->get_markup_id(),
 				// short unique id is expected in the shortcode arguments.
@@ -340,5 +308,164 @@ class Post_Selection extends Instance {
 
 	protected function get_card_data(): Post_Selection_Settings {
 		return $this->settings;
+	}
+
+	/**
+	 * @param array<string,mixed> $default_variables
+	 * @param array<string,mixed> $custom_arguments
+	 * @param \Psr\Container\ContainerInterface|null $container
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected static function get_custom_template_variables(
+		string $instance_id,
+		string $php_code,
+		array $default_variables,
+		array $custom_arguments,
+		$container
+	): array {
+		$template_controller = static::eval_template_controller( $php_code );
+
+		return static::get_custom_controller_variables(
+			$template_controller,
+			$instance_id,
+			$default_variables,
+			$custom_arguments,
+			$container
+		);
+	}
+
+	/**
+	 * @param array<string,mixed> $default_variables
+	 * @param array<string,mixed> $custom_arguments
+	 * @param \Psr\Container\ContainerInterface|null $container
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected static function get_custom_validation_variables(
+		string $instance_id,
+		string $php_code,
+		array $default_variables,
+		array $custom_arguments,
+		$container
+	): array {
+		$template_controller = static::eval_template_controller( $php_code );
+
+		return static::get_custom_controller_validation_variables(
+			$template_controller,
+			$instance_id,
+			$default_variables,
+			$custom_arguments,
+			$container
+		);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	protected static function eval_template_controller( string $php_code ) {
+		return eval_snippet(
+			$php_code,
+			array(
+				// defined for back compatibility, as the old code may expect it.
+				'_args'       => array(),
+				'_pageNumber' => 0,
+			),
+			$error
+		);
+	}
+
+	/**
+	 * @param mixed $template_controller
+	 * @param array<string,mixed> $default_variables
+	 * @param array<string,mixed> $custom_arguments
+	 * @param \Psr\Container\ContainerInterface|null $container
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected static function get_custom_controller_variables(
+		$template_controller,
+		string $instance_id,
+		array $default_variables,
+		array $custom_arguments,
+		$container
+	): array {
+		if ( $template_controller instanceof Template_Controller ) {
+			static::prepare_template_controller( $template_controller, $instance_id, $default_variables, $custom_arguments, $container );
+
+			return $template_controller->get_variables();
+		}
+
+		return static::get_array_controller_variables( $template_controller );
+	}
+
+	/**
+	 * @param mixed $template_controller
+	 * @param array<string,mixed> $default_variables
+	 * @param array<string,mixed> $custom_arguments
+	 * @param \Psr\Container\ContainerInterface|null $container
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected static function get_custom_controller_validation_variables(
+		$template_controller,
+		string $instance_id,
+		array $default_variables,
+		array $custom_arguments,
+		$container
+	): array {
+		if ( $template_controller instanceof Template_Controller ) {
+			static::prepare_template_controller( $template_controller, $instance_id, $default_variables, $custom_arguments, $container );
+
+			return $template_controller->get_variables_for_validation();
+		}
+
+		return static::get_array_controller_variables( $template_controller );
+	}
+
+	/**
+	 * @param array<string,mixed> $default_variables
+	 * @param array<string,mixed> $custom_arguments
+	 * @param \Psr\Container\ContainerInterface|null $container
+	 */
+	protected static function prepare_template_controller(
+		Template_Controller $template_controller,
+		string $instance_id,
+		array $default_variables,
+		array $custom_arguments,
+		$container
+	): void {
+		$template_controller->set_instance_id( $instance_id );
+		$template_controller->set_default_variables( $default_variables );
+		$template_controller->set_custom_arguments( $custom_arguments );
+		$template_controller->set_container( $container );
+	}
+
+	/**
+	 * Array return is allowed for back compatibility.
+	 *
+	 * @param mixed $template_controller
+	 *
+	 * @return array<string,mixed>
+	 */
+	protected static function get_array_controller_variables( $template_controller ): array {
+		if ( is_array( $template_controller ) ) {
+			/**
+			 * @var array<string,mixed> $template_controller
+			 */
+			return $template_controller;
+		}
+
+		return array();
+	}
+
+	/**
+	 * @return string[]
+	 */
+	protected static function get_system_variable_names(): array {
+		return array(
+			'_card', // for back compatibility.
+			Hard_Post_Selection_Cpt::variable_name(),
+		);
 	}
 }

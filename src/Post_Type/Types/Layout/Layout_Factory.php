@@ -13,42 +13,42 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Library\Library_Asset_Collector;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Field_Context\Field_Context_Loader;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Field_Value_Resolver;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Instance\Layout_Request_Responder;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Instance\Layout_Template_Printer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Instance\Layout_Variables_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Layout_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Rendering\Template_Renderer_Storage;
 use WP_REST_Request;
 
 class Layout_Factory extends Instance_Factory {
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Layout_Renderer $layout_renderer;
-	protected Template_Renderer_Storage $template_renderer_storage;
-	protected Field_Value_Resolver $field_value_resolver;
-	protected Field_Context_Loader $field_context_loader;
 	protected Field_Provider_Cluster $provider_cluster;
 	protected Html_Renderer $html_renderer;
+	protected Layout_Variables_Builder $variables_builder;
+	protected Layout_Template_Printer $template_printer;
+	protected Layout_Request_Responder $request_responder;
 
 	public function __construct(
 		Cpt_Asset_Collector $assets_collector,
 		Library_Asset_Collector $library_asset_collector,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Layout_Renderer $layout_renderer,
-		Template_Renderer_Storage $template_renderer_storage,
-		Field_Value_Resolver $field_value_resolver,
-		Field_Context_Loader $field_context_loader,
 		Field_Provider_Cluster $provider_cluster,
-		Html_Renderer $html_renderer
+		Html_Renderer $html_renderer,
+		Layout_Variables_Builder $variables_builder,
+		Layout_Template_Printer $template_printer,
+		Layout_Request_Responder $request_responder
 	) {
 		parent::__construct( $assets_collector, $library_asset_collector );
 
 		$this->layouts_settings_storage  = $layouts_settings_storage;
 		$this->layout_renderer           = $layout_renderer;
-		$this->template_renderer_storage = $template_renderer_storage;
-		$this->field_value_resolver      = $field_value_resolver;
-		$this->field_context_loader      = $field_context_loader;
 		$this->provider_cluster          = $provider_cluster;
 		$this->html_renderer             = $html_renderer;
+		$this->variables_builder         = $variables_builder;
+		$this->template_printer          = $template_printer;
+		$this->request_responder         = $request_responder;
 	}
 
 	public function get_template_fields( Cpt_Theme_Settings $theme_settings ): array {
@@ -65,7 +65,7 @@ class Layout_Factory extends Instance_Factory {
 		int $page_id,
 		?Layout_Settings $layout_settings = null,
 		string $classes = ''
-	): Layout {
+	): Layout_Instance {
 		$layout_settings ??= $this->layouts_settings_storage->get( $unique_view_id );
 
 		ob_start();
@@ -89,7 +89,13 @@ class Layout_Factory extends Instance_Factory {
 		?array $local_data = null,
 		array $item_ids = array()
 	): void {
-		$view = $this->make( $source, $view_unique_id, $page_id, null, $classes );
+		$view = $this->make(
+			$source,
+			$view_unique_id,
+			$page_id,
+			null,
+			$classes
+		);
 
 		$view->set_local_data( $local_data );
 		$view->set_item_ids( $item_ids );
@@ -124,10 +130,17 @@ class Layout_Factory extends Instance_Factory {
 		return $layout->get_rest_api_response( $wprest_request );
 	}
 
-	protected function create_flat_layout_instance( string $unique_id ): Layout {
+	protected function create_flat_layout_instance( string $unique_id ): Layout_Instance {
 		$settings = $this->layouts_settings_storage->get( $unique_id );
 
-		return $this->create_layout_instance( new Source(), $settings, '', '' );
+		$source = new Source();
+
+		return $this->create_layout_instance(
+			$source,
+			$settings,
+			'',
+			''
+		);
 	}
 
 	protected function create_layout_instance(
@@ -135,21 +148,24 @@ class Layout_Factory extends Instance_Factory {
 		Layout_Settings $settings,
 		string $markup,
 		string $classes
-	): Layout {
-		return new Layout(
+	): Layout_Instance {
+		return new Layout_Instance(
 			$this->provider_cluster,
-			$this->template_renderer_storage,
+			$this->variables_builder,
+			$this->template_printer,
+			$this->request_responder,
 			$markup,
 			$settings,
 			$source,
-			$this->field_value_resolver,
-			$this->field_context_loader,
 			$this->html_renderer,
 			$classes
 		);
 	}
 
 	protected function get_template_variables_for_validation( string $unique_id ): array {
-		return $this->make( new Source(), $unique_id, 0 )->get_template_variables_for_validation();
+		$source = new Source();
+		$layout = $this->make( $source, $unique_id, 0 );
+
+		return $layout->get_template_variables_for_validation();
 	}
 }

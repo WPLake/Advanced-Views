@@ -24,8 +24,25 @@ final class Item_Ids_Resolver {
 	/**
 	 * @param array<string,mixed> $attrs
 	 *
+	 * @return string|null Null if the attrs are valid.
+	 */
+	public function get_error( string $item_type, array $attrs ): ?string {
+		$posts      = Source_Args_Normalizer::parse_list( $attrs['posts'] ?? null );
+		$selections = Source_Args_Normalizer::parse_list( $attrs['post-selections'] ?? null );
+
+		$has_posts      = count( $posts ) > 0;
+		$has_selections = count( $selections ) > 0;
+		$is_conflict    = Layout_Settings::ITEM_TYPE_POST === $item_type && $has_posts && $has_selections;
+
+		return $is_conflict ?
+			__( "'posts' and 'post-selections' arguments can't be used together", 'acf-views' ) :
+			null;
+	}
+
+	/**
+	 * @param array<string,mixed> $attrs
+	 *
 	 * @return int[]
-	 * @throws Invalid_Source_Args_Exception
 	 */
 	public function resolve( string $item_type, array $attrs, Query_Context $context ): array {
 		if ( Layout_Settings::ITEM_TYPE_POST === $item_type ) {
@@ -49,7 +66,6 @@ final class Item_Ids_Resolver {
 	 * @param array<string,mixed> $attrs
 	 *
 	 * @return int[]
-	 * @throws Invalid_Source_Args_Exception
 	 */
 	protected function resolve_posts( array $attrs, Query_Context $context ): array {
 		$posts      = Source_Args_Normalizer::parse_list( $attrs['posts'] ?? null );
@@ -57,13 +73,6 @@ final class Item_Ids_Resolver {
 
 		$has_posts      = count( $posts ) > 0;
 		$has_selections = count( $selections ) > 0;
-		$is_conflict    = $has_posts && $has_selections;
-
-		if ( $is_conflict ) {
-			throw new Invalid_Source_Args_Exception(
-				esc_html__( "'posts' and 'post-selections' arguments can't be used together", 'acf-views' )
-			);
-		}
 
 		if ( $has_selections ) {
 			return $this->resolve_selections( $selections, $context );

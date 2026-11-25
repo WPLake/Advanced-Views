@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Meta;
 use Org\Wplake\Advanced_Views\Plugin\Plugin;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Field_Context\Field_Context;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
@@ -22,7 +22,7 @@ final class Field_Value_Resolver {
 	 */
 	public function resolve_value(
 		Field_Context $field_context,
-		Layout $layout,
+		Layout_Instance $layout,
 		Source $source,
 		$value,
 		bool $is_for_validation = false,
