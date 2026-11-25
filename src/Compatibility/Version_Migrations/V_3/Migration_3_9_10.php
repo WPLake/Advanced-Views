@@ -33,35 +33,39 @@ final class Migration_3_9_10 extends Version_Migration_Base {
 			new Migration_Field_Values(
 				$logger,
 				$post_selections_settings_storage,
-				fn ( Cpt_Settings $cpt_settings ) => $this->enable_template( $cpt_settings )
+				fn ( Cpt_Settings $cpt_settings ) => self::enable_template( $cpt_settings )
 			),
 			new Migration_Field_Values(
 				$logger,
 				$layouts_settings_storage,
-				fn ( Cpt_Settings $cpt_settings ) => $this->set_custom_item_type( $cpt_settings )
+				fn ( Cpt_Settings $cpt_settings ) => self::set_custom_item_type( $cpt_settings )
 			),
 		);
 	}
 
-	public function enable_template( Cpt_Settings $cpt_settings ): bool {
-		if ( ! $cpt_settings instanceof Post_Selection_Settings ||
-			$cpt_settings->has_template ) {
-			return false;
+	public static function enable_template( Cpt_Settings $cpt_settings ): bool {
+		$is_template_missing = $cpt_settings instanceof Post_Selection_Settings &&
+			! $cpt_settings->has_template;
+
+		if ( $is_template_missing ) {
+			$cpt_settings->has_template = true;
+
+			return true;
 		}
 
-		$cpt_settings->has_template = true;
-
-		return true;
+		return false;
 	}
 
-	public function set_custom_item_type( Cpt_Settings $cpt_settings ): bool {
-		if ( ! $cpt_settings instanceof Layout_Settings ||
-			Layout_Settings::ITEM_TYPE_CUSTOM === $cpt_settings->item_type ) {
-			return false;
+	public static function set_custom_item_type( Cpt_Settings $cpt_settings ): bool {
+		$is_item_type_changeable = $cpt_settings instanceof Layout_Settings &&
+			Layout_Settings::ITEM_TYPE_CUSTOM !== $cpt_settings->item_type;
+
+		if ( $is_item_type_changeable ) {
+			$cpt_settings->item_type = Layout_Settings::ITEM_TYPE_CUSTOM;
+
+			return true;
 		}
 
-		$cpt_settings->item_type = Layout_Settings::ITEM_TYPE_CUSTOM;
-
-		return true;
+		return false;
 	}
 }

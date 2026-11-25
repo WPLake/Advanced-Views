@@ -57,7 +57,13 @@ class Postbox_Printer {
 		}
 
 		$shortcode_name = $public_cpt->shortcode();
-		$shortcode      = sprintf( '[%s name="%s" %s="%s"]', $shortcode_name, $entry_name, 'id', $unique_id );
+		$shortcode      = sprintf(
+			'[%s name="%s" %s="%s"]',
+			$shortcode_name,
+			$entry_name,
+			'id',
+			$unique_id
+		);
 
 		return array( self::shortcode_tags( $shortcode, $is_short, $is_single ) );
 	}
@@ -69,7 +75,11 @@ class Postbox_Printer {
 		);
 
 		$button_label = __( 'Upgrade to Pro', 'acf-views' );
-		$tags         = self::support_postbox_tags( $description, External_Links::PRO_VERSION_URL, $button_label );
+		$tags         = self::support_postbox_tags(
+			$description,
+			External_Links::PRO_VERSION_URL,
+			$button_label
+		);
 
 		$this->html_renderer->print_html( $tags );
 	}
@@ -145,7 +155,6 @@ class Postbox_Printer {
 	}
 
 	protected static function embed_hint_tags( string $question, string $answer ): Html_Tag {
-
 		return tag( 'p' )
 			->content(
 				$question,
@@ -169,7 +178,6 @@ class Postbox_Printer {
 	}
 
 	protected static function button_link_tags( string $url, string $label ): Html_Tag {
-
 		return tag( 'a' )
 			->attributes(
 				array(

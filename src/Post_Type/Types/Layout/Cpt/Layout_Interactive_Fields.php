@@ -62,14 +62,18 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 
 		$layout_settings = $this->layout_settings_storage->get( $layout_unique_id );
 
-		return array_merge(
-			parent::get_interactive_response( $post ),
-			array(
-				'textareaItems'         => $this->get_editor_field_values( $layout_settings ),
-				'elements'              => $this->get_postbox_elements_response( $post, $layout_settings ),
-				'autocompleteVariables' => $this->layout_factory->get_autocomplete_variables( $layout_unique_id ),
-			)
+		$parent_response        = parent::get_interactive_response( $post );
+		$textarea_items         = $this->get_editor_field_values( $layout_settings );
+		$elements               = $this->get_postbox_elements_response( $post, $layout_settings );
+		$autocomplete_variables = $this->layout_factory->get_autocomplete_variables( $layout_unique_id );
+
+		$layout_response = array(
+			'textareaItems'         => $textarea_items,
+			'elements'              => $elements,
+			'autocompleteVariables' => $autocomplete_variables,
 		);
+
+		return array_merge( $parent_response, $layout_response );
 	}
 
 	protected function get_editor_fields(): array {
@@ -110,14 +114,18 @@ final class Layout_Interactive_Fields extends Cpt_Interactive_Fields {
 	 * @return array<string,mixed>
 	 */
 	protected function get_postbox_elements_response( WP_Post $post, Layout_Settings $layout_settings ): array {
+		$unique_id         = $layout_settings->get_unique_id( true );
+		$title             = get_the_title( $post );
+		$is_internal_usage = $layout_settings->is_for_internal_usage_only();
+
 		ob_start();
 		$this->postbox->print_postbox_shortcode(
-			$layout_settings->get_unique_id( true ),
+			$unique_id,
 			false,
 			$this->public_cpt,
-			get_the_title( $post ),
+			$title,
 			false,
-			$layout_settings->is_for_internal_usage_only()
+			$is_internal_usage
 		);
 		$shortcodes = (string) ob_get_clean();
 
