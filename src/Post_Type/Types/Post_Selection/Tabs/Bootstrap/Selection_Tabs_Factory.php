@@ -20,7 +20,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Sel
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Table\Selection_Cpt_Table;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Post_Selection_Fs_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Post_Selection_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Tabs\Post_Selection_Bulk_Validation_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Tabs\Post_Selection_Pre_Built_Tab;
@@ -31,12 +31,14 @@ class Selection_Tabs_Factory extends Factory_Base {
 	public function fs_only_tab(): Fs_Only_Tab {
 		$cpt_table        = $this->resolve( Selection_Cpt_Table::class );
 		$settings_storage = $this->resolve( Selection_Settings_Storage::class );
+		$html_renderer    = $this->resolve( Html_Renderer::class );
+		$row_title        = $this->resolve( Row_Title_Printer::class );
 
 		return new Fs_Only_Tab(
 			$cpt_table,
 			$settings_storage,
-			$this->resolve( Html_Renderer::class ),
-			$this->resolve( Row_Title_Printer::class )
+			$html_renderer,
+			$row_title
 		);
 	}
 
@@ -44,9 +46,16 @@ class Selection_Tabs_Factory extends Factory_Base {
 		$cpt_table         = $this->resolve( Selection_Cpt_Table::class );
 		$settings_storage  = $this->resolve( Selection_Settings_Storage::class );
 		$fs_only_tab       = $this->fs_only_tab();
-		$selection_factory = $this->resolve( Post_Selection_Factory::class );
+		$selection_factory = $this->resolve( Selection_Factory::class );
+		$row_title         = $this->resolve( Row_Title_Printer::class );
 
-		return new Post_Selection_Bulk_Validation_Tab( $cpt_table, $settings_storage, $fs_only_tab, $selection_factory, $this->resolve( Row_Title_Printer::class ) );
+		return new Post_Selection_Bulk_Validation_Tab(
+			$cpt_table,
+			$settings_storage,
+			$fs_only_tab,
+			$selection_factory,
+			$row_title
+		);
 	}
 
 	public function pre_built_tab(): Post_Selection_Pre_Built_Tab {
@@ -79,6 +88,7 @@ class Selection_Tabs_Factory extends Factory_Base {
 		$settings_storage      = $this->resolve( Selection_Settings_Storage::class );
 		$migrator              = $this->resolve( Cpt_Settings_Migrator::class );
 		$layouts_pre_built_tab = $this->resolve( Layout_Pre_Built_Tab::class );
+		$row_title             = $this->resolve( Row_Title_Printer::class );
 
 		return new Post_Selection_Pre_Built_Tab(
 			$cpt_table,
@@ -89,7 +99,7 @@ class Selection_Tabs_Factory extends Factory_Base {
 			$logger,
 			$layouts_pre_built_tab,
 			$html_renderer,
-			$this->resolve( Row_Title_Printer::class )
+			$row_title
 		);
 	}
 }

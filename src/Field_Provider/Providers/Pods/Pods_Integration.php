@@ -16,6 +16,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Layout_Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
@@ -38,6 +39,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 		Field_Provider_Cluster $provider_cluster,
 		Layout_Save_Actions $layouts_cpt_save_actions,
 		Layout_Factory $layout_factory,
+		Layout_Renderer $layout_renderer,
 		Pods_Data_Vendor $pods_data_vendor,
 		Layout_Shortcode_Renderer $layout_shortcode,
 		Cpt_Theme_Settings $settings,
@@ -50,6 +52,7 @@ class Pods_Integration extends Settings_Vendor_Integration {
 			$provider_cluster,
 			$layouts_cpt_save_actions,
 			$layout_factory,
+			$layout_renderer,
 			$pods_data_vendor,
 			$layout_shortcode,
 			$settings,

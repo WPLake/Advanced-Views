@@ -15,7 +15,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 
 defined( 'ABSPATH' ) || exit;
 
-class Layout_Bulk_Validation_Tab extends Bulk_Validation_Tab {
+final class Layout_Bulk_Validation_Tab extends Bulk_Validation_Tab {
 	private Layout_Factory $layout_factory;
 
 	public function __construct(
@@ -31,6 +31,6 @@ class Layout_Bulk_Validation_Tab extends Bulk_Validation_Tab {
 	}
 
 	protected function make_validation_instance( string $unique_id ): Instance {
-		return $this->layout_factory->make( new Source(), $unique_id, 0 );
+		return $this->layout_factory->create_layout( new Source(), $unique_id, 0 );
 	}
 }

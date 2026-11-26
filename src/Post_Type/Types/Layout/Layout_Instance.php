@@ -14,8 +14,8 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Field_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Item_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Variable_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Template_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Variable_Builder;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_REST_Request;
 
@@ -40,6 +40,10 @@ class Layout_Instance extends Instance {
 	 */
 	private array $item_ids;
 
+	/**
+	 * @param array<string|int,mixed>|null $local_data
+	 * @param int[] $item_ids Used only by the Multiple format
+	 */
 	public function __construct(
 		Field_Provider_Cluster $provider_cluster,
 		Variable_Builder $variables_builder,
@@ -48,7 +52,9 @@ class Layout_Instance extends Instance {
 		Layout_Settings $layout_settings,
 		Source $source,
 		Html_Renderer $html_renderer,
-		string $classes = ''
+		string $classes = '',
+		?array $local_data = null,
+		array $item_ids = array()
 	) {
 		parent::__construct( $layout_settings, $twig_template, $html_renderer, $classes );
 
@@ -57,8 +63,8 @@ class Layout_Instance extends Instance {
 		$this->variables_builder = $variables_builder;
 		$this->template_renderer = $template_renderer;
 		$this->source            = $source;
-		$this->local_data        = null;
-		$this->item_ids          = array();
+		$this->local_data        = $local_data;
+		$this->item_ids          = $item_ids;
 	}
 
 	/**
@@ -116,39 +122,25 @@ class Layout_Instance extends Instance {
 	/**
 	 * @param array<string,mixed> $custom_arguments
 	 */
-	public function insert_fields_and_print_html(
+	public function render(
 		array $custom_arguments = array()
-	): bool {
+	): ?string {
 		$template = $this->get_template();
 
 		$twig_variables = $this->get_template_variables( false, $custom_arguments );
 
 		ob_start();
-		$is_rendered = $this->render_template_and_print_html( $template, $twig_variables );
+		$is_rendered = $this->render_template( $template, $twig_variables );
 		$html        = (string) ob_get_clean();
 
 		// shortcode support (necessary for the relationship field with the Field Layout option and others).
-		echo do_shortcode( $html );
-
-		return $is_rendered;
+		return $is_rendered ?
+			do_shortcode( $html ) :
+			null;
 	}
 
 	public function get_view_data(): Layout_Settings {
 		return $this->layout_settings;
-	}
-
-	/**
-	 * @param array<string|int,mixed>|null $local_data
-	 */
-	public function set_local_data( ?array $local_data ): void {
-		$this->local_data = $local_data;
-	}
-
-	/**
-	 * @param int[] $item_ids Used only by the Multiple format
-	 */
-	public function set_item_ids( array $item_ids ): void {
-		$this->item_ids = $item_ids;
 	}
 
 	/**
@@ -161,7 +153,7 @@ class Layout_Instance extends Instance {
 	/**
 	 * @param array<string,mixed> $variables
 	 */
-	protected function render_template_and_print_html(
+	protected function render_template(
 		string $template,
 		array $variables,
 		bool $is_for_validation = false

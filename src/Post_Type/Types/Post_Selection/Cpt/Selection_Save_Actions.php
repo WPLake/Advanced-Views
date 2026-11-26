@@ -19,14 +19,14 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Library\Library_Cpt_Integrat
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Cpt\Template\Template_Code_Updater;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Post_Selection_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Factory;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration_Storage;
 
 class Selection_Save_Actions extends Cpt_Save_Actions {
 
 	private Template_Code_Updater $template_updater;
 	private Selection_Query_Builder $query_builder;
-	private Post_Selection_Factory $post_selection_factory;
+	private Selection_Factory $post_selection_factory;
 	/**
 	 * @var Post_Selection_Settings
 	 */
@@ -41,7 +41,7 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 		Library_Cpt_Integrator $cpt_integrator,
 		Template_Code_Updater $template_updater,
 		Selection_Query_Builder $query_builder,
-		Post_Selection_Factory $post_selection_factory,
+		Selection_Factory $post_selection_factory,
 		Template_Integration_Storage $template_integration_storage
 	) {
 		// make a clone before passing to the parent, to make sure that external changes won't appear in this object.
@@ -71,13 +71,7 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 	 */
 	public function perform_save_actions( $post_id, bool $is_skip_save = false ): ?Post_Selection_Settings {
 		if ( $this->is_my_post( $post_id ) ) {
-			// skip save, it'll be below.
-			$selection_settings = parent::perform_save_actions( $post_id, true );
-
-			// not just on null, but also on the type, for IDE.
-			if ( $selection_settings instanceof Post_Selection_Settings ) {
-				return $this->save_updated_selection( $selection_settings, $is_skip_save );
-			}
+			return $this->perform_selection_save_actions( $post_id, $is_skip_save );
 		}
 
 		return null;
@@ -92,23 +86,19 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 	}
 
 	protected function make_validation_instance(): Instance {
-		return $this->post_selection_factory->make( $this->post_selection_settings );
+		return $this->post_selection_factory->create_selection( $this->post_selection_settings );
 	}
 
 	protected function integrate_template_code( Cpt_Settings $cpt_data ): void {
-		if ( ! $this->post_selection_settings->has_template() ) {
-			return;
+		if ( $this->post_selection_settings->has_template() ) {
+			parent::integrate_template_code( $cpt_data );
 		}
-
-		parent::integrate_template_code( $cpt_data );
 	}
 
 	protected function validate_custom_markup(): void {
-		if ( ! $this->post_selection_settings->has_template() ) {
-			return;
+		if ( $this->post_selection_settings->has_template() ) {
+			parent::validate_custom_markup();
 		}
-
-		parent::validate_custom_markup();
 	}
 
 	protected function update_markup( Cpt_Settings $cpt_settings ): void {
@@ -118,15 +108,32 @@ class Selection_Save_Actions extends Cpt_Save_Actions {
 	}
 
 	protected function update_query_preview( Post_Selection_Settings $selection_settings ): void {
-		$this->query_builder->set_query_context(
-			Query_Context::new_instance()->set_post_id( $selection_settings->preview_context_post )
-		);
+		$query_context = Query_Context::new_instance()
+			->set_post_id( $selection_settings->preview_context_post );
+
+		$this->query_builder->set_query_context( $query_context );
+
+		$query = $this->query_builder->build_post_query( $selection_settings );
 
 		// @phpcs:ignore
-		$selection_settings->query_preview = print_r(
-			$this->query_builder->build_post_query( $selection_settings ),
-			true
-		);
+		$selection_settings->query_preview = print_r( $query, true );
+	}
+
+	/**
+	 * @param int|string $post_id
+	 *
+	 * @throws Exception
+	 */
+	protected function perform_selection_save_actions( $post_id, bool $is_skip_save ): ?Post_Selection_Settings {
+		// skip save, it'll be below.
+		$selection_settings = parent::perform_save_actions( $post_id, true );
+
+		// not just on null, but also on the type, for IDE.
+		if ( $selection_settings instanceof Post_Selection_Settings ) {
+			return $this->save_updated_selection( $selection_settings, $is_skip_save );
+		}
+
+		return null;
 	}
 
 	protected function save_updated_selection( Post_Selection_Settings $selection_settings, bool $is_skip_save ): Post_Selection_Settings {

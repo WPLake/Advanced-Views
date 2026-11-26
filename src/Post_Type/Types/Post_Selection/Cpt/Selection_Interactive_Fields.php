@@ -15,8 +15,8 @@ use Org\Wplake\Advanced_Views\Plugin\Dashboard\Html\Postbox_Printer;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Cpt_Interactive_Fields;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Post_Selection_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Post_Selection_Markup;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Markup;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
 use Org\Wplake\Advanced_Views\Template\Template_Engine\Core\Integration\Template_Integration_Storage;
 use WP_Post;
@@ -25,8 +25,8 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 	const REST_REFRESH_ROUTE = '/card-refresh';
 
 	protected Selection_Settings_Storage $selection_settings_storage;
-	protected Post_Selection_Markup $selection_markup;
-	protected Post_Selection_Factory $selection_factory;
+	protected Selection_Markup $selection_markup;
+	protected Selection_Factory $selection_factory;
 	protected Selection_Meta_Boxes $selection_meta_boxes;
 	protected Selection_Results_Preview $results_preview;
 
@@ -34,8 +34,8 @@ final class Selection_Interactive_Fields extends Cpt_Interactive_Fields {
 		Selection_Cpt $public_cpt,
 		Postbox_Printer $postbox,
 		Selection_Settings_Storage $selections_settings_storage,
-		Post_Selection_Markup $selection_markup,
-		Post_Selection_Factory $selection_factory,
+		Selection_Markup $selection_markup,
+		Selection_Factory $selection_factory,
 		Template_Integration_Storage $template_integration_storage,
 		Field_Provider_Cluster $provider_cluster,
 		Settings_Storage $settings,

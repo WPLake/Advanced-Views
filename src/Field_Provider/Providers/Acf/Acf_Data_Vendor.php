@@ -39,6 +39,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Layout_Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 
@@ -74,6 +75,7 @@ class Acf_Data_Vendor extends Field_Provider_Base {
 			$container->resolve( Field_Provider_Cluster::class ),
 			$container->resolve( Layout_Save_Actions::class ),
 			$container->resolve( Layout_Factory::class ),
+			$container->resolve( Layout_Renderer::class ),
 			$this,
 			$container->resolve( Layout_Shortcode_Renderer::class ),
 			$container->resolve( Settings_Storage::class ),

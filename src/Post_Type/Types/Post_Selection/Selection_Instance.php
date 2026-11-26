@@ -22,10 +22,10 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\int;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
-class Post_Selection extends Instance {
+class Selection_Instance extends Instance {
 	private Post_Selection_Settings $settings;
 	private Post_Query $post_query;
-	private Post_Selection_Markup $post_selection_markup;
+	private Selection_Markup $post_selection_markup;
 	private Template_Renderer_Storage $template_renderer_storage;
 	private int $pages_amount;
 	/**
@@ -37,7 +37,7 @@ class Post_Selection extends Instance {
 		Template_Renderer_Storage $template_renderer_storage,
 		Post_Selection_Settings $post_selection_settings,
 		Post_Query $post_query,
-		Post_Selection_Markup $post_selection_markup,
+		Selection_Markup $post_selection_markup,
 		Html_Renderer $html_renderer,
 		string $classes = ''
 	) {
@@ -77,10 +77,10 @@ class Post_Selection extends Instance {
 		return array();
 	}
 
-	public function query_insert_and_print_html(
+	public function render(
 		Query_Context $query_context,
 		bool $is_load_more = false
-	): void {
+	): string {
 		$posts_data = $this->post_query->query_posts( $this->settings, $query_context );
 
 		$this->pages_amount = int( $posts_data, 'pagesAmount' );
@@ -97,7 +97,10 @@ class Post_Selection extends Instance {
 
 		$twig_variables = $this->get_template_variables( false, $query_context->get_custom_arguments() );
 
-		$this->render_template_and_print_html( $template, $twig_variables );
+		ob_start();
+		$this->render_template( $template, $twig_variables );
+
+		return (string) ob_get_clean();
 	}
 
 	public function getCardData(): Post_Selection_Settings {
@@ -275,7 +278,7 @@ class Post_Selection extends Instance {
 	/**
 	 * @param array<string,mixed> $variables
 	 */
-	protected function render_template_and_print_html(
+	protected function render_template(
 		string $template,
 		array $variables,
 		bool $is_for_validation = false

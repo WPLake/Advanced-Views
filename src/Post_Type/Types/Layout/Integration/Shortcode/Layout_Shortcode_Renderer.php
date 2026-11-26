@@ -12,7 +12,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Setting
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Arguments\Argument_Parser;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Arguments\Shortcode_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
@@ -21,30 +21,28 @@ defined( 'ABSPATH' ) || exit;
 final class Layout_Shortcode_Renderer extends Shortcode_Base {
 	private Layout_Settings_Storage $layouts_settings_storage;
 	private Argument_Parser $shortcode_arguments_parser;
-	private Layout_Renderer $layout_printer;
+	private Layout_Renderer $layout_renderer;
 
 	public function __construct(
 		Layout_Cpt $public_cpt,
 		Settings_Storage $settings,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Live_Reloader_Component $live_reloader_component,
-		Layout_Factory $layout_factory,
 		Html_Renderer $html_renderer,
 		Argument_Parser $shortcode_arguments_parser,
-		Layout_Renderer $layout_printer
+		Layout_Renderer $layout_renderer
 	) {
 		parent::__construct(
 			$public_cpt,
 			$settings,
 			$layouts_settings_storage,
-			$layout_factory,
 			$live_reloader_component,
 			$html_renderer
 		);
 
 		$this->layouts_settings_storage   = $layouts_settings_storage;
 		$this->shortcode_arguments_parser = $shortcode_arguments_parser;
-		$this->layout_printer             = $layout_printer;
+		$this->layout_renderer            = $layout_renderer;
 	}
 
 	/**
@@ -55,10 +53,19 @@ final class Layout_Shortcode_Renderer extends Shortcode_Base {
 		$post_type = $this->get_post_type();
 		$unique_id = $this->layouts_settings_storage->get_unique_id_from_shortcode_id( $layout_id, $post_type );
 
-		if ( '' === $unique_id ) {
-			return $this->get_missing_layout_markup( $attrs );
+		$is_found = strlen( $unique_id ) > 0;
+
+		if ( $is_found ) {
+			return $this->render_available_layout( $unique_id, $attrs );
 		}
 
+		return $this->get_missing_layout_markup( $attrs );
+	}
+
+	/**
+	 * @param array<string,mixed> $attrs
+	 */
+	protected function render_available_layout( string $unique_id, array $attrs ): string {
 		$is_available = $this->is_layout_available_for_user( $unique_id, $attrs );
 
 		if ( $is_available ) {
@@ -66,10 +73,6 @@ final class Layout_Shortcode_Renderer extends Shortcode_Base {
 		}
 
 		return '';
-	}
-
-	protected function get_unique_id_prefix(): string {
-		return Layout_Settings::UNIQUE_ID_PREFIX;
 	}
 
 	/**
@@ -108,7 +111,15 @@ final class Layout_Shortcode_Renderer extends Shortcode_Base {
 		Shortcode_Arguments $arguments,
 		array $attrs
 	): string {
-		$html        = $this->layout_printer->render( $layout_settings, $arguments );
+		$html        = $this->layout_renderer->render(
+			$layout_settings,
+			$arguments->source,
+			$arguments->current_page_id,
+			$arguments->classes,
+			$arguments->custom_arguments,
+			$arguments->local_data,
+			$arguments->item_ids
+		);
 		$is_rendered = is_string( $html );
 
 		return $is_rendered ?
@@ -134,7 +145,9 @@ final class Layout_Shortcode_Renderer extends Shortcode_Base {
 			$roles_without
 		);
 
-		return $is_shortcode_available && $is_layout_available;
+		$is_available = $is_shortcode_available && $is_layout_available;
+
+		return $is_available;
 	}
 
 	/**

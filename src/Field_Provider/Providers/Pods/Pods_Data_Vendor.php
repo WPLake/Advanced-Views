@@ -35,6 +35,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Layout_Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
@@ -99,6 +100,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			$container->resolve( Field_Provider_Cluster::class ),
 			$container->resolve( Layout_Save_Actions::class ),
 			$container->resolve( Layout_Factory::class ),
+			$container->resolve( Layout_Renderer::class ),
 			$this,
 			$container->resolve( Layout_Shortcode_Renderer::class ),
 			$container->resolve( Settings_Storage::class ),
@@ -214,42 +216,27 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	 * @param mixed[] $data
 	 */
 	public function fill_field_meta( Field_Meta $field_meta, array $data = array() ): void {
-		if ( array() === $data ) {
+		$is_data_missing = 0 === count( $data );
+
+		if ( $is_data_missing ) {
 			$data = $this->find_field_info( $field_meta->get_field_id() );
 		}
 
-		$field_type      = string( $data, 'type' );
-		$supported_types = $this->get_supported_field_types();
+		$field_type = string( $data, 'type' );
 
-		$is_supported = array() !== $data && in_array(
-			$field_type,
-			$supported_types,
-			true
-		);
-
-		if ( ! $is_supported ) {
+		if ( ! $this->is_supported_data( $data ) ) {
 			return;
 		}
 
 		$name           = string( $data, 'name' );
 		$label          = string( $data, 'label' );
-		$display_format = $this->get_display_format( $data );
+		$display_format = self::get_display_format( $data );
 		$choices        = $this->get_choices( $data );
 		$is_repeatable  = boolExtended( $data, 'repeatable' );
 		$pro_stub_types = $this->get_pro_stub_field_types();
 		$registered     = $this->get_registered_field_types();
-
-		// for file and pick fields.
-		$return_format = string( $data, 'file_type' );
-		$return_format = '' === $return_format ?
-			string( $data, 'pick_object' ) :
-			$return_format;
-
-		// for file and pick fields.
-		$format_type = string( $data, 'file_format_type' );
-		$format_type = '' === $format_type ?
-			string( $data, 'pick_format_type' ) :
-			$format_type;
+		$return_format  = self::get_return_format( $data );
+		$format_type    = self::get_format_type( $data );
 
 		$is_pro_stub                 = in_array(
 			$field_type,
@@ -292,33 +279,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 		?array $local_data = null
 	) {
 		if ( function_exists( 'pods' ) ) {
-			$field_id          = $field_meta->get_field_id();
-			$id_parts          = explode( '.', $field_id );
-			$field_source_type = $id_parts[0];
-			$field_name        = $id_parts[1] ?? '';
-			$source_id         = $source->get_id();
-
-			$value = $this->get_pods_value(
-				$field_name,
-				$field_source_type,
-				$source_id,
-				$is_formatted,
-				$local_data
-			);
-
-			switch ( $field_meta->get_type() ) {
-				case 'oembed':
-					$is_filled = is_string( $value ) && strlen( $value ) > 0;
-					$value     = $is_filled ?
-						wp_oembed_get( $value ) :
-						'';
-					$value     = is_string( $value ) ?
-						$value :
-						'';
-					break;
-			}
-
-			return $value;
+			return $this->read_field_value( $field_meta, $source, $is_formatted, $local_data );
 		}
 
 		return null;
@@ -404,10 +365,53 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 						class_exists( 'Pods_Migrate_Packages' ) &&
 						is_callable( array( 'Pods_Migrate_Packages', 'export' ) );
 
-		if ( ! $is_supported ) {
-			return null;
+		if ( $is_supported ) {
+			$pod_id = $pod->get_id();
+
+			return $this->get_pod_export( $pod_id, $group_id );
 		}
 
+		return null;
+	}
+
+	/**
+	 * @param mixed[] $groups_data
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function get_export_meta_data( array $groups_data ): array {
+		$pods_version = defined( 'PODS_VERSION' ) ?
+			constant( 'PODS_VERSION' ) :
+			'';
+
+		return array(
+			'version' => $pods_version,
+			'build'   => time(),
+		);
+	}
+
+	/**
+	 * @param mixed[] $group_data
+	 * @param mixed[] $meta_data
+	 */
+	public function import_group( array $group_data, array $meta_data ): ?string {
+		$is_supported = class_exists( 'Pods_Migrate_Packages' ) &&
+						defined( 'PODS_DIR' ) &&
+						is_callable( array( 'Pods_Migrate_Packages', 'import_pod' ) );
+
+		if ( $is_supported ) {
+			return $this->import_pod( $group_data, $meta_data );
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param mixed $pod_id
+	 *
+	 * @return mixed[]|null
+	 */
+	protected function get_pod_export( $pod_id, string $group_id ): ?array {
 		$logger      = $this->get_logger();
 		$log_context = array(
 			'group_id' => $group_id,
@@ -415,7 +419,10 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 
 		include_once self::get_migrate_file();
 
-		$pod_id      = $pod->get_id();
+		if ( ! class_exists( 'Pods_Migrate_Packages' ) ) {
+			return null;
+		}
+
 		$export_args = array(
 			'pods' => array( $pod_id ),
 		);
@@ -452,38 +459,20 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	}
 
 	/**
-	 * @param mixed[] $groups_data
-	 *
-	 * @return array<string, mixed>
-	 */
-	public function get_export_meta_data( array $groups_data ): array {
-		$pods_version = defined( 'PODS_VERSION' ) ?
-			constant( 'PODS_VERSION' ) :
-			'';
-
-		return array(
-			'version' => $pods_version,
-			'build'   => time(),
-		);
-	}
-
-	/**
 	 * @param mixed[] $group_data
 	 * @param mixed[] $meta_data
 	 */
-	public function import_group( array $group_data, array $meta_data ): ?string {
-		$is_supported = class_exists( 'Pods_Migrate_Packages' ) &&
-						defined( 'PODS_DIR' ) &&
-						is_callable( array( 'Pods_Migrate_Packages', 'import_pod' ) );
+	protected function import_pod( array $group_data, array $meta_data ): ?string {
+		include_once self::get_migrate_file();
 
-		if ( ! $is_supported ) {
+		if ( ! class_exists( 'Pods_Migrate_Packages' ) ) {
 			return null;
 		}
 
-		include_once self::get_migrate_file();
+		$is_meta_missing = 0 === count( $meta_data );
 
 		// for compatibility with our old export format, which didn't have meta.
-		if ( array() === $meta_data ) {
+		if ( $is_meta_missing ) {
 			$meta_data = $this->get_export_meta_data( array() );
 		}
 
@@ -496,34 +485,81 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 
 		$imported_pod = Pods_Migrate_Packages::import( $import_args );
 
-		if ( false === is_array( $imported_pod ) ) {
-			$logger      = $this->get_logger();
-			$log_context = array(
-				'group_data' => $group_data,
-			);
-
-			$logger->warning( 'Pods import failed', $log_context );
-
-			return null;
+		if ( is_array( $imported_pod ) ) {
+			return stringOrNull( $group_data, 'name' );
 		}
 
-		return stringOrNull( $group_data, 'name' );
+		$logger      = $this->get_logger();
+		$log_context = array(
+			'group_data' => $group_data,
+		);
+
+		$logger->warning( 'Pods import failed', $log_context );
+
+		return null;
+	}
+
+	/**
+	 * @param mixed[] $data
+	 */
+	protected function is_supported_data( array $data ): bool {
+		$field_type      = string( $data, 'type' );
+		$supported_types = $this->get_supported_field_types();
+		$is_filled       = count( $data ) > 0;
+		$is_supported    = in_array(
+			$field_type,
+			$supported_types,
+			true
+		);
+
+		return $is_filled && $is_supported;
+	}
+
+	/**
+	 * @param array<string|int,mixed>|null $local_data
+	 *
+	 * @return mixed
+	 */
+	protected function read_field_value(
+		Field_Meta $field_meta,
+		Source $source,
+		bool $is_formatted,
+		?array $local_data
+	) {
+		$field_id                           = $field_meta->get_field_id();
+		[ $field_source_type, $field_name ] = self::split_pods_id( $field_id );
+		$source_id                          = $source->get_id();
+
+		$value = $this->get_pods_value(
+			$field_name,
+			$field_source_type,
+			$source_id,
+			$is_formatted,
+			$local_data
+		);
+
+		switch ( $field_meta->get_type() ) {
+			case 'oembed':
+				$value = self::get_oembed_html( $value );
+				break;
+		}
+
+		return $value;
 	}
 
 	/**
 	 * @param array<string,mixed> $data
 	 */
-	protected function get_display_format( array $data ): string {
+	protected static function get_display_format( array $data ): string {
 		$field_type = string( $data, 'type' );
 
-		$resolvers = array(
-			'datetime' => fn() => $this->get_datetime_display_format( $data ),
-			'date'     => fn() => $this->get_date_display_format( $data ),
-			'time'     => fn() => $this->get_time_display_format( $data ),
-		);
-
-		if ( key_exists( $field_type, $resolvers ) ) {
-			return $resolvers[ $field_type ]();
+		switch ( $field_type ) {
+			case 'datetime':
+				return self::get_datetime_display_format( $data );
+			case 'date':
+				return self::get_date_display_format( $data );
+			case 'time':
+				return self::get_time_display_format( $data );
 		}
 
 		return '';
@@ -532,7 +568,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	/**
 	 * @param array<string,mixed> $data
 	 */
-	protected function get_datetime_display_format( array $data ): string {
+	protected static function get_datetime_display_format( array $data ): string {
 		$date_time_type = string( $data, 'datetime_type' );
 
 		if ( 'wp' === $date_time_type ) {
@@ -577,7 +613,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	/**
 	 * @param array<string,mixed> $data
 	 */
-	protected function get_date_display_format( array $data ): string {
+	protected static function get_date_display_format( array $data ): string {
 		$date_type = string( $data, 'date_type' );
 
 		if ( 'wp' === $date_type ) {
@@ -594,7 +630,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	/**
 	 * @param array<string,mixed> $data
 	 */
-	protected function get_time_display_format( array $data ): string {
+	protected static function get_time_display_format( array $data ): string {
 		$time_type = string( $data, 'time_type' );
 
 		if ( 'wp' === $time_type ) {
@@ -608,6 +644,69 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 			string( $data, 'time_format' );
 
 		return self::get_php_time_format( $display_time_format );
+	}
+
+	/**
+	 * For file and pick fields.
+	 *
+	 * @param array<string,mixed> $data
+	 */
+	protected static function get_return_format( array $data ): string {
+		$return_format = string( $data, 'file_type' );
+
+		return '' === $return_format ?
+			string( $data, 'pick_object' ) :
+			$return_format;
+	}
+
+	/**
+	 * For file and pick fields.
+	 *
+	 * @param array<string,mixed> $data
+	 */
+	protected static function get_format_type( array $data ): string {
+		$format_type = string( $data, 'file_format_type' );
+
+		return '' === $format_type ?
+			string( $data, 'pick_format_type' ) :
+			$format_type;
+	}
+
+	/**
+	 * @return array{0:string,1:string}
+	 */
+	protected static function split_pods_id( string $field_id ): array {
+		$id_parts = explode( '.', $field_id );
+
+		return array( $id_parts[0], $id_parts[1] ?? '' );
+	}
+
+	/**
+	 * @param mixed $value
+	 */
+	protected static function get_oembed_html( $value ): string {
+		$is_filled = is_string( $value ) && strlen( $value ) > 0;
+		$html      = $is_filled ?
+			wp_oembed_get( $value ) :
+			'';
+
+		return is_string( $html ) ?
+			$html :
+			'';
+	}
+
+	/**
+	 * @return array<string|int,mixed>
+	 */
+	protected function get_related_object( string $pick_object ): array {
+		$pick_related_objects = $this->get_pick_related_objects();
+
+		$is_related = key_exists( $pick_object, $pick_related_objects ) &&
+						is_array( $pick_related_objects[ $pick_object ] );
+
+		return $is_related ?
+			$pick_related_objects[ $pick_object ] :
+			array();
 	}
 
 	/**
@@ -628,13 +727,7 @@ class Pods_Data_Vendor extends Field_Provider_Base {
 	 * @return mixed[]
 	 */
 	protected function get_dynamic_choices( string $pick_object ): array {
-		$pick_related_objects = $this->get_pick_related_objects();
-
-		$is_related     = key_exists( $pick_object, $pick_related_objects ) &&
-							is_array( $pick_related_objects[ $pick_object ] );
-		$related_object = $is_related ?
-			$pick_related_objects[ $pick_object ] :
-			array();
+		$related_object = $this->get_related_object( $pick_object );
 
 		$has_callback = key_exists( 'data_callback', $related_object ) &&
 						is_callable( $related_object['data_callback'] );

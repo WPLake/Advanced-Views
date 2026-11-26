@@ -12,8 +12,17 @@ use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Cpt_Item_Picker;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Elementor\Cpt_Widget_Registrar;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Integration\Elementor\Selection_Elementor_Assets;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Integration\Gutenberg\Selection_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Integration\Selection_Ajax_Handler;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Integration\Selection_Rest_Handler;
 
 class Selection_Integrations_Bootstrap extends Bootstrap_Base {
+	public static function get_actor_classes(): array {
+		return array(
+			Selection_Ajax_Handler::class,
+			Selection_Rest_Handler::class,
+		);
+	}
+
 	public static function get_actor_factories( Instance_Container $container ): array {
 		$factory = $container->resolve( Selection_Integrations_Factory::class );
 

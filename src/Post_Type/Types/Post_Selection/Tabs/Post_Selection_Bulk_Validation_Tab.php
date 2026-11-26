@@ -10,19 +10,19 @@ use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Fs_Only_Tab;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt\Table\Row_Title_Printer;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Post_Selection_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Factory;
 
 defined( 'ABSPATH' ) || exit;
 
 class Post_Selection_Bulk_Validation_Tab extends Bulk_Validation_Tab {
-	protected Post_Selection_Factory $card_factory;
+	protected Selection_Factory $card_factory;
 	protected Selection_Settings_Storage $cards_data_storage;
 
 	public function __construct(
 		Cpt_Table $cpt_table,
 		Selection_Settings_Storage $post_selections_settings_storage,
 		Fs_Only_Tab $fs_only_tab,
-		Post_Selection_Factory $post_selection_factory,
+		Selection_Factory $post_selection_factory,
 		Row_Title_Printer $row_title_printer
 	) {
 		parent::__construct( $cpt_table, $post_selections_settings_storage, $fs_only_tab, $row_title_printer );
@@ -32,6 +32,8 @@ class Post_Selection_Bulk_Validation_Tab extends Bulk_Validation_Tab {
 	}
 
 	protected function make_validation_instance( string $unique_id ): Instance {
-		return $this->card_factory->make( $this->cards_data_storage->get( $unique_id ) );
+		$selection_settings = $this->cards_data_storage->get( $unique_id );
+
+		return $this->card_factory->create_selection( $selection_settings );
 	}
 }

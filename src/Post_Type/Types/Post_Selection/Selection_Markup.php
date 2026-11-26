@@ -29,7 +29,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 /**
  * @phpstan-import-type Html_Node from Html_Tag
  */
-class Post_Selection_Markup {
+class Selection_Markup {
 	private Selection_Wrapper_Resolver $card_composer;
 	protected Token_Factory_Storage $token_factory_storage;
 	private Layout_Cpt $layout_cpt;

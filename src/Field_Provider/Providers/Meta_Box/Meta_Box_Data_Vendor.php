@@ -34,6 +34,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Cpt\Layout_Save_Actions;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Layout_Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use WP_Post;
 use RWMB_Field;
@@ -68,6 +69,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			$container->resolve( Field_Provider_Cluster::class ),
 			$container->resolve( Layout_Save_Actions::class ),
 			$container->resolve( Layout_Factory::class ),
+			$container->resolve( Layout_Renderer::class ),
 			$this,
 			$container->resolve( Layout_Shortcode_Renderer::class ),
 			$container->resolve( Settings_Storage::class ),
@@ -198,41 +200,45 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	 * @param mixed[] $data
 	 */
 	public function fill_field_meta( Field_Meta $field_meta, array $data = array() ): void {
-		if ( array() === $data ) {
+		if ( 0 === count( $data ) ) {
 			$data = $this->get_field_info( $field_meta->get_field_id() );
 		}
 
 		$field_type      = string( $data, 'type' );
 		$supported_types = $this->get_supported_field_types();
 
-		$is_supported = array() !== $data && in_array(
+		$has_data          = count( $data ) > 0;
+		$is_type_supported = in_array(
 			$field_type,
 			$supported_types,
 			true
 		);
+		$is_supported      = $has_data && $is_type_supported;
 
 		if ( ! $is_supported ) {
 			return;
 		}
 
-		$name           = string( $data, 'name' );
-		$identifier     = string( $data, 'id' );
-		$choices        = arr( $data, 'options' );
-		$is_multiple    = boolExtended( $data, 'multiple' );
-		$save_format    = string( $data, 'save_format' );
-		$is_repeatable  = boolExtended( $data, 'clone' );
-		$pro_stub_types = $this->get_pro_stub_field_types();
-		$timestamp      = (bool) ( $data['timestamp'] ?? false );
-		$label          = 'hidden' !== $field_type ?
+		$name          = string( $data, 'name' );
+		$identifier    = string( $data, 'id' );
+		$choices       = arr( $data, 'options' );
+		$is_multiple   = boolExtended( $data, 'multiple' );
+		$save_format   = string( $data, 'save_format' );
+		$is_repeatable = boolExtended( $data, 'clone' );
+		$timestamp     = (bool) ( $data['timestamp'] ?? false );
+		$label         = 'hidden' !== $field_type ?
 			$name :
 			__( 'Hidden', 'acf-views' );
 
-		$is_pro_stub                 = in_array(
+		$pro_stub_types = $this->get_pro_stub_field_types();
+		$is_pro_stub    = in_array(
 			$field_type,
 			$pro_stub_types,
 			true
 		);
-		$is_repeatable_not_supported = $is_repeatable && $this->is_repeatable_not_supported();
+
+		$is_repeatable_unsupported   = $this->is_repeatable_not_supported();
+		$is_repeatable_not_supported = $is_repeatable && $is_repeatable_unsupported;
 
 		$field_meta
 			->set_is_native_type( true )
@@ -267,8 +273,8 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			'file'          => $set_multiple,
 			'file_advanced' => $set_multiple,
 			'file_upload'   => $set_multiple,
-			'date'          => fn() => $this->fill_date_formats( $field_meta, 'Y-m-d' ),
-			'datetime'      => fn() => $this->fill_date_formats( $field_meta, 'Y-m-d H:i' ),
+			'date'          => fn() => self::fill_date_formats( $field_meta, 'Y-m-d' ),
+			'datetime'      => fn() => self::fill_date_formats( $field_meta, 'Y-m-d H:i' ),
 		);
 
 		if ( key_exists( $field_type, $type_fillers ) ) {
@@ -279,8 +285,10 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			$field_meta->set_is_group( true );
 		}
 
-		// some fields don't require the repeater trick, as they use the HTML field with the formatted value.
-		// so markup will already include all the content.
+		/**
+		 * Some fields don't require the repeater trick, as they use the HTML field with the formatted value,
+		 * so markup will already include all the content.
+		 */
 		$field_types_without_self_repeatable = array(
 			'video',
 			'sidebar',
@@ -289,11 +297,12 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			'wysiwyg',
 		);
 
-		$is_self_repeatable = $is_repeatable && ! in_array(
+		$is_repeater_trick_needed = ! in_array(
 			$field_type,
 			$field_types_without_self_repeatable,
 			true
 		);
+		$is_self_repeatable       = $is_repeatable && $is_repeater_trick_needed;
 
 		if ( $is_self_repeatable ) {
 			if ( 'group' === $field_type ) {
@@ -330,7 +339,13 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		);
 
 		if ( is_array( $local_data ) ) {
-			return $this->get_local_field_value( $local_data, $field_meta, $is_formatted, $args, $source_id );
+			return $this->get_local_field_value(
+				$local_data,
+				$field_meta,
+				$is_formatted,
+				$args,
+				$source_id
+			);
 		}
 
 		$field_id = $field_meta->get_field_id();
@@ -363,7 +378,11 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			);
 		}
 
-		return self::get_raw_field_value( $field_meta, $args, $source_id );
+		return self::get_raw_field_value(
+			$field_meta,
+			$args,
+			$source_id
+		);
 	}
 
 	public function convert_string_to_date_time( Field_Meta $field_meta, string $value ): ?DateTime {
@@ -399,12 +418,18 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	 * @return null|array{title:string,url:string}
 	 */
 	public function get_group_link_by_group_id( string $group_id ): ?array {
-		$post = get_page_by_path( $group_id, OBJECT, 'meta-box' );
+		$post = get_page_by_path(
+			$group_id,
+			OBJECT,
+			'meta-box'
+		);
 
 		if ( is_object( $post ) ) {
+			$edit_link = get_edit_post_link( $post->ID );
+
 			return array(
 				'title' => $post->post_title,
-				'url'   => (string) get_edit_post_link( $post->ID ),
+				'url'   => (string) $edit_link,
 			);
 		}
 
@@ -454,8 +479,11 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	 * @return mixed[]|null
 	 */
 	public function get_group_export_data( string $group_id ): ?array {
-		$post   = get_page_by_path( $group_id, OBJECT, 'meta-box' );
-		$logger = $this->get_logger();
+		$post = get_page_by_path(
+			$group_id,
+			OBJECT,
+			'meta-box'
+		);
 
 		if ( is_object( $post ) ) {
 			$post_data = array(
@@ -479,6 +507,8 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 
 			return $post_data;
 		}
+
+		$logger = $this->get_logger();
 
 		$logger->warning(
 			'failed to get MetaBox group by path',
@@ -512,8 +542,10 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		if ( $is_ready ) {
 			self::save_group_meta( $post->ID, $prepared_data );
 
-			// manually signup in MetaBox registry,
-			// otherwise won't be available for query within this request.
+			/**
+			 * Manually signup in MetaBox registry,
+			 * otherwise won't be available for query within this request.
+			 */
 			$registry->make( $prepared_data );
 
 			return $post->post_name;
@@ -615,24 +647,28 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	protected function prepare_group_data( array $group_data ): ?array {
 		$post_name = stringOrNull( $group_data, 'post_name' );
 
-		if ( null === $post_name ) {
-			$logger      = $this->get_logger();
-			$log_context = array(
-				'group_data' => $group_data,
+		if ( is_string( $post_name ) ) {
+			$existing_post = get_page_by_path(
+				$post_name,
+				OBJECT,
+				'meta-box'
 			);
 
-			$logger->warning( 'failed to get post_name from MetaBox group data', $log_context );
+			if ( $existing_post instanceof WP_Post ) {
+				$group_data['ID'] = $existing_post->ID;
+			}
 
-			return null;
+			return $group_data;
 		}
 
-		$existing_post = get_page_by_path( $post_name, OBJECT, 'meta-box' );
+		$logger      = $this->get_logger();
+		$log_context = array(
+			'group_data' => $group_data,
+		);
 
-		if ( null !== $existing_post ) {
-			$group_data['ID'] = $existing_post->ID;
-		}
+		$logger->warning( 'failed to get post_name from MetaBox group data', $log_context );
 
-		return $group_data;
+		return null;
 	}
 
 	/**
@@ -658,15 +694,17 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 
 		$post = get_post( $post_id );
 
-		if ( null === $post ) {
-			$log_context = array(
-				'post_id' => $post_id,
-			);
-
-			$logger->warning( 'failed to get MetaBox group by id', $log_context );
+		if ( $post instanceof WP_Post ) {
+			return $post;
 		}
 
-		return $post;
+		$log_context = array(
+			'post_id' => $post_id,
+		);
+
+		$logger->warning( 'failed to get MetaBox group by id', $log_context );
+
+		return null;
 	}
 
 	/**
@@ -699,19 +737,22 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 				$supported_field_types,
 				true
 			);
-			$is_included  = array() === $include_only_types || in_array(
+			$is_any_type = 0 === count( $include_only_types );
+			$is_listed   = in_array(
 				$field_type,
 				$include_only_types,
 				true
 			);
+			$is_included = $is_any_type || $is_listed;
+			$is_suitable = $is_supported && $is_included;
 
-			if ( ! $is_supported || ! $is_included ) {
+			if ( ! $is_suitable ) {
 				continue;
 			}
 
 			$field_id = string( $field, 'id' );
 
-			$field_key = '' === $parent_choice_value ?
+			$field_key = 0 === strlen( $parent_choice_value ) ?
 				$this->get_field_key( $group_id, $field_id ) :
 				Field_Settings::create_field_key( $parent_choice_value, $field_id );
 
@@ -722,7 +763,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 
 			$sub_fields = arr( $field, 'fields' );
 
-			if ( array() !== $sub_fields ) {
+			if ( count( $sub_fields ) > 0 ) {
 				$field_choices = $this->get_field_choices_recursively(
 					$field_choices,
 					$sub_fields,
@@ -756,10 +797,10 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 
 			$sub_fields = arr( $field, 'fields' );
 
-			if ( array() !== $sub_fields ) {
+			if ( count( $sub_fields ) > 0 ) {
 				$sub_field_info = $this->get_field_recursively( $target_field_id, $sub_fields );
 
-				if ( array() !== $sub_field_info ) {
+				if ( count( $sub_field_info ) > 0 ) {
 					return $sub_field_info;
 				}
 			}
@@ -782,7 +823,7 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 
 			$data = $this->get_field_recursively( $target_field_id, $fields );
 
-			if ( array() !== $data ) {
+			if ( count( $data ) > 0 ) {
 				return $data;
 			}
 		}
@@ -849,25 +890,9 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		// repeater.
 		if ( $field_meta->is_repeater() ) {
 			foreach ( $raw_value as $raw_row ) {
-				$formatted_row = array();
-				$raw_row       = arr( $raw_row );
+				$raw_row = arr( $raw_row );
 
-				foreach ( $item_settings->repeater_fields as $repeater_field ) {
-					$repeater_meta       = $repeater_field->get_field_meta();
-					$repeater_field_id   = $repeater_meta->get_field_id();
-					$repeater_field_name = $repeater_meta->get_name();
-
-					$field_value = $raw_row[ $repeater_field_id ] ?? '';
-
-					$formatted_row[ $repeater_field_name ] = $this->format_group_item_value(
-						$field_value,
-						$repeater_field,
-						$repeater_meta,
-						$source
-					);
-				}
-
-				$formatted_value[] = $formatted_row;
+				$formatted_value[] = $this->format_group_row( $raw_row, $item_settings, $source );
 			}
 
 			return $formatted_value;
@@ -890,14 +915,25 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 		}
 
 		// group.
+		return $this->format_group_row( $raw_value, $item_settings, $source );
+	}
+
+	/**
+	 * @param array<int|string,mixed> $raw_row
+	 *
+	 * @return array<int|string,mixed>
+	 */
+	protected function format_group_row( array $raw_row, Item_Settings $item_settings, Source $source ): array {
+		$formatted_row = array();
+
 		foreach ( $item_settings->repeater_fields as $repeater_field ) {
 			$repeater_meta       = $repeater_field->get_field_meta();
 			$repeater_field_id   = $repeater_meta->get_field_id();
 			$repeater_field_name = $repeater_meta->get_name();
 
-			$field_value = $raw_value[ $repeater_field_id ] ?? '';
+			$field_value = $raw_row[ $repeater_field_id ] ?? '';
 
-			$formatted_value[ $repeater_field_name ] = $this->format_group_item_value(
+			$formatted_row[ $repeater_field_name ] = $this->format_group_item_value(
 				$field_value,
 				$repeater_field,
 				$repeater_meta,
@@ -905,21 +941,26 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 			);
 		}
 
-		return $formatted_value;
+		return $formatted_row;
 	}
 
 	/**
 	 * Repeatable is supported only if the group field isn't a Pro stub.
 	 */
 	protected function is_repeatable_not_supported(): bool {
-		return ( $this->get_registered_field_types()['group'] ?? null ) instanceof Pro_Stub_Field;
+		$field_types = $this->get_registered_field_types();
+		$group_type  = $field_types['group'] ?? null;
+
+		return $group_type instanceof Pro_Stub_Field;
 	}
 
-	protected function fill_date_formats( Field_Meta $field_meta, string $format ): void {
+	protected static function fill_date_formats( Field_Meta $field_meta, string $format ): void {
 		$return_format = $field_meta->get_return_format();
 
-		// set the default value (from MetaBox)
-		// if user changes the format using the jsOptions setting, we can't get it, so he must define 'save_format' in that case.
+		/**
+		 * Set the default value (from MetaBox).
+		 * If user changes the format using the jsOptions setting, we can't get it, so he must define 'save_format'.
+		 */
 		if ( '' === $return_format ) {
 			$field_meta
 				->set_return_format( $format )
@@ -990,7 +1031,9 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 	) {
 		$field_id = $field_meta->get_field_id();
 
-		if ( 'group' === $field_meta->get_type() ) {
+		$type = $field_meta->get_type();
+
+		if ( 'group' === $type ) {
 			$post_id = int( $source_id );
 
 			/**
@@ -1006,7 +1049,13 @@ class Meta_Box_Data_Vendor extends Field_Provider_Base {
 
 			// It's impossible to format the group value without the item data.
 			return null !== $item_settings ?
-				$this->format_group_value( $value, $field_settings, $field_meta, $item_settings, $source ) :
+				$this->format_group_value(
+					$value,
+					$field_settings,
+					$field_meta,
+					$item_settings,
+					$source
+				) :
 				$value;
 		}
 

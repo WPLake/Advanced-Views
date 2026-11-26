@@ -19,6 +19,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Setting
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Layout_Shortcode_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Factory;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_Post;
@@ -43,6 +44,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 	private Field_Provider_Cluster $provider_cluster;
 	private Layout_Save_Actions $layouts_cpt_save_actions;
 	private Layout_Factory $layout_factory;
+	private Layout_Renderer $layout_renderer;
 	private Field_Provider $data_vendor;
 	private Layout_Shortcode_Renderer $layout_shortcode;
 	private Layout_Cpt $layouts_cpt;
@@ -54,6 +56,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		Field_Provider_Cluster $provider_cluster,
 		Layout_Save_Actions $layouts_cpt_save_actions,
 		Layout_Factory $layout_factory,
+		Layout_Renderer $layout_renderer,
 		Field_Provider $data_vendor,
 		Layout_Shortcode_Renderer $layout_shortcode,
 		Cpt_Theme_Settings $settings,
@@ -67,6 +70,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		$this->provider_cluster         = $provider_cluster;
 		$this->layouts_cpt_save_actions = $layouts_cpt_save_actions;
 		$this->layout_factory           = $layout_factory;
+		$this->layout_renderer          = $layout_renderer;
 		$this->data_vendor              = $data_vendor;
 		$this->layout_shortcode         = $layout_shortcode;
 		$this->layouts_cpt              = $layouts_cpt;
@@ -205,16 +209,14 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		$source->set_is_block( true );
 		$source->set_user_id( get_current_user_id() );
 
-		ob_start();
-		$this->layout_factory->make_and_print_html(
+		$html = $this->layout_renderer->render(
+			$layout_settings,
 			$source,
-			$unique_id,
 			$post_id,
 			'',
 			array(),
 			$local_data
-		);
-		$html = (string) ob_get_clean();
+		) ?? '';
 
 		$shadow_html = $this->layout_shortcode->maybe_add_quick_link_and_shadow_css(
 			$html,
@@ -560,8 +562,8 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 		$is_filled        = strlen( $message ) > 0;
 
 		if ( $is_filled ) {
-			$type_messages                = arr( $messages, $vendor_post_type );
-			$type_messages[1]             = string( $type_messages, 1 ) . $message;
+			$type_messages                 = arr( $messages, $vendor_post_type );
+			$type_messages[1]              = string( $type_messages, 1 ) . $message;
 			$messages[ $vendor_post_type ] = $type_messages;
 		}
 
@@ -627,7 +629,7 @@ abstract class Settings_Vendor_Integration extends Cpt_Settings_Creator implemen
 
 		if ( $is_filled ) {
 			$unique_id     = $layout_settings->get_unique_id();
-			$view          = $this->layout_factory->make( new Source(), $unique_id, 0 );
+			$view          = $this->layout_factory->create_layout( new Source(), $unique_id, 0 );
 			$error         = $view->get_markup_validation_error();
 			$is_with_error = strlen( $error ) > 0;
 

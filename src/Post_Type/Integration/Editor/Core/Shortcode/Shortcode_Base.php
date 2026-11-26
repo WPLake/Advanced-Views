@@ -14,19 +14,15 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
 use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
-use Org\Wplake\Advanced_Views\Plugin\Plugin;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use WP_REST_Request;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
 use function Org\Wplake\Advanced_Views\Template\Html\tag;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\any;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\arr;
 
 abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, Actor {
-	private Instance_Factory $instance_factory;
 	private Settings_Storage $settings;
 	private Cpt_Settings_Storage $cpt_settings_storage;
 	private Live_Reloader_Component $live_reloader_component;
@@ -41,7 +37,6 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		Public_Cpt $public_cpt,
 		Settings_Storage $settings,
 		Cpt_Settings_Storage $cpt_settings_storage,
-		Instance_Factory $instance_factory,
 		Live_Reloader_Component $live_reloader_component,
 		Html_Renderer $html_renderer
 	) {
@@ -49,7 +44,6 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		$this->rendered_ids            = array();
 		$this->settings                = $settings;
 		$this->cpt_settings_storage    = $cpt_settings_storage;
-		$this->instance_factory        = $instance_factory;
 		$this->live_reloader_component = $live_reloader_component;
 		$this->html_renderer           = $html_renderer;
 	}
@@ -59,135 +53,9 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 	}
 
 	public function set_route_hooks( Route_Detector $route_detector ): void {
-		if ( $route_detector->is_admin_route() ) {
-			self::add_action( 'rest_api_init', array( $this, 'register_rest_route' ) );
-		}
-
 		foreach ( $this->public_cpt->shortcodes() as $shortcode ) {
 			self::add_shortcode( $shortcode, array( $this, 'do_shortcode' ) );
 		}
-	}
-
-	protected function get_post_type(): string {
-		return $this->public_cpt->cpt_name();
-	}
-
-	abstract protected function get_unique_id_prefix(): string;
-
-	/**
-	 * @param mixed $argument_input
-	 *
-	 * @return string[]
-	 */
-	protected static function get_roles( $argument_input ): array {
-		if ( is_string( $argument_input ) ) {
-			$argument_input = trim( $argument_input );
-
-			if ( strlen( $argument_input ) > 0 ) {
-				return explode( ',', $argument_input );
-			}
-		} elseif ( is_array( $argument_input ) ) { // can be an array, if called from Bridge.
-			/**
-			 * @var string[] $argument_input
-			 */
-			return $argument_input;
-		}
-
-		return array();
-	}
-
-	/**
-	 * @param string[] $user_roles
-	 * @param mixed[] $shortcode_args
-	 */
-	protected function is_shortcode_available_for_user( array $user_roles, array $shortcode_args ): bool {
-		$user_with_roles_input    = any( $shortcode_args, 'user-with-roles' );
-		$user_with_roles          = self::get_roles( $user_with_roles_input );
-		$user_without_roles_input = any( $shortcode_args, 'user-without-roles' );
-		$user_without_roles       = self::get_roles( $user_without_roles_input );
-
-		return self::is_available_for_roles(
-			$user_roles,
-			$user_with_roles,
-			$user_without_roles
-		);
-	}
-
-	/**
-	 * @param string[] $user_roles
-	 * @param string[] $allowed_roles Empty for no limits.
-	 * @param string[] $denied_roles Empty for no limits.
-	 */
-	protected static function is_available_for_roles( array $user_roles, array $allowed_roles, array $denied_roles ): bool {
-		$matched_allowed_roles = array_intersect( $allowed_roles, $user_roles );
-		$matched_denied_roles  = array_intersect( $denied_roles, $user_roles );
-
-		$is_allowed_unlimited = 0 === count( $allowed_roles );
-		$is_allowed_matched   = count( $matched_allowed_roles ) > 0;
-		$is_denied_matched    = count( $matched_denied_roles ) > 0;
-
-		$is_allowed = $is_allowed_unlimited || $is_allowed_matched;
-
-		return $is_allowed && ! $is_denied_matched;
-	}
-
-	protected function create_error_markup( string $error_text ): string {
-		$tags = tag( 'p' )
-			->attributes( array( 'style' => array( 'color' => 'red' ) ) )
-			->content(
-				$error_text
-			);
-
-		return $this->html_renderer->render_html( $tags );
-	}
-
-	/**
-	 * @param mixed[] $args
-	 */
-	protected static function get_error_text( string $shortcode, array $args, string $error ): string {
-		$joined_attrs    = self::join_string_attrs( $args );
-		$shortcode_debug = sprintf( '(%s %s)', $shortcode, $joined_attrs );
-
-		$error_label = __( 'AVF shortcode render error:', 'acf-views' );
-
-		return sprintf( '%s %s %s', $error_label, $error, $shortcode_debug );
-	}
-
-	/**
-	 * @param mixed[] $args
-	 */
-	protected static function join_string_attrs( array $args ): string {
-		$attrs = array();
-
-		foreach ( $args as $name => $value ) {
-			// skip complex types (that may be passed from Bridge).
-			if ( is_string( $value ) ) {
-				$attrs[] = sprintf( '%s="%s"', $name, $value );
-			}
-		}
-
-		return implode( ' ', $attrs );
-	}
-
-	/**
-	 * @param mixed[] $args
-	 */
-	protected function get_error_markup( string $shortcode, array $args, string $error ): string {
-		if ( Avf_User::can_see_errors() ) {
-			$error_text = self::get_error_text( $shortcode, $args, $error );
-
-			return $this->create_error_markup( $error_text );
-		}
-
-		return '';
-	}
-
-	protected function get_shortcode_name(): string {
-		return $this->public_cpt->shortcode();
-	}
-
-	protected function get_live_reloader_component(): Live_Reloader_Component {
-		return $this->live_reloader_component;
 	}
 
 	/**
@@ -230,11 +98,83 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 			$shadow_css = '';
 		}
 
-		if ( $is_with_quick_link || Cpt_Settings::WEB_COMPONENT_NONE !== $cpt_data->web_component ) {
+		$is_with_web_component = Cpt_Settings::WEB_COMPONENT_NONE !== $cpt_data->web_component;
+		$is_markup_added       = $is_with_quick_link || $is_with_web_component;
+
+		if ( $is_markup_added ) {
 			return $this->add_quick_link_and_last_tag_markup( $html, $shadow_css, $is_with_quick_link, $cpt_data );
 		}
 
 		return $html;
+	}
+
+	public function get_rendered_items_count(): int {
+		return count( $this->rendered_ids );
+	}
+
+	/**
+	 * @param array<string,string>|string $args
+	 */
+	public function do_shortcode( $args ): string {
+		$attrs     = array();
+		$args_list = arr( $args );
+
+		// positional attributes have int keys, but the renderers work with named ones.
+		foreach ( $args_list as $name => $value ) {
+			$attrs[ (string) $name ] = $value;
+		}
+
+		return $this->render_shortcode( $attrs );
+	}
+
+	protected function get_post_type(): string {
+		return $this->public_cpt->cpt_name();
+	}
+
+	/**
+	 * @param string[] $user_roles
+	 * @param mixed[] $shortcode_args
+	 */
+	protected function is_shortcode_available_for_user( array $user_roles, array $shortcode_args ): bool {
+		$user_with_roles_input    = any( $shortcode_args, 'user-with-roles' );
+		$user_with_roles          = self::get_roles( $user_with_roles_input );
+		$user_without_roles_input = any( $shortcode_args, 'user-without-roles' );
+		$user_without_roles       = self::get_roles( $user_without_roles_input );
+
+		return self::is_available_for_roles(
+			$user_roles,
+			$user_with_roles,
+			$user_without_roles
+		);
+	}
+
+	protected function create_error_markup( string $error_text ): string {
+		$tags = tag( 'p' )
+			->attributes( array( 'style' => array( 'color' => 'red' ) ) )
+			->content( $error_text );
+
+		return $this->html_renderer->render_html( $tags );
+	}
+
+	/**
+	 * @param mixed[] $args
+	 */
+	protected function get_error_markup( string $shortcode, array $args, string $error ): string {
+		if ( Avf_User::can_see_errors() ) {
+			$error_text = self::get_error_text( $shortcode, $args, $error );
+
+			return $this->create_error_markup( $error_text );
+		}
+
+		return '';
+	}
+
+	protected function get_shortcode_name(): string {
+		return $this->public_cpt->shortcode();
+	}
+
+	protected function get_live_reloader_component(): Live_Reloader_Component {
+		return $this->live_reloader_component;
 	}
 
 	protected function create_shadow_css( Cpt_Settings $cpt_data ): string {
@@ -243,35 +183,9 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		$host_css   = sprintf( ':host{all: initial!important;}%s', $shadow_css );
 
 		$tags = tag( 'style' )
-			->content(
-				raw_html( $host_css )
-			);
+			->content( raw_html( $host_css ) );
 
 		return $this->html_renderer->render_html( $tags );
-	}
-
-	/**
-	 * @return string|null Null if the html has no declarative shadow template.
-	 */
-	protected static function embed_shadow_css( string $html, string $shadow_css ): ?string {
-		$template_opening_tag = '<template shadowrootmode="open">';
-
-		// use strpos instead of str_replace, as we need to replace the first occurrence only,
-		// e.g. for Card + View inside, only for Card, as for View we already processed.
-		$pos = strpos( $html, $template_opening_tag );
-
-		if ( is_int( $pos ) ) {
-			$template_opening_tag_length = strlen( $template_opening_tag );
-
-			return substr_replace(
-				$html,
-				$template_opening_tag . "\r\n" . $shadow_css,
-				$pos,
-				$template_opening_tag_length
-			);
-		}
-
-		return null;
 	}
 
 	protected function add_quick_link_and_last_tag_markup(
@@ -285,19 +199,25 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 			'/<\/[a-z0-9\-_]+>$/' :
 			'/<\/template>/';
 
-		preg_match_all( $last_tag_regex, $html, $matches, PREG_OFFSET_CAPTURE );
+		$last_tag_match = self::find_last_tag_match( $html, $last_tag_regex );
 
-		$is_last_tag_not_defined = 0 === count( $matches[0] );
-
-		if ( $is_last_tag_not_defined ) {
-			return $html;
+		if ( is_array( $last_tag_match ) ) {
+			return $this->insert_markup_before_last_tag( $html, $last_tag_match, $shadow_css, $is_with_quick_link, $cpt_data );
 		}
 
-		// we need the last match only, e.g.
-		// e.g. for Card + View inside, only for Card, as for View we already processed.
-		$last_match_index = count( $matches[0] ) - 1;
-		$last_tag_match   = $matches[0][ $last_match_index ];
+		return $html;
+	}
 
+	/**
+	 * @param array{0:string,1:int} $last_tag_match
+	 */
+	protected function insert_markup_before_last_tag(
+		string $html,
+		array $last_tag_match,
+		string $shadow_css,
+		bool $is_with_quick_link,
+		Cpt_Settings $cpt_data
+	): string {
 		$quick_link_html = $is_with_quick_link ? $this->create_quick_link_html( $cpt_data ) : '';
 
 		$closing_div          = $last_tag_match[0];
@@ -313,16 +233,11 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 	}
 
 	protected function create_quick_link_html( Cpt_Settings $cpt_data ): string {
-		$label  = __( 'Edit', 'acf-views' );
-		$label .= sprintf( ' "%s"', $cpt_data->title );
+		$label       = __( 'Edit', 'acf-views' );
+		$label      .= sprintf( ' "%s"', $cpt_data->title );
+		$link_target = self::get_quick_link_target();
 
-		$site_url         = get_site_url();
-		$playground_pos   = strpos( $site_url, 'playground.wordpress.net' );
-		$is_wp_playground = is_int( $playground_pos );
-		$link_target      = false === $is_wp_playground ?
-			'_blank' :
-			'_self';
-		$attrs            = array(
+		$attrs = array(
 			'href'        => $cpt_data->get_edit_post_link(),
 			'target'      => $link_target,
 			'class'       => 'acf-views__quick-link',
@@ -333,82 +248,139 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 
 		$tags = tag( 'a' )
 			->attributes( $attrs )
-			->content(
-				$label
-			);
+			->content( $label );
 
 		return $this->html_renderer->render_html( $tags );
 	}
 
-	public function get_rendered_items_count(): int {
-		return count( $this->rendered_ids );
-	}
-
-	public function register_rest_route(): void {
-		foreach ( $this->public_cpt->rest_route_names() as $route_name ) {
-			$route_pattern = $route_name . '/(?P<unique_id>[a-z0-9]+)';
-			$route_args    = $this->get_rest_route_args();
-
-			register_rest_route( Plugin::REST_NAMESPACE, $route_pattern, $route_args );
+	/**
+	 * @param mixed $argument_input
+	 *
+	 * @return string[]
+	 */
+	protected static function get_roles( $argument_input ): array {
+		if ( is_string( $argument_input ) ) {
+			return self::split_roles( $argument_input );
 		}
+
+		// can be an array, if called from Bridge.
+		if ( is_array( $argument_input ) ) {
+			/**
+			 * @var string[] $argument_input
+			 */
+			return $argument_input;
+		}
+
+		return array();
 	}
 
 	/**
-	 * @param array<string,string>|string $args
+	 * @return string[]
 	 */
-	public function do_shortcode( $args ): string {
+	protected static function split_roles( string $roles_input ): array {
+		$roles_input = trim( $roles_input );
+		$is_filled   = strlen( $roles_input ) > 0;
+
+		return $is_filled ?
+			explode( ',', $roles_input ) :
+			array();
+	}
+
+	/**
+	 * @param string[] $user_roles
+	 * @param string[] $allowed_roles Empty for no limits.
+	 * @param string[] $denied_roles Empty for no limits.
+	 */
+	protected static function is_available_for_roles( array $user_roles, array $allowed_roles, array $denied_roles ): bool {
+		$matched_allowed_roles = array_intersect( $allowed_roles, $user_roles );
+		$matched_denied_roles  = array_intersect( $denied_roles, $user_roles );
+
+		$is_allowed_unlimited = 0 === count( $allowed_roles );
+		$is_allowed_matched   = count( $matched_allowed_roles ) > 0;
+		$is_denied_matched    = count( $matched_denied_roles ) > 0;
+
+		$is_allowed = $is_allowed_unlimited || $is_allowed_matched;
+
+		return $is_allowed && ! $is_denied_matched;
+	}
+
+	/**
+	 * @param mixed[] $args
+	 */
+	protected static function get_error_text( string $shortcode, array $args, string $error ): string {
+		$joined_attrs    = self::join_string_attrs( $args );
+		$shortcode_debug = sprintf( '(%s %s)', $shortcode, $joined_attrs );
+
+		$error_label = __( 'AVF shortcode render error:', 'acf-views' );
+
+		return sprintf( '%s %s %s', $error_label, $error, $shortcode_debug );
+	}
+
+	/**
+	 * @param mixed[] $args
+	 */
+	protected static function join_string_attrs( array $args ): string {
 		$attrs = array();
 
-		// positional attributes have int keys, but the renderers work with named ones.
-		foreach ( arr( $args ) as $name => $value ) {
-			$attrs[ (string) $name ] = $value;
+		foreach ( $args as $name => $value ) {
+			// skip complex types (that may be passed from Bridge).
+			if ( is_string( $value ) ) {
+				$attrs[] = sprintf( '%s="%s"', $name, $value );
+			}
 		}
 
-		return $this->render_shortcode( $attrs );
+		return implode( ' ', $attrs );
 	}
 
 	/**
-	 * @return mixed[]
+	 * @return string|null Null if the html has no declarative shadow template.
 	 */
-	protected function get_rest_route_args(): array {
-		return array(
-			'methods'             => 'POST',
-			'args'                => array(
-				'unique_id' => array(
-					/**
-					 * @param mixed $param
-					 */
-					'validate_callback' => function ( $param ): bool {
-						if ( is_string( $param ) || is_numeric( $param ) ) {
-							$param     = (string) $param;
-							$post_type = $this->get_post_type();
-							$unique_id = $this->cpt_settings_storage->get_unique_id_from_shortcode_id( $param, $post_type );
+	protected static function embed_shadow_css( string $html, string $shadow_css ): ?string {
+		$template_opening_tag = '<template shadowrootmode="open">';
 
-							return strlen( $unique_id ) > 0;
-						}
+		// use strpos instead of str_replace, as we need to replace the first occurrence only,
+		// e.g. for Card + View inside, only for Card, as for View we already processed.
+		$pos = strpos( $html, $template_opening_tag );
 
-						return false;
-					},
-				),
-			),
-			'permission_callback' => fn(): bool =>
-				// available to all by default.
-				true,
-			/**
-			 * @return array<string,mixed>
-			 */
-			'callback'            => function ( WP_REST_Request $wprest_request ): array {
-				$short_unique_id = $wprest_request->get_param( 'unique_id' );
+		if ( is_int( $pos ) ) {
+			$template_opening_tag_length = strlen( $template_opening_tag );
+			$replacement                 = sprintf( "%s\r\n%s", $template_opening_tag, $shadow_css );
 
-				if ( is_string( $short_unique_id ) ) {
-					$unique_id = $this->get_unique_id_prefix() . $short_unique_id;
+			return substr_replace(
+				$html,
+				$replacement,
+				$pos,
+				$template_opening_tag_length
+			);
+		}
 
-					return $this->instance_factory->get_rest_api_response( $unique_id, $wprest_request );
-				}
+		return null;
+	}
 
-				// already validated above - only reachable if validate_callback let a non-string id through.
-				return array();
-			},
-		);
+	/**
+	 * @return array{0:string,1:int}|null The last match (the tag and its offset), null if there is none.
+	 */
+	protected static function find_last_tag_match( string $html, string $last_tag_regex ): ?array {
+		preg_match_all( $last_tag_regex, $html, $matches, PREG_OFFSET_CAPTURE );
+
+		$matches_count = count( $matches[0] );
+
+		if ( $matches_count > 0 ) {
+			// we need the last match only, e.g.
+			// e.g. for Card + View inside, only for Card, as for View we already processed.
+			return $matches[0][ $matches_count - 1 ];
+		}
+
+		return null;
+	}
+
+	protected static function get_quick_link_target(): string {
+		$site_url         = get_site_url();
+		$playground_pos   = strpos( $site_url, 'playground.wordpress.net' );
+		$is_wp_playground = is_int( $playground_pos );
+
+		return $is_wp_playground ?
+			'_self' :
+			'_blank';
 	}
 }

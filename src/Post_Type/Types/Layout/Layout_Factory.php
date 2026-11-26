@@ -8,14 +8,12 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Theme_Settings;
 use Org\Wplake\Advanced_Views\Field_Provider\Core\Field_Provider_Cluster;
-use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Asset_Collector;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Instance_Factory;
-use Org\Wplake\Advanced_Views\Post_Type\Integration\Library\Library_Asset_Collector;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Markup_Provider;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Variable_Builder;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Template_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Template\Rendering\Variable_Builder;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use WP_REST_Request;
 
@@ -28,8 +26,6 @@ class Layout_Factory extends Instance_Factory {
 	protected Template_Renderer $template_renderer;
 
 	public function __construct(
-		Cpt_Asset_Collector $assets_collector,
-		Library_Asset_Collector $library_asset_collector,
 		Layout_Settings_Storage $layouts_settings_storage,
 		Markup_Provider $markup_provider,
 		Field_Provider_Cluster $provider_cluster,
@@ -37,8 +33,6 @@ class Layout_Factory extends Instance_Factory {
 		Variable_Builder $variables_builder,
 		Template_Renderer $template_renderer
 	) {
-		parent::__construct( $assets_collector, $library_asset_collector );
-
 		$this->layouts_settings_storage = $layouts_settings_storage;
 		$this->markup_provider          = $markup_provider;
 		$this->provider_cluster         = $provider_cluster;
@@ -55,12 +49,18 @@ class Layout_Factory extends Instance_Factory {
 		);
 	}
 
-	public function make(
+	/**
+	 * @param mixed[]|null $local_data
+	 * @param int[] $item_ids Used only by the Multiple format
+	 */
+	public function create_layout(
 		Source $source,
 		string $unique_view_id,
 		int $page_id,
 		?Layout_Settings $layout_settings = null,
-		string $classes = ''
+		string $classes = '',
+		?array $local_data = null,
+		array $item_ids = array()
 	): Layout_Instance {
 		$layout_settings ??= $this->layouts_settings_storage->get( $unique_view_id );
 
@@ -68,44 +68,14 @@ class Layout_Factory extends Instance_Factory {
 		$this->markup_provider->print_markup( $layout_settings, $page_id );
 		$markup = (string) ob_get_clean();
 
-		return $this->create_layout_instance( $source, $layout_settings, $markup, $classes );
-	}
-
-	/**
-	 * @param mixed[] $custom_arguments
-	 * @param mixed[]|null $local_data
-	 * @param int[] $item_ids Used only by the Multiple format
-	 */
-	public function make_and_print_html(
-		Source $source,
-		string $view_unique_id,
-		int $page_id,
-		string $classes = '',
-		array $custom_arguments = array(),
-		?array $local_data = null,
-		array $item_ids = array()
-	): void {
-		$view = $this->make(
+		return $this->create_layout_instance(
 			$source,
-			$view_unique_id,
-			$page_id,
-			null,
-			$classes
+			$layout_settings,
+			$markup,
+			$classes,
+			$local_data,
+			$item_ids
 		);
-
-		$view->set_local_data( $local_data );
-		$view->set_item_ids( $item_ids );
-
-		$is_not_empty = $view->insert_fields_and_print_html( $custom_arguments );
-
-		// mark as rendered, only if is not empty
-		// 'makeAndGetHtml' used as the primary. 'make' used for the specific cases, like validationInstance.
-		if ( $is_not_empty ) {
-			$layout_settings = $view->get_view_data();
-
-			$this->assets_collector->add_asset( $layout_settings );
-			$this->library_asset_collector->activate_libraries( $layout_settings );
-		}
 	}
 
 	/**
@@ -139,11 +109,17 @@ class Layout_Factory extends Instance_Factory {
 		);
 	}
 
+	/**
+	 * @param mixed[]|null $local_data
+	 * @param int[] $item_ids
+	 */
 	protected function create_layout_instance(
 		Source $source,
 		Layout_Settings $settings,
 		string $markup,
-		string $classes
+		string $classes,
+		?array $local_data = null,
+		array $item_ids = array()
 	): Layout_Instance {
 		return new Layout_Instance(
 			$this->provider_cluster,
@@ -153,13 +129,15 @@ class Layout_Factory extends Instance_Factory {
 			$settings,
 			$source,
 			$this->html_renderer,
-			$classes
+			$classes,
+			$local_data,
+			$item_ids
 		);
 	}
 
 	protected function get_template_variables_for_validation( string $unique_id ): array {
 		$source = new Source();
-		$layout = $this->make( $source, $unique_id, 0 );
+		$layout = $this->create_layout( $source, $unique_id, 0 );
 
 		return $layout->get_template_variables_for_validation();
 	}

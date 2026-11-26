@@ -30,12 +30,47 @@ abstract class Instance {
 	/**
 	 * @return array<string,mixed>
 	 */
+	public function get_ajax_response( string $php_code = '' ): array {
+		$controller = eval_snippet( $php_code, array(), $error );
+
+		return $this->get_ajax_response_args( $controller );
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	public function get_rest_api_response( WP_REST_Request $wprest_request, string $php_code = '' ): array {
+		$controller = eval_snippet( $php_code, array(), $error );
+
+		return $this->get_rest_api_response_args( $wprest_request, $controller );
+	}
+
+	public function get_markup_validation_error(): string {
+		$twig_variables_for_validation = $this->get_template_variables( true );
+
+		ob_start();
+		$this->render_template( $this->template, $twig_variables_for_validation, true );
+		$html = (string) ob_get_clean();
+
+		return Template_Renderer_Base::extract_error_message( $html );
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	public function get_template_variables_for_validation(): array {
+		return $this->get_template_variables( true );
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
 	abstract protected function get_template_variables( bool $is_for_validation = false ): array;
 
 	/**
 	 * @param array<string,mixed> $variables
 	 */
-	abstract protected function render_template_and_print_html(
+	abstract protected function render_template(
 		string $template,
 		array $variables,
 		bool $is_for_validation = false
@@ -56,11 +91,14 @@ abstract class Instance {
 	abstract protected function get_rest_api_response_args( WP_REST_Request $wprest_request, $controller ): array;
 
 	protected function get_classes(): string {
+		$is_own_classes_filled = strlen( $this->classes ) > 0;
+		$is_css_classes_filled = strlen( $this->cpt_settings->css_classes ) > 0;
+
 		$classes  = '';
-		$classes .= '' !== $this->classes ?
+		$classes .= $is_own_classes_filled ?
 			$this->classes . ' ' :
 			'';
-		$classes .= '' !== $this->cpt_settings->css_classes ?
+		$classes .= $is_css_classes_filled ?
 			$this->cpt_settings->css_classes . ' ' :
 			'';
 
@@ -87,8 +125,10 @@ abstract class Instance {
 			null
 		);
 
-		if ( is_object( $container ) &&
-			is_a( $container, '\Psr\Container\ContainerInterface' ) ) {
+		$is_container = is_object( $container ) &&
+						is_a( $container, '\Psr\Container\ContainerInterface' );
+
+		if ( $is_container ) {
 			return $container;
 		}
 
@@ -101,47 +141,14 @@ abstract class Instance {
 		$engine_name      = ucfirst( $this->cpt_settings->template_engine );
 		$message          = sprintf( $message_template, $engine_name );
 
+		$attributes = array(
+			'style' => array( 'color' => 'red' ),
+		);
+
 		$tags = tag( 'p' )
-			->attributes( array( 'style' => array( 'color' => 'red' ) ) )
-			->content(
-				$message
-			);
+			->attributes( $attributes )
+			->content( $message );
 
 		$this->html_renderer->print_html( $tags );
-	}
-
-	/**
-	 * @return array<string,mixed>
-	 */
-	public function get_ajax_response( string $php_code = '' ): array {
-		$controller = eval_snippet( $php_code, array(), $error );
-
-		return $this->get_ajax_response_args( $controller );
-	}
-
-	/**
-	 * @return array<string,mixed>
-	 */
-	public function get_rest_api_response( WP_REST_Request $wprest_request, string $php_code = '' ): array {
-		$controller = eval_snippet( $php_code, array(), $error );
-
-		return $this->get_rest_api_response_args( $wprest_request, $controller );
-	}
-
-	public function get_markup_validation_error(): string {
-		$twig_variables_for_validation = $this->get_template_variables( true );
-
-		ob_start();
-		$this->render_template_and_print_html( $this->template, $twig_variables_for_validation, true );
-		$html = (string) ob_get_clean();
-
-		return Template_Renderer_Base::extract_error_message( $html );
-	}
-
-	/**
-	 * @return array<string,mixed>
-	 */
-	public function get_template_variables_for_validation(): array {
-		return $this->get_template_variables( true );
 	}
 }
