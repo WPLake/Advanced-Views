@@ -49,14 +49,14 @@ final class Layout_Shortcode_Renderer extends Shortcode_Base {
 	 * @param array<string,mixed> $attrs
 	 */
 	public function render_shortcode( array $attrs ): string {
-		$layout_id = self::get_layout_id( $attrs );
-		$post_type = $this->get_post_type();
-		$unique_id = $this->layouts_settings_storage->get_unique_id_from_shortcode_id( $layout_id, $post_type );
+		$unique_id = $this->get_layout_unique_id( $attrs );
 
-		$is_found = strlen( $unique_id ) > 0;
+		$is_found     = strlen( $unique_id ) > 0;
+		$is_available = $is_found &&
+						$this->is_layout_accessible( $unique_id, $attrs );
 
-		if ( $is_found ) {
-			return $this->render_available_layout( $unique_id, $attrs );
+		if ( $is_available ) {
+			return $this->render_layout( $unique_id, $attrs );
 		}
 
 		return $this->get_missing_layout_markup( $attrs );
@@ -65,26 +65,35 @@ final class Layout_Shortcode_Renderer extends Shortcode_Base {
 	/**
 	 * @param array<string,mixed> $attrs
 	 */
-	protected function render_available_layout( string $unique_id, array $attrs ): string {
-		$is_available = $this->is_layout_available_for_user( $unique_id, $attrs );
+	protected function get_layout_unique_id( array $attrs ): string {
+		$layout_id = self::get_layout_id( $attrs );
+		$post_type = $this->get_post_type();
 
-		if ( $is_available ) {
-			return $this->render_layout( $unique_id, $attrs );
-		}
-
-		return '';
+		return $this->layouts_settings_storage->get_unique_id_from_shortcode_id( $layout_id, $post_type );
 	}
 
 	/**
 	 * @param array<string,mixed> $attrs
 	 */
 	protected function get_missing_layout_markup( array $attrs ): string {
-		$singular_name = $this->public_cpt->labels()->singular_name();
+		$message        = $this->get_missing_layout_message();
+		$shortcode_name = $this->get_shortcode_name();
+
+		return $this->get_error_markup(
+			$shortcode_name,
+			$attrs,
+			$message
+		);
+	}
+
+	protected function get_missing_layout_message(): string {
+		$singular_name = $this->public_cpt
+			->labels()
+			->singular_name();
 		// translators: %s is a singular post-type name.
 		$message_template = __( '%s is missing', 'acf-views' );
-		$message          = sprintf( $message_template, $singular_name );
 
-		return $this->get_error_markup( $this->get_shortcode_name(), $attrs, $message );
+		return sprintf( $message_template, $singular_name );
 	}
 
 	/**
@@ -92,14 +101,25 @@ final class Layout_Shortcode_Renderer extends Shortcode_Base {
 	 */
 	protected function render_layout( string $unique_id, array $attrs ): string {
 		$layout_settings = $this->layouts_settings_storage->get( $unique_id );
-		$arguments       = $this->shortcode_arguments_parser->parse( $layout_settings, $attrs );
+		$arguments       = $this->shortcode_arguments_parser->parse_arguments( $layout_settings, $attrs );
 		$is_parsed       = ! $arguments->has_error();
 
 		if ( $is_parsed ) {
-			return $this->render_parsed_layout( $unique_id, $layout_settings, $arguments, $attrs );
+			return $this->render_parsed_layout(
+				$unique_id,
+				$layout_settings,
+				$arguments,
+				$attrs
+			);
 		}
 
-		return $this->get_error_markup( $this->get_shortcode_name(), $attrs, $arguments->error );
+		$shortcode_name = $this->get_shortcode_name();
+
+		return $this->get_error_markup(
+			$shortcode_name,
+			$attrs,
+			$arguments->error
+		);
 	}
 
 	/**
@@ -123,31 +143,39 @@ final class Layout_Shortcode_Renderer extends Shortcode_Base {
 		$is_rendered = is_string( $html );
 
 		return $is_rendered ?
-			$this->maybe_add_quick_link_and_shadow_css( $html, $unique_id, $attrs, false ) :
+			$this->maybe_add_quick_link_and_shadow_css(
+				$html,
+				$unique_id,
+				$attrs,
+				false
+			) :
 			'';
 	}
 
 	/**
 	 * @param mixed[] $attrs
 	 */
-	protected function is_layout_available_for_user( string $unique_id, array $attrs ): bool {
-		$user_roles = wp_get_current_user()->roles;
+	protected function is_layout_accessible( string $unique_id, array $attrs ): bool {
+		$user_roles             = wp_get_current_user()->roles;
+		$is_shortcode_available = $this->is_shortcode_accessible( $user_roles, $attrs );
+		$is_layout_available    = $this->is_layout_allowed_for_roles( $unique_id, $user_roles );
 
-		$is_shortcode_available = $this->is_shortcode_available_for_user( $user_roles, $attrs );
+		return $is_shortcode_available && $is_layout_available;
+	}
 
+	/**
+	 * @param string[] $user_roles
+	 */
+	protected function is_layout_allowed_for_roles( string $unique_id, array $user_roles ): bool {
 		$layout_settings = $this->layouts_settings_storage->get( $unique_id );
 		$roles_with      = $layout_settings->get_roles_with();
 		$roles_without   = $layout_settings->get_roles_without();
 
-		$is_layout_available = self::is_available_for_roles(
+		return self::is_available_for_roles(
 			$user_roles,
 			$roles_with,
 			$roles_without
 		);
-
-		$is_available = $is_shortcode_available && $is_layout_available;
-
-		return $is_available;
 	}
 
 	/**

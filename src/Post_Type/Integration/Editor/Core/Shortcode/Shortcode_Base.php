@@ -7,7 +7,6 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Shortcode;
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Acf\Groups\Parents\Cpt_Settings;
-use Org\Wplake\Advanced_Views\Plugin\Utils\Code_Minifier;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Actor_Base;
 use Org\Wplake\Advanced_Views\Plugin\Core\Actor\Route_Detector;
@@ -15,6 +14,7 @@ use Org\Wplake\Advanced_Views\Plugin\Core\Avf_User;
 use Org\Wplake\Advanced_Views\Plugin\Cpt\Pub\Public_Cpt;
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
+use Org\Wplake\Advanced_Views\Plugin\Utils\Code_Minifier;
 use Org\Wplake\Advanced_Views\Post_Type\Core\Cpt_Data_Storage\Cpt_Settings_Storage;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Template\Html\raw_html;
@@ -127,7 +127,7 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 	 * @param string[] $user_roles
 	 * @param mixed[] $shortcode_args
 	 */
-	protected function is_shortcode_available_for_user( array $user_roles, array $shortcode_args ): bool {
+	protected function is_shortcode_accessible( array $user_roles, array $shortcode_args ): bool {
 		$user_with_roles_input    = any( $shortcode_args, 'user-with-roles' );
 		$user_with_roles          = self::get_roles( $user_with_roles_input );
 		$user_without_roles_input = any( $shortcode_args, 'user-without-roles' );

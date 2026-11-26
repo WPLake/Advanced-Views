@@ -27,10 +27,10 @@ final class Attribute_Reader {
 	 * @param array<string,mixed> $attrs
 	 */
 	public static function get_string( array $attrs, string $name ): string {
-		$value = $attrs[ $name ] ?? '';
+		$value         = $attrs[ $name ] ?? '';
+		$is_stringable = is_string( $value ) || is_numeric( $value );
 
-		return is_string( $value ) ||
-				is_numeric( $value ) ?
+		return $is_stringable ?
 			(string) $value :
 			'';
 	}

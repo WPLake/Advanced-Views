@@ -15,11 +15,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
  */
 final class Legacy_Source_Mapper {
 	private Shortcode_Gutenberg_Block $shortcode_block;
-	private Item_Source_Resolver $item_source_resolver;
+	private Item_Resolver $item_resolver;
 
-	public function __construct( Shortcode_Gutenberg_Block $shortcode_block, Item_Source_Resolver $item_source_resolver ) {
-		$this->shortcode_block      = $shortcode_block;
-		$this->item_source_resolver = $item_source_resolver;
+	public function __construct( Shortcode_Gutenberg_Block $shortcode_block, Item_Resolver $item_resolver ) {
+		$this->shortcode_block = $shortcode_block;
+		$this->item_resolver   = $item_resolver;
 	}
 
 	/**
@@ -27,75 +27,55 @@ final class Legacy_Source_Mapper {
 	 *
 	 * @return Source|null Null if the 'object-id' argument contains a wrong value.
 	 */
-	public function map( array $attrs, int $current_page_id ): ?Source {
-		$object_id  = self::get_object_id( $attrs );
-		$user_id    = Item_Source_Resolver::get_user_id( self::get_user_argument( $attrs ) );
-		$term_id    = Item_Source_Resolver::get_term_id(
-			Attribute_Reader::get_int( $attrs, 'term-id' ),
-			Attribute_Reader::get_string( $attrs, 'menu-slug' )
-		);
-		$comment_id = Item_Source_Resolver::get_comment_id( Attribute_Reader::get_int( $attrs, 'comment-id' ) );
-		$post_slug  = Attribute_Reader::get_string( $attrs, 'post-slug' );
+	public function map_source( array $attrs ): ?Source {
+		$object_id = $this->resolve_object_id( $attrs );
+		$post_slug = Attribute_Reader::get_string( $attrs, 'post-slug' );
 
-		// enable the 'term' mode by default if we're on a taxonomy page, nothing was set,
-		// and it doesn't happen inside the Gutenberg query loop.
-		$is_default_term_mode = is_tax() &&
-								'' === $object_id &&
-								! $this->shortcode_block->is_context_post_set();
-		$object_id            = $is_default_term_mode ?
-			'term' :
-			$object_id;
+		$user_argument = self::get_user_argument( $attrs );
+		$user_id       = Item_Resolver::resolve_user_id( $user_argument );
+
+		$term_item_id = Attribute_Reader::get_int( $attrs, 'term-id' );
+		$menu_slug    = Attribute_Reader::get_string( $attrs, 'menu-slug' );
+		$term_id      = Item_Resolver::resolve_term_id( $term_item_id, $menu_slug );
+
+		$comment_item_id = Attribute_Reader::get_int( $attrs, 'comment-id' );
+		$comment_id      = Item_Normalizer::normalize_comment_id( $comment_item_id );
 
 		$data_post_id = $this->get_data_post_id(
 			$object_id,
-			$current_page_id,
 			$user_id,
 			$term_id,
 			$comment_id,
 			$post_slug
 		);
+		$is_resolved  = strlen( $data_post_id ) > 0;
 
-		if ( '' === $data_post_id ) {
-			return null;
+		if ( $is_resolved ) {
+			return self::create_source( $data_post_id, $user_id, $term_id, $comment_id );
 		}
 
-		$source = new Source();
-
-		$source->set_id( $data_post_id );
-		$source->set_is_block( false );
-		$source->set_user_id( $user_id );
-		$source->set_term_id( $term_id );
-		$source->set_comment_id( $comment_id );
-
-		return $source;
+		return null;
 	}
 
 	/**
 	 * @param array<string,mixed> $attrs
 	 */
-	protected static function get_object_id( array $attrs ): string {
-		$object_id    = Attribute_Reader::get_string( $attrs, 'object-id' );
-		$options_page = Attribute_Reader::parse_list( $attrs['options-page'] ?? null )[0] ?? '';
+	protected function resolve_object_id( array $attrs ): string {
+		$object_id = self::get_object_id( $attrs );
 
-		return '' !== $options_page ?
-			$options_page :
+		// enable the 'term' mode by default if we're on a taxonomy page, nothing was set,
+		// and it doesn't happen inside the Gutenberg query loop.
+		$is_default_term_mode = is_tax() &&
+								0 === strlen( $object_id ) &&
+								! $this->shortcode_block->is_context_post_set();
+
+		return $is_default_term_mode ?
+			'term' :
 			$object_id;
-	}
-
-	/**
-	 * @param array<string,mixed> $attrs
-	 *
-	 * @return int|null Null if the argument is missing, so the current user is used.
-	 */
-	protected static function get_user_argument( array $attrs ): ?int {
-		return isset( $attrs['user-id'] ) ?
-			Attribute_Reader::get_int( $attrs, 'user-id' ) :
-			null;
 	}
 
 	protected function get_data_post_id(
 		string $object_id,
-		int $current_page_id,
 		int $user_id,
 		int $term_id,
 		int $comment_id,
@@ -120,7 +100,7 @@ final class Legacy_Source_Mapper {
 			(int) $object_id :
 			0;
 		$is_page_slug = 0 === $item_id &&
-						'' !== $object_id &&
+						strlen( $object_id ) > 0 &&
 						0 !== self::get_post_by_slug( $object_id );
 
 		if ( $is_page_slug ) {
@@ -128,11 +108,47 @@ final class Legacy_Source_Mapper {
 			return $object_id;
 		}
 
-		$post_id = $this->item_source_resolver->get_post_id( $item_id, $current_page_id );
+		$post_id = $this->item_resolver->resolve_post_id( $item_id );
 
 		return 0 !== $post_id ?
 			(string) $post_id :
 			'';
+	}
+
+	/**
+	 * @param array<string,mixed> $attrs
+	 */
+	protected static function get_object_id( array $attrs ): string {
+		$object_id    = Attribute_Reader::get_string( $attrs, 'object-id' );
+		$options_page = Attribute_Reader::parse_list( $attrs['options-page'] ?? null )[0] ?? '';
+		$is_filled    = strlen( $options_page ) > 0;
+
+		return $is_filled ?
+			$options_page :
+			$object_id;
+	}
+
+	/**
+	 * @param array<string,mixed> $attrs
+	 *
+	 * @return int|null Null if the argument is missing, so the current user is used.
+	 */
+	protected static function get_user_argument( array $attrs ): ?int {
+		return isset( $attrs['user-id'] ) ?
+			Attribute_Reader::get_int( $attrs, 'user-id' ) :
+			null;
+	}
+
+	protected static function create_source( string $data_post_id, int $user_id, int $term_id, int $comment_id ): Source {
+		$source = new Source();
+
+		$source->set_id( $data_post_id );
+		$source->set_is_block( false );
+		$source->set_user_id( $user_id );
+		$source->set_term_id( $term_id );
+		$source->set_comment_id( $comment_id );
+
+		return $source;
 	}
 
 	// get_page_by_path() requires post_type, but we don't know it, so use the direct query.

@@ -10,11 +10,11 @@ use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Shortcode\Shortcode_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Acf\Groups\Post_Selection_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Data_Storage\Selection_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Renderer;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Cpt;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Renderer;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
-use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 use WP_Post;
+use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -47,7 +47,7 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 	 */
 	public function render_shortcode( array $attrs ): string {
 		$current_user = wp_get_current_user();
-		$is_available = $this->is_shortcode_available_for_user( $current_user->roles, $attrs );
+		$is_available = $this->is_shortcode_accessible( $current_user->roles, $attrs );
 
 		if ( $is_available ) {
 			return $this->render_selection( $attrs );
