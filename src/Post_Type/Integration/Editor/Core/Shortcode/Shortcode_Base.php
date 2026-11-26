@@ -67,14 +67,13 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		array $shortcode_arguments,
 		bool $is_gutenberg_block
 	): string {
-		if ( ! key_exists( $unique_id, $this->rendered_ids ) ) {
-			$this->rendered_ids[ $unique_id ] = true;
-		}
+		$this->rendered_ids[ $unique_id ] = true;
 
 		$cpt_data = $this->cpt_settings_storage->get( $unique_id );
 
-		$is_with_quick_link = $this->settings->is_dev_mode() &&
-								Avf_User::can_manage();
+		$is_dev_mode        = $this->settings->is_dev_mode();
+		$can_manage         = Avf_User::can_manage();
+		$is_with_quick_link = $is_dev_mode && $can_manage;
 
 		$reloading_component = $this->live_reloader_component->get_reloading_component(
 			$cpt_data,
@@ -83,15 +82,8 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		);
 		$html                = $reloading_component . $html;
 
-		$is_css_internal = $cpt_data->is_css_internal();
-		$shadow_css      = $is_css_internal ?
-			$this->create_shadow_css( $cpt_data ) :
-			'';
-
-		$is_declarative_shadow_dom = Cpt_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $cpt_data->web_component;
-		$embedded_html             = $is_declarative_shadow_dom ?
-			self::embed_shadow_css( $html, $shadow_css ) :
-			null;
+		$shadow_css    = $this->get_internal_shadow_css( $cpt_data );
+		$embedded_html = self::get_embedded_html( $html, $shadow_css, $cpt_data );
 
 		if ( is_string( $embedded_html ) ) {
 			$html       = $embedded_html;
@@ -177,6 +169,14 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		return $this->live_reloader_component;
 	}
 
+	protected function get_internal_shadow_css( Cpt_Settings $cpt_data ): string {
+		$is_css_internal = $cpt_data->is_css_internal();
+
+		return $is_css_internal ?
+			$this->create_shadow_css( $cpt_data ) :
+			'';
+	}
+
 	protected function create_shadow_css( Cpt_Settings $cpt_data ): string {
 		$css_code   = $cpt_data->get_css_code( Cpt_Settings::CODE_MODE_DISPLAY );
 		$shadow_css = Code_Minifier::minify_css( $css_code );
@@ -202,7 +202,13 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 		$last_tag_match = self::find_last_tag_match( $html, $last_tag_regex );
 
 		if ( is_array( $last_tag_match ) ) {
-			return $this->insert_markup_before_last_tag( $html, $last_tag_match, $shadow_css, $is_with_quick_link, $cpt_data );
+			return $this->insert_markup_before_last_tag(
+				$html,
+				$last_tag_match,
+				$shadow_css,
+				$is_with_quick_link,
+				$cpt_data
+			);
 		}
 
 		return $html;
@@ -251,6 +257,17 @@ abstract class Shortcode_Base extends Actor_Base implements Shortcode_Renderer, 
 			->content( $label );
 
 		return $this->html_renderer->render_html( $tags );
+	}
+
+	/**
+	 * @return string|null Null if the shadow CSS can't be embedded (not a declarative shadow DOM).
+	 */
+	protected static function get_embedded_html( string $html, string $shadow_css, Cpt_Settings $cpt_data ): ?string {
+		$is_declarative_shadow_dom = Cpt_Settings::WEB_COMPONENT_SHADOW_DOM_DECLARATIVE === $cpt_data->web_component;
+
+		return $is_declarative_shadow_dom ?
+			self::embed_shadow_css( $html, $shadow_css ) :
+			null;
 	}
 
 	/**

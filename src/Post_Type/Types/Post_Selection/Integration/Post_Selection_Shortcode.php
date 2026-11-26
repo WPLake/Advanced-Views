@@ -30,7 +30,13 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 		Selection_Renderer $post_selection_renderer,
 		Html_Renderer $html_renderer
 	) {
-		parent::__construct( $public_cpt, $settings, $post_selections_settings_storage, $live_reloader_component, $html_renderer );
+		parent::__construct(
+			$public_cpt,
+			$settings,
+			$post_selections_settings_storage,
+			$live_reloader_component,
+			$html_renderer
+		);
 
 		$this->cards_data_storage = $post_selections_settings_storage;
 		$this->selection_renderer = $post_selection_renderer;
@@ -48,19 +54,6 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 		}
 
 		return '';
-	}
-
-	protected static function get_current_post_id(): int {
-		global $post;
-
-		$is_loop_post = $post instanceof WP_Post &&
-			$post->ID > 0;
-
-		// a) object-id in the current loop
-		// b) the current page id.
-		return $is_loop_post ?
-			$post->ID :
-			get_queried_object_id();
 	}
 
 	/**
@@ -133,6 +126,19 @@ final class Post_Selection_Shortcode extends Shortcode_Base {
 		$message  = sprintf( $template, $singular_name );
 
 		return $this->get_error_markup( $shortcode, $attrs, $message );
+	}
+
+	protected static function get_current_post_id(): int {
+		global $post;
+
+		$is_loop_post = $post instanceof WP_Post &&
+			$post->ID > 0;
+
+		// a) object-id in the current loop
+		// b) the current page id.
+		return $is_loop_post ?
+			$post->ID :
+			get_queried_object_id();
 	}
 
 	/**

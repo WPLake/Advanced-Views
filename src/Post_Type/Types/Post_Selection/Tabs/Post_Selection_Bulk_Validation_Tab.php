@@ -14,7 +14,7 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Post_Selection\Selection_Factory;
 
 defined( 'ABSPATH' ) || exit;
 
-class Post_Selection_Bulk_Validation_Tab extends Bulk_Validation_Tab {
+final class Post_Selection_Bulk_Validation_Tab extends Bulk_Validation_Tab {
 	protected Selection_Factory $card_factory;
 	protected Selection_Settings_Storage $cards_data_storage;
 
@@ -25,7 +25,12 @@ class Post_Selection_Bulk_Validation_Tab extends Bulk_Validation_Tab {
 		Selection_Factory $post_selection_factory,
 		Row_Title_Printer $row_title_printer
 	) {
-		parent::__construct( $cpt_table, $post_selections_settings_storage, $fs_only_tab, $row_title_printer );
+		parent::__construct(
+			$cpt_table,
+			$post_selections_settings_storage,
+			$fs_only_tab,
+			$row_title_printer
+		);
 
 		$this->card_factory       = $post_selection_factory;
 		$this->cards_data_storage = $post_selections_settings_storage;

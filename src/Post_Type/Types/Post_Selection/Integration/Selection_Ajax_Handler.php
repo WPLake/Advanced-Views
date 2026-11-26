@@ -48,11 +48,16 @@ final class Selection_Ajax_Handler extends Actor_Base implements Actor {
 
 		// otherwise it may be a Layout request.
 		if ( $is_selection_request ) {
-			$response = $this->get_selection_response( $selection_id );
-
-			echo wp_json_encode( $response );
-			exit;
+			$this->send_selection_response( $selection_id );
 		}
+	}
+
+	protected function send_selection_response( string $selection_id ): void {
+		$response = $this->get_selection_response( $selection_id );
+		$json     = wp_json_encode( $response );
+
+		echo $json;
+		exit;
 	}
 
 	/**

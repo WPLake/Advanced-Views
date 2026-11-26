@@ -58,7 +58,8 @@ class Selection_Factory extends Instance_Factory {
 	 * @return array<string,mixed>
 	 */
 	public function get_ajax_response( string $unique_id ): array {
-		$settings = $this->get_cards_data_storage()->get( $unique_id );
+		$storage  = $this->get_cards_data_storage();
+		$settings = $storage->get( $unique_id );
 		$card     = $this->create_selection( $settings );
 
 		return $card->get_ajax_response();
@@ -68,7 +69,8 @@ class Selection_Factory extends Instance_Factory {
 	 * @return array<string,mixed>
 	 */
 	public function get_rest_api_response( string $unique_id, WP_REST_Request $wprest_request ): array {
-		$settings       = $this->get_cards_data_storage()->get( $unique_id );
+		$storage        = $this->get_cards_data_storage();
+		$settings       = $storage->get( $unique_id );
 		$post_selection = $this->create_selection( $settings );
 
 		return $post_selection->get_rest_api_response( $wprest_request );
