@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Sources;
+namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Context;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -13,7 +13,7 @@ use WP_Term;
 /**
  * Provides the item IDs of the current request context (Gutenberg query loop, main query, queried object).
  */
-final class Context_Provider {
+final class Request_Context_Reader {
 	private Shortcode_Gutenberg_Block $shortcode_block;
 
 	public function __construct( Shortcode_Gutenberg_Block $shortcode_block ) {

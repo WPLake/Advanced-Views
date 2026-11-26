@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Sources;
+namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -13,7 +13,7 @@ use WP_Term;
 /**
  * Resolves the item IDs of a Layout from already parsed references (post selections, menu slugs).
  */
-final class Item_Resolver {
+final class Reference_Resolver {
 	private Post_Provider $post_provider;
 
 	public function __construct( Post_Provider $post_provider ) {

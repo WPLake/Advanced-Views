@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Sources;
+namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -15,7 +15,7 @@ use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\intOrNull;
 /**
  * Validates parsed item IDs: keeps only the IDs whose entity exists.
  */
-final class Item_Validator {
+final class Existing_Item_Filter {
 	/**
 	 * @param array<mixed> $ids
 	 *
