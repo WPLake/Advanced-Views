@@ -39,7 +39,6 @@ final class Layout_Renderer {
 	/**
 	 * @param mixed[] $custom_arguments
 	 * @param mixed[]|null $local_data
-	 * @param int[] $item_ids Used only by the Multiple format
 	 *
 	 * @return string|null Null if nothing should be displayed (a recursion).
 	 */
@@ -49,8 +48,7 @@ final class Layout_Renderer {
 		int $page_id,
 		string $classes = '',
 		array $custom_arguments = array(),
-		?array $local_data = null,
-		array $item_ids = array()
+		?array $local_data = null
 	): ?string {
 		$layout = $this->layout_factory->create_layout(
 			$source,
@@ -58,8 +56,7 @@ final class Layout_Renderer {
 			$page_id,
 			$layout_settings,
 			$classes,
-			$local_data,
-			$item_ids
+			$local_data
 		);
 		$render = fn(): string => $this->render_instance( $layout, $custom_arguments );
 

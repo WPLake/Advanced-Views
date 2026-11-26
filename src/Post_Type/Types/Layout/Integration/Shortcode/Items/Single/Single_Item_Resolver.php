@@ -7,16 +7,17 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Argument_Parser\Argument_Exception;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Argument_Parser\Request_Context_Reader;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Arguments\Attribute_Reader;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Context\Request_Context_Reader;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items\Existing_Item_Filter;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items\Reference_Resolver;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items\Lookup\Existing_Item_Filter;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items\Lookup\Reference_Resolver;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 
 /**
  * Resolves the Source of a single-item Layout from its shortcode attrs.
  */
-final class Single_Source_Resolver {
+final class Single_Item_Resolver {
 	private Request_Context_Reader $context_provider;
 	private Legacy_Source_Mapper $legacy_source_mapper;
 
@@ -28,9 +29,9 @@ final class Single_Source_Resolver {
 	/**
 	 * @param array<string,mixed> $attrs
 	 *
-	 * @return Source|string The error message if the source can't be resolved.
+	 * @throws Argument_Exception If the source can't be resolved.
 	 */
-	public function resolve_source( string $item_type, array $attrs ) {
+	public function resolve_item_id( string $item_type, array $attrs ): Source {
 		$is_custom = Layout_Settings::ITEM_TYPE_CUSTOM === $item_type;
 
 		// the typed flow is the main one, the legacy arguments of a custom-data Layout are mapped into its result.
@@ -38,7 +39,11 @@ final class Single_Source_Resolver {
 			$this->legacy_source_mapper->map_source( $attrs ) :
 			$this->resolve_item_source( $item_type, $attrs );
 
-		return $source ?? self::get_wrong_argument_error( $item_type );
+		if ( null === $source ) {
+			throw new Argument_Exception( self::get_wrong_argument_error( $item_type ) );
+		}
+
+		return $source;
 	}
 
 	/**

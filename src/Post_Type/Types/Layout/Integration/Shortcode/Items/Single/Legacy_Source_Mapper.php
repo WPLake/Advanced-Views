@@ -8,9 +8,9 @@ defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Gutenberg\Shortcode_Gutenberg_Block;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Arguments\Attribute_Reader;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Context\Request_Context_Reader;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items\Existing_Item_Filter;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items\Reference_Resolver;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Argument_Parser\Request_Context_Reader;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items\Lookup\Existing_Item_Filter;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items\Lookup\Reference_Resolver;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 
 /**

@@ -51,7 +51,6 @@ class Layout_Factory extends Instance_Factory {
 
 	/**
 	 * @param mixed[]|null $local_data
-	 * @param int[] $item_ids Used only by the Multiple format
 	 */
 	public function create_layout(
 		Source $source,
@@ -59,8 +58,7 @@ class Layout_Factory extends Instance_Factory {
 		int $page_id,
 		?Layout_Settings $layout_settings = null,
 		string $classes = '',
-		?array $local_data = null,
-		array $item_ids = array()
+		?array $local_data = null
 	): Layout_Instance {
 		$layout_settings ??= $this->layouts_settings_storage->get( $unique_view_id );
 
@@ -73,8 +71,7 @@ class Layout_Factory extends Instance_Factory {
 			$layout_settings,
 			$markup,
 			$classes,
-			$local_data,
-			$item_ids
+			$local_data
 		);
 	}
 
@@ -111,15 +108,13 @@ class Layout_Factory extends Instance_Factory {
 
 	/**
 	 * @param mixed[]|null $local_data
-	 * @param int[] $item_ids
 	 */
 	protected function create_layout_instance(
 		Source $source,
 		Layout_Settings $settings,
 		string $markup,
 		string $classes,
-		?array $local_data = null,
-		array $item_ids = array()
+		?array $local_data = null
 	): Layout_Instance {
 		return new Layout_Instance(
 			$this->provider_cluster,
@@ -130,8 +125,7 @@ class Layout_Factory extends Instance_Factory {
 			$source,
 			$this->html_renderer,
 			$classes,
-			$local_data,
-			$item_ids
+			$local_data
 		);
 	}
 

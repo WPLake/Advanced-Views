@@ -4,23 +4,25 @@ declare( strict_types=1 );
 
 namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode;
 
+defined( 'ABSPATH' ) || exit;
+
 use Org\Wplake\Advanced_Views\Plugin\Dashboard\Live_Reloader\Live_Reloader_Component;
 use Org\Wplake\Advanced_Views\Plugin\Settings\Settings_Storage;
 use Org\Wplake\Advanced_Views\Post_Type\Integration\Editor\Core\Shortcode\Shortcode_Base;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Data_Storage\Layout_Settings_Storage;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Arguments\Argument_Parser;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Arguments\Shortcode_Arguments;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Argument_Parser\Argument_Exception;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Argument_Parser\Argument_Parser;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Arguments\Common_Arguments;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Cpt;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Layout_Renderer;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 use Org\Wplake\Advanced_Views\Template\Html\Rendering\Html_Renderer;
 use function Org\Wplake\Advanced_Views\Vendors\WPLake\Typed\string;
 
-defined( 'ABSPATH' ) || exit;
-
 final class Layout_Shortcode_Renderer extends Shortcode_Base {
 	private Layout_Settings_Storage $layouts_settings_storage;
-	private Argument_Parser $shortcode_arguments_parser;
+	private Argument_Parser $argument_parser;
 	private Layout_Renderer $layout_renderer;
 
 	public function __construct(
@@ -29,7 +31,7 @@ final class Layout_Shortcode_Renderer extends Shortcode_Base {
 		Layout_Settings_Storage $layouts_settings_storage,
 		Live_Reloader_Component $live_reloader_component,
 		Html_Renderer $html_renderer,
-		Argument_Parser $shortcode_arguments_parser,
+		Argument_Parser $argument_parser,
 		Layout_Renderer $layout_renderer
 	) {
 		parent::__construct(
@@ -40,9 +42,9 @@ final class Layout_Shortcode_Renderer extends Shortcode_Base {
 			$html_renderer
 		);
 
-		$this->layouts_settings_storage   = $layouts_settings_storage;
-		$this->shortcode_arguments_parser = $shortcode_arguments_parser;
-		$this->layout_renderer            = $layout_renderer;
+		$this->layouts_settings_storage = $layouts_settings_storage;
+		$this->argument_parser          = $argument_parser;
+		$this->layout_renderer          = $layout_renderer;
 	}
 
 	/**
@@ -100,45 +102,47 @@ final class Layout_Shortcode_Renderer extends Shortcode_Base {
 	 * @param array<string,mixed> $attrs
 	 */
 	protected function render_layout( string $unique_id, array $attrs ): string {
-		$layout_settings = $this->layouts_settings_storage->get( $unique_id );
-		$arguments       = $this->shortcode_arguments_parser->parse_arguments( $layout_settings, $attrs );
-		$is_parsed       = ! $arguments->has_error();
+		$layout_settings  = $this->layouts_settings_storage->get( $unique_id );
+		$common_arguments = $this->argument_parser->parse_common_arguments( $attrs );
 
-		if ( $is_parsed ) {
-			return $this->render_parsed_layout(
-				$unique_id,
-				$layout_settings,
-				$arguments,
-				$attrs
+		try {
+			$source = $this->argument_parser->resolve_source( $layout_settings, $attrs, $common_arguments );
+		} catch ( Argument_Exception $exception ) {
+			$shortcode_name = $this->get_shortcode_name();
+
+			return $this->get_error_markup(
+				$shortcode_name,
+				$attrs,
+				$exception->getMessage()
 			);
 		}
 
-		$shortcode_name = $this->get_shortcode_name();
-
-		return $this->get_error_markup(
-			$shortcode_name,
-			$attrs,
-			$arguments->error
+		return $this->render_resolved_layout(
+			$unique_id,
+			$layout_settings,
+			$source,
+			$common_arguments,
+			$attrs
 		);
 	}
 
 	/**
 	 * @param array<string,mixed> $attrs
 	 */
-	protected function render_parsed_layout(
+	protected function render_resolved_layout(
 		string $unique_id,
 		Layout_Settings $layout_settings,
-		Shortcode_Arguments $arguments,
+		Source $source,
+		Common_Arguments $common_arguments,
 		array $attrs
 	): string {
 		$html        = $this->layout_renderer->render(
 			$layout_settings,
-			$arguments->source,
-			$arguments->queried_object_id,
-			$arguments->classes,
-			$arguments->custom_arguments,
-			$arguments->local_data,
-			$arguments->item_ids
+			$source,
+			$common_arguments->queried_object_id,
+			$common_arguments->classes,
+			$common_arguments->custom_arguments,
+			$common_arguments->local_data
 		);
 		$is_rendered = is_string( $html );
 

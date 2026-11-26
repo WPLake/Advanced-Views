@@ -2,21 +2,24 @@
 
 declare( strict_types=1 );
 
-namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items\Multiple;
+namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items;
 
 defined( 'ABSPATH' ) || exit;
 
 use Org\Wplake\Advanced_Views\Post_Query\Core\Context\Query_Context;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Acf\Groups\Layout_Settings;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Argument_Parser\Argument_Exception;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Argument_Parser\Request_Context_Reader;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Arguments\Attribute_Reader;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Context\Request_Context_Reader;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items\Existing_Item_Filter;
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items\Reference_Resolver;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Arguments\Common_Arguments;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items\Lookup\Existing_Item_Filter;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Items\Lookup\Reference_Resolver;
 
 /**
  * Resolves the item IDs of a multiple-items Layout from its shortcode attrs.
  */
-final class Multiple_Items_Resolver {
+final class Multi_Item_Resolver {
 	private Reference_Resolver $item_resolver;
 
 	public function __construct( Reference_Resolver $item_resolver ) {
@@ -26,18 +29,19 @@ final class Multiple_Items_Resolver {
 	/**
 	 * @param array<string,mixed> $attrs
 	 *
-	 * @return int[]|string The error message if the attrs are conflicting.
+	 * @throws Argument_Exception If the attrs are conflicting.
 	 */
-	public function resolve_item_ids( string $item_type, array $attrs, int $queried_object_id ) {
+	public function resolve_item_ids( string $item_type, array $attrs, Common_Arguments $common_arguments ): Source {
 		$error = self::get_conflict_error( $item_type, $attrs );
 
-		if ( ! is_string( $error ) ) {
-			$query_context = self::create_query_context( $attrs, $queried_object_id );
-
-			return $this->resolve_ids( $item_type, $attrs, $query_context );
+		if ( null !== $error ) {
+			throw new Argument_Exception( $error );
 		}
 
-		return $error;
+		$query_context = self::create_query_context( $common_arguments );
+		$item_ids      = $this->resolve_ids( $item_type, $attrs, $query_context );
+
+		return Source::make_items( $item_type, $item_ids );
 	}
 
 	/**
@@ -93,14 +97,9 @@ final class Multiple_Items_Resolver {
 			null;
 	}
 
-	/**
-	 * @param array<string,mixed> $attrs
-	 */
-	protected static function create_query_context( array $attrs, int $queried_object_id ): Query_Context {
-		$custom_arguments = Attribute_Reader::get_custom_arguments( $attrs );
-
+	protected static function create_query_context( Common_Arguments $common_arguments ): Query_Context {
 		return Query_Context::new_instance()
-			->set_post_id( $queried_object_id )
-			->set_custom_arguments( $custom_arguments );
+			->set_post_id( $common_arguments->queried_object_id )
+			->set_custom_arguments( $common_arguments->custom_arguments );
 	}
 }

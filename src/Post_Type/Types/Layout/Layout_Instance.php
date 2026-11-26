@@ -35,14 +35,9 @@ class Layout_Instance extends Instance {
 	 * @var array<string|int,mixed>|null
 	 */
 	private ?array $local_data;
-	/**
-	 * @var int[]
-	 */
-	private array $item_ids;
 
 	/**
 	 * @param array<string|int,mixed>|null $local_data
-	 * @param int[] $item_ids Used only by the Multiple format
 	 */
 	public function __construct(
 		Field_Provider_Cluster $provider_cluster,
@@ -53,8 +48,7 @@ class Layout_Instance extends Instance {
 		Source $source,
 		Html_Renderer $html_renderer,
 		string $classes = '',
-		?array $local_data = null,
-		array $item_ids = array()
+		?array $local_data = null
 	) {
 		parent::__construct( $layout_settings, $twig_template, $html_renderer, $classes );
 
@@ -64,7 +58,6 @@ class Layout_Instance extends Instance {
 		$this->template_renderer = $template_renderer;
 		$this->source            = $source;
 		$this->local_data        = $local_data;
-		$this->item_ids          = $item_ids;
 	}
 
 	/**
@@ -147,7 +140,7 @@ class Layout_Instance extends Instance {
 	 * @return int[]
 	 */
 	public function get_item_ids(): array {
-		return $this->item_ids;
+		return $this->source->get_item_ids( $this->layout_settings->item_type );
 	}
 
 	/**
@@ -158,7 +151,7 @@ class Layout_Instance extends Instance {
 		array $variables,
 		bool $is_for_validation = false
 	): bool {
-		$items_count = count( $this->item_ids );
+		$items_count = count( $this->get_item_ids() );
 
 		// the validation renders fake data, it must never be skipped.
 		$is_empty_render = ! $is_for_validation && $this->template_renderer->is_empty_render(
