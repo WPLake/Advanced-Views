@@ -134,7 +134,7 @@ final class Layout_Shortcode_Renderer extends Shortcode_Base {
 		$html        = $this->layout_renderer->render(
 			$layout_settings,
 			$arguments->source,
-			$arguments->current_page_id,
+			$arguments->queried_object_id,
 			$arguments->classes,
 			$arguments->custom_arguments,
 			$arguments->local_data,

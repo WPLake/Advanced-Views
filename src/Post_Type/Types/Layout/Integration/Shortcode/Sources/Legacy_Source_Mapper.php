@@ -6,8 +6,8 @@ namespace Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode
 
 defined( 'ABSPATH' ) || exit;
 
-use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Arguments\Attribute_Reader;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Gutenberg\Shortcode_Gutenberg_Block;
+use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Integration\Shortcode\Arguments\Attribute_Reader;
 use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
 
 /**
@@ -15,11 +15,11 @@ use Org\Wplake\Advanced_Views\Post_Type\Types\Layout\Source;
  */
 final class Legacy_Source_Mapper {
 	private Shortcode_Gutenberg_Block $shortcode_block;
-	private Item_Resolver $item_resolver;
+	private Context_Provider $context_provider;
 
-	public function __construct( Shortcode_Gutenberg_Block $shortcode_block, Item_Resolver $item_resolver ) {
-		$this->shortcode_block = $shortcode_block;
-		$this->item_resolver   = $item_resolver;
+	public function __construct( Shortcode_Gutenberg_Block $shortcode_block, Context_Provider $context_provider ) {
+		$this->shortcode_block  = $shortcode_block;
+		$this->context_provider = $context_provider;
 	}
 
 	/**
@@ -32,14 +32,14 @@ final class Legacy_Source_Mapper {
 		$post_slug = Attribute_Reader::get_string( $attrs, 'post-slug' );
 
 		$user_argument = self::get_user_argument( $attrs );
-		$user_id       = Item_Resolver::resolve_user_id( $user_argument );
+		$user_id       = null !== $user_argument ?
+			( Item_Validator::validate_user_ids( array( $user_argument ) )[0] ?? 0 ) :
+			( Context_Provider::get_current_user_id() ?? 0 );
 
-		$term_item_id = Attribute_Reader::get_int( $attrs, 'term-id' );
-		$menu_slug    = Attribute_Reader::get_string( $attrs, 'menu-slug' );
-		$term_id      = Item_Resolver::resolve_term_id( $term_item_id, $menu_slug );
+		$term_id = self::resolve_term_id( $attrs );
 
 		$comment_item_id = Attribute_Reader::get_int( $attrs, 'comment-id' );
-		$comment_id      = Item_Normalizer::normalize_comment_id( $comment_item_id );
+		$comment_id      = Item_Validator::validate_comment_ids( array( $comment_item_id ) )[0] ?? 0;
 
 		$data_post_id = $this->get_data_post_id(
 			$object_id,
@@ -55,6 +55,22 @@ final class Legacy_Source_Mapper {
 		}
 
 		return null;
+	}
+
+	/**
+	 * @param array<string,mixed> $attrs
+	 */
+	protected static function resolve_term_id( array $attrs ): int {
+		$term_item_id = Attribute_Reader::get_int( $attrs, 'term-id' );
+		$menu_slug    = Attribute_Reader::get_string( $attrs, 'menu-slug' );
+
+		if ( 0 !== $term_item_id ) {
+			return Item_Validator::validate_term_ids( array( $term_item_id ) )[0] ?? 0;
+		}
+
+		return strlen( $menu_slug ) > 0 ?
+			Item_Resolver::resolve_menu_term_id( $menu_slug ) ?? 0 :
+			Context_Provider::get_queried_term_id() ?? 0;
 	}
 
 	/**
@@ -108,9 +124,12 @@ final class Legacy_Source_Mapper {
 			return $object_id;
 		}
 
-		$post_id = $this->item_resolver->resolve_post_id( $item_id );
+		// an invalid argument is not replaced with the context default, only an absent one is.
+		$post_id = strlen( $object_id ) > 0 ?
+			( Item_Validator::validate_post_ids( array( $item_id ) )[0] ?? null ) :
+			$this->context_provider->get_post_id();
 
-		return 0 !== $post_id ?
+		return null !== $post_id ?
 			(string) $post_id :
 			'';
 	}

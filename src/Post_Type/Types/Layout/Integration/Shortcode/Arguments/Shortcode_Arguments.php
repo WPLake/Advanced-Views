@@ -17,7 +17,7 @@ final class Shortcode_Arguments {
 	 * @var int[]
 	 */
 	public array $item_ids;
-	public int $current_page_id;
+	public int $queried_object_id;
 	public string $classes;
 	/**
 	 * @var mixed[]
@@ -30,13 +30,13 @@ final class Shortcode_Arguments {
 	public string $error;
 
 	public function __construct() {
-		$this->source           = new Source();
-		$this->item_ids         = array();
-		$this->current_page_id  = 0;
-		$this->classes          = '';
-		$this->custom_arguments = array();
-		$this->local_data       = null;
-		$this->error            = '';
+		$this->source            = new Source();
+		$this->item_ids          = array();
+		$this->queried_object_id = 0;
+		$this->classes           = '';
+		$this->custom_arguments  = array();
+		$this->local_data        = null;
+		$this->error             = '';
 	}
 
 	public function has_error(): bool {
@@ -58,8 +58,8 @@ final class Shortcode_Arguments {
 		return $this;
 	}
 
-	public function set_current_page_id( int $current_page_id ): self {
-		$this->current_page_id = $current_page_id;
+	public function set_queried_object_id( int $queried_object_id ): self {
+		$this->queried_object_id = $queried_object_id;
 
 		return $this;
 	}
