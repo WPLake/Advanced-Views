@@ -59,30 +59,10 @@ class Selection_Tabs_Factory extends Factory_Base {
 	}
 
 	public function pre_built_tab(): Post_Selection_Pre_Built_Tab {
-		$logger             = $this->resolve( Logger::class );
-		$html_renderer      = $this->resolve( Html_Renderer::class );
-		$selections_cpt     = $this->resolve( Selection_Cpt::class );
-		$plugin_meta        = $this->resolve( Plugin_Meta::class );
-		$engines_storage    = $this->resolve( Engines_Storage::class );
-		$selection_settings = $this->resolve( Post_Selection_Settings::class );
-		$provider_cluster   = $this->resolve( Field_Provider_Cluster::class );
-
-		$folder_name    = $selections_cpt->folder_name();
-		$pre_built_path = $plugin_meta->get_root_path( 'pre_built' );
-		$file_system    = new File_System( $logger, $folder_name, $html_renderer, $pre_built_path );
-		$fs_fields      = new Post_Selection_Fs_Fields( $engines_storage );
-		$db_management  = new Db_Management( $logger, $file_system, $selections_cpt, true );
-
-		$pre_built_settings_storage = new Selection_Settings_Storage(
-			$logger,
-			$file_system,
-			$fs_fields,
-			$db_management,
-			$selection_settings
-		);
-
-		// the bundled items keep their JS in the old-format script.js file.
-		$pre_built_settings_storage->use_fallback_fields();
+		$logger                     = $this->resolve( Logger::class );
+		$html_renderer              = $this->resolve( Html_Renderer::class );
+		$provider_cluster           = $this->resolve( Field_Provider_Cluster::class );
+		$pre_built_settings_storage = $this->pre_built_settings_storage();
 
 		$cpt_table             = $this->resolve( Selection_Cpt_Table::class );
 		$settings_storage      = $this->resolve( Selection_Settings_Storage::class );
@@ -101,5 +81,43 @@ class Selection_Tabs_Factory extends Factory_Base {
 			$html_renderer,
 			$row_title
 		);
+	}
+
+	protected function pre_built_settings_storage(): Selection_Settings_Storage {
+		$logger             = $this->resolve( Logger::class );
+		$html_renderer      = $this->resolve( Html_Renderer::class );
+		$selections_cpt     = $this->resolve( Selection_Cpt::class );
+		$plugin_meta        = $this->resolve( Plugin_Meta::class );
+		$engines_storage    = $this->resolve( Engines_Storage::class );
+		$selection_settings = $this->resolve( Post_Selection_Settings::class );
+
+		$folder_name    = $selections_cpt->folder_name();
+		$pre_built_path = $plugin_meta->get_root_path( 'pre_built' );
+		$file_system    = new File_System(
+			$logger,
+			$folder_name,
+			$html_renderer,
+			$pre_built_path
+		);
+		$fs_fields      = new Post_Selection_Fs_Fields( $engines_storage );
+		$db_management  = new Db_Management(
+			$logger,
+			$file_system,
+			$selections_cpt,
+			true
+		);
+
+		$storage = new Selection_Settings_Storage(
+			$logger,
+			$file_system,
+			$fs_fields,
+			$db_management,
+			$selection_settings
+		);
+
+		// the bundled items keep their JS in the old-format script.js file.
+		$storage->use_fallback_fields();
+
+		return $storage;
 	}
 }
